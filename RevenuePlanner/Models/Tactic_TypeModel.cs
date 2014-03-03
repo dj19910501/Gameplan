@@ -1,0 +1,28 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.ComponentModel.DataAnnotations;
+namespace RevenuePlanner.Models
+{
+    public class Tactic_TypeModel
+    {
+        [Key]
+        public int TacticTypeId { get; set; }
+        public Guid? ClientId { get; set; }
+        public int? ModelId { get; set; }
+        public int? StageId { get; set; }
+        public Nullable<int> ProjectedInquiries { get; set; }
+        public Nullable<int> ProjectedMQLs { get; set; }
+        public Nullable<int> ProjectedRevenue { get; set; }
+        public System.DateTime CreatedDate { get; set; }
+        public System.Guid CreatedBy { get; set; }
+        public Nullable<System.DateTime> ModifiedDate { get; set; }
+        public Nullable<System.Guid> ModifiedBy { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string Category { get; set; }
+        public string Status { get; set; }
+        public List<ModelVersion> Versions { get; set; }
+    }
+}

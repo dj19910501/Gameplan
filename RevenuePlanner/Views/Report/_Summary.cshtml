@@ -1,0 +1,189 @@
+﻿@model RevenuePlanner.Models.SummaryReportModel
+@using RevenuePlanner.Helpers
+@{
+    bool isPlanExistToShowReport = Convert.ToBoolean(ViewBag.IsPlanExistToShowReport);    
+}
+
+<script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
+
+@Html.Hidden("hdnIsPlanExistToShowReport", isPlanExistToShowReport)
+<div class="report-gray-container" id="DivSummaryRevenue" style="display: none; margin-top: 0px !important;">
+    <a class="CursorHand" onclick="window.location.href='@Url.Action("Revenue", "Report")'">
+        <div class="report-chart">
+            <label>Realized Revenue to Plan</label>
+            <div class="info">
+                <h6>@Html.LabelForMQL("MQL")</h6>
+                <h3 id="h3MQLActual">@Model.MQLs</h3>
+                @if (Convert.ToDouble(Model.MQLsPercentage) < 0)
+                {
+                    <h4 class="red-value">@Model.MQLsPercentage%</h4>    
+                }
+                else
+                {
+                    <h4 class="green-value">@Model.MQLsPercentage%</h4>    
+                }
+
+            </div>
+            <div class="info">
+                <h6>Revenue</h6>
+                <h3>$@Model.Revenue</h3>
+
+                @if (Convert.ToDouble(Model.RevenuePercentage) < 0)
+                {
+                    <h4 class="red-value">@Model.RevenuePercentage%</h4>    
+                }
+                else
+                {
+                    <h4 class="green-value">@Model.RevenuePercentage%</h4>    
+                }
+            </div>
+        </div>
+    </a>
+    <div class="report-info">
+        <h4>Revenue Summary</h4>
+        <p>
+            You are <strong>@Model.PlanStatus</strong> plan to close <strong>$@Model.ProjectedRevenue</strong> this year.
+        </p>
+        <a id="AViewDetailReportRevenue" class="CursorHand" onclick="window.location.href='@Url.Action("Revenue", "Report")'">View Details<span></span></a>
+    </div>
+</div>
+
+<div class="report-gray-container" id="DivSummaryWaterfall" style="display: none;">
+    <a class="CursorHand" onclick="window.location.href='@Url.Action("Conversion", "Report")'">
+        <div class="report-chart">
+            <label>@Html.LabelForINQ("INQ") > @Html.LabelForMQL("MQL") > @Html.LabelForCW("CW")</label>
+            <div id="chartDiv" class="report-chart1" style="width: 140px; height: 85px; left: 4px; top: 0px;"></div>
+            <div class="legend1"></div>
+            <div class="legend2"></div>
+        </div>
+    </a>
+    <div class="report-info">
+        <h4>Waterfall Conversion Summary</h4>
+        <p>
+            Your overall conversion is <strong>@Model.OverallConversionPlanStatus.</strong><br />
+            @Html.LabelForINQ("INQ") : <strong>@Model.ISQsStatus.</strong><br />
+            @Html.LabelForMQL("MQL") : <strong>@Model.MQLsStatus.</strong><br />
+            @Html.LabelForCW("CW") : <strong>@Model.CWsStatus.</strong><br />
+        </p>
+        <a id="AViewDetailReportConversion" class="CursorHand" onclick="window.location.href='@Url.Action("Conversion", "Report")'">View Details<span></span></a>
+    </div>
+
+</div>
+<script type="text/javascript">
+    
+    $(document).ready(function () {
+        ShowHideReport();
+        var data = @Html.Raw(Json.Encode(Model.chartData));
+
+        //// Bug 295:Waterfall Conversion Summary Graph misleading
+        //// Array to hold chart points.
+        var arrChartData = [];
+
+        //// Pushing data into array.
+        $.each(data, function(index,objChardData){
+            arrChartData.push(parseInt(objChardData.Actual));
+            arrChartData.push(parseInt(objChardData.Projected));
+        });
+
+        //// Finding max from array.
+        var endValue = (Math.max.apply(Math, arrChartData));
+
+        //// Checking whether max is not zero.
+        if (endValue == 0) {
+            endValue = 100;
+        }
+        else
+        {
+            endValue = Math.ceil(endValue/10)*10
+        }
+
+        //// Calculating step value.
+        var stepValue = endValue/10;
+
+        setgraphdata(data);
+        function setgraphdata(data) {
+            var barChart = new dhtmlXChart({
+                view: "bar",
+                container: "chartDiv",
+                value: "#Actual#",
+                tooltip: "#Actual#",//// Reason: To show actual value as tooltip. Added By: Maninder Singh on 1/28/2014
+                radius: 0,
+                border: false,
+                color: "#00a1e4",
+                toggle: false,
+                xAxis: {
+                    lines: false,
+                    template: "#Stage#",
+                },
+                yAxis: {
+                    start: 0,
+                    end: endValue,
+                    step: stepValue,
+                    template: function (value) {
+                        return FormatCommas(value, false);
+                    }
+                },
+                legend: {
+                    values: [{ text: "Actual", color: "#00A1E4" }, { text: "Projected", color: "#B3B3B3" }],
+                    valign: "middle",
+                    align: "right",
+                    width: 60, //// Reason: Increase width of legend box so that text 'projected' get displayed properly. Added By: Maninder Singh on 1/28/2014
+                    toggle: false,
+                    layout: "y",
+                    marker: {
+                        type: "square",
+                        width: 10,
+                        height: 10,
+                        radius: 0,
+                    }
+                }
+            });
+
+            barChart.addSeries({
+                value: "#Projected#",
+                tooltip: "#Projected#", //// Reason: To show projected value as tooltip. Added By: Maninder Singh on 1/28/2014
+                color: "#e6e6e6",
+                border: false
+            });
+            barChart.parse(data, "json");
+
+            /*remove grid from charts*/
+            $('canvas').each(function () {
+                if ($(this).attr('canvas_id') == "undefined")
+                    $(this).remove();
+            });
+        }
+
+        //// Added By Maninder Singh 
+        //// Date 1/28/2014
+        //// Added Set tooltip
+        SetTipsy();
+
+        //// Added By Maninder Singh 
+        //// Date 1/28/2014
+        //// Function to set tooltip for large numbers.
+        function SetTipsy() {
+            SetFormatForLabel("#h3MQLActual", 5);
+        }
+
+        
+    });
+
+    function ShowHideReport() {
+        if ($('#hdnIsPlanExistToShowReport').val().toLowerCase() == 'true') {
+            $('#DivNoPlanToShowReport').css('display', 'none');
+            $('#DivSummaryRevenue').css('display', 'block');
+            $('#DivSummaryWaterfall').css('display', 'block');
+            $('#BtnShareReport').removeAttr('disabled');
+            $('#BtnShareReport').removeClass('btn btn-blue-disable text-shadow-blue source-sans-proregular').addClass('btn btn-blue text-shadow-blue source-sans-proregular');
+        }
+        else {
+            $('#BtnShareReport').attr('disabled', 'disabled');
+            $('#BtnShareReport').removeClass('class', 'btn btn-blue text-shadow-blue source-sans-proregular').addClass('btn btn-blue-disable text-shadow-blue source-sans-proregular');
+            $('#DivNoPlanToShowReport').css('display', 'block');
+            $('#DivSummaryRevenue').css('display', 'none');
+            $('#DivSummaryWaterfall').css('display', 'none');
+        }
+    }
+
+</script>

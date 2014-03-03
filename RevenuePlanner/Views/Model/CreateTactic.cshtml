@@ -1,0 +1,316 @@
+﻿@model RevenuePlanner.Models.Tactic_TypeModel
+@using RevenuePlanner.Models
+@using RevenuePlanner.Helpers
+    <div class="head">
+        <span class="close-form source-sans-proregular">» CLOSE MENU</span>
+        <div class="cf">
+            <h2 class="source-sans-prolight">Tactic Detail</h2>
+        </div>
+    </div>
+    <div id="errorMsg" class="alert alert-error hide message-position-small">
+        <a class="close">×</a>
+        <strong>Error!</strong> <span id="spanMessage"></span>
+    </div>
+
+    @using (Html.BeginForm(new { @id = "frmSaveTactic" }))
+    {
+         <script type="text/javascript">
+             $(document).ready(function () {
+                 $(".verticalIdSelectBox select").selectbox();
+             });
+		</script>
+        <div id="frm_tactics" name="frm_tactics">
+            <div class="content">
+                @Html.HiddenFor(model => model.TacticTypeId, new { id = "hdnTacticTypeId" })
+
+                @Html.HiddenFor(model => model.ModelId, new { id = "hdnModelId" })
+                @Html.HiddenFor(model => model.ClientId, new { id = "hdnClientId" })
+
+                <label>Title</label>
+                @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true" })
+
+                <label>Description</label>
+                @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional" })
+
+                <label>Target Stage</label>
+                <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.StageId, new SelectList((System.Collections.IEnumerable)ViewBag.Stages, "StageId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
+
+                <label>Status</label>
+                @{
+        if (Model.ClientId != null)
+        {
+@*<input id="t_status" class="icon-check-gray icon-check-blue" type="text" readonly="" maxlength="18" placeholder="Deployed" name="t_status">
+                <label><span id="t_status" class="icon-check-gray icon-check-blue setbackground">Deployed </span></label>*@
+                    <span id="t_status" class="setbackground">@Html.Raw("Deployed")</span>
+                
+        }
+        else
+        {
+@*  <input class="icon-check-gray " type="text" readonly="" maxlength="18" placeholder="Deployed">
+                <label><span id="t_status" class="icon-check-gray setbackground" >Not Deployed </span></label>*@
+                
+                    <span id="t_status" class="setbackground">@Html.Raw("Not Deployed")</span>
+        }
+                }
+            </div>
+            <!--End content-->
+
+            <div class="content dark">
+                <p>Add two or more projected or historical values for projection purposes.</p>
+
+                <label>Projected @Html.LabelForINQ("INQ")</label>
+                @Html.TextBoxFor(model => model.ProjectedInquiries, new {  require = "true", id = "hdnProjectedInquiries", @class="priceValue", maxlength=@RevenuePlanner.Helpers.Common.maxLengthPriceValue })
+
+                <label>Projected @Html.LabelForMQL("MQL")</label>
+                @Html.TextBoxFor(model => model.ProjectedMQLs, new {  require = "true", id = "hdnProjectedMQLs" , @class="priceValue", maxlength=@RevenuePlanner.Helpers.Common.maxLengthPriceValue})
+
+                <label>Projected Cost</label>
+                @Html.TextBoxFor(model => model.ProjectedRevenue, new { require = "true", id = "hdnProjectedRevenue" ,@class="currency_dollar", maxlength=@RevenuePlanner.Helpers.Common.maxLengthDollar})
+
+            </div>
+            <!--end content dark-->
+            <div class="wraper-btns cf">
+                <div class="span6">
+                    @{
+        if ((bool)ViewBag.IsCreated == true)
+        {
+                        <button id="CreateTactic" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
+        }
+        else
+        {
+                        <button id="save_tactic" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
+        }
+                    }
+                </div>
+                <div class="span6">
+                    <button class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
+                </div>
+            </div>
+        </div>
+    }
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+
+        if ($("#latestModelId").val() == $("#mode").val()) {
+            $("#CreateTactic").show();
+            $("#save_tactic").show();
+            MakeEditable();
+        }
+        else {
+            $("#CreateTactic").hide();
+            $("#save_tactic").hide();
+            MakeViewOnly();//Bug 17:Should not be able to edit a published model
+        }
+        $("span.tool-tip").tooltip();
+
+        $(".alert").find(".close").on("click", function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            $(this).closest(".alert").slideUp(400);
+        });
+
+        $('.close-form', this.$panel).click(function (e) {
+            $("#slidepanel").css("display", "none");
+            $("#slidepanel-container").empty();
+        });
+
+   
+        $('form').find('input[type=text], select, textarea').each(function () {
+            $(this).change(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val() == '') {
+                        $(this).addClass("error");
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                } /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
+                if ($(this).attr('id') == 'hdnProjectedInquiries') {
+                    var tValue = ReplaceCC($("#hdnProjectedInquiries").val());
+                    if (isNaN(tValue)) {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                }
+                if ($(this).attr('id') == 'hdnProjectedMQLs') {
+                    var tValue = ReplaceCC($("#hdnProjectedMQLs").val()); 
+                    if (isNaN(tValue)) {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                }
+                if ($(this).attr('id') == 'hdnProjectedRevenue') {
+                    var tValue = ReplaceCC($("#hdnProjectedRevenue").val()); 
+                    if (isNaN(tValue)) {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                }
+            });
+        });
+
+        $("#save_tactic").click(function () {
+            var iserror = false;
+            $('form').find('input[type=text], select, textarea').each(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val() == '') {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                } /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
+                if ($(this).attr('id') == 'hdnProjectedInquiries') {
+                    var tValue = ReplaceCC($("#hdnProjectedInquiries").val());
+                    if (isNaN(tValue)) {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                }
+                if ($(this).attr('id') == 'hdnProjectedMQLs') {
+                    var tValue = ReplaceCC($("#hdnProjectedMQLs").val());
+                    if (isNaN(tValue)) {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                }
+                if ($(this).attr('id') == 'hdnProjectedRevenue') {
+                    var tValue = ReplaceCC($("#hdnProjectedRevenue").val());
+                    if (isNaN(tValue)) {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                }
+            });
+
+            if (iserror) {
+                ShowError("Make sure all fields are filled and try again.");
+                return false;
+            }
+            var Title = $("#Title").val();
+            var Description = $("#Description").val();
+            var StageId = $("#StageId").val();
+            /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
+            var ProjectedMQLs =ReplaceCC($("#hdnProjectedMQLs").val());
+            var ProjectedInquiries =ReplaceCC($("#hdnProjectedInquiries").val());
+            var ProjectedRevenue =ReplaceCC($("#hdnProjectedRevenue").val());
+            var TacticTypeId = $("#hdnTacticTypeId").val();
+            //var clientId = $("#hdnClientId").val();
+            var modelID = $("#hdnModelId").val();
+
+            if (StageId == '' || StageId == 'Undefined') {
+                StageId = 'null';
+            }
+            var ModelTacticTypeId = $("#hdnTacticTypeId").val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Model/SaveTactic/")',
+                data: 'Title=' + Title + '&Description=' + Description + '&StageId=' + StageId + '&ProjectedMQLs=' + ProjectedMQLs + '&ProjectedInquiries=' + ProjectedInquiries
+                + '&ProjectedRevenue=' + ProjectedRevenue + '&TacticTypeId=' + TacticTypeId
+               + '&modelID=' + modelID,
+                success: function (data) {
+                    if (data.redirect) {
+                        $("#slidepanel").css("display", "none");
+                        $("#slidepanel-container").empty();
+                        window.location.reload(true);
+                        return;
+                    }
+                    if (data.errormsg) {
+                        ShowError(data.errormsg);
+                        return;
+                    }
+
+                },
+                error: function () {
+                    myApp.hidePleaseWait();
+                }
+            });
+        });
+
+        $("#CreateTactic").click(function () {
+            var iserror = false;
+            $('form').find('input[type=text], select, textarea').each(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val() == '') {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                }
+                /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
+                if ($(this).attr('id') == 'hdnProjectedInquiries') {
+                    var tValue = ReplaceCC($("#hdnProjectedInquiries").val());
+                    if (isNaN(tValue)) {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                }
+                if ($(this).attr('id') == 'hdnProjectedMQLs') {
+                    var tValue = ReplaceCC($("#hdnProjectedMQLs").val()); 
+                    if (isNaN(tValue)) {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                }
+                if ($(this).attr('id') == 'hdnProjectedRevenue') {
+                    var tValue = ReplaceCC($("#hdnProjectedRevenue").val()); 
+                    if (isNaN(tValue)) {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                }
+            });
+            if (iserror) {
+                ShowError("Make sure all fields are filled and try again.");
+                return false;
+            }
+
+            var Title = $("#Title").val();
+            var Description = $("#Description").val();
+            var StageId = $("#StageId").val();
+            /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
+            var ProjectedMQLs =ReplaceCC($("#hdnProjectedMQLs").val());
+            var ProjectedInquiries =ReplaceCC($("#hdnProjectedInquiries").val());
+            var ProjectedRevenue =ReplaceCC($("#hdnProjectedRevenue").val());
+            var TacticTypeId = $("#hdnTacticTypeId").val();
+            var clientId = $("#hdnClientId").val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Model/SaveTactic/")',
+                data: 'Title=' + Title + '&Description=' + Description + '&StageId=' + StageId + '&ProjectedMQLs=' + ProjectedMQLs + '&ProjectedInquiries=' + ProjectedInquiries
+                + '&ProjectedRevenue=' + ProjectedRevenue + '&TacticTypeId=' + 0
+               + '&modelID=' + $("#hdnModelId").val(),
+                success: function (data) {
+                    if (data.redirect) {
+                        $("#slidepanel").css("display", "none");
+                        $("#slidepanel-container").empty();
+                        window.location.reload(true);
+                        return;
+                    }
+                    if (data.errormsg) {
+                        ShowError(data.errormsg);
+                        return;
+                    }
+
+                },
+                error: function () {
+                    myApp.hidePleaseWait();
+                }
+            });
+        });
+        function ShowError(value) {
+            $("#errorMsg").slideDown(400);
+            $("#spanMessage").empty();
+            $("#spanMessage").text(value);
+        }
+
+
+    });
+</script>

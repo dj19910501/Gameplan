@@ -1,0 +1,759 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="BDSAuthModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityContainer Name="BDSAuthModelStoreContainer">
+          <EntitySet Name="Application" EntityType="BDSAuthModel.Store.Application" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Application_Role" EntityType="BDSAuthModel.Store.Application_Role" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Client" EntityType="BDSAuthModel.Store.Client" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Menu_Application" EntityType="BDSAuthModel.Store.Menu_Application" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Role" EntityType="BDSAuthModel.Store.Role" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Role_Permission" EntityType="BDSAuthModel.Store.Role_Permission" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="User" EntityType="BDSAuthModel.Store.User" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="User_Application" EntityType="BDSAuthModel.Store.User_Application" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK_Application_Role_Application" Association="BDSAuthModel.Store.FK_Application_Role_Application">
+            <End Role="Application" EntitySet="Application" />
+            <End Role="Application_Role" EntitySet="Application_Role" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Application_Role_Role" Association="BDSAuthModel.Store.FK_Application_Role_Role">
+            <End Role="Role" EntitySet="Role" />
+            <End Role="Application_Role" EntitySet="Application_Role" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Menu_Application_Application" Association="BDSAuthModel.Store.FK_Menu_Application_Application">
+            <End Role="Application" EntitySet="Application" />
+            <End Role="Menu_Application" EntitySet="Menu_Application" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Menu_Application_Menu_Application" Association="BDSAuthModel.Store.FK_Menu_Application_Menu_Application">
+            <End Role="Menu_Application" EntitySet="Menu_Application" />
+            <End Role="Menu_Application1" EntitySet="Menu_Application" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Role_Permission_Menu_Application" Association="BDSAuthModel.Store.FK_Role_Permission_Menu_Application">
+            <End Role="Menu_Application" EntitySet="Menu_Application" />
+            <End Role="Role_Permission" EntitySet="Role_Permission" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Role_Permission_Role" Association="BDSAuthModel.Store.FK_Role_Permission_Role">
+            <End Role="Role" EntitySet="Role" />
+            <End Role="Role_Permission" EntitySet="Role_Permission" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Application_Application" Association="BDSAuthModel.Store.FK_User_Application_Application">
+            <End Role="Application" EntitySet="Application" />
+            <End Role="User_Application" EntitySet="User_Application" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Application_User" Association="BDSAuthModel.Store.FK_User_Application_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="User_Application" EntitySet="User_Application" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Client" Association="BDSAuthModel.Store.FK_User_Client">
+            <End Role="Client" EntitySet="Client" />
+            <End Role="User" EntitySet="User" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Application">
+          <Key>
+            <PropertyRef Name="ApplicationId" />
+          </Key>
+          <Property Name="ApplicationId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Code" Type="nvarchar" Nullable="false" MaxLength="25" />
+          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="Description" Type="nvarchar" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" />
+          <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="ModifiedBy" Type="uniqueidentifier" />
+        </EntityType>
+        <EntityType Name="Application_Role">
+          <Key>
+            <PropertyRef Name="ApplicationRoleId" />
+          </Key>
+          <Property Name="ApplicationRoleId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="ApplicationId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="RoleId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" />
+          <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="ModifiedBy" Type="uniqueidentifier" />
+          <Property Name="IsDeleted" Type="bit" />
+        </EntityType>
+        <EntityType Name="Client">
+          <Key>
+            <PropertyRef Name="ClientId" />
+          </Key>
+          <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Code" Type="nvarchar" Nullable="false" MaxLength="25" />
+          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="Logo" Type="varbinary(max)" />
+          <Property Name="Address1" Type="nvarchar" MaxLength="255" />
+          <Property Name="Address2" Type="nvarchar" MaxLength="255" />
+          <Property Name="City" Type="nvarchar" MaxLength="50" />
+          <Property Name="State" Type="nvarchar" MaxLength="50" />
+          <Property Name="ZipCode" Type="nvarchar" MaxLength="10" />
+          <Property Name="Country" Type="nvarchar" MaxLength="50" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" />
+          <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="ModifiedBy" Type="uniqueidentifier" />
+        </EntityType>
+        <EntityType Name="Menu_Application">
+          <Key>
+            <PropertyRef Name="MenuApplicationId" />
+          </Key>
+          <Property Name="MenuApplicationId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="ParentApplicationId" Type="int" />
+          <Property Name="ApplicationId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Code" Type="nvarchar" Nullable="false" MaxLength="25" />
+          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="Description" Type="nvarchar" />
+          <Property Name="IsDisplayInMenu" Type="bit" Nullable="false" />
+          <Property Name="SortOrder" Type="int" Nullable="false" />
+          <Property Name="ControllerName" Type="nvarchar" MaxLength="255" />
+          <Property Name="ActionName" Type="nvarchar" MaxLength="255" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" />
+          <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="ModifiedBy" Type="uniqueidentifier" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Role">
+          <Key>
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="RoleId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Code" Type="nvarchar" Nullable="false" MaxLength="25" />
+          <Property Name="Title" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="Description" Type="nvarchar" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" />
+          <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="ModifiedBy" Type="uniqueidentifier" />
+        </EntityType>
+        <EntityType Name="Role_Permission">
+          <Key>
+            <PropertyRef Name="RolePermissionId" />
+          </Key>
+          <Property Name="RolePermissionId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="RoleId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="MenuApplicationId" Type="int" Nullable="false" />
+          <Property Name="PermissionCode" Type="int" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" />
+          <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="ModifiedBy" Type="uniqueidentifier" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="FirstName" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="LastName" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="Email" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="Password" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ProfilePhoto" Type="varbinary(max)" />
+          <Property Name="DisplayName" Type="nvarchar" MaxLength="255" />
+          <Property Name="JobTitle" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="BusinessUnitId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="GeographyId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="User_Application">
+          <Key>
+            <PropertyRef Name="UserApplicationId" />
+          </Key>
+          <Property Name="UserApplicationId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ApplicationId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="RoleId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="LastLoginDate" Type="datetime" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" />
+          <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="ModifiedBy" Type="uniqueidentifier" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Application_Role_Application">
+          <End Role="Application" Type="BDSAuthModel.Store.Application" Multiplicity="1" />
+          <End Role="Application_Role" Type="BDSAuthModel.Store.Application_Role" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Application">
+              <PropertyRef Name="ApplicationId" />
+            </Principal>
+            <Dependent Role="Application_Role">
+              <PropertyRef Name="ApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Application_Role_Role">
+          <End Role="Role" Type="BDSAuthModel.Store.Role" Multiplicity="1" />
+          <End Role="Application_Role" Type="BDSAuthModel.Store.Application_Role" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Role">
+              <PropertyRef Name="RoleId" />
+            </Principal>
+            <Dependent Role="Application_Role">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Menu_Application_Application">
+          <End Role="Application" Type="BDSAuthModel.Store.Application" Multiplicity="1" />
+          <End Role="Menu_Application" Type="BDSAuthModel.Store.Menu_Application" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Application">
+              <PropertyRef Name="ApplicationId" />
+            </Principal>
+            <Dependent Role="Menu_Application">
+              <PropertyRef Name="ApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Menu_Application_Menu_Application">
+          <End Role="Menu_Application" Type="BDSAuthModel.Store.Menu_Application" Multiplicity="0..1" />
+          <End Role="Menu_Application1" Type="BDSAuthModel.Store.Menu_Application" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Menu_Application">
+              <PropertyRef Name="MenuApplicationId" />
+            </Principal>
+            <Dependent Role="Menu_Application1">
+              <PropertyRef Name="ParentApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Role_Permission_Menu_Application">
+          <End Role="Menu_Application" Type="BDSAuthModel.Store.Menu_Application" Multiplicity="1" />
+          <End Role="Role_Permission" Type="BDSAuthModel.Store.Role_Permission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Menu_Application">
+              <PropertyRef Name="MenuApplicationId" />
+            </Principal>
+            <Dependent Role="Role_Permission">
+              <PropertyRef Name="MenuApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Role_Permission_Role">
+          <End Role="Role" Type="BDSAuthModel.Store.Role" Multiplicity="1" />
+          <End Role="Role_Permission" Type="BDSAuthModel.Store.Role_Permission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Role">
+              <PropertyRef Name="RoleId" />
+            </Principal>
+            <Dependent Role="Role_Permission">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Application_Application">
+          <End Role="Application" Type="BDSAuthModel.Store.Application" Multiplicity="1" />
+          <End Role="User_Application" Type="BDSAuthModel.Store.User_Application" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Application">
+              <PropertyRef Name="ApplicationId" />
+            </Principal>
+            <Dependent Role="User_Application">
+              <PropertyRef Name="ApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Application_User">
+          <End Role="User" Type="BDSAuthModel.Store.User" Multiplicity="1" />
+          <End Role="User_Application" Type="BDSAuthModel.Store.User_Application" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="User_Application">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Client">
+          <End Role="Client" Type="BDSAuthModel.Store.Client" Multiplicity="1" />
+          <End Role="User" Type="BDSAuthModel.Store.User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Client">
+              <PropertyRef Name="ClientId" />
+            </Principal>
+            <Dependent Role="User">
+              <PropertyRef Name="ClientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="BDSAuthModel" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="BDSAuthEntities" p1:LazyLoadingEnabled="true">
+          <EntitySet Name="Applications" EntityType="BDSAuthModel.Application" />
+          <EntitySet Name="Application_Role" EntityType="BDSAuthModel.Application_Role" />
+          <EntitySet Name="Clients" EntityType="BDSAuthModel.Client" />
+          <EntitySet Name="Menu_Application" EntityType="BDSAuthModel.Menu_Application" />
+          <EntitySet Name="Roles" EntityType="BDSAuthModel.Role" />
+          <EntitySet Name="Role_Permission" EntityType="BDSAuthModel.Role_Permission" />
+          <EntitySet Name="Users" EntityType="BDSAuthModel.User" />
+          <EntitySet Name="User_Application" EntityType="BDSAuthModel.User_Application" />
+          <AssociationSet Name="FK_Application_Role_Application" Association="BDSAuthModel.FK_Application_Role_Application">
+            <End Role="Application" EntitySet="Applications" />
+            <End Role="Application_Role" EntitySet="Application_Role" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Menu_Application_Application" Association="BDSAuthModel.FK_Menu_Application_Application">
+            <End Role="Application" EntitySet="Applications" />
+            <End Role="Menu_Application" EntitySet="Menu_Application" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Application_Application" Association="BDSAuthModel.FK_User_Application_Application">
+            <End Role="Application" EntitySet="Applications" />
+            <End Role="User_Application" EntitySet="User_Application" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Application_Role_Role" Association="BDSAuthModel.FK_Application_Role_Role">
+            <End Role="Role" EntitySet="Roles" />
+            <End Role="Application_Role" EntitySet="Application_Role" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Client" Association="BDSAuthModel.FK_User_Client">
+            <End Role="Client" EntitySet="Clients" />
+            <End Role="User" EntitySet="Users" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Menu_Application_Menu_Application" Association="BDSAuthModel.FK_Menu_Application_Menu_Application">
+            <End Role="Menu_Application" EntitySet="Menu_Application" />
+            <End Role="Menu_Application1" EntitySet="Menu_Application" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Role_Permission_Menu_Application" Association="BDSAuthModel.FK_Role_Permission_Menu_Application">
+            <End Role="Menu_Application" EntitySet="Menu_Application" />
+            <End Role="Role_Permission" EntitySet="Role_Permission" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Role_Permission_Role" Association="BDSAuthModel.FK_Role_Permission_Role">
+            <End Role="Role" EntitySet="Roles" />
+            <End Role="Role_Permission" EntitySet="Role_Permission" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Application_User" Association="BDSAuthModel.FK_User_Application_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="User_Application" EntitySet="User_Application" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Application">
+          <Key>
+            <PropertyRef Name="ApplicationId" />
+          </Key>
+          <Property Name="ApplicationId" Type="Guid" Nullable="false" />
+          <Property Name="Code" Type="String" Nullable="false" MaxLength="25" Unicode="true" FixedLength="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" Unicode="true" FixedLength="false" />
+          <Property Name="Description" Type="String" MaxLength="4000" Unicode="true" FixedLength="false" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="Guid" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Guid" />
+          <NavigationProperty Name="Application_Role" Relationship="BDSAuthModel.FK_Application_Role_Application" FromRole="Application" ToRole="Application_Role" />
+          <NavigationProperty Name="Menu_Application" Relationship="BDSAuthModel.FK_Menu_Application_Application" FromRole="Application" ToRole="Menu_Application" />
+          <NavigationProperty Name="User_Application" Relationship="BDSAuthModel.FK_User_Application_Application" FromRole="Application" ToRole="User_Application" />
+        </EntityType>
+        <EntityType Name="Application_Role">
+          <Key>
+            <PropertyRef Name="ApplicationRoleId" />
+          </Key>
+          <Property Name="ApplicationRoleId" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="ApplicationId" Type="Guid" Nullable="false" />
+          <Property Name="RoleId" Type="Guid" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="Guid" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Guid" />
+          <Property Name="IsDeleted" Type="Boolean" />
+          <NavigationProperty Name="Application" Relationship="BDSAuthModel.FK_Application_Role_Application" FromRole="Application_Role" ToRole="Application" />
+          <NavigationProperty Name="Role" Relationship="BDSAuthModel.FK_Application_Role_Role" FromRole="Application_Role" ToRole="Role" />
+        </EntityType>
+        <EntityType Name="Client">
+          <Key>
+            <PropertyRef Name="ClientId" />
+          </Key>
+          <Property Name="ClientId" Type="Guid" Nullable="false" />
+          <Property Name="Code" Type="String" Nullable="false" MaxLength="25" Unicode="true" FixedLength="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="Logo" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <Property Name="Address1" Type="String" MaxLength="255" Unicode="true" FixedLength="false" />
+          <Property Name="Address2" Type="String" MaxLength="255" Unicode="true" FixedLength="false" />
+          <Property Name="City" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="State" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="ZipCode" Type="String" MaxLength="10" Unicode="true" FixedLength="false" />
+          <Property Name="Country" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="Guid" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Guid" />
+          <NavigationProperty Name="Users" Relationship="BDSAuthModel.FK_User_Client" FromRole="Client" ToRole="User" />
+        </EntityType>
+        <EntityType Name="Menu_Application">
+          <Key>
+            <PropertyRef Name="MenuApplicationId" />
+          </Key>
+          <Property Name="MenuApplicationId" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="ParentApplicationId" Type="Int32" />
+          <Property Name="ApplicationId" Type="Guid" Nullable="false" />
+          <Property Name="Code" Type="String" Nullable="false" MaxLength="25" Unicode="true" FixedLength="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" Unicode="true" FixedLength="false" />
+          <Property Name="Description" Type="String" MaxLength="4000" Unicode="true" FixedLength="false" />
+          <Property Name="IsDisplayInMenu" Type="Boolean" Nullable="false" />
+          <Property Name="SortOrder" Type="Int32" Nullable="false" />
+          <Property Name="ControllerName" Type="String" MaxLength="255" Unicode="true" FixedLength="false" />
+          <Property Name="ActionName" Type="String" MaxLength="255" Unicode="true" FixedLength="false" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="Guid" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Guid" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Application" Relationship="BDSAuthModel.FK_Menu_Application_Application" FromRole="Menu_Application" ToRole="Application" />
+          <NavigationProperty Name="Menu_Application1" Relationship="BDSAuthModel.FK_Menu_Application_Menu_Application" FromRole="Menu_Application" ToRole="Menu_Application1" />
+          <NavigationProperty Name="Menu_Application2" Relationship="BDSAuthModel.FK_Menu_Application_Menu_Application" FromRole="Menu_Application1" ToRole="Menu_Application" />
+          <NavigationProperty Name="Role_Permission" Relationship="BDSAuthModel.FK_Role_Permission_Menu_Application" FromRole="Menu_Application" ToRole="Role_Permission" />
+        </EntityType>
+        <EntityType Name="Role">
+          <Key>
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="RoleId" Type="Guid" Nullable="false" />
+          <Property Name="Code" Type="String" Nullable="false" MaxLength="25" Unicode="true" FixedLength="false" />
+          <Property Name="Title" Type="String" Nullable="false" MaxLength="255" Unicode="true" FixedLength="false" />
+          <Property Name="Description" Type="String" MaxLength="4000" Unicode="true" FixedLength="false" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="Guid" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Guid" />
+          <NavigationProperty Name="Application_Role" Relationship="BDSAuthModel.FK_Application_Role_Role" FromRole="Role" ToRole="Application_Role" />
+          <NavigationProperty Name="Role_Permission" Relationship="BDSAuthModel.FK_Role_Permission_Role" FromRole="Role" ToRole="Role_Permission" />
+        </EntityType>
+        <EntityType Name="Role_Permission">
+          <Key>
+            <PropertyRef Name="RolePermissionId" />
+          </Key>
+          <Property Name="RolePermissionId" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="RoleId" Type="Guid" Nullable="false" />
+          <Property Name="MenuApplicationId" Type="Int32" Nullable="false" />
+          <Property Name="PermissionCode" Type="Int32" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="Guid" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Guid" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Menu_Application" Relationship="BDSAuthModel.FK_Role_Permission_Menu_Application" FromRole="Role_Permission" ToRole="Menu_Application" />
+          <NavigationProperty Name="Role" Relationship="BDSAuthModel.FK_Role_Permission_Role" FromRole="Role_Permission" ToRole="Role" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <Property Name="FirstName" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="LastName" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="255" Unicode="true" FixedLength="false" />
+          <Property Name="Password" Type="String" Nullable="false" MaxLength="255" Unicode="true" FixedLength="false" />
+          <Property Name="ClientId" Type="Guid" Nullable="false" />
+          <Property Name="ProfilePhoto" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <Property Name="DisplayName" Type="String" MaxLength="255" Unicode="true" FixedLength="false" />
+          <Property Name="JobTitle" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="BusinessUnitId" Type="Guid" Nullable="false" />
+          <Property Name="GeographyId" Type="Guid" Nullable="false" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Client" Relationship="BDSAuthModel.FK_User_Client" FromRole="User" ToRole="Client" />
+          <NavigationProperty Name="User_Application" Relationship="BDSAuthModel.FK_User_Application_User" FromRole="User" ToRole="User_Application" />
+        </EntityType>
+        <EntityType Name="User_Application">
+          <Key>
+            <PropertyRef Name="UserApplicationId" />
+          </Key>
+          <Property Name="UserApplicationId" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <Property Name="ApplicationId" Type="Guid" Nullable="false" />
+          <Property Name="RoleId" Type="Guid" Nullable="false" />
+          <Property Name="LastLoginDate" Type="DateTime" Precision="3" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="Guid" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="Guid" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Application" Relationship="BDSAuthModel.FK_User_Application_Application" FromRole="User_Application" ToRole="Application" />
+          <NavigationProperty Name="User" Relationship="BDSAuthModel.FK_User_Application_User" FromRole="User_Application" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_Application_Role_Application">
+          <End Role="Application" Type="BDSAuthModel.Application" Multiplicity="1" />
+          <End Role="Application_Role" Type="BDSAuthModel.Application_Role" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Application">
+              <PropertyRef Name="ApplicationId" />
+            </Principal>
+            <Dependent Role="Application_Role">
+              <PropertyRef Name="ApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Menu_Application_Application">
+          <End Role="Application" Type="BDSAuthModel.Application" Multiplicity="1" />
+          <End Role="Menu_Application" Type="BDSAuthModel.Menu_Application" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Application">
+              <PropertyRef Name="ApplicationId" />
+            </Principal>
+            <Dependent Role="Menu_Application">
+              <PropertyRef Name="ApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Application_Application">
+          <End Role="Application" Type="BDSAuthModel.Application" Multiplicity="1" />
+          <End Role="User_Application" Type="BDSAuthModel.User_Application" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Application">
+              <PropertyRef Name="ApplicationId" />
+            </Principal>
+            <Dependent Role="User_Application">
+              <PropertyRef Name="ApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Application_Role_Role">
+          <End Role="Role" Type="BDSAuthModel.Role" Multiplicity="1" />
+          <End Role="Application_Role" Type="BDSAuthModel.Application_Role" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Role">
+              <PropertyRef Name="RoleId" />
+            </Principal>
+            <Dependent Role="Application_Role">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Client">
+          <End Role="Client" Type="BDSAuthModel.Client" Multiplicity="1" />
+          <End Role="User" Type="BDSAuthModel.User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Client">
+              <PropertyRef Name="ClientId" />
+            </Principal>
+            <Dependent Role="User">
+              <PropertyRef Name="ClientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Menu_Application_Menu_Application">
+          <End Role="Menu_Application" Type="BDSAuthModel.Menu_Application" Multiplicity="0..1" />
+          <End Role="Menu_Application1" Type="BDSAuthModel.Menu_Application" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Menu_Application">
+              <PropertyRef Name="MenuApplicationId" />
+            </Principal>
+            <Dependent Role="Menu_Application1">
+              <PropertyRef Name="ParentApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Role_Permission_Menu_Application">
+          <End Role="Menu_Application" Type="BDSAuthModel.Menu_Application" Multiplicity="1" />
+          <End Role="Role_Permission" Type="BDSAuthModel.Role_Permission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Menu_Application">
+              <PropertyRef Name="MenuApplicationId" />
+            </Principal>
+            <Dependent Role="Role_Permission">
+              <PropertyRef Name="MenuApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Role_Permission_Role">
+          <End Role="Role" Type="BDSAuthModel.Role" Multiplicity="1" />
+          <End Role="Role_Permission" Type="BDSAuthModel.Role_Permission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Role">
+              <PropertyRef Name="RoleId" />
+            </Principal>
+            <Dependent Role="Role_Permission">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Application_User">
+          <End Role="User" Type="BDSAuthModel.User" Multiplicity="1" />
+          <End Role="User_Application" Type="BDSAuthModel.User_Application" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="User_Application">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="BDSAuthModelStoreContainer" CdmEntityContainer="BDSAuthEntities">
+          <EntitySetMapping Name="Applications">
+            <EntityTypeMapping TypeName="BDSAuthModel.Application">
+              <MappingFragment StoreEntitySet="Application">
+                <ScalarProperty Name="ApplicationId" ColumnName="ApplicationId" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Application_Role">
+            <EntityTypeMapping TypeName="BDSAuthModel.Application_Role">
+              <MappingFragment StoreEntitySet="Application_Role">
+                <ScalarProperty Name="ApplicationRoleId" ColumnName="ApplicationRoleId" />
+                <ScalarProperty Name="ApplicationId" ColumnName="ApplicationId" />
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Clients">
+            <EntityTypeMapping TypeName="BDSAuthModel.Client">
+              <MappingFragment StoreEntitySet="Client">
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Logo" ColumnName="Logo" />
+                <ScalarProperty Name="Address1" ColumnName="Address1" />
+                <ScalarProperty Name="Address2" ColumnName="Address2" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="State" ColumnName="State" />
+                <ScalarProperty Name="ZipCode" ColumnName="ZipCode" />
+                <ScalarProperty Name="Country" ColumnName="Country" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Menu_Application">
+            <EntityTypeMapping TypeName="BDSAuthModel.Menu_Application">
+              <MappingFragment StoreEntitySet="Menu_Application">
+                <ScalarProperty Name="MenuApplicationId" ColumnName="MenuApplicationId" />
+                <ScalarProperty Name="ParentApplicationId" ColumnName="ParentApplicationId" />
+                <ScalarProperty Name="ApplicationId" ColumnName="ApplicationId" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="IsDisplayInMenu" ColumnName="IsDisplayInMenu" />
+                <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
+                <ScalarProperty Name="ControllerName" ColumnName="ControllerName" />
+                <ScalarProperty Name="ActionName" ColumnName="ActionName" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Roles">
+            <EntityTypeMapping TypeName="BDSAuthModel.Role">
+              <MappingFragment StoreEntitySet="Role">
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Role_Permission">
+            <EntityTypeMapping TypeName="BDSAuthModel.Role_Permission">
+              <MappingFragment StoreEntitySet="Role_Permission">
+                <ScalarProperty Name="RolePermissionId" ColumnName="RolePermissionId" />
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="MenuApplicationId" ColumnName="MenuApplicationId" />
+                <ScalarProperty Name="PermissionCode" ColumnName="PermissionCode" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="BDSAuthModel.User">
+              <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
+                <ScalarProperty Name="ProfilePhoto" ColumnName="ProfilePhoto" />
+                <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
+                <ScalarProperty Name="JobTitle" ColumnName="JobTitle" />
+                <ScalarProperty Name="BusinessUnitId" ColumnName="BusinessUnitId" />
+                <ScalarProperty Name="GeographyId" ColumnName="GeographyId" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="User_Application">
+            <EntityTypeMapping TypeName="BDSAuthModel.User_Application">
+              <MappingFragment StoreEntitySet="User_Application">
+                <ScalarProperty Name="UserApplicationId" ColumnName="UserApplicationId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="ApplicationId" ColumnName="ApplicationId" />
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="LastLoginDate" ColumnName="LastLoginDate" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

@@ -1,0 +1,118 @@
+﻿@{
+    var popupvalue = (string)ViewBag.InspectPopup;
+}
+@Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
+@Html.Display(popupvalue)
+<buttom class="close-x-icon" data-dismiss="modal" aria-hidden="true"></buttom>
+@{
+    var programMaster  = (RevenuePlanner.Models.InspectModel)ViewBag.ProgramDetail;
+}
+@Html.Hidden("hdnPlanProgramId", programMaster.PlanProgramId, new { id = "hdnPlanProgramId" })
+@Html.Hidden("hdnProgramStatus", programMaster.Status, new { id = "hdnProgramStatus" })
+<div>
+    <span class="icon-flag bg-purple" style="background-color:#@programMaster.ColorCode !important;"></span>
+    <h2 class="title-simple source-sans-prolight">@programMaster.ProgramTitle
+    @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId , tacticId = 0, EditObject = "Program", ismsg = "" }, new { @class = "edit-icon"})</h2>
+</div>
+<div>
+
+    <ul class="nav nav-tabs new-margin" id="InspectTab">
+        <li class="active pull-left" id="liSetup">
+            <a>Setup</a>
+        </li>
+        <li class="pull-left" id="liReview">
+            <a>Review</a>
+        </li>
+        <li id="status-option" class="source-sans-pro pull-right">
+            <p class="status-option-title hide" style="display: block;">Status: </p>
+            <span class="status-option" style="color: #78A9C2;">@programMaster.Status</span>
+        </li>
+    </ul>
+    <div id="divTab">
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var divPartial = "#divPartial";
+    var TabSetup = "Setup";
+    var TabReview = "Review";
+
+    var divTab = "#divTab";
+
+    $(document).ready(
+      function () {
+
+          var InspectValue = $("#hdnInspectPopup").val();
+          var planProgramId = $("#hdnPlanProgramId").val();
+          // Call Remove Tabclass
+          RemoveTabClass();
+
+          $("#li" + InspectValue).removeClass("pull-left");
+          $("#li" + InspectValue).addClass("active pull-left");
+          var tabtext = ($("#li" + InspectValue).children('a').text());
+          $('#div' + tabtext).css({ display: "block" });
+
+          loadReview(planProgramId, tabtext);
+
+          // Click on Tab Partialview Refresh Based On Selected Tab
+          $(".pull-left").on("click", function () {
+              RemoveTabClass();
+              $(this).removeClass("pull-left");
+              $(this).addClass("active pull-left");
+              $("#errorMessage").css("display", "none");
+              $("#successMessage").css("display", "none");
+              /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+              var topsize = $(document).scrollTop();
+              $("#modal-container-186470").css("top", topsize + "px");/*end*/
+              var tabtext = ($(this).children('a').text());
+              var planTacticId = $("#hdnPlanTacticId").val();
+              loadReview(planProgramId, tabtext);
+
+          });
+
+          // Close event for Error Message & Success Message Close button 
+          $(".alert").find(".close").on("click", function (e) {
+              e.stopPropagation();
+              e.preventDefault();
+              $(this).closest(".alert").css("display", "none");
+              /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+              var topsize = $(document).scrollTop();
+              $("#modal-container-186470").css("top", topsize + "px");
+          });
+
+      });
+
+    function RemoveTabClass() {
+        $('#InspectTab').children().each(function () {
+            if ($(this).hasClass('active pull-left')) {
+                $(this).removeClass("active pull-left");
+                $(this).addClass("pull-left");
+            }
+        });
+    }
+
+    function loadReview(id, tabValue) {
+
+
+        $.ajaxSetup({ cache: false });
+        var url;
+        if (tabValue == TabSetup) {
+            url = '@Url.Content("~/Home/LoadSetupProgram/")';
+          }
+          if (tabValue == TabReview) {
+              url = '@Url.Content("~/Home/LoadReviewProgram/")';
+        }
+
+
+        RemoveTabClass();
+        $("#li" + tabValue).removeClass("pull-left");
+        $("#li" + tabValue).addClass("active pull-left");
+        $('#div' + tabValue).css({ display: "block" });
+
+        $("#divTab").empty();
+
+        $("#divTab").load(url + '?id=' + id);
+    }
+
+</script>

@@ -1,0 +1,54 @@
+﻿@model RevenuePlanner.Models.InspectModel
+@{
+    var campaign = (RevenuePlanner.Models.InspectModel)ViewBag.CampaignDetail;
+}
+
+@using (Html.BeginForm("SaveTactic", "Inspect", FormMethod.Post, new { @name = "SaveTacticForm" }))
+{
+    @Html.HiddenFor(model => model.PlanCampaignId)
+    <div class="span7" id="inspect-modal-right-div">
+        <div id="nl-form" class="nl-form nl-form-modal">
+            @Html.Raw("I'm running campaign called") 
+            <span id="tactic-name" class="color5693B3">@campaign.CampaignTitle</span>
+            @Html.Raw("from")
+           <span id="start-date" class="color5693B3">@campaign.StartDate.ToShortDateString()</span>
+            @Html.Raw("to")
+            <span id="end-date" class="color5693B3">@campaign.EndDate.ToShortDateString()</span>
+            @Html.Raw("for the")
+            <span id="vertical" class="color5693B3">@campaign.VerticalTitle</span>
+            @Html.Raw("vertical.")
+            
+                                          <br>
+            @Html.Raw("The status is:") 
+            <span id="status" class="color5693B3">@campaign.Status</span>
+            <div class="nl-overlay"></div>
+
+        </div>
+        <!--To call js for forms animations-->
+        <script src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
+        <script>
+            var nlform2 = new NLForm(document.getElementById('nl-form'));
+        </script>
+    </div>
+                                       
+    <div class="span2" id="inspect-modal-left-column1">
+         <p>@Html.Raw("Description")</p>
+         @Html.TextAreaFor(model => model.Description, new { @class = "span12 text-area-size truncate", style = "background:#F2F2F2;", @readonly = "true" })
+    </div>
+    <div class="span2" id="inspect-modal-left-column2">
+        <p>@Html.Raw("Owner")</p>
+        @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = campaign.Owner })
+        <p>@Html.Raw("Audience")</p>
+        @Html.TextBox("txtAudience", (string)ViewBag.Audience, new { @class = "span12 input-small", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.Audience })
+        <p>@Html.Raw("Business Unit")</p>
+        @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
+        <p>@Html.Raw("Cost")</p>
+        @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true", title = campaign.Cost })
+       
+    </div>
+                                        
+    <span class="flag-icon"></span>
+    <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular gear-icon button-inspect-review-modal pull-right"
+        id="button-review-tactic" name="button-save" value="Review Tactic" style="display: none;"></input>
+}
+

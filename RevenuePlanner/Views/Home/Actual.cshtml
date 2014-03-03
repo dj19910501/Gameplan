@@ -1,0 +1,431 @@
+﻿@using RevenuePlanner.Helpers
+@{
+    var tacticActual = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
+}
+<div id="panel-656352" class="content-panel-tab">
+    <div class="cf" id="divActualInner">
+        <div id="months_container" class="container-table" style="float: left;">
+            <table class="table table-striped mystats table-style " id="tblActual">
+                <thead>
+                    <tr class="text-align-right height42">
+                        <th class="font908D88 actual-popup-tile">Tile</th>
+                        <th class="border-r font908D88 padding-left55 text-align-right">Jan</th>
+                        <th class="font908D88 padding-left55 text-align-right">Feb</th>
+                        <th class="border-r font908D88 padding-left55 text-align-right">Mar</th>
+                        <th class="font908D88 padding-left55 text-align-right">Apr</th>
+                        <th class="font908D88 padding-left55 text-align-right">May</th>
+                        <th class="border-r font908D88 padding-left55 text-align-right">Jun</th>
+                        <th class="font908D88 padding-left55 text-align-right">Jul</th>
+                        <th class="border-r font908D88 padding-left55 text-align-right">Aug</th>
+                        <th class="font908D88 padding-left55 text-align-right">Sept</th>
+                        <th class="font908D88 padding-left55 text-align-right">Oct</th>
+                        <th class="border-r font908D88 padding-left55 text-align-right">Nov</th>
+                        <th class="font908D88 padding-left55 text-align-right">Dec</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (string s in @ViewBag.StageTitle)
+            {
+                string idtr = "tr" + @s;
+                        <tr class="height42" id="@idtr">
+                            @{
+                                string stageLable = s;
+                                if (!string.IsNullOrEmpty(s))
+                                {
+                                    if (s.ToLower() == Common.StageCodeINQ)
+                                    {
+                                        stageLable = Html.LabelForINQ(s);
+                                    }
+                                    else if (s.ToLower() == Common.StageCodeMQL)
+                                    {
+                                        stageLable = Html.LabelForMQL(s);
+                                    }
+                                    else if (s.ToLower() == Common.StageCodeCW)
+                                    {
+                                        stageLable = Html.LabelForCW(s);
+                                    }
+                                }
+                            }
+                            <th class="font3F3F3F actual-popup-tile">@stageLable</th>
+                            @for (int j = 1; j <= 12; j++)
+                    {
+                        string ids = s + "-Y" + j;
+                        string maxL = RevenuePlanner.Helpers.Common.maxLengthPriceValue;
+                        string classes = "backgroundC6EBF3 text-align-right width75px input-table priceValue";
+                        if (s == "Revenue")
+                        {
+                            classes = "backgroundC6EBF3 text-align-right width75px currency_dollar input-table";
+                            maxL = RevenuePlanner.Helpers.Common.maxLengthDollar;
+                        }
+                                <th class="border-r font3F3F3F ">
+                                    <input id="@ids" class="@classes" placeholder="- - -" maxlength="@maxL"></th>
+@* @Html.TextBox(s + "-Y" + j, null, new { @class = "backgroundC6EBF3 width75px input-table error" })
+                     </th>*@
+                    }
+                        </tr>
+            }
+                    <tr class="height42">
+                        <th class="font3F3F3F actual-popup-tile">Cost</th>
+                        <th class="border-r font3F3F3F"></th>
+                        <th class="font3F3F3F"></th>
+                        <th class="border-r font3F3F3F"></th>
+                        <th class="font3F3F3F"></th>
+                        <th class="font3F3F3F"></th>
+                        <th class="border-r font3F3F3F"></th>
+                        <th class="font3F3F3F"></th>
+                        <th class="border-r font3F3F3F"></th>
+                        <th class="font3F3F3F"></th>
+                        <th class="font3F3F3F"></th>
+                        <th class="border-r font3F3F3F"></th>
+                        <th class="font3F3F3F"></th>
+                    </tr>
+                    <tr class="height42">
+                        <th class="font3F3F3F actual-popup-tile">ROI</th>
+                        <th class="border-r font3F3F3F"></th>
+                        <th class="font3F3F3F"></th>
+                        <th class="border-r font3F3F3F"></th>
+                        <th class="font3F3F3F"></th>
+                        <th class="font3F3F3F"></th>
+                        <th class="border-r font3F3F3F"></th>
+                        <th class="font3F3F3F"></th>
+                        <th class="border-r font3F3F3F"></th>
+                        <th class="font3F3F3F"></th>
+                        <th class="font3F3F3F"></th>
+                        <th class="border-r font3F3F3F"></th>
+                        <th class="font3F3F3F"></th>
+                    </tr>
+                </tbody>
+
+            </table>
+        </div>
+        <div class="pull-left" style="float: left;">
+            <table class="table table-striped mystats table-style table-up shadow-table">
+                <thead>
+                    <tr class="height42">
+                        <th class="font908D88 padding-left55">Projected</th>
+                        <th class="border-r font908D88 text-align-right">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="height42">
+                        <th id="inqP" class="text-align-right  projected font908D88">@tacticActual.INQs</th>
+                        <th id="lblTotalINQ" class="border-r font3F3F3F text-align-right">@tacticActual.INQsActual</th>
+                    </tr>
+                    <tr class="height42">
+                        <th id="mqlP" class="text-align-right  projected font908D88">@tacticActual.MQLs</th>
+                        <th id="lblTotalMQL" class="border-r font3F3F3F text-align-right ">@tacticActual.MQLsActual</th>
+                    </tr>
+                    <tr class="height42">
+                        <th id="cwP" class="text-align-right  projected font908D88">@tacticActual.CWs</th>
+                        <th id="lblTotalCW" class="border-r font3F3F3F text-align-right">@tacticActual.CWsActual</th>
+                    </tr>
+                    <tr class="height42">
+                        <th id="rP" class="text-align-right projected font908D88">@tacticActual.Revenues</th>
+                        <th id="lblTotalRevenue" class="border-r font3F3F3F text-align-right">@tacticActual.RevenuesActual</th>
+                    </tr>
+                    <tr class="height42">
+                        <th id="cP" class="text-align-right projected font908D88">@tacticActual.Cost</th>
+                        <th class="border-r font3F3F3F text-align-right">
+                            <input id="cT" class="backgroundC6EBF3 font3F3F3F text-align-right width75px currency_dollar" placeholder="- - -" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" value="@tacticActual.CostActual"></th>
+                    </tr>
+                    <tr class="height42">
+                        <th id="roiP" class="text-align-right height22 projected padding-bottom9 font908D88">@tacticActual.ROI</th>
+                        <th id="roiT" class="border-r redfont text-align-right">@tacticActual.ROIActual</th>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+        <div class="cf ">
+            <div class="btn-container without-border-top pull-left">
+                @* <button class="btn btn-blue text-shadow-blue source-sans-proregular share-tactic-icon button-inspect-result-modal pull-right" type="button"><span class="flag-icon"></span>Share Tactic</button>*@
+                <button id="btnUploadResult" class="btn btn-blue text-shadow-blue source-sans-proregular button-inspect-result-modal pull-right margin-right20 padding-side30" type="button">Update Actuals</button>
+            </div>
+            <div class="pull-left">
+                <label id="last-updated" class="pull-left last-updated"></label>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end content-panel-tab-->
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var TacticActual;
+        var planTacticId = $("#hdnPlanTacticId").val();
+        function ActualTab() {
+            html = '<div class="bold padding-top16 font-size18">Tactic should be "Approved" for adding actuals.</div>';
+            return html;
+        }
+
+        var hdnTacticStatus = $("#hdnTacticStatus").val();
+        var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
+        var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
+        var Declinestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()";
+        var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
+        if (hdnTacticStatus != Approvedstatus && hdnTacticStatus != Declinestatus && hdnTacticStatus != InProgressstatus && hdnTacticStatus != Completestatus) {
+            $("#divActualInner").empty();
+            $("#divActualInner").append(ActualTab());
+        }
+        else {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Home/GetActualTacticData/")',
+                data: {
+                    id: planTacticId
+                },
+                success: function (r) {
+                    TacticActual = r;
+                    fillTacticActualTable();
+                    getLoadActual();
+                },
+                error: function () {
+                    $("#errorMessage").css("display", "block");
+                    /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                    var topsize = $(document).scrollTop() + 41;
+                    $("#modal-container-186470").css("top", topsize + "px");
+                    $("#spanMessageError").empty();
+                    $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                    myApp.hidePleaseWait();
+                    return false;
+                }
+            });
+        }
+
+        function fillTacticActualTable() {
+            if (typeof TacticActual != 'undefined') {
+                if (TacticActual.length) {
+                    document.getElementById('last-updated').innerHTML = TacticActual[0].updateString;
+                    for (i in TacticActual) {
+                        $("#" + TacticActual[i].stageTitle + "-" + TacticActual[i].period).val(TacticActual[i].actualValue);
+                    }
+
+                }
+            }
+        }
+        function getLoadActual() {
+            $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+            $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+
+            document.getElementById('inqP').innerHTML = FormatCommas(document.getElementById('inqP').innerHTML, false);
+            document.getElementById('lblTotalINQ').innerHTML = FormatCommas(document.getElementById('lblTotalINQ').innerHTML, false);
+
+            document.getElementById('mqlP').innerHTML = FormatCommas(document.getElementById('mqlP').innerHTML, false);
+            document.getElementById('lblTotalMQL').innerHTML = FormatCommas(document.getElementById('lblTotalMQL').innerHTML, false);
+
+            document.getElementById('cwP').innerHTML = FormatCommas(document.getElementById('cwP').innerHTML, false);
+            document.getElementById('lblTotalCW').innerHTML = FormatCommas(document.getElementById('lblTotalCW').innerHTML, false);
+
+            document.getElementById('rP').innerHTML = FormatCurrency(document.getElementById('rP').innerHTML, false);
+            document.getElementById('lblTotalRevenue').innerHTML = FormatCurrency(document.getElementById('lblTotalRevenue').innerHTML, false);
+
+            document.getElementById('cP').innerHTML = FormatCurrency(document.getElementById('cP').innerHTML, false);
+            document.getElementById('cT').innerHTML = FormatCurrency(document.getElementById('cT').innerHTML, false);
+            //$('#mqlP').val(FormatCommas($('#mqlP').val(), false));
+            //$('#cwP').val(FormatCommas($('#cwP').val(), false));
+            //$('#rP').val(FormatCurrency($('#rP').val(), false));
+            //$('#rT').val(FormatCurrency($('#rT').val(), false));
+
+
+            $('#months_container').parent().css("padding-right", "40px");
+            $('#months_container').parent().css("width", "650px");
+            $('#months_container').parent().css("height", "275px");
+            $('#months_container').css("width", "650px");
+            $('#months_container').css("overflow-x", "scroll");
+            //$(function () {
+            //    $('#months_container').slimScrollHorizontal({
+            //        height: '300px',
+            //        width: '650px',
+            //        alwaysVisible: false,
+            //        start: 'left',
+            //        position: 'bottom',
+            //        wheelStep: 10
+            //    }).css({ paddingBottom: '10px' });
+            //});
+            //$('#months_container').slimScrollHorizontal().bind('slimscroll', function (e, pos) {
+            //    console.log(e);
+            //    $('#months_container').parent().css("width", "650px");
+            //    $('#months_container').parent().addClass("pull-left");
+            //    $('#months_container').css("width", "650px");
+            //    if (pos != 'right')
+            //        $('.table-up').addClass("shadow-table");
+            //    else
+            //        $('.table-up').removeClass("shadow-table");
+            //});
+
+        }
+
+        $('#tblActual').find('input').each(function () {
+            $(this).keyup(function () {
+                if ($(this).val().trim() != '') {
+                    var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
+                    if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+                        //  $(this).removeClass("error");
+                        var arr = (this).id.split('-');
+                        var ida = "lblTotal" + arr[0];
+                        var totalvalue = 0;
+                        $('#tr' + arr[0]).find('input').each(function () {
+                            var cvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', ''));
+                            if (!isNaN(cvalue)) {
+                                totalvalue = cvalue + parseFloat(totalvalue);
+                            }
+                        });
+                        if (arr[0] == 'Revenue') {
+                            document.getElementById(ida).innerHTML = totalvalue;
+                            document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, false);
+                        }
+                        else {
+                            document.getElementById(ida).innerHTML = totalvalue;
+                            document.getElementById(ida).innerHTML = FormatCommas(document.getElementById(ida).innerHTML, false);
+                        }
+
+                        calculateRIO();
+                    }
+                    else {
+                        //$(this).addClass("error");
+                    }
+
+                }
+                else {
+                    //$(this).removeClass("error");
+                }
+            });
+        });
+
+        function ReplaceCC(text) {
+            return text.trim().replace(/,/g, '').replace('$', '');
+        }
+        $('#cT').bind('change', calculateRIO);
+        $('#cT').bind('keyup', calculateRIO);
+
+        function calculateRIO() {
+            var pcost = parseFloat(ReplaceCC($("#cp").text()));
+            if (pcost != 0 && !isNaN(pcost)) {
+                var prevenue = parseFloat(ReplaceCC($("#rP").text()));
+                var roip = prevenue / pcost;
+                $("#roiP").text(roip.toFixed(2));
+            }
+            pcost = parseFloat(ReplaceCC($("#cT").val()));
+            if (pcost != 0 && !isNaN(pcost)) {
+                var prevenue = parseFloat(ReplaceCC($("#lblTotalRevenue").text()));
+                var roiT = prevenue / pcost;
+                $("#roiT").text(roiT.toFixed(2));
+            }
+        }
+
+        $("#btnUploadResult").click(function () {
+            var _tactic = []
+            var isError = false;
+            var isData = false;
+            var totalINQActual = (document.getElementById('lblTotalINQ').innerHTML).trim().replace(/,/g, '').replace('$', '');
+            var totalMQLActual = (document.getElementById('lblTotalMQL').innerHTML).trim().replace(/,/g, '').replace('$', '');
+            var totalCWActual = (document.getElementById('lblTotalCW').innerHTML).trim().replace(/,/g, '').replace('$', '');
+            var totalRevenueActual = (document.getElementById('lblTotalRevenue').innerHTML).trim().replace(/,/g, '').replace('$', '');
+            var totalCostActual = $('#cT').val().trim().replace(/,/g, '').replace('$', '');
+            var totalROI = (document.getElementById('roiP').innerHTML).trim().replace(/,/g, '').replace('$', '');
+            var totalROIActual = (document.getElementById('roiT').innerHTML).trim().replace(/,/g, '').replace('$', '');
+            $("#errorMessage").css("display", "none");
+            $("#successMessage").css("display", "none");
+            $('#tblActual').find('input').each(function () {
+
+                if ($(this).val().trim() != '') {
+                    if ($(this).val().trim().replace(/,/g, '').replace('$', '').match('^(0|[1-9][0-9]*)$')) {
+                        $(this).removeClass("error");
+                    }
+                    else {
+                        $(this).addClass("error");
+                        isError = true;
+                    }
+
+                    var arr = (this).id.split('-');
+                    var thisValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
+
+                    if (thisValue != 0) {
+                        _tactic.push({
+                            PlanTacticId: planTacticId,
+                            StageTitle: arr[0],
+                            Period: arr[1],
+                            ActualValue: thisValue,
+                            TotalINQActual: totalINQActual,
+                            TotalMQLActual: totalMQLActual,
+                            TotalCWActual: totalCWActual,
+                            TotalRevenueActual: totalRevenueActual,
+                            TotalCostActual: totalCostActual,
+                            ROI: totalROI,
+                            ROIActual: totalROIActual
+                        });
+                        isData = true;
+                    }
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            });
+            if (isError) {
+                $("#errorMessage").css("display", "block");
+                /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                var topsize = $(document).scrollTop() + 41;
+                $("#modal-container-186470").css("top", topsize + "px");
+                $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.ValidateForValidField");
+                return false;
+            }
+            if (parseFloat(totalMQLActual) > parseFloat(totalINQActual)) {
+                var msg = "@RevenuePlanner.Helpers.Common.objCached.ValidationForMqlGreaterThanINQ"
+                var msgdisplay = msg.replace('{0}', totalMQLActual).replace('{1}', totalINQActual);
+                $("#spanMessageError").text(msgdisplay);
+                $("#errorMessage").css("display", "block");
+                var topsize = $(document).scrollTop() + 41;
+                $("#modal-container-186470").css("top", topsize + "px");
+                return false;
+            }
+            if (!isData) {
+                $("#errorMessage").css("display", "block");
+                /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                var topsize = $(document).scrollTop() + 41;
+                $("#modal-container-186470").css("top", topsize + "px");
+                $("#spanMessageError").text("To upload result you require to add value for one of the field.");
+                return false;
+            }
+            $("#errorMessage").css("display", "none");
+            _tactic = JSON.stringify({ 'tacticactual': _tactic });
+            $.ajax({
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                type: 'POST',
+                url: '@Url.Content("~/Home/UploadResult/")',
+                data: _tactic,
+                success: function (data) {
+                    if (data != 'undefined') {
+                        if (data.id != 0) {
+                            $("#successMessage").css("display", "block");
+                            var topsize = $(document).scrollTop() + 41;
+                            $("#modal-container-186470").css("top", topsize + "px");
+                            $("#spanMessageSuccess").empty();
+                            $("#spanMessageSuccess").text(data.msg);
+                            loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue);
+                        }
+                        else {
+                            $("#errorMessage").css("display", "block");
+                            $("#spanMessageError").empty();
+                            $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                        }
+                    }
+                },
+                error: function () {
+                    $("#errorMessage").css("display", "block");
+                    /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                    var topsize = $(document).scrollTop() + 41;
+                    $("#modal-container-186470").css("top", topsize + "px");
+                    $("#spanMessageError").empty();
+                    $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                    myApp.hidePleaseWait();
+                    return false;
+                }
+            });
+
+
+        });
+
+    });
+</script>

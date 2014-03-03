@@ -1,0 +1,62 @@
+﻿@using RevenuePlanner.Helpers
+<div id="header" class="span12">
+    @Html.Partial("_nav")
+    @if (Sessions.User != null)
+    {
+        <span class="title text-shadow-black source-sans-prolight">@Sessions.User.Client</span>
+    }
+    else
+    {
+        <span class="title text-shadow-black source-sans-prolight">Bulldog @Sessions.ApplicationName™</span>
+    }
+    <div class="mrp-logo"></div>
+    @if (Sessions.User != null)
+    {
+        <div class="info-user cf">
+            <p class="text-shadow-black source-sans-prolight user-drop-down">@Sessions.User.FirstName @Sessions.User.LastName<span class="divider"> | </span>@Sessions.User.JobTitle
+            </p>
+            @*<img class="avatar-user" src="@Url.Content("~/Content/images/photo-user.jpg")" alt="User avatar" />*@
+            <img class="avatar-user" src="@Url.Action("UserPhoto", "Home")" alt="User avatar" />
+
+        </div>
+        <div class="dropdown-info-user" style="display: none;">
+            <ul class="drop-down-menu">
+                <li><a href="@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })">Preferences</a></li>
+                <li><a href="#" id="ContactSupport">Support</a></li>
+                <li><a href="@Url.Action("LogOff", "Login")">Sign Out</a></li>
+               @* @using (Html.BeginForm("LogOff", "Login", FormMethod.Post, new { id = "logoutForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <li><a href="javascript:document.getElementById('logoutForm').submit()">Sign Out</a></li>
+                }*@
+            </ul>
+        </div>
+    }
+</div>
+<script type="text/javascript">
+    //user menu-dropdown
+    $(".user-drop-down").click(function () {
+        console.log('ahah');
+        var X = $(this).attr('id');
+        if (X == 1) {
+            $(".dropdown-info-user").hide();
+            $(".info-user").removeClass("selected");
+            $(this).attr('id', '0');
+        } else {
+            $(".dropdown-info-user").show();
+            $(".info-user").addClass("selected");
+
+            //set width to dropdown container
+            var vWidth = $(".info-user").width() + 20;
+            $(".dropdown-info-user").css("width", vWidth);
+            $(this).attr('id', '1');
+        }
+    });
+
+    //This function hide dropdown when user click outside of container
+    $(document).mouseup(function () {
+        $(".dropdown-info-user").hide();
+        $(".info-user").removeClass("selected");
+        $(".user-drop-down").attr('id', '');
+    });
+</script>

@@ -1,0 +1,493 @@
+﻿@model RevenuePlanner.Models.UserModel
+
+<script src="@Url.Content("~/Scripts/jquery.validate.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")"></script>
+
+@{
+    ViewBag.Title = "Add User";
+    ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string isViewOnly = ViewBag.IsViewOnly;
+    bool isSysAdmin = (bool)ViewBag.IsSysAdmin;
+    Guid clientId = Guid.Parse(Convert.ToString(ViewBag.CurrClientId));
+    string client = (string)ViewBag.CurrClient;
+}
+
+@Html.Hidden("IsViewOnly", isViewOnly)
+@Html.Hidden("SuccMsg", TempData["SuccessMessage"])
+@Html.Hidden("ErrMsg", TempData["ErrorMessage"])
+
+@section Sidebar {
+    <div class="padding-content">
+        <h4 class="text-shadow-black source-sans-prolight">Preferences</h4>
+    </div>
+    <ul class="nav nav-list nav-gray">
+        <li class="item active">
+            <a class="source-sans-probold inputs" href="#"><span></span>MY PROFILE</a>
+        </li>
+        <li class="item">
+            <a class="source-sans-probold organization" href="#"><span></span>ORGANIZATION</a>
+        </li>
+    </ul>
+}
+
+<!--success message-->
+<div id="successMessage" class="alert hide alert-success message-position">
+    <a class="close">×</a>
+    <strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))
+</div>
+<!--success message-->
+<!--error message-->
+<div id="errorMessage" class="alert hide alert-error message-position">
+    <a class="close">×</a>
+    <strong>Error!</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))
+</div>
+<!--error message-->
+
+<ul class="nav nav-tabs margin-bottom0">
+    <li class="source-sans-proregular">
+        <h2 class="title-header">Add New User</h2>
+    </li>
+</ul>
+<a class="link-gray" href="@Url.Action("Index", "User")">« BACK TO LIST</a>
+
+<div class="padding-content cf source-sans-proregular" id="content">
+    <div class="row">
+        <div class="span2 content-colum-left content-img-user">
+        </div>
+        <div class="span10 content-colum-info-user">
+            @using (Html.BeginForm("Create", "User", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.ValidationSummary(true)
+
+                <div class="cf inputs-aligned-horizontal">
+                    @Html.LabelFor(model => model.FirstName)
+
+                    @Html.EditorFor(model => model.FirstName)
+                    @Html.ValidationMessageFor(model => model.FirstName)
+                </div>
+
+                <div class="cf inputs-aligned-horizontal">
+                    @Html.LabelFor(model => model.LastName)
+
+                    @Html.EditorFor(model => model.LastName)
+                    @Html.ValidationMessageFor(model => model.LastName)
+                </div>
+
+                <div class="cf inputs-aligned-horizontal">
+                    @Html.LabelFor(model => model.Email)
+
+                    @Html.EditorFor(model => model.Email)
+                    <span class="field-validation-error" id="isEmailExist"></span>
+                    @Html.ValidationMessageFor(model => model.Email)
+                </div>
+
+                <div class="cf inputs-aligned-horizontal">
+                    @Html.LabelFor(model => model.Password)
+
+                    @Html.TextBoxFor(model => model.Password, new { placeholder = "Password (8 char. min)", type = "password" })
+                    <span id="result"></span>
+                    @Html.ValidationMessageFor(model => model.Password)
+                </div>
+                
+                <div class="cf inputs-aligned-horizontal">
+                    @Html.LabelFor(model => model.ConfirmPassword)
+
+                    @Html.TextBoxFor(model => model.ConfirmPassword, new { placeholder = "Confirm Password (8 char. min)", type = "password" })
+                    <span id="match"></span>
+                    @Html.ValidationMessageFor(model => model.ConfirmPassword)
+                </div>
+                
+                <div class="cf inputs-aligned-horizontal">
+                    @Html.LabelFor(model => model.JobTitle)
+
+                    @Html.EditorFor(model => model.JobTitle)
+                    @Html.ValidationMessageFor(model => model.JobTitle)
+                </div>
+
+                <div class="cf inputs-aligned-horizontal">
+                    @Html.LabelFor(model => model.ProfilePhoto)
+                    <div class="container-img">
+                        <img id="userImage" src="@Url.Action("LoadUserImage", "User")" class="pull-left">
+                        <div class="pull-left">
+                            <div class="btn-group">
+                                <input name="file" id="filePrev" type="file" style="display: inline-block; width: 200px;" />
+                            </div>
+                            <small>JPG or PNG format only (size up to 1 MB).</small>
+                        </div>
+                    </div>
+                </div>
+                    
+                <div class="cf inputs-aligned-horizontal">
+                    @Html.LabelFor(model => model.ClientId)
+                    @if (isSysAdmin)
+                    {
+                        <div class="btn-group">
+                            @Html.DropDownListFor(c => c.ClientId, new SelectList((System.Collections.IEnumerable)ViewData["Clients"], "ClientId", "Name"), "Please Select")
+                            @Html.ValidationMessageFor(model => model.ClientId)
+                        </div>
+                    }
+                    else
+                    {
+                        @Html.Hidden("ClientId", clientId)
+                        @Html.Hidden("Client", client)
+                        @Html.TextBox("txtClient", client, new { style = "background:#F2F2F2;", @readonly = "true", title = client })
+                    }
+                </div>
+
+                <div class="cf inputs-aligned-horizontal">
+                    @Html.LabelFor(model => model.BusinessUnitId)
+                    <div class="btn-group">
+                        @if (ViewData["BusinessUnits"] != null)
+                        {
+                            @Html.DropDownListFor(c => c.BusinessUnitId, new SelectList((System.Collections.IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Title"), "Please Select")
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(c => c.BusinessUnitId, Enumerable.Empty<SelectListItem>(), "Please Select")
+                        }
+                        @Html.ValidationMessageFor(model => model.BusinessUnitId)
+                    </div>
+                </div>
+
+                <div class="cf inputs-aligned-horizontal">
+                    @Html.LabelFor(model => model.GeographyId)
+                    <div class="btn-group">
+                        @if (ViewData["Geographies"] != null)
+                        {
+                            @Html.DropDownListFor(c => c.GeographyId, new SelectList((System.Collections.IEnumerable)ViewData["Geographies"], "GeographyId", "Title"), "Please Select")
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(c => c.GeographyId, Enumerable.Empty<SelectListItem>(), "Please Select")
+                        }
+                        @Html.ValidationMessageFor(model => model.GeographyId)
+                    </div>
+                </div>
+                
+                <div class="cf inputs-aligned-horizontal">
+                    @Html.LabelFor(model => model.RoleId)
+                    <div class="btn-group">
+                        @Html.DropDownListFor(c => c.RoleId, new SelectList((System.Collections.IEnumerable)ViewData["Roles"], "RoleId", "Title"), "Please Select")
+                        @Html.ValidationMessageFor(model => model.RoleId)
+                    </div>
+                </div>
+                
+                        if (isViewOnly != "true")
+                        {
+                <div class="cf inputs-aligned-horizontal">
+                    <div class="container-button">
+                        <input id="btnSubmit" type="submit" value="Save" title="Save" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" />
+                    </div>
+                </div>
+                        }
+            }
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+
+        if ($('#SuccMsg').val() == null || $('#SuccMsg').val() == '') {
+            $("#successMessage").slideUp(400);
+        }
+        else {
+            $("#successMessage").slideDown(1200);
+            $("#successMessage").slideUp(3000);
+        }
+        if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
+            $("#errorMessage").slideUp(400);
+        }
+        else {
+            $("#errorMessage").slideDown(400);
+            $("html, body").animate({ scrollTop: 0 }, 1000);
+        }
+
+        if ($('#IsViewOnly').val() != '') {
+            $("#content :input").attr("disabled", true);
+        }
+
+        $('#btnSubmit').click(function () {
+            $('#content :input').each(function () {
+                if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
+                    var input = $(this).val();
+                    if (input == '') {
+                        $(this).addClass("error");
+                    } else {
+                        $(this).removeClass("error");
+                    }
+                }
+            });
+
+            if ($('#result').text() != '' && $('#result').text().toLowerCase() == 'too short') {
+                $('#result').removeClass();
+                $(this).addClass("error");
+                return false;
+            }
+
+            if ($('#match').text() != '' && $('#match').text().toLowerCase() == 'don\'t match') {
+                $('#match').removeClass();
+                $(this).addClass("error");
+                return false;
+            }
+
+            if ($('#Password').val().length < 8) {
+                $('#result').removeClass();
+                $(this).addClass("error");
+                return false;
+            }
+
+            if ($('#ConfirmPassword').val().length < 8) {
+                $('#match').removeClass();
+                $(this).addClass("error");
+                return false;
+            }
+        });
+
+        //function to add or remove class ERROR when inputs text are empty.
+        $('input').blur(function () {
+            if ($(this).attr('type') == 'text' || $(this).attr('type') == 'password') {
+                if ($(this).val() == '') {
+                    $(this).addClass("error");
+                } else {
+                    $(this).removeClass("error");
+                }
+            }
+        });
+
+        $('select').blur(function () {
+            if ($(this).val() == '') {
+                $(this).addClass("error");
+            } else {
+                $(this).removeClass("error");
+            }
+        });
+
+        $("#ClientId").change(function () {
+            var clientId = $(this).val();
+            if (clientId != "") {
+                loadBusinessUnit(clientId);
+                loadGeography(clientId);
+            }
+        });
+
+        function loadBusinessUnit(clientId) {
+            if (clientId != "" && clientId != "0" && clientId != "null") {
+                $.getJSON("@Url.Content("~/User/GetBusinessUnit")", { id: clientId },
+function (businessUnitData) {
+    var select = $("#BusinessUnitId");
+    select.empty();
+    $.each(businessUnitData, function (index, itemData) {
+        select.append($('<option/>', {
+            value: itemData.Value,
+            text: itemData.Text
+        }));
+    });
+    if ($("#BusinessUnitId option").eq(0).val() != "") {
+        $("#BusinessUnitId option").eq(0).before($("<option></option>").val("").text("Please select"));
+    }
+    if ($("#BusinessUnitId option").eq(0).val() == undefined) {
+        $("#BusinessUnitId").append($("<option></option>").val("").text("Please select"));
+    }
+    $("#BusinessUnitId").val("");
+});
+        }
+    }
+        function loadGeography(clientId) {
+            if (clientId != "" && clientId != "0" && clientId != "null") {
+                $.getJSON("@Url.Content("~/User/GetGeography")", { id: clientId },
+            function (geographyData) {
+                var select = $("#GeographyId");
+                select.empty();
+                $.each(geographyData, function (index, itemData) {
+                    select.append($('<option/>', {
+                        value: itemData.Value,
+                        text: itemData.Text
+                    }));
+                });
+                if ($("#GeographyId option").eq(0).val() != "") {
+                    $("#GeographyId option").eq(0).before($("<option></option>").val("").text("Please select"));
+                }
+                if ($("#GeographyId option").eq(0).val() == undefined) {
+                    $("#GeographyId").append($("<option></option>").val("").text("Please select"));
+                }
+                $("#GeographyId").val("");
+            });
+            }
+        }
+    });
+    $('#Email').keyup(function () {
+        $('#isEmailExist').html('');
+    });
+    $('#Email').blur(function () {
+        $('#isEmailExist').html('');
+        $('#isEmailExist').removeClass();
+
+        var email = this.value;
+        if (email != null && email != '') {
+            var pattern = new RegExp(/^\b[A-Z0-9._%-]+@@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i);
+            if (!pattern.test(email)) {
+                $('#isEmailExist').addClass('field-validation-error');
+                $('#isEmailExist').html('Not a valid Email.');
+                return;
+            }
+            $.ajax(
+            {
+                type: "GET",
+                cache: false,
+                url: 'IsEmailExist',
+                data: { email: this.value },
+                dataType: "json",
+                success: function (data) {
+                    if (data == '1') {
+                        $('#isEmailExist').addClass('field-validation-error');
+                        $('#isEmailExist').html('This email already exists. Please choose another email.');
+                    }
+                    else if (data == '0') {
+                        $('#isEmailExist').addClass('field-validation-success');
+                        $('#isEmailExist').html('Email available.');
+                    }
+                    else {
+                        $('#isEmailExist').html('');
+                    }
+                },
+                error: function () {
+                    $('#isEmailExist').html('');
+                    myApp.hidePleaseWait();
+                }
+            });
+        }
+    });
+
+    $("#filePrev").change(function () {
+        var id = $(this).attr("id");
+        var filesize = this.files[0].size;
+        if (filesize > 1 * 1024 * 1024) {
+            alert("- Only files with extensions " + (validExtensions.join("  ").toUpperCase()) + " and size upto 1MB are allowed.");
+            return false;
+        }
+        ChangeFile("#userImage", "#filePrev");
+    });
+
+    var validExtensions = new Array(".jpg", ".png");
+    function isValidExtension(ext) {
+        var flag = false;
+        for (var i = 0; i < validExtensions.length; i++) {
+            if (validExtensions[i] == ext) {
+                flag = true;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    function ChangeFile(thumbID, fileID) {
+
+        var imgTag = $(thumbID);
+        var inputTag = $(fileID);
+
+        var file = $(fileID).val();
+        var ext = file.slice(file.lastIndexOf(".")).toLowerCase();
+        if (!isValidExtension(ext)) {
+            alert("- Only files with extensions " + (validExtensions.join("  ").toUpperCase()) + " and size upto 1MB are allowed.");
+            return false;
+        }
+        $('<input>').attr({ type: $(inputTag).attr('type'), name: "name-clone" }).addClass("upload-clone").insertAfter(inputTag);
+        $("<form>").attr({
+            method: "post",
+            id: "prototype",
+            action: "@Url.Content("~/User/AjaxSubmit")"
+        }).appendTo("body").hide();
+        $('#prototype').attr((this.encoding ? 'encoding' : 'enctype'), 'multipart/form-data');
+        $(inputTag).appendTo("#prototype").hide();
+        $("#prototype").ajaxSubmit(function () {
+            var d = new Date();
+            $(imgTag)[0].src = "@Url.Content("~/User/ImageLoad?a=")" + d.getMilliseconds();
+            $(inputTag).insertAfter('.upload-clone').show();
+            $('.upload-clone').remove();
+            $('#prototype').remove();
+
+            return false;
+        });
+        return false;
+    }
+
+    $('#Password').keyup(function (event) {
+        $('#result').removeClass()
+        $('#result').html('')
+        if ($('#Password').val() != '')
+            $('#result').html(checkStrength($('#Password').val()))
+    });
+
+    $('#ConfirmPassword').keyup(function (event) {
+        $('#match').removeClass()
+        $('#match').html('')
+        if (($('#ConfirmPassword').val() != '') && ($('#Password').val() != ''))
+            $('#match').html(checkMatch($('#ConfirmPassword').val(), $('#Password').val()))
+    });
+
+    function checkMatch(password1, password2) {
+        $('#match').removeClass()
+        if (password1 == password2) {
+            $('#match').addClass('check-icon-green')
+            return "Match";
+        } else {
+            $('#match').addClass('check-icon-red')
+            return "Don't match";
+        }
+    }
+
+    function checkStrength(password) {
+
+        //initial strength
+        var strength = 0
+
+        //if the password length is less than 6, return message.
+        if (password.length < 8) {
+            $('#result').removeClass()
+            $('#result').addClass('check-icon-red')
+            return 'Too short'
+        }
+
+        //length is ok, lets continue.
+
+        //if length is 8 characters or more, increase strength value
+        if (password.length > 7) strength += 1
+
+        //if password contains both lower and uppercase characters, increase strength value
+        if (password.match(/([a-z].*[A-Z])|([A-Z].*[a-z])/)) strength += 1
+
+        //if it has numbers and characters, increase strength value
+        if (password.match(/([a-zA-Z])/) && password.match(/([0-9])/)) strength += 1
+
+        //if it has one special character, increase strength value
+        if (password.match(/([!,%,&,@@,#,$,^,*,?,_,~])/)) strength += 1
+
+        //if it has two special characters, increase strength value
+        if (password.match(/(.*[!,%,&,@@,#,$,^,*,?,_,~].*[!,",%,&,@@,#,$,^,*,?,_,~])/)) strength += 1
+
+        //now we have calculated strength value, we can return messages
+
+        //if value is less than 2
+        if (strength < 2) {
+            $('#result').removeClass()
+            $('#result').addClass('check-icon-red')//weak
+            return 'Weak'
+        } else if (strength == 2) {
+            $('#result').removeClass()
+            $('#result').addClass('check-icon-green')//good)
+            return 'Good'
+        } else {
+            $('#result').removeClass()
+            $('#result').addClass('check-icon-green')//strong
+            return 'Strong'
+        }
+    }
+</script>
+
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@

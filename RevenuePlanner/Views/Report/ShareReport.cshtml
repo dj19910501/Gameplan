@@ -1,0 +1,204 @@
+﻿@{
+    string reportType = Convert.ToString(ViewBag.ReportType);
+}
+
+<link href="@Url.Content("~/Content/css/Select2/select2.css")" rel="stylesheet" />
+<script src="~/Scripts/js/Select2/select2.js"></script>
+<div class="row-fluid calc-height" id="DivShareReportContainer">
+    <div class="span12">
+        <div id="errorMessageShareReportPopup" class="alert alert-error hide error-over-modal">
+            <a class="close">×</a>
+            <strong>Error!</strong><span id="spanMessageErrorShareReportPopup"></span>
+        </div>
+        <div id="modal-container-186470" class="form-inspect-share hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="login-wrapper">
+                <form name="share-report">
+                    <h2 class="primary-title source-sans-prosemibold">Share Report</h2>
+                    <label>All fields required.</label>
+                    <input id="select2Email" type="hidden" name="select2Email" class="input-block-level" style="margin-bottom: 10px;" />
+                    <textarea rows="3" placeholder="Add Optional Message" id="TxtOptionalMessage" maxlength="255"></textarea>
+                    <span class="attach-icon"></span>
+                    <label id="shareReport">@reportType</label>
+                    <button class="form-inspect-share-button btn btn-large" type="submit" value="Submit">Share</button>
+                    <button id="cancel-share-report-button" class="btn-link" type="button">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row-fluid calc-height" id="DivShareReportConfirmationContainer">
+    <div class="span12">
+        <div id="modal-container-confirmation" class="form-inspect-share-confirmation hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="login-wrapper">
+                <form name="login-register">
+                    <h2 class="primary-title source-sans-prosemibold">Report Successfully<br />
+                        Shared With</h2>
+                    <label id="email-confirmation"></label>
+                    <button class="form-inspect-share-button btn btn-large" id="BtnCloseConfirmation">Close</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var select2EmailData = [];
+
+    $(document).ready(function () {
+        //// Hide parent div container when popup is closed.
+        $("#modal-container-186470").on("hide", function (e) { $("#DivShareReport").hide(); });
+
+        $('#modal-container-confirmation').on("hide", function (e) { $("#DivShareReport").hide(); });
+        $('#modal-container-confirmation').on("show", function (e) { $("#DivShareReport").show(); });
+
+        //// Show popup.
+        $("#modal-container-186470").modal('show');
+
+        //// Close popup and error message.
+        $('#cancel-share-report-button').on("click", function () {
+            $('#modal-container-186470').modal("hide");
+            $(".alert").find(".close").click();
+        });
+
+        //// Close error message.
+        $(".alert").find(".close").on("click", function (e) {
+            e.stopPropagation();
+            e.preventDefault(); 
+            $(this).closest(".alert").slideUp(400);
+        });	
+
+        //// Populating email id.
+        var emails = @Html.Raw(Json.Encode(@ViewBag.EmailIds));
+        if (emails != null) {
+            $.each(emails, function (index, email) {
+                select2EmailData.push({id: email, text: email});
+            });
+        }
+
+        //// Adding data to select2
+        $("#select2Email").select2({
+            placeholder: "Email",
+            multiple: true,
+            data: select2EmailData
+        });
+
+        //// Valdiate and Send mail on click of share button of share report popup.
+        $('form[name="share-report"]').on("submit", function (e) {
+            if ($("#select2Email").select2("val") == "") {
+                var msgspan = "Please select atleast one email.";
+                $("#errorMessageShareReportPopup").css("display", "block");
+                $(".input-block-level").addClass("error");
+                $("#spanMessageErrorShareReportPopup").text(msgspan);
+            }
+                //// Validating Optional message.
+            else if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test($("#TxtOptionalMessage").val())) {
+                var msgspan = "Special character are not allowed, try again.";
+                $("#errorMessageShareReportPopup").css("display", "block");
+                $("#TxtOptionalMessage").addClass("error");
+                $(".input-block-level").removeClass("error");
+                $("#spanMessageErrorShareReportPopup").text(msgspan);
+            } else {
+                $(".input-block-level").removeClass("error");
+                $("#TxtOptionalMessage").removeClass("error");
+                // Send mail and show confirmation popup.
+                ShareReport($("#select2Email").select2("val").toString(), $("#TxtOptionalMessage").val());
+            }
+
+            return false;
+        });
+
+        //Start Share Report
+        function ShareReport(email, optionalMessage) {
+            var reportType = '@reportType';
+            var htmlOfCurrentView = GetHTML(reportType);
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '@Url.Content("~/Report/ShareReport/")',
+                data: {
+                    reportType: reportType,
+                    toEmailIds: email,
+                    optionalMessage: optionalMessage,
+                    htmlOfCurrentView : htmlOfCurrentView
+                },
+                success: function (data) {
+                    if (data != 'undefined' && data != false) {
+                        ShowConfirmation(email);
+                        return false;
+                    }
+                    else {
+                        var msgspan = '@RevenuePlanner.Helpers.Common.objCached.ErrorOccured';
+                        $("#errorMessageShareReportPopup").css("display", "block");
+                        $("#spanMessageErrorShareReportPopup").text(msgspan);
+                    }
+                },
+                error: function () {
+                    myApp.hidePleaseWait();
+                }
+            });
+        }
+
+        function GetHTML(reportType)
+        {
+            if (reportType == '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()') {
+                return GetHTMLSummary()
+            }else if (reportType == '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()') {
+                return GetHTMLRevenue();
+            }else if (reportType == '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()') {
+                return GetHTMLConversion();
+            }
+            else {
+                return false;
+            }
+    }
+
+        function GetHTMLConversion()
+        {
+            var html =$('#ParentULConversionSummary').wrap('<p/>').parent().html() + $('#ChildULConversionSummary').wrap('<p/>').parent().html() + $('#DivHtmlContent').wrap('<p/>').parent().html();
+            var $html = $('<div id="content_wraper" class="span10 all-height" style="width:100%">' + html + '</div>');
+            $html.find('div[id="chartDiv1"]').empty();
+            $html.find('div[id="chartDiv2"]').empty();
+            $html.find('div[id="chartDiv3"]').empty();
+            html = $html.wrap('<p/>').parent().html();
+            return escape(html);
+        }
+
+        function GetHTMLRevenue()
+        {
+            var html =$('#ParentULRevenueSummary').wrap('<p/>').parent().html() + $('#ChildULRevenueSummary').wrap('<p/>').parent().html() + $('#DivHtmlContent').wrap('<p/>').parent().html();
+            var $html = $('<div id="content_wraper" class="span10 all-height" style="width:100%">' + html + '</div>');
+            $html.find('div[id="chartDiv3"]').empty();
+            $html.find('div[id="chartDiv4"]').empty();
+            $html.find('div[id="chartDiv5"]').empty();
+            $html.find('div[id="chartDiv6"]').empty();
+            html = $html.wrap('<p/>').parent().html();
+            return escape(html);
+        }
+
+        function GetHTMLSummary(){
+            var html =$('#ulNav').wrap('<p/>').parent().html() + $('#htmlContent').wrap('<p/>').parent().html();
+            var $html = $('<div>' + html + '</div>');
+            $html.find('div[id="chartDiv"]').empty();
+            $html.find('#AViewDetailReportRevenue').remove();
+            $html.find('#AViewDetailReportConversion').remove();
+            html = $html.html();
+            return escape(html);
+        }
+
+        //// Close popup and error message.
+        $('#BtnCloseConfirmation').on("click", function () {
+            $('#modal-container-confirmation').modal("hide");
+            $(".alert").find(".close").click();
+        });
+
+        $('#modal-container-confirmation').hide();
+        function ShowConfirmation(email) {
+            $('#modal-container-186470').modal("hide");
+            $(".alert").find(".close").click();
+            $('#email-confirmation').html(email);
+            $('#modal-container-confirmation').modal('show');
+        }
+    });
+</script>

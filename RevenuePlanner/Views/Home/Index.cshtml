@@ -1,0 +1,2067 @@
+﻿@model RevenuePlanner.Models.HomePlanModel
+@using RevenuePlanner.Helpers
+@{
+    ViewBag.Title = ViewBag.ActiveMenu;
+    string activeMenu = Convert.ToString(ViewBag.ActiveMenu);
+    string isViewOnly = ViewBag.IsViewOnly;
+    int showInspectForPlanTacticId = ViewBag.ShowInspectForPlanTacticId;
+    int showInspectForPlanCampaignId = ViewBag.ShowInspectForPlanCampaignId; // variable added to show campagin popup from email url link click when email sent to user when comapign shared
+    int showInspectForPlanProgramId = ViewBag.ShowInspectForPlanProgramId; // variable added to show program popup from email url link click when email sent to user when program shared
+    bool showBid = ViewBag.showBid;
+}
+
+@Html.Hidden("IsViewOnly", isViewOnly)
+@Html.Hidden("hdnshowInspectForPlanTacticId", showInspectForPlanTacticId)
+@Html.Hidden("hdnshowInspectForPlanCampaignId", showInspectForPlanCampaignId)
+@Html.Hidden("hdnshowInspectForPlanProgramId", showInspectForPlanProgramId)
+
+<script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
+<link href="@Url.Content("~/Content/css/dhtmlxchart_1.css")" rel="stylesheet" type="text/css" />
+
+<style type="text/css">
+    .pull-right > span {
+        margin-right: -15px !important;
+    }
+
+    .dhx_chart {
+        color: #000000;
+        font-family: 'source_sans_prolight',Arial,"sans-serif";
+        font-size: 9px;
+    }
+</style>
+@section nlFormContent{
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
+}
+@Html.Hidden("ActiveMenu", activeMenu)
+@Html.HiddenFor(m => m.PlanId)
+@section Sidebar{
+    <script type="text/javascript">
+        var CurrentBid = 0;
+        // Edited to add PlanYear option.
+        var Currenttime = "planYear";
+        $(document).ready(function () {
+            $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=false&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val());//activeMenu parameter added
+            switch ($('#ActiveMenu').val().toLowerCase()) {
+                case 'home':
+                    $("#DivButtonsHome").show();
+                    $("#DivButtonsPlanSummary").hide();
+                    break;
+                case 'plan':
+                    $("#DivButtonsHome").hide();
+                    $("#DivButtonsPlanSummary").show();
+                    break;
+            }
+            $("#modalMainContainer").hide();
+            //onClickPlanTitle();
+            onClickActivity();
+            onClickBusinessUnit();
+        });
+        function populateNF(items, id) {
+            var $dropdown = $("#" + id);
+            var $html = '';
+            if (items.length > 0) {
+                $.each(items, function (index, plan) {
+                    if (plan.Selected) {
+                        $html += '<option value="' + plan.Value + '" selected>' + plan.Text + '</option>';
+                        CurrentPlanId = plan.Value;
+                    } else {
+                        $html += '<option value="' + plan.Value + '">' + plan.Text + '</option>';
+                    }
+                });
+            } else {
+                $html += '<option value=' + 0 + ' selected>' + "Plan Title" + '</option>';
+                CurrentPlanId = 0;
+            }
+            $dropdown.append($html);
+        }
+        function onClickPlanTitle() {
+            $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+                var planTitle = $(this).text();
+                var option = $.grep($('#dropdown-plan-title option'), function (value) { return $(value).text() == planTitle; })
+                CurrentPlanId = $(option[0]).val();
+                RefreshCurrentTab();
+                GetHealderData(CurrentPlanId);
+                GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
+            });
+        }
+        function populateNFActivity(items, id) {
+            var $dropdown = $("#" + id);
+            var $html = '';
+            if (items.length > 0) {
+                $.each(items, function (index, time) {
+
+                    if (time.Selected) {
+                        $html += '<option value="' + time.Value + '" selected>' + time.Text + '</option>';
+                        Currenttime = time.Value;
+                    } else {
+                        $html += '<option value="' + time.Value + '">' + time.Text + '</option>';
+                    }
+                });
+            }
+            $dropdown.append($html);
+        }
+        function onClickActivity() {
+            $('#nl-formAct > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+                if (CurrentPlanId > 0) {
+                    var Title = $(this).text();
+                    var option = $.grep($('#drpthisyear option'), function (value) { return $(value).text() == Title; })
+                    Currenttime = $(option[0]).val();
+                    isQuater = Currenttime;
+                    RefreshCurrentTab();
+                    GetHealderData(CurrentPlanId);
+                    GetNumberOfActivityPerMonByPlanId(CurrentPlanId, Currenttime);
+
+                }
+            });
+        }
+
+        function addBusinessUnitItems(items, id) {
+            var $dropDown = $('#dropdown-business-unit ul');
+            var $html = "";
+            $('#dropdown-business-unit > ul > li').remove();//first clear menu
+            if (typeof items != 'undefined') {
+                if (typeof items.length) {
+                    for (i in items) {
+                        $html += '<li id=' + items[i].Value + '><a id="option" name=' + items[i].Value + ' href="#">' + items[i].Text + '</a></li>';
+                    }
+                    $dropDown.append($html);
+                }
+                else {
+                    $html += '<li id=0><a href="#">Nothing to load</a></li>';
+                    $dropDown.append($html);
+                }
+            }
+        }
+        function onClickBusinessUnit() {
+            $('#dropdown-business-unit').find('a#option').click(function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                var Title = $(this).text();
+                var id = $(this).attr("name");
+                $("#selected-option").html('');
+                $("#selected-option").html(Title);
+                $("#DivloadPlan").html('');
+                var pid = $('#PlanId').val();
+                $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + id + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val()); //activeMenu parameter added
+            });
+        }
+
+    </script>
+
+    <div class="padding-content padding-bottom0" id="DivButtonsHome">
+        <h4 class="text-shadow-black source-sans-prolight">Planning Review</h4>
+        @if (isViewOnly != "true")
+        {
+            <div class="wraper-btns cf">
+                <div class="span6">
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("AddActual", "Home")'">Add Actuals</button>
+                </div>
+                <div class="span6">
+                     <!-- change by kunal for edit plan  -->
+                    <!-- start -->
+                    @{
+                        if (RevenuePlanner.Helpers.Sessions.PlanId != null)
+                        {
+                            int pid = 0;
+                            int.TryParse(Convert.ToString(RevenuePlanner.Helpers.Sessions.PlanId), out pid);
+                                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Create", "Plan", new { id = pid })'">Edit Plan</button>
+                        }
+                        else
+                        {
+                                    <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button">Edit Plan</button>
+                        }
+                    }
+                    <!-- end -->
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="padding-content padding-bottom0" id="DivButtonsPlanSummary">
+        <h4 class="text-shadow-black source-sans-prolight">Plan Summary</h4>
+        @if (isViewOnly != "true")
+        {
+            <div class="wraper-btns cf">
+                <div class="span6">
+                    <div class="btn-group ">
+                        <button id="BtnGroup" class="btn btn-blue text-shadow-blue source-sans-proregular buttom-width resize-drop-button without-border-buttom displayinherit   source-sans-prolight width90px">
+                            New Plan
+                        </button>
+                        <button data-toggle="dropdown" class="btn btn-blue dropdown-toggle height25 displayinherit width19px">
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu source-sans-prolight">
+                            <li>
+                                <a href="#">Create New</a>
+                            </li>
+                            <li>
+                                <a href="#">Duplicate</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="span6">
+                    <!-- change by kunal for edit plan - 01-17-2012 -->
+                    <!-- start -->
+                    @{
+            if (RevenuePlanner.Helpers.Sessions.PlanId != null)
+            {
+                int pid = 0;
+                int.TryParse(Convert.ToString(RevenuePlanner.Helpers.Sessions.PlanId), out pid);
+                        <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Create", "Plan", new { id = pid })'">Edit Plan</button>
+            }
+            else
+            {
+                        <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button">Edit Plan</button>
+            }
+                    }
+                    <!-- end -->
+                    @*<button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Assortment", "Plan")'">Add Activity</button>*@
+                </div>
+            </div>
+        }
+    </div>
+
+
+    <!--First Accordion-->
+    <div class="scrolled_div">
+        <div class="accordion colors" id="DivAccordion"></div>
+    </div>
+
+    <div class="shadow-scroll"></div>
+
+    <div class="padding-content padding-top0">
+        <a class="link-alone" id="AShowOnlyMyTactic" href="#">
+            <label>Show only My Tactics</label></a>
+
+        <h4 class="text-shadow-black source-sans-prolight">Filters</h4>
+
+        <!--Second Accordion-->
+        <div class="accordion simple" id="accordion-Filter">
+            <div class="accordion-group">
+                @if (Model.objGeography.Count > 0)
+                {
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle collapsed chevron-right" data-toggle="collapse" data-parent="#accordion-Filter" href="#accordion-filterGeography">Geography</a>
+                    </div>
+                    <div id="accordion-filterGeography" class="accordion-body collapse">
+                        @foreach (var geography in Model.objGeography)
+                        {
+                            <a href="#" class="accordion-inner" filterId="@geography.GeographyId">@geography.Title<span class="pull-right"></span></a>                        
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-Filter" href="#">Geography</a>
+                    </div>
+                }
+            </div>
+            <div class="accordion-group">
+                @if (Model.objIndividuals.Count > 0)
+                {
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle collapsed chevron-right" data-toggle="collapse" data-parent="#accordion-Filter" href="#accordion-filterIndividuals">Individuals</a>
+                    </div>
+                    <div id="accordion-filterIndividuals" class="accordion-body collapse">
+                        @foreach (var individual in Model.objIndividuals)
+                        {
+                            <a href="#" class="accordion-inner" filterId="@individual.UserId">@string.Format("{0} {1}", individual.FirstName, individual.LastName)<span class="pull-right"></span></a>                        
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="accordion-heading"><a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-Filter" href="#">Individuals</a></div>
+                }
+
+            </div>
+        </div>
+    </div>
+    <!--End Second Accordion-->
+    <ul class="nav nav-list nav-gray-plan">
+        <li id="change-log" class="nav-header">
+            <span>Change Log</span>
+            <div class="changes"></div>
+        </li>
+    </ul>
+
+}
+
+<!--success message-->
+<div id="successMessageDuplicatePlan" class="alert hide alert-success message-position">
+    <a class="close">×</a>
+    <div id="cSuccessDuplicatePlan">@Html.Raw(HttpUtility.HtmlDecode((string)ViewBag.SuccessMessageDuplicatePlan))</div>
+</div>
+<!--success message-->
+<!--error message-->
+<div id="errorMessageDuplicatePlan" class="alert hide alert-error message-position">
+    <a class="close">×</a>
+    <div id="cErrorDuplicatePlan">@Html.Raw(HttpUtility.HtmlDecode((string)ViewBag.ErrorMessageDuplicatePlan))</div>
+</div>
+<!--error message-->
+<div class="light-blue-chart cf">
+    @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
+</div>
+@{
+    if (showBid == true)
+    {
+    <div id="dropdown-business-unit" class="btn-group">
+        <a id="selected-option" class="dropdown-toggle" href="#" data-toggle="dropdown">Business Unit</a>
+        <ul class="dropdown-menu">
+            <li>
+                <script>
+                    var BusinessUnitIds = @Html.Raw(Json.Encode(Model.BusinessUnitIds))
+                    addBusinessUnitItems(BusinessUnitIds, "dropdown-business-unit");
+                </script>
+            </li>
+        </ul>
+    </div>
+    }
+}
+<script>
+    var pid = $('#PlanId').val();
+    var CurrentPlanId = pid;
+</script>
+<div id="DivloadPlan">
+</div>
+@*@Html.Partial("~/Views/Home/_PlanDropdown.cshtml", Model.objHomePlan)*@
+@*<ul class="nav nav-tabs">
+    <li class="title-header source-sans-proregular bold font-size25px">
+
+        <form id="nl-form2" class="nl-form-plan-title without-margin">
+
+            <select id="dropdown-plan-title" data-default="0%" class="">
+                <script>
+                    var plan = @Html.Raw(Json.Encode(Model.plans));
+                    populateNF(plan, "dropdown-plan-title");
+                </script>
+            </select>
+
+            <!--<div class="nl-overlay"></div>-->
+            <script>
+                var nlform = new NLForm(document.getElementById('nl-form2'));
+            </script>
+            <div class="nl-overlay2"></div>
+        </form>
+    </li>
+    <li>
+        <span class="drop-down-logo-icon2"></span>
+    </li>
+    <li class="active pull-right">
+        <a id="ATactics" href="#">Tactics</a>
+    </li>
+    <li class=" pull-right">
+        <a id="AVertical" href="#">Vertical</a>
+    </li>
+    <li class=" pull-right">
+        <a id="AStage" href="#">Stage</a>
+    </li>
+    <li class=" pull-right">
+        <a id="AAudience" href="#">Audience</a>
+    </li>
+    @if (Model.IsDirector)
+    {
+        <li class=" pull-right">
+            <a id="ABusinessUnit" href="#">Business Unit</a>
+        </li>
+        <li class=" pull-right">
+            <a id="ARequest" href="#">Requests
+			<span id="RequestCount" class="label label-important"></span>
+            </a>
+        </li>
+    }
+</ul>*@
+
+<div class="tab-content all-height">
+    <div class="tab-pane active all-height" >
+        <div class="padding-content cf all-height">
+            <div id="gantt_here"></div>
+            <div class="shadow-scroll-gantt"></div>
+            <table id="table_activities" class="table table-striped table-hover bold">
+                <thead>
+                    <tr>
+                        <th class="border-r show-modal">Title</th>
+                        <th class="show-modal">@Html.LabelForINQ("INQ")</th>
+                        <th class="show-modal">@Html.LabelForMQL("MQL")</th>
+                        <th class="show-modal">@Html.LabelForCW("CW")</th>
+                        <th class="border-r show-modal">Cost</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!--tr elements are add dinamically with javascript-->
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div id="Notabcontent" style="display: none;">
+    <span class="pull-left margin_t30 bold " style="margin-left: 20px;">No Plans exists.</span>
+</div>
+@*// Inspect Popup Div 
+    // Added By Bhavesh
+*@
+<div class="container-fluid all-height" id="modalMainContainer">
+    <div class="row-fluid calc-height">
+        <div class="container-fluid">
+            <div class="row-fluid ">
+                <div class="span12">
+
+                    <div id="modal-container-186470" class="modal-inspect-review hide fade" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none">
+                        <div id="successMessage" class="alert alert-success message-position-popup" style="display: none;">
+                            <a class="close">×</a>
+                            <strong>Success.</strong> <span id="spanMessageSuccess"></span>
+                        </div>
+                        <div id="errorMessage" class="alert alert-error hide message-position-popup" style="display: none;">
+                            <a class="close">×</a>
+                            <strong>Error!</strong> <span id="spanMessageError">Make sure all fields are filled and try again.</span>
+                        </div>
+                        <div id="divPartial">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="divBackground" class="modal-backdrop fade in" style="display: none"></div>
+
+<script type="text/javascript">
+    /// Script Start
+    /// Added By: Maninder Singh Wadhva.
+    var GanttTabs = {
+        Tactic: 0,
+        Vertical: 1,
+        Stage: 2,
+        Audience: 3,
+        BusinessUnit: 4,
+        Request: 5
+    }
+    //// Global variable to hold quarter or year.
+    var isQuater = Currenttime;//false;
+
+    //// Global variable to hold current tab.
+    var type = GanttTabs.Tactic;
+
+    //// Global variable to hold filters
+    var filters = {
+        geographyIds: [],
+        IndividualsIds: []
+    };
+    var IsShowOnlyMyTactic = false
+    $("#AShowOnlyMyTactic").click(function () {
+        IsShowOnlyMyTactic = !IsShowOnlyMyTactic;
+        if (IsShowOnlyMyTactic) {
+            $("#AShowOnlyMyTactic > label").css("background-color", "#FFFFFF");
+        }
+        else {
+            $("#AShowOnlyMyTactic > label").css("background-color", "");
+        }
+
+        RefreshCurrentTab();
+    });
+
+    //// Function to toggle quarter and year.
+    //$('#ahrefthisyear').click(function () {
+    //    if (!isQuater) {
+    //        $('#spanthisyear').text("this quarter")
+    //        isQuater = true;
+    //    }
+    //    else {
+    //        $('#spanthisyear').text("this year")
+    //        isQuater = false;
+    //    }
+
+    //    RefreshCurrentTab();
+    //});
+
+    //// Function to refresh current tab.
+    function RefreshCurrentTab() {
+        //debugger;
+        switch (type) {
+            case GanttTabs.Tactic:
+                GetTactics();
+                break;
+            case GanttTabs.Vertical:
+                GetVertical();
+                break;
+            case GanttTabs.Stage:
+                GetStage();
+                break;
+            case GanttTabs.Audience:
+                GetAudience();
+                break;
+            case GanttTabs.BusinessUnit:
+                GetBusinessUnit();
+                break;
+            case GanttTabs.Request:
+                GetRequest();
+                break;
+            default:
+                alert('No match');
+                break;
+        }
+    }
+    /// Script End
+    /// Added By: Maninder Singh Wadhva.
+
+    SetBudget("#pbudget");
+    SetPriceValue("#pMQLs");
+</script>
+
+
+<script type="text/javascript">
+    /// Script Start
+    /// Added By: Maninder Singh Wadhva.
+    //// Default load tactics in view control.
+    function DuplicatePlan() {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/DuplicatePlan/")',
+            dataType: "json",
+            success: function (data) {
+                if (data.isSuccess == true) {
+                    var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + $('#ActiveMenu').val() + '&currentPlanId=' + data.planId;
+                    window.location.href = url;
+                }
+                else {
+                    alert('Error');
+                }
+            },
+            error: function () {
+                myApp.hidePleaseWait();
+            }
+        });
+    }
+
+    function SetPlanButtons() {
+        $('#BtnGroup').click(function (e) {
+            if ($(this).html().toLowerCase() == "duplicate") {
+                DuplicatePlan();
+            }
+            else {
+                var url = '@Url.Content("~/Plan/Create/0")';
+                window.location.href = url;
+            }
+        });
+    }
+
+    function ShowChangeLog() {
+        $('.changes').html('');
+        var url = '@Url.Content("~/Home/LoadChangeLog/")';
+        $('.changes').load(url + '?objectId=' + CurrentPlanId);
+    }
+
+    $(document).ready(
+        function () {
+            DuplicatePlanMessage();
+            SetPlanButtons();
+            var flg = false;
+            var strflg = "";
+            SetGantt();
+            AttachEventToFilter();
+            ShowInspectForPlanTacticId();
+            //functions added to show campagin and program popup from email url link click when email sent to user when comapign or program shared
+            ShowInspectForPlanCampaignId();
+            ShowInspectForPlanProgramId();
+        });
+
+    function DuplicatePlanMessage() {
+        /*close x event on message*/
+        $("#successMessageDuplicatePlan").find(".close").click(function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
+            $(this).closest(".alert").slideUp(400);
+        });
+
+        $("#errorMessageDuplicatePlan").find(".close").click(function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
+            $(this).closest(".alert").slideUp(400);
+        });
+
+        if ($('#cSuccessDuplicatePlan').html() == '') {
+            $("#successMessageDuplicatePlan").slideUp(400);
+        }
+        else {
+            $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+            $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + $('#cSuccessDuplicatePlan').html())
+            $("#successMessageDuplicatePlan").slideDown(3000);
+            $("#successMessageDuplicatePlan").slideUp(1200, function () { $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height"); });
+        }
+
+        if ($('#cErrorDuplicatePlan').html() == '') {
+            $("#errorMessageDuplicatePlan").slideUp(400);
+        }
+        else {
+            $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+            $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + $('#cErrorDuplicatePlan').html())
+            $("#errorMessageDuplicatePlan").slideDown(400);
+        }
+
+        //if ($('#cSuccessDuplicatePlan').html() == '' && $('#cErrorDuplicatePlan').html() == '') {
+        //    $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
+        //} else {
+        //    $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+        //}
+    }
+
+    function ShowInspectForPlanTacticId() {
+        var hdnshowInspectForPlanTacticId = $("#hdnshowInspectForPlanTacticId")
+        if (hdnshowInspectForPlanTacticId.val() != 0) {
+            ShowModel(null, true);
+            hdnshowInspectForPlanTacticId.val(0);
+        }
+    }
+
+    function ShowInspectForPlanCampaignId() {
+        var hdnshowInspectForPlanCampaignId = $("#hdnshowInspectForPlanCampaignId")
+        if (hdnshowInspectForPlanCampaignId.val() != 0) {
+
+            ShowModel(null, true);
+            hdnshowInspectForPlanCampaignId.val(0);
+        }
+    }
+    function ShowInspectForPlanProgramId() {
+        var hdnshowInspectForPlanProgramId = $("#hdnshowInspectForPlanProgramId")
+        if (hdnshowInspectForPlanProgramId.val() != 0) {
+
+            ShowModel(null, true);
+            hdnshowInspectForPlanProgramId.val(0);
+        }
+    }
+    strflg = "";
+    //// Get tactic on click of tactic tab.
+    //$('#ATactics').click(GetTactics)
+
+    ////// Get tactic on click of vertical tab.
+    //$('#AVertical').click(GetVertical)
+
+    ////// Get tactic on click of audience tab.
+    //$('#AAudience').click(GetAudience)
+
+    ////// Get tactic on click of business unit tab.
+    //$('#ABusinessUnit').click(GetBusinessUnit)
+
+    ////// Get tactic on click of stage tab.
+    //$('#AStage').click(GetStage)
+
+    ////// Get tactic on click of request tab.
+    //$('#ARequest').click(GetRequest)
+
+    function AttachEventToFilter() {
+        $("#accordion-filterGeography").find("a").click(ApplyOrRemoveFilter);
+        $("#accordion-filterIndividuals").find("a").click(ApplyOrRemoveFilter);
+    }
+
+    function ApplyOrRemoveFilter() {
+        ($(this).toggleClass("x-icon"));
+        filters.geographyIds = $.map($("#accordion-filterGeography").find("a.x-icon"), function (a) { return $(a).attr("filterId") });
+        filters.IndividualsIds = $.map($("#accordion-filterIndividuals").find("a.x-icon"), function (a) { return $(a).attr("filterId") });
+        RefreshCurrentTab();
+
+    }
+
+    //// Function to get tactic.
+    function GetTactics() {
+        $('.pull-right').removeClass('active');
+        $('#ATactics').closest('li').addClass('active');
+        type = GanttTabs.Tactic;
+        AjaxRequest();
+    }
+
+    //// Function to get audience.
+    function GetAudience() {
+        $('.pull-right').removeClass('active');
+        $('#AAudience').closest('li').addClass('active');
+        type = GanttTabs.Audience;
+        AjaxRequest();
+    }
+
+    //// Function to get vertical.
+    function GetVertical() {
+        $('.pull-right').removeClass('active');
+        $('#AVertical').closest('li').addClass('active');
+        type = GanttTabs.Vertical;
+        AjaxRequest();
+    }
+
+    //// Function to get business unit.
+    function GetBusinessUnit() {
+        $('.pull-right').removeClass('active');
+        $('#ABusinessUnit').closest('li').addClass('active');
+        type = GanttTabs.BusinessUnit;
+        AjaxRequest();
+    }
+
+    //// Function to get stage.
+    function GetStage() {
+        $('.pull-right').removeClass('active');
+        $('#AStage').closest('li').addClass('active');
+        type = GanttTabs.Stage;
+        AjaxRequest();
+    }
+
+    //// Function to get request.
+    function GetRequest() {
+        $('.pull-right').removeClass('active');
+        $('#ARequest').closest('li').addClass('active');
+        type = GanttTabs.Request;
+        AjaxRequest();
+    }
+
+    //// Function to create tactic view control.
+    function AddAccordionToggleAndInnerTactic(data) {
+        var div = $('#DivAccordion');
+        div.empty();
+        $.each(data.tacticType, function (index1, objTactic) {
+            var colorCode = objTactic.ColorCode;
+            var tacticTypeId = objTactic.TacticTypeId;
+
+            //// Filter plan campaign program tactic based on tactic type id.
+            var filteredTactic = $.grep(data.planCampaignProgramTactic, function (value) { return value.TacticTypeId == tacticTypeId; })
+
+            //// Adding Tactic type.
+            div.append("<div class='accordion-group' id='DivAccordionGroup" + tacticTypeId + "'></div>");
+            $("#DivAccordionGroup" + tacticTypeId).append("<div class='accordion-heading'>\
+                                                <a class='accordion-toggle item-" + colorCode + " collapsed chevron-right' data-toggle='collapse' data-parent='#DivAccordion' href='#accordion-element-" + tacticTypeId + "'>\
+                                                    <div class='cf'>" + objTactic.Title + "<span class='pull-right'><span id='spn_" + tacticTypeId + "'>0</span>" + "/" + filteredTactic.length + "</span></div>\
+                                                </a>\
+                                            </div>\
+                                            <div id='accordion-element-" + tacticTypeId + "' class='accordion-body collapse'></div>");
+
+            //// Adding tactic title.
+            $.each(filteredTactic, function (index2, objfilteredTactic) {
+                $("#accordion-element-" + tacticTypeId).append("<a class='accordion-inner item-" + colorCode + "' href='#' taskid='" + objfilteredTactic.TaskId + "'>" + objfilteredTactic.Title + "</a>")
+                $("a[taskid='" + objfilteredTactic.TaskId + "']").click(function (event) {
+                    GanttOpenBranch($(this).attr('taskid'));
+                    //alert($(this).attr('taskid'));
+                });
+            });
+        });
+    }
+
+    function GanttOpenBranch(taskId) {
+
+        var flag = false;
+        $(".gantt_grid_data").find('div[class^="gantt_row"]').each(function (index1) {
+
+            var itaskid = $(this).attr('task_id');
+            if (taskId == itaskid) {
+                flag = true;
+            }
+
+        });
+
+        if (flag == false) {
+
+            var arr = taskId.split('_');
+            $.each(arr, function (index, item) {
+                var tId = '';
+                for (var counter = 0; counter <= index; counter++) {
+                    if (tId == '') {
+                        tId = arr[counter]
+                    }
+                    else {
+                        tId += '_' + arr[counter]
+                    }
+                }
+                gantt.open(tId);
+
+            });
+        }
+
+
+    }
+
+    //// Function to create audience view control.
+    function AddAccordionToggleAndInnerAudience(data) {
+        var div = $('#DivAccordion');
+        strflg = "";
+        div.empty();
+        $.each(data.audience, function (index1, objAudience) {
+            var colorCode = objAudience.ColorCode;
+            var audienceId = objAudience.AudienceId;
+
+            filteredAudience = $.grep(data.audienceTactic, function (value) { return value.AudienceId == audienceId; }).sort(SortAlphabetically);
+
+            ////// Adding Audience.
+            div.append("<div class='accordion-group' id='DivAccordionGroup" + audienceId + "'></div>");
+            $("#DivAccordionGroup" + audienceId).append("<div class='accordion-heading'>\
+                                                <a class='accordion-toggle item-" + colorCode + " collapsed chevron-right' data-toggle='collapse' data-parent='#DivAccordion' href='#accordion-element-" + audienceId + "'>\
+                                                    <div class='cf'>" + objAudience.Title + "<span class='pull-right'><span id='spnaud_" + audienceId + "'>0</span>" + "/" + filteredAudience.length + "</span></div>\
+                                                </a>\
+                                            </div>\
+                                            <div id='accordion-element-" + audienceId + "' class='accordion-body collapse'></div>");
+
+            //// Adding tactic title.
+            $.each(filteredAudience, function (index2, objfilteredAudience) {
+                $("#accordion-element-" + audienceId).append("<a class='accordion-inner item-" + colorCode + "' href='#' taskid='" + objfilteredAudience.TaskId + "'>" + objfilteredAudience.Title + "</a>")
+                $("a[taskid='" + objfilteredAudience.TaskId + "']").click(function (event) {
+                    GanttOpenBranch($(this).attr('taskid'));
+                });
+            });
+        });
+    }
+
+    //// Function to create vertical view control.
+    function AddAccordionToggleAndInnerVertical(data) {
+        var div = $('#DivAccordion');
+        div.empty();
+        $.each(data.vertical, function (index1, objVertical) {
+            var colorCode = objVertical.ColorCode;
+            var verticalId = objVertical.VerticalId;
+
+            filteredVertical = $.grep(data.verticalTactic, function (value) { return value.VerticalId == verticalId; }).sort(SortAlphabetically);
+
+            ////// Adding Vertical.
+            div.append("<div class='accordion-group' id='DivAccordionGroup" + verticalId + "'></div>");
+            $("#DivAccordionGroup" + verticalId).append("<div class='accordion-heading'>\
+                                                <a class='accordion-toggle item-" + colorCode + " collapsed chevron-right' data-toggle='collapse' data-parent='#DivAccordion' href='#accordion-element-" + verticalId + "'>\
+                                                    <div class='cf'>" + objVertical.Title + "<span class='pull-right'><span id='spnver_" + verticalId + "'>0</span>" + "/" + filteredVertical.length + "</span></div>\
+                                                </a>\
+                                            </div>\
+                                            <div id='accordion-element-" + verticalId + "' class='accordion-body collapse'></div>");
+
+            //// Adding tactic title.
+            $.each(filteredVertical, function (index2, objfilteredVertical) {
+                $("#accordion-element-" + verticalId).append("<a class='accordion-inner item-" + colorCode + "' href='#' taskid='" + objfilteredVertical.TaskId + "'>" + objfilteredVertical.Title + "</a>")
+                $("a[taskid='" + objfilteredVertical.TaskId + "']").click(function (event) {
+                    GanttOpenBranch($(this).attr('taskid'));
+                });
+            });
+        });
+    }
+
+    //// Function to create stage view control.
+    function AddAccordionToggleAndInnerStage(data) {
+        var div = $('#DivAccordion');
+        div.empty();
+        $.each(data.stage, function (index1, objStage) {
+            var colorCode = objStage.ColorCode;
+            var stageId = objStage.StageId;
+
+            filteredStage = $.grep(data.stageTactic, function (value) { return value.StageId == stageId; }).sort(SortAlphabetically);
+
+            ////// Adding Stage.
+            div.append("<div class='accordion-group' id='DivAccordionGroup" + stageId + "'></div>");
+            $("#DivAccordionGroup" + stageId).append("<div class='accordion-heading'>\
+                                                <a class='accordion-toggle item-" + colorCode + " collapsed chevron-right' data-toggle='collapse' data-parent='#DivAccordion' href='#accordion-element-" + stageId + "'>\
+                                                    <div class='cf'>" + objStage.Title + "<span class='pull-right'><span id='spnstage_" + stageId + "'>0</span>" + "/" + filteredStage.length + "</span></div>\
+                                                </a>\
+                                            </div>\
+                                            <div id='accordion-element-" + stageId + "' class='accordion-body collapse'></div>");
+
+            //// Adding tactic title.
+            $.each(filteredStage, function (index2, objfilteredStage) {
+                $("#accordion-element-" + stageId).append("<a class='accordion-inner item-" + colorCode + "' href='#' taskid='" + objfilteredStage.TaskId + "'>" + objfilteredStage.Title + "</a>")
+                $("a[taskid='" + objfilteredStage.TaskId + "']").click(function (event) {
+                    GanttOpenBranch($(this).attr('taskid'));
+                });
+            });
+        });
+    }
+
+    //// Function to create business unit view control.
+    function AddAccordionToggleAndInnerBusinessUnit(data) {
+        var div = $('#DivAccordion');
+        div.empty();
+        $.each(data.businessUnit, function (index1, objBusinessUnit) {
+            var colorCode = objBusinessUnit.ColorCode;
+            var businessUnitId = objBusinessUnit.BusinessUnitId;
+
+            filteredBusinessUnit = $.grep(data.businessUnitTactic, function (value) { return value.BusinessUnitId == businessUnitId; }).sort(SortAlphabetically);
+
+            ////// Adding Business Unit.
+            div.append("<div class='accordion-group' id='DivAccordionGroup" + businessUnitId + "'></div>");
+            $("#DivAccordionGroup" + businessUnitId).append("<div class='accordion-heading'>\
+                                                <a class='accordion-toggle item-" + colorCode + " collapsed chevron-right' data-toggle='collapse' data-parent='#DivAccordion' href='#accordion-element-" + businessUnitId + "'>\
+                                                    <div class='cf'>" + objBusinessUnit.Title + "<span class='pull-right'><span id='spnbus_" + businessUnitId + "'>0</span>" + "/" + filteredBusinessUnit.length + "</span></div>\
+                                                </a>\
+                                            </div>\
+                                            <div id='accordion-element-" + businessUnitId + "' class='accordion-body collapse'></div>");
+
+            //// Adding tactic title.
+            $.each(filteredBusinessUnit, function (index2, objfilteredBusinessUnit) {
+                $("#accordion-element-" + businessUnitId).append("<a class='accordion-inner item-" + colorCode + "' href='#' taskid='" + objfilteredBusinessUnit.TaskId + "'>" + objfilteredBusinessUnit.Title + "</a>")
+                $("a[taskid='" + objfilteredBusinessUnit.TaskId + "']").click(function (event) {
+                    GanttOpenBranch($(this).attr('taskid'));
+                });
+            });
+        });
+    }
+
+    //// Function to create request view control.
+    var activities = { data: '' };
+    function AddAccordionToggleAndInnerRequest(data) {
+        AddAccordionToggleAndInnerTactic(data);
+
+        onlyTactic = $.grep(data.taskData, function (value) {
+            return ((typeof value.isSubmitted != 'undefined') && (typeof value.isDeclined != 'undefined'))
+        });
+
+        submittedTactic = $.grep(onlyTactic, function (value) {
+            return (value.isSubmitted == true);
+        });
+
+        declinedTactic = $.grep(onlyTactic, function (value) {
+            return (value.isDeclined == true);
+        });
+
+        var submittedDeclinedTactic = submittedTactic.concat(declinedTactic);
+        activities = { data: submittedDeclinedTactic };
+
+        FillTacticsTable();
+
+        if ($('#IsViewOnly').val() != '') {
+            $("#table_activities th:nth-child(6), #table_activities td:nth-child(6)").remove();
+        }
+    }
+
+    //// Function to sort alphabetically.
+    function SortAlphabetically(obj1, obj2) {
+        var obj1Property = obj1.Title.toLowerCase();
+        var obj2Property = obj2.Title.toLowerCase();
+        return ((obj1Property < obj2Property) ? -1 : ((obj1Property > obj2Property) ? 1 : 0));
+    }
+
+    var planYear;
+    //// Function to make ajax request.
+    function AjaxRequest() {
+        $.ajax(
+      {
+          type: "GET",
+          cache: false,
+          url: '@Url.Action("GetViewControlDetail", "Home")',
+          data: { Type: type, PlanId: CurrentPlanId, IsQuarter: isQuater, geographyIds: filters.geographyIds.join(), individualsIds: filters.IndividualsIds.join(), isShowOnlyMyTactic: IsShowOnlyMyTactic },
+          dataType: "json",
+          success: function (data) {
+              $('#RequestCount').html(data.requestCount);
+              planYear = parseInt(data.planYear);
+
+              switch (type) {
+                  case GanttTabs.Tactic:
+                      AddAccordionToggleAndInnerTactic(data);
+                      break;
+                  case GanttTabs.Vertical:
+                      AddAccordionToggleAndInnerVertical(data);
+                      break;
+                  case GanttTabs.Stage:
+                      AddAccordionToggleAndInnerStage(data);
+                      break;
+                  case GanttTabs.Audience:
+                      AddAccordionToggleAndInnerAudience(data);
+                      break;
+                  case GanttTabs.BusinessUnit:
+                      AddAccordionToggleAndInnerBusinessUnit(data);
+                      break;
+                  case GanttTabs.Request:
+                      AddAccordionToggleAndInnerRequest(data);
+                      break;
+                  default:
+                      alert('No match');
+                      break;
+              }
+              AttachEventToGroupHeading();
+              renderGantt(data.taskData);
+              ShowChangeLog();
+              //// Hide/Show Tabulated data shown below gantt of request tab.
+              if (GanttTabs.Request == type) {
+                  $(".shadow-scroll-gantt").show();
+                  $("#table_activities").show();
+              } else {
+                  $("#table_activities").hide();
+                  $(".shadow-scroll-gantt").hide();
+              }
+          },
+          error: function () {
+              myApp.hidePleaseWait();
+          }
+      });
+  }
+
+  function AttachEventToGroupHeading() {
+      var divAccordionGroups = $("div[id^='DivAccordionGroup']").find("div.accordion-heading a");
+      $.each(divAccordionGroups, function (index, accGroup) {
+          var accordionGroup = $(this);
+          if (typeof accordionGroup != 'undefined') {
+              accordionGroup.click(function () {
+                  var anchor = $(this).parent().next().find("a");
+                  if (typeof anchor != 'undefined') {
+                      anchor.click();
+                  }
+              });
+          }
+      })
+  }
+
+  //// Function to start date of current quarter.
+  function getQarterStartDate() {
+      var currentDate = new Date();
+      var quater = Math.floor((currentDate.getMonth()) / 3) + 1;
+      var startDate;
+      var fullYear = currentDate.getFullYear();
+      switch (quater) {
+          case 1:
+              startDate = new Date(fullYear, 00, 01);
+              break;
+          case 2:
+              startDate = new Date(fullYear, 03, 01);
+              break;
+          case 3:
+              startDate = new Date(fullYear, 06, 01);
+              break;
+          case 4:
+              startDate = new Date(fullYear, 09, 01);
+              break;
+          default:
+              startDate = currentDate;
+      }
+
+      return startDate;
+  }
+
+  //// Function to set common properties of gantt.
+  function SetGantt() {
+      gantt.config.grid_width = 236;
+      gantt.config.readonly = true;
+      gantt.config.autofit = true;
+      gantt.config.drag_links = false;
+      gantt.config.drag_resize = false;
+      gantt.config.drag_progress = false;
+  }
+
+  //// Function to render gantt i.e. for this year or this quarter.
+  function renderGantt(taskData) {
+      //console.log(taskData);
+      var tasks = {
+          data: taskData
+      };
+
+      //var tasks = {
+      //    data: [
+      //        { id: 1, text: "ERP V10 Product Launch", start_date: new Date(2013, 00, 05), duration: 10, progress: 1, open: true },
+      //        { id: 2, text: "Q2 Lead Gen", start_date: new Date(2013, 02, 05), duration: 10, progress: 1, open: false }]
+      //};
+
+      $.each(tasks.data, function (index, objData) {
+          objData.start_date = new Date(objData.start_date);
+      });
+
+      gantt.eachTask(function (task) {
+          gantt.deleteTask(task.id)
+      })
+      if (isQuater == "thisquarter") {
+          //// Setting scale.
+          gantt.config.scale_unit = "month";
+          gantt.config.step = 12;
+          gantt.config.date_scale = " %Y";
+
+          gantt.config.scale_height = 60;
+          gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+          gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+          //// Getting quarter
+          var startDate = getQarterStartDate();
+          var endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 1);
+          gantt.config.start_date = startDate;
+          gantt.config.end_date = endDate;
+          //// filtering quater data
+          var filteredData = $.grep(tasks.data,
+                                     function (value) {
+                                         return (value.start_date >= startDate && value.start_date <= endDate)
+                                     }
+                                   );
+          var filteredTasks = { data: filteredData };
+
+          gantt.init("gantt_here");
+
+          var json_length = filteredTasks.data.length;
+          var gantt_div = document.getElementById("gantt_here");
+          gantt_div.style.height = ((json_length * 35) + 94) + "px";
+
+          //// Function to add class to each task bar.
+          gantt.templates.task_class = function (start, end, task) {
+              if (typeof task.plantacticid != 'undefined') {
+                  return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+              } else {
+                  return task.color;
+              }
+          };
+          gantt.parse(filteredTasks);
+      } else if (isQuater == "thisyear") {
+          gantt.config.scale_unit = "year";
+          gantt.config.step = 1;
+          gantt.config.date_scale = "%Y";
+          gantt.config.scale_height = 60;
+          gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+          gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+          //gantt.config.start_date = new Date(planYear, 00, 01);
+          //gantt.config.end_date = new Date(planYear + 1, 00, 01);
+
+          var date = new Date();
+          gantt.config.start_date = new Date(date.getFullYear(), 00, 01);
+          gantt.config.end_date = new Date(date.getFullYear() + 1, 00, 01);
+          gantt.init("gantt_here");
+
+          var json_length = tasks.data.length;
+          var gantt_div = document.getElementById("gantt_here");
+          gantt_div.style.height = ((json_length * 35) + 94) + "px";
+
+          //// Function to add class to each task bar.
+          gantt.templates.task_class = function (start, end, task) {
+              if (typeof task.plantacticid != 'undefined') {
+                  return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+              } else {
+                  return task.color;
+              }
+          };
+
+          gantt.parse(tasks);
+      }
+      else if (isQuater == "thismonth") {
+          gantt.config.scale_unit = "month";
+          gantt.config.step = 12;
+          gantt.config.date_scale = " %Y";
+          gantt.config.scale_height = 60;
+          gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+          gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+          var date = new Date(), m = date.getMonth();
+          gantt.config.start_date = new Date(date.getFullYear(), m, 01);
+          gantt.config.end_date = new Date(date.getFullYear(), m + 1, 01);
+
+
+          var filteredData = $.grep(tasks.data,
+                                    function (value) {
+                                        return (value.start_date >= startDate && value.start_date <= endDate)
+                                    }
+                                  );
+          var filteredTasks = { data: filteredData };
+
+          gantt.init("gantt_here");
+
+          var json_length = tasks.data.length;
+          var gantt_div = document.getElementById("gantt_here");
+          gantt_div.style.height = ((json_length * 35) + 94) + "px";
+
+          //// Function to add class to each task bar.
+
+          gantt.templates.task_class = function (start, end, task) {
+              if (typeof task.plantacticid != 'undefined') {
+                  return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+              } else {
+                  return task.color;
+              }
+          };
+
+          gantt.parse(tasks);
+      }
+      else if (isQuater == "nextyear") {
+
+          gantt.config.scale_unit = "year";
+          gantt.config.step = 1;
+          gantt.config.date_scale = "%Y";
+          gantt.config.scale_height = 60;
+          gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+          gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+          var date = new Date();
+          gantt.config.start_date = new Date(date.getFullYear() + 1, 00, 01);
+          gantt.config.end_date = new Date(date.getFullYear() + 2, 00, 01);
+          gantt.init("gantt_here");
+
+          var json_length = tasks.data.length;
+          var gantt_div = document.getElementById("gantt_here");
+          gantt_div.style.height = ((json_length * 35) + 94) + "px";
+
+          //// Function to add class to each task bar.
+          gantt.templates.task_class = function (start, end, task) {
+              if (typeof task.plantacticid != 'undefined') {
+                  return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+              } else {
+                  return task.color;
+              }
+          };
+
+          gantt.parse(tasks);
+      } else if (isQuater == "planYear") {
+          // Edited to add PlanYear option.
+          gantt.config.scale_unit = "year";
+          gantt.config.step = 1;
+          gantt.config.date_scale = "%Y";
+          gantt.config.scale_height = 60;
+          gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+          gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+          gantt.config.start_date = new Date(planYear, 00, 01);
+          gantt.config.end_date = new Date(planYear + 1, 00, 01);
+          gantt.init("gantt_here");
+
+          var json_length = tasks.data.length;
+          var gantt_div = document.getElementById("gantt_here");
+          gantt_div.style.height = ((json_length * 35) + 94) + "px";
+
+          //// Function to add class to each task bar.
+          gantt.templates.task_class = function (start, end, task) {
+              if (typeof task.plantacticid != 'undefined') {
+                  return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+              } else {
+                  return task.color;
+              }
+          };
+
+          gantt.parse(tasks);
+      }
+
+      //// Hide/Show Tabulated data shown below gantt of request tab.
+      if (GanttTabs.Request == type) {
+          //// Calculating height for grid
+          modSampleHeight();
+          var gantt_div1 = document.getElementById("gantt_here");
+          gantt_div1.style.height = ((6 * 35) + 94) + "px";
+          gantt.config.min_column_width = function (data) {
+              return 10;
+          };
+      }
+
+      gantt.eachTask(function (task) {
+          gantt.open(task.id)
+      })
+
+      AttachEventToTactic();
+  }
+
+  function Quarter() {
+      gantt.config.scale_unit = "month";
+      gantt.config.step = 12;
+      gantt.config.date_scale = " %Y";
+
+      gantt.config.scale_height = 60;
+      gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+      gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+      //// Getting quarter
+      var startDate = getQarterStartDate();
+      var endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 1);
+      gantt.config.start_date = startDate;
+      gantt.config.end_date = endDate;
+
+      //// filtering quater data
+      var filteredData = $.grep(tasks.data,
+                                 function (value) {
+                                     return (value.start_date >= startDate && value.start_date <= endDate)
+                                 }
+                               );
+      var filteredTasks = { data: filteredData };
+
+      gantt.init("gantt_here");
+
+      var json_length = filteredTasks.data.length;
+      var gantt_div = document.getElementById("gantt_here");
+      gantt_div.style.height = ((json_length * 35) + 94) + "px";
+
+      //// Function to add class to each task bar.
+      gantt.templates.task_class = function (start, end, task) {
+          if (typeof task.plantacticid != 'undefined') {
+              return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+          } else {
+              return task.color;
+          }
+      };
+      gantt.parse(filteredTasks);
+  }
+
+  function year() {
+      gantt.config.scale_unit = "year";
+      gantt.config.step = 1;
+      gantt.config.date_scale = "%Y";
+      gantt.config.scale_height = 60;
+      gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+      gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+      gantt.config.start_date = new Date(planYear, 00, 01);
+      gantt.config.end_date = new Date(planYear + 1, 00, 01);
+      gantt.init("gantt_here");
+
+      var json_length = tasks.data.length;
+      var gantt_div = document.getElementById("gantt_here");
+      gantt_div.style.height = ((json_length * 35) + 94) + "px";
+
+      //// Function to add class to each task bar.
+      gantt.templates.task_class = function (start, end, task) {
+          if (typeof task.plantacticid != 'undefined') {
+              return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+          } else {
+              return task.color;
+          }
+      };
+
+      gantt.parse(tasks);
+  }
+
+  function thismonth() {
+      gantt.config.scale_unit = "month";
+      gantt.config.step = 12;
+      gantt.config.date_scale = " %Y";
+
+      gantt.config.scale_height = 60;
+      gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+      gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+      //// Getting quarter
+      var date = new Date();
+      var startDate = new Date(date.getFullYear(), date.getMonth(), 1);
+      var endDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+      //var startDate = getQarterStartDate();
+      //var endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 1);
+      gantt.config.start_date = startDate;
+      gantt.config.end_date = endDate;
+
+      //// filtering quater data
+      var filteredData = $.grep(tasks.data,
+                                 function (value) {
+                                     return (value.start_date >= startDate && value.start_date <= endDate)
+                                 }
+                               );
+      var filteredTasks = { data: filteredData };
+
+      gantt.init("gantt_here");
+
+      var json_length = filteredTasks.data.length;
+      var gantt_div = document.getElementById("gantt_here");
+      gantt_div.style.height = ((json_length * 35) + 94) + "px";
+
+      //// Function to add class to each task bar.
+      gantt.templates.task_class = function (start, end, task) {
+          if (typeof task.plantacticid != 'undefined') {
+              return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+          } else {
+              return task.color;
+          }
+      };
+      gantt.parse(filteredTasks);
+  }
+
+  function nextyear() {
+      gantt.config.scale_unit = "year";
+      gantt.config.step = 1;
+      gantt.config.date_scale = "%Y";
+      gantt.config.scale_height = 60;
+      gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+      gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+      gantt.config.start_date = new Date(planYear + 1, 00, 01);
+      gantt.config.end_date = new Date(planYear + 2, 00, 01);
+      gantt.init("gantt_here");
+
+      var json_length = tasks.data.length;
+      var gantt_div = document.getElementById("gantt_here");
+      gantt_div.style.height = ((json_length * 35) + 94) + "px";
+
+      //// Function to add class to each task bar.
+      gantt.templates.task_class = function (start, end, task) {
+          if (typeof task.plantacticid != 'undefined') {
+              return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+          } else {
+              return task.color;
+          }
+      };
+
+      gantt.parse(tasks);
+  }
+
+  function modSampleHeight() {
+      var headHeight = 94;
+      var sch = document.getElementById("gantt_here");
+      sch.style.height = (parseInt(document.body.offsetHeight) - headHeight) + "px";
+      //var contbox = document.getElementById("contbox");
+      //contbox.style.width = (parseInt(document.body.offsetWidth)-300)+"px";
+
+      gantt.setSizes();
+  }
+
+  //// Variable to hold double click event.
+  var eventTaskDoubleClick;
+  //// Function to attach event to show inspect model.
+  function AttachEventToTactic() {
+      //// Detaching double click event.
+      if (eventTaskDoubleClick != undefined) {
+          gantt.detachEvent(eventTaskDoubleClick);
+      }
+
+      //// Attaching double click event
+      eventTaskDoubleClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) { ShowModel(taskId, null) });
+  }
+
+  function ShowModel(taskId, isShowInspect) {
+
+      var task, planTacticId, planProgramId, planCampaignId;
+      if (taskId != null) {
+          task = gantt.getTask(taskId);
+          planTacticId = task.plantacticid;
+          planProgramId = task.planprogramid;
+          planCampaignId = task.plancampaignid;
+
+
+      } else if (isShowInspect) {
+          planTacticId = $("#hdnshowInspectForPlanTacticId").val();
+          planCampaignId = $("#hdnshowInspectForPlanCampaignId").val();
+          planProgramId = $("#hdnshowInspectForPlanProgramId").val();
+      }
+
+
+      //// Checking whether current task is tactic or not.
+      if (typeof planTacticId != 'undefined' && planTacticId != 0) {
+          modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
+          $("#modal-container-186470").modal('show');
+          $("#successMessage").css("display", "none");
+          $("#errorMessage").css("display", "none");
+          loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup");
+      }
+
+          //// Checking whether current task is tactic or not.
+      else if (typeof planProgramId != 'undefined' && planProgramId != 0) {
+          modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
+          $("#modal-container-186470").modal('show');
+          $("#successMessage").css("display", "none");
+          $("#errorMessage").css("display", "none");
+          loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup");
+      }
+
+          //// Checking whether current task is tactic or not.
+      else if (typeof planCampaignId != 'undefined' && planCampaignId != 0) {
+          modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
+          $("#modal-container-186470").modal('show');
+          $("#successMessage").css("display", "none");
+          $("#errorMessage").css("display", "none");
+          loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup");
+      }
+}
+
+$("#modal-container-186470").on("show", function (e) { $("#modalMainContainer").show(); });
+$("#modal-container-186470").on("hide", function (e) { $("#modalMainContainer").hide(); });
+
+//Scrip Addded By Bhavesh for Inspect Popup
+
+// Added By Bhavesh
+// Inspect Popup
+/// Start Script Of Inspect Popup
+/// Modified by Kunal to add  section parameter to open popup campaign, program or tactic wise
+function loadInspectPopup(id, section, tabValue) {
+    var url = '@Url.Content("~/Home/LoadInspectPopup")';
+      $("#divPartial").empty();
+      //$("#divPartial").load(url + '?id=' + id + '&TabValue=' + tabValue);
+      $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue);
+  }
+
+  //End Script Of Bhaveh
+
+  //Start Creating and Populating tabulated data
+  function FillTacticsTable() {
+      $('#table_activities > tbody >tr').remove();
+      if (typeof activities != 'undefined') {
+          if (activities.data.length) {
+              for (i in activities.data) {
+                  addRowTactic(i, activities.data[i].id, activities.data[i].text, activities.data[i].inqs,
+                      activities.data[i].mqls, activities.data[i].cws, activities.data[i].cost, activities.data[i].isDeclined, activities.data[i].isSubmitted);
+              }
+          }
+      }
+  }
+
+  //add row in tactics table
+  function addRowTactic(index, id, text, inqs, mqls, cws, cost, isDeclined, isSubmitted) {
+      var $activitiesTable = $('#table_activities > tbody');
+      var $html = "";
+      if (isDeclined) {
+          $html += '<tr class="rejected" id="' + id + '" data-index="' + index + '">' +
+                      '<td class="border-r sm"><span class="title-baseline-model">' + text + '</span><span class="search-icon"></span></td>' +
+                      '<td class="sm">' + inqs + '</td>' +
+                      '<td class="sm">' + mqls + '</td>' +
+                      '<td class="sm">$' + cws + '</td>' +
+                      '<td class="border-r sm">$' + cost + '</td>' +
+                      '<td><span class="reject-icon active"></span><span class="accept-icon"></span></td>' +
+                  '</tr>';
+      } else if (isSubmitted) {
+          $html += '<tr class="pending"  id="' + id + '" data-index="' + index + '">' +
+                      '<td class="border-r sm"><span class="title-baseline-model">' + text + '</span><span class="search-icon"></span></td>' +
+                      '<td class="sm">' + inqs + '</td>' +
+                      '<td class="sm">' + mqls + '</td>' +
+                      '<td class="sm">$' + cws + '</td>' +
+                      '<td class="border-r sm">$' + cost + '</td>' +
+                      '<td><span class="reject-icon"></span><span class="accept-icon"></span></td>' +
+                  '</tr>';
+      }
+
+      $activitiesTable.append($html);
+
+  }
+
+  $(document).on("click", ".accept-icon", function () {
+      var task = gantt.getTask($(this.parentNode.parentNode).attr("id"));
+      ApproveTactic(this, task);
+  })
+
+  function ApproveTactic(e, task) {
+      $.ajax({
+          type: 'POST',
+          url: '@Url.Content("~/Home/ApproveDeclineTactic/")',
+          data: {
+              planTacticId: task.plantacticid,
+              isApprove: true
+          },
+          dataType: "json",
+          success: function (data) {
+              if (data.result == true) {
+                  if (task.isSubmitted) {
+                      $('#RequestCount').html($('#RequestCount').html() - 1);
+                  }
+
+                  var index = $(e.parentNode.parentNode).attr("data-index");
+                  task.isDeclined = false;
+                  task.isSubmitted = false;
+                  activities.data.splice(index, 1);
+                  console.log($('#index_activity'));
+                  $('#table_activities tbody tr').remove();
+                  FillTacticsTable();
+                  gantt.refreshData();
+              }
+              else {
+                  alert('Not Approved');
+              }
+          },
+          error: function () {
+              myApp.hidePleaseWait();
+          }
+      });
+  }
+
+  $(document).on("click", ".reject-icon", function () {
+      var task = gantt.getTask($(this.parentNode.parentNode).attr("id"));
+      DeclineTactic(this, task);
+  })
+
+  function DeclineTactic(e, task) {
+      $.ajax({
+          type: 'POST',
+          url: '@Url.Content("~/Home/ApproveDeclineTactic/")',
+          data: {
+              planTacticId: task.plantacticid,
+              isApprove: false
+          },
+          dataType: "json",
+          success: function (data) {
+              if (data.result == true) {
+                  if (task.isSubmitted) {
+                      $('#RequestCount').html($('#RequestCount').html() - 1);
+                  }
+                  var index = $(e.parentNode.parentNode).attr("data-index");
+                  var activityTemp = activities.data[index];
+                  activities.data.splice(index, 1);
+                  $('#table_activities tbody tr').remove();
+                  activityTemp.isDeclined = true;
+                  activityTemp.isSubmitted = false;
+                  activities.data.push(activityTemp);
+                  FillTacticsTable();
+                  gantt.refreshData();
+              }
+              else {
+                  alert('Not Declined');
+              }
+          },
+          error: function () {
+              myApp.hidePleaseWait();
+          }
+      });
+  }
+
+  //tbody tr
+  $("#table_activities").on("click", ".sm", function () {
+      ShowModel($(this.parentNode).attr("id"), null)
+  })
+  //End Creating and Populating tabulated data
+
+  /// Script End
+  /// Added By: Maninder Singh Wadhva.
+
+  /// Ended Script Of Inspect Popup
+  function GetHealderData(intplanid) {
+      $.ajax(
+      {
+          type: "GET",
+          cache: false,
+          url: '@Url.Action("GetPlanByPlanID", "Plan")',
+          data: {
+              planid: intplanid
+
+          },
+          dataType: "json",
+          success: function (data) {
+              if (data != null) {
+
+                  $.each(data.lstHomePlanModelHeader, function (index, obj) {
+                      if (index == "MQLs") {
+                          $("#pMQLs").html(obj);
+                          SetPriceValue("#pMQLs");
+                      }
+                      else if (index == "Budget") {
+                          $("#pbudget").html(obj);
+                          SetBudget("#pbudget");
+                      }
+                      else if (index == "TacticCount") {
+                          $("#ptacticcount").html(obj);
+                      }
+                      else if (index == "mqlLabel") {
+                          $("#pmqlLabel").html(obj);
+                      }
+                      else if (index == "costLabel") {
+                          $("#pcostLabel").html(obj);
+                      }
+
+                  });
+
+              }
+          },
+          error: function () {
+              myApp.hidePleaseWait();
+          }
+      });
+  }
+  function GetNumberOfActivityPerMonByPlanId(intplanid, strParam) {
+      $.ajax(
+      {
+          type: "GET",
+          cache: false,
+          url: '@Url.Action("GetNumberOfActivityPerMonthByPlanId", "Home")',
+          data: {
+              planid: intplanid,
+              strparam: strParam,
+              geographyIds: filters.geographyIds.join(), individualsIds: filters.IndividualsIds.join(), isShowOnlyMyTactic: IsShowOnlyMyTactic
+          },
+          dataType: "json",
+          success: function (data) {
+              if (data != null) {
+                  $(".dhx_canvas_text").remove();
+                  $("canvas").remove();
+                  setgraphdata(data);
+
+              }
+          },
+          error: function () {
+              myApp.hidePleaseWait();
+          }
+      });
+  }
+  function setgraphdata(data) {
+
+      var barChart2 = new dhtmlXChart({
+          view: "bar",
+          container: "chart2",
+          value: "#NoOfActivity#",
+          label: "#NoOfActivity#",
+          color: "#Color#",
+          radius: 3,
+          padding: {
+              top: 25,
+              bottom: 16,
+              right: 00,
+              left: 00
+
+          },
+          xAxis: {
+
+              template: "#Month#"
+          },
+      });
+      barChart2.parse(data.lstchart, "json");
+  }
+
+
+  gantt.attachEvent("onTaskOpened", function (id) {
+      var planid = CurrentPlanId;
+      if (id.substring(0, 1) == "C") {
+          var intid = 0;
+          if (id.indexOf("P") >= 0) {
+              intid = id.substring(id.indexOf('P') + 1);
+          }
+          if (intid != 0) {
+              $("#DivAccordion").find('span[id^="spn_"]').each(function (index1) {
+                  var tid = this.id.substring(this.id.indexOf('_') + 1);
+                  var cnt = 0;
+                  var a = gantt.getChildren(id);
+                  $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
+                      var taskid = $(this).attr('taskid');
+                      $.each(a, function (index, value) {
+                          if (taskid == value) {
+                              cnt = cnt + 1;
+                          }
+                      });
+                  });
+
+
+
+                  if ($("#" + this.id).text() != '') {
+                      $("#" + this.id).text(parseInt($("#" + this.id).text()) + cnt);
+                  }
+
+
+              });
+          }
+      }
+
+      if (id.substring(0, 1) == "S") {
+
+          var intid = 0;
+          if (id.indexOf("P") >= 0) {
+              intid = id.substring(id.indexOf('P') + 1);
+          }
+          if (intid != 0) {
+
+              $("#DivAccordion").find('span[id^="spnstage_"]').each(function (index1) {
+
+                  var tid = this.id.substring(this.id.indexOf('_') + 1);
+
+
+                  var cnt = 0;
+                  var a = gantt.getChildren(id);
+                  $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
+                      var taskid = $(this).attr('taskid');
+
+                      $.each(a, function (index, value) {
+
+                          if (taskid == value) {
+                              cnt = cnt + 1;
+                          }
+                      });
+                  });
+
+
+
+                  if ($("#" + this.id).text() != '') {
+                      $("#" + this.id).text(parseInt($("#" + this.id).text()) + cnt);
+                  }
+
+
+              });
+          }
+      }
+      if (id.substring(0, 1) == "V") {
+
+          var intid = 0;
+          if (id.indexOf("P") >= 0) {
+              intid = id.substring(id.indexOf('P') + 1);
+          }
+          if (intid != 0) {
+
+              $("#DivAccordion").find('span[id^="spnver_"]').each(function (index1) {
+
+                  var tid = this.id.substring(this.id.indexOf('_') + 1);
+
+
+                  var cnt = 0;
+                  var a = gantt.getChildren(id);
+                  $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
+                      var taskid = $(this).attr('taskid');
+
+                      $.each(a, function (index, value) {
+
+                          if (taskid == value) {
+                              cnt = cnt + 1;
+                          }
+                      });
+                  });
+
+
+
+                  if ($("#" + this.id).text() != '') {
+                      $("#" + this.id).text(parseInt($("#" + this.id).text()) + cnt);
+                  }
+
+
+              });
+          }
+      }
+      if (id.substring(0, 1) == "A") {
+
+          var intid = 0;
+          if (id.indexOf("P") >= 0) {
+              intid = id.substring(id.indexOf('P') + 1);
+          }
+          if (intid != 0) {
+
+              $("#DivAccordion").find('span[id^="spnaud_"]').each(function (index1) {
+
+                  var tid = this.id.substring(this.id.indexOf('_') + 1);
+
+
+                  var cnt = 0;
+                  var a = gantt.getChildren(id);
+                  $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
+                      var taskid = $(this).attr('taskid');
+
+                      $.each(a, function (index, value) {
+
+                          if (taskid == value) {
+                              cnt = cnt + 1;
+                          }
+                      });
+                  });
+
+
+
+                  if ($("#" + this.id).text() != '') {
+                      $("#" + this.id).text(parseInt($("#" + this.id).text()) + cnt);
+                  }
+
+
+              });
+          }
+      }
+
+      if (id.substring(0, 1) == "B") {
+
+          var intid = 0;
+          if (id.indexOf("P") >= 0) {
+              intid = id.substring(id.indexOf('P') + 1);
+          }
+          if (intid != 0) {
+
+              $("#DivAccordion").find('span[id^="spnbus_"]').each(function (index1) {
+
+                  var tid = this.id.substring(this.id.indexOf('_') + 1);
+
+
+                  var cnt = 0;
+                  var a = gantt.getChildren(id);
+                  $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
+                      var taskid = $(this).attr('taskid');
+
+                      $.each(a, function (index, value) {
+
+                          if (taskid == value) {
+                              cnt = cnt + 1;
+                          }
+                      });
+                  });
+
+
+
+                  if ($("#" + this.id).text() != '') {
+                      $("#" + this.id).text(parseInt($("#" + this.id).text()) + cnt);
+                  }
+
+
+              });
+          }
+      }
+
+
+  });
+
+
+
+  gantt.attachEvent("onTaskClosed", function (id) {
+
+
+      if (id.substring(0, 1) == "C") {
+
+
+
+          var intid = 0;
+          if (id.indexOf("P") >= 0) {
+              intid = id.substring(id.indexOf('P') + 1);
+          }
+          if (intid != 0) {
+
+              $("#DivAccordion").find('span[id^="spn_"]').each(function (index1) {
+
+                  var tid = this.id.substring(this.id.indexOf('_') + 1);
+
+
+                  var cnt = 0;
+                  var a = gantt.getChildren(id);
+                  $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
+                      var taskid = $(this).attr('taskid');
+
+                      $.each(a, function (index, value) {
+                          //alert(index + ": " + value);
+
+                          if (taskid == value) {
+                              cnt = cnt - 1;
+                          }
+                      });
+                  });
+
+
+
+                  if ($("#" + this.id).text() != '') {
+                      $("#" + this.id).text(parseInt($("#" + this.id).text()) + cnt);
+                  }
+
+
+              });
+          }
+      }
+      if (id.substring(0, 1) == "S") {
+
+          var intid = 0;
+          if (id.indexOf("P") >= 0) {
+              intid = id.substring(id.indexOf('P') + 1);
+          }
+          if (intid != 0) {
+
+              $("#DivAccordion").find('span[id^="spnstage_"]').each(function (index1) {
+
+                  var tid = this.id.substring(this.id.indexOf('_') + 1);
+
+
+                  var cnt = 0;
+                  var a = gantt.getChildren(id);
+                  $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
+                      var taskid = $(this).attr('taskid');
+
+                      $.each(a, function (index, value) {
+
+                          if (taskid == value) {
+                              cnt = cnt + 1;
+                          }
+                      });
+                  });
+
+
+
+                  if ($("#" + this.id).text() != '') {
+                      $("#" + this.id).text(parseInt($("#" + this.id).text()) - cnt);
+                  }
+
+
+              });
+          }
+      }
+      if (id.substring(0, 1) == "V") {
+
+          var intid = 0;
+          if (id.indexOf("P") >= 0) {
+              intid = id.substring(id.indexOf('P') + 1);
+          }
+          if (intid != 0) {
+
+              $("#DivAccordion").find('span[id^="spnver_"]').each(function (index1) {
+
+                  var tid = this.id.substring(this.id.indexOf('_') + 1);
+
+
+                  var cnt = 0;
+                  var a = gantt.getChildren(id);
+                  $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
+                      var taskid = $(this).attr('taskid');
+
+                      $.each(a, function (index, value) {
+
+                          if (taskid == value) {
+                              cnt = cnt + 1;
+                          }
+                      });
+                  });
+
+
+
+                  if ($("#" + this.id).text() != '') {
+                      $("#" + this.id).text(parseInt($("#" + this.id).text()) - cnt);
+                  }
+
+
+              });
+          }
+      }
+      if (id.substring(0, 1) == "A") {
+
+          var intid = 0;
+          if (id.indexOf("P") >= 0) {
+              intid = id.substring(id.indexOf('P') + 1);
+          }
+          if (intid != 0) {
+
+              $("#DivAccordion").find('span[id^="spnaud_"]').each(function (index1) {
+
+                  var tid = this.id.substring(this.id.indexOf('_') + 1);
+
+
+                  var cnt = 0;
+                  var a = gantt.getChildren(id);
+                  $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
+                      var taskid = $(this).attr('taskid');
+
+                      $.each(a, function (index, value) {
+
+                          if (taskid == value) {
+                              cnt = cnt + 1;
+                          }
+                      });
+                  });
+
+
+
+                  if ($("#" + this.id).text() != '') {
+                      $("#" + this.id).text(parseInt($("#" + this.id).text()) - cnt);
+                  }
+
+
+              });
+          }
+      }
+      if (id.substring(0, 1) == "B") {
+
+          var intid = 0;
+          if (id.indexOf("P") >= 0) {
+              intid = id.substring(id.indexOf('P') + 1);
+          }
+          if (intid != 0) {
+
+              $("#DivAccordion").find('span[id^="spnbus_"]').each(function (index1) {
+
+                  var tid = this.id.substring(this.id.indexOf('_') + 1);
+
+
+                  var cnt = 0;
+                  var a = gantt.getChildren(id);
+                  $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
+                      var taskid = $(this).attr('taskid');
+
+                      $.each(a, function (index, value) {
+
+                          if (taskid == value) {
+                              cnt = cnt + 1;
+                          }
+                      });
+                  });
+
+
+
+                  if ($("#" + this.id).text() != '') {
+                      $("#" + this.id).text(parseInt($("#" + this.id).text()) - cnt);
+                  }
+
+
+              });
+          }
+      }
+
+  });
+  gantt.attachEvent("onTaskClick", function (id, e) {
+
+      flg = false;
+
+  });
+</script>

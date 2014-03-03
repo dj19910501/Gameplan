@@ -1,0 +1,184 @@
+﻿@using RevenuePlanner.Helpers
+@{
+    bool IsDisable = false;
+    if (Sessions.User != null)
+    {
+        IsDisable = true;
+    } 
+@*<div class="container-fluid all-height" id="DivShareTacticPopupMain">
+    <div class="row-fluid calc-height">
+        <div class="span12">*@
+    <div id="errorMessageContactSupportPopup" class="alert alert-error hide contact-support-message-position-popup">
+        <a class="close">×</a>
+        <strong>Error : </strong><span id="spanErrorMessageContactSupportPopup"></span>
+    </div>
+    <div id="SuccessMessageContactSupportPopup" class="alert alert-success hide contact-support-message-position-popup">
+        <a class="close">×</a>
+        <strong>Success : </strong><span id="spanSuccessMessageContactSupportPopup"></span>
+    </div>
+    <div id="DivContactSupportPopup" class="form-contact-support fade in" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block">
+        <div class="login-wrapper">
+            <form name="login-register">
+                <h2 class="primary-title source-sans-prosemibold">Contact Support</h2>
+                <label class="inpus-required-title source-sans-prolight">All fields required.</label>
+                @if (IsDisable == false)
+                {
+                    <input id="email_id" name="email" type="email" class="input-block-level-contact-support source-sans-prolight inputs-login" placeholder="Email" disabled="@IsDisable" required/>
+                    <input id="company_name" name="password" type="text" class="input-block-level-contact-support source-sans-prolight inputs-login" placeholder="Company Name" disabled="@IsDisable" required/>
+                }
+                else
+                {
+                    <input id="email_id" name="email" type="email" class="input-block-level-contact-support source-sans-prolight inputs-login" value="@Sessions.User.Email" disabled="@IsDisable" required/>
+                    <input id="company_name" name="password" type="text" class="input-block-level-contact-support source-sans-prolight inputs-login" value="@Sessions.User.Client" disabled="@IsDisable" required/>
+                }
+                <input id="issue" name="issue" type="text" class="input-block-level-contact-support source-sans-prolight inputs-login" placeholder="Issue" required />
+
+                @*<textarea id="issue" name="issue" class="input-block-level source-sans-prolight inputs-login" required />*@
+
+                <button class="button-contact-support btn btn-large" id="submit_issue" type="submit" value="Submit">Submit</button>
+                <button id="close_popup" class="button-contact-support btn btn-large" type="button">Cancel</button>
+
+            </form>
+            @if (IsDisable == false)
+            {
+                <div style="margin-top: 50px;"></div>
+                        
+                <div class="icon-contact-support conv_helveticaltstd-light">
+                    <a href='@Url.Action("Index", "Login")'>
+                        <div class="contact-support-icon"></div>
+                        Return to Sign in</a>
+                </div>
+            }
+        </div>
+    </div>@*
+        </div>
+    </div>
+</div>*@
+    <div id="DivBackgroundSupportContact" class="modal-backdrop fade in" style="z-index: 2001"></div>
+}
+
+<script type="text/javascript">
+    $(function () {
+
+        $("#errorMessageContactSupportPopup").find(".close").on("click", function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            $(this).closest(".alert").slideUp(400);
+        });
+
+        // Valdiate and Send mail on click of share button of share tactic popup.
+        $('#submit_issue').click(function () {
+            $(".input-block-level-contact-support").removeClass("error");
+            var flag = 0;
+            $('.input-block-level-contact-support').each(function () {
+                if ($(this).val() == "") {
+                    $(this).addClass("error");
+                    flag = 1;
+                }
+            });
+          
+            if (flag == 1) {
+                var msgspan = "Please enter values in all field.";
+                $("#errorMessageContactSupportPopup").css("display", "block");
+                $("#spanErrorMessageContactSupportPopup").text(msgspan);
+            }
+            else {
+                /*
+                changed by : Nirav Shah on 31 Jan 2014 
+                Bug 109 :  	 Steps: 1. Click on support to open support pop-up 2. Enter 1' OR '1'='1 as script in Company name and Issue field Bug: Observe that entering shows blank fields in email 
+                */
+                var flage = true;
+                close_messages();
+                var emailId = $('#email_id').val();
+                var company = $('#company_name').val();
+                var issue = $('#issue').val();
+                if (!validateCompanyName(company)) {
+                    flage = false;
+                    $('#company_name').addClass("error");
+                    var msgspan = "Please enter valid companyName.";
+                    $("#errorMessageContactSupportPopup").css("display", "block");
+                    $("#spanErrorMessageContactSupportPopup").text(msgspan);
+                }
+                if (!validateIssue(issue)) {
+                    flage = false;
+                    $('#issue').addClass("error");
+                    var msgspan = "Please enter valid characters in issue.";
+                    $("#errorMessageContactSupportPopup").css("display", "block");
+                    $("#spanErrorMessageContactSupportPopup").text(msgspan);
+                }
+                if (!validateEmail(emailId)) {
+                    flage = false;
+                    $('#email_id').addClass("error");
+                    var msgspan = "Please enter valid email.";
+                    $("#errorMessageContactSupportPopup").css("display", "block");
+                    $("#spanErrorMessageContactSupportPopup").text(msgspan);
+                }
+                if (flage == true) {
+                    $.ajax({
+                        url: '@Url.Content("~/Login/ContactSupport/")' + '?emailId=' + emailId + '&companyName=' + company + '&issue=' + issue,
+                       type: 'POST',
+                       cache: false,
+                       success: function (result) {
+                           if (result == true) {
+                               var msgspan = "Contact support request submitted successfully";
+                               $("#spanSuccessMessageContactSupportPopup").text(msgspan);
+                               $("#SuccessMessageContactSupportPopup").slideDown(1200);
+                               $("#SuccessMessageContactSupportPopup").slideUp(2500).promise().always(function () {
+                                   close_popup();
+                               });
+                           }
+                           else {
+                               var msgspan = "Error occured in sending mail, Please try again";
+                               $(".input-block-level-contact-support").addClass("error");
+                               $("#errorMessageContactSupportPopup").css("display", "block");
+                               $("#spanErrorMessageContactSupportPopup").text(msgspan);
+                           }
+                       }
+                   });
+               }
+               return false;
+           }
+            return false;
+        });
+
+        //----------------------------
+
+        function validateEmail(email) {
+            var re = /^(([^<>()[\]\\.,;:\s@@\"]+(\.[^<>()[\]\\.,;:\s@@\"]+)*)|(\".+\"))@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(email);
+        }
+
+        function validateCompanyName(CompanyName) {
+            var re = /^[a-zA-Z0-9\s\[\]\.\-&']*$/;
+            return re.test(CompanyName);
+        }
+        function validateIssue(Issue) {
+            var re = /^[a-zA-Z0-9\s\[\]\.\-_\@@,?:;\'\(\)\{\}\[\]']*$/;
+            return re.test(Issue);
+        }
+        //----------------------------
+        $(document).keyup(function (e) {
+            if (e.keyCode == 27) { // esc keycode
+                close_popup();
+            }
+        });
+
+        $('#close_popup').click(function () {
+            close_popup();
+        });
+
+        function close_popup() {
+            $('#DivBackgroundSupportContact').css("display", "none");
+            $('#DivContactSupportPopup').css("display", "none");
+            $('#DivBackgroundSupportContact').remove();
+            $('#DivContactSupportPopup').remove();
+            close_messages();
+        }
+
+        function close_messages() {
+            $('#errorMessageContactSupportPopup').css("display", "none");
+            $('#SuccessMessageContactSupportPopup').css("display", "none");
+        }
+
+    });
+</script>

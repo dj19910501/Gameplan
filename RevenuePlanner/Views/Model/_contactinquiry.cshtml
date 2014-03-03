@@ -1,0 +1,27 @@
+﻿@model RevenuePlanner.Models.ContactInquiry
+@using RevenuePlanner.Helpers
+<div id="nl-form2" class="nl-form">
+    @Html.Raw("I have")
+    @Html.TextBoxFor(model => model.AddressableContract, new { placeholder =@Model.AddressableContract, datadefault = "AddressableContract", formattype = "priceValue",datasubline = "For example: <em>1000</em>",maxlength = "15" })
+    @Html.Raw("addressable contacts in my database.")
+    <br />
+    @{
+        Dictionary<int, string> FunnelList = new Dictionary<int, string>();
+        FunnelList = (Dictionary<int, string>)TempData["FunnelList"];
+        @Html.GenerateFunnel(FunnelList,@Model.MarketingLeads,@Model.MarketingDealSize, @Model.TeleprospectingLeads,@Model.TeleprospectingDealSize,@Model.SalesLeads,@Model.SalesDealSize,false)
+        
+    }
+    <div class="nl-overlay"></div>
+</div>
+@Html.GenerateFunnel(FunnelList,@Model.MarketingLeads,@Model.MarketingDealSize, @Model.TeleprospectingLeads,@Model.TeleprospectingDealSize,@Model.SalesLeads,@Model.SalesDealSize,true)
+<script src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
+<script>
+    var nlform2 = new NLForm(document.getElementById('nl-form2'));
+    //$('.nl-field-toggle').each(function () {
+    //    if ($(this).html() == '' || $(this).html() == null)
+    //    {
+    //        $(this).hide();
+    //        $(this).remove();
+    //    }
+    //});
+</script>

@@ -1,0 +1,1916 @@
+﻿@using RevenuePlanner.Helpers
+@{
+    ViewBag.Title = "Revenue";
+    ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Report;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
+<link href="@Url.Content("~/Content/css/dhtmlxchart.css")" rel="stylesheet" type="text/css" />
+@section nlFormContent{
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
+}
+@section Sidebar
+{
+    <div class="padding-content padding-bottom0">
+        <h4 class="text-shadow-black source-sans-prolight">Reports</h4>
+        <div class="wraper-btns cf">
+            <div class="span6">
+                @if (RevenuePlanner.Helpers.Sessions.PlanId != 0)
+                {
+                    <button id="BtnAddActual" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("AddActual", "Home")'">Add Actuals</button>    
+                }
+                else
+                {
+                    <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" disabled="disabled" type="button">Add Actuals</button>
+                }
+            </div>
+            <div class="span6">
+                <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" id="BtnShareReport">Share Report</button>
+            </div>
+        </div>
+    </div>
+    <ul class="nav nav-list nav-gray-reports">
+        <li class="item">
+            <a class="source-sans-probold summary" onclick="window.location.href='@Url.Action("Index", "Report")'"><span></span>SUMMARY</a>
+        </li>
+        <li class="item active">
+            <a class="source-sans-probold revenue" onclick="window.location.href='@Url.Action("Revenue", "Report")'"><span></span>REVENUE</a>
+        </li>
+        <li class="item">
+            <a class="source-sans-probold conversion" onclick="window.location.href='@Url.Action("Conversion", "Report")'"><span></span>CONVERSION</a>
+        </li>
+    </ul>
+}
+
+@Html.Action("ReportHeader", "Report", new { id = (string)ViewBag.SelectOption })
+
+<ul class="nav nav-tabs" id="ParentULRevenueSummary">
+    <li class="source-sans-proregular">
+        <h2 class="title-header">Revenue Summary</h2>
+    </li>
+    @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
+    {
+        <li class="disabled pull-right">
+            <a>@RevenuePlanner.Helpers.Common.RevenueBusinessUnit</a>
+        </li>
+    }
+    <li class="disabled pull-right">
+        <a>@RevenuePlanner.Helpers.Common.RevenueGeography</a>
+    </li>
+    @if (RevenuePlanner.Helpers.Sessions.ReportPlanId == 0)
+    {
+        <li class="disabled pull-right">
+            <a>@RevenuePlanner.Helpers.Common.RevenuePlans</a>
+        </li>
+    }
+</ul>
+
+<ul class="nav nav-tabs nav-bars-table" id="ChildULRevenueSummary">
+</ul>
+<div id="DivHtmlContent" class="padding-content cf source-sans-proregular">
+    <table id="table_reports" class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="width240">Campaign Title</th>
+                @foreach (string s in (List<string>)ViewBag.MonthTitle)
+                {
+                    <th class="width53">@s</th>
+                }
+                <th class="width83 light-blue-row border-shadow">Total @Html.LabelForMQL("MQL")</th>
+                <th class="width83 light-blue-row">Revenue</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!--tr elements are added dinamically with javascript (view script.js file)-->
+        </tbody>
+    </table>
+
+    <!--Revenue To Plan -->
+    <ul class="nav nav-tabs" id="ParentULRevenueToPlan">
+        <li class="source-sans-proregular">
+            <h4 class="title-header">Revenue to Plan</h4>
+        </li>
+        <li class="active pull-right">
+            <a>@RevenuePlanner.Helpers.Common.RevenueOrganization</a>
+        </li>
+        <li class="disabled pull-right">
+            <a>@RevenuePlanner.Helpers.Common.RevenueVertical</a>
+        </li>
+        <li class="disabled pull-right">
+            <a>@RevenuePlanner.Helpers.Common.RevenueGeography</a>
+        </li>
+        <li class="disabled pull-right">
+            <a>@RevenuePlanner.Helpers.Common.RevenueAudience</a>
+        </li>
+        @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
+        {
+            <li class="disabled pull-right">
+                <a>@RevenuePlanner.Helpers.Common.RevenueBusinessUnit</a>
+            </li>
+        }
+    </ul>
+
+    <ul class="nav nav-tabs nav-bars-table" id="ChildULRevenueToPlan">
+    </ul>
+    <br />
+    <div class="chart_table_wrapper">
+        <div id="chartDiv3" class="report-chart3"></div>
+        <table id="table_reports2" class="table table-striped2">
+            <thead>
+                <tr>
+                    <th class="width96px large-border-bottom"></th>
+                    @foreach (string s in (List<string>)ViewBag.MonthTitle)
+                    {
+                        if ((string)ViewBag.SelectOption == RevenuePlanner.Helpers.Enums.UpcomingActivities.thisquarter.ToString())
+                        {
+                        <th class="width100px border-top-bottom">@s</th>
+                        }
+                        else
+                        {
+                        <th class="width52px border-top-bottom">@s</th>
+                        }
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                <!--tr elements are added dinamically with javascript-->
+            </tbody>
+        </table>
+    </div>
+
+    <!--  Revenue Realization-->
+    <div class="title-header-reports">
+        <h4>Revenue Realization</h4>
+        <div>
+            <span class="selectBox" id="ddlBusinessUnitSelectBox">
+                @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId != Guid.Empty)
+                {
+                    @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnit, "BusinessUnitId", "Title", @RevenuePlanner.Helpers.Sessions.BusinessUnitId), new { @class = "ddlStyleReport", @disabled = "disabled" })
+                }
+                else
+                {
+                    @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnit, "BusinessUnitId", "Title"), new { @class = "ddlStyleReport" })
+                }
+            </span>
+            <span class="selectBox" id="ddlCampaignSelectBox">
+                <select id="ddlCampaign" name="ddlCampaign" class="ddlStyleReport">
+                    <option value="0">All Campaigns</option>
+                </select>
+            </span>
+            <span class="selectBox" id="ddlProgramSelectBox">
+                <select id="ddlProgram" name="ddlProgram" class="ddlStyleReport">
+                    <option value="0">All Programs</option>
+                </select>
+            </span>
+            <span class="selectBox" id="ddlTacticSelectBox">
+                <select id="ddlTactic" name="ddlTactic" class="ddlStyleReport">
+                    <option value="0">All Tactics</option>
+                </select>
+            </span>
+
+        </div>
+    </div>
+    <table id="table_reports3" class="table table-striped3">
+        <thead>
+            <tr>
+                <th class="width130"></th>
+                @foreach (string s in (List<string>)ViewBag.MonthTitle)
+                {
+                    <th class="width49">@s</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            <!--tr elements are added dinamically with javascript-->
+        </tbody>
+    </table>
+
+    <!--  Revenue Source Performance-->
+    <ul class="nav nav-tabs" id="ParentULSourcePerformance">
+        <li class="source-sans-proregular">
+            <h4 class="title-header">Source Performance</h4>
+        </li>
+        <li class="active pull-right">
+            <a>@RevenuePlanner.Helpers.Common.SourcePerformanceActual</a>
+        </li>
+        <li class="disabled pull-right">
+            <a>@RevenuePlanner.Helpers.Common.SourcePerformanceTrend</a>
+        </li>
+        <li class="disabled pull-right">
+            <a>@RevenuePlanner.Helpers.Common.SourcePerformancePlan</a>
+        </li>
+    </ul>
+    <div class="report-gray-container">
+        <div class="report-chart-group">
+            <div class="report-chart">
+                <label>Business Unit</label>
+                <div id="chartDiv4" class="report-chart4"></div>
+            </div>
+            <div class="report-chart">
+                <label>Geography</label>
+                <div id="chartDiv5" class="report-chart5"></div>
+            </div>
+            <div class="report-chart">
+                <label>Vertical</label>
+                <div id="chartDiv6" class="report-chart6"></div>
+            </div>
+        </div>
+    </div>
+    <!--  Revenue Contribution-->
+    <ul class="nav nav-tabs" id="ParentULRevenueContribution">
+        <li class="source-sans-proregular">
+            <h4 class="title-header">Revenue Contribution</h4>
+        </li>
+        <li class="active pull-right">
+            <a>@RevenuePlanner.Helpers.Common.RevenueCampaign</a>
+        </li>
+        <li class="disabled pull-right">
+            <a>@RevenuePlanner.Helpers.Common.RevenueVertical</a>
+        </li>
+        <li class="disabled pull-right">
+            <a>@RevenuePlanner.Helpers.Common.RevenueGeography</a>
+        </li>
+        <li class="disabled pull-right">
+            <a>@RevenuePlanner.Helpers.Common.RevenueAudience</a>
+        </li>
+        @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
+        {
+            <li class="disabled pull-right">
+                <a>@RevenuePlanner.Helpers.Common.RevenueBusinessUnit</a>
+            </li>
+        }
+    </ul>
+    <table id="table_reports4" class="table table-striped">
+        <thead>
+            <tr>
+                <th class="width130 border-r main_table_header">BUSINESS UNIT</th>
+                <th class="width53 main_table_header">REVENUE</th>
+                <th class="width53 main_table_header"></th>
+                <th class="width53 main_table_header"></th>
+                <th class="width53 border-r main_table_header"></th>
+                <th class="width53 main_table_header">COST</th>
+                <th class="width53 main_table_header"></th>
+                <th class="width53 main_table_header"></th>
+                <th class="width53 border-r main_table_header"></th>
+                <th class="width53 main_table_header"></th>
+                <th class="width53 main_table_header"></th>
+                <th class="width53 main_table_header"></th>
+            </tr>
+            <tr>
+                @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
+                {
+                    <th class="border-r table_header">
+                        <span class="selectBox" id="ddlBusinessSelectBox">
+                            <select id="ddlBusinessUnitContribution" name="ddlBusinessUnitContribution" class="ddlStyleReport">
+                                <option value="0">All Business Units</option>
+                            </select>
+                        </span>
+                    </th>
+                }
+                <th class="table_header">Plan</th>
+                <th class="table_header">Actual</th>
+                <th class="table_header">Trend</th>
+                <th class="border-r table_header"></th>
+                <th class="table_header">Plan</th>
+                <th class="table_header">Actual</th>
+                <th class="table_header">Trend</th>
+                <th class="border-r table_header"></th>
+                <th class="table_header">Run Rate</th>
+                <th class="table_header">Pipeline Converage</th>
+                <th class="table_header">Rev vs. Spend</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!--tr elements are added dinamically with javascript-->
+        </tbody>
+    </table>
+
+</div>
+
+<div id="DivShareReport">
+</div>
+
+<script type="text/javascript">
+    var TotalMonth = 12;
+
+
+    //Start Revenue Summary
+    var reportTableInfo;
+    var reportTableInfo3;
+    var selectOption = "@ViewBag.SelectOption"
+    var totalMonthIncluded = 12;
+    var sumColProjectedRevenue = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    var sumColActualRevenue = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    $(document).ready(function () {
+
+        $('#ParentULRevenueSummary').find('li:nth-child(2)').removeClass('disabled').addClass('active');
+        var parentLabel = $('#ParentULRevenueSummary').find('li:nth-child(2)').children().text();
+        LoadChildData();
+        $("#ParentULRevenueSummary li").click(function () {
+            var selectParent = $(this).children().text();
+            if (selectParent != "Revenue Summary") {
+                RemoveTabClassParentULRevenueSummary();
+                $(this).removeClass("disabled");
+                $(this).addClass("active");
+                parentLabel = selectParent;
+                LoadChildData();
+            }
+        });
+        function LoadChildClick() {
+            $("#ChildULRevenueSummary li").click(function () {
+                RemoveTabClassChildULRevenueSummary();
+                $(this).removeClass("disabled");
+                $(this).addClass("active");
+                var selectParent = $(this).children().text();
+                var selectId = $(this).attr("id");
+                LoadData(selectId);
+            });
+
+            var Childid = $("#ChildULRevenueSummary").find('li:first').attr("id");
+            LoadData(Childid);
+        }
+
+        function RemoveTabClassParentULRevenueSummary() {
+            $('#ParentULRevenueSummary').children().each(function () {
+                if ($(this).hasClass('active')) {
+                    $(this).removeClass("active");
+                    $(this).addClass("disabled");
+                }
+            });
+        }
+
+        function RemoveTabClassChildULRevenueSummary() {
+            $('#ChildULRevenueSummary').children().each(function () {
+                $(this).removeClass("active");
+                $(this).removeClass("disabled");
+                $(this).addClass("disabled");
+            });
+        }
+
+        function LoadChildData() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Report/GetChildLabelData/")',
+                data: {
+                    ParentLabel: parentLabel,
+                    selectOption: selectOption
+                },
+                success: function (r) {
+                    //reportTableInfo = r;
+                    BindChildLabel(r);
+                    if (r.length > 0) {
+                        LoadChildClick();
+                    }
+                },
+                error: function () {
+                    myApp.hidePleaseWait();
+                }
+            });
+        }
+
+        function LoadData(Id) {
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Report/GetRevenueSummaryData/")',
+                data: {
+                    ParentLabel: parentLabel,
+                    id: Id.toString(),
+                    selectOption: selectOption,
+                },
+                success: function (r) {
+                    reportTableInfo = r;
+                    fillReportTable();
+                    LoadCheckBoxClick();
+                },
+                error: function () {
+                    myApp.hidePleaseWait();
+                }
+            });
+        }
+
+        function LoadCheckBoxClick() {
+            /*if checkbox is clicked add or remove sum on totals*/
+            $('#table_reports td input').click(function () {
+                if (!$(this).is(':checked')) {
+                    $(this).attr("checked", false);
+                    sumMQLTotals();
+                }
+                else {
+                    $(this).attr("checked", true);
+                    sumMQLTotals();
+                }
+            });
+        }
+
+    });
+
+    function BindChildLabel(childLabel) {
+        if (typeof childLabel != 'undefined') {
+            $("#ChildULRevenueSummary").empty();
+            if (childLabel.length) {
+                for (i in childLabel) {
+                    $("#ChildULRevenueSummary").append('<li class="disabled pull-left" id="' + childLabel[i].id + '"><a>' + childLabel[i].title + '</a></li>');
+                }
+                $("#ChildULRevenueSummary").find('li:first').removeClass("disabled");
+                $("#ChildULRevenueSummary").find('li:first').addClass("active");
+            }
+            else {
+                $("#ChildULRevenueSummary").append('No Records found for This Selection.');
+            }
+        }
+    }
+
+    //fill reports table with data from json
+    function fillReportTable() {
+        if (typeof reportTableInfo != 'undefined') {
+            if (reportTableInfo.length) {
+                $('#table_reports > tbody').empty();
+
+                for (var k = 0; k <= TotalMonth; k++) {
+                    sumColProjectedRevenue[k] = 0;
+                    sumColActualRevenue[k] = 0;
+                }
+                for (i in reportTableInfo) {
+                    addRowReport(i, reportTableInfo[i].id, reportTableInfo[i].title, reportTableInfo[i].monthList, reportTableInfo[i].trevenueProjected, reportTableInfo[i].tproject, reportTableInfo[i].tRevenueActual, reportTableInfo[i].tacticActual, 1);
+                    totalMonthIncluded = reportTableInfo[i].monthList.length;
+                }
+
+                var $tableReports1 = $('#table_reports > tbody');
+                var htmlOther = '';
+                //MQL
+                htmlOther += '<tr index="MQL"><td class="report-gray-row"></td>' +
+                '<td class="border-r report-gray-row">@Html.LabelForMQL("MQL")</td>';
+                for (var k = 1; k <= totalMonthIncluded ; k++) {
+                    htmlOther += '<td class="border-r report-gray-row"><div class="div-line">' + 0 + '</div><div class="div-below-line">' + 0 + '</div></td>';
+                }
+
+                htmlOther += '<td id="rowTotal" class="border-r report-gray-row light-blue-row border-shadow"><div id="totalMQLActual" class="div-line">' + 0 + '</div><div id="totalMQLProjected" class="div-below-line">' + 0 + '</div></td>' +
+                '<td class="report-gray-row light-blue-row"><div class="div-line"></div><div class="div-below-line"></div></td>' +
+                '</tr>';
+
+                //Actual to plan
+                var totalActualRevenue = 0;
+                var totalProjectedRevenue = 0;
+                htmlOther += '<tr index="Actual"><td class="report-gray-row"></td>' +
+               '<td class="border-r report-gray-row">Actual to Plan</td>';
+                for (var k = 1; k <= totalMonthIncluded ; k++) {
+                    htmlOther += '<td class="border-r report-gray-row"><div class="div-line">' + FormatNumber(sumColActualRevenue[k], false) + '</div><div class="div-below-line">' + FormatNumber(sumColProjectedRevenue[k], false) + '</div></td>';
+                    totalActualRevenue = totalActualRevenue + parseFloat(sumColActualRevenue[k]);
+                    totalProjectedRevenue = totalProjectedRevenue + parseFloat(sumColProjectedRevenue[k]);
+                }
+
+                htmlOther += '<td class="border-r report-gray-row light-blue-row border-shadow"><div class="div-line"></div><div class="div-below-line"></div></td>' +
+                '<td class="report-gray-row light-blue-row"><div class="div-line">' + FormatNumber(totalActualRevenue, false) + '</div><div class="div-below-line">' + FormatNumber(totalProjectedRevenue, false) + '</div></td>' +
+                '</tr>';
+                var totalRealizationR = totalActualRevenue - totalProjectedRevenue;
+                var classForRealization = "green-value";
+                if (totalRealizationR < 0) {
+                    classForRealization = "red-value";
+                    totalRealizationR = Math.abs(totalRealizationR);
+                }
+                //Realization
+                htmlOther += '<tr index="Realized"><td class="report-gray-row"></td>' +
+                '<td class="border-r report-gray-row">Realized Difference</td>';
+                for (var k = 1; k <= totalMonthIncluded ; k++) {
+                    htmlOther += '<td class="border-r report-gray-row"></td>';
+                }
+                //green - value,red-value
+                htmlOther += '<td  id="totalRealizationMQL" class="border-r report-gray-row green-value light-blue-row border-shadow">' + 0 + '</td>' +
+                '<td id="totalRealizationRevenue" class="report-gray-row ' + classForRealization + ' light-blue-row">' + FormatNumber(totalRealizationR, false) + '</td>' +
+                '</tr>';
+
+                $tableReports1.append(htmlOther);
+            } else {
+                $('#table_reports > tbody').empty();
+                $('#table_reports > tbody').append('<tr><td colspan="8" class="gray">No saved reports to display.</td></tr>');
+            }
+        }
+        /*change value on MQL totals*/
+        // sumMQLTotals();
+    }
+
+    function addRowReport(_index, _id, _title, _monthList, _trevenueProjected, _tProject, _tRevenueActual, _tActual, _type) {
+        var $tableReports = $('#table_reports > tbody');
+        if ($tableReports.find("tr td.gray").html() == "No saved reports to display.") {
+            $tableReports.find("tr").remove();
+        }
+        if (_type == 1) {
+            var htmlappend = '';
+            htmlappend = '<tr index="Campaign"><td><input type="checkbox" id="' + _id + '"></td>' +
+                                '<td class="border-r">' + _title + '</input></td>';
+            var arrtProjectP = [];
+            var arrtProjectV = [];
+            var arrtActualP = [];
+            var arrtActualV = [];
+            var arrtActualR = [];
+            var arrtProjectedRevenueP = [];
+            var arrtProjectedRevenueV = [];
+            var arrtActualRevenueP = [];
+            var arrtActualRevenueV = [];
+            var TotalProjectedRevenue = 0;
+            var TotalActualRevenue = 0;
+            var isProjected = false;
+            var isActual = false;
+            var isProjectedRevenue = false;
+            var isActualRevenue = false;
+            if (_tActual.length > 0) {
+                isActual = true;
+                for (a in _tActual) {
+                    arrtActualP.push(_tActual[a].key);
+                    arrtActualV.push(_tActual[a].ActualValue);
+                }
+            }
+            if (_tProject.length > 0) {
+                isProjected = true;
+                for (b in _tProject) {
+                    arrtProjectP.push(_tProject[b].PKey);
+                    arrtProjectV.push(_tProject[b].PSum);
+                }
+            }
+            if (_trevenueProjected.length > 0) {
+                isProjectedRevenue = true;
+                for (c in _trevenueProjected) {
+                    arrtProjectedRevenueP.push(_trevenueProjected[c].PKey);
+                    arrtProjectedRevenueV.push(_trevenueProjected[c].PSum);
+                }
+            }
+            if (_tRevenueActual.length > 0) {
+                isActualRevenue = true;
+                for (d in _tRevenueActual) {
+                    arrtActualRevenueP.push(_tRevenueActual[d].key);
+                    arrtActualRevenueV.push(_tRevenueActual[d].ActualValue);
+                }
+            }
+            var k = 1;
+            for (ml in _monthList) {
+
+                var period = _monthList[ml];
+                var projectedValue = "---";
+                var ActualValue = "---";
+
+                if (isProjected) {
+                    var indexp = $.inArray(period, arrtProjectP);
+                    if (indexp >= 0) {
+                        projectedValue = FormatINQMQL(arrtProjectV[indexp], false);
+                        ActualValue = 0;
+                    }
+                }
+                if (isActual) {
+                    var indexa = $.inArray(period, arrtActualP);
+                    if (indexa >= 0) {
+                        ActualValue = FormatINQMQL(arrtActualV[indexa], false);
+                    }
+                }
+                if (isProjectedRevenue) {
+                    var indexrp = $.inArray(period, arrtProjectedRevenueP);
+                    if (indexrp >= 0) {
+                        TotalProjectedRevenue = TotalProjectedRevenue + parseFloat(arrtProjectedRevenueV[indexrp]);
+                        sumColProjectedRevenue[k] = sumColProjectedRevenue[k] + parseFloat(arrtProjectedRevenueV[indexrp]);
+                    }
+                }
+                if (isActualRevenue) {
+                    var indexra = $.inArray(period, arrtActualRevenueP);
+                    if (indexra >= 0) {
+                        TotalActualRevenue = TotalActualRevenue + parseFloat(arrtActualRevenueV[indexra]);
+                        sumColActualRevenue[k] = sumColActualRevenue[k] + parseFloat(arrtActualRevenueV[indexra]);
+                    }
+                }
+                k++;
+                htmlappend += '<td class="border-r"><div class="div-line" id="diva' + _id + '">' + ActualValue + '</div><div class="div-below-line" id="divp' + _id + '">' + projectedValue + '</div></td>';
+            }
+
+            htmlappend += '<td id="rowTotal" class="border-r report-gray-row light-blue-row border-shadow"><div class="div-line" id="totalMQLA' + _id + '">' + 0 + '</div><div class="div-below-line" id="totalMQLP' + _id + '">' + 0 + '</div></td>' +
+                                '<td class="light-blue-row report-gray-row"><div class="div-line">' + FormatNumber(TotalActualRevenue, false) + '</div><div class="div-below-line">' + FormatNumber(TotalProjectedRevenue, false) + '</div></td>' +
+                                '</tr>';
+            $tableReports.append(htmlappend);
+        }
+    }
+
+    //sum MQL totals on rows
+    function sumMQLTotals() {
+        var blueMql1, blueMql2;
+        var sumCol = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        var sumCol2 = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        $('#table_reports tbody tr').each(function () {
+            var count = 0;
+            blueMql1 = 0;
+            blueMql2 = 0;
+            if ($(this).attr('index') == "MQL") {
+                count = 0;
+                $(this).find('td').each(function () {
+                    if (count <= totalMonthIncluded + 2) {
+                        var t1 = FormatINQMQL(sumCol[count], false);
+                        var t2 = FormatINQMQL(sumCol2[count], false);
+                        $(this).find('.div-line').html(t1);
+                        $(this).find('.div-below-line').html(t2);
+                        count = count + 1;
+                    }
+                });
+                var totalRMQL = parseFloat($("#totalMQLActual").text()) - parseFloat($("#totalMQLProjected").text());
+                $("#totalRealizationMQL").text(FormatINQMQL(totalRMQL), false);
+                if (totalRMQL < 0) {
+                    if ($("#totalRealizationMQL").hasClass('green-value')) {
+                        $("#totalRealizationMQL").addClass('red-value');
+                        $("#totalRealizationMQL").removeClass('green-value');
+                    }
+                }
+                else {
+                    if ($("#totalRealizationMQL").hasClass('red-value')) {
+                        $("#totalRealizationMQL").addClass('green-value');
+                        $("#totalRealizationMQL").removeClass('red-value');
+                    }
+                }
+            }
+            else {
+                $(this).find('#rowTotal .div-line').html("0");
+                $(this).find('#rowTotal .div-below-line').html("0");
+            }
+            /*if is checked sum on rows*/
+            if ($(this).find('input').attr('checked')) {
+                var cid = $(this).find('input').attr('id');
+                $(this).find('td').each(function (i) {
+                    if (count <= totalMonthIncluded + 1) {
+                        var text1, text2;
+                        var aid = "#diva" + cid;
+                        var pid = "#divp" + cid;
+                        text1 = $(this).find(aid).text();
+                        text2 = $(this).find(pid).text();
+                        if (text1 == "---" || text1 == "undefined" || text1 == "") {
+                            blueMql1 = blueMql1 + 0;
+                            sumCol[i] = sumCol[i] + 0;
+                        }
+                        else {
+                            blueMql1 = blueMql1 + parseFloat(ReplaceCC((text1)));
+                            sumCol[i] = sumCol[i] + parseFloat(ReplaceCC((text1)));
+                        }
+                        if (text2 == "---" || text2 == "undefined" || text2 == "") {
+                            blueMql2 = blueMql2 + 0;
+                            sumCol2[i] = sumCol2[i] + 0;
+                        }
+                        else {
+                            blueMql2 = blueMql2 + parseFloat(ReplaceCC((text2)));
+                            sumCol2[i] = sumCol2[i] + parseFloat(ReplaceCC((text2)));
+                        }
+                        count = count + 1;
+                    }
+                    else {
+                        $(this).find('.div-line').html(FormatINQMQL(blueMql1), false);
+                        $(this).find('.div-below-line').html(FormatINQMQL(blueMql2), false);
+                        sumCol[totalMonthIncluded + 2] = sumCol[totalMonthIncluded + 2] + blueMql1;
+                        sumCol2[totalMonthIncluded + 2] = sumCol2[totalMonthIncluded + 2] + blueMql2;
+                        return false;
+                    }
+                });
+            }//if
+
+        });
+    }
+    //End Revenue Summary
+
+    /// Start Script For Revenue Realization
+
+    $(document).ready(function () {
+        var BusinessUnitId = $('#ddlBusinessUnit').val();
+        var campaignId = $('#ddlCampaign').val();
+        var programId = $('#ddlProgram').val();
+        var sumColTotalRevenue = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        fillCampaignDropdown();
+        $('#ddlBusinessUnit').change(function () {
+            $('#ddlCampaign').empty();
+            $("#ddlProgram").empty();
+            $('#ddlTactic').empty();
+            fillCampaignDropdown();
+        });
+        $('#ddlCampaign').change(function () {
+            $("#ddlProgram").empty();
+            $('#ddlTactic').empty();
+            fillProgramDropdown();
+        });
+        $('#ddlProgram').change(function () {
+            $('#ddlTactic').empty();
+            fillTacticDropdown();
+        });
+        $('#ddlTactic').change(function () {
+            LoadDataRevenueRealization();
+        });
+        function fillCampaignDropdown() {
+            BusinessUnitId = $('#ddlBusinessUnit').val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Report/LoadCampaignDropDown/")',
+                data: {
+                    id: BusinessUnitId,
+                    selectOption: selectOption
+                },
+                success: function (data) {
+                    $("#ddlCampaign").empty();
+                    $("#ddlCampaign").append("<option value='0'>All Campaigns</option>");
+                    $.each(data, function (index, optionData) {
+                        $("#ddlCampaign").append("<option value='" + optionData.PlanCampaignId + "'>" + optionData.Title + "</option>");
+                    });
+                    fillProgramDropdown();
+                },
+                error: function () {
+                    $("#ddlCampaign").empty();
+                    $("#ddlCampaign").append("<option value='0'>All Campaigns</option>");
+                    fillProgramDropdown();
+                    myApp.hidePleaseWait();
+                }
+            });
+
+        }
+
+        function fillProgramDropdown() {
+            var id;
+            var Type = '';
+            campaignId = $('#ddlCampaign').val();
+            if (campaignId > 0) {
+                Type = '';
+                id = campaignId.toString();
+            }
+            else {
+                Type = "@RevenuePlanner.Helpers.Common.RevenueBusinessUnit"
+                id = BusinessUnitId.toString();
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Report/LoadProgramDropDown/")',
+                data: {
+                    id: id,
+                    type: Type,
+                    selectOption: selectOption
+                },
+                success: function (data) {
+                    $("#ddlProgram").empty();
+                    $("#ddlProgram").append("<option value='0'>All Programs</option>");
+                    $.each(data, function (index, optionData) {
+                        $("#ddlProgram").append("<option value='" + optionData.PlanProgramId + "'>" + optionData.Title + "</option>");
+                    });
+                    fillTacticDropdown();
+                },
+                error: function () {
+                    $("#ddlProgram").empty();
+                    $("#ddlProgram").append("<option value='0'>All Programs</option>");
+                    fillTacticDropdown();
+                    myApp.hidePleaseWait();
+                }
+            });
+
+        }
+        function fillTacticDropdown() {
+            var id;
+            var Type = '';
+            programId = $('#ddlProgram').val();
+            if (programId > 0) {
+                Type = '';
+                id = programId.toString();
+            }
+            else if (campaignId > 0) {
+                Type = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
+                id = campaignId.toString();
+            }
+            else {
+                Type = "@RevenuePlanner.Helpers.Common.RevenueBusinessUnit"
+                id = BusinessUnitId.toString();
+            }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/LoadTacticDropDown/")',
+            data: {
+                id: id,
+                type: Type,
+                selectOption: selectOption
+            },
+            success: function (data) {
+                $("#ddlTactic").empty();
+                $("#ddlTactic").append("<option value='0'>All Tactics</option>");
+                $.each(data, function (index, optionData) {
+                    $("#ddlTactic").append("<option value='" + optionData.PlanTacticId + "'>" + optionData.Title + "</option>");
+                });
+                LoadDataRevenueRealization();
+                myApp.hidePleaseWait();
+            },
+            error: function () {
+                $("#ddlTactic").empty();
+                $("#ddlTactic").append("<option value='0'>All Tactics</option>");
+                LoadDataRevenueRealization();
+                myApp.hidePleaseWait();
+            }
+        });
+
+    }
+        function LoadDataRevenueRealization() {
+            $(".selectBox select").selectbox('detach');
+            var id;
+            var Type = '';
+            var tacticId = $("#ddlTactic").val();
+            if (tacticId > 0) {
+                id = tacticId;
+                Type = "@RevenuePlanner.Helpers.Common.RevenueTactic"
+            }
+            else if (programId > 0) {
+                Type = "@RevenuePlanner.Helpers.Common.RevenueProgram"
+                id = programId.toString();
+            }
+            else if (campaignId > 0) {
+                Type = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
+            id = campaignId.toString();
+        }
+        else {
+            Type = "@RevenuePlanner.Helpers.Common.RevenueBusinessUnit"
+            id = BusinessUnitId.toString();
+        }
+
+    var bid = BusinessUnitId.toString();
+    $.ajax({
+        type: 'POST',
+        url: '@Url.Content("~/Report/LoadRevenueRealization/")',
+        data: {
+            id: id,
+            businessUnitId: bid,
+            type: Type,
+            selectOption: selectOption
+        },
+        success: function (r) {
+            reportTableInfo3 = r;
+            fillReportTable3();
+            $(".selectBox select").selectbox('attach');
+        },
+        error: function () {
+            $(".selectBox select").selectbox('attach');
+            myApp.hidePleaseWait();
+        }
+    });
+
+}
+
+        //fill reports table with data from json
+        function fillReportTable3() {
+            if (typeof reportTableInfo3 != 'undefined') {
+                if (reportTableInfo3.length) {
+                    $('#table_reports3 > tbody').empty();
+                    for (var k = 0; k <= TotalMonth; k++) {
+                        sumColTotalRevenue[k] = 0;
+                    }
+                    for (j in reportTableInfo3) {
+                        if (typeof reportTableInfo3[j] != 'undefined') {
+                            addRowReport3("@Html.LabelForINQ("INQ") Goal", reportTableInfo3[j].INQGoal, 1, reportTableInfo3[j].monthList);
+                            addRowReport3("@Html.LabelForINQ("INQ") Actual", reportTableInfo3[j].INQActual, 1, reportTableInfo3[j].monthList);
+                            addRowReport3("@Html.LabelForMQL("MQL") Goal", reportTableInfo3[j].MQLGoal, 1, reportTableInfo3[j].monthList);
+                            addRowReport3("@Html.LabelForMQL("MQL") Actual", reportTableInfo3[j].MQLActual, 2, reportTableInfo3[j].monthList);
+                            addRowReport3("Revenue Received", reportTableInfo3[j].RevenueGoal, 1, reportTableInfo3[j].monthList);
+                            addRowReport3("Total Revenue", [], 3, reportTableInfo3[j].monthList);
+                        }
+                    }
+                } else {
+                    $('#table_reports3 > tbody').empty();
+                    $('#table_reports3 > tbody').append('<tr><td colspan="8" class="gray">No saved reports to display.</td></tr>');
+                }
+            }
+        }
+
+        //add row in reports table
+        function addRowReport3(_title, _Goal, _type, _monthList) {
+
+            var $tableReports3 = $('#table_reports3 > tbody');
+
+            if ($tableReports3.find("tr td.gray").html() == "No saved reports to display.") {
+                $tableReports3.find("tr").remove();
+            }
+            var arrtProjectP = [];
+            var arrtProjectV = [];
+            var isProjected = false;
+            if (_Goal.length > 0) {
+                isProjected = true;
+                for (a in _Goal) {
+                    arrtProjectP.push(_Goal[a].PKey);
+                    arrtProjectV.push(_Goal[a].PSum);
+                }
+            }
+            if (_type == 1) {
+                var htmlappend = '';
+                htmlappend = '<tr>' +
+                             '<td>' + _title + '</td>';
+                var k = 1;
+                for (mrl in _monthList) {
+                    var period = _monthList[mrl];
+                    var Value = "-";
+                    if (isProjected) {
+                        var indexp = $.inArray(period, arrtProjectP);
+                        if (indexp >= 0) {
+                            Value = arrtProjectV[indexp];
+                        }
+                    }
+                    if (_title == 'Revenue Received') {
+                        var sumvalue = 0;
+                        if (Value != "-") {
+                            sumvalue = parseFloat(Value);
+                            Value = FormatNumber(Value, false);
+                        }
+                        if (k == 1) {
+                            sumColTotalRevenue[k] = sumvalue;
+                        }
+                        else {
+                            sumColTotalRevenue[k] = sumColTotalRevenue[k - 1] + sumvalue;
+                        }
+                    }
+                    else {
+                        if (Value != "-") {
+                            Value = FormatINQMQL(Value, false);
+                        }
+                    }
+                    htmlappend += '<td>' + Value + '</td>';
+                    k++;
+                }
+                htmlappend += '</tr>';
+                $tableReports3.append(htmlappend);
+            }
+            if (_type == 2) {
+                var htmlappend = '';
+                htmlappend = '<tr>' +
+                             '<td class="border-bottom-row">' + _title + '</td>';
+                var k = 1;
+                for (mrl in _monthList) {
+                    var period = _monthList[mrl];
+                    var Value = "-";
+                    if (isProjected) {
+                        var indexp = $.inArray(period, arrtProjectP);
+                        if (indexp >= 0) {
+                            Value = FormatINQMQL(arrtProjectV[indexp], false);
+                        }
+                    }
+                    htmlappend += '<td class="border-bottom-row">' + Value + '</td>';
+                    k++;
+                }
+                htmlappend += '</tr>';
+                $tableReports3.append(htmlappend);
+            }
+            if (_type == 3) {
+                //sumColTotalRevenue
+                var htmlappend = '';
+                htmlappend = '<tr>' +
+                             '<td class="total-row">' + _title + '</td>';
+                var k = 1;
+                for (mrl in _monthList) {
+                    var period = _monthList[mrl];
+                    htmlappend += '<td class="total-row">' + FormatNumber(sumColTotalRevenue[k], false) + '</td>';
+                    k++;
+                }
+                htmlappend += '</tr>';
+                $tableReports3.append(htmlappend);
+            }
+        }
+    });
+    // End Revenue Realization
+
+    // Start of Revenue Contribution
+    var reportTableInfo4;
+    var planRevenueTotal = 0;
+    var actualRevenueTotal = 0;
+    var trendRevenueTotal = 0;
+    var planCostTotal = 0;
+    var actualCostTotal = 0;
+    var trendCostTotal = 0;
+    var runRateTotal = 0;
+    var pipelineTotal = 0;
+    var totalRevSpendRevenue = 0;
+    var totalRevSpendCost = 0;
+    function BindSelectBoxes() {
+        $(".selectBox select").selectbox("attach");
+    }
+    $(document).ready(function () {
+        $("#DivShareReport").hide();
+        BindSelectBoxes();
+        $("#BtnShareReport").click(function () {
+            ShowShareReport();
+        });
+
+        function ShowShareReport() {
+            var url = '@Url.Content("~/Report/ShowShareReport/")';
+            $("#DivShareReport").empty()
+                                       .load(url.concat('?reportType=') + '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()')
+                                           .show();
+    }
+
+        var parentLabelContribution = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
+        $('#ddlBusinessUnitContribution').change(function () {
+            LoadRevenueContributionData();
+        });
+        $("#ParentULRevenueContribution li").click(function () {
+            var selectParent = $(this).children().text();
+            if (selectParent != "Revenue Contribution") {
+                RemoveTabClassParentULRevenueContribution();
+                $(this).removeClass("disabled");
+                $(this).addClass("active");
+                parentLabelContribution = selectParent;
+                if (parentLabelContribution == "@RevenuePlanner.Helpers.Common.RevenueBusinessUnit") {
+                $("#ddlBusinessUnitContribution").css("display", "none");
+                $("#ddlBusinessUnitContribution").next().hide();
+            }
+            else {
+                $("#ddlBusinessUnitContribution").css("display", "block");
+                $("#ddlBusinessUnitContribution").next().show();
+            }
+            addHeaderPart();
+        }
+    });
+        function RemoveTabClassParentULRevenueContribution() {
+            $("#ParentULRevenueContribution").children().each(function () {
+                if ($(this).hasClass('active')) {
+                    $(this).removeClass("active");
+                    $(this).addClass("disabled");
+                }
+            });
+        }
+        addHeaderPart();
+        function LoadRevenueContributionData() {
+            var buid = 0;
+            // if (parentLabelContribution != "@RevenuePlanner.Helpers.Common.RevenueBusinessUnit") {
+        buid = $("#ddlBusinessUnitContribution").val();
+        // }
+        var isBusiness = true;
+        if (buid == 0) {
+            isBusiness = false;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/LoadRevenueContribution/")',
+            data: {
+                parentlabel: parentLabelContribution,
+                businessUnitId: buid,
+                isBusinessUnit: isBusiness,
+                selectOption: selectOption
+            },
+            success: function (r) {
+                reportTableInfo4 = r;
+                fillReportTable4();
+            },
+            error: function () {
+                myApp.hidePleaseWait();
+            }
+        });
+    }
+        function addHeaderPart() {
+            AddDropdown();
+        }
+        function AddDropdown() {
+            $(".selectBox select").selectbox("detach");
+            var plabel = "@RevenuePlanner.Helpers.Common.RevenueBusinessUnit"
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/GetChildLabelData/")',
+            data: { ParentLabel: plabel },
+            success: function (data) {
+                $("#ddlBusinessUnitContribution").empty();
+                $("#ddlBusinessUnitContribution").append("<option value='0'>All Business Units</option>");
+                $.each(data, function (index, optionData) {
+                    $("#ddlBusinessUnitContribution").append("<option value='" + optionData.id + "'>" + optionData.title + "</option>");
+                });
+                $(".selectBox select").selectbox("attach");
+                LoadRevenueContributionData();
+            },
+            error: function () {
+                $("#ddlBusinessUnitContribution").append("<option value='0'>All Business Units</option>");
+                $(".selectBox select").selectbox("attach");
+                myApp.hidePleaseWait();
+            }
+        });
+    }
+    });
+//fill reports table with data from json
+function fillReportTable4() {
+    $('#table_reports4 > tbody').empty();
+    planRevenueTotal = 0;
+    actualRevenueTotal = 0;
+    trendRevenueTotal = 0;
+    planCostTotal = 0;
+    actualCostTotal = 0;
+    trendCostTotal = 0;
+    runRateTotal = 0;
+    pipelineTotal = 0;
+    totalRevSpendRevenue = 0;
+    totalRevSpendCost = 0;
+    if (typeof reportTableInfo4 != 'undefined') {
+        if (reportTableInfo4.length) {
+            for (i in reportTableInfo4) {
+                addRowReport4(reportTableInfo4[i].Title, reportTableInfo4[i].PlanRevenue, reportTableInfo4[i].ActualRevenue, reportTableInfo4[i].TrendRevenue, reportTableInfo4[i].PlanCost, reportTableInfo4[i].ActualCost, reportTableInfo4[i].TrendCost, reportTableInfo4[i].RunRate, reportTableInfo4[i].PipelineCoverage, reportTableInfo4[i].RevSpend, reportTableInfo4[i].RevenueTotal, reportTableInfo4[i].CostTotal);
+            }
+            addLastRow();
+        } else {
+            $('#table_reports4 > tbody').append('<tr><td colspan="8" class="gray">No saved reports to display.</td></tr>');
+        }
+    }
+}
+function addLastRow() {
+    var htmlLastRow = ''
+    htmlLastRow += '<tr>' +
+                       '<td class="total-row border-r">Total</td>' +
+                       '<td class="total-row">' + FormatNumber(planRevenueTotal, false) + '</td>' +
+                       '<td class="total-row">' + FormatNumber(actualRevenueTotal, false) + '</td>' +
+                       '<td class="total-row">' + FormatNumber(trendRevenueTotal, false) + '</td>';
+    var perTotalRevenue = 0;
+    if (planRevenueTotal != 0) {
+        perTotalRevenue = ((parseFloat(actualRevenueTotal) - parseFloat(planRevenueTotal)) / parseFloat(planRevenueTotal)) * 100;
+    }
+    perTotalRevenue = (Math.round(perTotalRevenue * 100) / 100)
+    if (perTotalRevenue < 0) {
+        htmlLastRow += '<td class="total-row border-r red-value"><span class="red-arrow-down-icon"></span><span>' + perTotalRevenue.toString().replace('-', '') + '%</span></td>';
+    }
+    else {
+        htmlLastRow += '<td class="total-row border-r green-value"><span class="green-arrow-up-icon"></span><span>' + perTotalRevenue + '%</span></td>';
+    }
+    //'<td class="total-row border-r green-value"><span class="green-arrow-up-icon"></span><span class="pull-left">0</span></td>' +
+    htmlLastRow += '<td class="total-row">' + FormatNumber(planCostTotal, false) + '</td>' +
+       '<td class="total-row">' + FormatNumber(actualCostTotal, false) + '</td>' +
+       '<td class="total-row">' + FormatNumber(trendCostTotal, false) + '</td>';
+
+    var perTotalCost = 0;
+    if (planCostTotal != 0) {
+        perTotalCost = ((parseFloat(actualCostTotal) - parseFloat(planCostTotal)) / parseFloat(planCostTotal)) * 100;
+    }
+    perTotalCost = (Math.round(perTotalCost * 100) / 100)
+    if (perTotalCost < 0) {
+        htmlLastRow += '<td class="total-row border-r red-value"><span class="red-arrow-down-icon"></span><span>' + FormatNumber(Math.abs(perTotalCost), true) + '</span></td>';
+    }
+    else {
+        htmlLastRow += '<td class="total-row border-r green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(perTotalCost, true) + '</span></td>';
+    }
+
+    htmlLastRow += '<td class="total-row">' + FormatNumber(runRateTotal, false) + '</td>' +
+        '<td class="total-row">' + FormatNumber(pipelineTotal, false) + '</td>';
+
+    var perRevSpend = 0;
+    if (totalRevSpendCost != 0) {
+        perRevSpend = ((parseFloat(totalRevSpendRevenue) - parseFloat(totalRevSpendCost)) / parseFloat(totalRevSpendCost));
+    }
+    perRevSpend = (Math.round(perRevSpend * 100) / 100)
+    if (perRevSpend < 0) {
+        htmlLastRow += '<td class="total-row border-r red-value"><span class="red-arrow-down-icon"></span><span>' + Math.abs(perRevSpend) + '</span></td>';
+    }
+    else {
+        htmlLastRow += '<td class="total-row border-r green-value"><span class="green-arrow-up-icon"></span><span>' + perRevSpend + '</span></td>';
+    }
+    htmlLastRow += '</tr>';
+    $('#table_reports4 > tbody').append(htmlLastRow);
+}
+
+//add row in reports table
+function addRowReport4(_title, _PlanRevenue, _ActualRevenue, _TrendRevenue, _PlanCost, _ActualCost, _TrendCost, _RunRate, _PipelineCoverage, _RevSpend, _RevenueTotal, _CostTotal) {
+    var $tableReports4 = $('#table_reports4 > tbody');
+    if ($tableReports4.find("tr td.gray").html() == "No saved reports to display.") {
+        $tableReports4.find("tr").remove();
+    }
+    planRevenueTotal += _PlanRevenue;
+    actualRevenueTotal += _ActualRevenue;
+    trendRevenueTotal += _TrendRevenue;
+    planCostTotal += _PlanCost;
+    actualCostTotal += _ActualCost;
+    trendCostTotal += _TrendCost;
+    runRateTotal += _RunRate;
+    pipelineTotal += _PipelineCoverage;
+    pipelineTotal = (Math.round(pipelineTotal * 100) / 100);
+    totalRevSpendRevenue += _RevenueTotal;
+    totalRevSpendCost += _CostTotal;
+    var htmlCon = '';
+    htmlCon += '<tr>' +
+                        '<td class="border-r">' + _title + '</td>' +
+                        '<td>' + FormatNumber(_PlanRevenue, false) + '</td>' +
+                        '<td>' + FormatNumber(_ActualRevenue, false) + '</td>' +
+                        '<td>' + FormatNumber(_TrendRevenue, false) + '</td>';
+    var perRevenue = 0;
+    if (_PlanRevenue != 0) {
+        perRevenue = ((parseFloat(_ActualRevenue) - parseFloat(_PlanRevenue)) / parseFloat(_PlanRevenue)) * 100;
+    }
+    perRevenue = (Math.round(perRevenue * 100) / 100)
+    if (perRevenue < 0) {
+        htmlCon += '<td class="border-r red-value"><span class="red-arrow-down-icon"></span><span>' + FormatNumber(Math.abs(perRevenue), true) + '</span></td>';
+    }
+    else {
+        htmlCon += '<td class="border-r green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(perRevenue, true) + '</span></td>';
+    }
+    htmlCon += '<td>' + FormatNumber(_PlanCost, false) + '</td>' +
+                            '<td>' + FormatNumber(_ActualCost, false) + '</td>' +
+                            '<td>' + FormatNumber(_TrendCost, false) + '</td>';
+    var perCost = 0;
+    if (_PlanCost != 0) {
+        perCost = ((parseFloat(_ActualCost) - parseFloat(_PlanCost)) / parseFloat(_PlanCost)) * 100;
+    }
+    perCost = (Math.round(perCost * 100) / 100)
+    if (perCost < 0) {
+        htmlCon += '<td class="border-r red-value"><span class="red-arrow-down-icon"></span><span>' + FormatNumber(Math.abs(perCost), true) + '</span></td>';
+    }
+    else {
+        htmlCon += '<td class="border-r green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(perCost, true) + '</span></td>';
+    }
+
+    htmlCon += '<td>' + FormatNumber(_RunRate, false) + '</td>' +
+              '<td>' + FormatNumber(_PipelineCoverage, false) + '</td>';
+    if (_RevSpend < 0) {
+        htmlCon += '<td class="border-r red-value"><span class="red-arrow-down-icon"></span><span>' + numberWithCommas(Math.round(Math.abs(_RevSpend) * 100) / 100) + '</span></td>';
+    }
+    else {
+        htmlCon += '<td class="border-r green-value"><span class="green-arrow-up-icon"></span><span>' + numberWithCommas(Math.round(_RevSpend * 100) / 100) + '</span></td>';
+    }
+    htmlCon += '</tr>';
+    $tableReports4.append(htmlCon);
+}
+
+// End of Revenue Contribution
+
+// Start Revenue To Plan
+window.onload = function () {
+    var reportTableInfo2; var dataset; var parentLabelRevenueToPLan = "@RevenuePlanner.Helpers.Common.RevenueOrganization";
+    var TempreportTableInfo2; var Tempdataset;
+    var tempreportDataPrevious; var tempDataSetPrevious;
+
+    LoadChildDataRevenueToPlan();
+
+    function LoadChildDataRevenueToPlan() {
+        if (parentLabelRevenueToPLan != "@RevenuePlanner.Helpers.Common.RevenueOrganization") {
+                    $('#ChildULRevenueToPlan').show();
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/Report/GetChildLabelData/")',
+                    data: {
+                        ParentLabel: parentLabelRevenueToPLan
+                    },
+                    success: function (r) {
+                        BindChildLabelRevenueToPlan(r);
+                        LoadChildClickRevenueToPlan();
+                    },
+                    error: function () {
+                        myApp.hidePleaseWait();
+                    }
+                });
+            } else {
+                $('#ChildULRevenueToPlan').hide();
+                LoadChildClickRevenueToPlan();
+            }
+        }
+
+    $("#ParentULRevenueToPlan li").click(function () {
+        var selectParent = $(this).children().text();
+        if (selectParent != "Revenue to Plan") {
+            RemoveTabClassParentULRevenueToPlan();
+            $(this).removeClass("disabled");
+            $(this).addClass("active");
+            parentLabelRevenueToPLan = selectParent;
+            LoadChildDataRevenueToPlan();
+        }
+    });
+
+    function LoadChildClickRevenueToPlan() {
+        $("#ChildULRevenueToPlan li").click(function () {
+            RemoveTabClassChildULRevenueToPlan();
+            $(this).removeClass("disabled");
+            $(this).addClass("active");
+            var selectParent = $(this).children().text();
+            var selectId = $(this).attr("id");
+            FillRevenueToPlan(selectId);
+        });
+
+        var Childid = 0;
+        if (parentLabelRevenueToPLan != "@RevenuePlanner.Helpers.Common.RevenueOrganization") {
+                    Childid = $("#ChildULRevenueToPlan").find('li:first').attr("id");
+                }
+                FillRevenueToPlan(Childid);
+            }
+
+    function RemoveTabClassParentULRevenueToPlan() {
+        $('#ParentULRevenueToPlan').children().each(function () {
+            if ($(this).hasClass('active')) {
+                $(this).removeClass("active");
+                $(this).addClass("disabled");
+            }
+        });
+    }
+
+    function RemoveTabClassChildULRevenueToPlan() {
+        $('#ChildULRevenueToPlan').children().each(function () {
+            $(this).removeClass("active");
+            $(this).removeClass("disabled");
+            $(this).addClass("disabled");
+        });
+    }
+
+    function BindChildLabelRevenueToPlan(childLabel) {
+        if (typeof childLabel != 'undefined') {
+            $("#ChildULRevenueToPlan").empty();
+            if (childLabel.length) {
+                for (i in childLabel) {
+                    $("#ChildULRevenueToPlan").append('<li class="disabled pull-left" id="' + childLabel[i].id + '"><a>' + childLabel[i].title + '</a></li>');
+                }
+                $("#ChildULRevenueToPlan").find('li:first').removeClass("disabled");
+                $("#ChildULRevenueToPlan").find('li:first').addClass("active");
+            }
+            else {
+                $("#ChildULRevenueToPlan").append('No Records found for This Selection.');
+            }
+        }
+    }
+
+    function FillRevenueToPlan(Id) {
+        var d = new Date();
+        var n = d.getMonth();
+        var isreturn = false;
+        var quarter = ((n - 1) / 3) + 1;
+        if (selectOption == "@RevenuePlanner.Helpers.Enums.UpcomingActivities.thisquarter.ToString()") {
+                    if (n <= 2) {
+                        var Option = "@RevenuePlanner.Helpers.Enums.UpcomingActivities.previousyear.ToString()";
+                    $.ajax(
+                {
+                    type: "GET",
+                    cache: false,
+                    url: '@Url.Action("GetRevenueToPlan", "Report")',
+                    data: {
+                        ParentLabel: parentLabelRevenueToPLan,
+                        id: Id,
+                        selectOption: Option,
+                        originalOption: selectOption
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        TempreportTableInfo2 = {
+                            data: data
+                        };
+
+                        tempDataSetPrevious = data.chartData;
+                        if (typeof TempreportTableInfo2 != 'undefined') {
+                            if (TempreportTableInfo2.data != 'undefined' && TempreportTableInfo2.data.length != 0) {
+                                for (var k = 0; k <= 8; k++) {
+                                    delete TempreportTableInfo2.data.projectedRevenue[k];
+                                    delete TempreportTableInfo2.data.actualRevenue[k];
+                                    delete TempreportTableInfo2.data.difference[k];
+                                    delete TempreportTableInfo2.data.contribution[k];
+                                    delete TempreportTableInfo2.data.revenueTrend[k];
+                                    delete TempreportTableInfo2.data.totalRevenue[k];
+                                    delete tempDataSetPrevious[k];
+                                }
+                            }
+                        }
+                        tempreportDataPrevious = TempreportTableInfo2;
+
+                        TempreportTableInfo2 = [];
+                        Option = "@RevenuePlanner.Helpers.Enums.UpcomingActivities.thisyear.ToString()";
+                            $.ajax(
+                        {
+                            type: "GET",
+                            cache: false,
+                            url: '@Url.Action("GetRevenueToPlan", "Report")',
+                        data: {
+                            ParentLabel: parentLabelRevenueToPLan,
+                            id: Id,
+                            selectOption: Option,
+                            originalOption: selectOption
+                        },
+                        dataType: "json",
+                        success: function (data) {
+                            TempreportTableInfo2 = {
+                                data: data
+                            };
+
+                            Tempdataset = data.chartData;
+                            if (typeof TempreportTableInfo2 != 'undefined') {
+                                if (TempreportTableInfo2.data != 'undefined' && TempreportTableInfo2.data.length != 0) {
+                                    for (var k = 3; k <= 11; k++) {
+                                        delete TempreportTableInfo2.data.projectedRevenue[k];
+                                        delete TempreportTableInfo2.data.actualRevenue[k];
+                                        delete TempreportTableInfo2.data.difference[k];
+                                        delete TempreportTableInfo2.data.contribution[k];
+                                        delete TempreportTableInfo2.data.revenueTrend[k];
+                                        delete TempreportTableInfo2.data.totalRevenue[k];
+                                        delete Tempdataset[k];
+                                    }
+                                }
+                                else {
+                                    //// Modified By: Maninder Singh Wadhva Bug 298:Revenue to plan graph is incorrect.
+                                    TempreportTableInfo2 = {
+                                        data: {
+                                            "projectedRevenue": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
+                                            "actualRevenue": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
+                                            "difference": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
+                                            "contribution": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
+                                            "revenueTrend": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
+                                            "totalRevenue": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
+                                            "chartData": [{ "Month": "Jan", "Actual": 0, "Projected": 0, "Contribution": 0, "ColorActual": null, "ColorProjected": null, "ColorContibution": null },
+                                                { "Month": "Feb", "Actual": 0, "Projected": 0, "Contribution": 0, "ColorActual": null, "ColorProjected": null, "ColorContibution": null },
+                                                { "Month": "Mar", "Actual": 0, "Projected": 0, "Contribution": 0, "ColorActual": null, "ColorProjected": null, "ColorContibution": null }, ]
+                                        }
+                                    };
+
+                                    Tempdataset = TempreportTableInfo2.data.chartData;
+                                }
+                            }
+                            if (typeof tempreportDataPrevious.data.length > 0) {
+                                for (var k = 0 ; k <= 2; k++) {
+                                    tempreportDataPrevious.data.projectedRevenue.push(TempreportTableInfo2.data.projectedRevenue[k]);
+                                    tempreportDataPrevious.data.actualRevenue.push(TempreportTableInfo2.data.actualRevenue[k]);
+                                    tempreportDataPrevious.data.difference.push(TempreportTableInfo2.data.difference[k]);
+                                    tempreportDataPrevious.data.contribution.push(TempreportTableInfo2.data.contribution[k]);
+                                    tempreportDataPrevious.data.revenueTrend.push(TempreportTableInfo2.data.revenueTrend[k]);
+                                    tempreportDataPrevious.data.totalRevenue.push(TempreportTableInfo2.data.totalRevenue[k]);
+                                    tempDataSetPrevious.push(Tempdataset[k]);
+                                }
+                                reportTableInfo2 = tempreportDataPrevious;
+
+                            }
+                            else {
+                                //// Modified By: Maninder Singh Wadhva Bug 298:Revenue to plan graph is incorrect.
+                                reportTableInfo2 = {
+                                    data: {
+                                        "projectedRevenue": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
+                                        "actualRevenue": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
+                                        "difference": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
+                                        "contribution": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
+                                        "revenueTrend": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
+                                        "totalRevenue": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
+                                        "chartData": [{ "Month": "Oct", "Actual": 0, "Projected": 0, "Contribution": 0, "ColorActual": null, "ColorProjected": null, "ColorContibution": null },
+                                            { "Month": "Nov", "Actual": 0, "Projected": 0, "Contribution": 0, "ColorActual": null, "ColorProjected": null, "ColorContibution": null },
+                                            { "Month": "Dec", "Actual": 0, "Projected": 0, "Contribution": 0, "ColorActual": null, "ColorProjected": null, "ColorContibution": null }, ]
+                                    }
+                                };
+                                tempDataSetPrevious = reportTableInfo2.data.chartData;
+                                if (typeof TempreportTableInfo2 != 'undefined') {
+                                    if (TempreportTableInfo2.data != 'undefined' && TempreportTableInfo2.data.length != 0) {
+                                        for (var k = 0 ; k <= 2; k++) {
+                                            reportTableInfo2.data.projectedRevenue.push(TempreportTableInfo2.data.projectedRevenue[k]);
+                                            reportTableInfo2.data.actualRevenue.push(TempreportTableInfo2.data.actualRevenue[k]);
+                                            reportTableInfo2.data.difference.push(TempreportTableInfo2.data.difference[k]);
+                                            reportTableInfo2.data.contribution.push(TempreportTableInfo2.data.contribution[k]);
+                                            reportTableInfo2.data.revenueTrend.push(TempreportTableInfo2.data.revenueTrend[k]);
+                                            reportTableInfo2.data.totalRevenue.push(TempreportTableInfo2.data.totalRevenue[k]);
+                                            tempDataSetPrevious.push(Tempdataset[k]);
+                                        }
+                                    }
+                                }
+                            }
+
+                            fillReportTable2();
+                            dataset = [];
+                            for (member in tempDataSetPrevious) {
+                                if (tempDataSetPrevious[member] != null) {
+                                    dataset.push(tempDataSetPrevious[member]);
+                                }
+                            }
+                            FillChartRevenueToPlan();
+                        },
+                        error: function () {
+                            myApp.hidePleaseWait();
+                        }
+                    });
+
+                        },
+                    error: function () {
+                        myApp.hidePleaseWait();
+                    }
+                });
+
+
+
+        }
+        else {
+            var Option = "@RevenuePlanner.Helpers.Enums.UpcomingActivities.thisyear.ToString()";
+                    $.ajax(
+                 {
+                     type: "GET",
+                     cache: false,
+                     url: '@Url.Action("GetRevenueToPlan", "Report")',
+                     data: {
+                         ParentLabel: parentLabelRevenueToPLan,
+                         id: Id,
+                         selectOption: Option,
+                         originalOption: selectOption
+                     },
+                     dataType: "json",
+                     success: function (data) {
+
+                         TempreportTableInfo2 = {
+                             data: data
+                         };
+                         Tempdataset = data.chartData;
+                         if (typeof TempreportTableInfo2 != 'undefined') {
+                             if (TempreportTableInfo2.data != 'undefined' && TempreportTableInfo2.data.length != 0) {
+                                 if (quarter == 2) {
+                                     for (var k = 6 ; k <= 11; k++) {
+                                         delete TempreportTableInfo2.data.projectedRevenue[k];
+                                         delete TempreportTableInfo2.data.actualRevenue[k];
+                                         delete TempreportTableInfo2.data.difference[k];
+                                         delete TempreportTableInfo2.data.contribution[k];
+                                         delete TempreportTableInfo2.data.revenueTrend[k];
+                                         delete TempreportTableInfo2.data.totalRevenue[k];
+                                         delete Tempdataset[k];
+                                     }
+                                 }
+                                 else if (quarter == 3) {
+                                     for (var k = 0 ; k <= 2; k++) {
+                                         delete TempreportTableInfo2.data.projectedRevenue[k];
+                                         delete TempreportTableInfo2.data.actualRevenue[k];
+                                         delete TempreportTableInfo2.data.difference[k];
+                                         delete TempreportTableInfo2.data.contribution[k];
+                                         delete TempreportTableInfo2.data.revenueTrend[k];
+                                         delete TempreportTableInfo2.data.totalRevenue[k];
+                                         delete Tempdataset[k];
+                                     }
+                                     for (var k = 9 ; k <= 11; k++) {
+                                         delete TempreportTableInfo2.data.projectedRevenue[k];
+                                         delete TempreportTableInfo2.data.actualRevenue[k];
+                                         delete TempreportTableInfo2.data.difference[k];
+                                         delete TempreportTableInfo2.data.contribution[k];
+                                         delete TempreportTableInfo2.data.revenueTrend[k];
+                                         delete TempreportTableInfo2.data.totalRevenue[k];
+                                         delete Tempdataset[k];
+                                     }
+                                 }
+                                 else if (quarter == 4) {
+                                     for (var k = 0 ; k <= 5; k++) {
+                                         delete TempreportTableInfo2.data.projectedRevenue[k];
+                                         delete TempreportTableInfo2.data.actualRevenue[k];
+                                         delete TempreportTableInfo2.data.difference[k];
+                                         delete TempreportTableInfo2.data.contribution[k];
+                                         delete TempreportTableInfo2.data.revenueTrend[k];
+                                         delete TempreportTableInfo2.data.totalRevenue[k];
+                                         delete Tempdataset[k];
+                                     }
+                                 }
+                             }
+                         }
+                         reportTableInfo2 = TempreportTableInfo2;
+                         fillReportTable2();
+                         dataset = [];
+                         for (member in Tempdataset) {
+                             if (Tempdataset[member] != null) {
+                                 dataset.push(Tempdataset[member]);
+                             }
+                         }
+                         FillChartRevenueToPlan();
+                     },
+                     error: function () {
+                         myApp.hidePleaseWait();
+                     }
+                 });
+
+
+             }
+         }
+         else {
+             $.ajax(
+              {
+                  type: "GET",
+                  cache: false,
+                  url: '@Url.Action("GetRevenueToPlan", "Report")',
+                      data: {
+                          ParentLabel: parentLabelRevenueToPLan,
+                          id: Id,
+                          selectOption: selectOption,
+                          originalOption: selectOption
+                      },
+                      dataType: "json",
+                      success: function (data) {
+                          TempreportTableInfo2 = {
+                              data: data
+                          };
+
+                          Tempdataset = data.chartData;
+                          reportTableInfo2 = TempreportTableInfo2;
+                          fillReportTable2();
+                          dataset = Tempdataset;
+                          FillChartRevenueToPlan();
+                      },
+                      error: function () {
+                          myApp.hidePleaseWait();
+                      }
+                  });
+              }
+          }
+
+    function FillChartRevenueToPlan() {
+        //// Modified By: Maninder Singh Wadhva Bug 298:Revenue to plan graph is incorrect.
+        //// Array to hold chart points.
+        var arrChartData = [];
+
+        //// Pushing data into array.
+        $.each(dataset, function (index, objChardData) {
+            if (objChardData.Actual != null) {
+                arrChartData.push(parseInt(objChardData.Actual));
+            }
+
+            if (objChardData.Projected != null) {
+                arrChartData.push(parseInt(objChardData.Projected));
+            }
+
+            if (objChardData.Contribution != null) {
+                arrChartData.push(parseInt(objChardData.Contribution));
+            }
+        });
+
+        //// Finding max from array.
+        var endValue = (Math.max.apply(Math, arrChartData));
+
+        //// Checking whether max is not zero.
+        if (endValue == 0 || arrChartData.length == 0) {
+            endValue = 100;
+        }
+        else {
+            endValue = Math.ceil(endValue / 10) * 10
+        }
+
+        //// Calculating step value.
+        var stepValue = endValue / 10;
+
+        /*bar chart*/
+        var barChart = new dhtmlXChart({
+            view: "bar",
+            container: "chartDiv3",
+            value: "#Actual#",
+            tooltip: "$#Actual#",
+            radius: 0,
+            border: false,
+            color: "#ColorActual#",
+            width: 20,
+            xAxis: {
+                lines: false,
+                template: "#Month#"
+            },
+            yAxis: {
+                start: 0,
+                end: endValue,
+                step: stepValue,
+                template: function (value) {
+                    return FormatCommas(value, false);
+                },
+                lines: false
+            },
+            legend: {
+                values: [{ text: "Actual", color: "#d4d4d4" }, { text: "Projected", color: "#1a638a" }, { text: "Contribution", color: "#559659" }],
+                valign: "middle",
+                align: "left",
+                width: 50,
+                toggle: false,
+                layout: "y",
+                marker: {
+                    type: "square",
+                    width: 10,
+                    height: 10,
+                    radius: 0,
+                }
+            }
+        });
+
+        barChart.addSeries({
+            value: "#Projected#",
+            tooltip: "$#Projected#",
+            color: "#ColorProjected#",
+            border: false
+        });
+
+        barChart.addSeries({
+            value: "#Contribution#",
+            tooltip: "#Contribution#",
+            color: "#ColorContribution#",
+            border: false
+        });
+
+        //// Added to check whether chart data is defined or not.
+        if (dataset != null && dataset.length != 0) {
+            $('#chartDiv3').show();
+            barChart.parse(dataset, "json");
+        }
+        else {
+            $('#chartDiv3').hide();
+        }
+    }
+
+    //fill reports table with data from json
+    function fillReportTable2() {
+        if (typeof reportTableInfo2 != 'undefined') {
+            if (reportTableInfo2.data != 'undefined' && reportTableInfo2.data.length != 0) {
+                $('#table_reports2 > tbody').empty();
+
+                addRowReport2("Projected Revenue", reportTableInfo2.data.projectedRevenue, 1);
+                addRowReport2("Actual Revenue", reportTableInfo2.data.actualRevenue, 2);
+                addRowReport2("Difference", reportTableInfo2.data.difference, 3);
+                addRowReport2("% Contribution", reportTableInfo2.data.contribution, 4);
+                addRowReport2("Revenue Trend", reportTableInfo2.data.revenueTrend, 5);
+                addRowReport2("Total Revenue", reportTableInfo2.data.totalRevenue, 6);
+            } else {
+                $('#table_reports2 > tbody').empty();
+                $('#table_reports2 > tbody').append('<tr><td colspan="8" class="gray">No saved reports to display.</td></tr>');
+            }
+        }
+    }
+
+    //add row in reports table
+    function addRowReport2(_title, _goal, _type) {
+
+        var $tableReports2 = $('#table_reports2 > tbody');
+
+        if ($tableReports2.find("tr td.gray").html() == "No saved reports to display.") {
+            $tableReports2.find("tr").remove();
+        }
+        var htmlplan = '';
+        if (_type == 1 || _type == 2 || _type == 5) {
+
+            htmlplan += '<tr>' +
+                                '<td>' + _title + '</td>';
+            for (member in _goal) {
+                if (_goal[member] != null) {
+                    htmlplan += '<td>' + FormatNumber(_goal[member].Value, false) + '</td>';
+                }
+            }
+            htmlplan += '</tr>';
+        }
+
+        if (_type == 3) {
+
+            htmlplan += '<tr>' +
+                        '<td>' + _title + '</td>';
+            for (member in _goal) {
+                if (_goal[member] != null) {
+                    htmlplan += (parseFloat(_goal[member].Value) >= 0) ? '<td class="green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(_goal[member].Value, true) + '</span></td>' : '<td class="red-value"><span class="red-arrow-down-icon"></span><span>' + FormatNumber(Math.abs(_goal[member].Value), true) + '</span></td>';
+                }
+            }
+            htmlplan += '</tr>';
+        }
+
+        if (_type == 4) {
+
+            htmlplan += '<tr>' +
+                        '<td>' + _title + '</td>';
+            for (member in _goal) {
+                if (_goal[member] != null) {
+                    htmlplan += '<td class="border-bottom-row">' + FormatNumber(_goal[member].Value, true) + '</td>';
+                }
+            }
+            htmlplan += '</tr>';
+        }
+
+        if (_type == 6) {
+            htmlplan += '<tr>' +
+                        '<td>' + _title + '</td>';
+            for (member in _goal) {
+                if (_goal[member] != null) {
+                    htmlplan += '<td class="total-row">' + FormatNumber(_goal[member].Value, false) + '</td>';
+                }
+            }
+            htmlplan += '</tr>';
+        }
+        $tableReports2.append(htmlplan);
+
+    }
+
+    /*bar chart*/
+    var barChart2 = new dhtmlXChart({
+        view: "barH",
+        container: "chartDiv4",
+        value: "#Value#",
+        tooltip: "$#Value#K",
+        radius: 0,
+        border: false,
+        color: "#ColorCode#",
+        width: 20,
+        xAxis: {
+            start: 0,
+            step: 1,
+            end: 10,
+            lines: false,
+        },
+        yAxis: {
+            template: "#Title#",
+            lines: false,
+        }
+    });
+
+    /*bar chart*/
+    var barChart3 = new dhtmlXChart({
+        view: "barH",
+        container: "chartDiv5",
+        value: "#Value#",
+        tooltip: "$#Value#K",
+        radius: 0,
+        border: false,
+        color: "#ColorCode#",
+        width: 20,
+        xAxis: {
+            start: 0,
+            step: 1,
+            end: 10,
+            lines: false,
+        },
+        yAxis: {
+            template: "#Title#",
+            lines: false,
+        }
+    });
+
+
+    /*bar chart*/
+    var barChart4 = new dhtmlXChart({
+        view: "barH",
+        container: "chartDiv6",
+        value: "#Value#",
+        tooltip: "$#Value#K",
+        radius: 0,
+        border: false,
+        color: "#ColorCode#",
+        width: 20,
+        xAxis: {
+            start: 0,
+            step: 1,
+            end: 10,
+            lines: false,
+        },
+        yAxis: {
+            template: "#Title#",
+            lines: false,
+        }
+    });
+    var filter = "@RevenuePlanner.Helpers.Common.SourcePerformanceActual";
+            FillChartSourcePerformance();
+
+            $("#ParentULSourcePerformance li").click(function () {
+                var selectParent = $(this).children().text();
+                if (selectParent != "Source Performance") {
+                    RemoveTabClassParentULSourcePerformance();
+                    $(this).removeClass("disabled");
+                    $(this).addClass("active");
+                    filter = selectParent;
+                    FillChartSourcePerformance();
+                }
+            });
+
+            function RemoveTabClassParentULSourcePerformance() {
+                $('#ParentULSourcePerformance').children().each(function () {
+                    if ($(this).hasClass('active')) {
+                        $(this).removeClass("active");
+                        $(this).addClass("disabled");
+                    }
+                });
+            }
+            var dataset1, dataset2, dataset3;
+            function FillChartSourcePerformance() {
+                $.ajax(
+                      {
+                          type: "GET",
+                          cache: false,
+                          url: '@Url.Action("GetSourcePerformance", "Report")',
+                      data: {
+                          filter: filter,
+                          selectOption: selectOption
+                      },
+                      dataType: "json",
+                      success: function (data) {
+                          console.log(data);
+                          dataset1 = null;
+                          dataset2 = null;
+                          dataset3 = null;
+                          var chartDataSourcePerformance = {
+                              ChartBusinessUnit: data.ChartBusinessUnit,
+                              ChartGeography: data.ChartGeography,
+                              ChartVertical: data.ChartVertical
+                          }
+
+                          dataset1 = data.ChartBusinessUnit;
+                          dataset2 = data.ChartGeography;
+                          dataset3 = data.ChartVertical;
+                          //dataset = data.chartData;
+                          //fill data on reports table
+                          FillChartSourcePerformanceBusinessUnit();
+                          FillChartSourcePerformanceGeography();
+                          FillChartSourcePerformanceVertical();
+                      },
+                      error: function () {
+                          myApp.hidePleaseWait();
+                      }
+                  });
+              }
+
+    function FillChartSourcePerformanceBusinessUnit() {
+        barChart2.parse(dataset1, "json");
+    }
+
+    function FillChartSourcePerformanceGeography() {
+        barChart3.parse(dataset2, "json");
+    }
+    function FillChartSourcePerformanceVertical() {
+        barChart4.parse(dataset3, "json");
+    }
+    /*remove grid from charts*/
+    $('canvas').each(function () {
+        if ($(this).attr('canvas_id') == "undefined")
+            $(this).remove();
+        if ($(this).attr('canvas_id') == "axis_y")
+            $(this).remove();
+        if ($(this).attr('canvas_id') == "axis_x")
+            $(this).remove();
+        if ($(this).attr('canvas_id') == "0")
+            $(this).addClass("prueba");
+    });
+}
+</script>

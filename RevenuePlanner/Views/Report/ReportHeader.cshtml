@@ -1,0 +1,125 @@
+﻿@using RevenuePlanner.Helpers
+ <div class="light-blue-chart cf">
+    <div class="white-chart" style="display:none;">
+        <p class="source-sans-probold">@Html.LabelForMQL("MQL") Trend</p>
+        <div class="graph">
+            <p class="value source-sans-prolight" id="mqlTrend"></p>
+            <h5 id="mqlTrendPercentage"></h5>
+        </div>
+    </div>
+    <div class="white-chart" style="display:none;">
+        <p class="source-sans-probold">Trend</p>
+        <p class="value source-sans-prolight" id="revenueTrend"></p>
+        <h5 id="revenueTrendPercentage"></h5>
+    </div>
+    <div class="white-chart">
+        <p class="source-sans-probold">Actual</p>
+        <p class="value source-sans-prolight" id="revenueActual"></p>
+        <h5 id="revenueActualPercentage"></h5>
+    </div>
+    <div class="white-chart">
+        <p class="source-sans-probold">Projected</p>
+        <p class="value source-sans-prolight" id="revenueProjected"></p>
+        <a class="ellipsis-block">Revenue</a>
+    </div>
+    <div class="wraper-title">
+        <h3 class="source-sans-prolight timeframe ">Marketing Revenue
+        <br /></h3>
+    <form id="nl-formAct" class="nl-form-plan-title without-margin">
+        <select id="drpthisyear" data-default="0%" class="">
+        </select>
+        <div class="nl-overlay"></div>
+    </form>
+    </div>
+</div>
+<script type="text/javascript">
+    var OptionMain = "@ViewBag.SelectOption"
+
+    $(document).ready(function () {
+        var time = @Html.Raw(Json.Encode(ViewBag.UpcomingActivity))
+        populateNFActivity(time, "drpthisyear");
+
+        function populateNFActivity(items, id) {
+            var $dropdown = $("#" + id);
+            var $html = '';
+            if (items.length > 0) {
+                $.each(items, function (index, time) {
+                    if (time.Value == OptionMain) {
+                        $html += '<option value="' + time.Value + '" selected>' + time.Text + '</option>';
+                    } else {
+                    $html += '<option value="' + time.Value + '">' + time.Text + '</option>';
+                     }
+                });
+            }
+            $dropdown.append($html);
+           nlform = new NLForm(document.getElementById('nl-formAct'));
+           onClickActivity();
+           LoadHeaderData();
+        }
+
+        function onClickActivity() {
+            $('#nl-formAct > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+                    var Title = $(this).text();
+                    var option = $.grep($('#drpthisyear option'), function (value) { return $(value).text() == Title; })
+                    Currenttime = $(option[0]).val();
+                    OptionMain = Currenttime;
+                    var url = '@Url.Content("~/Report/Revenue")';
+                window.location.href = url + '?id=' + OptionMain;
+                    //LoadHeaderData();
+                    //RefreshCurrentTab();
+            });
+        }
+
+        function LoadHeaderData() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Report/GetReportRevenueHeader/")',
+                data: { option: OptionMain },
+                success: function (data) {
+                    if (data != undefined) {
+                        setLabel(data);
+                    }
+                },
+                error: function () {
+                    myApp.hidePleaseWait();
+                }
+            });
+        }
+
+        function setLabel(data) {
+            setLabelToolTip("#revenueProjected", data.ProjectedRevenueValue, 5, true);
+            setLabelToolTip("#revenueActual", data.ActualRevenueValue, 5, true);
+            setLabelToolTip("#revenueTrend", data.TrendRevenue, 5, true);
+            setLabelToolTip("#mqlTrend", data.TrendMQL, 5, false);
+            var revenuePercentage = 0, revenueTrendPercentage = 0, mqlTrendPercentage = 0;
+            if (parseFloat(data.ProjectedRevenueValue) > 0) {
+                revenuePercentage = (((parseFloat(data.ActualRevenueValue) - parseFloat(data.ProjectedRevenueValue)) / parseFloat(data.ProjectedRevenueValue)) * 100);
+                revenueTrendPercentage = (((parseFloat(data.TrendRevenue) - parseFloat(data.ProjectedRevenueValue)) / parseFloat(data.ProjectedRevenueValue)) * 100);
+            }
+            if (parseFloat(data.ProjectedMQLValue) > 0) {
+                mqlTrendPercentage = (((parseFloat(data.TrendMQL) - parseFloat(data.ProjectedMQLValue)) / parseFloat(data.ProjectedMQLValue)) * 100);
+            }
+            setPercentage("#revenueActualPercentage", revenuePercentage);
+            setPercentage("#revenueTrendPercentage", revenueTrendPercentage);
+            setPercentage("#mqlTrendPercentage", mqlTrendPercentage);
+        }
+
+        function setPercentage(id, value) {
+            var absValue = FormatNumber(Math.abs(parseFloat(value)), true);
+            var isNegative = parseFloat(value) < 0;
+            if (isNegative) {
+                $(id).addClass("red-value");
+                $(id).removeClass("green-value");
+                $(id).text("-" + absValue);
+            }
+            else {
+                $(id).removeClass("red-value");
+                $(id).addClass("green-value");
+                $(id).text("+" + absValue);
+            }
+            
+        }
+
+    });
+
+</script>

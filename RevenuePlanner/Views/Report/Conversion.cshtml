@@ -1,0 +1,757 @@
+﻿@model RevenuePlanner.Models.SummaryReportModel
+@using RevenuePlanner.Helpers
+@{
+    ViewBag.Title = "Conversion Report";
+    ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Report;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
+<link href="@Url.Content("~/Content/css/dhtmlxchart.css")" rel="stylesheet" type="text/css" />
+
+@{
+    var revenueSummary = (RevenuePlanner.Models.SummaryReportModel)ViewBag.SummaryReport;
+}
+@section nlFormContent{
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
+}
+@section Sidebar
+{
+    <div class="padding-content padding-bottom0">
+        <h4 class="text-shadow-black source-sans-prolight">Reports</h4>
+        <div class="wraper-btns cf">
+            <div class="span6">
+                @if (RevenuePlanner.Helpers.Sessions.PlanId != 0)
+                {
+                    <button id="BtnAddActual" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("AddActual", "Home")'">Add Actuals</button>    
+                }
+                else
+                {
+                    <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" disabled="disabled" type="button">Add Actuals</button>
+                }
+            </div>
+            <div class="span6">
+                <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" id="BtnShareReport">Share Report</button>
+            </div>
+        </div>
+    </div>
+
+
+    <ul class="nav nav-list nav-gray-reports">
+        <li class="item">
+            <a class="source-sans-probold summary" onclick="window.location.href='@Url.Action("Index", "Report")'"><span></span>SUMMARY</a>
+        </li>
+        <li class="item">
+            <a class="source-sans-probold revenue" onclick="window.location.href='@Url.Action("Revenue", "Report")'"><span></span>REVENUE</a>
+        </li>
+        <li class="item active">
+            <a class="source-sans-probold conversion" onclick="window.location.href='@Url.Action("Conversion", "Report")'"><span></span>CONVERSION</a>
+        </li>
+    </ul>
+}
+
+@Html.Action("ConversionReportHeader", "Report", new { id = (string)ViewBag.SelectOption })
+<ul class="nav nav-tabs" id="ParentULConversionSummary">
+    <li class="source-sans-proregular">
+        <h2 class="title-header">Conversion Summary</h2>
+    </li>
+    <li class="disabled pull-right">
+        <a>@RevenuePlanner.Helpers.Common.Vertical</a>
+    </li>
+    <li class="disabled pull-right">
+        <a>@RevenuePlanner.Helpers.Common.Geography</a>
+    </li>
+    <li class="disabled pull-right">
+        <a>@RevenuePlanner.Helpers.Common.Audience</a>
+    </li>
+    @if(RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
+    {
+        <li class="active pull-right">
+            <a>@RevenuePlanner.Helpers.Common.BusinessUnit</a>
+        </li>
+    }
+</ul>
+<ul class="nav nav-tabs nav-bars-table" id="ChildULConversionSummary">
+</ul>
+
+<div id="DivHtmlContent"  class="padding-content cf source-sans-proregular">
+    <table id="table_reports" class="table">
+        <thead>
+            <tr>
+                <th></th>
+                @if(RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
+                {
+                    <th class="width275" id="ActivityName">Business Unit</th>
+                }
+                else
+                {
+                    <th class="width275" id="ActivityName">Audience</th>
+                }
+                <th class="width83">New @Html.LabelForINQ("INQ")</th>
+                <th class="width83">@Html.LabelForINQ("INQ")→@Html.LabelForMQL("MQL")</th>
+                <th class="width83">@Html.LabelForMQL("MQL")</th>
+                <th class="width83">@Html.LabelForCW("CW")</th>
+                <th class="width83">ADS</th>
+                <th class="width83 light-blue-row">Revenue</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!--tr elements are added dinamically with javascript (view script.js file)-->
+        </tbody>
+    </table>
+    <ul class="nav nav-tabs" id="ParentULMQLConversion">
+        <!-- ParentULRevenueSummary -->
+        <li class="source-sans-proregular">
+            <h4 class="title-header">@Html.LabelForMQL("MQL") Conversion Plan</h4>
+        </li>
+        <li class="disabled pull-right" id="@RevenuePlanner.Helpers.Common.Vertical">
+            <a>@RevenuePlanner.Helpers.Common.Vertical</a>
+        </li>
+        <li class="disabled pull-right" id="@RevenuePlanner.Helpers.Common.Geography">
+            <a>@RevenuePlanner.Helpers.Common.Geography</a>
+        </li>
+        <li class="disabled pull-right" id="@RevenuePlanner.Helpers.Common.Audience">
+            <a>@RevenuePlanner.Helpers.Common.Audience</a>
+        </li>
+        @if(RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
+        {
+            <li class="active pull-right" id="@RevenuePlanner.Helpers.Common.BusinessUnit">
+                <a>@RevenuePlanner.Helpers.Common.BusinessUnit</a>
+            </li>
+         }
+    </ul>
+    <ul class="nav nav-tabs nav-bars-table" id="ChildULMQLConversion"></ul>
+    <!-- ChildULRevenueSummary -->
+
+    <table id="table_reports5" class="table table-striped2">
+        <thead>
+            <tr>
+                <th class="width100px large-border-bottom"></th>
+                @foreach (string s in (List<string>)ViewBag.MonthTitle)
+                {
+                     <th class="width44 border-top-bottom">@s</th>
+                }
+               
+            </tr>
+        </thead>
+        <tbody>
+            <!--tr elements are added dinamically with javascript-->
+        </tbody>
+    </table>
+    <ul class="nav nav-tabs" @* id="sub_nav_tabs" *@ id="MQLPerformance">
+        <li class="source-sans-proregular">
+            <h4 class="title-header">@Html.LabelForMQL("MQL") Performance</h4>
+        </li>
+        <li class="active pull-right">
+            <a  id="@RevenuePlanner.Helpers.Common.Actuals">@RevenuePlanner.Helpers.Common.Actuals</a>
+        </li>
+        <li class="disabled pull-right">
+            <a  id="@RevenuePlanner.Helpers.Common.Trend">@RevenuePlanner.Helpers.Common.Trend</a>
+        </li>
+        <li class="disabled pull-right">
+            <a  id="@RevenuePlanner.Helpers.Common.Plan">@RevenuePlanner.Helpers.Common.Plan</a>
+        </li>
+    </ul>
+    <div class="report-gray-container">
+        <div class="report-chart-group">
+            <div class="report-chart">
+                <label>Business Unit</label>
+                <div id="chartDiv1" class="report-chart4"></div>
+            </div>
+            <div class="report-chart">
+                <label>Geography</label>
+                <div id="chartDiv2" class="report-chart5"></div>
+            </div>
+            <div class="report-chart">
+                <label>Vertical</label>
+                <div id="chartDiv3" class="report-chart6"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="DivShareReport">
+</div>
+
+<script type="text/javascript">
+    var selectOption = "@ViewBag.SelectOption"
+    var TempreportTableInfo2; var Tempdataset;
+    var tempreportDataPrevious; var tempDataSetPrevious;
+    $(document).ready(function () {
+        $("#DivShareReport").hide();
+
+        $("#BtnShareReport").click(function () {
+            ShowShareReport();
+        });
+
+        function ShowShareReport() {
+            var url = '@Url.Content("~/Report/ShowShareReport/")';
+            $("#DivShareReport").empty()
+                                       .load(url.concat('?reportType=') + '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()')
+                                       .show();
+        }
+
+        $("#ParentULMQLConversion").find('li:last').removeClass('disabled').addClass('active'); // this will add active class to first tab in MQL conversion plan report
+        $('#ParentULConversionSummary').find('li:last').removeClass('disabled').addClass('active'); // this will add active class to first tab in MQL conversion plan report
+
+        //---------------- Code related to Conversion summary child tab --------------------//
+        var parentSummaryTab = $('#ParentULConversionSummary li.active').children().text();
+        LoadConversionSummaryChildData(); // this will load default data for conversion summary
+
+        $("#ParentULConversionSummary li").click(function () {
+            var selectParent = $(this).children().text();
+            if (selectParent != "Conversion Summary") {
+                $('#ActivityName').html(selectParent);
+                RemoveTabClassParentULConversionSummary();
+                $(this).removeClass("disabled");
+                $(this).addClass("active");
+                parentSummaryTab = selectParent;
+                LoadConversionSummaryChildData();
+            }
+        });
+
+        function RemoveTabClassParentULConversionSummary() {
+            $('#ParentULConversionSummary').children().each(function () {
+                if ($(this).hasClass('active')) {
+                    $(this).removeClass("active");
+                    $(this).addClass("disabled");
+                }
+            });
+        }
+
+        function RemoveTabClassChildULConversionSummary() {
+            $('#ChildULConversionSummary').children().each(function () {
+                if ($(this).hasClass('active')) {
+                    $(this).removeClass("active");
+                    $(this).addClass("disabled");
+                }
+            });
+        }
+
+        function LoadConversionSummaryChildData() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Report/GetChildTabForConversionSummary/")',
+                success: function (r) {
+                    if (typeof r != 'undefined') {
+                        $("#ChildULConversionSummary").empty();
+                        $("#ChildULConversionSummary").append('<li class="disabled pull-left" id=0><a >All Sources</a></li>');
+                        if (r.length) {
+                            for (i in r) {
+                                $("#ChildULConversionSummary").append('<li class="disabled pull-left" id="' + r[i].id + '"><a >' + r[i].title + '</a></li>');
+                            }
+                            $("#ChildULConversionSummary").find('li:first').removeClass("disabled");
+                            $("#ChildULConversionSummary").find('li:first').addClass("active");
+                            LoadConversionSummaryChildClick();
+                        }
+                        else {
+                            $("#ChildULConversionSummary").append('No Records found for This Selection.');
+                        }
+                    }
+                },
+                error: function () {
+                    myApp.hidePleaseWait();
+                }
+            });
+        }
+
+        function LoadConversionSummaryChildClick() {
+            $("#ChildULConversionSummary li").click(function () {
+                RemoveTabClassChildULConversionSummary();
+                $(this).removeClass("disabled");
+                $(this).addClass("active");
+                var selectParent = $(this).children().text();
+                var selectId = $(this).attr("id");
+                LoadConversionSummaryData(selectId);
+            });
+            var Childid = $("#ChildULConversionSummary").find('li:first').attr("id");
+            LoadConversionSummaryData(Childid);
+        }
+
+        function LoadConversionSummaryData(Id) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Report/GetConversionSummary/")',
+                data: {
+                    ParentConversionSummaryTab: parentSummaryTab,
+                    Id: Id,
+                    selectOption: selectOption
+                },
+                dataType: "json",
+                async: false,
+                type: 'post',
+                cache: false,
+                success: function (r) {
+                    var reportTableInfo = r;
+                    fillReportTable(reportTableInfo);
+                },
+                error: function () {
+                    myApp.hidePleaseWait();
+                }
+            });
+        }
+
+        //--------------- functions related to child tab for conversion summary report ends here ------------------//
+
+        //------------------ Functions related to load the child tabs for MQL conversion plan --------------------//
+        var ColINQProjected = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        var ColINQActual = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        var ColINQDifference = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        var ColMQLProjected = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        var ColMQLActual = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        var ColMQLDifference = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        var ColTotalMQL = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        var parentTab = $('#ParentULMQLConversion li.active').children().text();
+        LoadChildData();
+
+        $("#ParentULMQLConversion li").click(function () {
+            var selectParent = $(this).children().text();
+            if (selectParent != "MQL Conversion Plan") {
+                RemoveTabClassParentULMQLConversion();
+                $(this).removeClass("disabled");
+                $(this).addClass("active");
+                parentTab = selectParent;
+                LoadChildData();
+            }
+        });
+
+        function RemoveTabClassParentULMQLConversion() {
+            $('#ParentULMQLConversion').children().each(function () {
+                if ($(this).hasClass('active')) {
+                    $(this).removeClass("active");
+                    $(this).addClass("disabled");
+                }
+            });
+        }
+
+        function RemoveTabClassChildULMQLConversion() {
+            $('#ChildULMQLConversion').children().each(function () {
+                if ($(this).hasClass('active')) {
+                    $(this).removeClass("active");
+                    $(this).addClass("disabled");
+                }
+            });
+        }
+
+        function LoadChildData() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Report/GetChildTab/")',
+                data: {
+                    ParentTab: parentTab
+                },
+                success: function (r) {
+                    BindChildLabel(r);
+                    LoadChildClick();
+                },
+                error: function () {
+                    myApp.hidePleaseWait();
+                }
+            });
+        }
+
+        function BindChildLabel(childLabel) {
+            if (typeof childLabel != 'undefined') {
+                $("#ChildULMQLConversion").empty();
+                if (childLabel.length) {
+                    for (i in childLabel) {
+                        $("#ChildULMQLConversion").append('<li class="disabled pull-left" id="' + childLabel[i].id + '"><a >' + childLabel[i].title + '</a></li>');
+                    }
+                    $("#ChildULMQLConversion").find('li:first').removeClass("disabled");
+                    $("#ChildULMQLConversion").find('li:first').addClass("active");
+                }
+                else {
+                    $("#ChildULMQLConversion").append('No Records found for This Selection.');
+                }
+            }
+        }
+
+        function LoadChildClick() {
+            $("#ChildULMQLConversion li").click(function () {
+                RemoveTabClassChildULMQLConversion();
+                $(this).removeClass("disabled");
+                $(this).addClass("active");
+                var selectParent = $(this).children().text();
+                var selectId = $(this).attr("id");
+                LoadData(selectId);
+            });
+            var Childid = $("#ChildULMQLConversion").find('li:first').attr("id");
+            LoadData(Childid);
+        }
+
+        function LoadData(Id) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Report/GetMQLConversionPlanData/")',
+                data: {
+                    ParentTab: parentTab,
+                    Id: Id,
+                    selectOption: selectOption
+                },
+                dataType: "json",
+                async: false,
+                type: 'post',
+                cache: false,
+                success: function (r) {
+                    var reportTableInfo2 = r;
+                    fillReportTable2(reportTableInfo2);
+                },
+                error: function () {
+                    myApp.hidePleaseWait();
+                }
+            });
+        }
+
+
+        //--------------- functions related to child tab for MQL performance report ends here ------------------//
+
+
+
+        //fill reports table with data from json - For Conversion summary report
+        function fillReportTable(reportTableInfo) {
+            $('#table_reports > tbody > tr').empty();
+            if (typeof reportTableInfo != 'undefined') {
+                if (reportTableInfo.data.length) {
+                    for (i in reportTableInfo.data) {
+                        addRowReport(reportTableInfo.data[i].title, reportTableInfo.data[i].newInq, reportTableInfo.data[i].inqMql, reportTableInfo.data[i].mql, reportTableInfo.data[i].cw, reportTableInfo.data[i].ads, reportTableInfo.data[i].revenue, reportTableInfo.data[i].type);
+                    }
+                } else {
+                    $('#table_reports > tbody').append('<tr><td colspan="8" class="gray">No saved reports to display.</td></tr>');
+                }
+            }
+        }
+
+        //add row in reports table - for Conversion Summary report, this function will be called from FillReportTable
+        function addRowReport(_title, _newInq, _inqMql, _mql, _cw, _ads, _revenue, _type) {
+            var $tableReports = $('#table_reports > tbody');
+
+            if ($tableReports.find("tr td.gray").html() == "No saved reports to display.") {
+                $tableReports.find("tr").remove();
+            }
+            if (_type == 1) {
+                $tableReports.append('<tr><td></td>' +
+                                    '<td class="border-r">' + _title + '</td>' +
+                                    '<td class="border-r large-bold-text">' + FormatWithRoundValue(_newInq) + '</td>' +
+                                    '<td class="border-r"><div class="div-line">' + FormatWithRoundValue(_inqMql[0].val) + '</div><div>' + FormatWithRoundValue(_inqMql[1].val) + '</div></td>' +
+                                    '<td class="border-r large-bold-text">' + FormatWithRoundValue(_mql) + '</td>' +
+                                    '<td class="border-r large-bold-text">' + FormatWithRoundValue(_cw) + '</td>' +
+                                    '<td class="border-r"><div class="div-line">' + FormatNumber(_ads[0].val, false) + '</div><div>' + FormatNumber(_ads[1].val, false) + '</div></td>' +
+                                    '<td class="border-r light-blue-row"><div class="div-line small-bold-text">' + FormatNumber(_revenue[0].val, false) + '</div><div class="small-bold-text">' + FormatNumber(_revenue[1].val, false) + '</div></td>' +
+                                    '</tr>');
+            }
+            if (_type == 2) {
+                $tableReports.append('<tr><td class="report-gray-row"></td>' +
+                                   '<td class="border-r report-gray-row">' + _title + '</td>' +
+                                   '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(_newInq) + '</td>' +
+                                   '<td class="border-r report-gray-row"><div class="div-line">' + FormatWithRoundValue(_inqMql[0].val) + '</div><div>' + FormatWithRoundValue(_inqMql[1].val) + '</div></td>' +
+                                   '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(_mql) + '</td>' +
+                                   '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(_cw) + '</td>' +
+                                   '<td class="border-r report-gray-row"><div class="div-line">' + FormatNumber(_ads[0].val, false) + '</div><div>' + FormatNumber(_ads[1].val, false) + '</div></td>' +
+                                   '<td class="border-r light-blue-row" ><div class="div-line small-bold-text">' + FormatNumber(_revenue[0].val, false) + '</div><div class="small-bold-text">' + FormatNumber(_revenue[1].val, false) + '</div></td>' +
+                                   '</tr>');
+            }
+        }
+
+        //fill reports table with data from json - For MQL Conversion Plan data
+        function fillReportTable2(json_reportTableInfo2) {
+            $('#table_reports5 > tbody').empty();
+            if (typeof json_reportTableInfo2 != 'undefined') {
+                if (json_reportTableInfo2.length) {
+                    for (var k = 0; k <= 12; k++) {
+                        ColINQProjected[k] = 0;
+                        ColINQActual[k] = 0;
+                        ColINQDifference[k] = 0;
+                        ColMQLProjected[k] = 0;
+                        ColMQLActual[k] = 0;
+                        ColMQLDifference[k] = 0;
+                        ColTotalMQL[k] = 0;
+                    }
+                    for (j in json_reportTableInfo2) {
+                        if (typeof json_reportTableInfo2[j] != 'undefined') {
+                            addRowReport2("@Html.LabelForINQ("INQ") Projected", json_reportTableInfo2[j].INQGoal, 1, json_reportTableInfo2[j].monthList);
+                            addRowReport2("@Html.LabelForINQ("INQ") Actual", json_reportTableInfo2[j].INQActual, 2, json_reportTableInfo2[j].monthList);
+                            addRowReport2("Difference", [], 3, json_reportTableInfo2[j].monthList);
+                            addRowReport2("@Html.LabelForMQL("MQL") Projected", json_reportTableInfo2[j].MQLGoal, 4, json_reportTableInfo2[j].monthList);
+                            addRowReport2("@Html.LabelForMQL("MQL") Actual", json_reportTableInfo2[j].MQLActual, 5, json_reportTableInfo2[j].monthList);
+                            addRowReport2("Difference", [], 6, json_reportTableInfo2[j].monthList);
+                            addRowReport2("Total @Html.LabelForMQL("MQL")", [], 7, json_reportTableInfo2[j].monthList);
+                        }
+                    }
+                } else {
+                    $('#table_reports5 > tbody').append('<tr><td colspan="8" class="gray">No saved reports to display.</td></tr>');
+                }
+            }
+        }
+
+        //add row in reports table - for MQL Conversion Plan report, this function will be called from fillReportTable2
+        function addRowReport2(_title, _Goal, _type, _monthList) {
+            var $tableReports2 = $('#table_reports5 > tbody');
+
+            if ($tableReports2.find("tr td.gray").html() == "No saved reports to display.") {
+                $tableReports2.find("tr").remove();
+            }
+
+            var arrtProjectP = [];
+            var arrtProjectV = [];
+            var isProjected = false;
+            if (_Goal.length > 0) {
+                isProjected = true;
+                for (a in _Goal) {
+                    arrtProjectP.push(_Goal[a].PKey);
+                    arrtProjectV.push(_Goal[a].PSum);
+                }
+            }
+            if (_type == 1 || _type == 2 || _type == 4 || _type == 5) {
+                var htmlappend = '';
+                htmlappend = '<tr>' +
+                             '<td>' + _title + '</td>';
+                var k = 1;
+                for (mrl in _monthList) {
+                    var period = _monthList[mrl];
+                    var Value = "-";
+                    var sumvalue = 0;
+                    if (isProjected) {
+                        var indexp = $.inArray(period, arrtProjectP);
+                        if (indexp >= 0) {
+                            sumvalue = parseFloat(arrtProjectV[indexp]);
+                            Value = FormatINQMQL(sumvalue, false);
+                        }
+                    }
+
+                        if (_type == 1) {
+                            ColINQProjected[k] = sumvalue;
+                        }
+                        else if (_type == 2) {
+                            ColINQActual[k] = sumvalue;
+                        }
+                        else if (_type == 4) {
+                            ColMQLProjected[k] = sumvalue;
+                        }
+                        else if (_type == 5) {
+                            ColMQLActual[k] = sumvalue;
+                        }
+
+                        if (k == 1) {
+                            if (_type == 5) {
+                                ColTotalMQL[k] = sumvalue;
+                            }
+                        }
+                        else {
+                            if (_type == 5) {
+                                ColTotalMQL[k] = ColTotalMQL[k - 1] + sumvalue;
+                            }
+                        }
+                    htmlappend += '<td>' + Value + '</td>';
+                    k++;
+                }
+                htmlappend += '</tr>';
+                $tableReports2.append(htmlappend);
+            }
+            if (_type == 3 || _type == 6) {
+                var htmlappend = '';
+                htmlappend = '<tr>' +
+                             '<td>' + _title + '</td>';
+                var k = 1;
+                for (mrl in _monthList) {
+                    var value = 0;
+            if (_type == 3) {
+                        var pvalue = parseFloat(ColINQProjected[k]);
+                        var avalue = parseFloat(ColINQActual[k]);
+                        if (pvalue != 0) {
+                            value = ((avalue - pvalue) / pvalue) * 100;
+                        }
+                    }
+                    else if (_type == 6) {
+                        var pvalue = parseFloat(ColMQLProjected[k]);
+                        var avalue = parseFloat(ColMQLActual[k]);
+                        if (pvalue != 0) {
+                            value = ((avalue - pvalue) / pvalue) * 100;
+                        }
+                    }
+
+                    if (value < 0) {
+                        htmlappend += '<td class="td-class-arrow red-value"><span class="red-arrow-down-icon"></span><span>' + FormatNumber(Math.abs(value), true) + '</span></td>';
+                    }
+                    else {
+                        htmlappend += '<td class="td-class-arrow green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(Math.abs(value), true) + '</span></td>';
+                    }
+                    k++;
+                }
+                htmlappend += '</tr>';
+                $tableReports2.append(htmlappend);
+            }
+            if (_type == 7) {
+                //ColTotalMQL
+                var htmlappend = '';
+                htmlappend = '<tr>' +
+                             '<td class="total-row">' + _title + '</td>';
+                var k = 1;
+                for (mrl in _monthList) {
+                    var period = _monthList[mrl];
+                    htmlappend += '<td class="total-row">' + FormatINQMQL(ColTotalMQL[k], false) + '</td>';
+                    k++;
+                }
+                htmlappend += '</tr>';
+                $tableReports2.append(htmlappend);
+            }
+        }
+
+    });
+
+
+    window.onload = function () {
+
+        /* bar chart for Business Unit */
+        var barChart1 = new dhtmlXChart({
+            view: "barH",
+            container: "chartDiv1",
+            value: "#Value#",
+            tooltip: "#Value#K",
+            radius: 0,
+            border: false,
+            color: "#ColorCode#",
+            width: 25,
+            xAxis: {
+                start: 0,
+                step: 1,
+                end: 10,
+                lines: false,
+            },
+            yAxis: {
+                template: "#Title#",
+                lines: false,
+            }
+        });
+
+        /* bar chart for Geography */
+        var barChart2 = new dhtmlXChart({
+            view: "barH",
+            container: "chartDiv2",
+            value: "#Value#",
+            tooltip: "#Value#K",
+            radius: 0,
+            border: false,
+            color: "#ColorCode#",
+            width: 25,
+            xAxis: {
+                start: 0,
+                step: 1,
+                end: 10,
+                lines: false,
+            },
+            yAxis: {
+                template: "#Title#",
+                lines: false,
+            }
+        });
+
+        /*bar chart for Veritcal */
+        var barChart3 = new dhtmlXChart({
+            view: "barH",
+            container: "chartDiv3",
+            value: "#Value#",
+            tooltip: "#Value#K",
+            radius: 0,
+            border: false,
+            width: 25,
+            color: "#ColorCode#",
+            xAxis: {
+                start: 0,
+                step: 1,
+                end: 10,
+                lines: false,
+            },
+            yAxis: {
+                template: "#Title#",
+                lines: false,
+            }
+        });
+        var filter = "@RevenuePlanner.Helpers.Common.Actuals";
+        LoadPerformanceData(filter); //default tab loading
+
+        $("#MQLPerformance li").click(function () {
+            var selectParent = $(this).children().text();
+            if (selectParent != "MQL Performance") {
+                RemoveTabClassMQLPerformance();
+                $(this).removeClass("disabled");
+                $(this).addClass("active");
+                parentTab = selectParent;
+                LoadPerformanceData(parentTab);
+            }
+        });
+
+        function RemoveTabClassMQLPerformance() {
+            $('#MQLPerformance').children().each(function () {
+                if ($(this).hasClass('active')) {
+                    $(this).removeClass("active");
+                    $(this).addClass("disabled");
+                }
+            });
+        }
+
+
+        // Function to load MQL performance report
+        function LoadPerformanceData(filter) {
+
+            $.ajax(
+                 {
+                     type: "GET",
+                cache: false,
+                     url: '@Url.Action("GetMQLPerformance", "Report")',
+                      data: {
+                          filter: filter,
+                          selectOption: selectOption
+                      },
+                      dataType: "json",
+                      success: function (data) {
+                         // console.log(data);
+                          dataset1 = null;
+                          dataset2 = null;
+                          dataset3 = null;
+                          var chartDataSourcePerformance = {
+                              ChartBusinessUnit: data.ChartBusinessUnit,
+                              ChartGeography: data.ChartGeography,
+                              ChartVertical: data.ChartVertical
+                          }
+
+                          dataset1 = data.ChartBusinessUnit;
+                          dataset2 = data.ChartGeography;
+                          dataset3 = data.ChartVertical;
+                          //dataset = data.chartData;
+                          //fill data on reports table
+                          FillChartSourcePerformanceBusinessUnit();
+                          FillChartSourcePerformanceGeography();
+                          FillChartSourcePerformanceVertical();
+                      },
+                      error: function () {
+                          myApp.hidePleaseWait();
+                      }
+                 });
+        }
+
+        function FillChartSourcePerformanceBusinessUnit() {
+                    barChart1.parse(dataset1, "json");
+                }
+
+        function FillChartSourcePerformanceGeography() {
+                    barChart2.parse(dataset2, "json");
+                }
+        function FillChartSourcePerformanceVertical() {
+                    barChart3.parse(dataset3, "json");
+        }
+
+        /*remove grid from charts*/
+        $('canvas').each(function () {
+            if ($(this).attr('canvas_id') == "undefined")
+                $(this).remove();
+            if ($(this).attr('canvas_id') == "axis_y")
+                $(this).remove();
+            if ($(this).attr('canvas_id') == "axis_x")
+                $(this).remove();
+            if ($(this).attr('canvas_id') == "0")
+                $(this).addClass("prueba");
+        });
+    }
+</script>

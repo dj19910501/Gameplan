@@ -1,0 +1,173 @@
+﻿@{
+    ViewBag.Title = ViewBag.ActiveMenu;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Sidebar
+{
+    @if (ViewBag.IsPlan)
+    {
+        <div class="padding-content padding-bottom0">
+            <h4 class="text-shadow-black source-sans-prolight">Plan Summary</h4>
+            <div class="wraper-btns cf">
+                <div class="span6">
+                    <div class="btn-group ">
+                        <button id="BtnGroup" class="btn btn-blue text-shadow-blue source-sans-proregular buttom-width resize-drop-button without-border-buttom displayinherit   source-sans-prolight width90px">
+                            New Plan
+                        </button>
+                        <button data-toggle="dropdown" class="btn btn-blue dropdown-toggle height25 displayinherit width19px">
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu source-sans-prolight">
+                            <li>
+                                <a href="#">Create New</a>
+                            </li>
+                            @*  <li>
+                                <a href="#">Duplicate</a>
+                            </li>*@
+                        </ul>
+                    </div>
+                </div>
+                <div class="span6">
+                    <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button" disabled="disabled">Add Activity</button>
+                </div>
+            </div>
+        </div> 
+    }
+    else
+    {
+        <div class="padding-content padding-bottom0" id="DivButtonsHome">
+            <h4 class="text-shadow-black source-sans-prolight">Planning Review</h4>
+            <!--<div class="width100"><button class="btn btn-blue text-shadow-blue source-sans-proregular flag-icon" type="button"><span></span>Create New Tactic</button></div>-->
+            <div class="wraper-btns cf">
+                <div class="span6">
+                    <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button" href="#">Add Actuals</button>
+                </div>
+                <div class="span6">
+                    <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button" href="#">Add Activity</button>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!--First Accordion-->
+    <div class="scrolled_div">
+        <div class="accordion colors" id="accordion-667611">
+            <div class="accordion-heading">
+                <a class="accordion-toggle item-cccccc collapsed" data-toggle="collapse" data-parent="#accordion-667611" href="#">
+                    <div class="cf">No Tactics</div>
+                </a>
+            </div>
+        </div>
+        <!--End First Accordion-->
+    </div>
+
+    <div class="shadow-scroll" style="visibility: hidden"></div>
+
+    <div class="padding-content padding-top0">
+        <p style="visibility: hidden"><a class="link-alone" href="#"><strong>Show only My Tactics</strong></a></p>
+
+        <h4 class="text-shadow-black source-sans-prolight">Filters</h4>
+
+        <!--Second Accordion-->
+        <div class="accordion simple" id="accordion-465171">
+            <div class="accordion-heading">
+                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-465171" href="#">Geography</a>
+            </div>
+            <div class="accordion-heading">
+                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-465171" href="#">Individuals</a>
+            </div>
+        </div>
+        <!--End Second Accordion-->
+    </div>
+}
+<div class="light-blue-chart cf">
+    @Html.Partial("~/Views/Shared/_planheader.cshtml")
+</div>
+<ul class="nav nav-tabs">
+    <li class="title-header source-sans-proregular">
+        <h2>Plan Title</h2>
+    </li>
+    <li class="active pull-right">
+        <a href="#">Tactics</a>
+    </li>
+    <li class="pull-right">
+        <a href="#">Vertical</a>
+    </li>
+    <li class="pull-right">
+        <a href="#">Stage</a>
+    </li>
+    <li class=" pull-right">
+        <a href="#">Audience</a>
+    </li>
+    @if (ViewBag.IsDirector)
+    {
+        <li class=" pull-right">
+            <a id="ABusinessUnit" href="#">Business Unit</a>
+        </li>
+        <li class=" pull-right">
+            <a id="ARequest" href="#">Requests
+			<span id="RequestCount" class="label label-important">0</span>
+            </a>
+        </li>
+    }
+</ul>
+
+
+<div class="tab-content all-height">
+    <div class="tab-pane active all-height" id="panel-656352">
+        <div class="padding-content cf all-height lenght-div">
+            <div id="gantt_here"></div>
+            <span class="pull-left margin_t30 bold">No saved plans to display</span>
+            <div>
+                <button id="btnCreateNewPlan" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular margin_t60" type="button" href="@Url.Content("~/Plan/Create/0")">Create New Plan</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(
+     function () {
+         $('#BtnGroup').click(function (e) {
+             var url = '@Url.Content("~/Plan/Create/0")';
+             window.location.href = url;
+         });
+     });
+
+        $("#pMQLs").html("0");
+        $("#ptacticcount").html("0");
+        SetBudget("#pbudget");
+        $("#pcostLabel").html(@RevenuePlanner.Helpers.Enums.PlanHeader_LabelValues[RevenuePlanner.Helpers.Enums.PlanHeader_Label.Budget.ToString()].ToString());
+        $("#pmqlLabel").html(@RevenuePlanner.Helpers.Enums.PlanHeader_LabelValues[RevenuePlanner.Helpers.Enums.PlanHeader_Label.ProjectedMQLLabel.ToString()].ToString());
+
+        var tasks = { data: [] };
+        gantt.config.scale_unit = "year";
+        gantt.config.step = 1;
+        gantt.config.date_scale = "%Y";
+        gantt.config.scale_height = 60;
+        gantt.config.row_height = 37;
+        gantt.config.grid_width = 236;
+        gantt.config.readonly = true;
+        gantt.config.autofit = true;
+        gantt.config.show_progress = false;
+        gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+        gantt.init("gantt_here", new Date(2013, 0, 1), new Date(2014, 0, 1));
+        var json_length = tasks.data.length;
+        var gantt_div = document.getElementById("gantt_here");
+        gantt_div.style.height = ((json_length * 35) + 94) + "px";
+        gantt.parse(tasks);
+
+        $("#btnCreateNewPlan").click(function () {
+            //window.location.href = '/Plan/Create';
+            window.location.href = $(this).attr('href');
+        });
+
+        $("#btnNPlan").click(function () {
+            //window.location.href = '/Plan/Create';
+            window.location.href = $(this).attr('href');
+        });
+
+
+
+    </script>

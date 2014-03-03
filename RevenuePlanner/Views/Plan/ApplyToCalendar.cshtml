@@ -1,0 +1,824 @@
+﻿@model RevenuePlanner.Models.HomePlanModel
+@{
+    ViewBag.Title = "Plan";
+    ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string isViewOnly = ViewBag.IsViewOnly;
+    bool showBid = ViewBag.showBid;
+    string Planid = Convert.ToString(RevenuePlanner.Helpers.Sessions.PlanId);
+}
+
+
+@Html.Hidden("IsViewOnly", isViewOnly)
+<script src="~/Scripts/js/DHTMLX/danddcontrol.js"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
+<link href="@Url.Content("~/Content/css/dhtmlxchart_1.css")" rel="stylesheet" type="text/css" />
+
+<style type="text/css">
+    .pull-right > span {
+        margin-right: -15px !important;
+    }
+
+    .dhx_chart {
+        color: #000000;
+        font-family: 'source_sans_prolight',Arial,"sans-serif";
+        font-size: 9px;
+    }
+</style>
+
+@section nlFormContent{
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
+}
+@Html.HiddenFor(m => m.PlanId)
+<script type="text/javascript">
+    //var CurrentPlanId = 0;
+    var CurrentBid = 0;		
+// Edited to add PlanYear option.
+    var Currenttime = "planYear";
+    function populateNF(items, id) {
+        var $dropdown = $("#" + id);
+        var $html = '';
+        if (items.length > 0) {
+            $.each(items, function (index, plan) {
+                if (plan.Selected) {
+                    $html += '<option value="' + plan.Value + '" selected>' + plan.Text + '</option>';
+                    CurrentPlanId = plan.Value;
+                } else {
+                    $html += '<option value="' + plan.Value + '">' + plan.Text + '</option>';
+                }
+            });
+        } else {
+            $html += '<option value=' + 0 + ' selected>' + "Plan Title" + '</option>';
+            CurrentPlanId = 0;
+        }
+        $dropdown.append($html);
+    }
+
+    function onClickPlanTitle() {
+        $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+            var planTitle = $(this).text();
+            var option = $.grep($('#dropdown-plan-title option'), function (value) { return $(value).text() == planTitle; })
+            CurrentPlanId = $(option[0]).val();
+            RefreshCalendar();
+            GetHealderData(CurrentPlanId);
+            GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
+        });
+    }
+    function populateNFActivity(items, id) {
+        var $dropdown = $("#" + id);
+        var $html = '';
+        if (items.length > 0) {
+            $.each(items, function (index, time) {
+
+                if (time.Selected) {
+                    $html += '<option value="' + time.Value + '" selected>' + time.Text + '</option>';
+                    Currenttime = time.Value;
+                } else {
+                    $html += '<option value="' + time.Value + '">' + time.Text + '</option>';
+                }
+            });
+        }
+        $dropdown.append($html);
+    }
+    function onClickActivity() {
+        $('#nl-formAct > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+            if (CurrentPlanId > 0) {
+                var Title = $(this).text();
+                var option = $.grep($('#drpthisyear option'), function (value) { return $(value).text() == Title; })
+                Currenttime = $(option[0]).val();
+                isQuater = Currenttime;
+                RefreshCalendar();
+                GetHealderData(CurrentPlanId);
+                GetNumberOfActivityPerMonByPlanId(CurrentPlanId, Currenttime);
+            }
+        });
+    }
+    function addBusinessUnitItems(items, id) {
+        var $dropDown = $('#dropdown-business-unit ul');
+        var $html = "";
+        $('#dropdown-business-unit > ul > li').remove();//first clear menu
+        if (typeof items != 'undefined') {
+            if (typeof items.length) {
+                for (i in items) {
+                    $html += '<li id=' + items[i].Value + '><a id="option" name=' + items[i].Value + ' href="#">' + items[i].Text + '</a></li>';
+                }
+                $dropDown.append($html);
+            }
+            else {
+                $html += '<li id=0><a href="#">Nothing to load</a></li>';
+                $dropDown.append($html);
+            }
+        }
+    }
+    function onClickBusinessUnit() {
+        $('#dropdown-business-unit').find('a#option').click(function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            var Title = $(this).text();
+            var id = $(this).attr("name");
+            $("#selected-option").html('');
+            $("#selected-option").html(Title);
+            $("#DivloadPlan").html('');
+            var pid = $('#PlanId').val();
+            $('#DivloadPlan').load('@Url.Action("PlanList", "Plan")' + '?Bid=' + id);
+
+        });
+    }
+    $(document).ready(function () {
+        //onClickPlanTitle();
+        $('#DivloadPlan').load('@Url.Action("PlanList", "Plan")' + '?Bid=false');
+        onClickActivity();
+        onClickBusinessUnit();
+
+    });
+</script>
+@section Sidebar{
+    <div class="padding-content padding-bottom0 ">
+        <h4 class="text-shadow-black source-sans-prolight">Plan Summary</h4>
+        @if (isViewOnly != "true")
+        {
+            <div class="wraper-btns cf">
+                <div class="span6">
+                    <div class="btn-group ">
+                        <button id="BtnGroup" class="btn btn-blue text-shadow-blue source-sans-proregular buttom-width resize-drop-button without-border-buttom displayinherit   source-sans-prolight width90px">
+                            New Plan
+                        </button>
+                        <button data-toggle="dropdown" class="btn btn-blue dropdown-toggle height25 displayinherit width19px">
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu source-sans-prolight">
+                            <li>
+                                <a href="#">Create New</a>
+                            </li>
+                            <li>
+                                <a href="#">Duplicate</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="span6">
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Assortment", "Plan")'">Add Activity</button>
+                </div>
+            </div>
+        }
+    </div>
+    <ul class="nav nav-list nav-gray-plan">
+        <li class="item ">
+            @*<a class="source-sans-probold inputs" onclick="window.location.href='@Url.Action("Create", "Plan", new { id = Planid })'"><span></span>@Html.Raw("PLAN DEFINITION")</a>*@
+            <a class="source-sans-probold inputs" id="LeftNavInput"><span></span>@Html.Raw("PLAN DEFINITION")</a>
+        </li>
+        <li class="item">
+            @*<a class="source-sans-probold audience" onclick="window.location.href='@Url.Action("Assortment", "Plan")'"><span></span>@Html.Raw("CAMPAIGNS")</a>*@
+            <a class="source-sans-probold audience" id="LeftNavCampaigns"><span></span>@Html.Raw("CAMPAIGNS")</a>
+        </li>
+        <li class="item  active">
+            <a class="source-sans-probold tactics" href="#"><span></span>@Html.Raw("APPLY TO CALENDAR")</a>
+        </li>
+    </ul>
+
+    <ul class="nav nav-list nav-gray-plan">
+        <li id="change-log" class="nav-header">
+            <span>Change Log</span>
+            <div class="changes"></div>
+        </li>
+    </ul>
+}
+
+<!--success message-->
+<div id="successMessageDuplicatePlan" class="alert hide alert-success message-position-small">
+    <a class="close">×</a>
+    <div id="cSuccessDuplicatePlan"></div>
+</div>
+<!--success message-->
+<!--error message-->
+<div id="errorMessageDuplicatePlan" class="alert hide alert-error message-position-small">
+    <a class="close">×</a>
+    <div id="cErrorDuplicatePlan"></div>
+</div>
+<!--error message-->
+@*Plan Header*@
+<div class="light-blue-chart cf">
+    @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
+</div>
+@{
+    if (showBid == true)
+    {
+    <div id="dropdown-business-unit" class="btn-group">
+        <a id="selected-option" class="dropdown-toggle" href="#" data-toggle="dropdown">Business Unit</a>
+        <ul class="dropdown-menu">
+            <li>
+                <script>
+                    var BusinessUnitIds = @Html.Raw(Json.Encode(Model.BusinessUnitIds))
+                    addBusinessUnitItems(BusinessUnitIds, "dropdown-business-unit");
+                </script>
+            </li>
+        </ul>
+    </div>
+    }
+}
+<script>
+    var pid = $('#PlanId').val();
+    var CurrentPlanId = pid;
+</script>
+<div id="DivloadPlan">
+</div>
+<div class="tab-content all-height cf">
+    <div class="tab-pane active all-height" id="panel-656352">
+        <div class=" pl20 cf">
+            <div class="margin-left9 pull-left">
+                @foreach (var userId in Model.CollaboratorId)
+                {
+                    <img class="avatar-user img-border align_avatar_image" alt="User avatar" src="@Url.Action("LoadUserImage", "User", new { id = userId, width = 30, height = 30 })">
+                }
+                <span class="bold margin_left6">@Model.CollaboratorId.Count() Collaborators</span>
+                <span class="font_size10 updated-text-align">Last updated @Html.DisplayFor(model => model.LastUpdatedDate)</span>
+            </div>
+            <div>
+                <div class="gantt-padding cf all-height lenght-div ">
+                    <div id="gantt_here"></div>
+                </div>
+                <div class="margin-top20">
+                   @* <a href="url">< @Html.ActionLink("Back", "Assortment", "Plan")
+                    </a>*@
+                    <a id="lnkGoBack" style="cursor:pointer;">Back</a>
+                    @if (isViewOnly != "true")
+                    {
+                        using (Html.BeginForm("ApplyToCalendar", "Plan", FormMethod.Post, new { @id = "frmPublishPlan" }))
+                        {
+                        <input id="BtnPublishPlan" class="btn btn-blue text-shadow-blue source-sans-proregular padding-side20 pull-right margin-top20" type="submit" value="Publish Plan">
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="Notabcontent" style="display: none;">
+    <span class="pull-left margin_t30 bold" style="margin-left: 20px;">No Plans exists.</span>
+</div>
+@Html.Hidden("hdnMsg", (string)ViewBag.Msg, new { id = "hdnMsg" })
+@Html.Hidden("hdnisError", (bool)ViewBag.isError, new { id = "hdnisError" })
+<script type="text/javascript">
+
+    //// Global variable to hold quarter or year.
+    var isQuater = Currenttime;// false;
+
+    //Manoj Start 28Jan2014 : Bug-12 (User can lose data via navigation in application)
+    function AssignDefaultValue() {
+        $('#slidepanel-container').find("input[type=text],textarea,select").each(function () {
+            $(this).attr("myValue", $(this).val());
+        });
+    }
+    
+    $(document).on("click", "#lnkCampaigns", function (e) {
+        displayconfirm('@Url.Action("Assortment", "Plan")');
+    });
+    $(document).on("click", "#lnkGoBack", function (e) {
+        displayconfirm('@Url.Action("Assortment", "Plan")');
+    });
+    $(document).on("click", "#LeftNavCampaigns", function (e) {
+        displayconfirm('@Url.Action("Assortment", "Plan")');
+    });
+    $(document).on("click", "#LeftNavInput", function (e) {
+        displayconfirm('@Url.Action("Create", "Plan", new { id = Planid })');
+    });
+    //function to check myValue attribute values and input values that any changes made?
+    function isDataChanged() {
+        var changed = false;
+        $('#slidepanel-container').find("input[type=text],textarea,select").each(function () {
+            var iv = $(this).attr("myValue");
+            if ($(this).attr('id') == 't_startdate' || $(this).attr('id') == 't_enddate') {
+                var strValue = $(this).val();
+                if (strValue != null && strValue != '') {
+                    strValue = strValue.replace(' 12:00:00 AM', '');
+                    $(this).val(strValue);
+                    var newDateObj = new Date($(this).val());
+                    var oldDateObj = new Date(iv);
+                    if (newDateObj.getFullYear() + '-' + newDateObj.getMonth() + '-' + newDateObj.getDate() != oldDateObj.getFullYear() + '-' + oldDateObj.getMonth() + '-' + oldDateObj.getDate()) {
+                        changed = true;
+                    }
+                }
+                
+            }
+            else {
+                if ($(this).val() != iv) {
+                    changed = true;
+                }
+            }
+        });
+        return changed;
+    }
+    function displayconfirm(strURL) {
+        if (isDataChanged()) {
+            $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a href='"+ strURL +"' style='font-weight:bold;color:gray'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+            $("#errorMessageDuplicatePlan").slideDown(3000);
+        }
+        else {
+            window.location.href = strURL;
+        }
+    }
+    $(document).on("click", "#confirmClose", function (e) {
+        $("#errorMessageDuplicatePlan").slideUp(3000);
+    });
+    //Manoj End 28Jan2014 : Bug-12 (User can lose data via navigation in application)
+    function ShowChangeLog() {
+        $('.changes').html('');
+        var url = '@Url.Content("~/Home/LoadChangeLog/")';
+        $('.changes').load(url + '?objectId=' + CurrentPlanId);
+    }
+    $(document).ready(
+       function () {
+           $('#BtnGroup').click(function (e) {
+               if ($(this).html().toLowerCase() == "duplicate") {
+                   DuplicatePlan();
+               }
+               else {
+                   var url = '@Url.Content("~/Plan/Create/0")';
+                   window.location.href = url;
+               }
+           });
+       });
+
+       function DuplicatePlan() {
+           $.ajax({
+               type: 'POST',
+               url: '@Url.Content("~/Plan/DuplicatePlan/")',
+               dataType: "json",
+               success: function (data) {
+                   if (data.isSuccess == true) {
+                       var url = '@Url.Content("~/Plan/ApplyToCalendar")';
+                       window.location.href = url;
+                   }
+                   else {
+                       alert('Error');
+                   }
+               },
+               error: function () {
+                   myApp.hidePleaseWait();
+               }
+           });
+       }
+
+       function RefreshCalendar() {
+           SetGantt();
+           GetTactics();
+       }
+
+       //// Function to get tactic.
+       function GetTactics() {
+           AjaxRequest();
+       }
+
+       var ismsg = $("#hdnMsg").val();
+       var hdnisError = $("#hdnisError").val();
+       if (ismsg != '') {
+           if (hdnisError == 'True') {
+               $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + ismsg);
+               $("#errorMessageDuplicatePlan").slideDown(3000);
+           }
+           else {
+               $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + ismsg);
+               $("#successMessageDuplicatePlan").slideDown(3000);
+               $("#successMessageDuplicatePlan").slideUp(1200);
+           }
+       }
+       /*close x event on message*/
+       $("#successMessageDuplicatePlan").find(".close").click(function (e) {
+           e.stopPropagation();
+           e.preventDefault();
+           $(this).closest(".alert").slideUp(400);
+       });
+
+       $("#errorMessageDuplicatePlan").find(".close").click(function (e) {
+           e.stopPropagation();
+           e.preventDefault();
+           $(this).closest(".alert").slideUp(400);
+       });
+
+       //// Function to sort alphabetically.
+       function SortAlphabetically(obj1, obj2) {
+           var obj1Property = obj1.Title.toLowerCase();
+           var obj2Property = obj2.Title.toLowerCase();
+           return ((obj1Property < obj2Property) ? -1 : ((obj1Property > obj2Property) ? 1 : 0));
+       }
+
+       var planYear;
+       //// Function to make ajax request.
+       function AjaxRequest() {
+           GetNumberOfActivityPerMonByPlanId(CurrentPlanId);
+           var isPublished = false;
+           $.ajax(
+         {
+             type: "GET",
+             cache: false,
+             url: '@Url.Action("GetGanttData", "Plan")',
+             data: { PlanId: CurrentPlanId, isQuater: isQuater },
+             dataType: "json",
+             success: function (data) {
+                 planYear = parseInt(data.planYear);
+                 isPublished = data.isPublished;
+                 renderGantt(data.taskData);
+                 ShowChangeLog();
+                 if (isPublished) {
+                     $("#BtnPublishPlan").hide();
+                 }
+                 else {
+                     $("#BtnPublishPlan").show();
+                 }
+             },
+             error: function () {
+                 myApp.hidePleaseWait();
+             }
+         });
+     }
+
+     //// Function to start date of current quarter.
+     function getQarterStartDate() {
+         var currentDate = new Date();
+         var quater = Math.floor((currentDate.getMonth()) / 3) + 1;
+         var startDate;
+         var fullYear = currentDate.getFullYear();
+         switch (quater) {
+             case 1:
+                 startDate = new Date(fullYear, 00, 01);
+                 break;
+             case 2:
+                 startDate = new Date(fullYear, 03, 01);
+                 break;
+             case 3:
+                 startDate = new Date(fullYear, 06, 01);
+                 break;
+             case 4:
+                 startDate = new Date(fullYear, 09, 01);
+                 break;
+             default:
+                 startDate = currentDate;
+         }
+
+         return startDate;
+     }
+
+
+     function GetNumberOfActivityPerMonByPlanId(intplanid, strParam) {
+         $.ajax(
+         {
+             type: "GET",
+             cache: false,
+             url: '@Url.Action("GetNumberOfActivityPerMonthByPlanId", "Home")',
+          data: {
+              planid: intplanid,
+              strparam: strParam,
+              geographyIds: '', individualsIds: ''
+          },
+          dataType: "json",
+          success: function (data) {
+              if (data != null) {
+                  $(".dhx_canvas_text").remove();
+                  $("canvas").remove();
+                  setgraphdata(data);
+
+              }
+          },
+          error: function () {
+              myApp.hidePleaseWait();
+          }
+      });
+  }
+  function setgraphdata(data) {
+
+      var barChart2 = new dhtmlXChart({
+          view: "bar",
+          container: "chart2",
+          value: "#NoOfActivity#",
+          label: "#NoOfActivity#",
+          color: "#Color#",
+          radius: 3,
+          padding: {
+              top: 25,
+              bottom: 16,
+              right: 00,
+              left: 00
+
+          },
+          xAxis: {
+
+              template: "#Month#"
+          },
+      });
+      barChart2.parse(data.lstchart, "json");
+  }
+
+
+     //// Function to render gantt i.e. for this year or this quarter.
+     function renderGantt(taskData) {
+         var tasks = {
+             data: taskData
+         };
+
+         $.each(tasks.data, function (index, objData) {
+             objData.start_date = new Date(objData.start_date);
+         });
+
+         gantt.eachTask(function (task) {
+             gantt.deleteTask(task.id)
+         })
+
+         //// Modified By: Maninder Singh Wadhva to fix TFS Bug#260 Plan - Apply to Calendar - The plotting of activity bars in the calendar doesn't align with the dates mentioned.
+         gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+         gantt.config.scale_height = 60;
+         gantt.config.round_dnd_dates = false;
+         gantt.config.scale_unit = "month";
+         gantt.config.date_scale = " %M";
+         gantt.config.subscales = [{ unit: "year", step: 1, date: "%Y" }];
+         gantt.templates.task_class = function (start, end, task) { return task.color + " cursorPointer"; };
+
+         if (isQuater == "thisquarter") {
+             //// Getting quarter
+             var startDate = getQarterStartDate();
+             var endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 1);
+             gantt.config.start_date = startDate;
+             gantt.config.end_date = endDate;
+             //// filtering quater data
+             var filteredData = $.grep(tasks.data,
+                                        function (value) {
+                                            return (value.start_date >= startDate && value.start_date <= endDate)
+                                        }
+                                      );
+             var filteredTasks = { data: filteredData };
+
+             gantt.init("gantt_here");
+
+             var json_length = filteredTasks.data.length;
+             var gantt_div = document.getElementById("gantt_here");
+             gantt_div.style.height = ((json_length * 35) + 94) + "px";
+             gantt.parse(filteredTasks);
+         } else if (isQuater == "thisyear") {
+             var date = new Date();
+             gantt.config.start_date = new Date(date.getFullYear(), 00, 01);
+             gantt.config.end_date = new Date(date.getFullYear() + 1, 00, 01);
+             gantt.init("gantt_here");
+
+             var json_length = tasks.data.length;
+             var gantt_div = document.getElementById("gantt_here");
+             gantt_div.style.height = ((json_length * 35) + 94) + "px";
+             gantt.parse(tasks);
+         }
+         else if (isQuater == "thismonth") {
+             var date = new Date(), m = date.getMonth();
+             gantt.config.start_date = new Date(date.getFullYear(), m, 01);
+             gantt.config.end_date = new Date(date.getFullYear(), m + 1, 01);
+             gantt.init("gantt_here");
+
+             var json_length = tasks.data.length;
+             var gantt_div = document.getElementById("gantt_here");
+             gantt_div.style.height = ((json_length * 35) + 94) + "px";
+             gantt.parse(tasks);
+         }
+         else if (isQuater == "nextyear") {
+             var date = new Date();
+             gantt.config.start_date = new Date(date.getFullYear() + 1, 00, 01);
+             gantt.config.end_date = new Date(date.getFullYear() + 2, 00, 01);
+             gantt.init("gantt_here");
+
+             var json_length = tasks.data.length;
+             var gantt_div = document.getElementById("gantt_here");
+             gantt_div.style.height = ((json_length * 35) + 94) + "px";
+             gantt.parse(tasks);
+         } else if (isQuater == "planYear") {	 
+// Edited to add PlanYear option.
+             gantt.config.start_date = new Date(planYear, 00, 01);
+             gantt.config.end_date = new Date(planYear + 1, 00, 01);
+             gantt.init("gantt_here");
+
+             var json_length = tasks.data.length;
+             var gantt_div = document.getElementById("gantt_here");
+             gantt_div.style.height = ((json_length * 35) + 94) + "px";
+             gantt.parse(tasks);
+         }
+
+         AttachEventToTactic();
+         HideDragHandleOfTask();
+     }
+
+     //// Function to hide drag handle.
+     function HideDragHandleOfTask() {
+         gantt.eachTask(function (task) {
+             if (task.IsHideDragHandleLeft || task.IsHideDragHandleRight) {
+                 HideDragHandleLeftOrRigth(task);
+             }
+         })
+     }
+
+     //// Function to hide left right drag handle.
+     function HideDragHandleLeftOrRigth(task) {
+         $(".gantt_bars_area").find("div[task_id='" + task.id + "']").find('div[class="gantt_task_drag task_left"]').remove();
+         $(".gantt_bars_area").find("div[task_id='" + task.id + "']").find('div[class="gantt_task_drag task_right"]').remove();
+     }
+
+     gantt.attachEvent("onTaskSelected", function (id, item) {
+         HideDragHandleOfTask();
+     });
+
+     gantt.attachEvent("onTaskOpened", function (id) {
+         HideDragHandleOfTask();
+     });
+
+     gantt.attachEvent("onTaskClosed", function (id) {
+         HideDragHandleOfTask();
+     });
+
+     //// Variable to hold double click event.
+     var eventTaskDoubleClick;
+     //// Function to attach event to show inspect model.
+     function AttachEventToTactic() {
+         //// Detaching double click event.
+         if (eventTaskDoubleClick != undefined) {
+             gantt.detachEvent(eventTaskDoubleClick);
+         }
+
+         //// Attaching double click event
+         eventTaskDoubleClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) { ShowSidePanel(taskId, e) });
+     }
+
+     function ShowSidePanel(taskId, e) {
+         var task = gantt.getTask(taskId);
+
+         //// Checking whether current task is tactic or not.
+         if (typeof task.plantacticid !== 'undefined') {
+             //// Getting plan tactic id.
+
+             ShowTactic(task.plantacticid)
+         }
+         else if (typeof task.PlanProgramId !== 'undefined') {
+             //// Getting plan program id.
+             ShowProgram(task.PlanProgramId)
+         }
+         else if (typeof task.PlanCampaignId !== 'undefined') {
+             ShowCampaign(task.PlanCampaignId)
+         }
+     }
+
+     //scroll right sidebar form
+     $(function () {
+         $('.scrolled_div_form').slimScroll({
+             height: 'auto',
+             alwaysVisible: true,
+             distance: '-10px',
+             wheelStep: 3,
+             allowPageScroll: false,
+             disableFadeOut: false
+         });
+     });
+
+     function ShowCampaign(id) {
+         $("#slidepanel").css("display", "block");
+       //  $("#slidepanel-container").css("display", "block");
+         var url = '@Url.Content("~/Plan/EditCampaign")';
+         //$('#slidepanel-container').load(url + '?id=' + id);
+         $('#slidepanel-container').load(url + '?id=' + id,AssignDefaultValue);
+         $("#slidepanel").css("right", "0px");
+         myApp.hidePleaseWait();
+     }
+
+     function ShowProgram(id) {
+         $("#slidepanel").css("display", "block");
+        // $("#slidepanel-container").css("display", "block");
+         var url = '@Url.Content("~/Plan/EditProgram")';
+         //$('#slidepanel-container').load(url + '?id=' + id);
+         $('#slidepanel-container').load(url + '?id=' + id, AssignDefaultValue);
+         $("#slidepanel").css("right", "0px");
+         myApp.hidePleaseWait();
+     }
+
+     function ShowTactic(id) {
+         $("#slidepanel").css("display", "block");
+//         $("#slidepanel-container").css("display", "block");
+         var url = '@Url.Content("~/Plan/EditTactic")';
+         //$('#slidepanel-container').load(url + '?id=' + id);
+         $('#slidepanel-container').load(url + '?id=' + id, AssignDefaultValue);
+               $("#slidepanel").css("right", "0px");
+         myApp.hidePleaseWait();
+     }
+     //// Function to set common properties of gantt.
+     function SetGantt() {
+         gantt.config.grid_width = 236;
+         gantt.config.readonly = false;
+         gantt.config.show_progress = false;
+         gantt.config.autofit = true;
+         gantt.config.drag_links = false;
+         gantt.config.drag_progress = false;
+
+         if ($('#IsViewOnly').val() != '') {
+             gantt.config.drag_resize = false;
+         }
+         else {
+             gantt.config.drag_resize = true;
+         }
+     }
+
+     //// Attaching function to after task drag event handler.
+     gantt.attachEvent("onAfterTaskDrag", function (id, mode, e) { AfterTaskDrag(id, mode, e); });
+
+     //// Attaching code to before task drag event handler to avoid move of task whose either or both dates are not plotted on current view.
+     gantt.attachEvent("onBeforeTaskDrag", function (id, mode, e) {
+         var modes = gantt.config.drag_mode;
+         if (mode == modes.move) {
+             var task = gantt.getTask(id);
+             if (task.IsHideDragHandleLeft || task.IsHideDragHandleRight) {
+                 return false;
+             }
+         }
+         return true;
+     });
+
+    //// Function to set after start_date and duration.
+    //// Modified By: Maninder Singh Wadhva to fix TFS Bug#260 Plan - Apply to Calendar - The plotting of activity bars in the calendar doesn't align with the dates mentioned.
+     function AfterTaskDrag(id, mode, e) {
+         var modes = gantt.config.drag_mode;
+         switch (mode) {
+             case modes.move:
+             case modes.resize:
+                 var task = gantt.getTask(id);
+                 if (typeof task.PlanCampaignId != 'undefined') {
+                     UpdateStartEndDate(task.PlanCampaignId, task.start_date, task.duration -1, true, false, false)
+                 } else if (typeof task.PlanProgramId != 'undefined') {
+                     UpdateStartEndDate(task.PlanProgramId, task.start_date, task.duration -1, false, true, false)
+                 } else if (typeof task.plantacticid != 'undefined') {
+                     UpdateStartEndDate(task.plantacticid, task.start_date, task.duration - 1, false, false, true)
+                 }
+                 break;
+         }
+     }
+
+     function CheckDate(date, duration) {
+         var startDate = null;
+         var endDate = null;
+         updatedStartDate = null;
+         updatedDuration = null;
+
+         if (isQuater == "thisquarter") {
+             //// Getting quarter
+             startDate = getQarterStartDate();
+             endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 0);
+         } else if (isQuater == "thisyear") {		  
+// Changed variable name.
+             var currentDate = new Date();
+             startDate = new Date(currentDate.getFullYear(), 00, 01);
+             endDate = new Date(currentDate.getFullYear() + 1, 00, 0);
+         }
+         else if (isQuater == "thismonth") {
+             var currentDate = new Date(), m = currentDate.getMonth();
+             startDate = new Date(currentDate.getFullYear(), m, 01);
+             endDate = new Date(currentDate.getFullYear(), m + 1, 0);
+         }
+         else if (isQuater == "nextyear") {
+             var currentDate = new Date();
+             startDate = new Date(currentDate.getFullYear() + 1, 00, 01);
+             endDate = new Date(currentDate.getFullYear() + 2, 00, 0);
+         } else if (isQuater == "planYear") { 
+			//Edited to add PlanYear option.
+             startDate = new Date(planYear, 00, 01);
+             endDate = new Date(planYear + 1, 00, 0);
+         }
+
+         var taskEndDate = new Date(date);
+         taskEndDate.setDate(date.getDate() + duration);
+
+         if (date < startDate) {
+             updatedStartDate = startDate;
+             updatedDuration = Math.round(duration - ((startDate - date) / (1000 * 60 * 60 * 24)));
+         } else if (taskEndDate > endDate) {
+             updatedStartDate = date;
+             updatedDuration = Math.round((endDate - date) / (1000 * 60 * 60 * 24));
+         }
+         else {
+             updatedStartDate = date;
+             updatedDuration = duration;
+         }
+     }
+
+     var updatedStartDate = null;
+     var updatedDuration = null;
+     //// Function to update start or end date.
+     function UpdateStartEndDate(id, startDate, duration, isPlanCampaign, isPlanProgram, isPlanTactic) {
+         CheckDate(startDate, duration);
+         updatedStartDate = (updatedStartDate.getMonth() + 1) + '/' + (updatedStartDate.getDate()) + '/' + updatedStartDate.getFullYear();
+
+         $.ajax({
+             type: 'POST',
+             url: '@Url.Action("UpdateStartEndDate", "Plan")',
+             data: { id: id, startDate: updatedStartDate, duration: updatedDuration, isPlanCampaign: isPlanCampaign, isPlanProgram: isPlanProgram, isPlanTactic: isPlanTactic },
+             dataType: 'json',
+             success: function (data) {
+                 return data;
+             },
+             error: function () {
+                 myApp.hidePleaseWait();
+                 GetTactics();
+             }
+         });
+     }
+</script>

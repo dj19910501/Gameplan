@@ -1,0 +1,302 @@
+﻿@model RevenuePlanner.Models.PlanModel
+@using RevenuePlanner.Helpers
+@{
+    ViewBag.Title = "Plan Definition";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string strPlanid = Convert.ToString(Model.PlanId);
+}
+
+@section nlFormContent{
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
+}
+
+
+@section Sidebar
+{
+    <div class="padding-content padding-bottom0 ">
+        <h4 class="text-shadow-black source-sans-prolight">Plan Summary</h4>
+        <div class="wraper-btns cf">
+            <div class="span6">
+                <div class="btn-group ">
+                    <button id="BtnGroup" class="btn btn-blue text-shadow-blue source-sans-proregular buttom-width resize-drop-button without-border-buttom displayinherit   source-sans-prolight width90px">
+                        New Plan
+                    </button>
+                    <button data-toggle="dropdown" class="btn btn-blue dropdown-toggle height25 displayinherit width19px">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu source-sans-prolight">
+                        <li>
+                            <a href="#">Create New</a>
+                        </li>
+                        @*  <li>
+                            <a href="#">Duplicate</a>
+                        </li>*@
+                    </ul>
+                </div>
+            </div>
+            <div class="span6">
+                <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button" disabled="disabled">Add Activity</button>
+            </div>
+        </div>
+    </div>
+    @{
+        string ulclass = "";
+        bool mode_edit = false;
+        if (strPlanid == "" || strPlanid == "0")
+        {
+            ulclass = "nav nav-listc nav-gray-planc";
+
+        }
+        else
+        {
+            ulclass = "nav nav-listc nav-gray-plan";
+            mode_edit = true;
+        }
+    
+    }
+    <ul class="@ulclass">
+        <li class="item active">
+            <a class="source-sans-probold inputs" href="#"><span></span>@Html.Raw("PLAN DEFINITION")</a>
+        </li>
+        <li class="item">
+            @if (!mode_edit)
+            {
+                <a class="source-sans-probold audience" href="#"><span></span>@Html.Raw("CAMPAIGNS")</a>
+            }
+            else
+            {
+@*<a class="source-sans-probold audience" onclick="window.location.href='@Url.Action("Assortment", "Plan")'"><span></span>@Html.Raw("CAMPAIGNS")</a>*@
+                <a class="source-sans-probold audience" id="LeftNavCampaigns"><span></span>@Html.Raw("CAMPAIGNS")</a>
+            }
+        </li>
+        <li class="item">
+            @if (!mode_edit)
+            {
+                <a class="source-sans-probold tactics" href="#"><span></span>@Html.Raw("APPLY TO CALENDAR")</a>
+            }
+            else
+            {
+@*<a class="source-sans-probold tactics" onclick="window.location.href='@Url.Action("ApplyToCalendar", "Plan")'"><span></span>@Html.Raw("APPLY TO CALENDAR")</a>*@
+                <a class="source-sans-probold tactics" id="aApplyToCalender"><span></span>@Html.Raw("APPLY TO CALENDAR")</a>
+            }
+        </li>
+
+        <li class="nav-header">
+            <span>Change Log</span>
+        </li>
+    </ul>
+
+
+
+
+}
+
+
+@using (Html.BeginForm("SavePlan", "Plan", FormMethod.Post, new { @name = "SavePlanForm" }))
+{    
+   
+    <!--Error message-->
+    <div id="errorMessage" class="alert alert-error hide message-position-small">
+        <a class="close" id="aclose">×</a>
+        <strong>Error!</strong><span id="spanMessageError">Make sure all fields are filled and try again.</span>
+    </div>
+    <!--Error message-->
+            
+                
+    
+    <table class="light-blue-background margin5">
+        <tbody>
+
+            <tr>
+                <td>
+                    <div id="nl-form" class="nl-form nomargin pull-left form-plan-mini padding-assortment">
+                        <div class="bold font_size16">1. Plan definition</div>
+                        I'm using the 
+														 @*@Html.DropDownList("ddlModel", (SelectList)TempData["selectList"])*@
+                        @{
+    if (strPlanid == "" || strPlanid == "0")
+    {
+                            @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], "select", new { datadefault = "SelectModel" })
+                               
+    }
+    else
+    {   
+                               
+                            <span id="spandef">@Model.ModelTitle</span>
+    }
+                        }
+                        model to create a new plan called						
+														@Html.TextBoxFor(model => model.Title, new { placeholder = @Model.Title, datasubline = "For example: <em>2014 North American Events</em>", datadefault = "Title", maxlength = "50", @class = "myValue" })
+                        in
+                         @Html.DropDownListFor(m => m.Year, (SelectList)TempData["selectYearList"], new { placeholder = @Model.Year, @class = "myValue"})
+
+                        that generates 
+														@Html.TextBoxFor(model => model.MQls, new { placeholder = @Model.MQls, datasubline = "For example: <em>200</em>", datadefault = "MQL", datamask = "ddd-dddd", id = "txtMQL", formatType = "priceValue", maxlength = "10", @class = "myValue" })
+                        @Html.LabelForMQL("MQL") with a budget of
+														@Html.TextBoxFor(model => model.Budget, new { placeholder = @Model.Budget, datasubline = "For example: <em>$800,000</em>", datadefault = "Budget", formatType = "currency_dollar", maxlength = "15", id = "txtBudget", @class = "myValue" }).
+													    <div class="nl-overlay"></div>
+                        <!--To call js for forms animations-->
+                        <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
+                        <script>
+                            var nlform = new NLForm(document.getElementById('nl-form'));
+                        </script>
+                    </div>
+                </td>
+                <td class="width100px bg-content-blue">
+                    @*<button class="btn btn-blue text-shadow-blue source-sans-proregular padding-side20" type="button">Next </button>*@
+                    <input type="button" value="Next" id="button-save" class="btn btn-blue text-shadow-blue source-sans-proregular padding-side20" />
+                </td>
+                @Html.Hidden("Planid", strPlanid)
+                @Html.HiddenFor(model => model.ModelId)
+                @Html.HiddenFor(model => model.PlanId)
+            </tr>
+        </tbody>
+    </table>
+          
+
+}
+
+
+
+<script type="text/javascript">
+
+    $(document).ready(
+      function () {
+          $('#BtnGroup').click(function (e) {
+              var url = '@Url.Content("~/Plan/Create/0")';
+              window.location.href = url;
+          });
+
+          $("#button-save").click(function () {
+              var isError = false;
+              $('.nl-field').each(function () {
+                  if ($(this).next().attr('datadefault') == "Title") {
+                      var tValue = $(this).children('a').text();
+
+                      if (tValue == '' || tValue == "Plan Title") {
+                          $(this).children('a').addClass("error-form");
+                          isError = true;
+                      }
+                      else {
+                          $(this).children('a').removeClass("error-form");
+                      }
+
+                  }
+                  else if ($(this).next().attr('datadefault') == "MQL") {
+                      var tValue = $(this).children('a').text();
+                      if (tValue == '' || tValue == '0') {
+                          $(this).children('a').addClass("error-form");
+                          isError = true;
+                      }
+                      else {
+                          $(this).children('a').removeClass("error-form");
+                      }
+                  }
+                  else if ($(this).next().attr('datadefault') == "Budget") {
+                      var tValue = $(this).children('a').text();
+                      if (tValue == '' || tValue == '$0') {
+                          $(this).children('a').addClass("error-form");
+                          isError = true;
+                      }
+                      else {
+                          $(this).children('a').removeClass("error-form");
+                      }
+                  }
+                  else if ($(this).next().attr('datadefault') == "SelectModel") {
+                      if ($("#Planid").val() == '' || $("#Planid").val() == '0') {
+                          var tValue = $(this).children('a').text();
+                          if (tValue == 'select') {
+                              $(this).children('a').addClass("error-form");
+                              isError = true;
+
+                          }
+                          else {
+                              $(this).children('a').removeClass("error-form");
+                          }
+                      }
+                  }
+
+              });
+
+              if (isError) {
+                  $("#errorMessage").css("display", "block");
+                  $("#spanMessageError").empty();
+                  $("#spanMessageError").text("Make sure all fields are filled and try again.");
+              }
+              else {
+                  $("#errorMessage").css("display", "none");
+              }
+
+              if (!isError) {
+                  $("#txtMQL").val(ReplaceCC($("#txtMQL").val()));
+                  $("#txtBudget").val(ReplaceCC($("#txtBudget").val()));
+                  $.ajax({
+                      type: 'POST',
+                      url: '@Url.Content("~/Plan/SavePlan")',
+                      data: $("form[name=SavePlanForm]").serialize(),
+                      success: function (data) {
+                          if (data != 'undefined') {
+                              if (data.id != 0) {
+                                  window.location.href = data.redirect;
+                                  return;
+                              }
+                              else {
+                                  $("#errorMessage").css("display", "block");
+                                  $("#spanMessageError").empty();
+                                  $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                                  return false;
+                              }
+                          }
+                      },
+                      error: function () {
+                          $("#errorMessage").css("display", "block");
+                          $("#spanMessageError").empty();
+                          $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                          myApp.hidePleaseWait();
+                          return false;
+                      }
+                  });
+              }
+              return isError;
+          });
+
+          // $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+      });
+
+
+</script>
+<script type="text/javascript">
+    //Manoj Start 28Jan2014 : Bug-12 (User can lose data via navigation in application)
+    //function to check myValue attribute values and input values that any changes made?
+    function isDataChanged() {
+        var changed = false;
+        $('.myValue').each(function () {
+            var iv = $(this).attr("placeholder");
+            if ($(this).val() != iv) {
+                changed = true;
+            }
+        });
+        return changed;
+    }
+    $(document).on("click", "#confirmClose", function (e) {
+        $("#errorMessage").slideUp(3000);
+    });
+    $(document).on("click", "#aApplyToCalender", function (e) {
+        displayconfirm('@Url.Action("ApplyToCalendar", "Plan")');
+    });
+    $(document).on("click", "#LeftNavCampaigns", function (e) {
+        displayconfirm('@Url.Action("Assortment", "Plan")');
+      });
+    function displayconfirm(strURL) {
+          if (isDataChanged()) {
+              $('#errorMessage').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a style='font-weight:bold;color:gray;' href='" + strURL + "'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+              $("#errorMessage").slideDown(3000);
+          }
+          else {
+              window.location.href = strURL;
+          }
+      }
+      //Manoj End 28Jan2014 : Bug-12 (User can lose data via navigation in application)
+</script>

@@ -1,0 +1,196 @@
+﻿@model IEnumerable<RevenuePlanner.Models.UserModel>
+@using RevenuePlanner.Helpers
+
+<script src="@Url.Content("~/Scripts/jquery.validate.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")"></script>
+
+@{
+    ViewBag.Title = "My Team";
+    ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string isViewOnly = ViewBag.IsViewOnly;
+    var isAdmin = (string)ViewBag.IsAdmin;
+    var permRoleCodesForDel = (string)ViewBag.PermRoleCodesForDel;
+}
+
+@Html.Hidden("IsViewOnly", isViewOnly)
+@Html.Hidden("SuccMsg", TempData["SuccessMessage"])
+@Html.Hidden("ErrMsg", TempData["ErrorMessage"])
+
+@section Sidebar {
+    <div class="padding-content">
+        <h4 class="text-shadow-black source-sans-prolight">Preferences</h4>
+    </div>
+    <ul class="nav nav-list nav-gray">
+        <li class="item active">
+            <a class="source-sans-probold inputs" href="#"><span></span>MY PROFILE</a>
+        </li>
+        <li class="item">
+            <a class="source-sans-probold organization" href="#"><span></span>ORGANIZATION</a>
+        </li>
+    </ul>
+}
+
+<!--success message-->
+<div id="successMessage" class="alert hide alert-success message-position">
+    <a class="close">×</a>
+    <strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))
+</div>
+<!--success message-->
+<!--error message-->
+<div id="errorMessage" class="alert hide alert-error message-position">
+    <a class="close">×</a>
+    <strong>Error!</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))
+</div>
+<!--error message-->
+
+<ul class="nav nav-tabs">
+    <li class="source-sans-proregular">
+        <h2 class="title-header">My Team</h2>
+    </li>
+</ul>
+<div class="padding-content cf source-sans-proregular">
+    <div class="row">
+        <div class="span2 content-colum-left">
+            <div class="padding-right70">
+                <ul class="nav nav-pills nav-stacked width216">
+                    <li>
+                        <a  href="@Url.Action("Edit", "User", new { src = "myaccount" })">Account</a>
+                    </li>
+                    <li class="active"><a href="@Url.Action("Index", "User")">Team Members</a></li>
+                    <li><a href="@Url.Action("Notifications", "User")">Notifications</a></li>
+                    <li><a href="@Url.Action("ChangePassword", "User")">Change Password</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="span10 content-colum-right">
+            <table class="table table-striped table-hover myteam" id="userTable">
+                <thead>
+                    <tr>
+                        <th title="First Name">First Name
+                        </th>
+                        <th title="Last Name">Last Name
+                        </th>
+                        <th title="Business Unit">Business Unit
+                        </th>
+                        <th title="Region">Region
+                        </th>
+                        <th title="Role">Role
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr id="@item.UserId" class="userRow">
+                            <td title="@item.FirstName">
+                                @Html.DisplayFor(model => item.FirstName)
+                            </td>
+                            <td title="@item.LastName" >
+                                @Html.DisplayFor(model => item.LastName)
+                            </td>
+                            <td title="@item.BusinessUnit">
+                                @Html.DisplayFor(model => item.BusinessUnit)
+                            </td>
+                            <td title="@item.Geography">
+                                @Html.DisplayFor(model => item.Geography)
+                            </td>
+                            <td title="@item.RoleTitle">
+                                @Html.DisplayFor(model => item.RoleTitle)
+                            </td>
+                            @if (permRoleCodesForDel != null)
+                            {
+                                if (permRoleCodesForDel.Contains(item.RoleCode))
+                                {
+                                    if (isViewOnly != "true")
+                                    {
+                                <td class="userDelete">
+                                    <a href="@Url.Action("Delete", "User", new { id = item.UserId })" onclick="return confirm('Are you sure you want to delete this Member?');" >
+                                        <span class="x-icon hide pull-right" title="Delete Member"></span>
+                                    </a>
+                                </td>
+                                    }
+                                    else
+                                    {
+                                <td class="userDelete">
+                                    <span></span>
+                                </td>
+                                    }
+                                }
+                                else
+                                {
+                                <td class="userDelete">
+                                    <span></span>
+                                </td>
+                                }
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @if (!string.IsNullOrWhiteSpace(isAdmin) && isAdmin.ToLower() == "true")
+            {
+                <p>
+                    <a id="lnkAddUser" href="@Url.Action("Create", "User")" class="link-blue">Add New User</a>
+                </p>
+            }
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+
+        if ($('#IsViewOnly').val() != '') {
+            $('#lnkAddUser').remove();
+            //$("#userTable:input").attr("disabled", true);
+        }
+
+        /*close x event on message*/
+        $(".close").click(function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            $(this).closest(".alert").slideUp(400);
+        });
+
+        if ($('#SuccMsg').val() == null || $('#SuccMsg').val() == '') {
+            $("#successMessage").slideUp(400);
+        }
+        else {
+            $("#successMessage").slideDown(1200);
+            $("#successMessage").slideUp(3000);
+        }
+        if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
+            $("#errorMessage").slideUp(400);
+        }
+        else {
+            $("#errorMessage").slideDown(400);
+            $("html, body").animate({ scrollTop: 0 }, 1000);
+        }
+
+        $('.myteam td').click(function () {
+            if ($('#IsViewOnly').val() != '') {
+                return false;
+            }
+            var tdClass = this.getAttribute('class');
+            var userId = $(this).closest('tr').attr('id');
+            if (tdClass == null || tdClass == '') {
+                if (userId != null) {
+                    window.location.href = "@Url.Content("~/user/edit?usrid=")" + userId + "&src=myteam";
+        }
+    }
+    else {
+        if (tdClass.toString().toLowerCase() == 'userdelete') {
+            return;
+        }
+    }
+        });
+    });
+</script>
+
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@

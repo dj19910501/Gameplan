@@ -1,0 +1,143 @@
+﻿@{
+    int planCampaignId = Convert.ToInt32(ViewBag.PlanCampaignId);
+    string campaignTitle = Convert.ToString(ViewBag.CampaignTitle);
+    @Html.Hidden("planCampaignId", planCampaignId);
+}
+
+<link href="@Url.Content("~/Content/css/Select2/select2.css")" rel="stylesheet" />
+<script src="~/Scripts/js/Select2/select2.js"></script>
+<div class="container-fluid all-height" id="DivShareTacticPopupMain">
+    <div class="row-fluid calc-height">
+        <div class="span12">
+            <div id="errorMessageShareTacticPopup" class="alert alert-error hide error-over-modal">
+                <a class="close">×</a>
+                <strong>Error!</strong><span id="spanMessageErrorShareTacticPopup"></span>
+            </div>
+            <div id="DivShareTacticPopup" class="form-inspect-share hide fade in" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block">
+                <div class="login-wrapper">
+                    <form name="share-tactic">
+                        <h2 class="primary-title source-sans-prosemibold">Share Campaign</h2>
+                        <label>All fields required.</label>
+                        <input id="select2Email" type="hidden" name="select2Email" class="input-block-level" style="margin-bottom: 10px;" />
+                        <textarea rows="3" placeholder="Add Optional Message" id="TxtOptionalMessage" maxlength="255"></textarea>
+                        <span class="attach-icon"></span>
+                        <label id="shareTactic">@campaignTitle</label>
+                        <button class="form-inspect-share-button btn btn-large" type="submit" value="Submit">Share</button>
+                        <button id="cancel-share-tactic-button" class="btn-link" type="button">Cancel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="DivBackgroundShareTactic" class="modal-backdrop fade in" style="z-index: 999"></div>
+<div class="container-fluid all-height" id="DivShareTacticPopupConfirmationMain">
+    <div class="row-fluid calc-height">
+        <div class="span12">
+            <div id="DivShareTacticPopupConfirmation" class="form-inspect-share-confirmation hide fade in" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none">
+                <div class="login-wrapper">
+                    <form name="login-register">
+                        <h2 class="primary-title source-sans-prosemibold">Campaign Successfully<br />
+                            Shared With</h2>
+                        <label id="email-confirmation"></label>
+                        <button class="form-inspect-share-button btn btn-large" type="button" id="BtnCloseConfirmation">Close</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var select2EmailData = [];
+    $(document).ready(function () {
+        var emails = @Html.Raw(Json.Encode(@ViewBag.EmailIds));
+        if (emails != null) {
+            $.each(emails, function (index, email) {
+                select2EmailData.push({id: email, text: email});
+            });
+        }
+        $("#select2Email").select2({
+            placeholder: "Email",
+            multiple: true,
+            data: select2EmailData
+        });
+        $("#errorMessageShareTacticPopup").find(".close").on("click", function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            $(this).closest(".alert").slideUp(400);
+        });
+
+        $('#cancel-share-tactic-button').on("click", function () {
+            $('#DivShareTacticPopupMain').empty();
+            $('#DivBackgroundShareTactic').css("display", "none");
+        });
+
+        //// Valdiate and Send mail on click of share button of share tactic popup.
+        $('form[name="share-tactic"]').on("submit", function (e) {
+            if ($("#select2Email").select2("val") == "") {
+                var msgspan = "Please select atleast one email.";
+                $("#errorMessageShareTacticPopup").css("display", "block");
+                $(".input-block-level").addClass("error");
+                $("#spanMessageErrorShareTacticPopup").text(msgspan);
+            }
+                //// Validating Optional message.
+            else if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test($("#TxtOptionalMessage").val())) {
+                var msgspan = "Special character are not allowed, try again.";
+                $("#errorMessageShareTacticPopup").css("display", "block");
+                $("#TxtOptionalMessage").addClass("error");
+                $(".input-block-level").removeClass("error");
+                $("#spanMessageErrorShareTacticPopup").text(msgspan);
+            } else {
+                $(".input-block-level").removeClass("error");
+                $("#TxtOptionalMessage").removeClass("error");
+                // Send mail and show confirmation popup.
+                ShareTactic($("#select2Email").select2("val").toString(), $("#TxtOptionalMessage").val());
+            }
+
+            return false;
+        });
+
+        $('#BtnCloseConfirmation').on("click", function () {
+            $('#DivShareTacticPopupConfirmationMain').empty();
+            $('#DivBackgroundShareTactic').css("display", "none");
+        });
+    });
+    //Start Share Tactic
+    function ShareTactic(email, optionalMessage) {
+      
+        var planCampaignId = $('#planCampaignId').val();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Home/ShareTactic/")',
+            data: {
+                planTacticId: planCampaignId,
+                toEmailIds: email,
+                optionalMessage: optionalMessage,
+                section : "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()"
+            },
+            success: function (data) {
+                if (data != 'undefined' && data != false) {
+                    ShowConfirmation(email);
+                    return false;
+                }
+                else {
+                    var msgspan = "";
+                    $("#errorMessageShareTacticPopup").css("display", "block");
+                    $("#spanMessageErrorShareTacticPopup").text(msgspan);
+                }
+            },
+            error: function () {
+                myApp.hidePleaseWait();
+            }
+        });
+    }
+
+    function ShowConfirmation(email) {
+        $('#cancel-share-tactic-button').click();
+        $('#DivBackgroundShareTactic').css("display", "block");
+        $("#DivShareTacticPopupConfirmation").css("display", "block");
+        $("#email-confirmation").html(email);
+    }
+
+    //End Share Tactic
+</script>

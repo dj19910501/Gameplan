@@ -1,0 +1,31 @@
+﻿@model List<RevenuePlanner.Models.ChangeLog_ViewModel>
+
+    @foreach(var item in Model)
+    {
+        <div class="change"> 
+            <span class="title">
+                @item.ComponentTitle
+            </span>
+            <span class="type">
+                @item.ComponentType
+            </span> 
+            <span class="action">
+                @item.Action
+            </span> 
+            @if(!string.IsNullOrEmpty(item.ActionSuffix))
+            {
+                <span>from</span>
+                <span class="title">
+                    @item.ActionSuffix
+                </span>
+            }
+            by 
+            <span class="author">
+                @item.User
+            </span>. 
+            <br> 
+            <span class="datetime">
+                @item.DateStamp
+            </span>
+        </div>
+    }

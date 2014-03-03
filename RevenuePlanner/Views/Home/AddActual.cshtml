@@ -1,0 +1,790 @@
+﻿@model RevenuePlanner.Models.HomePlanModel
+@using RevenuePlanner.Helpers
+@{
+    ViewBag.Title = "Add Actuals";
+}
+@section Sidebar
+{
+    <div class="padding-content padding-bottom0" id="DivButtonsHome">
+        <h4 class="text-shadow-black source-sans-prolight">Planning Review</h4>
+            <div class="wraper-btns cf">
+                <div class="span6">
+                    <button id="btnNPlan" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Create", "Plan")'">New Plan</button>
+                </div>
+                <div class="span6">
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Assortment", "Plan")'">Add Activity</button>
+                </div>
+            </div>
+    </div>
+  
+   @*  <!--First Accordion-->
+    <div class="scrolled_div">
+        <div class="accordion colors" id="DivAccordion"></div>
+    </div>
+
+    <div class="shadow-scroll"></div>*@
+    <div class="padding-content padding-top0">
+        <a class="link-alone" id="AShowOnlyMyTactic" href="#">
+            <label>Show only My Tactics</label></a>
+
+        <h4 class="text-shadow-black source-sans-prolight">Filters</h4>
+
+        <!--Second Accordion-->
+        <div class="accordion simple" id="accordion-Filter">
+             <div class="accordion-group">
+                @if (((List<RevenuePlanner.Models.TacticType>)ViewBag.TacticTypeList).Count > 0)
+                {
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle collapsed chevron-right" data-toggle="collapse" data-parent="#accordion-Filter" href="#accordion-filterTacticType">Tactic Type</a>
+                    </div>
+                    <div id="accordion-filterTacticType" class="accordion-body collapse">
+                        @foreach (var item in ((List<RevenuePlanner.Models.TacticType>)ViewBag.TacticTypeList))
+                        {
+                            <a href="#" class="accordion-inner" tacticId="@item.TacticTypeId">@item.Title<span class="pull-right"></span></a>                        
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-Filter" href="#">Tactic Type</a>
+                    </div>
+                }
+            </div>
+            <div class="accordion-group">
+                @if (Model.objGeography.Count > 0)
+                {
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle collapsed chevron-right" data-toggle="collapse" data-parent="#accordion-Filter" href="#accordion-filterGeography">Geography</a>
+                    </div>
+                    <div id="accordion-filterGeography" class="accordion-body collapse">
+                        @foreach (var geography in Model.objGeography)
+                        {
+                            <a href="#" class="accordion-inner" filterId="@geography.GeographyId">@geography.Title<span class="pull-right"></span></a>                        
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-Filter" href="#">Geography</a>
+                    </div>
+                }
+            </div>
+            <div class="accordion-group">
+                @if (Model.objIndividuals.Count > 0)
+                {
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle collapsed chevron-right" data-toggle="collapse" data-parent="#accordion-Filter" href="#accordion-filterIndividuals">Individuals</a>
+                    </div>
+                    <div id="accordion-filterIndividuals" class="accordion-body collapse">
+                        @foreach (var individual in Model.objIndividuals)
+                        {
+                            <a href="#" class="accordion-inner" filterId="@individual.UserId">@string.Format("{0} {1}", individual.FirstName, individual.LastName)<span class="pull-right"></span></a>                        
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="accordion-heading"><a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-Filter" href="#">Individuals</a></div>
+                }
+
+            </div>
+        </div>
+    </div>
+    <!--End Second Accordion-->
+    <ul class="nav nav-list nav-gray-plan">            
+        <li id="change-log" class="nav-header">
+            <span>Change Log</span>
+            <div class="changes"></div>
+        </li>
+    </ul>
+}
+<!--Error message-->
+<div id="errorMessage" class="alert alert-error hide message-position-small">
+    <a class="close" id="aclose">×</a>
+    <strong>Error! </strong><span id="spanMessageError">Make sure all fields are filled and try again.</span>
+</div>
+<!--Error message-->
+<!--success message-->
+<div id="successMessage" class="alert alert-success hide message-position-small">
+    <a class="close">×</a>
+    <strong>Success. </strong><span id="spanMessageSuccess"></span>
+</div>
+<!--success message-->
+
+<a class="link-alone" id="calendar-link-home-actuals" href="#">
+    <label onclick="window.location.href='@Url.Action("Index", "Home", new { currentPlanId = @RevenuePlanner.Helpers.Sessions.PlanId })'"><span class="left-arrow"></span>Back to Calendar</label>
+</a>
+<ul class="nav nav-tabs">
+    <li class="title-header source-sans-proregular">
+        <h2>Add Actuals</h2>
+    </li>
+    <li id="liOpen" class="active pull-right">
+        <a href="#">Open</a>
+    </li>
+    <li id="liAll" class="disabled pull-right">
+        <a href="#">All Tactics</a>
+    </li>
+</ul>
+<div class="padding-content cf source-sans-proregular">
+    <!--Second Accordion-->
+    <div class="accordion accordion-actuals" id="accordion2">
+    </div>
+</div>
+<div id="DivPartialShareTactic">
+</div>
+<script type="text/javascript">
+    var actuals;
+    var showMyTacticId = 0;
+    var geoArr = [];
+    var indArr = [];
+    var tacArr = [];
+    $(document).ready(function () {
+        $(".alert").find(".close").on("click", function (e) {
+            $(this).closest(".alert").slideUp(400);
+        });
+
+        $('.changes').html('');
+        var url = '@Url.Content("~/Home/LoadChangeLog")';
+        $('.changes').load(url + '?objectId=' + "@RevenuePlanner.Helpers.Sessions.PlanId");
+
+        var Status = 0;
+        CallAjax();
+        $("#liOpen a").click(function () {
+            Status = 0;
+            $("#liOpen").removeClass('disabled').addClass('active');
+            $("#liAll").removeClass('active').addClass('disabled');
+            $("#errorMessage").css("display", "none");
+            $("#successMessage").css("display", "none");
+            CallAjax();
+
+        });
+
+        $("#liAll a").click(function () {
+            Status = 1;
+            $("#liOpen").removeClass('active').addClass('disabled');
+            $("#liAll").addClass('active').removeClass('disabled');
+            $("#errorMessage").css("display", "none");
+            $("#successMessage").css("display", "none");
+            CallAjax();
+        });
+
+        function CallAjax() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Home/GetActualTactic/")',
+                data: {
+                    status: Status
+                },
+                success: function (r) {
+                    actuals = r;
+                    $('.accordion-actuals').empty();
+
+                    LoadPage();
+                },
+                error: function () {
+                    myApp.hidePleaseWait();
+                }
+            });
+        }
+
+        var IsShowOnlyMyTactic = false
+        $("#AShowOnlyMyTactic").click(function () {
+            IsShowOnlyMyTactic = !IsShowOnlyMyTactic;
+            if (IsShowOnlyMyTactic) {
+                $("#AShowOnlyMyTactic > label").css("background-color", "#FFFFFF");
+                showMyTacticId = "@RevenuePlanner.Helpers.Sessions.User.UserId"
+                
+            }
+            else {
+                $("#AShowOnlyMyTactic > label").css("background-color", "");
+                showMyTacticId = 0;
+            }
+            callFilter();
+            CallAjax();
+        });
+
+        $("#accordion-filterGeography").find("a").click(ApplyFilter);
+        $("#accordion-filterIndividuals").find("a").click(ApplyFilter);
+        $("#accordion-filterTacticType").find("a").click(ApplyFilter);
+        function ApplyFilter() {
+            ($(this).toggleClass("x-icon"));
+            callFilter();
+            CallAjax();
+        }
+
+        function callFilter() {
+            geoArr = [];
+            indArr = [];
+            tacArr = [];
+            $("#accordion-filterIndividuals").find("a").each(function () {
+                if ($(this).hasClass('x-icon')) {
+                    indArr.push($(this).attr("filterId"));
+                }
+            });
+            $("#accordion-filterGeography").find("a").each(function () {
+                if ($(this).hasClass('x-icon')) {
+                    geoArr.push($(this).attr("filterId"));
+                }
+            });
+            $("#accordion-filterTacticType").find("a").each(function () {
+                if ($(this).hasClass('x-icon')) {
+                    tacArr.push($(this).attr("tacticId"));
+                }
+            });
+            if (showMyTacticId != 0) {
+                indArr.push(showMyTacticId);
+            }
+        }
+
+        function animateMask(mask, value) {
+            $(mask).animate({
+                height: value
+            }, 300, function () {
+                // Animation complete
+            });
+        };
+        function maskWidht() {
+            var widthHeader = $("#accordion2").width(),
+                widthRigth = widthHeader - 652;
+
+            $(".header-toogle-actual-right").width(widthRigth);
+            $(".table-actual-mask").width(widthRigth);
+            $('.table-actual-mask').scrollLeft(0);
+            $(".accordion-actuals .accordion-heading").find('.table-actual-mask').next().css({ "margin-left": widthRigth });
+            return this;
+        };
+
+        function LoadPage() {
+            fillActualsTable();
+            NumberFormatterTipsyTitle(".tipsyclassTitle", 24);
+            maskWidht();
+            /*if a toogle is open the first time page loads, change css of mask*/
+            $(".accordion-actuals .accordion-group .in").prev()
+                                                        .find(".table-actual-mask")
+                                                            .css({ "height": "254px" });
+
+            ///*change left titles from header if toogle  is open*/
+            $(".accordion-actuals .accordion-group .in").prev().
+                                                         find(".table-titles-actual-left")
+                                                                 .css({ "color": "#908D88" });
+
+
+
+
+            /*change mask if toogle is open*/
+            $(".accordion-actuals .accordion-heading a").click(function () {
+                /*set mask shadows width*/
+                $('.shadow-scroll-table-mask-left').css({ "visibility": "hidden" });
+                $('.shadow-scroll-table-mask-right').css({ "visibility": "hidden" });
+                /*set mask height*/
+                $('.table-actual-mask').css({ "height": "0px" });
+                /*set left titles from header if toogle  is open*/
+                $(".accordion-actuals .accordion-group .in").prev().
+                                                        find(".table-titles-actual-left")
+                                                                .css({ "color": "#ffffff" });
+                /*set glass icon from header if toogle  is open*/
+                $(".accordion-actuals .accordion-group .in").prev().
+                                                                find(".glass-icon")
+                                                                        .css({ "visibility": "hidden" });
+                /*set visibility on scroll over mask*/
+                $(".table-actual-mask").css({ "overflow-x": "hidden" });
+
+                var that = this,
+                    mask = $(that).next().find(".table-actual-mask"),
+                    titles = $(that).find(".table-titles-actual-left"),
+                    glassIcon = $(that).find(".glass-icon"),
+                    shadowRight = $(that).next().find(".shadow-scroll-table-mask-right"),
+                    shadowLeft = $(that).next().find(".shadow-scroll-table-mask-left");
+                var styles = { visibility: "hidden", width: "0px", height: "0px" };
+
+                if ($(that).parent().parent().parent().next().hasClass("in")) {
+                    /*set mask shadows width*/
+                    $('.shadow-scroll-table-mask-left').css({ "visibility": "hidden" });
+                    $('.shadow-scroll-table-mask-right').css({ "visibility": "hidden" });
+                    glassIcon.css({ "visibility": "hidden" });
+                    titles.css({ "color": "#ffffff" });
+                    mask.css({ "overflow-x": "hidden" });
+                    shadowRight.css(styles);
+                    shadowLeft.css(styles);
+                    animateMask($(mask), 0);
+                } else {
+                    /*set mask shadows width*/
+                    glassIcon.css({ "visibility": "visible" });
+                    titles.css({ "color": "#908D88" });
+                    mask.css({ "height": "0px" });
+                    mask.css({ "overflow-x": "scroll" });
+                    animateMask($(mask), 254);
+                }
+
+
+            });
+
+            /*click event on mask*/
+            /*change mask if toogle is open*/
+            $(".table-actual-mask").click(function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            });
+
+            /*shadow on table*/
+            $(".accordion-actuals .accordion-heading").find('.table-actual-mask').scroll(function () {
+                var styles = { visibility: "visible", widht: "15px", height: "238px" };
+                var styles1 = { visibility: "hidden", widht: "15px", height: "238px" };
+                if ($(this).scrollLeft() > 0) {
+                    /*set shadows*/
+                    $(this).prev().css(styles);
+                    $(this).next().css(styles);
+                    $(this).next().css({ "margin-left": $(".table-actual-mask").width() });
+                }
+                if ($(this).scrollLeft() == 0) {
+                    $(this).prev().css(styles1);
+                }
+                if ($(this).scrollLeft() == 1800 - $(".table-actual-mask").width()) {
+                    $(this).next().css(styles1);
+                }
+
+            });
+
+            window.onresize = function () {
+                function maskWidht() {
+                    var widthHeader = $("#accordion2").width(),
+                        widthRigth = widthHeader - 652;
+
+                    $(".header-toogle-actual-right").width(widthRigth);
+                    $(".table-actual-mask").width(widthRigth);
+                    $('.table-actual-mask').scrollLeft(0);
+                    $(".accordion-actuals .accordion-heading").find('.table-actual-mask').next().css({ "margin-left": widthRigth });
+
+                    return this;
+                };
+                maskWidht();
+
+            }
+
+            // For Format Price & Total Input
+            $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+            $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+            
+            //Format Commas For Projected Value
+            $("div[id^='ProjectedlblP']").each(function () {
+                $(this).text(FormatCommas($(this).text(), false));
+            });
+
+            //Format Currency For Projected Value
+            $("div[id^='ProjectedlblC']").each(function () {
+                $(this).text(FormatCurrency($(this).text(), false));
+            });
+
+            //Format Commas For Actual Value
+            $("div[id^='ActuallblP']").each(function () {
+                $(this).text(FormatCommas($(this).text(), false));
+            });
+
+            //Format Currency For Actual Value
+            $("div[id^='ActuallblC']").each(function () {
+                $(this).text(FormatCurrency($(this).text(), false));
+            });
+
+            //Format Currency For Actual Cost Input
+            $("input[id^='ActuallblC']").each(function () {
+                $(this).val(FormatCurrency($(this).val(), false));
+            });
+            $('.currency_dollarCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+            $('.accordion').find('input').each(function () {
+
+                $(this).keyup(function () {
+                    if ($(this).val().trim() != '') {
+                        var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
+                        if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+                            //  $(this).removeClass("error");
+                            var costlbl = (this).id.replace('ActuallblCCost', '');
+                            if ((this).id.replace(costlbl, '') != "ActuallblCCost") {
+                                var arr = (this).id.split('-');
+                                costlbl = arr[0];
+                                var formatValue = "P";
+                                if (arr[1] == 'Revenue') {
+                                    formatValue = "C";
+                                }
+                                var ida = "Actuallbl" + formatValue + arr[1] + arr[0];
+                                var totalvalue = 0;
+                                $('#tr' + arr[0] + arr[1]).find('input').each(function () {
+                                    var cvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', ''));
+                                    if (!isNaN(cvalue)) {
+                                        totalvalue = cvalue + parseFloat(totalvalue);
+                                    }
+                                });
+                                if (arr[1] == 'Revenue') {
+                                    document.getElementById(ida).innerHTML = totalvalue;
+                                    document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, false);
+                                }
+                                else {
+                                    document.getElementById(ida).innerHTML = totalvalue;
+                                    document.getElementById(ida).innerHTML = FormatCommas(document.getElementById(ida).innerHTML, false);
+                                }
+                            }
+                            calculateRIO(costlbl);
+                        }
+                        else {
+                            //$(this).addClass("error");
+                        }
+                        
+                    }
+                    else {
+                        //$(this).removeClass("error");
+                    }
+
+                });
+            });
+          
+            function calculateRIO(id) {
+                var pcost = parseFloat(ReplaceCC($("#ProjectedlblCCost" + id).text()));
+                if (pcost != 0 && !isNaN(pcost)) {
+                    var prevenue = parseFloat(ReplaceCC($("#ProjectedlblCRevenue" + id).text()));
+                    var roip = prevenue / pcost;
+                    $("#ProjectedROI" + id).text(roip.toFixed(2));
+                }
+                pcost = parseFloat(ReplaceCC($("#ActuallblCCost" + id).val()));
+                if (pcost != 0 && !isNaN(pcost)) {
+                    var prevenue = parseFloat(ReplaceCC($("#ActuallblCRevenue" + id).text()));
+                    var roiT = prevenue / pcost;
+                    $("#ActualROI" + id).text(roiT.toFixed(2));
+                }
+            }
+
+            $("[id^='BtnShareTactic']").click(function () {
+                $("#errorMessage").css("display", "none");
+                $("#successMessage").css("display", "none");
+                $("#DivPartialShareTactic").empty();
+                var url = '@Url.Content("~/Home/ShowShareTactic/")';
+                $("#DivPartialShareTactic").load(url + '?planTacticId=' + $(this).attr('tacticId') + '&section=@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()');
+            });
+
+
+            $("[id^='UpdateResult']").click(function () {
+                $("#errorMessage").css("display", "none");
+                $("#successMessage").css("display", "none");
+
+
+                var _tactic = []
+                var tacticId = $(this).attr('tacticId');
+                var isError = false;
+                var isData = false;
+                var totalINQActual = ReplaceCC($("#ActuallblPINQ" + tacticId).text());
+                var totalMQLActual = ReplaceCC($("#ActuallblPMQL" + tacticId).text());
+                var totalCWActual = ReplaceCC($("#ActuallblPCW" + tacticId).text());
+                var totalRevenueActual = ReplaceCC($("#ActuallblCRevenue" + tacticId).text());
+                var totalCostActual = ReplaceCC($("#ActuallblCCost" + tacticId).val());
+                var totalROI = ReplaceCC($("#ProjectedROI" + tacticId).text());
+                var totalROIActual = ReplaceCC($("#ActualROI" + tacticId).text());
+                var tableId = "#divTable" + tacticId;
+                $(tableId).find('input').each(function () {
+                    if ($(this).val().trim() != '') {
+                        //alert(ReplaceCC($(this).val()));
+                        var thisValue = ReplaceCC($(this).val());
+                        if (thisValue.match('^(0|[1-9][0-9]*)$')) {
+                            $(this).removeClass("error");
+                        }
+                        else {
+                            $(this).addClass("error");
+                            isError = true;
+                        }
+                        var arr = (this).id.split('-');
+                        if (thisValue != 0) {
+                            _tactic.push({
+                                PlanTacticId: tacticId,
+                                StageTitle: arr[1],
+                                Period: arr[2],
+                                ActualValue: thisValue,
+                                TotalINQActual: totalINQActual,
+                                TotalMQLActual: totalMQLActual,
+                                TotalCWActual: totalCWActual,
+                                TotalRevenueActual: totalRevenueActual,
+                                TotalCostActual: totalCostActual,
+                                ROI: totalROI,
+                                ROIActual: totalROIActual
+                            });
+                            isData = true;
+                        }
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                });
+                if (isError) {
+                    $("#errorMessage").css("display", "block");
+                    $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.ValidateForValidField");
+                    return false;
+                }
+                if (parseFloat(totalMQLActual) > parseFloat(totalINQActual)) {
+                    var msg = "@RevenuePlanner.Helpers.Common.objCached.ValidationForMqlGreaterThanINQ"
+                     var msgdisplay = msg.replace('{0}', totalMQLActual).replace('{1}', totalINQActual);
+                     $("#spanMessageError").text(msgdisplay);
+                     $("#errorMessage").css("display", "block");
+                     return false;
+                }
+                if (!isData) {
+                    $("#errorMessage").css("display", "block");
+                    $("#spanMessageError").empty();
+                    $("#spanMessageError").text("To upload result you require to add value for one of the field.");
+                    return false;
+                }
+                $("#errorMessage").css("display", "none");
+                _tactic = JSON.stringify({ 'tacticactual': _tactic });
+                $.ajax({
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    type: 'POST',
+                    url: '@Url.Content("~/Home/UploadResult/")',
+                    data: _tactic,
+                    success: function (data) {
+                        if (data != 'undefined') {
+                            if (data.id != 0) {
+                                CallAjax();
+                                $("#successMessage").css("display", "block");
+                                $("#spanMessageSuccess").empty();
+                                $("#spanMessageSuccess").text(data.msg);
+                            }
+                        }
+                    },
+                    error: function () {
+                        myApp.hidePleaseWait();
+                    }
+                });
+
+
+            });
+        }
+
+        function fillActualsTable() {
+            if (typeof actuals != 'undefined') {
+                $('.accordion-actuals').empty();
+                var $html = '';
+                var isFilterFound = false;
+                if (actuals.length) {
+                    var indexValue = 0;
+                    for (i in actuals) {
+                        var isShow = true;
+                        if (geoArr.length != 0 || indArr.length != 0 || tacArr.length != 0) {
+                            isShow = false;
+                        }
+                        //, actuals[i].geographyId, actuals[i].individualId, actuals[i].tacticTypeId
+                        var foundTac = -1;
+                        for(var k= 0; k <= tacArr.length; k++)
+                        {
+                            if(tacArr[k] == actuals[i].tacticTypeId)
+                            {
+                                foundTac = k;
+                            }
+                        }
+                        var foundGeo = jQuery.inArray(actuals[i].geographyId, geoArr);
+                        var foundInd = jQuery.inArray(actuals[i].individualId, indArr);
+                        if ((foundGeo >= 0 && indArr.length == 0 && tacArr.length == 0) ||
+                            (foundInd >= 0 && geoArr.length == 0 && tacArr.length == 0) ||
+                            (foundTac >= 0 && geoArr.length == 0 && indArr.length == 0) ||
+                            (foundGeo >= 0 && foundInd >= 0 && tacArr.length == 0) ||
+                            (foundGeo >= 0 && foundTac >= 0 && indArr.length == 0) ||
+                            (foundTac >= 0 && foundInd >= 0 && geoArr.length == 0) ||
+                            (foundGeo >= 0 && foundInd >= 0 && foundTac >= 0)) {
+                            isShow = true;
+                        }
+                        if (isShow)
+                        {
+                            indexValue = indexValue + 1;
+                            isFilterFound = true;
+                            addRowActual(indexValue, actuals[i].id, actuals[i].title, actuals[i].inqProjected, actuals[i].inqActual, actuals[i].mqlProjected, actuals[i].mqlActual, actuals[i].cwProjected, actuals[i].cwActual, actuals[i].revenueProjected, actuals[i].revenueActual, actuals[i].costProjected, actuals[i].costActual, actuals[i].roiProjected, actuals[i].roiActual, actuals[i].actualData);
+                        }
+                    }
+                    if (!isFilterFound) {
+                        $html += '@RevenuePlanner.Helpers.Common.objCached.NoTacticFound';
+                        var $tableActuals = $('.accordion-actuals');
+                        $tableActuals.append($html);
+                    }
+                } else {
+                    if (Status == 0) {
+                        $html += '@RevenuePlanner.Helpers.Common.objCached.NoOpenTacticExists';
+                    }
+                    else {
+                        $html += '@RevenuePlanner.Helpers.Common.objCached.NoTacticExistPlan';
+                    }
+                    var $tableActuals = $('.accordion-actuals');
+
+                    $tableActuals.append($html);
+                }
+                
+
+            }
+        }
+
+        //add row in actuals table
+        function addRowActual(_index, _id, _title, _inqProjected, _inqActual, _mqlProjected, _mqlActual, _cwProjected, _cwActual, _revenueProjected, _revenueActual, _costProjected, _costActual, _roiProjected, _roiActual, _actualData) {
+            var $tableActuals = $('.accordion-actuals');
+            var num = parseInt(_index);
+            var updateBy = '', stat;
+            var $html = '<div class="accordion-group">' +
+                            '<div class="accordion-heading">' +
+                            '<div class="accordion-toggle">' +
+                                        '<div class="header-toogle-actual">' +
+                                         '<a data-toggle="collapse" class="chevron-right" data-parent="#accordion2" href="#collapse' + _id + '">' +
+                                            '<div class="header-toogle-actual-left">' +
+                                            '<span class="font-black">' + num + '.</span><span class="tipsyclassTitle">' + _title +
+                                            '</span><span class="glass-icon"></span>' +
+                                                '<div class="table-titles-actual-left">' +
+                                                    '<label>Projected</label>' +
+                                                    '<label>Actual</label>' +
+                                                '</div>' +
+                                            '</div>' +
+                                        '</a>';
+
+            // if (typeof _actualData != 'undefined') {
+            //if (_actualData.length > 0) {
+            $html += '<div class="header-toogle-actual-right">' +
+            '<div class="shadow-scroll-table-mask-left"></div>' +
+            '<div class="table-actual-mask">' +
+            '<div id="divTable' + _id + '">' +
+               '<table id="table_actuals" class="table" tableTacticId="tableActual' + _id + '">' +
+                '<thead>' +
+                    '<tr>' +
+                        '<th>Jan</th>' +
+                        '<th>Feb</th>' +
+                        '<th>Mar</th>' +
+                        '<th>Apr</th>' +
+                        '<th>May</th>' +
+                        '<th>Jun</th>' +
+                        '<th>Jul</th>' +
+                        '<th>Aug</th>' +
+                        '<th>Sep</th>' +
+                        '<th>Oct</th>' +
+                        '<th>Nov</th>' +
+                        '<th>Dec</th>' +
+                    '</tr>' +
+                '</thead>' +
+                '<tbody>';
+            var arrStage = ['INQ', 'MQL', 'CW', 'Revenue'];
+            for (var p = 0; p < arrStage.length; p = p + 1) {
+                var idtr = "tr" + _id + arrStage[p];
+                $html += '<tr id=' + idtr + '>';
+                for (var j = 1; j <= 12; j = j + 1) {
+                    var tdId = _id + "-" + arrStage[p] + "-Y" + j;
+                    $html += '<td><input id="' + tdId + '" placeholder="0" ';
+                    //  value=' + _actualData[i].jan + '></input></td>';
+                    if (arrStage[p] == 'Revenue') {
+                        $html += ' class="currency_dollar"  maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar"';
+                    }
+                    else {
+                        $html += ' class="priceValue"  maxlength="@RevenuePlanner.Helpers.Common.maxLengthPriceValue"';
+                    }
+
+                    for (k in _actualData) {
+                        var comStr1 = _actualData[k].title + _actualData[k].period;
+                        var comStr2 = arrStage[p] + "Y" + j;
+                        if (comStr1 == comStr2) {
+                            $html += 'value="' + _actualData[k].actualValue + '"';
+                        }
+                        updateBy = _actualData[k].UpdateBy;
+                        stat = _actualData[k].IsUpdate;
+                    }
+                    $html += ' ></input></td>';
+                    // $html += '<td><input placeholder="0" ></input></td>';
+                }
+                $html += '</tr>';
+            }
+
+            $html += '</tbody>' +
+                '</table>' +
+                '</div>' +
+                '</div>' +
+                '<div class="shadow-scroll-table-mask-right"></div>' +
+                '</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>' +
+        '<div id="collapse' + _id + '" class="accordion-body collapse">' +
+          '<div class="accordion-inner">';
+
+            $html += '<div class="body-toogle-actual">@Html.LabelForINQ("INQ")<div class="table-info-actual-left-wraper">' +
+                                            '<div class="table-info-actual-left" id="ProjectedlblPINQ' + _id + '">' +
+                                                _inqProjected +
+                                            '</div>' +
+                                            '<div class="table-info-actual-left" id="ActuallblPINQ' + _id + '">' +
+                                                _inqActual +
+                                            '</div>' +
+                                        '</div>' +
+                                    '</div>';
+
+            $html += '<div class="body-toogle-actual">@Html.LabelForMQL("MQL")<div class="table-info-actual-left-wraper">' +
+                                            '<div class="table-info-actual-left" id="ProjectedlblPMQL' + _id + '">' +
+                                                _mqlProjected +
+                                            '</div>' +
+                                            '<div class="table-info-actual-left" id="ActuallblPMQL' + _id + '">' +
+                                                _mqlActual +
+                                            '</div>' +
+                                        '</div>' +
+                                    '</div>';
+
+            $html += '<div class="body-toogle-actual">@Html.LabelForCW("CW")<div class="table-info-actual-left-wraper">' +
+                                            '<div class="table-info-actual-left" id="ProjectedlblPCW' + _id + '">' +
+                                                _cwProjected +
+                                            '</div>' +
+                                            '<div class="table-info-actual-left" id="ActuallblPCW' + _id + '">' +
+                                                _cwActual +
+                                            '</div>' +
+                                        '</div>' +
+                                    '</div>';
+
+            $html += '<div class="body-toogle-actual">Revenue<div class="table-info-actual-left-wraper">' +
+                                            '<div class="table-info-actual-left" id="ProjectedlblCRevenue' + _id + '">' +
+                                                _revenueProjected +
+                                            '</div>' +
+                                            '<div class="table-info-actual-left" id="ActuallblCRevenue' + _id + '">' +
+                                                _revenueActual +
+                                            '</div>' +
+                                        '</div>' +
+                                    '</div>';
+            //}
+            //else {
+
+            //}
+            //}//if
+            $html += '<div class="body-toogle-actual">Cost' +
+                                '<div id="border-right" class="table-info-actual-left-wraper">' +
+                                    '<div class="table-info-actual-left" id="ProjectedlblCCost' + _id + '">' +
+                                        _costProjected +
+                                    '</div>' +
+                                    '<div class="table-info-actual-left" style="float: right;">' +
+                                        '<input placeholder="0" class="currency_dollarCost" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" id="ActuallblCCost' + _id + '" value="' + _costActual + '">' + '</input>' +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>';
+
+
+            $html += '<div class="body-toogle-actual">ROI' +
+                                    '<div id="border-right" class="table-info-actual-left-wraper">' +
+                                        '<div class="table-info-actual-left" id="ProjectedROI' + _id + '">' +
+                                            _roiProjected +
+                                        '</div>' +
+                                        '<div class="table-info-actual-left green-value" id="ActualROI' + _id + '">' +
+                                            _roiActual +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>';
+
+            $html += '<div class="body-toogle-actual">' +
+                            '<div class="wrapper-toogle-actual-buttons">' + updateBy +
+                                '<button id="BtnShareTactic' + _id + '" tacticId="' + _id + '" class="btn btn-blue text-shadow-blue source-sans-proregular share-tactic-icon button-inspect-result-modal pull-right" type="button"><span class="flag-icon"></span>Share Tactic</button>' +
+                                '<button id="UpdateResult" tacticId="' + _id + '" class="btn btn-blue text-shadow-blue source-sans-proregular button-inspect-result-modal pull-right margin-right20" type="button"><span class="flag-icon"></span>Update Actuals</button>' +
+                            '</div>' +
+                        '</div>' +
+                        '</div>' +
+                    '</div>' +
+                  '</div>';
+            $tableActuals.append($html);
+
+        }//addRowActual
+
+    });//document ready
+
+
+
+</script>

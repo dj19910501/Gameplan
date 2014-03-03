@@ -1,0 +1,200 @@
+﻿@model IEnumerable<RevenuePlanner.Models.UserNotification>
+@using RevenuePlanner.Helpers
+
+<script src="@Url.Content("~/Scripts/jquery.validate.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")"></script>
+
+@{
+    ViewBag.Title = "My Notifications";
+    ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string isViewOnly = ViewBag.IsViewOnly;
+    int SMCount = (int)ViewBag.SMCount;
+    int AMCount = (int)ViewBag.AMCount;
+}
+
+@Html.Hidden("IsViewOnly", isViewOnly)
+@Html.Hidden("SuccMsg", TempData["SuccessMessage"])
+@Html.Hidden("ErrMsg", TempData["ErrorMessage"])
+
+@section Sidebar {
+    <div class="padding-content">
+        <h4 class="text-shadow-black source-sans-prolight">Preferences</h4>
+    </div>
+    <ul class="nav nav-list nav-gray">
+        <li class="item active">
+            <a class="source-sans-probold inputs" href="#"><span></span>MY PROFILE</a>
+        </li>
+        <li class="item">
+            <a class="source-sans-probold organization" href="#"><span></span>ORGANIZATION</a>
+        </li>
+    </ul>
+}
+
+
+<!--success message-->
+<div id="successMessage" class="alert hide alert-success message-position">
+    <a class="close">×</a>
+    <strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))
+</div>
+<!--success message-->
+<!--error message-->
+<div id="errorMessage" class="alert hide alert-error message-position">
+    <a class="close">×</a>
+    <strong>Error!</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))
+</div>
+<!--error message-->
+
+<ul class="nav nav-tabs">
+    <li class="source-sans-proregular">
+        <h2 class="title-header">My Notifications</h2>
+    </li>
+</ul>
+
+<div class="padding-content cf source-sans-proregular" id="content">
+    <div class="row">
+        <div class="span2 width216">
+            <div class="padding-right70">
+                <ul class="nav nav-pills nav-stacked width216">
+                    <li>
+                        <a href="@Url.Action("Edit", "User", new { src = "myaccount" })">Account</a>
+                    </li>
+                    <li><a href="@Url.Action("Index", "User")">Team Members</a></li>
+                    <li class="active"><a href="@Url.Action("Notifications", "User")">Notifications</a></li>
+                    <li><a href="@Url.Action("ChangePassword", "User")">Change Password</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="span10 content-user-checkbox">
+            @if (SMCount > 0)
+            {
+                <div class="cf inputs-aligned-horizontal">
+                    <label class="align-top">System Messages</label>
+                    <div class="wraper-checkbox">
+                        @foreach (var item in Model)
+                        {
+                            var checkBoxIdSMSel = "chk" + item.NotificationId;
+                            var checkBoxIdSM = "chk" + item.NotificationId;
+                            var notificationType = item.NotificationType;
+
+                            if (notificationType.ToString().ToLower() == Enums.NotificationType.SM.ToString().ToLower())
+                            {
+                                if (item.IsSelected)
+                                {
+                            <input type="checkbox" id="@checkBoxIdSMSel" class="chkclass" value="@item.NotificationId" checked="checked" />@item.NotificationTitle
+                            <br />
+                                }
+                                else
+                                {
+                            
+                            <input type="checkbox" id="@checkBoxIdSM" class="chkclass" value="@item.NotificationId"/>@item.NotificationTitle
+                            <br />
+                                }
+                            }
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (AMCount > 0)
+            {
+                <div class="cf inputs-aligned-horizontal">
+                    <label class="align-top">Activity Messages</label>
+                    <div class="wraper-checkbox">
+                        @foreach (var item in Model)
+                        {
+                            var checkBoxIdAMSel = "chk" + item.NotificationId;
+                            var checkBoxIdAM = "chk" + item.NotificationId;
+                            var notificationType = item.NotificationType;
+
+                            if (notificationType.ToString().ToLower() == Enums.NotificationType.AM.ToString().ToLower())
+                            {
+                                if (item.IsSelected)
+                                {
+                            <input type="checkbox" id="@checkBoxIdAMSel" class="chkclass" value="@item.NotificationId" checked="checked" />@item.NotificationTitle
+                            <br />  
+                                }
+                                else
+                                {
+                            <input type="checkbox" id="@checkBoxIdAM" class="chkclass" value="@item.NotificationId" />@item.NotificationTitle
+                            <br />
+                                }
+                            }
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (isViewOnly != "true")
+            {
+                <div class="cf inputs-aligned-horizontal">
+                    <div class="container-button">
+                        <input type="submit" value="Save" title="save" id="saveNotifications" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" />
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+
+        if ($('#IsViewOnly').val() != '') {
+            $("#content :input").attr("disabled", true);
+        }
+
+        /*close x event on message*/
+        $(".close").click(function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            $(this).closest(".alert").slideUp(400);
+        });
+
+        if ($('#SuccMsg').val() == null || $('#SuccMsg').val() == '') {
+            $("#successMessage").slideUp(400);
+        }
+        else {
+            $("#successMessage").slideDown(1200);
+            $("#successMessage").slideUp(3000);
+        }
+        if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
+            $("#errorMessage").slideUp(400);
+        }
+        else {
+            $("#errorMessage").slideDown(400);
+            $("html, body").animate({ scrollTop: 0 }, 1000);
+        }
+
+    });
+
+    $('#saveNotifications').click(function () {
+        var checkedList = '';
+        $('input[type=checkbox]').each(function () {
+            if (this.checked) {
+                checkedList += $(this).val() + ',';
+            }
+        });
+        $.ajax(
+       {
+           type: "GET",
+           cache: false,
+           url: 'SaveNotifications',
+           data: { notifications: checkedList.substring(0, checkedList.length - 1) },
+           success: function (data) {
+               window.location.href = "@Url.Content("~/User/Notifications")";
+           },
+           error: function () {
+               myApp.hidePleaseWait();
+           }
+       });
+    });
+
+</script>
+
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@

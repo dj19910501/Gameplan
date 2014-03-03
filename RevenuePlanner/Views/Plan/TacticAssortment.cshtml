@@ -1,0 +1,443 @@
+﻿@model RevenuePlanner.Models.Plan_Campaign_Program_TacticModel
+@using RevenuePlanner.Helpers
+@*<script type="text/javascript" src="~/Scripts/js/Mask.js"></script>*@
+<div class="head">
+    <span class="close-form source-sans-proregular">» CLOSE MENU</span>
+    <div class="cf">
+        <h2 class="source-sans-prolight">Tactic Detail</h2>
+        @* TFS Point 253,206 : Model/Plan - sidebars - integrate gear icon with feature to delete/duplicate tactic
+    Added by Nirav Shah on 17 feb 2014
+ *@
+        @if (!(bool)ViewBag.IsCreated)
+        {
+            <div class="btn-group pull-right gear-dropdown">
+                <span class="gear-sidebar dropdown-toggle" data-toggle="dropdown"></span>
+                <ul class="dropdown-menu">
+                    <li><a id="spanDuplicate">Duplicate Tactic</a></li>
+                    @if ((bool)ViewBag.IsOwner && !(bool)ViewBag.IsCreated)
+                    {
+                        <li><a id="deleteTactic">Delete Tactic</a></li>                        
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</div>
+<!--end sidebar-head-->
+<div id="errorMessage" class="alert alert-error hide message-position-small">
+    <a class="close">×</a>
+    <strong>Error!</strong> <span id="spanMessage"></span>
+</div>
+<div id="frm_campaigns" name="frm_campaigns">
+    @using (Html.BeginForm(new { @id = "frmSaveTactic" }))
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $(".verticalIdSelectBox select").selectbox();
+            });
+        </script>
+        <div class="content">
+            @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
+            @Html.HiddenFor(model => model.PlanTacticId, new { id = "hdnPlanTacticId" })
+            @Html.HiddenFor(model => model.PStartDate, new { id = "hdnPStartDate" })
+            @Html.HiddenFor(model => model.PEndDate, new { id = "hdnPEndDate" })
+            @Html.HiddenFor(model => model.CStartDate, new { id = "hdnCStartDate" })
+            @Html.HiddenFor(model => model.CEndDate, new { id = "hdnCEndDate" })
+
+
+            <label class="t_title">Tactic Title</label>
+            @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true" })
+
+            <label>Tactic Type</label>
+            <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true", Id = "ddlTacticType" })</span>
+
+            <label>Description</label>
+            @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", rows = "3" })
+
+            @if ((bool)ViewBag.RedirectType)
+            {
+                <label>Parent Campaign</label>
+                @Html.TextBox("txtCampaign", (string)ViewBag.Campaign, new { @readonly = "true" });
+                <label>Parent Program</label>
+                @Html.TextBox("txtProgram", (string)ViewBag.Program, new { @readonly = "true" });
+            }
+
+            <label>Vertical</label>
+            <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
+
+            <label>Audience</label>
+            <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
+
+            <label>Geography</label>
+            <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
+            @Html.Hidden("hdnRedirect", (bool)ViewBag.RedirectType, new { id = "hdnRedirectType" })
+            @if ((bool)ViewBag.RedirectType)
+            {
+                <div class="cf margin-top10 margin-left-4">
+                    <div class="pull-left width50">
+                        <label class="padding-left4">Start date</label>
+                        <div class="dp datepicker input-append date without-margin calendar-width" id="dp_start" data-date="today();" data-date-format="@RevenuePlanner.Helpers.Common.dateFormat">
+                            @Html.TextBoxFor(model => model.StartDate, new { @class = "span2 black-border-right font-size13 padding-bottom14", id = "t_startdate" })
+                            <span class="add-on height30">
+                                <img src="~/Content/images/gray-calendar-icon.png"></span>
+                        </div>
+                    </div>
+
+                    <div class="pull-right width50">
+                        <label class="padding-left4">End date</label>
+                        <div class="dp datepicker input-append date without-margin calendar-width" id="dp_end" data-date="today();" data-date-format="@RevenuePlanner.Helpers.Common.dateFormat">
+                            @Html.TextBoxFor(model => model.EndDate, new { @class = "span2 black-border-right font-size13 padding-bottom14", id = "t_enddate" })
+                            <span class="add-on height30">
+                                <img src="~/Content/images/gray-calendar-icon.png"></span>
+                        </div>
+                    </div>
+
+                </div>
+            }
+        </div>
+        <!--End content-->
+        <div class="content dark inline-ellipsis">
+            <div class="cf width100">
+                <div class="width65px margin-right20 pull-left">
+                    <label>@Html.LabelForINQ("INQ")</label>
+                    @Html.TextBoxFor(model => model.INQs, new { placeholder = "0", id = "txtinq", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
+                </div>
+
+                <div class="width65px margin-right20 pull-left">
+                    <label>@Html.LabelForMQL("MQL")</label>
+                    @Html.TextBoxFor(model => model.MQLs, new { placeholder = "0", id = "txtmql", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @readonly = "true" })
+                </div>
+
+                <div class="width65px pull-left">
+                    <label>Cost</label>
+                    @*  TFS Bug 207 : Cant override the Cost from the defaults coming out of the model
+                                    changed by Nirav shah on 10 feb 2014  *@
+                    @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", id = "txtCost", @class = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                </div>
+            </div>
+            @if ((bool)ViewBag.RedirectType)
+            {
+                <p class="font-size12 pull-left font-size13">Edit tactic details in </p>
+                <label class="pull-left font-size12 padding-left3">@*@Html.ActionLink("Assortment Mix","Assortment")*@ <a href="#" id="lnkCampaigns">Campaigns</a>.</label>
+            }
+        </div>
+        <!--end content dark-->
+
+        <div class="wraper-btns cf">
+            <div class="span6">
+                <button id="save_campaign_tactic" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
+            </div>
+            <div class="span6">
+                <button class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
+            </div>
+        </div>
+        <!--End buttons-->
+    }
+
+</div>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        //$.ajaxSetup({ cache: false });
+        var isredirect = "@ViewBag.RedirectType";
+        var isAssortment = $("#hdnRedirectType").val();
+        var hdnYear = @ViewBag.Year
+        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+
+        if (isredirect == 'True') {
+            $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
+            $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
+        }
+        $("span.tool-tip").tooltip();
+
+        $(".alert").find(".close").on("click", function (e) {
+           
+            e.stopPropagation();
+            e.preventDefault();
+            $(this).closest(".alert").slideUp(400);
+        });
+        if (isredirect == 'True') {
+            $('.dropdown-menu').css("display", "none");
+        }
+        $('.close-form', this.$panel).click(function (e) {
+            if (isredirect == 'True') {
+                $('.dropdown-menu').css("display", "none");
+            }
+            $("#slidepanel").css("display", "none");
+            $("#slidepanel-container").empty();
+        });
+
+        var mqlConversion = 0;
+        function GetConversionRate(inqValue) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/CalculateMQL")',
+                data: $("form").serialize() + '&RedirectType=' + isAssortment,
+            success: function (data) {
+                mqlConversion = data.mql;
+                    $("#txtmql").val(FormatCommas(Math.round(mqlConversion * inqValue).toString(), false));
+            },
+            error: function () {
+                ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                myApp.hidePleaseWait();
+            }
+        });
+        }
+
+        $('form').find('input[type=text], select, textarea').each(function () {
+            $(this).change(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val() == '') {
+                        $(this).addClass("error");
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                }
+            });
+        });
+
+        $("#txtinq").keyup(function () {
+            var inqValue = ReplaceCC($("#txtinq").val());
+            GetConversionRate(inqValue);
+        });
+
+        $("#save_campaign_tactic").click(function () {
+            var iserror = false;
+            $('form').find('input[type=text], select, textarea').each(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val() == '') {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                }
+            });
+            if (iserror) {
+                ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+                return false;
+            }
+            if (isredirect == 'True') {
+                var sdate = $('#t_startdate').val();
+                var edate = $('#t_enddate').val();
+                if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
+                if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
+                //var psdate = $('#hdnPStartDate').val();
+                //var pedate = $('#hdnPEndDate').val();
+                //var csdate = $('#hdnCStartDate').val();
+                //var cedate = $('#hdnCEndDate').val();
+                if (!validateDateCompare(sdate, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) return false;
+                //if (!validateDateCompare(psdate, sdate, "Program Start Date")) return false;
+                //if (!validateDateCompare(csdate, sdate, "Campaign Start Date")) return false;
+                //if (!validateDateCompare(edate, pedate, "Program End Date")) return false;
+                //if (!validateDateCompare(edate, cedate, "Campaign End Date")) return false;
+            }
+
+            
+            $("#txtinq").val(ReplaceCC($("#txtinq").val()));
+            $("#txtmql").val(ReplaceCC($("#txtmql").val()));
+            $("#txtCost").val(ReplaceCC($("#txtCost").val()));
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/SaveTactic")',
+                data: $("form").serialize() + '&RedirectType=' + isAssortment,
+                success: function (data) {
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                        return;
+                    }
+                    if (data.errormsg) {
+                        ShowError(data.errormsg);
+                        return;
+                    }
+
+                },
+                error: function () {
+                    ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                    myApp.hidePleaseWait();
+                }
+            });
+        });
+
+        $('#ddlTacticType').change(function () {
+            var tacticTypeId = $(this).val();
+            var pinq = 0;
+            var pmql = 0;
+            var pcost = 0;
+            //alert(tacticTypeId);
+            if (tacticTypeId != '') {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Plan/LoadTacticTypeValue")',
+                    data: { tacticTypeId: tacticTypeId },
+                    success: function (data) {
+                        pinq = data.inq;
+                        pmql = data.mql;
+                        pcost = data.revenue;
+                        $("#txtinq").val(pinq);
+                        GetConversionRate(pinq);
+                       // $("#txtmql").val(FormatCommas(Math.round(mqlConversion * pinq).toString(), false));
+                        $("#txtCost").val(pcost);
+                        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+                        $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+                    },
+                    error: function () {
+                        ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                        myApp.hidePleaseWait();
+                    }
+                });
+            }
+            else {
+                $("#txtinq").val(pinq);
+                $("#txtmql").val(pmql);
+                $("#txtCost").val(pcost);
+                $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+                $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+            }
+
+
+        });
+
+        $("#spanDuplicate").click(function () {
+            var hdnPlanTacticId = $("#hdnPlanTacticId").val();
+            var isAssortment = $("#hdnRedirectType").val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/DuplicateCopyClone")',
+                data:
+                    {
+                        id: hdnPlanTacticId,
+                        RedirectType: isAssortment,
+                        CopyClone: 'Tactic'
+                    },
+                success: function (data) {
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                        return;
+                    }
+                    if (data.errormsg) {
+                        ShowError(data.errormsg);
+                        return;
+                    }
+
+                },
+                error: function () {
+                    ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                    myApp.hidePleaseWait();
+                }
+            });
+        });
+@* TFS Point 253,206 : Model/Plan - sidebars - integrate gear icon with feature to delete/duplicate tactic
+    Added by Nirav Shah on 17 feb 2014
+ *@
+        $("#deleteTactic").click(function () {
+            if (confirm('Are you sure you want to delete this tactic?')) {
+                var idTactic = $("#hdnPlanTacticId").val();
+                var isAssortment = $("#hdnRedirectType").val();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Plan/DeleteTactic")',
+                    data: {
+                        ID: idTactic,
+                        RedirectType: isAssortment
+                    },
+                    success: function (data) {
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                            return;
+                        }
+                        if (data.errormsg) {
+                            alert(data.errormsg);
+                            return;
+                        }
+
+                    },
+                    error: function () {
+                        myApp.hidePleaseWait();
+                    }
+                });
+            }
+            else {
+                return false;
+            }
+        });
+        function ShowError(value) {
+            $("#errorMessage").slideDown(400);
+            $("#spanMessage").empty();
+            $("#spanMessage").text(value);
+        }
+
+        $('.dp').datepicker({
+            format: "@RevenuePlanner.Helpers.Common.dateFormat",
+            autoclose: true,
+        }).on('changeDate', function (ev) {
+            var inqValue = ReplaceCC($("#txtinq").val());
+            GetConversionRate(inqValue);
+            $(this).datepicker('hide');
+        });;
+
+        /*hide the other datepicker in input onclick*/
+
+        $('#t_startdate').click(function () {
+            $('#dp_end').datepicker('hide');
+        })
+
+        $('#t_enddate').click(function () {
+            $('#dp_start').datepicker('hide');
+        })
+
+
+        //$('#t_startdate-p').click(function () {
+        //    $('#dp_end-p').datepicker('hide');
+        //})
+
+        //$('#t_enddate-p').click(function () {
+        //    $('#dp_start-p').datepicker('hide');
+        //})
+
+        //$('#t_startdate-t').click(function () {
+        //    $('#dp_end-t').datepicker('hide');
+        //})
+
+        //$('#t_enddate-t').click(function () {
+        //    $('#dp_start-t').datepicker('hide');
+        //})
+
+        //hide the other datepicker in add-on onclick
+        $('#dp_start .add-on').click(function () {
+            $('#dp_start').datepicker('show');
+            $('#dp_end').datepicker('hide');
+
+        })
+        $('#dp_end .add-on').click(function () {
+            $('#dp_start').datepicker('hide');
+            $('#dp_end').datepicker('show');
+
+        })
+        //$('#add-on-start-p').click(function () {
+        //    $('#dp_start-p').datepicker('show');
+        //    $('#dp_end-p').datepicker('hide');
+
+        //})
+        //$('#add-on-end-p').click(function () {
+        //    $('#dp_end-p').datepicker('show');
+        //    $('#dp_start-p').datepicker('hide');
+
+        //})
+        //$('#add-on-start-t').click(function () {
+        //    $('#dp_start-t').datepicker('show');
+        //    $('#dp_end-t').datepicker('hide');
+
+        //})
+        //$('#add-on-end-t').click(function () {
+        //    $('#dp_end-t').datepicker('show');
+        //    $('#dp_start-t').datepicker('hide');
+
+        //})
+
+    });
+</script>

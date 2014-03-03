@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Messages>
+  <Field>
+    <Name>ServiceUnavailableMessage</Name>
+    <value>This application is currently unavailable. The site administrators are currently working hard to address this issue.</value>
+  </Field>
+  <Field>
+    <Name>InvalidProfileImage</Name>
+    <value>Only files with extensions (JPG and PNG) and size upto 1MB are allowed.</value>
+  </Field>
+  <Field>
+    <Name>InvalidPassword</Name>
+    <value>Login failed, please enter valid 8 character password.</value>
+  </Field>
+  <Field>
+    <Name>InvalidLogin</Name>
+    <value>Login failed, please ensure that you have entered valid credentials.</value>
+  </Field>
+  <Field>
+    <Name>ErrorOccured</Name>
+    <value>An error has occured.</value>
+  </Field>
+  <Field>
+    <Name>UserAdded</Name>
+    <value>User added sucessfully.</value>
+  </Field>
+  <Field>
+    <Name>UserEdited</Name>
+    <value>User edited sucessfully.</value>
+  </Field>
+  <Field>
+    <Name>UserDeleted</Name>
+    <value>User deleted sucessfully.</value>
+  </Field>
+  <Field>
+    <Name>UserCantDeleted</Name>
+    <value>User cannot be deleted.</value>
+  </Field>
+  <Field>
+    <Name>UserCantEdited</Name>
+    <value>User cannot be edited.</value>
+  </Field>
+  <Field>
+    <Name>UserPasswordChanged</Name>
+    <value>Password has been changed successfully.</value>
+  </Field>
+  <Field>
+    <Name>CurrentUserPasswordNotCorrect</Name>
+    <value>Your current password is not correct.</value>
+  </Field>
+  <Field>
+    <Name>UserPasswordDoNotMatch</Name>
+    <value>Your new password and confirm new password do not match.</value>
+  </Field>
+  <Field>
+    <Name>UserDuplicate</Name>
+    <value>User with same details already exists in our database.</value>
+  </Field>
+  <Field>
+    <Name>DeleteConfirm</Name>
+    <value>Are you sure you want to delete this record?</value>
+  </Field>
+  <Field>
+    <Name>ActivityMasterAdded</Name>
+    <value>Activity Master added successfully.</value>
+  </Field>
+  <Field>
+    <Name>ActivityMasterDeleted</Name>
+    <value>Activity Master deleted successfully.</value>
+  </Field>
+  <Field>
+    <Name>ActivityMasterDuplicate</Name>
+    <value>Duplicate Activity Master.</value>
+  </Field>
+  <Field>
+    <Name>ActivityMasterEdited</Name>
+    <value>Activity Master edited successfully.</value>
+  </Field>
+  <Field>
+    <Name>UserNotificationsSaved</Name>
+    <value>User notifications have been saved successfully.</value>
+  </Field>
+  <Field>
+    <Name>DuplicateCampaignExits</Name>
+    <value>Campaign with same title exits.</value>
+  </Field>
+  <Field>
+    <Name>DuplicateProgramExits</Name>
+    <value>Program with same title exits.</value>
+  </Field>
+  <Field>
+    <Name>DuplicateTacticExits</Name>
+    <value>Tactic with same title exits.</value>
+  </Field>
+  <Field>
+    <Name>DeleteCampaignDependency</Name>
+    <value>Dependency with other entities exits, cannot be deleted.</value>
+  </Field>
+  <Field>
+    <Name>DeleteProgramDependency</Name>
+    <value>Dependency with other entities exits, cannot be deleted.</value>
+  </Field>
+  <Field>
+    <Name>ValidateForEmptyField</Name>
+    <value>Make sure all fields are filled and try again.</value>
+  </Field>
+  <Field>
+    <Name>ValidateForValidField</Name>
+    <value>Make sure all fields are filled with valid values and try again.</value>
+  </Field>
+  <Field>
+    <Name>DateComapreValidation</Name>
+    <value>End date must be greater than or equal to start date.</value>
+  </Field>
+  <Field>
+    <Name>CommentSuccessfully</Name>
+    <value>Update completed.</value>
+  </Field>
+  <Field>
+    <Name>TacticStatusSuccessfully</Name>
+    <value>Tactic {0} successfully.</value>
+  </Field>
+  <Field>
+    <Name>ProgramStatusSuccessfully</Name>
+    <value>Program {0} successfully.</value>
+  </Field>
+  <Field>
+    <Name>CampaignStatusSuccessfully</Name>
+    <value>Campaign {0} successfully.</value>
+  </Field>
+  <Field>
+    <Name>TacticStartDateCompareWithParentStartDate</Name>
+    <value>One of the tactic start date is less than selected start date.</value>
+  </Field>
+  <Field>
+    <Name>TacticEndDateCompareWithParentEndDate</Name>
+    <value>One of the tactic end date is greater than seleted end date.</value>
+  </Field>
+  <Field>
+    <Name>ProgramStartDateCompareWithParentStartDate</Name>
+    <value>One of the program start date is less than selected start date.</value>
+  </Field>
+  <Field>
+    <Name>ProgramEndDateCompareWithParentEndDate</Name>
+    <value>One of the program end date is greater than seleted end date.</value>
+  </Field>
+  <Field>
+    <Name>ModelSaveSuccess</Name>
+    <value>Model {0} saved successfully.</value>
+  </Field>
+  <Field>
+    <Name>ModelAudienceSaveSuccess</Name>
+    <value>Audience acquisition planning successully saved.</value>
+  </Field>
+  <Field>
+    <Name>ModelNewTacticSaveSucess</Name>
+    <value>Model Tactic {0} saved successfully.</value>
+  </Field>
+  <Field>
+    <Name>ModelTacticSaveSucess</Name>
+    <value>Model Tactics saved successfully.</value>
+  </Field>
+  <Field>
+    <Name>ModelTacticEditSucess</Name>
+    <value>Model Tactic {0} modified successfully.</value>
+  </Field>
+  <Field>
+    <Name>StartDateCurrentYear</Name>
+    <value>Start date must be selected of current plan year.</value>
+  </Field>
+  <Field>
+    <Name>EndDateCurrentYear</Name>
+    <value>End date must be selected of current plan year.</value>
+  </Field>
+  <Field>
+    <Name>NoTacticFound</Name>
+    <value>No tactic found.</value>
+  </Field>
+  <Field>
+    <Name>NoOpenTacticExists</Name>
+    <value>No open tactic exists.</value>
+  </Field>
+  <Field>
+    <Name>NoTacticExistPlan</Name>
+    <value>No tactic exist for this plan.</value>
+  </Field>
+  <Field>
+    <Name>InvalidError</Name>
+    <value>InvalidError.</value>
+  </Field>
+  <Field>
+    <Name>ModelTacticTypeNotexist</Name>
+    <value>No tactic type(s) selected for {0} model.</value>
+  </Field>
+  <Field>
+    <Name>ModelPublishSuccess</Name>
+    <value>Model Published Successfully.</value>
+  </Field>
+  <Field>
+    <Name>StageNotDefined</Name>
+    <value>Stages not specified for current account.</value>
+  </Field>
+  <Field>
+    <Name>ValidationForMqlGreaterThanINQ</Name>
+    <value>Unable to save data as entered.  Total MQLs of {0} exceeds total INQs of {1}. Total MQLs must be less than or equal to total INQs.</value>
+  </Field>
+  <!--
+  * changed by : Nirav Shah on 31 Jan 2013
+  * Bug 19:Model - should not be able to publish a model with no tactics selected 
+	-->
+  <Field>
+    <Name>DeleteTacticDependency</Name>
+    <value>One of the selected tactic(s) is being used in a plan and hence cannot be deleted.</value>
+  </Field>
+  <Field>
+    <Name>ModifiedTactic</Name>
+    <value>Tactic(s) modified successfully.</value>
+  </Field>
+  <!--added by Nirav Shah  on 14 feb 2014 -->
+  <Field>
+    <Name>ModelDeleteSuccess</Name>
+    <value>Model {0} deleted successfully.</value>
+  </Field>
+  <Field>
+    <Name>ModelDeleteDependency</Name>
+    <value>Model {0} is being used in a plan and hence cannot be deleted.</value>
+  </Field>
+  <Field>
+    <Name>NoModelFound</Name>
+    <value>No Model {0} found.</value>
+  </Field>
+  <Field>
+    <Name>ModelDeleteConfirmMessage</Name>
+    <value>Are you sure you want to delete selected model (all versions related to it also deleted)?</value>
+  </Field>
+  <Field>
+    <Name>PlanDeleteSuccessful</Name>
+    <value>Plan {0} deleted successfully.</value>
+  </Field>
+  <Field>
+    <Name>PlanDeleteError</Name>
+    <value>Error occured during deleting the {0} plan</value>
+  </Field>
+  <Field>
+    <Name>PlanDeleteConfirmMessage</Name>
+    <value>Are you sure you want to delete selected plan (all campaigns/programs/tactics related to it also deleted)?</value>
+  </Field>
+  <Field>
+    <Name>ModelDeleteParentDependency</Name>
+    <value>Model {0} Version {1} is being used in a plan and hence cannot be deleted.</value>
+  </Field>
+  <Field>
+    <Name>ModelPublishCreateNew</Name>
+    <value>You are about to create a new version of a published model, doing so will only apply changes once the new version is published.  At that point, the changes will only apply to tactics that start after the chosen effective date of the updated version.  Do you wish to continue?</value>
+  </Field>
+  <Field>
+    <Name>ModelPublishEdit</Name>
+    <value>You are about to edit a published model, doing so will apply changes across all plans associated with this version of the model, even to tactics that have already commenced.  Do you wish to continue?</value>
+  </Field>
+  <Field>
+    <Name>ModelPublishTacticDelete</Name>
+    <value>Can't remove one or more tactic(s) because it is currently attached to plan {0}</value>
+  </Field>
+  <Field>
+    <Name>ModelPublishComfirmation</Name>
+    <value>You are about to publish a new version of an already published model. Doing so will apply the new conversion rates and velocities only to tactics that start the selected effective date.</value>
+  </Field>
+</Messages>

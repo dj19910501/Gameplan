@@ -1,0 +1,127 @@
+﻿@using RevenuePlanner.Helpers
+<div class="light-blue-chart cf">
+    <div class="white-chart" style="display:none;">
+        <p class="source-sans-probold">Revenue Trend</p>
+        <div class="graph">
+           	<p class="value source-sans-prolight" id="revenueTrend"></p>
+           	<h5 id="revenueTrendPercentage"></h5>
+        </div>
+    </div>
+    <div class="white-chart" style="display:none;">
+        <p class="source-sans-probold">Trend</p>
+        <p class="value source-sans-prolight" id="mqlTrend"></p>
+        <h5 id="mqlTrendPercentage"></h5>
+    </div>
+    <div class="white-chart">
+        <p class="source-sans-probold">Actual</p>
+        <p class="value source-sans-prolight" id="mqlActual"></p>
+        <h5 id="mqlActualPercentage"></h5>
+    </div>
+    <div class="white-chart">
+        <p class="source-sans-probold">Projected</p>
+        <p class="value source-sans-prolight" id="mqlProjected"></p>
+        <a class="ellipsis-block">@Html.LabelForMQL("MQL")</a>
+    </div>
+    <div class="wraper-title">
+        <h3 class="source-sans-prolight">Waterfall Conversion <br/></h3>
+        <form id="nl-formAct" class="nl-form-plan-title without-margin">
+        <select id="drpthisyear" data-default="0%" class="">
+        </select>
+        <div class="nl-overlay"></div>
+    </form>
+    </div>
+</div>
+<script type="text/javascript">
+    var OptionMain = "@ViewBag.SelectOption"
+
+    $(document).ready(function () {
+        var time = @Html.Raw(Json.Encode(ViewBag.UpcomingActivity))
+        populateNFActivity(time, "drpthisyear");
+
+        function populateNFActivity(items, id) {
+            var $dropdown = $("#" + id);
+            var $html = '';
+            if (items.length > 0) {
+                $.each(items, function (index, time) {
+                    if (time.Value == OptionMain) {
+                        $html += '<option value="' + time.Value + '" selected>' + time.Text + '</option>';
+                    } else {
+                    $html += '<option value="' + time.Value + '">' + time.Text + '</option>';
+                     }
+                });
+            }
+            $dropdown.append($html);
+           nlform = new NLForm(document.getElementById('nl-formAct'));
+           onClickActivity();
+           LoadHeaderData();
+        }
+
+        function onClickActivity() {
+            $('#nl-formAct > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+                    var Title = $(this).text();
+                    var option = $.grep($('#drpthisyear option'), function (value) { return $(value).text() == Title; })
+                    Currenttime = $(option[0]).val();
+                    OptionMain = Currenttime;
+                    var url = '@Url.Content("~/Report/Conversion")';
+                    window.location.href = url + '?id=' + OptionMain;
+                   // LoadHeaderData();
+            });
+        }
+
+        function LoadHeaderData() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Report/GetReportRevenueHeader/")',
+                data: { option: OptionMain },
+                success: function (data) {
+                    if (data != undefined) {
+                        setLabel(data);
+                    }
+                },
+                error: function () {
+                    myApp.hidePleaseWait();
+                }
+            });
+        }
+
+        function setLabel(data) {
+            setLabelToolTip("#revenueTrend", data.TrendRevenue, 5, true);
+            setLabelToolTip("#mqlProjected", data.ProjectedMQLValue, 5, false);
+            setLabelToolTip("#mqlActual", data.ActualMQLValue, 5, false);
+            setLabelToolTip("#mqlTrend", data.TrendMQL, 5, false);
+            var mqlActualPercentage = 0, revenueTrendPercentage = 0, mqlTrendPercentage = 0;
+            if (parseFloat(data.ProjectedMQLValue) > 0) {
+                mqlActualPercentage = (((parseFloat(data.ActualMQLValue) - parseFloat(data.ProjectedMQLValue)) / parseFloat(data.ProjectedMQLValue)) * 100);
+                mqlTrendPercentage = (((parseFloat(data.TrendMQL) - parseFloat(data.ProjectedMQLValue)) / parseFloat(data.ProjectedMQLValue)) * 100);
+            }
+            if (parseFloat(data.ProjectedRevenueValue) > 0) {
+                revenueTrendPercentage = (((parseFloat(data.TrendRevenue) - parseFloat(data.ProjectedRevenueValue)) / parseFloat(data.ProjectedRevenueValue)) * 100);
+            }
+            setPercentage("#mqlTrendPercentage", mqlTrendPercentage);
+            setPercentage("#mqlActualPercentage", mqlActualPercentage);
+            setPercentage("#revenueTrendPercentage", revenueTrendPercentage);
+        }
+
+        function setPercentage(id, value) {
+            var absValue = FormatNumber(Math.abs(parseFloat(value)), true);
+            var isNegative = value < 0;
+            if (isNegative) {
+                $(id).addClass("red-value");
+                $(id).removeClass("green-value");
+                //Start Manoj Limbachiy Date: 05Feb2014 Bug 153:Extra % on Waterfall Conversion Report 
+                $(id).text("-" + absValue);
+                //End Manoj Limbachiy Date: 05Feb2014 Bug 153:Extra % on Waterfall Conversion Report 
+            }
+            else {
+                $(id).removeClass("red-value");
+                $(id).addClass("green-value");
+                //Start Manoj Limbachiy Date: 05Feb2014 Bug 153:Extra % on Waterfall Conversion Report 
+                $(id).text("+" + absValue);
+                //End Manoj Limbachiy Date: 05Feb2014 Bug 153:Extra % on Waterfall Conversion Report 
+            }
+            
+        }
+
+    });
+
+</script>			

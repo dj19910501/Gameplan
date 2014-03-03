@@ -1,0 +1,14 @@
+﻿@using RevenuePlanner.Helpers
+@if (Request.IsAuthenticated && Sessions.User != null) {
+    <text>
+        @Html.Raw(Sessions.User.FirstName + " " + Sessions.User.LastName)
+        |@using (Html.BeginForm("LogOff", "Login", FormMethod.Post, new { id = "logoutForm" })) {
+            @Html.AntiForgeryToken()
+            <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
+        }
+    </text>
+} else {
+    <ul>
+        <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+    </ul>
+}

@@ -1,0 +1,226 @@
+﻿@model RevenuePlanner.Models.InspectModel
+@{
+    var tactic = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
+}
+
+@using (Html.BeginForm("SaveTactic", "Inspect", FormMethod.Post, new { @name = "SaveTacticForm" }))
+{
+    @Html.HiddenFor(model => model.PlanTacticId)
+    <div class="span7" id="inspect-modal-right-div">
+        <div id="nl-form" class="nl-form nl-form-modal">
+            I'm running 
+            @if ((bool)ViewBag.ApprovedStatus)
+            {                              
+                <span id="tactic-type" class="color5693B3">@tactic.TacticTypeTitle</span>
+            }
+            else
+            {
+                @Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.TacticType, "TacticTypeId", "Title"), "Please Select")
+            }
+            tactic called 
+            @if ((bool)ViewBag.ApprovedStatus)
+            {
+                <span id="tactic-name" class="color5693B3">@tactic.TacticTitle</span>
+            }
+            else
+            {
+                   @Html.TextBoxFor(model => model.TacticTitle, new { placeholder = tactic.TacticTitle, datasubline = "For example: <em> Tatic Title </em>" })
+            }
+            from
+            @if ((bool)ViewBag.ApprovedStatus)
+            {
+                <span id="start-date" class="color5693B3">@tactic.StartDate.ToShortDateString()</span>
+            }
+            else
+            {
+               @Html.TextBoxFor(model => model.StartDate, new { placeholder = tactic.StartDate.ToShortDateString(), datadefault = "date", datasubline = "For example: <em>" + RevenuePlanner.Helpers.Common.dateFormat + "</em>" }) 
+            }
+            to
+            @if ((bool)ViewBag.ApprovedStatus)
+            {
+                <span id="end-date" class="color5693B3">@tactic.EndDate.ToShortDateString()</span>
+            }
+            else
+            {
+               @Html.TextBoxFor(model => model.EndDate, new { placeholder = tactic.EndDate.ToShortDateString(), datadefault = "date", datasubline = "For example: <em>" + RevenuePlanner.Helpers.Common.dateFormat + "</em>" }) 
+            }
+            for the
+            @if ((bool)ViewBag.ApprovedStatus)
+            {
+                <span id="vertical" class="color5693B3">@tactic.VerticalTitle</span>
+            }
+            else
+            {
+               @Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select") 
+            }
+            vertical.
+                                          <br>
+            The status is: 
+            @if ((bool)ViewBag.ApprovedStatus)
+            {
+                <span id="status" class="color5693B3">@tactic.Status</span>
+            }
+            else
+            {
+               @Html.DropDownListFor(model => model.Status, new SelectList((System.Collections.IEnumerable)ViewBag.StatusList, "Value", "Text"), "Please Select") 
+            }
+
+            <div class="nl-overlay"></div>
+
+        </div>
+        <!--To call js for forms animations-->
+        <script src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
+        <script>
+            var nlform2 = new NLForm(document.getElementById('nl-form'));
+        </script>
+    </div>
+                                       
+    <div class="span2" id="inspect-modal-left-column1">
+        <p>Parent Campaign</p>
+        @if ((bool)ViewBag.ApprovedStatus)
+        {
+            @Html.TextBox("txtCampaign", tactic.CampaignTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.CampaignTitle });
+        }
+        else
+        {
+            @Html.DropDownListFor(model => model.PlanCampaignId, new SelectList((System.Collections.IEnumerable)ViewBag.Campaign, "PlanCampaignId", "Title"), "Please Select", new { @id = "ddlCampaign", style = "background:#F2F2F2; width: 150px;" });
+        }
+        <p>Parent Program</p>
+
+        @if ((bool)ViewBag.ApprovedStatus)
+        {
+            @Html.TextBox("txtProgram", tactic.ProgramTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.ProgramTitle });
+        }
+        else
+        {
+            @Html.DropDownListFor(model => model.PlanProgramId, new SelectList((System.Collections.IEnumerable)ViewBag.Program, "PlanProgramId", "Title"), "Please Select", new { @id = "ddlProgram", style = "background:#F2F2F2; width: 150px;" });
+        }
+
+        <p>Description</p>
+        @if ((bool)ViewBag.ApprovedStatus)
+        {
+            @Html.TextAreaFor(model => model.Description, new { @class = "span12 text-area-size truncate", style = "background:#F2F2F2;", @readonly = "true" });
+        }
+        else
+        {
+            @Html.TextAreaFor(model => model.Description, new { @class = "span12 text-area-size" });
+        }
+
+    </div>
+    <div class="span2" id="inspect-modal-left-column2">
+        <p>Owner</p>
+        @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.Owner })
+        <p>Audience</p>
+        @if ((bool)ViewBag.ApprovedStatus)
+        {
+            @Html.TextBox("txtAudience", (string)ViewBag.Audience, new { @class = "span12 input-small", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.Audience });
+        }
+        else
+        {
+            @Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @id = "ddlAudience", style = "background:#F2F2F2; width: 150px;" });
+        }
+
+        <p>Business Unit</p>
+        @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
+        <p>Cost</p>
+        @if ((bool)ViewBag.ApprovedStatus)
+        {
+            @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true", title = tactic.Cost });
+        }
+        else
+        {
+            @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small truncate", title = tactic.Cost, id = "txtCost", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar });
+        }
+    </div>
+                                        
+    <span class="flag-icon"></span>
+    <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular gear-icon button-inspect-review-modal pull-right"
+        id="button-review-tactic" name="button-save" value="Review Tactic" style="display: none;"></input>
+}
+
+<script type="text/javascript">
+    $(document).ready(
+      function () {
+          // Click of Camaign Dropdown Event Change , Fill Data Of Program Dropdown using Json
+          $('#ddlCampaign').change(function () {
+              var CampaignId = $(this).val();
+              $.ajax({
+                  type: 'POST',
+                  url: '@Url.Content("~/Home/LoadProgram")',
+                  data: { campaignId: CampaignId },
+                  success: function (data) {
+                      $("#ddlProgram").empty();
+                      $("#ddlProgram").append("<option value='Please Select'>Please Select</option>");
+                      $.each(data, function (index, optionData) {
+                          $("#ddlProgram").append("<option value='" + optionData.PlanProgramId + "'>" + optionData.Title + "</option>");
+                      });
+                  },
+                  error: function () {
+                      $("#ddlProgram").empty();
+                      $("#ddlProgram").append("<option value='Please Select'>Please Select</option>");
+                      myApp.hidePleaseWait();
+                  }
+              });
+          });
+
+          $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+
+          // Click On Button in Setup Tab check validation of Empty field, Dropdown Value Selected or Not & Date Format
+          $("#button-review-tactic").click(function () {
+              var isError = true;
+              $('.nl-field').each(function () {
+                  var isvalidate = true;
+                  if ($(this).next().attr('datadefault') == 'date') {
+                      var sdate = $(this).children('a').text().trim();
+                      isvalidate = isDate(sdate);
+                  }
+
+                  if ($(this).children('a').text() == '' || $(this).children('a').text() == 'Please Select' || isvalidate == false) {
+                      $(this).children('a').addClass("error-form");
+                      isError = false;
+                  }
+                  else {
+                      $(this).children('a').removeClass("error-form");
+                  }
+              });
+
+              // Display Error Message Div Panel
+              if (isError == false) {
+                  $("#errorMessage").css("display", "block");    // Show the Alert
+                  /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                  var topsize = $(document).scrollTop() + 41;
+                  $("#modal-container-186470").css("top", topsize + "px");
+                  $("#spanMessageError").empty();
+                  $("#spanMessageError").text("Make sure all fields are filled and try again.");
+              }
+              else {
+                  $("#errorMessage").css("display", "none");
+                  /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                  var topsize = $(document).scrollTop();
+                  $("#modal-container-186470").css("top", topsize + "px");
+              }
+              $("#txtCost").val(ReplaceCC($("#txtCost").val()));
+              // There is validate form Than Save Tactic Details
+              if (isError) {
+                  $.ajax({
+                      type: 'POST',
+                      url: '@Url.Content("~/Home/SaveTactic")',
+                      data: $("form[name=SaveTacticForm]").serialize(),
+                      success: function (data) {
+                          if (data != 'undefined') {
+                              loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue); //section parameter passed to open tactic popup
+                          }
+                      },
+                      error: function () {
+                          myApp.hidePleaseWait();
+                      }
+                  });
+              }
+
+              return isError;
+          });
+
+
+
+      });
+</script>

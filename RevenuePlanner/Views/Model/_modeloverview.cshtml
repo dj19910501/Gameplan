@@ -1,0 +1,63 @@
+﻿@model RevenuePlanner.Models.ModelOverView
+@if (Model.ModelId != 0)
+{
+    @Html.HiddenFor(m => m.Title)
+    @Html.HiddenFor(m => m.BusinessUnitId)
+    <div id="nl-form" class="nl-form">
+        @Html.Raw("I'm editing a model called")
+        <span class="color5693B3">@Model.Title</span>
+        @Html.Raw("for")
+        <span class="color5693B3">@Model.BusinessUnitName.</span>
+          <div class="nl-overlay"></div>
+    </div>
+}
+else
+{
+    <div id="nl-form" class="nl-form">
+        @Html.Raw("I'm creating a model called")
+        @Html.TextBoxFor(model => model.Title, new { placeholder = @Model.Title, datadefault = "Title" ,datasubline = "For example: <em>SMB Baseline</em>"})
+        @Html.Raw("for")
+        @Html.DropDownListFor(m => m.BusinessUnitId, (SelectList)TempData["BusinessUnitList"]).
+        <div class="nl-overlay"></div>
+    </div>
+    @Html.Hidden("hdnmoelexist", ""); // hidden field added to check if model exist or not
+ 
+}
+<script src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
+<script>
+    var nlform = new NLForm(document.getElementById('nl-form'));
+    $('.nl-field').each(function () {
+        if ($(this).next().attr('datadefault') == "Title") {
+            $(this).children('a').attr('id', 'lnkTitle');
+        }
+    });
+    onClickActivity();
+    // function added to handle the blur event of NaturalLanguageForm textbox to check for duplicate model
+    function getblurvalue(sender) {
+        var aHrefElement = $("a")
+        if ($(sender).parent().parent().parent().find(aHrefElement).attr("id") == "lnkTitle") {
+           $("#lnkTitle").html($(sender).val());
+           $.ajax(
+           {
+               type: "GET",
+               cache: false,
+               url: '@Url.Content("~/Model/CheckDuplicateModelTitle")',
+               data: { Title: encodeURIComponent($(sender).val()), BusinessUnitId: $("#BusinessUnitId").val() },
+                dataType: "json",
+                success: function (data) {
+                    if (data == 'exist') {
+                        $("#hdnmoelexist").val("true");
+                    }
+                    else {
+                        $("#hdnmoelexist").val("false");
+                    }
+                },
+                error: function () {
+                    myApp.hidePleaseWait();
+                }
+            });
+        }
+        $(".nl-field-go").click();
+    }
+</script>
+

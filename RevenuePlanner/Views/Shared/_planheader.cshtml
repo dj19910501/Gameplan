@@ -1,0 +1,44 @@
+﻿@model RevenuePlanner.Models.HomePlanModelHeader
+
+<div class="white-chart">
+    <p class="source-sans-probold">Activity Distribution</p>
+    <div id="chart2" style="width: 140px; height: 85px; margin-left: 34px; margin-top: 32px;"></div>
+    @*<div class="graph">
+            <img src="@Url.Content("~/Content/images/graph-chart-small.jpg")" alt="graph" />
+        </div>*@
+</div>
+<div class="white-chart">
+    <p class="source-sans-probold">Tactics</p>
+    @*<p class="value source-sans-prolight">@Html.Label(ViewData["TacticCount"].ToString())</p>*@
+    <p class="value source-sans-prolight" id="ptacticcount">@Html.DisplayFor(model => model.TacticCount)</p>
+</div>
+<div class="white-chart">
+    <p class="source-sans-probold" id="pcostLabel">@Html.DisplayFor(model => model.costLabel)</p>
+    <p class="value source-sans-prolight" id="pbudget">$ @Html.DisplayFor(model => model.Budget)</p>
+</div>
+<div class="white-chart">
+    <p class="source-sans-probold" id="pmqlLabel">@Html.DisplayFor(model => model.mqlLabel)</p>
+    <p class="value source-sans-prolight" id="pMQLs">@Html.DisplayFor(model => model.MQLs)</p>
+</div>
+
+<div class="wraper-title">
+    <h3 class="source-sans-prolight timeframe ">@Html.Raw("Upcoming activities ")
+        <br />
+    </h3>
+    <form id="nl-formAct" class="nl-form-plan-title without-margin">
+        <select id="drpthisyear" data-default="0%" class="">
+            <script>
+                var time = @Html.Raw(Json.Encode(Model.UpcomingActivity))
+                populateNFActivity(time, "drpthisyear");
+            </script>
+        </select>
+        <script>
+            nlform = new NLForm(document.getElementById('nl-formAct'));
+        </script>
+        <div class="nl-overlay"></div>
+    </form>
+</div>
+<script type="text/javascript">
+    SetBudget("#pbudget");
+    SetPriceValue("#pMQLs");
+</script>

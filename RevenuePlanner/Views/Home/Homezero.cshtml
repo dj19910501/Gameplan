@@ -1,0 +1,207 @@
+﻿@using RevenuePlanner.Helpers
+@{
+    ViewBag.Title = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Sidebar
+{
+
+    <div class="padding-content padding-bottom0">
+        <h4 class="text-shadow-black source-sans-prolight">Planning Review</h4>
+        <div class="wraper-btns cf">
+            <div class="span6">
+                <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Add Actuals</button>
+            </div>
+            <div class="span6">
+                <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Add Activity</button>
+            </div>
+        </div>
+    </div>
+
+    <!--First Accordion-->
+    <div class="scrolled_div">
+        <div class="accordion colors" id="accordion-667611">
+            <div class="accordion-heading">
+                <a class="accordion-toggle item-1627a0 collapsed" data-toggle="collapse" data-parent="#accordion-667611" href="#">
+                    <div class="cf">No Programs</div>
+                </a>
+            </div>
+        </div>
+        <!--End First Accordion-->
+    </div>
+
+    <div class="shadow-scroll" style="visibility: hidden"></div>
+
+    <div class="padding-content padding-top0">
+        <p style="visibility: hidden"><a class="link-alone" href="#"><strong>Show only My Tactics</strong></a></p>
+
+        <h4 class="text-shadow-black source-sans-prolight">Filters</h4>
+
+        <!--Second Accordion-->
+        <div class="accordion simple" id="accordion-465171">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle collapsed chevron-right" data-toggle="collapse" data-parent="#accordion-465171" href="#accordion-element-220005">Geography</a>
+                </div>
+                @*<div id="accordion-element-220005" class="accordion-body collapse">
+                    <div class="accordion-inner">
+                        Anim pariatur cliche...
+                    </div>
+                </div>*@
+            </div>
+            @* <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle collapsed chevron-right" data-toggle="collapse" data-parent="#accordion-465171" href="#accordion-element-292919">Teams</a>
+                </div>
+                <div id="accordion-element-292919" class="accordion-body collapse">
+                    <a href="#" class="accordion-inner">Demand Gen</a>
+                    <a href="#" class="accordion-inner x-icon">Channel Marketing<span class="pull-right"></span></a>
+                    <a href="#" class="accordion-inner x-icon">Field Marketing<span class="pull-right"></span></a>
+                    <a href="#" class="accordion-inner">Programs</a>
+                    <a href="#" class="accordion-inner">PR/Social</a>
+                    <a href="#" class="accordion-inner x-icon">Sales<span class="pull-right"></span></a>
+                </div>
+            </div>*@
+            <div class="accordion-heading">
+                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-465171" href="#">Individuals</a>
+            </div>
+            @* <div class="accordion-heading">
+                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-465171" href="#">Channels</a>
+            </div>*@
+        </div>
+        <!--End Second Accordion-->
+    </div>
+
+}
+
+
+<div class="light-blue-chart cf">
+    <div class="white-chart">
+        <p class="source-sans-probold">Activity Distribution</p>
+        <div class="graph">
+            <img src="@Url.Content("~/Content/images/graph-chart-small.jpg")" alt="graph" />
+        </div>
+    </div>
+    <div class="white-chart">
+        <p class="source-sans-probold">Tactics</p>
+        <p class="value source-sans-prolight">0</p>
+    </div>
+    <div class="white-chart">
+        <p class="source-sans-probold">Budget</p>
+        <p class="value source-sans-prolight">$0</p>
+    </div>
+    <div class="white-chart">
+        <p class="source-sans-probold">Projected MQL</p>
+        <p class="value source-sans-prolight">0</p>
+    </div>
+    <div class="wraper-title">
+        <h3 class="source-sans-prolight">Upcoming activities
+            <br />
+            <a href="#">this year</a></h3>
+    </div>
+</div>
+<ul class="nav nav-tabs">
+    <li class="title-header source-sans-proregular">
+        <h2></h2>
+    </li>
+    <li class="active pull-right">
+        <a href="#">Tactics</a>
+    </li>
+    <li class="pull-right">
+        <a href="#">Vertical</a>
+    </li>
+    <li class=" pull-right">
+        <a href="#">Stage</a>
+    </li>
+    <li class=" pull-right">
+        <a href="#">Audience</a>
+    </li>
+</ul>
+
+
+<div class="tab-content all-height">
+    <div class="tab-pane active all-height" id="panel-656352">
+        <div class="padding-content cf all-height lenght-div">
+
+            <div id="gantt_here"></div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row-fluid ">
+        <div class="span12">
+
+            <div id="modal-container-186470" class="modal-revenue hide fade border-welcome-modal " role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+                <h3 class="title-simple source-sans-prolight ">Welcome to @Sessions.ApplicationName</h3>
+                <div class="modal-body">
+                    <p id="title-modal-revenue">To get the most out of @Sessions.ApplicationName, you need to create a few things first.</p>
+                    <div class="row-fluid">
+
+                        <ul class="welcome-sprite cf">
+
+                            <li class="model-modal">
+                                <p class="sprite-text-modal">
+                                    1. Model<div class="icon source-sans-probold">
+                                    </div>
+                                </p>
+
+                            </li>
+                            <li class="plan-modal">
+                                <p class="sprite-text-modal">
+                                    2. Plan<div class="icon source-sans-probold">
+                                    </div>
+                                </p>
+
+                            </li>
+                            <li class="boost-modal">
+                                <p class="sprite-text-modal">
+                                    3. Boost<div class="icon source-sans-probold">
+                                    </div>
+                                </p>
+
+                            </li>
+                            <li class="review-modal">
+                                <p class="sprite-text-modal">
+                                    4. Review<div class="icon source-sans-probold">
+                                    </div>
+                                </p>
+
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+
+                    <button id="btnContinue" class="btn btn-blue text-shadow-blue source-sans-proregular button-welcome-modal" data-dismiss="modal" aria-hidden="true" href="@Url.Action("PlanZero", "Plan", new { activeMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Home })" >Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var tasks = { data: [] };
+    gantt.config.scale_unit = "year";
+    gantt.config.step = 1;
+    gantt.config.date_scale = "%Y";
+    gantt.config.scale_height = 60;
+    gantt.config.row_height = 37;
+    gantt.config.grid_width = 236;
+    gantt.config.readonly = true;
+    gantt.config.autofit = true;
+    gantt.config.show_progress = false;
+    gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+    gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+    gantt.init("gantt_here", new Date(2013, 0, 1), new Date(2014, 0, 1));
+    var json_length = tasks.data.length;
+    var gantt_div = document.getElementById("gantt_here");
+    gantt_div.style.height = ((json_length * 35) + 94) + "px";
+    gantt.parse(tasks);
+
+    $("#modal-container-186470").modal('show');
+
+    $("#btnContinue").click(function () {
+
+        window.location.href = $(this).attr('href');
+    });
+</script>

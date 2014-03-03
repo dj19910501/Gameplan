@@ -1,0 +1,390 @@
+﻿@model RevenuePlanner.Models.Plan_Campaign_ProgramModel
+@using RevenuePlanner.Helpers
+<div class="head">
+    <span class="close-form source-sans-proregular">» CLOSE MENU</span>
+    <div class="cf">
+        <h2 class="source-sans-prolight">Program Detail</h2>
+        @* TFS Point 253,206 : Model/Plan - sidebars - integrate gear icon with feature to delete/duplicate tactic
+    Added by Nirav Shah on 17 feb 2014
+ *@
+        @if (!(bool)ViewBag.IsCreated)
+        {
+            <div class="btn-group pull-right gear-dropdown">
+                <span class="gear-sidebar dropdown-toggle" data-toggle="dropdown"></span>
+                <ul class="dropdown-menu">
+                    <li><a id="spanDuplicate">Duplicate Program</a></li>
+                    @if ((bool)ViewBag.IsOwner && !(bool)ViewBag.IsCreated)
+                    {
+                        <li><a id="deleteProgram">Delete Program</a></li>                        
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</div>
+<!--end sidebar-head-->
+<div id="errorMessage" class="alert alert-error hide message-position-small">
+    <a class="close">×</a>
+    <strong>Error!</strong> <span id="spanMessage"></span>
+</div>
+<div id="frm_campaigns" name="frm_campaigns">
+    @using (Html.BeginForm(new { @id = "frmSaveProgram" }))
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $(".verticalIdSelectBox select").selectbox();
+            });
+        </script>
+        <div class="content">
+            @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
+            @Html.HiddenFor(model => model.PlanCampaignId, new { id = "hdnPlanCampaignId" })
+            @Html.HiddenFor(model => model.CStartDate, new { id = "hdnCStartDate" })
+            @Html.HiddenFor(model => model.CEndDate, new { id = "hdnCEndDate" })
+            @Html.HiddenFor(model => model.TStartDate, new { id = "hdnTStartDate" })
+            @Html.HiddenFor(model => model.TEndDate, new { id = "hdnTEndDate" })
+
+            <label class="t_title">Program Title</label>
+            @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true" })
+
+            <label>Description</label>
+            @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", rows = "3" })
+
+            @if ((bool)ViewBag.RedirectType)
+            {
+                <label>Parent Campaign</label>
+                @Html.TextBox("txtCampaign", (string)ViewBag.Campaign, new { @readonly = "true" });
+            }
+
+            <label>Vertical</label>
+            <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
+
+            <label>Audience</label>
+            <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
+
+            <label>Geography</label>
+            <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
+
+            @Html.Hidden("hdnRedirect", (bool)ViewBag.RedirectType, new { id = "hdnRedirectType" })
+            @if ((bool)ViewBag.RedirectType)
+            {
+                <div class="cf margin-top10 margin-left-4">
+                    <div class="pull-left width50">
+                        <label class="padding-left4">Start date</label>
+                        <div class="dp datepicker input-append date without-margin calendar-width" id="dp_start" data-date="today();" data-date-format="@RevenuePlanner.Helpers.Common.dateFormat">
+                            @Html.TextBoxFor(model => model.StartDate, new { @class = "span2 black-border-right font-size13 padding-bottom14", id = "t_startdate" })
+                            <span class="add-on height30">
+                                <img src="~/Content/images/gray-calendar-icon.png"></span>
+                        </div>
+                    </div>
+
+                    <div class="pull-right width50">
+                        <label class="padding-left4">End date</label>
+                        <div class="dp datepicker input-append date without-margin calendar-width" id="dp_end" data-date="today();" data-date-format="@RevenuePlanner.Helpers.Common.dateFormat">
+                            @Html.TextBoxFor(model => model.EndDate, new { @class = "span2 black-border-right font-size13 padding-bottom14", id = "t_enddate" })
+                            <span class="add-on height30">
+                                <img src="~/Content/images/gray-calendar-icon.png"></span>
+                        </div>
+                    </div>
+
+                </div>
+            }
+        </div>
+        <!--End content-->
+        <div class="content dark inline-ellipsis">
+            @if (!(bool)ViewBag.IsCreated)
+            {
+                <div class="cf width100">
+                    <div class="width65px margin-right20 pull-left">
+                        <label>@Html.LabelForINQ("INQ")</label>
+                        @Html.TextBoxFor(model => model.INQs, new { placeholder = "0", id = "txtinq", @class = "priceValue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
+                    </div>
+
+                    <div class="width65px margin-right20 pull-left">
+                        <label>@Html.LabelForMQL("MQL")</label>
+                        @Html.TextBoxFor(model => model.MQLs, new { placeholder = "0", id = "txtmql", @class = "priceValue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
+                    </div>
+
+                    <div class="width65px pull-left">
+                        <label>Cost</label>
+                        @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", id = "txtCost", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                    </div>
+                </div>
+            }
+            @if ((bool)ViewBag.IsCreated)
+            {
+                <div class="tactics-part">
+                    <label>Tactics</label>
+                    <div id="c_tactics">
+                        <!--selects elements created dynamically-->
+                    </div>
+                    <span class="c-add-tactic link-blue">Add New tactics</span>
+                </div>			
+            }
+            @if ((bool)ViewBag.RedirectType)
+            {
+                <p class="font-size12 pull-left font-size13">Edit program details in </p>
+                <label class="pull-left font-size12 padding-left3">@*@Html.ActionLink("Assortment Mix","Assortment")*@ <a href="#" id="lnkCampaigns">Campaigns</a>.</label>
+            }
+        </div>
+        <!--end content dark-->
+
+        <div class="wraper-btns cf">
+            <div class="span6">
+                <button id="save_campaign_program" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
+            </div>
+            <div class="span6">
+                <button class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
+            </div>
+        </div>
+        <!--End buttons-->
+    }
+
+</div>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var isredirect = "@ViewBag.RedirectType";
+        var hdnYear = @ViewBag.Year
+        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+
+        if (isredirect == 'True') {
+            $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
+            $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
+        }
+
+        var tactictype;
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/GetTacticType/")',
+            data: {
+            },
+            success: function (r) {
+                tactictype = r;
+                myApp.hidePleaseWait();
+            },
+            error: function () {
+                myApp.hidePleaseWait();
+            }
+        });
+
+        $("span.tool-tip").tooltip();
+
+        $(".alert").find(".close").on("click", function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            $(this).closest(".alert").slideUp(400);
+        });
+        if (isredirect == 'True') {
+            $('.dropdown-menu').css("display", "none");
+        }
+        $('.close-form', this.$panel).click(function (e) {
+            if (isredirect == 'True') {
+                $('.dropdown-menu').css("display", "none");
+            }
+            $("#slidepanel").css("display", "none");
+            $("#slidepanel-container").empty();
+        });
+
+        $(".c-add-tactic").click(function () {
+            var tacticString;
+            if (typeof tactictype != 'undefined') {
+                for (i in tactictype) {
+                    tacticString = tacticString + '<option value="' + tactictype[i].TacticTypeId + '">' + tactictype[i].Title + '</option>';
+                }
+            }
+            $("#c_tactics").append('<div><select id="TacticTypeId" class="ddlStyle" require="true" name="TacticTypeId" data-val-required="The TacticTypeId field is required." data-val-number="The field TacticTypeId must be a number." data-val="true">' +
+               '<option value="">Please Select</option>' + tacticString +
+               '</select>' +
+          '<span class="delete-tactic"></span></div>');
+
+        });
+
+        $('#c_tactics').on('click', '.delete-tactic', function () {
+            $(this).prev().remove();
+            $(this).remove();
+        });
+
+        $('form').find('input[type=text], select, textarea').each(function () {
+            $(this).change(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val() == '') {
+                        $(this).addClass("error");
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                }
+            });
+        });
+
+        $("#save_campaign_program").click(function () {
+            var iserror = false;
+            $('form').find('input[type=text], select, textarea').each(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val() == '') {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                }
+            });
+            if (iserror) {
+                ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+                return false;
+            }
+
+            if (isredirect == 'True') {
+                sdate = $('#t_startdate').val();
+                edate = $('#t_enddate').val();
+                //var csdate = $('#hdnCStartDate').val();
+                //var cedate = $('#hdnCEndDate').val();
+                var tsdate = $('#hdnTStartDate').val();
+                var tedate = $('#hdnTEndDate').val();
+                if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
+                if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
+                if (!validateDateCompare(sdate, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) return false;
+                //if (!validateDateCompare(csdate, sdate, "Campaign Start Date")) return false;
+                //if (!validateDateCompare(edate, cedate, "Campaign End Date")) return false;
+                if (!validateDateCompare(sdate, tsdate, "@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate")) return false;
+                if (!validateDateCompare(tedate, edate, "@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate")) return false;
+            }
+
+            var arTactic = [];
+            var _Tactics = $("#frm_campaigns #c_tactics select");
+            for (var l = 0; l < _Tactics.length; l++) {
+                var typeid = $(_Tactics[l]).val();
+                arTactic[l] = typeid;
+            }
+            var isAssortment = $("#hdnRedirectType").val();
+
+            //$("#txtinq").val(ReplaceCC($("#txtinq").val()));
+            //$("#txtmql").val(ReplaceCC($("#txtmql").val()));
+            //$("#txtCost").val(ReplaceCC($("#txtCost").val()));
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/SaveProgram")',
+                data: $("form").serialize() + '&tactics=' + arTactic + '&RedirectType=' + isAssortment,
+                success: function (data) {
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                        return;
+                    }
+                    if (data.errormsg) {
+                        ShowError(data.errormsg);
+                        return;
+                    }
+
+                },
+                error: function () {
+                    ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                    myApp.hidePleaseWait();
+                }
+            });
+        });
+                @* TFS Point 253,206 : Model/Plan - sidebars - integrate gear icon with feature to delete/duplicate tactic
+    Added by Nirav Shah on 17 feb 2014
+ *@
+        $("#spanDuplicate").click(function () {
+            var hdnPlanProgramId = $("#hdnPlanProgramId").val();
+            var isAssortment = $("#hdnRedirectType").val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/DuplicateCopyClone")',
+                data:
+                    {
+                        id: hdnPlanProgramId,
+                        RedirectType: isAssortment,
+                        CopyClone: 'Program'
+                    },
+                success: function (data) {
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                        return;
+                    }
+                    if (data.errormsg) {
+                        ShowError(data.errormsg);
+                        return;
+                    }
+
+                },
+                error: function () {
+                    ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                    myApp.hidePleaseWait();
+                }
+            });
+        });
+                @* TFS Point 253,206 : Model/Plan - sidebars - integrate gear icon with feature to delete/duplicate tactic
+    Added by Nirav Shah on 17 feb 2014
+ *@
+        $("#deleteProgram").click(function () {
+            if (confirm('Are you sure you want to delete this program?')) {
+                var idProgram = $("#hdnPlanProgramId").val();
+                var isAssortment = $("#hdnRedirectType").val();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Plan/DeleteProgram")',
+                    data: {
+                        ID: idProgram,
+                        RedirectType: isAssortment
+                    },
+                    success: function (data) {
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                            return;
+                        }
+                        if (data.errormsg) {
+                            alert(data.errormsg);
+                            return;
+                        }
+
+                    },
+                    error: function () {
+                        myApp.hidePleaseWait();
+                    }
+                });
+            }
+            else {
+                return false;
+            }
+        });
+        function ShowError(value) {
+            $("#errorMessage").slideDown(400);
+            $("#spanMessage").empty();
+            $("#spanMessage").text(value);
+        }
+
+        $('.dp').datepicker({
+            format: "@RevenuePlanner.Helpers.Common.dateFormat",
+            autoclose: true,
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });;
+
+        /*hide the other datepicker in input onclick*/
+
+        $('#dp_start .add-on').click(function () {
+            $('#dp_start').datepicker('show');
+            $('#dp_end').datepicker('hide');
+
+        })
+        $('#dp_end .add-on').click(function () {
+            $('#dp_start').datepicker('hide');
+            $('#dp_end').datepicker('show');
+
+        })
+
+        $('#t_startdate').click(function () {
+            $('#dp_end').datepicker('hide');
+        })
+
+        $('#t_enddate').click(function () {
+            $('#dp_start').datepicker('hide');
+        })
+
+
+    });
+</script>
