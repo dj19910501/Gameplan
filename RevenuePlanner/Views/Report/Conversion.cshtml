@@ -67,7 +67,7 @@
     <li class="disabled pull-right">
         <a>@RevenuePlanner.Helpers.Common.Audience</a>
     </li>
-    @if(RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
+    @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
     {
         <li class="active pull-right">
             <a>@RevenuePlanner.Helpers.Common.BusinessUnit</a>
@@ -77,12 +77,12 @@
 <ul class="nav nav-tabs nav-bars-table" id="ChildULConversionSummary">
 </ul>
 
-<div id="DivHtmlContent"  class="padding-content cf source-sans-proregular">
+<div id="DivHtmlContent" class="padding-content cf source-sans-proregular">
     <table id="table_reports" class="table">
         <thead>
             <tr>
                 <th></th>
-                @if(RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
+                @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
                 {
                     <th class="width275" id="ActivityName">Business Unit</th>
                 }
@@ -116,12 +116,12 @@
         <li class="disabled pull-right" id="@RevenuePlanner.Helpers.Common.Audience">
             <a>@RevenuePlanner.Helpers.Common.Audience</a>
         </li>
-        @if(RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
+        @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
         {
             <li class="active pull-right" id="@RevenuePlanner.Helpers.Common.BusinessUnit">
                 <a>@RevenuePlanner.Helpers.Common.BusinessUnit</a>
             </li>
-         }
+        }
     </ul>
     <ul class="nav nav-tabs nav-bars-table" id="ChildULMQLConversion"></ul>
     <!-- ChildULRevenueSummary -->
@@ -132,9 +132,9 @@
                 <th class="width100px large-border-bottom"></th>
                 @foreach (string s in (List<string>)ViewBag.MonthTitle)
                 {
-                     <th class="width44 border-top-bottom">@s</th>
+                    <th class="width44 border-top-bottom">@s</th>
                 }
-               
+
             </tr>
         </thead>
         <tbody>
@@ -157,20 +157,21 @@
     </ul>
     <div class="report-gray-container">
         <div class="report-chart-group">
-            <div class="report-chart">
+            <div class="report-chart" id="chartDiv1Parent">
                 <label>Business Unit</label>
                 <div id="chartDiv1" class="report-chart4"></div>
             </div>
-            <div class="report-chart">
+            <div class="report-chart" id="chartDiv2Parent">
                 <label>Geography</label>
                 <div id="chartDiv2" class="report-chart5"></div>
             </div>
-            <div class="report-chart">
+            <div class="report-chart" id="chartDiv3Parent">
                 <label>Vertical</label>
                 <div id="chartDiv3" class="report-chart6"></div>
             </div>
         </div>
     </div>
+    <input type="hidden" id="chartDataMQLPerformance" value="" />
 </div>
 <div id="DivShareReport">
 </div>
@@ -520,29 +521,29 @@
                         }
                     }
 
-                        if (_type == 1) {
-                            ColINQProjected[k] = sumvalue;
-                        }
-                        else if (_type == 2) {
-                            ColINQActual[k] = sumvalue;
-                        }
-                        else if (_type == 4) {
-                            ColMQLProjected[k] = sumvalue;
-                        }
-                        else if (_type == 5) {
-                            ColMQLActual[k] = sumvalue;
-                        }
+                    if (_type == 1) {
+                        ColINQProjected[k] = sumvalue;
+                    }
+                    else if (_type == 2) {
+                        ColINQActual[k] = sumvalue;
+                    }
+                    else if (_type == 4) {
+                        ColMQLProjected[k] = sumvalue;
+                    }
+                    else if (_type == 5) {
+                        ColMQLActual[k] = sumvalue;
+                    }
 
-                        if (k == 1) {
-                            if (_type == 5) {
-                                ColTotalMQL[k] = sumvalue;
-                            }
+                    if (k == 1) {
+                        if (_type == 5) {
+                            ColTotalMQL[k] = sumvalue;
                         }
-                        else {
-                            if (_type == 5) {
-                                ColTotalMQL[k] = ColTotalMQL[k - 1] + sumvalue;
-                            }
+                    }
+                    else {
+                        if (_type == 5) {
+                            ColTotalMQL[k] = ColTotalMQL[k - 1] + sumvalue;
                         }
+                    }
                     htmlappend += '<td>' + Value + '</td>';
                     k++;
                 }
@@ -556,7 +557,7 @@
                 var k = 1;
                 for (mrl in _monthList) {
                     var value = 0;
-            if (_type == 3) {
+                    if (_type == 3) {
                         var pvalue = parseFloat(ColINQProjected[k]);
                         var avalue = parseFloat(ColINQActual[k]);
                         if (pvalue != 0) {
@@ -602,72 +603,6 @@
 
 
     window.onload = function () {
-
-        /* bar chart for Business Unit */
-        var barChart1 = new dhtmlXChart({
-            view: "barH",
-            container: "chartDiv1",
-            value: "#Value#",
-            tooltip: "#Value#K",
-            radius: 0,
-            border: false,
-            color: "#ColorCode#",
-            width: 25,
-            xAxis: {
-                start: 0,
-                step: 1,
-                end: 10,
-                lines: false,
-            },
-            yAxis: {
-                template: "#Title#",
-                lines: false,
-            }
-        });
-
-        /* bar chart for Geography */
-        var barChart2 = new dhtmlXChart({
-            view: "barH",
-            container: "chartDiv2",
-            value: "#Value#",
-            tooltip: "#Value#K",
-            radius: 0,
-            border: false,
-            color: "#ColorCode#",
-            width: 25,
-            xAxis: {
-                start: 0,
-                step: 1,
-                end: 10,
-                lines: false,
-            },
-            yAxis: {
-                template: "#Title#",
-                lines: false,
-            }
-        });
-
-        /*bar chart for Veritcal */
-        var barChart3 = new dhtmlXChart({
-            view: "barH",
-            container: "chartDiv3",
-            value: "#Value#",
-            tooltip: "#Value#K",
-            radius: 0,
-            border: false,
-            width: 25,
-            color: "#ColorCode#",
-            xAxis: {
-                start: 0,
-                step: 1,
-                end: 10,
-                lines: false,
-            },
-            yAxis: {
-                template: "#Title#",
-                lines: false,
-            }
-        });
         var filter = "@RevenuePlanner.Helpers.Common.Actuals";
         LoadPerformanceData(filter); //default tab loading
 
@@ -694,52 +629,134 @@
 
         // Function to load MQL performance report
         function LoadPerformanceData(filter) {
-
             $.ajax(
                  {
                      type: "GET",
-                cache: false,
+                     cache: false,
                      url: '@Url.Action("GetMQLPerformance", "Report")',
-                      data: {
-                          filter: filter,
-                          selectOption: selectOption
-                      },
-                      dataType: "json",
-                      success: function (data) {
-                         // console.log(data);
-                          dataset1 = null;
-                          dataset2 = null;
-                          dataset3 = null;
-                          var chartDataSourcePerformance = {
-                              ChartBusinessUnit: data.ChartBusinessUnit,
-                              ChartGeography: data.ChartGeography,
-                              ChartVertical: data.ChartVertical
-                          }
+                data: {
+                    filter: filter,
+                    selectOption: selectOption
+                },
+                dataType: "json",
+                success: function (data) {
+                    // console.log(data);
+                    dataset1 = null;
+                    dataset2 = null;
+                    dataset3 = null;
+                    var chartDataMQLPerformance = {
+                        ChartBusinessUnit: data.ChartBusinessUnit,
+                        ChartGeography: data.ChartGeography,
+                        ChartVertical: data.ChartVertical
+                    }
 
-                          dataset1 = data.ChartBusinessUnit;
-                          dataset2 = data.ChartGeography;
-                          dataset3 = data.ChartVertical;
-                          //dataset = data.chartData;
-                          //fill data on reports table
-                          FillChartSourcePerformanceBusinessUnit();
-                          FillChartSourcePerformanceGeography();
-                          FillChartSourcePerformanceVertical();
-                      },
-                      error: function () {
-                          myApp.hidePleaseWait();
-                      }
+                    $('#chartDataMQLPerformance').val(JSON.stringify(chartDataMQLPerformance));
+
+                    dataset1 = data.ChartBusinessUnit;
+                    dataset2 = data.ChartGeography;
+                    dataset3 = data.ChartVertical;
+                    //dataset = data.chartData;
+                    //fill data on reports table
+                    FillChartSourcePerformanceBusinessUnit();
+                    FillChartSourcePerformanceGeography();
+                    FillChartSourcePerformanceVertical();
+                },
+                error: function () {
+                    myApp.hidePleaseWait();
+                }
                  });
         }
 
         function FillChartSourcePerformanceBusinessUnit() {
-                    barChart1.parse(dataset1, "json");
+            $('#chartDiv1Parent').find('#chartDiv1').remove();
+            $('#chartDiv1Parent').append('<div id="chartDiv1" class="report-chart4"></div>');
+
+            var xAxisConfig = GetAxisConfiguration(dataset1)
+
+            /* bar chart for Business Unit */
+            var barChart1 = new dhtmlXChart({
+                view: "barH",
+                container: "chartDiv1",
+                value: "#Value#",
+                tooltip: "#Value#K",
+                radius: 0,
+                border: false,
+                color: "#ColorCode#",
+                width: 25,
+                xAxis: {
+                    start: 0,
+                    step: xAxisConfig.stepValue,
+                    end: xAxisConfig.endValue,
+                    lines: false,
+                },
+                yAxis: {
+                    template: "#Title#",
+                    lines: false,
                 }
+            });
+
+            barChart1.parse(dataset1, "json");
+        }
 
         function FillChartSourcePerformanceGeography() {
-                    barChart2.parse(dataset2, "json");
+            $('#chartDiv2Parent').find('#chartDiv2').remove();
+            $('#chartDiv2Parent').append('<div id="chartDiv2" class="report-chart5"></div>');
+
+            var xAxisConfig = GetAxisConfiguration(dataset2)
+
+            /* bar chart for Geography */
+            var barChart2 = new dhtmlXChart({
+                view: "barH",
+                container: "chartDiv2",
+                value: "#Value#",
+                tooltip: "#Value#K",
+                radius: 0,
+                border: false,
+                color: "#ColorCode#",
+                width: 25,
+                xAxis: {
+                    start: 0,
+                    step: xAxisConfig.stepValue,
+                    end: xAxisConfig.endValue,
+                    lines: false,
+                },
+                yAxis: {
+                    template: "#Title#",
+                    lines: false,
                 }
+            });
+
+            barChart2.parse(dataset2, "json");
+        }
         function FillChartSourcePerformanceVertical() {
-                    barChart3.parse(dataset3, "json");
+            $('#chartDiv3Parent').find('#chartDiv3').remove();
+            $('#chartDiv3Parent').append('<div id="chartDiv3" class="report-chart6"></div>');
+
+            var xAxisConfig = GetAxisConfiguration(dataset3)
+
+            /*bar chart for Veritcal */
+            var barChart3 = new dhtmlXChart({
+                view: "barH",
+                container: "chartDiv3",
+                value: "#Value#",
+                tooltip: "#Value#K",
+                radius: 0,
+                border: false,
+                width: 25,
+                color: "#ColorCode#",
+                xAxis: {
+                    start: 0,
+                    step: xAxisConfig.stepValue,
+                    end: xAxisConfig.endValue,
+                    lines: false,
+                },
+                yAxis: {
+                    template: "#Title#",
+                    lines: false,
+                }
+            });
+
+            barChart3.parse(dataset3, "json");
         }
 
         /*remove grid from charts*/
