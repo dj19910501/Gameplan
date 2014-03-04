@@ -410,3 +410,36 @@ function SetTitleToolTip(labelClass) {
         $(this).attr('title', labelText);
     });
 }
+
+//// Added By: Maninder Singh Wadhva to calculate dynamic configuration for x or y axis.
+function GetAxisConfiguration(dataset) {
+    //// Array to hold chart points.
+    var arrChartData = [];
+
+    //// Pushing data into array.
+    $.each(dataset, function (index, objChardData) {
+        if (objChardData.Value != null) {
+            arrChartData.push(parseInt(objChardData.Value));
+        }
+    });
+
+    //// Finding max from array.
+    var endValue = (Math.max.apply(Math, arrChartData));
+
+    //// Checking whether max is not zero.
+    if (endValue == 0 || arrChartData.length == 0) {
+        endValue = 100;
+    }
+    else {
+        endValue = Math.ceil(endValue / 10) * 10
+    }
+
+    //// Calculating step value.
+    var stepValue = endValue / 10;
+
+    console.log(endValue);
+    console.log(stepValue);
+
+    return [{ "stepValue": stepValue, "endValue": endValue }];
+
+}
