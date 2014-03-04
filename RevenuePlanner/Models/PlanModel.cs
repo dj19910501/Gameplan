@@ -28,7 +28,7 @@ namespace RevenuePlanner.Models
         public string ModelTitle { get; set; }
 
         //Added By Bhavesh
-        public int MQLDisplay { get; set; }
+        public double MQLDisplay { get; set; }
 
         //Added By Kunal
         public string Version { get; set; }
@@ -45,8 +45,8 @@ namespace RevenuePlanner.Models
         public Guid GeographyId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public int? INQs { get; set; }
-        public int? MQLs { get; set; }
+        public long? INQs { get; set; }
+        public double? MQLs { get; set; }
         public double? Cost { get; set; }
         public DateTime? PStartDate { get; set; }
         public DateTime? PEndDate { get; set; }
@@ -65,8 +65,8 @@ namespace RevenuePlanner.Models
         public Guid GeographyId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public int? INQs { get; set; }
-        public int? MQLs { get; set; }
+        public long? INQs { get; set; }
+        public double? MQLs { get; set; }
         public double? Cost { get; set; }
 
         public DateTime CStartDate { get; set; }
@@ -88,8 +88,8 @@ namespace RevenuePlanner.Models
 
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public int INQs { get; set; }
-        public int MQLs { get; set; }
+        public long INQs { get; set; }
+        public double MQLs { get; set; }
         public double Cost { get; set; }
 
         public DateTime PStartDate { get; set; }

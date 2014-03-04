@@ -2,7 +2,8 @@
 @using RevenuePlanner.Helpers
 <div id="nl-form2" class="nl-form">
     @Html.Raw("I have")
-    @Html.TextBoxFor(model => model.AddressableContract, new { placeholder =@Model.AddressableContract, datadefault = "AddressableContract", formattype = "priceValue",datasubline = "For example: <em>1000</em>",maxlength = "15" })
+     @Html.TextBoxFor(model => model.AddressableContract, new { placeholder = @Model.AddressableContract, datadefault = "AddressableContract", formattype = "priceValue", datasubline = "For example: <em>1000</em>", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
+    @*@Html.TextBoxFor(model => model.AddressableContract, new { placeholder =@Model.AddressableContract, datadefault = "AddressableContract", formattype = "priceValue",datasubline = "For example: <em>1000</em>",maxlength = "15" })*@
     @Html.Raw("addressable contacts in my database.")
     <br />
     @{

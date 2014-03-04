@@ -151,7 +151,7 @@ namespace RevenuePlanner.Controllers
                     }
 
                     plan.Title = objPlanModel.Title.Trim();
-                    plan.MQLs = Convert.ToInt32(objPlanModel.MQls.Trim().Replace(",", "").Replace("$", ""));
+                    plan.MQLs = Convert.ToInt64(objPlanModel.MQls.Trim().Replace(",", "").Replace("$", ""));
                     plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));
                     plan.ModelId = objPlanModel.ModelId;
                     plan.Year = objPlanModel.Year;
@@ -744,21 +744,21 @@ namespace RevenuePlanner.Controllers
                                                                                                             c.StartDate,
                                                                                                             c.EndDate).Equals(false))
                                                     .Select(c => new
-            {
-                id = string.Format("C{0}", c.PlanCampaignId),
-                text = c.Title,
-                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, c.StartDate),
-                duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
-                                                          CalendarEndDate,
-                                                          c.StartDate,
-                                                          c.EndDate),
-                progress = 0,
-                open = true,
-                color = Common.COLORC6EBF3_WITH_BORDER,
-                PlanCampaignId = c.PlanCampaignId,
-                IsHideDragHandleLeft = c.StartDate < CalendarStartDate,
-                IsHideDragHandleRight = c.EndDate > CalendarEndDate
-            }).Select(c => c).OrderBy(c => c.text);
+                                                    {
+                                                        id = string.Format("C{0}", c.PlanCampaignId),
+                                                        text = c.Title,
+                                                        start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, c.StartDate),
+                                                        duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
+                                                                                                  CalendarEndDate,
+                                                                                                  c.StartDate,
+                                                                                                  c.EndDate),
+                                                        progress = 0,
+                                                        open = true,
+                                                        color = Common.COLORC6EBF3_WITH_BORDER,
+                                                        PlanCampaignId = c.PlanCampaignId,
+                                                        IsHideDragHandleLeft = c.StartDate < CalendarStartDate,
+                                                        IsHideDragHandleRight = c.EndDate > CalendarEndDate
+                                                    }).Select(c => c).OrderBy(c => c.text);
 
             var taskDataProgram = db.Plan_Campaign_Program.Where(p => p.Plan_Campaign.PlanId.Equals(plan.PlanId) &&
                                                                       p.IsDeleted.Equals(false))
@@ -769,22 +769,22 @@ namespace RevenuePlanner.Controllers
                                                                                                                   p.StartDate,
                                                                                                                   p.EndDate).Equals(false))
                                                           .Select(p => new
-            {
-                id = string.Format("C{0}_P{1}", p.PlanCampaignId, p.PlanProgramId),
-                text = p.Title,
-                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, p.StartDate),
-                duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
-                                                          CalendarEndDate,
-                                                          p.StartDate,
-                                                          p.EndDate),
-                progress = 0,
-                open = true,
-                parent = string.Format("C{0}", p.PlanCampaignId),
-                color = Common.COLOR27A4E5,
-                PlanProgramId = p.PlanProgramId,
-                IsHideDragHandleLeft = p.StartDate < CalendarStartDate,
-                IsHideDragHandleRight = p.EndDate > CalendarEndDate
-            }).Select(p => p).Distinct().OrderBy(p => p.text);
+                                                          {
+                                                              id = string.Format("C{0}_P{1}", p.PlanCampaignId, p.PlanProgramId),
+                                                              text = p.Title,
+                                                              start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, p.StartDate),
+                                                              duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
+                                                                                                        CalendarEndDate,
+                                                                                                        p.StartDate,
+                                                                                                        p.EndDate),
+                                                              progress = 0,
+                                                              open = true,
+                                                              parent = string.Format("C{0}", p.PlanCampaignId),
+                                                              color = Common.COLOR27A4E5,
+                                                              PlanProgramId = p.PlanProgramId,
+                                                              IsHideDragHandleLeft = p.StartDate < CalendarStartDate,
+                                                              IsHideDragHandleRight = p.EndDate > CalendarEndDate
+                                                          }).Select(p => p).Distinct().OrderBy(p => p.text);
 
             var taskDataTactic = db.Plan_Campaign_Program_Tactic.Where(p => p.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId) &&
                                                                             p.IsDeleted.Equals(false))
@@ -795,22 +795,22 @@ namespace RevenuePlanner.Controllers
                                                                                                                         p.StartDate,
                                                                                                                         p.EndDate).Equals(false))
                                                                 .Select(t => new
-            {
-                id = string.Format("C{0}_P{1}_T{2}", t.Plan_Campaign_Program.PlanCampaignId, t.Plan_Campaign_Program.PlanProgramId, t.PlanTacticId),
-                text = t.Title,
-                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, t.StartDate),
-                duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
-                                                          CalendarEndDate,
-                                                          t.StartDate,
-                                                          t.EndDate),
-                progress = 0,
-                open = true,
-                parent = string.Format("C{0}_P{1}", t.Plan_Campaign_Program.PlanCampaignId, t.Plan_Campaign_Program.PlanProgramId),
-                color = Common.COLORC6EBF3_WITH_BORDER,
-                plantacticid = t.PlanTacticId,
-                IsHideDragHandleLeft = t.StartDate < CalendarStartDate,
-                IsHideDragHandleRight = t.EndDate > CalendarEndDate
-            }).OrderBy(t => t.text);
+                                                                {
+                                                                    id = string.Format("C{0}_P{1}_T{2}", t.Plan_Campaign_Program.PlanCampaignId, t.Plan_Campaign_Program.PlanProgramId, t.PlanTacticId),
+                                                                    text = t.Title,
+                                                                    start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, t.StartDate),
+                                                                    duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
+                                                                                                              CalendarEndDate,
+                                                                                                              t.StartDate,
+                                                                                                              t.EndDate),
+                                                                    progress = 0,
+                                                                    open = true,
+                                                                    parent = string.Format("C{0}_P{1}", t.Plan_Campaign_Program.PlanCampaignId, t.Plan_Campaign_Program.PlanProgramId),
+                                                                    color = Common.COLORC6EBF3_WITH_BORDER,
+                                                                    plantacticid = t.PlanTacticId,
+                                                                    IsHideDragHandleLeft = t.StartDate < CalendarStartDate,
+                                                                    IsHideDragHandleRight = t.EndDate > CalendarEndDate
+                                                                }).OrderBy(t => t.text);
 
             return taskDataCampaign.Concat<object>(taskDataTactic).Concat<object>(taskDataProgram).ToList<object>();
         }
@@ -1216,7 +1216,8 @@ namespace RevenuePlanner.Controllers
                                             pcpobj.VerticalId = form.VerticalId;
                                             pcpobj.AudienceId = form.AudienceId;
                                             pcpobj.GeographyId = form.GeographyId;
-                                            pcpobj.INQs = pcpobj.MQLs = 0;
+                                            pcpobj.INQs = 0;
+                                            pcpobj.MQLs = 0;
                                             pcpobj.Cost = 0;
                                             pcpobj.StartDate = DateTime.Now;
                                             pcpobj.EndDate = DateTime.Now.AddMonths(1);
@@ -1509,8 +1510,8 @@ namespace RevenuePlanner.Controllers
                                 int result = db.SaveChanges();
                                 int programid = pcpobj.PlanProgramId;
                                 result = Common.InsertChangeLog(Sessions.PlanId, null, programid, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
-                                int totalinq = 0;
-                                int totalmql = 0;
+                                long totalinq = 0;
+                                double totalmql = 0;
                                 double totalcost = 0;
                                 if (tactics != string.Empty)
                                 {
@@ -2184,10 +2185,10 @@ namespace RevenuePlanner.Controllers
                                value = (r.Aggregate(1.0, (s1, s2) => s1 * (s2.value / 100)))
                            }).Select(r => new { value = r.value }).SingleOrDefault();
 
-            
+
             if (mqllist != null)
             {
-                return mqllist.value;     
+                return mqllist.value;
             }
 
             return 0;

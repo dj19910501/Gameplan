@@ -320,7 +320,7 @@ namespace RevenuePlanner.Controllers
                             objModel.ParentModelId = currentModelId;
                             //End Model versioning change 02-Jan-2014
                             objModel.Year = DateTime.Now.Year;
-                            objModel.AddressableContacts = Convert.ToInt32(Convert.ToString(collection["AddressableContract"]).Replace(",", "").Replace("$", ""));
+                            objModel.AddressableContacts = Convert.ToInt64(Convert.ToString(collection["AddressableContract"]).Replace(",", "").Replace("$", ""));
                             objModel.Status = Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Draft.ToString())).Value;
                             objModel.BusinessUnitId = Guid.Parse(collection["BusinessUnitId"]);
                             objModel.IsActive = true;
@@ -340,7 +340,7 @@ namespace RevenuePlanner.Controllers
                             {
                                 objModel.Version = "1.0";
                                 objModel.Year = DateTime.Now.Year;
-                                objModel.AddressableContacts = Convert.ToInt32(Convert.ToString(collection["AddressableContract"]).Replace(",", "").Replace("$", ""));
+                                objModel.AddressableContacts = Convert.ToInt64(Convert.ToString(collection["AddressableContract"]).Replace(",", "").Replace("$", ""));
                                 objModel.Status = Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Draft.ToString())).Value;
                                 objModel.BusinessUnitId = Guid.Parse(collection["BusinessUnitId"]);
                                 objModel.IsActive = true;
@@ -358,7 +358,7 @@ namespace RevenuePlanner.Controllers
                                 isbenchmarkdb = obj.IsBenchmarked;
                                 if (obj != null)
                                 {
-                                    obj.AddressableContacts = Convert.ToInt32(Convert.ToString(collection["AddressableContract"]).Replace(",", "").Replace("$", ""));
+                                    obj.AddressableContacts = Convert.ToInt64(Convert.ToString(collection["AddressableContract"]).Replace(",", "").Replace("$", ""));
                                     obj.BusinessUnitId = Guid.Parse(collection["BusinessUnitId"]);
                                     obj.ModifiedDate = DateTime.Now;
                                     obj.ModifiedBy = Sessions.User.UserId;
@@ -379,9 +379,9 @@ namespace RevenuePlanner.Controllers
                         {
                             if (strtxtMarketing.Length == 2)
                             {
-                                int intValue = 0;
+                                long intValue = 0;
                                 double doubleValue = 0.0;
-                                int.TryParse(Convert.ToString(strtxtMarketing[0]).Replace(",", "").Replace("$", ""), out intValue);
+                                long.TryParse(Convert.ToString(strtxtMarketing[0]).Replace(",", "").Replace("$", ""), out intValue);
                                 double.TryParse(Convert.ToString(strtxtMarketing[1]).Replace(",", "").Replace("$", ""), out doubleValue);
 
                                 objModel_Funnel.ExpectedLeadCount = intValue;
@@ -413,17 +413,31 @@ namespace RevenuePlanner.Controllers
                         objModel_Funnel = new Model_Funnel();
                         objModel_Funnel.ModelId = intModelid;
                         objModel_Funnel.FunnelId = Convert.ToInt32(Request.Form["hdn_FunnelTeleprospecting"]);
-                        foreach (string tel in txtTeleprospecting)
+                        //foreach (string tel in txtTeleprospecting)
+                        //{
+                        //    int intValue = 0;
+                        //    double doubleValue = 0.0;
+                        //    int.TryParse(Convert.ToString(tel).Replace(",", "").Replace("$", ""), out intValue);
+                        //    double.TryParse(Convert.ToString(tel).Replace(",", "").Replace("$", ""), out doubleValue);
+
+                        //    objModel_Funnel.ExpectedLeadCount = intValue;
+                        //    objModel_Funnel.AverageDealSize = doubleValue;
+                        //}
+                        string[] strtxtTeleprospecting = txtTeleprospecting.ToArray();
+
+                        if (strtxtTeleprospecting.Length > 0)
                         {
-                            int intValue = 0;
-                            double doubleValue = 0.0;
-                            int.TryParse(Convert.ToString(tel).Replace(",", "").Replace("$", ""), out intValue);
-                            double.TryParse(Convert.ToString(tel).Replace(",", "").Replace("$", ""), out doubleValue);
+                            if (strtxtTeleprospecting.Length == 2)
+                            {
+                                long intValue = 0;
+                                double doubleValue = 0.0;
+                                long.TryParse(Convert.ToString(strtxtTeleprospecting[0]).Replace(",", "").Replace("$", ""), out intValue);
+                                double.TryParse(Convert.ToString(strtxtTeleprospecting[1]).Replace(",", "").Replace("$", ""), out doubleValue);
 
-                            objModel_Funnel.ExpectedLeadCount = intValue;
-                            objModel_Funnel.AverageDealSize = doubleValue;
+                                objModel_Funnel.ExpectedLeadCount = intValue;
+                                objModel_Funnel.AverageDealSize = doubleValue;
+                            }
                         }
-
                         Model_Funnel tmodelfunnel = db.Model_Funnel.Where(f => f.ModelId == objModel_Funnel.ModelId && f.FunnelId == objModel_Funnel.FunnelId).FirstOrDefault();
                         if (tmodelfunnel == null)
                         {
@@ -447,14 +461,29 @@ namespace RevenuePlanner.Controllers
                         objModel_Funnel = new Model_Funnel();
                         objModel_Funnel.ModelId = intModelid;
                         objModel_Funnel.FunnelId = Convert.ToInt32(Request.Form["hdn_FunnelSales"]);
-                        foreach (string sal in txtSales)
+                        //foreach (string sal in txtSales)
+                        //{
+                        //    int intValue = 0;
+                        //    double doubleValue = 0.0;
+                        //    int.TryParse(Convert.ToString(sal).Replace(",", "").Replace("$", ""), out intValue);
+                        //    double.TryParse(Convert.ToString(sal).Replace(",", "").Replace("$", ""), out doubleValue);
+                        //    objModel_Funnel.ExpectedLeadCount = intValue;
+                        //    objModel_Funnel.AverageDealSize = doubleValue;
+                        //}
+                        string[] strttxtSales = txtSales.ToArray();
+
+                        if (strttxtSales.Length > 0)
                         {
-                            int intValue = 0;
-                            double doubleValue = 0.0;
-                            int.TryParse(Convert.ToString(sal).Replace(",", "").Replace("$", ""), out intValue);
-                            double.TryParse(Convert.ToString(sal).Replace(",", "").Replace("$", ""), out doubleValue);
-                            objModel_Funnel.ExpectedLeadCount = intValue;
-                            objModel_Funnel.AverageDealSize = doubleValue;
+                            if (strttxtSales.Length == 2)
+                            {
+                                long intValue = 0;
+                                double doubleValue = 0.0;
+                                long.TryParse(Convert.ToString(strttxtSales[0]).Replace(",", "").Replace("$", ""), out intValue);
+                                double.TryParse(Convert.ToString(strttxtSales[1]).Replace(",", "").Replace("$", ""), out doubleValue);
+
+                                objModel_Funnel.ExpectedLeadCount = intValue;
+                                objModel_Funnel.AverageDealSize = doubleValue;
+                            }
                         }
                         objModel_Funnel.CreatedBy = Sessions.User.UserId;
                         objModel_Funnel.CreatedDate = DateTime.Now;
@@ -1565,7 +1594,7 @@ namespace RevenuePlanner.Controllers
                                         qtr = Convert.ToString(Enums.Quarter.Q1);
                                         objModel_Audience_Event = db.Model_Audience_Event.Where(m => m.ModelId == mid && m.Quarter == qtr).FirstOrDefault();
                                     }
-                                    objModel_Audience_Event.NumberofContacts = Convert.ToInt32(Convert.ToString(collection["NumberofContactsQ1"]).Replace(",", ""));
+                                    objModel_Audience_Event.NumberofContacts = Convert.ToInt64(Convert.ToString(collection["NumberofContactsQ1"]).Replace(",", ""));
                                     objModel_Audience_Event.EventsBudget = Convert.ToDouble(Convert.ToString(collection["EventsBudgetQ1"]).Replace(",", ""));
                                     objModel_Audience_Event.ContactToInquiryConversion = form.ContactToInquiryConversion;
                                 }
@@ -1576,7 +1605,7 @@ namespace RevenuePlanner.Controllers
                                         qtr = Convert.ToString(Enums.Quarter.Q2);
                                         objModel_Audience_Event = db.Model_Audience_Event.Where(m => m.ModelId == mid && m.Quarter == qtr).FirstOrDefault();
                                     }
-                                    objModel_Audience_Event.NumberofContacts = Convert.ToInt32(Convert.ToString(collection["NumberofContactsQ2"]).Replace(",", ""));
+                                    objModel_Audience_Event.NumberofContacts = Convert.ToInt64(Convert.ToString(collection["NumberofContactsQ2"]).Replace(",", ""));
                                     objModel_Audience_Event.EventsBudget = Convert.ToDouble(Convert.ToString(collection["EventsBudgetQ2"]).Replace(",", ""));
                                 }
                                 if (i == 2)
@@ -1586,7 +1615,7 @@ namespace RevenuePlanner.Controllers
                                         qtr = Convert.ToString(Enums.Quarter.Q3);
                                         objModel_Audience_Event = db.Model_Audience_Event.Where(m => m.ModelId == mid && m.Quarter == qtr).FirstOrDefault();
                                     }
-                                    objModel_Audience_Event.NumberofContacts = Convert.ToInt32(Convert.ToString(collection["NumberofContactsQ3"]).Replace(",", ""));
+                                    objModel_Audience_Event.NumberofContacts = Convert.ToInt64(Convert.ToString(collection["NumberofContactsQ3"]).Replace(",", ""));
                                     objModel_Audience_Event.EventsBudget = Convert.ToDouble(Convert.ToString(collection["EventsBudgetQ3"]).Replace(",", ""));
                                 }
                                 if (i == 3)
@@ -1596,7 +1625,7 @@ namespace RevenuePlanner.Controllers
                                         qtr = Convert.ToString(Enums.Quarter.Q4);
                                         objModel_Audience_Event = db.Model_Audience_Event.Where(m => m.ModelId == mid && m.Quarter == qtr).FirstOrDefault();
                                     }
-                                    objModel_Audience_Event.NumberofContacts = Convert.ToInt32(Convert.ToString(collection["NumberofContactsQ4"]).Replace(",", ""));
+                                    objModel_Audience_Event.NumberofContacts = Convert.ToInt64(Convert.ToString(collection["NumberofContactsQ4"]).Replace(",", ""));
                                     objModel_Audience_Event.EventsBudget = Convert.ToDouble(Convert.ToString(collection["EventsBudgetQ4"]).Replace(",", ""));
                                 }
 
@@ -3286,19 +3315,19 @@ namespace RevenuePlanner.Controllers
             var objfunnel = db.Funnels.Where(m => m.IsDeleted == false && m.Title == "Marketing").OrderBy(o => o.FunnelId).Select(m => m.FunnelId).ToList();
             var objmod = db.Models.Where(m => m.ModelId == ModelId).FirstOrDefault();
 
-            var intAddressableContacts = 0;
-            var intMarketingExpectedLeadCount = 0;
+            long addressableContacts = 0;
+            long marketingExpectedLeadCount = 0;
 
             if (objmod != null)
             {
 
-                intAddressableContacts = objmod.AddressableContacts;
+                addressableContacts = objmod.AddressableContacts;
                 if (objfunnel != null)
                 {
                     var objModel_Funnel = db.Model_Funnel.Where(m => m.ModelId == objmod.ModelId && objfunnel.Contains(m.FunnelId)).FirstOrDefault();
                     if (objModel_Funnel != null)
                     {
-                        intMarketingExpectedLeadCount = objModel_Funnel.ExpectedLeadCount;
+                        marketingExpectedLeadCount = objModel_Funnel.ExpectedLeadCount;
                     }
                 }
 
@@ -3307,8 +3336,8 @@ namespace RevenuePlanner.Controllers
             AudiencePlanModel objAudiencePlanModel = new AudiencePlanModel();
             if (ModelId != 0)
             {
-                objAudiencePlanModel.Q1UsableDatabase = intAddressableContacts;
-                objAudiencePlanModel.AllQOrigInboundInquiriesTotal = intMarketingExpectedLeadCount;
+                objAudiencePlanModel.Q1UsableDatabase = Convert.ToInt64(addressableContacts);
+                objAudiencePlanModel.AllQOrigInboundInquiriesTotal = Convert.ToInt64(marketingExpectedLeadCount);
                 var objModel_Audience_Outbound = db.Model_Audience_Outbound.Where(m => m.ModelId == ModelId).ToList();
                 if (objModel_Audience_Outbound != null)
                 {
@@ -3398,23 +3427,23 @@ namespace RevenuePlanner.Controllers
                         {
                             if (item.Quarter == Convert.ToString(Enums.Quarter.Q1))
                             {
-                                objAudiencePlanModel.NumberofContactsQ1 = Convert.ToInt32(item.NumberofContacts);
+                                objAudiencePlanModel.NumberofContactsQ1 = Convert.ToInt64(item.NumberofContacts);
                                 objAudiencePlanModel.EventsBudgetQ1 = Convert.ToDouble(item.EventsBudget);
                                 objAudiencePlanModel.ContactToInquiryConversion = Convert.ToDouble(item.ContactToInquiryConversion);
                             }
                             if (item.Quarter == Convert.ToString(Enums.Quarter.Q2))
                             {
-                                objAudiencePlanModel.NumberofContactsQ2 = Convert.ToInt32(item.NumberofContacts);
+                                objAudiencePlanModel.NumberofContactsQ2 = Convert.ToInt64(item.NumberofContacts);
                                 objAudiencePlanModel.EventsBudgetQ2 = Convert.ToDouble(item.EventsBudget);
                             }
                             if (item.Quarter == Convert.ToString(Enums.Quarter.Q3))
                             {
-                                objAudiencePlanModel.NumberofContactsQ3 = Convert.ToInt32(item.NumberofContacts);
+                                objAudiencePlanModel.NumberofContactsQ3 = Convert.ToInt64(item.NumberofContacts);
                                 objAudiencePlanModel.EventsBudgetQ3 = Convert.ToDouble(item.EventsBudget);
                             }
                             if (item.Quarter == Convert.ToString(Enums.Quarter.Q4))
                             {
-                                objAudiencePlanModel.NumberofContactsQ4 = Convert.ToInt32(item.NumberofContacts);
+                                objAudiencePlanModel.NumberofContactsQ4 = Convert.ToInt64(item.NumberofContacts);
                                 objAudiencePlanModel.EventsBudgetQ4 = Convert.ToDouble(item.EventsBudget);
                             }
 
@@ -3546,8 +3575,8 @@ namespace RevenuePlanner.Controllers
                             */
                             result = UpdateMQL(modelId);
                         }
-                        
-                        
+
+
                     }
                 }
             }
@@ -3602,7 +3631,7 @@ namespace RevenuePlanner.Controllers
             try
             {
                 ObjectParameter parameterReturnValue = new ObjectParameter("ReturnValue", typeof(int));
-                db.Update_MQL( ModelId,
+                db.Update_MQL(ModelId,
                                 Sessions.User.ClientId.ToString(),
                                 Enums.Stage.INQ.ToString(),
                                 Enums.Stage.MQL.ToString(),

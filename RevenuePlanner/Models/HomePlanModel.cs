@@ -9,7 +9,7 @@ namespace RevenuePlanner.Models
 {
     public class HomePlanModel
     {
-        public HomePlanModelHeader objplanhomemodelheader  { get; set; }
+        public HomePlanModelHeader objplanhomemodelheader { get; set; }
         public HomePlan objHomePlan { get; set; }
 
         //Start Maninder Singh Wadhva : 11/26/2013 - planId.
@@ -17,15 +17,15 @@ namespace RevenuePlanner.Models
         //End Maninder Singh Wadhva : 11/26/2013 - planId.
 
         //Start Maninder Singh Wadhva : 11/27/2013 - Director.
-    //    public bool IsDirector;
+        //    public bool IsDirector;
         //End Maninder Singh Wadhva : 11/27/2013 - Director.
-        
+
         //Start Maninder Singh Wadhva : 11/25/2013 - List of geographies and user.
         public List<Geography> objGeography { get; set; }
         public List<BDSService.User> objIndividuals { get; set; }
         //End Maninder Singh Wadhva : 11/25/2013 - List of geographies and user.
 
-      //  public List<SelectListItem> plans { get; set; }
+        //  public List<SelectListItem> plans { get; set; }
 
         //Start Maninder Singh Wadhva : 12/03/2013 - plan title.
         public string PlanTitle;
@@ -44,12 +44,12 @@ namespace RevenuePlanner.Models
     }
     public class HomePlanModelHeader
     {
-        public int MQLs { get; set; }
+        public double MQLs { get; set; }
         public double Budget { get; set; }
         public int TacticCount { get; set; }
         public string mqlLabel { get; set; }
         public string costLabel { get; set; }
-       // public List<string> UpcomingActivity { get; set; }
+        // public List<string> UpcomingActivity { get; set; }
         public List<SelectListItem> UpcomingActivity { get; set; }
     }
 
@@ -91,21 +91,21 @@ namespace RevenuePlanner.Models
 
         public DateTime EndDate { get; set; }
 
-        public int ?INQs { get; set; }
+        public long? INQs { get; set; }
 
-        public int? INQsActual { get; set; }
+        public long? INQsActual { get; set; }
 
-        public int ?MQLs { get; set; }
+        public double? MQLs { get; set; }
 
-        public int? MQLsActual { get; set; }
+        public double? MQLsActual { get; set; }
 
         public string VerticalTitle { get; set; }
 
         public string AudiencTitle { get; set; }
 
-        public int? CWs { get; set; }
+        public double? CWs { get; set; }
 
-        public int? CWsActual { get; set; }
+        public double? CWsActual { get; set; }
 
         public double? Revenues { get; set; }
 
