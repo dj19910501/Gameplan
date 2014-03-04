@@ -17,7 +17,7 @@ namespace RevenuePlanner.Models
         public int PlanTacticId { get; set; }
         public string StageTitle { get; set; }
         public string Period { get; set; }
-        public int Actualvalue { get; set; }
+        public double Actualvalue { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
     

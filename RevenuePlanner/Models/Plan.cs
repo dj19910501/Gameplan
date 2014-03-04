@@ -27,7 +27,7 @@ namespace RevenuePlanner.Models
         public string Version { get; set; }
         public string Year { get; set; }
         public string Description { get; set; }
-        public int MQLs { get; set; }
+        public double MQLs { get; set; }
         public double Budget { get; set; }
         public string Status { get; set; }
         public bool IsActive { get; set; }

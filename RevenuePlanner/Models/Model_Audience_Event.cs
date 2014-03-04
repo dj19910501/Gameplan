@@ -17,7 +17,7 @@ namespace RevenuePlanner.Models
         public int ModelAudienceEventId { get; set; }
         public int ModelId { get; set; }
         public string Quarter { get; set; }
-        public Nullable<int> NumberofContacts { get; set; }
+        public Nullable<long> NumberofContacts { get; set; }
         public Nullable<double> ContactToInquiryConversion { get; set; }
         public Nullable<double> EventsBudget { get; set; }
         public System.DateTime CreatedDate { get; set; }

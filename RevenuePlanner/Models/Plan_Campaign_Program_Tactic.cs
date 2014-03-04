@@ -32,12 +32,12 @@ namespace RevenuePlanner.Models
         public System.Guid BusinessUnitId { get; set; }
         public System.DateTime StartDate { get; set; }
         public System.DateTime EndDate { get; set; }
-        public int INQs { get; set; }
-        public Nullable<int> INQsActual { get; set; }
-        public int MQLs { get; set; }
-        public Nullable<int> MQLsActual { get; set; }
-        public Nullable<int> CWs { get; set; }
-        public Nullable<int> CWsActual { get; set; }
+        public long INQs { get; set; }
+        public Nullable<long> INQsActual { get; set; }
+        public double MQLs { get; set; }
+        public Nullable<double> MQLsActual { get; set; }
+        public Nullable<double> CWs { get; set; }
+        public Nullable<double> CWsActual { get; set; }
         public Nullable<double> Revenues { get; set; }
         public Nullable<double> RevenuesActual { get; set; }
         public double Cost { get; set; }
@@ -59,8 +59,8 @@ namespace RevenuePlanner.Models
         public virtual ICollection<Plan_Campaign_Program_Tactic_Comment> Plan_Campaign_Program_Tactic_Comment { get; set; }
         public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic1 { get; set; }
         public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic2 { get; set; }
+        public virtual TacticType TacticType { get; set; }
         public virtual Vertical Vertical { get; set; }
         public virtual ICollection<Tactic_Share> Tactic_Share { get; set; }
-        public virtual TacticType TacticType { get; set; }
     }
 }

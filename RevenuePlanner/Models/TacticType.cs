@@ -26,9 +26,9 @@ namespace RevenuePlanner.Models
         public string ColorCode { get; set; }
         public Nullable<int> ModelId { get; set; }
         public Nullable<int> StageId { get; set; }
-        public Nullable<int> ProjectedInquiries { get; set; }
-        public Nullable<int> ProjectedMQLs { get; set; }
-        public Nullable<int> ProjectedRevenue { get; set; }
+        public Nullable<long> ProjectedInquiries { get; set; }
+        public Nullable<double> ProjectedMQLs { get; set; }
+        public Nullable<double> ProjectedRevenue { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }

@@ -30,8 +30,8 @@ namespace RevenuePlanner.Models
         public System.Guid GeographyId { get; set; }
         public System.DateTime StartDate { get; set; }
         public System.DateTime EndDate { get; set; }
-        public Nullable<int> INQs { get; set; }
-        public Nullable<int> MQLs { get; set; }
+        public Nullable<long> INQs { get; set; }
+        public Nullable<double> MQLs { get; set; }
         public Nullable<double> Cost { get; set; }
         public bool IsDeleted { get; set; }
         public System.DateTime CreatedDate { get; set; }

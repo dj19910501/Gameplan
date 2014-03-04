@@ -30,7 +30,7 @@ namespace RevenuePlanner.Models
         public string Title { get; set; }
         public string Version { get; set; }
         public int Year { get; set; }
-        public int AddressableContacts { get; set; }
+        public long AddressableContacts { get; set; }
         public string Status { get; set; }
         public System.Guid BusinessUnitId { get; set; }
         public bool IsActive { get; set; }

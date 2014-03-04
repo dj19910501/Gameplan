@@ -23,7 +23,7 @@ namespace RevenuePlanner.Models
         public int ModelFunnelId { get; set; }
         public int ModelId { get; set; }
         public int FunnelId { get; set; }
-        public int ExpectedLeadCount { get; set; }
+        public long ExpectedLeadCount { get; set; }
         public double AverageDealSize { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
