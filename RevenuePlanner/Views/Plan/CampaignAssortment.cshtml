@@ -179,7 +179,7 @@
         });
 
         $(".c-add-program").click(function () {
-            $("#c_programs").append('<input class="delete-icon" type="text" placeholder="Program Title" maxlength="255" /><span class="delete-temp-program"></span>');
+            $("#c_programs").append('<input class="delete-icon" type="text" require="true" placeholder="Program Title" maxlength="255" /><span class="delete-temp-program"></span>');
         });
 
         $('#c_programs').on('click', '.delete-temp-program', function () {
@@ -190,7 +190,7 @@
         $('form').find('input[type=text], select, textarea').each(function () {
             $(this).change(function () {
                 if ($(this).attr('require') == 'true') {
-                    if ($(this).val() == '') {
+                    if ($(this).val().toString().trim() == '') {
                         $(this).addClass("error");
                     }
                     else {
@@ -204,7 +204,7 @@
             var iserror = false;
             $('form').find('input[type=text], select, textarea').each(function () {
                 if ($(this).attr('require') == 'true') {
-                    if ($(this).val() == '') {
+                    if ($(this).val().toString().trim() == '') {
                         $(this).addClass("error");
                         iserror = true;
                     }

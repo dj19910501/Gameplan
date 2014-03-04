@@ -352,15 +352,18 @@ function FormatWithRoundValue(value) {
 //Added By Bhavesh.
 function FormatINQMQL(value, isAbbreriviation) {
     // do not apply format as K , M because it have dependency.
-    
+    if (value == "---" || value == "undefined" || value == "") {
+        return value;
+    }
     var Value = (Math.round(parseFloat(value) * 100) / 100);
     Value = Value.toFixed();
-    if (isAbbreriviation) {
-        return GetAbberiviatedValue(Value);
-    }
-    else {
-        return Value;
-    }
+    return GetAbberiviatedValue(Value);
+    //if (isAbbreriviation) {
+    //    return GetAbberiviatedValue(Value);
+    //}
+    //else {
+    //    return Value;
+    //}
 }
 
 // Added by Juned - Bug# 244

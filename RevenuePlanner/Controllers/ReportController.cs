@@ -1096,7 +1096,7 @@ namespace RevenuePlanner.Controllers
                             else
                                 lst_Model_FunnelIds = db.Model_Funnel.Where(mf => lst_modelId.Contains(mf.ModelId)).Select(mf => mf.ModelFunnelId).ToList();
                             ConversionSummary c1 = new ConversionSummary();
-                            c1 = GetConversionSummaryRow(i, obj_BusinessUnit.Title, lst_BU_tactic, lst_Model_FunnelIds);
+                            c1 = GetConversionSummaryRow(i, obj_BusinessUnit.Title, lst_BU_tactic, lst_Model_FunnelIds, selectOption);
                             data.Add(c1);
                         }
                     }
@@ -1125,7 +1125,7 @@ namespace RevenuePlanner.Controllers
                             else
                                 lst_Model_FunnelIds = db.Model_Funnel.Where(mf => lst_modelId.Contains(mf.ModelId)).Select(mf => mf.ModelFunnelId).ToList();
                             ConversionSummary c1 = new ConversionSummary();
-                            c1 = GetConversionSummaryRow(i, obj_Audience.Title, lst_AU_tactic, lst_Model_FunnelIds);
+                            c1 = GetConversionSummaryRow(i, obj_Audience.Title, lst_AU_tactic, lst_Model_FunnelIds, selectOption);
                             data.Add(c1);
                         }
                     }
@@ -1153,7 +1153,7 @@ namespace RevenuePlanner.Controllers
                             else
                                 lst_Model_FunnelIds = db.Model_Funnel.Where(mf => lst_modelId.Contains(mf.ModelId)).Select(mf => mf.ModelFunnelId).ToList();
                             ConversionSummary c1 = new ConversionSummary();
-                            c1 = GetConversionSummaryRow(i, obj_Geography.Title, lst_GE_tactic, lst_Model_FunnelIds);
+                            c1 = GetConversionSummaryRow(i, obj_Geography.Title, lst_GE_tactic, lst_Model_FunnelIds, selectOption);
                             data.Add(c1);
                         }
                     }
@@ -1181,7 +1181,7 @@ namespace RevenuePlanner.Controllers
                             else
                                 lst_Model_FunnelIds = db.Model_Funnel.Where(mf => lst_modelId.Contains(mf.ModelId)).Select(mf => mf.ModelFunnelId).ToList();
                             ConversionSummary c1 = new ConversionSummary();
-                            c1 = GetConversionSummaryRow(i, obj_Vertical.Title, lst_VE_tactic, lst_Model_FunnelIds);
+                            c1 = GetConversionSummaryRow(i, obj_Vertical.Title, lst_VE_tactic, lst_Model_FunnelIds, selectOption);
                             data.Add(c1);
                         }
                     }
@@ -1263,7 +1263,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="ObjectType"></param>
         /// <param name="ObjectId"></param>
         /// <returns></returns>
-        private ConversionSummary GetConversionSummaryRow(int id, string title, List<int> TacticIds, List<int> ModelFunnelIds, int type = 1, string ObjectType = "", string ObjectId = "")
+        private ConversionSummary GetConversionSummaryRow(int id, string title, List<int> TacticIds, List<int> ModelFunnelIds,string selectOption)
         {
             ConversionSummary cm = new ConversionSummary();
             cm.id = id;
@@ -1286,8 +1286,26 @@ namespace RevenuePlanner.Controllers
             double Projected_Revenue = 0;
             double Actual_Revenue = 0;
 
-
+            List<string> includeMonth = GetMonthList(selectOption, true);
+           
             List<ProjectedRevenueClass> lstRev = ProjectedRevenueCalculate(TacticIds);
+            List<TacticDataTable> tacticdata = (from t in db.Plan_Campaign_Program_Tactic.ToList()
+                                                join l in lstRev on t.PlanTacticId equals l.PlanTacticId
+                                                select new TacticDataTable
+                                                {
+                                                    TacticId = t.PlanTacticId,
+                                                    StartMonth = t.StartDate.Month,
+                                                    EndMonth = t.EndDate.Month,
+                                                    Value = l.ProjectedRevenue,
+                                                    StartYear = t.StartDate.Year,
+                                                    EndYear = t.EndDate.Year
+                                                }).ToList();
+
+            Projected_Revenue = GetDatatable(tacticdata).AsEnumerable().AsQueryable().Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth))).GroupBy(r => r.Field<string>(ColumnMonth)).Select(g => new
+            {
+                PKey = g.Key,
+                PSum = g.Sum(r => r.Field<double>(ColumnValue))
+            }).Sum(p => p.PSum);
 
             foreach (var tactic in TacticIds)
             {
@@ -1297,10 +1315,8 @@ namespace RevenuePlanner.Controllers
                 Projected_INQ += obj_tactic.INQs;
                 Projected_MQL += obj_tactic.MQLs;
 
-                Projected_Revenue = lstRev.Where(r => r.PlanTacticId == tactic).Select(r => r.ProjectedRevenue).SingleOrDefault();
-
                 // get Actual values
-                var lst_tactic_actuals = db.Plan_Campaign_Program_Tactic_Actual.Where(pcpta => pcpta.PlanTacticId == tactic).ToList();
+                var lst_tactic_actuals = db.Plan_Campaign_Program_Tactic_Actual.Where(pcpta => pcpta.PlanTacticId == tactic && includeMonth.Contains(pcpta.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + pcpta.Period)).ToList();
                 if (lst_tactic_actuals.Count > 0)
                 {
                     foreach (var obj_tactic_actual in lst_tactic_actuals)
@@ -1380,7 +1396,7 @@ namespace RevenuePlanner.Controllers
             cm.revenue.Add(Projected_Rev);
 
 
-            cm.type = type;
+            cm.type = 1;
 
             return cm;
         }

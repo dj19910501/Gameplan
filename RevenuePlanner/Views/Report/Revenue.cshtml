@@ -559,14 +559,14 @@
                 if (isProjected) {
                     var indexp = $.inArray(period, arrtProjectP);
                     if (indexp >= 0) {
-                        projectedValue = FormatINQMQL(arrtProjectV[indexp], false);
+                        projectedValue = arrtProjectV[indexp];
                         ActualValue = 0;
                     }
                 }
                 if (isActual) {
                     var indexa = $.inArray(period, arrtActualP);
                     if (indexa >= 0) {
-                        ActualValue = FormatINQMQL(arrtActualV[indexa], false);
+                        ActualValue = arrtActualV[indexa];
                     }
                 }
                 if (isProjectedRevenue) {
@@ -583,8 +583,8 @@
                         sumColActualRevenue[k] = sumColActualRevenue[k] + parseFloat(arrtActualRevenueV[indexra]);
                     }
                 }
+                htmlappend += '<td class="border-r"><div class="div-line" id="diva' + _id + k + '" avalue = "' + ActualValue + '">' + FormatINQMQL(ActualValue,true) + '</div><div class="div-below-line" id="divp' + _id + k + '" avalue = "' + projectedValue + '">' + FormatINQMQL(projectedValue,true) + '</div></td>';
                 k++;
-                htmlappend += '<td class="border-r"><div class="div-line" id="diva' + _id + '">' + ActualValue + '</div><div class="div-below-line" id="divp' + _id + '">' + projectedValue + '</div></td>';
             }
 
             htmlappend += '<td id="rowTotal" class="border-r report-gray-row light-blue-row border-shadow"><div class="div-line" id="totalMQLA' + _id + '">' + 0 + '</div><div class="div-below-line" id="totalMQLP' + _id + '">' + 0 + '</div></td>' +
@@ -605,17 +605,19 @@
             blueMql2 = 0;
             if ($(this).attr('index') == "MQL") {
                 count = 0;
+                var j = 0;
                 $(this).find('td').each(function () {
-                    if (count <= totalMonthIncluded + 2) {
-                        var t1 = FormatINQMQL(sumCol[count], false);
-                        var t2 = FormatINQMQL(sumCol2[count], false);
+                    if (count <= totalMonthIncluded + 2 && count >= 2) {
+                        var t1 = FormatINQMQL(sumCol[j], true);
+                        var t2 = FormatINQMQL(sumCol2[j], true);
                         $(this).find('.div-line').html(t1);
                         $(this).find('.div-below-line').html(t2);
-                        count = count + 1;
+                        j = j + 1;
                     }
+                    count = count + 1;
                 });
-                var totalRMQL = parseFloat($("#totalMQLActual").text()) - parseFloat($("#totalMQLProjected").text());
-                $("#totalRealizationMQL").text(FormatINQMQL(totalRMQL), false);
+                var totalRMQL = parseFloat(sumCol[totalMonthIncluded]) - parseFloat(sumCol2[totalMonthIncluded]);
+                $("#totalRealizationMQL").text(FormatINQMQL(totalRMQL), true);
                 if (totalRMQL < 0) {
                     if ($("#totalRealizationMQL").hasClass('green-value')) {
                         $("#totalRealizationMQL").addClass('red-value');
@@ -637,12 +639,16 @@
             if ($(this).find('input').attr('checked')) {
                 var cid = $(this).find('input').attr('id');
                 $(this).find('td').each(function (i) {
-                    if (count <= totalMonthIncluded + 1) {
+                    if (count <= totalMonthIncluded - 1) {
                         var text1, text2;
-                        var aid = "#diva" + cid;
-                        var pid = "#divp" + cid;
-                        text1 = $(this).find(aid).text();
-                        text2 = $(this).find(pid).text();
+                        var aid = "#diva" + cid + (count + 1).toString();
+                        var pid = "#divp" + cid + (count + 1).toString();
+                        text1 = $(aid).attr("avalue");
+                        text2 = $(pid).attr("avalue");
+                       // alert(text1);
+                       // alert(text2);
+                        //text1 = $(this).find(aid).text();
+                        //text2 = $(this).find(pid).text();
                         if (text1 == "---" || text1 == "undefined" || text1 == "") {
                             blueMql1 = blueMql1 + 0;
                             sumCol[i] = sumCol[i] + 0;
@@ -662,10 +668,14 @@
                         count = count + 1;
                     }
                     else {
-                        $(this).find('.div-line').html(FormatINQMQL(blueMql1), false);
-                        $(this).find('.div-below-line').html(FormatINQMQL(blueMql2), false);
-                        sumCol[totalMonthIncluded + 2] = sumCol[totalMonthIncluded + 2] + blueMql1;
-                        sumCol2[totalMonthIncluded + 2] = sumCol2[totalMonthIncluded + 2] + blueMql2;
+                        var amid = "#totalMQLA" + cid;
+                        $(amid).html(FormatINQMQL(blueMql1, true));
+                        var pmid = "#totalMQLP" + cid;
+                        $(pmid).html(FormatINQMQL(blueMql2, true));
+                       // $(this).find('.div-line').html(FormatINQMQL(blueMql1, false));
+                      //  $(this).find('.div-below-line').html(FormatINQMQL(blueMql2, false));
+                        sumCol[totalMonthIncluded] = sumCol[totalMonthIncluded] + blueMql1;
+                        sumCol2[totalMonthIncluded] = sumCol2[totalMonthIncluded] + blueMql2;
                         return false;
                     }
                 });
