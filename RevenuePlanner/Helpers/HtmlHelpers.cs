@@ -51,7 +51,7 @@ namespace RevenuePlanner.Helpers
             textboxMarketingLeads.Attributes.Add("name", "txtMarketing");
             textboxMarketingLeads.Attributes.Add("datadefault", "ML");
             textboxMarketingLeads.Attributes.Add("datasubline", "For example: <em>200</em>");
-             
+
             if (MLeads > 0)
             {
                 textboxMarketingLeads.Attributes.Add("value", MLeads.ToString());
@@ -63,7 +63,7 @@ namespace RevenuePlanner.Helpers
                 textboxMarketingLeads.Attributes.Add("placeholder", "0");
             }
             textboxMarketingLeads.Attributes.Add("formatType", "dollarValue");
-            textboxMarketingLeads.Attributes.Add("maxlength", "13");
+            textboxMarketingLeads.Attributes.Add("maxlength", Common.maxLengthPriceValue);
 
 
             TagBuilder textboxMarketingDealSize = new TagBuilder("input");
@@ -83,7 +83,7 @@ namespace RevenuePlanner.Helpers
                 textboxMarketingDealSize.Attributes.Add("placeholder", "0");
             }
             textboxMarketingDealSize.Attributes.Add("formatType", "currency_dollar");
-            textboxMarketingDealSize.Attributes.Add("maxlength", "15");
+            textboxMarketingDealSize.Attributes.Add("maxlength", Common.maxLengthDollar);
 
             TagBuilder textboxTeleprospectingLeads = new TagBuilder("input");
             textboxTeleprospectingLeads.Attributes.Add("type", "text");
@@ -102,7 +102,7 @@ namespace RevenuePlanner.Helpers
                 textboxTeleprospectingLeads.Attributes.Add("placeholder", "0");
             }
             textboxTeleprospectingLeads.Attributes.Add("formatType", "dollarValue");
-            textboxTeleprospectingLeads.Attributes.Add("maxlength", "13");
+            textboxTeleprospectingLeads.Attributes.Add("maxlength", Common.maxLengthPriceValue);
 
             TagBuilder textboxTeleprospectingDealSize = new TagBuilder("input");
             textboxTeleprospectingDealSize.Attributes.Add("type", "text");
@@ -121,13 +121,13 @@ namespace RevenuePlanner.Helpers
                 textboxTeleprospectingDealSize.Attributes.Add("placeholder", "0");
             }
             textboxTeleprospectingDealSize.Attributes.Add("formatType", "currency_dollar");
-            textboxTeleprospectingDealSize.Attributes.Add("maxlength", "15");
+            textboxTeleprospectingDealSize.Attributes.Add("maxlength", Common.maxLengthDollar);
 
 
             TagBuilder textboxSalesLeads = new TagBuilder("input");
             textboxSalesLeads.Attributes.Add("type", "text");
             textboxSalesLeads.Attributes.Add("id", "SalesLeads");
-            textboxSalesLeads.Attributes.Add("name", "txtSalesLeads");
+            textboxSalesLeads.Attributes.Add("name", "txtSales");
             textboxSalesLeads.Attributes.Add("datadefault", "SL");
             textboxSalesLeads.Attributes.Add("datasubline", "For example: <em>200</em>");
             if (SLeads > 0)
@@ -141,7 +141,7 @@ namespace RevenuePlanner.Helpers
                 textboxSalesLeads.Attributes.Add("placeholder", "0");
             }
             textboxSalesLeads.Attributes.Add("formatType", "dollarValue");
-            textboxSalesLeads.Attributes.Add("maxlength", "13");
+            textboxSalesLeads.Attributes.Add("maxlength", Common.maxLengthPriceValue);
 
             TagBuilder textboxSalesDealSize = new TagBuilder("input");
             textboxSalesDealSize.Attributes.Add("type", "text");
@@ -160,13 +160,13 @@ namespace RevenuePlanner.Helpers
                 textboxSalesDealSize.Attributes.Add("placeholder", "0");
             }
             textboxSalesDealSize.Attributes.Add("formatType", "currency_dollar");
-            textboxSalesDealSize.Attributes.Add("maxlength", "15");
+            textboxSalesDealSize.Attributes.Add("maxlength", Common.maxLengthDollar);
 
             //foreach (var i in lst)
             //{
             //    sb.Append(i.ToString() + "<br>");
             //}
-           
+
             foreach (KeyValuePair<int, string> item in lst)
             {
                 sb.Append(item.Value + "<br>");
@@ -211,7 +211,7 @@ namespace RevenuePlanner.Helpers
         }
 
         #region Manoj Limbachiya TFS:263
-       
+
         /// <summary>
         /// Helper for INQ lable client wise
         /// </summary>

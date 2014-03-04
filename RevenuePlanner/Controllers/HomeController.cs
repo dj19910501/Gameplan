@@ -1579,12 +1579,12 @@ namespace RevenuePlanner.Controllers
                     {
                         using (var scope = new TransactionScope())
                         {
-                            ObjectParameter ReturnValue = new ObjectParameter("ReturnValue", typeof(int));
+                            ObjectParameter ReturnValue = new ObjectParameter("ReturnValue", typeof(Int64));
                             db.Plan_Campaign_Program_Tactic_ActualDelete(actualResult.PlanTacticId, ReturnValue);
-                            int returnValue;
-                            int inq = 0, mql = 0, cw = 0;
+                            Int64 returnValue;
+                            Int64 inq = 0, mql = 0, cw = 0;
                             double revenue = 0;
-                            Int32.TryParse(ReturnValue.Value.ToString(), out returnValue);
+                            Int64.TryParse(ReturnValue.Value.ToString(), out returnValue);
                             if (returnValue == 0)
                             {
                                 foreach (var t in tacticactual)

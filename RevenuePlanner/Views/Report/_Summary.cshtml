@@ -13,28 +13,28 @@
             <label>Realized Revenue to Plan</label>
             <div class="info">
                 <h6>@Html.LabelForMQL("MQL")</h6>
-                <h3 id="h3MQLActual">@Model.MQLs</h3>
+                <h3 id="h3MQLActual" class="truncate">@Model.MQLs</h3>
                 @if (Convert.ToDouble(Model.MQLsPercentage) < 0)
                 {
-                    <h4 class="red-value">@Model.MQLsPercentage%</h4>    
+                    <h4 class="red-value truncate">@Model.MQLsPercentage%</h4>    
                 }
                 else
                 {
-                    <h4 class="green-value">@Model.MQLsPercentage%</h4>    
+                    <h4 class="green-value truncate">@Model.MQLsPercentage%</h4>    
                 }
 
             </div>
             <div class="info">
                 <h6>Revenue</h6>
-                <h3>$@Model.Revenue</h3>
+                <h3 id="h3Revenue" class="truncate">$@Model.Revenue</h3>
 
                 @if (Convert.ToDouble(Model.RevenuePercentage) < 0)
                 {
-                    <h4 class="red-value">@Model.RevenuePercentage%</h4>    
+                    <h4 class="red-value truncate">@Model.RevenuePercentage%</h4>    
                 }
                 else
                 {
-                    <h4 class="green-value">@Model.RevenuePercentage%</h4>    
+                    <h4 class="green-value truncate">@Model.RevenuePercentage%</h4>    
                 }
             </div>
         </div>
@@ -164,9 +164,8 @@
         //// Function to set tooltip for large numbers.
         function SetTipsy() {
             SetFormatForLabel("#h3MQLActual", 5);
+            SetFormatForLabel("#h3Revenue", 5);
         }
-
-        
     });
 
     function ShowHideReport() {

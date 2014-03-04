@@ -66,7 +66,7 @@ namespace RevenuePlanner.Helpers
         /// <summary>
         /// Modified By Maninder Singh Wadhva for TFS Bug#300
         /// </summary>
-        public const string maxLengthDollar = "10";
+        public const string maxLengthDollar = "11";
         public const string maxLengthPriceValue = "10";
         public const string copySuffix = "_Copy";
 

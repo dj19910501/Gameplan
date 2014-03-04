@@ -7,17 +7,17 @@
 {
     <div class="padding-content padding-bottom0" id="DivButtonsHome">
         <h4 class="text-shadow-black source-sans-prolight">Planning Review</h4>
-            <div class="wraper-btns cf">
-                <div class="span6">
-                    <button id="btnNPlan" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Create", "Plan")'">New Plan</button>
-                </div>
-                <div class="span6">
-                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Assortment", "Plan")'">Add Activity</button>
-                </div>
+        <div class="wraper-btns cf">
+            <div class="span6">
+                <button id="btnNPlan" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Create", "Plan")'">New Plan</button>
             </div>
+            <div class="span6">
+                <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Assortment", "Plan")'">Add Activity</button>
+            </div>
+        </div>
     </div>
-  
-   @*  <!--First Accordion-->
+
+    @*  <!--First Accordion-->
     <div class="scrolled_div">
         <div class="accordion colors" id="DivAccordion"></div>
     </div>
@@ -31,7 +31,7 @@
 
         <!--Second Accordion-->
         <div class="accordion simple" id="accordion-Filter">
-             <div class="accordion-group">
+            <div class="accordion-group">
                 @if (((List<RevenuePlanner.Models.TacticType>)ViewBag.TacticTypeList).Count > 0)
                 {
                     <div class="accordion-heading">
@@ -93,7 +93,7 @@
         </div>
     </div>
     <!--End Second Accordion-->
-    <ul class="nav nav-list nav-gray-plan">            
+    <ul class="nav nav-list nav-gray-plan">
         <li id="change-log" class="nav-header">
             <span>Change Log</span>
             <div class="changes"></div>
@@ -195,7 +195,7 @@
             if (IsShowOnlyMyTactic) {
                 $("#AShowOnlyMyTactic > label").css("background-color", "#FFFFFF");
                 showMyTacticId = "@RevenuePlanner.Helpers.Sessions.User.UserId"
-                
+
             }
             else {
                 $("#AShowOnlyMyTactic > label").css("background-color", "");
@@ -366,31 +366,52 @@
             // For Format Price & Total Input
             $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
             $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-            
+
             //Format Commas For Projected Value
             $("div[id^='ProjectedlblP']").each(function () {
                 $(this).text(FormatCommas($(this).text(), false));
+                var txtvalue = $(this).text();
+                $(this).attr('title', txtvalue);
+                $('.truncate').tipsy({ gravity: 's' });
             });
 
             //Format Currency For Projected Value
             $("div[id^='ProjectedlblC']").each(function () {
                 $(this).text(FormatCurrency($(this).text(), false));
+                var txtvalue = $(this).text();
+                $(this).attr('title', txtvalue);
+                $('.truncate').tipsy({ gravity: 's' });
             });
 
             //Format Commas For Actual Value
             $("div[id^='ActuallblP']").each(function () {
                 $(this).text(FormatCommas($(this).text(), false));
+                var txtvalue = $(this).text();
+                $(this).attr('title', txtvalue);
+                $('.truncate').tipsy({ gravity: 's' });
             });
 
             //Format Currency For Actual Value
             $("div[id^='ActuallblC']").each(function () {
                 $(this).text(FormatCurrency($(this).text(), false));
+                var txtvalue = $(this).text();
+                $(this).attr('title', txtvalue);
+                $('.truncate').tipsy({ gravity: 's' });
             });
 
             //Format Currency For Actual Cost Input
             $("input[id^='ActuallblC']").each(function () {
                 $(this).val(FormatCurrency($(this).val(), false));
+                var txtvalue = $(this).val();
+                $(this).attr('title', txtvalue);
+                $('.truncate').tipsy({ gravity: 's' });
             });
+            $('.currency_dollarCost').each(function () {
+                var txtvalue = $(this).val();
+                $(this).attr('title', txtvalue);
+                $('.truncate').tipsy({ gravity: 's' });
+            });
+
             $('.currency_dollarCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
             $('.accordion').find('input').each(function () {
 
@@ -429,7 +450,7 @@
                         else {
                             //$(this).addClass("error");
                         }
-                        
+
                     }
                     else {
                         //$(this).removeClass("error");
@@ -437,7 +458,7 @@
 
                 });
             });
-          
+
             function calculateRIO(id) {
                 var pcost = parseFloat(ReplaceCC($("#ProjectedlblCCost" + id).text()));
                 if (pcost != 0 && !isNaN(pcost)) {
@@ -519,10 +540,10 @@
                 }
                 if (parseFloat(totalMQLActual) > parseFloat(totalINQActual)) {
                     var msg = "@RevenuePlanner.Helpers.Common.objCached.ValidationForMqlGreaterThanINQ"
-                     var msgdisplay = msg.replace('{0}', totalMQLActual).replace('{1}', totalINQActual);
-                     $("#spanMessageError").text(msgdisplay);
-                     $("#errorMessage").css("display", "block");
-                     return false;
+                    var msgdisplay = msg.replace('{0}', totalMQLActual).replace('{1}', totalINQActual);
+                    $("#spanMessageError").text(msgdisplay);
+                    $("#errorMessage").css("display", "block");
+                    return false;
                 }
                 if (!isData) {
                     $("#errorMessage").css("display", "block");
@@ -571,10 +592,8 @@
                         }
                         //, actuals[i].geographyId, actuals[i].individualId, actuals[i].tacticTypeId
                         var foundTac = -1;
-                        for(var k= 0; k <= tacArr.length; k++)
-                        {
-                            if(tacArr[k] == actuals[i].tacticTypeId)
-                            {
+                        for (var k = 0; k <= tacArr.length; k++) {
+                            if (tacArr[k] == actuals[i].tacticTypeId) {
                                 foundTac = k;
                             }
                         }
@@ -589,8 +608,7 @@
                             (foundGeo >= 0 && foundInd >= 0 && foundTac >= 0)) {
                             isShow = true;
                         }
-                        if (isShow)
-                        {
+                        if (isShow) {
                             indexValue = indexValue + 1;
                             isFilterFound = true;
                             addRowActual(indexValue, actuals[i].id, actuals[i].title, actuals[i].inqProjected, actuals[i].inqActual, actuals[i].mqlProjected, actuals[i].mqlActual, actuals[i].cwProjected, actuals[i].cwActual, actuals[i].revenueProjected, actuals[i].revenueActual, actuals[i].costProjected, actuals[i].costActual, actuals[i].roiProjected, actuals[i].roiActual, actuals[i].actualData);
@@ -612,7 +630,7 @@
 
                     $tableActuals.append($html);
                 }
-                
+
 
             }
         }
@@ -704,40 +722,40 @@
           '<div class="accordion-inner">';
 
             $html += '<div class="body-toogle-actual">@Html.LabelForINQ("INQ")<div class="table-info-actual-left-wraper">' +
-                                            '<div class="table-info-actual-left" id="ProjectedlblPINQ' + _id + '">' +
+                                                                  '<div class="table-info-actual-left truncate" id="ProjectedlblPINQ' + _id + '">' +
                                                 _inqProjected +
                                             '</div>' +
-                                            '<div class="table-info-actual-left" id="ActuallblPINQ' + _id + '">' +
+                                            '<div class="table-info-actual-left table-info-actual-width truncate" id="ActuallblPINQ' + _id + '">' +
                                                 _inqActual +
                                             '</div>' +
                                         '</div>' +
                                     '</div>';
 
             $html += '<div class="body-toogle-actual">@Html.LabelForMQL("MQL")<div class="table-info-actual-left-wraper">' +
-                                            '<div class="table-info-actual-left" id="ProjectedlblPMQL' + _id + '">' +
+                                            '<div class="table-info-actual-left truncate" id="ProjectedlblPMQL' + _id + '">' +
                                                 _mqlProjected +
                                             '</div>' +
-                                            '<div class="table-info-actual-left" id="ActuallblPMQL' + _id + '">' +
+                                            '<div class="table-info-actual-left table-info-actual-width truncate" id="ActuallblPMQL' + _id + '">' +
                                                 _mqlActual +
                                             '</div>' +
                                         '</div>' +
                                     '</div>';
 
             $html += '<div class="body-toogle-actual">@Html.LabelForCW("CW")<div class="table-info-actual-left-wraper">' +
-                                            '<div class="table-info-actual-left" id="ProjectedlblPCW' + _id + '">' +
+                                            '<div class="table-info-actual-left truncate" id="ProjectedlblPCW' + _id + '">' +
                                                 _cwProjected +
                                             '</div>' +
-                                            '<div class="table-info-actual-left" id="ActuallblPCW' + _id + '">' +
+                                            '<div class="table-info-actual-left table-info-actual-width truncate" id="ActuallblPCW' + _id + '">' +
                                                 _cwActual +
                                             '</div>' +
                                         '</div>' +
                                     '</div>';
 
             $html += '<div class="body-toogle-actual">Revenue<div class="table-info-actual-left-wraper">' +
-                                            '<div class="table-info-actual-left" id="ProjectedlblCRevenue' + _id + '">' +
+                                            '<div class="table-info-actual-left truncate" id="ProjectedlblCRevenue' + _id + '">' +
                                                 _revenueProjected +
                                             '</div>' +
-                                            '<div class="table-info-actual-left" id="ActuallblCRevenue' + _id + '">' +
+                                            '<div class="table-info-actual-left table-info-actual-width truncate" id="ActuallblCRevenue' + _id + '">' +
                                                 _revenueActual +
                                             '</div>' +
                                         '</div>' +
@@ -749,11 +767,11 @@
             //}//if
             $html += '<div class="body-toogle-actual">Cost' +
                                 '<div id="border-right" class="table-info-actual-left-wraper">' +
-                                    '<div class="table-info-actual-left" id="ProjectedlblCCost' + _id + '">' +
+                                    '<div class="table-info-actual-left truncate" id="ProjectedlblCCost' + _id + '">' +
                                         _costProjected +
                                     '</div>' +
                                     '<div class="table-info-actual-left" style="float: right;">' +
-                                        '<input placeholder="0" class="currency_dollarCost" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" id="ActuallblCCost' + _id + '" value="' + _costActual + '">' + '</input>' +
+                                        '<input placeholder="0" class="currency_dollarCost truncate" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" id="ActuallblCCost' + _id + '" value="' + _costActual + '">' + '</input>' +
                                     '</div>' +
                                 '</div>' +
                             '</div>';
@@ -761,10 +779,10 @@
 
             $html += '<div class="body-toogle-actual">ROI' +
                                     '<div id="border-right" class="table-info-actual-left-wraper">' +
-                                        '<div class="table-info-actual-left" id="ProjectedROI' + _id + '">' +
+                                        '<div class="table-info-actual-left truncate" id="ProjectedROI' + _id + '">' +
                                             _roiProjected +
                                         '</div>' +
-                                        '<div class="table-info-actual-left green-value" id="ActualROI' + _id + '">' +
+                                        '<div class="table-info-actual-left table-info-actual-width truncate green-value" id="ActualROI' + _id + '">' +
                                             _roiActual +
                                         '</div>' +
                                     '</div>' +

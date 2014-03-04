@@ -14,8 +14,8 @@ namespace RevenuePlanner.Models
         #region Outbound Properties
 
 
-        public int Q1UsableDatabase { get; set;}
-        public int AllQOrigInboundInquiriesTotal { get; set; }
+        public long Q1UsableDatabase { get; set; }
+        public long AllQOrigInboundInquiriesTotal { get; set; }
 
         public double NormalErosion { get; set; }
         public double UnsubscribeRate { get; set; }
@@ -27,7 +27,7 @@ namespace RevenuePlanner.Models
         public double Q1NormalErosion { get; set; }
         public double Q1UnsubscribeRate { get; set; }
         public double Q1CTRDelivered { get; set; }
-    
+
 
         public double Q1OutBoundErosion { get; set; }
         public double Q1OutBoundUnsubscribeRate { get; set; }
@@ -39,7 +39,7 @@ namespace RevenuePlanner.Models
         public int NumberOfTouchesQ3 { get; set; }
         public int NumberOfTouchesQ4 { get; set; }
         public int ListAcquisitionsQ1 { get; set; }
-        public int ListAcquisitionsQ2  { get; set; }
+        public int ListAcquisitionsQ2 { get; set; }
         public int ListAcquisitionsQ3 { get; set; }
         public int ListAcquisitionsQ4 { get; set; }
 
@@ -49,7 +49,7 @@ namespace RevenuePlanner.Models
         //public float Acquisition_CostperContactQ4 { get; set; }
 
         public double Acquisition_CostperContactQ1 { get; set; }
-        
+
 
         public int Acquisition_NumberofTouchesQ1 { get; set; }
         public int Acquisition_NumberofTouchesQ2 { get; set; }
@@ -64,7 +64,7 @@ namespace RevenuePlanner.Models
 
         #region Inbound Properties
 
-       
+
         public int Impressions { get; set; }
         public double ClickThroughRate { get; set; }
         public int Visits { get; set; }
@@ -85,10 +85,10 @@ namespace RevenuePlanner.Models
 
         #region Events Properties
 
-        public int NumberofContactsQ1 { get; set; }
-        public int NumberofContactsQ2 { get; set; }
-        public int NumberofContactsQ3 { get; set; }
-        public int NumberofContactsQ4 { get; set; }
+        public long NumberofContactsQ1 { get; set; }
+        public long NumberofContactsQ2 { get; set; }
+        public long NumberofContactsQ3 { get; set; }
+        public long NumberofContactsQ4 { get; set; }
         public double ContactToInquiryConversion { get; set; }
         public double EventsBudgetQ1 { get; set; }
         public double EventsBudgetQ2 { get; set; }

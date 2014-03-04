@@ -1551,4 +1551,9 @@ a {
     display:block;
     padding:0 5px;
 }
-/* */
+/*Added by Nirav Shah on 4 March 2014 for TFS point 300 */
+
+.table-info-actual-width{
+    float: right;
+    width: 140px;
+}
