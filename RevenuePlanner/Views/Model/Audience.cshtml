@@ -199,16 +199,16 @@
                     </div>
                     <div id="nl-form" class="nl-form">
                         My database shrinks  quarterly by
-										@Html.TextBoxFor(model => model.NormalErosion, new { placeholder = @Model.NormalErosion, datasubline = "For example: <em>1.5</em> or <em>3.1</em>", text = "NormalErosion", datadefault = "NormalErosion", formattype = "percentValue", maxlength = "6" })
+										@Html.TextBoxFor(model => model.NormalErosion, new { placeholder = @Model.NormalErosion, datasubline = "For example: <em>1.5</em> or <em>3.1</em>", text = "NormalErosion", datadefault = "NormalErosion", formattype = "percentValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPercentageValue  })
                         from normal erosion and 
-										@Html.TextBoxFor(model => model.UnsubscribeRate, new { placeholder = @Model.UnsubscribeRate, datasubline = "For example: <em>1.5</em> or <em>3.1</em>", text = "UnsubscribeRate", datadefault = "UnsubscribeRate", formattype = "percentValue", maxlength = "6" })
+										@Html.TextBoxFor(model => model.UnsubscribeRate, new { placeholder = @Model.UnsubscribeRate, datasubline = "For example: <em>1.5</em> or <em>3.1</em>", text = "UnsubscribeRate", datadefault = "UnsubscribeRate", formattype = "percentValue",maxlength = @RevenuePlanner.Helpers.Common.maxLengthPercentageValue })
                         from unsubscribes.
 										<br />
                         My delivered click through rate is
-										@Html.TextBoxFor(model => model.CTRDelivered, new { placeholder = @Model.CTRDelivered, datasubline = "For example: <em>1.5</em> or <em>3.1</em>", text = "CTRDelivered", datadefault = "CTRDelivered", formattype = "percentValue", maxlength = "6" })
+										@Html.TextBoxFor(model => model.CTRDelivered, new { placeholder = @Model.CTRDelivered, datasubline = "For example: <em>1.5</em> or <em>3.1</em>", text = "CTRDelivered", datadefault = "CTRDelivered", formattype = "percentValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPercentageValue  })
                         and registration rate is
                             <br />
-                        @Html.TextBoxFor(model => model.RegistrationRate, new { placeholder = @Model.RegistrationRate, datasubline = "For example: <em>100</em> or <em>50</em>", text = "RegistrationRate", datadefault = "RegistrationRate", formattype = "percentValue", maxlength = "6" }).	 																			
+                        @Html.TextBoxFor(model => model.RegistrationRate, new { placeholder = @Model.RegistrationRate, datasubline = "For example: <em>100</em> or <em>50</em>", text = "RegistrationRate", datadefault = "RegistrationRate", formattype = "percentValue",maxlength = @RevenuePlanner.Helpers.Common.maxLengthPercentageValue  }).	 																			
 									    <div class="nl-overlay"></div>
                     </div>
 
@@ -244,23 +244,23 @@
                                         @Html.TextBoxFor(model => model.Q1UsableDatabase, new { disabled = "disabled", @class = "gray-input" })
                                         <div class="input-append">
                                             @* <input id="Q1NormalErosion" type="text" placeholder="0" required value="3.0">*@
-                                            @Html.TextBoxFor(model => model.Q1NormalErosion, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "1", maxlength = "5" })
+                                            @Html.TextBoxFor(model => model.Q1NormalErosion, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "1", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPercentageValue  })
                                             <span class="add-on">%</span>
                                         </div>
                                         <div class="input-append">
                                             @* <input id="Q1UnsubscribeRate" type="text" placeholder="0" required value="1.5">*@
-                                            @Html.TextBoxFor(model => model.Q1UnsubscribeRate, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "2", maxlength = "5" })
+                                            @Html.TextBoxFor(model => model.Q1UnsubscribeRate, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "2",  maxlength = @RevenuePlanner.Helpers.Common.maxLengthPercentageValue })
                                             <span class="add-on">%</span>
                                         </div>
-                                        @Html.TextBoxFor(model => model.NumberOfTouchesQ1, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "3" })
+                                        @Html.TextBoxFor(model => model.NumberOfTouchesQ1, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "3", maxlength = @RevenuePlanner.Helpers.Common.maxLengthValue })
                                         <div class="input-append">
                                             @*<input id="Q1CTRDelivered" type="text" placeholder="0" required value="1.2">*@
-                                            @Html.TextBoxFor(model => model.Q1CTRDelivered, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "7", maxlength = "5" })
+                                            @Html.TextBoxFor(model => model.Q1CTRDelivered, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "7", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPercentageValue  })
                                             <span class="add-on">%</span>
                                         </div>
                                         <div class="input-append">
                                             @*<input id="Q1RegistrationRate" type="text" placeholder="0" required>*@
-                                            @Html.TextBoxFor(model => model.Q1RegistrationRate, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "8", maxlength = "5" })
+                                            @Html.TextBoxFor(model => model.Q1RegistrationRate, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "8",maxlength = @RevenuePlanner.Helpers.Common.maxLengthPercentageValue })
                                             <span class="add-on">%</span>
                                         </div>
                                         <input id="Q1ModeledOutboundUnpaidInquiries" type="text" class="gray-input twodigit" disabled="disabled" />
@@ -271,7 +271,7 @@
                                         <input id="Q2NormalErosion" type="text" class="gray-input twodigit" disabled="disabled" />
                                         <input id="Q2UnsubscribeRate" type="text" class="gray-input twodigit" disabled="disabled" />
 
-                                        @Html.TextBoxFor(model => model.NumberOfTouchesQ2, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "4" })
+                                        @Html.TextBoxFor(model => model.NumberOfTouchesQ2, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "4", maxlength = @RevenuePlanner.Helpers.Common.maxLengthValue })
                                         <input id="Q2CTRDelivered" class="gray-input twodigit" disabled="disabled" type="text" />
                                         <input id="Q2RegistrationRate" type="text" class="gray-input twodigit" disabled="disabled" />
                                         <input id="Q2ModeledOutboundUnpaidInquiries" type="text" class="gray-input twodigit" disabled="disabled" />
@@ -281,7 +281,7 @@
                                         <input id="Q3UsableDatabase" type="text" class="gray-input twodigit" disabled="disabled" />
                                         <input id="Q3NormalErosion" type="text" class="gray-input twodigit" disabled="disabled" />
                                         <input id="Q3UnsubscribeRate" type="text" class="gray-input twodigit" disabled="disabled" />
-                                        @Html.TextBoxFor(model => model.NumberOfTouchesQ3, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "5" })
+                                        @Html.TextBoxFor(model => model.NumberOfTouchesQ3, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "5", maxlength = @RevenuePlanner.Helpers.Common.maxLengthValue })
                                         <input id="Q3CTRDelivered" type="text" class="gray-input twodigit" disabled="disabled" />
                                         <input id="Q3RegistrationRate" type="text" class="gray-input twodigit" disabled="disabled" />
                                         <input id="Q3ModeledOutboundUnpaidInquiries" type="text" class="gray-input twodigit" disabled="disabled" />
@@ -291,7 +291,7 @@
                                         <input id="Q4UsableDatabase" type="text" class="gray-input twodigit" disabled="disabled" />
                                         <input id="Q4NormalErosion" type="text" class="gray-input twodigit" disabled="disabled" />
                                         <input id="Q4UnsubscribeRate" type="text" class="gray-input twodigit" disabled="disabled" />
-                                        @Html.TextBoxFor(model => model.NumberOfTouchesQ4, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "6" })
+                                        @Html.TextBoxFor(model => model.NumberOfTouchesQ4, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "6", maxlength = @RevenuePlanner.Helpers.Common.maxLengthValue })
                                         <input id="Q4CTRDelivered" type="text" class="gray-input twodigit" disabled="disabled" />
                                         <input id="Q4RegistrationRate" type="text" class="gray-input twodigit" disabled="disabled" />
                                         <input id="Q4ModeledOutboundUnpaidInquiries" type="text" class="gray-input twodigit" disabled="disabled" />
@@ -331,34 +331,34 @@
                                     <div class="table-regular-column">
                                         <h6 class="conv_helveticaltstd-light">Q1</h6>
 
-                                        @Html.TextBoxFor(model => model.ListAcquisitionsQ1, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "9" })
+                                        @Html.TextBoxFor(model => model.ListAcquisitionsQ1, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "9", maxlength = @RevenuePlanner.Helpers.Common.maxLengthValue })
                                         <div class="input-prepend">
                                             <span class="add-on">$</span>
 
-                                            @Html.TextBoxFor(model => model.Acquisition_CostperContactQ1, new { placeholder = "0", required = "", @class = "pricevaluewithdot", tabindex = "13" })
+                                            @Html.TextBoxFor(model => model.Acquisition_CostperContactQ1, new { placeholder = "0", required = "", @class = "pricevaluewithdot", tabindex = "13",maxlength = @RevenuePlanner.Helpers.Common.maxLengthPercentageValue  })
                                         </div>
                                         <input id="Q1CostperList" class="gray-input" type="text" disabled="disabled">
                                         <input id="Q1CumulativeList" class="gray-input" type="text" disabled="disabled">
                                         <input id="Q1CostperCumulativeContact" class="gray-input" type="text" disabled="disabled">
 
                                         <div class="input-append">
-                                            @Html.TextBoxFor(model => model.Q1OutBoundErosion, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "14", maxlength = "5" })
+                                            @Html.TextBoxFor(model => model.Q1OutBoundErosion, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "14", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPercentageValue  })
                                             <span class="add-on">%</span>
                                         </div>
                                         <div class="input-append">
-                                            @Html.TextBoxFor(model => model.Q1OutBoundUnsubscribeRate, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "15", maxlength = "5" })
+                                            @Html.TextBoxFor(model => model.Q1OutBoundUnsubscribeRate, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "15", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPercentageValue })
                                             <span class="add-on">%</span>
                                         </div>
 
 
-                                        @Html.TextBoxFor(model => model.Acquisition_NumberofTouchesQ1, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "16" })
+                                        @Html.TextBoxFor(model => model.Acquisition_NumberofTouchesQ1, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "16", maxlength = @RevenuePlanner.Helpers.Common.maxLengthValue })
                                         <div class="input-append">
-                                            @Html.TextBoxFor(model => model.Q1OutboundCTRDelivered, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "20", maxlength = "5" })
+                                            @Html.TextBoxFor(model => model.Q1OutboundCTRDelivered, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "20", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPercentageValue  })
                                             <span class="add-on">%</span>
                                         </div>
 
                                         <div class="input-append">
-                                            @Html.TextBoxFor(model => model.Acquisition_RegistrationRate, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "21", maxlength = "5" })
+                                            @Html.TextBoxFor(model => model.Acquisition_RegistrationRate, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "21", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPercentageValue  })
                                             <span class="add-on">%</span>
                                         </div>
                                         <input id="Q1ListAcquisitionsModeledOutboundUnpaidInquiriesTotal" class="gray-input twodigit" type="text" disabled="disabled">
@@ -366,7 +366,7 @@
                                     <div class="table-regular-column">
                                         <h6 class="conv_helveticaltstd-light">Q2</h6>
 
-                                        @Html.TextBoxFor(model => model.ListAcquisitionsQ2, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "10" })
+                                        @Html.TextBoxFor(model => model.ListAcquisitionsQ2, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "10", maxlength = @RevenuePlanner.Helpers.Common.maxLengthValue })
                                         <div class="input-prepend">
                                             <span class="add-on">$</span>
                                             <input id="Acquisition_CostperContactQ2" class="gray-input" type="text" disabled="disabled">
@@ -376,7 +376,7 @@
                                         <input id="Q2CostperCumulativeContact" class="gray-input twodigit" type="text" disabled="disabled">
                                         <input id="Q2OutBoundErosion" class="gray-input" type="text" disabled="disabled">
                                         <input id="Q2OutBoundUnsubscribeRate" class="gray-input" type="text" disabled="disabled">
-                                        @Html.TextBoxFor(model => model.Acquisition_NumberofTouchesQ2, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "17" })
+                                        @Html.TextBoxFor(model => model.Acquisition_NumberofTouchesQ2, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "17", maxlength = @RevenuePlanner.Helpers.Common.maxLengthValue })
                                         <input id="Q2OutboundCTRDelivered" class="gray-input" type="text" disabled="disabled">
                                         <input id="Q2AcquisitionRegistrationRate" class="gray-input" type="text" disabled="disabled">
                                         <input id="Q2ListAcquisitionsModeledOutboundUnpaidInquiriesTotal" class="gray-input twodigit" type="text" disabled="disabled">
@@ -384,7 +384,7 @@
                                     <div class="table-regular-column">
                                         <h6 class="conv_helveticaltstd-light">Q3</h6>
 
-                                        @Html.TextBoxFor(model => model.ListAcquisitionsQ3, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "11" })
+                                        @Html.TextBoxFor(model => model.ListAcquisitionsQ3, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "11", maxlength = @RevenuePlanner.Helpers.Common.maxLengthValue })
                                         <div class="input-prepend">
                                             <span class="add-on">$</span>
 
@@ -395,7 +395,7 @@
                                         <input id="Q3CostperCumulativeContact" class="gray-input twodigit" type="text" disabled="disabled">
                                         <input id="Q3OutBoundErosion" class="gray-input" type="text" disabled="disabled">
                                         <input id="Q3OutBoundUnsubscribeRate" class="gray-input" type="text" disabled="disabled">
-                                        @Html.TextBoxFor(model => model.Acquisition_NumberofTouchesQ3, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "18" })
+                                        @Html.TextBoxFor(model => model.Acquisition_NumberofTouchesQ3, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "18", maxlength = @RevenuePlanner.Helpers.Common.maxLengthValue })
                                         <input id="Q3OutboundCTRDelivered" class="gray-input" type="text" disabled="disabled">
                                         <input id="Q3AcquisitionRegistrationRate" class="gray-input" type="text" disabled="disabled">
                                         <input id="Q3ListAcquisitionsModeledOutboundUnpaidInquiriesTotal" class="gray-input twodigit" type="text" disabled="disabled">
@@ -403,7 +403,7 @@
                                     <div class="table-regular-column">
                                         <h6 class="conv_helveticaltstd-light">Q4</h6>
 
-                                        @Html.TextBoxFor(model => model.ListAcquisitionsQ4, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "12" })
+                                        @Html.TextBoxFor(model => model.ListAcquisitionsQ4, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "12", maxlength = @RevenuePlanner.Helpers.Common.maxLengthValue })
                                         <div class="input-prepend">
                                             <span class="add-on">$</span>
 
@@ -414,7 +414,7 @@
                                         <input id="Q4CostperCumulativeContact" class="gray-input twodigit" type="text" disabled="disabled">
                                         <input id="Q4OutBoundErosion" class="gray-input" type="text" disabled="disabled">
                                         <input id="Q4OutBoundUnsubscribeRate" class="gray-input" type="text" disabled="disabled">
-                                        @Html.TextBoxFor(model => model.Acquisition_NumberofTouchesQ4, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "19" })
+                                        @Html.TextBoxFor(model => model.Acquisition_NumberofTouchesQ4, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "19", maxlength = @RevenuePlanner.Helpers.Common.maxLengthValue })
                                         <input id="Q4OutboundCTRDelivered" class="gray-input" type="text" disabled="disabled">
                                         <input id="Q4AcquisitionRegistrationRate" class="gray-input" type="text" disabled="disabled">
                                         <input id="Q4ListAcquisitionsModeledOutboundUnpaidInquiriesTotal" class="gray-input twodigit" type="text" disabled="disabled">
@@ -454,14 +454,14 @@
                                     <div class="table-regular-column">
                                         <h6 class="conv_helveticaltstd-light">Q1</h6>
 
-                                        @Html.TextBoxFor(model => model.Impressions, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "22" })
+                                        @Html.TextBoxFor(model => model.Impressions, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "22", maxlength = @RevenuePlanner.Helpers.Common.maxLengthValue })
                                         <div class="input-append">
-                                            @Html.TextBoxFor(model => model.ClickThroughRate, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "23", maxlength = "5" })
+                                            @Html.TextBoxFor(model => model.ClickThroughRate, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "23", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPercentageValue  })
                                             <span class="add-on">%</span>
                                         </div>
                                         <input id="Visits" class="gray-input" disabled="disabled" type="text">
                                         <div class="input-append">
-                                            @Html.TextBoxFor(model => model.InboundRegistrationRate, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "24", maxlength = "5" })
+                                            @Html.TextBoxFor(model => model.InboundRegistrationRate, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "24",maxlength = @RevenuePlanner.Helpers.Common.maxLengthPercentageValue  })
                                             <span class="add-on">%</span>
                                         </div>
                                         <input id="Q1TotalOrganicInquiries" class="gray-input twodigit" disabled="disabled" type="text" />
@@ -526,14 +526,14 @@
                                 <div class="regular-column-wrapper">
                                     <div class="table-regular-column">
                                         <h6 class="conv_helveticaltstd-light">Q1</h6>
-                                        @Html.TextBoxFor(model => model.PPC_ClickThroughs, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "25" })
+                                        @Html.TextBoxFor(model => model.PPC_ClickThroughs, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "25", maxlength = @RevenuePlanner.Helpers.Common.maxLengthValue })
                                         <div class="input-prepend">
                                             <span class="add-on">$</span>
-                                            @Html.TextBoxFor(model => model.PPC_CostperClickThrough, new { placeholder = "0", required = "", @class = "pricevaluewithdot", tabindex = "26" })
+                                            @Html.TextBoxFor(model => model.PPC_CostperClickThrough, new { placeholder = "0", required = "", @class = "pricevaluewithdot", tabindex = "26",maxlength = @RevenuePlanner.Helpers.Common.maxLengthPercentageValue})
                                         </div>
                                         <input id="Q1PPCCost" class="gray-input" disabled="disabled" type="text">
                                         <div class="input-append">
-                                            @Html.TextBoxFor(model => model.PPC_RegistrationRate, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "27", maxlength = "5" })
+                                            @Html.TextBoxFor(model => model.PPC_RegistrationRate, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "27",maxlength = @RevenuePlanner.Helpers.Common.maxLengthPercentageValue  })
                                             <span class="add-on">%</span>
                                         </div>
                                         <input id="Q1TotalInboundPaidSearchInquiries" class="gray-input" disabled="disabled" type="text" />
@@ -587,11 +587,11 @@
                                         <h6 class="conv_helveticaltstd-light">Q1</h6>
                                         <div class="input-prepend">
                                             <span class="add-on">$</span>
-                                            @Html.TextBoxFor(model => model.GC_GuaranteedCPLBudget, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "28" })
+                                            @Html.TextBoxFor(model => model.GC_GuaranteedCPLBudget, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "28" ,maxlength = @RevenuePlanner.Helpers.Common.maxLengthValue })
                                         </div>
                                         <div class="input-prepend">
                                             <span class="add-on">$</span>
-                                            @Html.TextBoxFor(model => model.GC_CostperLead, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "29" })
+                                            @Html.TextBoxFor(model => model.GC_CostperLead, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "29",maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue  })
                                         </div>
                                         <input id="Q1TotalInboundPaidMediaInquiries" class="gray-input" disabled="disabled" type="text" />
                                     </div>
@@ -636,11 +636,11 @@
                                         <h6 class="conv_helveticaltstd-light">Q1</h6>
                                         <div class="input-prepend">
                                             <span class="add-on">$</span>
-                                            @Html.TextBoxFor(model => model.CSC_NonGuaranteedCPLBudget, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "30" })
+                                            @Html.TextBoxFor(model => model.CSC_NonGuaranteedCPLBudget, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "30", maxlength = @RevenuePlanner.Helpers.Common.maxLengthValue })
                                         </div>
                                         <div class="input-prepend">
                                             <span class="add-on">$</span>
-                                            @Html.TextBoxFor(model => model.CSC_CostperLead, new { placeholder = "0", required = "", @class = "pricevaluewithdot", tabindex = "31" })
+                                            @Html.TextBoxFor(model => model.CSC_CostperLead, new { placeholder = "0", required = "", @class = "pricevaluewithdot", tabindex = "31",maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar  })
                                         </div>
                                         <input id="Q1TotalInboundPaidSyndicatedInquiries" class="gray-input" disabled="disabled" type="text" />
                                     </div>
@@ -685,11 +685,11 @@
                                         <h6 class="conv_helveticaltstd-light">Q1</h6>
                                         <div class="input-prepend">
                                             <span class="add-on">$</span>
-                                            @Html.TextBoxFor(model => model.TDM_DigitalMediaBudget, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "32" })
+                                            @Html.TextBoxFor(model => model.TDM_DigitalMediaBudget, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "32", maxlength = @RevenuePlanner.Helpers.Common.maxLengthValue })
                                         </div>
                                         <div class="input-prepend">
                                             <span class="add-on">$</span>
-                                            @Html.TextBoxFor(model => model.TDM_CostperLead, new { placeholder = "0", required = "", @class = "pricevaluewithdot", tabindex = "33" })
+                                            @Html.TextBoxFor(model => model.TDM_CostperLead, new { placeholder = "0", required = "", @class = "pricevaluewithdot", tabindex = "33",maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                                         </div>
                                         <input id="Q1TotalTraditionalDigitalMediaInquiries" class="gray-input" disabled="disabled" type="text" />
                                     </div>
@@ -734,11 +734,11 @@
                                         <h6 class="conv_helveticaltstd-light">Q1</h6>
                                         <div class="input-prepend">
                                             <span class="add-on">$</span>
-                                            @Html.TextBoxFor(model => model.TP_PrintMediaBudget, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "34" })
+                                            @Html.TextBoxFor(model => model.TP_PrintMediaBudget, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "34", maxlength = @RevenuePlanner.Helpers.Common.maxLengthValue })
                                         </div>
                                         <div class="input-prepend">
                                             <span class="add-on">$</span>
-                                            @Html.TextBoxFor(model => model.TP_CostperLead, new { placeholder = "0", required = "", @class = "pricevaluewithdot", tabindex = "35" })
+                                            @Html.TextBoxFor(model => model.TP_CostperLead, new { placeholder = "0", required = "", @class = "pricevaluewithdot", tabindex = "35",maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                                         </div>
                                         <input id="Q1TotalTraditionalPrintInquiries" class="gray-input" disabled="disabled" type="text" />
                                     </div>
@@ -787,13 +787,13 @@
                                         @*@Html.TextBoxFor(model => model.NumberofContactsQ1, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "36" })*@
                                           @Html.TextBoxFor(model => model.NumberofContactsQ1, new { placeholder = "0", required = "", @class = "pricevalue", tabindex = "36", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
                                         <div class="input-append">
-                                            @Html.TextBoxFor(model => model.ContactToInquiryConversion, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "40", maxlength = "5" })
+                                            @Html.TextBoxFor(model => model.ContactToInquiryConversion, new { placeholder = "0", required = "", @class = "doubleText doubleTextPerc", tabindex = "40", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPercentageValue  })
                                             <span class="add-on">%</span>
                                         </div>
                                         <input id="Q1EventsNumberofInquiries" class="gray-input" disabled="disabled" type="text" />
                                         <div class="input-prepend">
                                             <span class="add-on">$</span>
-                                            @Html.TextBoxFor(model => model.EventsBudgetQ1, new { placeholder = "0", required = "", @class = "pricevaluewithdot", tabindex = "41" })
+                                            @Html.TextBoxFor(model => model.EventsBudgetQ1, new { placeholder = "0", required = "", @class = "pricevaluewithdot", tabindex = "41",maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                                         </div>
                                         <input id="Q1EventsCostperContact" class="gray-input" disabled="disabled" type="text" />
                                         <input id="Q1EventsCostperInquiry" class="gray-input twodigit" disabled="disabled" type="text" />
@@ -810,7 +810,7 @@
                                         <input id="Q2EventsNumberofInquiries" class="gray-input" disabled="disabled" type="text" />
                                         <div class="input-prepend">
                                             <span class="add-on">$</span>
-                                            @Html.TextBoxFor(model => model.EventsBudgetQ2, new { placeholder = "0", required = "", @class = "pricevaluewithdot", tabindex = "42" })
+                                            @Html.TextBoxFor(model => model.EventsBudgetQ2, new { placeholder = "0", required = "", @class = "pricevaluewithdot", tabindex = "42",maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                                         </div>
                                         <input id="Q2EventsCostperContact" class="gray-input" disabled="disabled" type="text" />
                                         <input id="Q2EventsCostperInquiry" class="gray-input twodigit" disabled="disabled" type="text" />
@@ -827,7 +827,7 @@
                                         <input id="Q3EventsNumberofInquiries" class="gray-input" disabled="disabled" type="text" />
                                         <div class="input-prepend">
                                             <span class="add-on">$</span>
-                                            @Html.TextBoxFor(model => model.EventsBudgetQ3, new { placeholder = "0", required = "", @class = "pricevaluewithdot", tabindex = "43" })
+                                            @Html.TextBoxFor(model => model.EventsBudgetQ3, new { placeholder = "0", required = "", @class = "pricevaluewithdot", tabindex = "43",maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                                         </div>
                                         <input id="Q3EventsCostperContact" class="gray-input" type="text" disabled="disabled" />
                                         <input id="Q3EventsCostperInquiry" class="gray-input twodigit" type="text" disabled="disabled" />
@@ -844,7 +844,7 @@
                                         <input id="Q4EventsNumberofInquiries" class="gray-input" type="text" disabled="disabled" />
                                         <div class="input-prepend">
                                             <span class="add-on">$</span>
-                                            @Html.TextBoxFor(model => model.EventsBudgetQ4, new { placeholder = "0", required = "", @class = "pricevaluewithdot", tabindex = "44" })
+                                            @Html.TextBoxFor(model => model.EventsBudgetQ4, new { placeholder = "0", required = "", @class = "pricevaluewithdot", tabindex = "44",maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                                         </div>
                                         <input id="Q4EventsCostperContact" class="gray-input" type="text" disabled="disabled" />
                                         <input id="Q4EventsCostperInquiry" class="gray-input twodigit" type="text" disabled="disabled" />
