@@ -4221,6 +4221,16 @@ span.red-arrow-down-icon {
         font-size: 16px !important;
     }
 
+.report-chart1 canvas{
+    left:10px;
+}
+.report-chart1 .dhx_axis_item_y {
+    width: 55px !important;
+}
+.report-chart1 .dhx_chart_legend {
+        left: 260px !important;
+}
+
 /*chart 2*/
 .report-chart2 {
     position: relative;
@@ -4780,10 +4790,10 @@ span.red-arrow-down-icon {
 }
 
 .table-up {
-    width: 22px !important;
+    /*width: 22px !important;*/
     border: 1px -moz-bg-solid #FFFFFF;
     height: 266px;
-    position: absolute;
+    /*position: absolute;*/
     border-bottom: 3px solid #A8A8A8;
     border-collapse: inherit;
 }
