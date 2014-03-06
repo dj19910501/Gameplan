@@ -422,7 +422,7 @@ namespace RevenuePlanner.Helpers
             }
         }
         // Section parameter added to decide to send SendNotificationMail for Tactic, Program or Campaign Section
-        public static void SendNotificationMail(List<string> EmailIds, string TacticName, string PlanName, string Action, string Comment = "", string Section = "")
+        public static void SendNotificationMail(List<string> EmailIds, string TacticName, string PlanName, string Action, string Comment = "", string Section = "", int planTacticId = 0, int planId = 0, string URL = "")
         {
             string emailBody = "";
             MRPEntities db = new MRPEntities();
@@ -430,6 +430,7 @@ namespace RevenuePlanner.Helpers
             if (Section == Convert.ToString(Enums.Section.Tactic).ToLower())
             {
                 emailBody = notification.EmailContent.Replace("[TacticNameToBeReplaced]", TacticName).Replace("[PlanNameToBeReplaced]", PlanName).Replace("[UserNameToBeReplaced]", Sessions.User.FirstName + " " + Sessions.User.LastName).Replace("[CommentToBeReplaced]", Comment);
+                emailBody = emailBody.Replace("[URL]", URL);
             }
             else if (Section == Convert.ToString(Enums.Section.Program).ToLower())
             {
@@ -490,7 +491,7 @@ namespace RevenuePlanner.Helpers
             return collaboratorId.Distinct().ToList<string>();
         }
 
-        public static void mailSendForTactic(int planTacticId, string status, string title, bool iscomment = false, string comment = "", string section = "")
+        public static void mailSendForTactic(int planTacticId, string status, string title, bool iscomment = false, string comment = "", string section = "", string URL = "")
         {
             BDSServiceClient service = new BDSServiceClient();
             BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
@@ -518,9 +519,11 @@ namespace RevenuePlanner.Helpers
 
                 //var PlanName = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanTacticId == planTacticId).Select(pcpt => pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Title).SingleOrDefault();
                 var PlanName = "";
+                int PlanId = 0;
                 if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                 {
                     PlanName = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanTacticId == planTacticId).Select(pcpt => pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Title).SingleOrDefault();
+                    PlanId = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanTacticId == planTacticId).Select(pcpt => pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId).SingleOrDefault();
                 }
                 else if (section == Convert.ToString(Enums.Section.Program).ToLower())
                 {
@@ -532,7 +535,6 @@ namespace RevenuePlanner.Helpers
                 }
                 if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
                 {
-
                     if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
                         SendNotificationMail(lst_CollaboratorEmail, title, PlanName, Enums.Custom_Notification.TacticApproved.ToString(), "", Convert.ToString(Enums.Section.Tactic).ToLower());
@@ -585,7 +587,7 @@ namespace RevenuePlanner.Helpers
                 {
                     if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
-                        SendNotificationMail(lst_CollaboratorEmail, title, PlanName, Enums.Custom_Notification.TacticCommentAdded.ToString(), comment, Convert.ToString(Enums.Section.Tactic).ToLower());
+                        SendNotificationMail(lst_CollaboratorEmail, title, PlanName, Enums.Custom_Notification.TacticCommentAdded.ToString(), comment, Convert.ToString(Enums.Section.Tactic).ToLower(), planTacticId, PlanId, URL);
                     }
                 }
                 else if (status.Equals(Enums.Custom_Notification.ProgramCommentAdded.ToString()) && iscomment)
@@ -1088,7 +1090,7 @@ namespace RevenuePlanner.Helpers
                                   where t.Plan_Campaign_Program.Plan_Campaign.PlanId == planId
                                       && t.IsDeleted.Equals(false) && tacticStatus.Contains(t.Status)
                                   select new { t.MQLs, t.Cost }).ToList();
-                
+
                 if (plan.Status == Enums.PlanStatusValues[Enums.PlanStatus.Draft.ToString()].ToString())
                 {
                     objHomePlanModelHeader.MQLs = plan.MQLs;
@@ -1265,7 +1267,8 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         public static bool IsDebug
         {
-            get {
+            get
+            {
                 CompilationSection compilationSection = (CompilationSection)System.Configuration.ConfigurationManager.GetSection(@"system.web/compilation");
                 return compilationSection.Debug;
             }
