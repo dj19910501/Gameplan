@@ -4226,6 +4226,8 @@ span.red-arrow-down-icon {
 }
 .report-chart1 .dhx_axis_item_y {
     width: 55px !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .report-chart1 .dhx_chart_legend {
         left: 260px !important;
