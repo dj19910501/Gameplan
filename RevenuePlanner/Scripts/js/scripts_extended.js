@@ -370,15 +370,16 @@ function FormatINQMQL(value, isAbbreriviation) {
 function NumberFormatterTipsy(lableId, maxSize) {
     $(lableId).each(function () {
         var txtvalue = $(this).text();
-        if (txtvalue.indexOf('$') === 0)
-        {
-            var lengthvalue = txtvalue.length;
-            if (lengthvalue > maxSize) {
-                $(this).text(txtvalue.substring(0,maxSize) + "...");
-            }
+        var lengthvalue = txtvalue.length;
+        if (lengthvalue > maxSize) {
+            $(this).text(txtvalue.substring(0, maxSize) + "...");
             $(this).attr('title', txtvalue);
             $(this).addClass('north');
             $('.north').tipsy({ gravity: 's' });
+        }
+        else {
+            $(this).removeAttr('original-title');
+            $(this).removeClass('north');
         }
     });
 }

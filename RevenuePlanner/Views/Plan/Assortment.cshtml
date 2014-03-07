@@ -98,7 +98,7 @@
         <span class="pull-left width55">2.Campaign Definition</span>
         <span class="pull-right width100px text-right margin-right50">Programs</span>
         <span class="pull-right width150px text-right tipsyclass">Cost</span>
-        <span class="pull-right width100px text-right">@Html.LabelForMQL("MQL")</span>
+        <span class="pull-right width100px text-right tipsyclass">@Html.LabelForMQL("MQL")</span>
 
 
     </div>
@@ -489,7 +489,7 @@
             success: function (r) {
                 campaign = r;
                 fillCampaignsTable();
-                NumberFormatterTipsy(".tipsyclass", 6);
+                NumberFormatterTipsy(".tipsyclass", 9);
                 if('@ViewBag.EditOjbect' == "Tactic" && '@ViewBag.TacticId' != 0)
                 {
                     $("[id=divTactic][index=" + @ViewBag.TacticId + "]").click();
@@ -557,7 +557,7 @@
                                 '<span class="pull-right width50px"><div class="add-icon campaign" data-slidepanel="panel"></div></span>' +
                                 '<span class="pull-right width100px text-right font-black">' + 0 + '</span>' +
                                 '<span class="pull-right width100px text-right font-black tipsyclass">$' + 0 + '</span>' +
-                                '<span class="pull-right width100px text-right font-black">' + 0 + '</span>' +
+                                '<span class="pull-right width100px text-right font-black tipsyclass">' + 0 + '</span>' +
                             '</a>' +
                         '</div>';
                     CallForRedirectToApplyToCalender();
@@ -569,7 +569,7 @@
                                 //'<div class="total height40 pull-right width3"></div>' +
                                 '<div class="total pull-right width100px text-right">' + FormatCommas(programTotal.toString(), false) + '</div>' +
                                 '<div class="total pull-right width150px text-right tipsyclass">$' + FormatCommas(costTotal.toString(), false) + '</div>' +
-                                '<div class="total pull-right width100px text-right">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
+                                '<div class="total pull-right width100px text-right tipsyclass">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
                             '</div>';
 
                 var $tableCampaigns = $('.accordion-campaign > .accordion-group');
@@ -607,7 +607,7 @@
                                '<span class="pull-right width50px"><div class="add-icon campaign" data-slidepanel="panel"></div></span>' +
                                 '<span class="pull-right width100px text-right font-black ">' + FormatCommas(_programCount.toString(), false) + '</span>' +
                                 '<span class="pull-right width150px text-right font-black tipsyclass">$' + FormatCommas(_cost.toString(), false) + '</span>' +
-                                '<span class="pull-right width100px text-right font-black ">' + FormatCommas(_mqls.toString(), false) + '</span>' +
+                                '<span class="pull-right width100px text-right font-black tipsyclass">' + FormatCommas(_mqls.toString(), false) + '</span>' +
                             '</a>' +
                         '</div>' +
                         '<div id="collapse' + _index + '" class="accordion-body';
@@ -640,7 +640,7 @@
                          '<span class="pull-right width50px"><div class="add-icon program" data-slidepanel="panel"></div></span>' +
                          '<span class="pull-right width100px text-right font-black">-</span>' +
                          '<span class="pull-right width150px text-right font-black tipsyclass">$' + FormatCommas(_programs[i].cost.toString(), false) + '</span>' +
-                         '<span class="pull-right width100px text-right font-black">' + FormatCommas(_programs[i].mqls.toString(), false) + '</span>' +
+                         '<span class="pull-right width100px text-right font-black tipsyclass">' + FormatCommas(_programs[i].mqls.toString(), false) + '</span>' +
                      '</a>' +
                  '</div>' +
 
@@ -677,8 +677,8 @@
                                     $html += '<span class="underline tipsyclassTitle tactic-name-span">' + _programs[i].tactics[k].title + '</span>' +
                                                     '<span class="pull-right width50px text-right font-black">&nbsp;</span>' +
                                               '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
-                                              '<span class="pull-right width150px text-right font-black">$' + FormatCommas(_programs[i].tactics[k].cost.toString(), false) + '</span>' +
-                                              '<span class="pull-right text-right font-black">' + FormatCommas(_programs[i].tactics[k].mqls.toString(), false) + '</span>' +
+                                              '<span class="pull-right width150px text-right font-black tipsyclass">$' + FormatCommas(_programs[i].tactics[k].cost.toString(), false) + '</span>' +
+                                              '<span class="pull-right width100px text-right font-black tipsyclass">' + FormatCommas(_programs[i].tactics[k].mqls.toString(), false) + '</span>' +
                                                 '</div>' +
                                             '</div>';
                               
