@@ -193,12 +193,14 @@
         $("#AShowOnlyMyTactic").click(function () {
             IsShowOnlyMyTactic = !IsShowOnlyMyTactic;
             if (IsShowOnlyMyTactic) {
-                $("#AShowOnlyMyTactic > label").css("background-color", "#FFFFFF");
+                $("#AShowOnlyMyTactic > label").html('Show All Tactics');
+                //$("#AShowOnlyMyTactic > label").css("background-color", "#FFFFFF");
                 showMyTacticId = "@RevenuePlanner.Helpers.Sessions.User.UserId"
 
             }
             else {
-                $("#AShowOnlyMyTactic > label").css("background-color", "");
+                $("#AShowOnlyMyTactic > label").html('Show only My Tactics');
+                //$("#AShowOnlyMyTactic > label").css("background-color", "");
                 showMyTacticId = 0;
             }
             callFilter();
@@ -372,7 +374,7 @@
                 $(this).text(FormatCommas($(this).text(), false));
                 var txtvalue = $(this).text();
                 $(this).attr('title', txtvalue);
-                
+
                 //$('.truncate').tipsy({ gravity: 's' });
             });
 
@@ -398,7 +400,7 @@
                 var txtvalue = $(this).text();
                 $(this).attr('title', txtvalue);
             });
-  
+
 
             //Format Commas For Actual Value
             $("div[id^='ActuallblP']").each(function () {
@@ -754,7 +756,7 @@
                                             '</div>' +
                                         '</div>' +
                                     '</div>';
-            
+
             $html += '<div class="body-toogle-actual">@Html.LabelForCW("CW")<div class="table-info-actual-left-wraper">' +
                                             '<div class="table-info-actual-left truncate" id="ProjectedlblValueCW' + _id + '">' +
                                                 _cwProjected +
@@ -793,7 +795,7 @@
             var roiProjectedValue = 0;
             if (_costProjected != 0 && !isNaN(_costProjected)) {
                 var prevenue = parseFloat(_revenueProjected);
-                roiProjectedValue = (Math.round(prevenue / parseFloat(_costProjected) * 100) /100);
+                roiProjectedValue = (Math.round(prevenue / parseFloat(_costProjected) * 100) / 100);
             }
 
             $html += '<div class="body-toogle-actual">ROI' +

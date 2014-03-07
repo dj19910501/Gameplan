@@ -470,12 +470,13 @@
     $("#AShowOnlyMyTactic").click(function () {
         IsShowOnlyMyTactic = !IsShowOnlyMyTactic;
         if (IsShowOnlyMyTactic) {
-            $("#AShowOnlyMyTactic > label").css("background-color", "#FFFFFF");
+            $("#AShowOnlyMyTactic > label").html('Show All Tactics');
+            //$("#AShowOnlyMyTactic > label").css("background-color", "#FFFFFF");
         }
         else {
-            $("#AShowOnlyMyTactic > label").css("background-color", "");
+            $("#AShowOnlyMyTactic > label").html('Show only My Tactics');
+            //$("#AShowOnlyMyTactic > label").css("background-color", "");
         }
-
         RefreshCurrentTab();
     });
 
@@ -536,20 +537,20 @@
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Plan/DuplicatePlan/")',
-                dataType: "json",
-                success: function (data) {
-                    if (data.isSuccess == true) {
-                        var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + $('#ActiveMenu').val() + '&currentPlanId=' + data.planId;
+            dataType: "json",
+            success: function (data) {
+                if (data.isSuccess == true) {
+                    var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + $('#ActiveMenu').val() + '&currentPlanId=' + data.planId;
                         window.location.href = url;
                     }
                     else {
                         alert('Error');
                     }
                 },
-                error: function () {
-                    myApp.hidePleaseWait();
-                }
-            });
+            error: function () {
+                myApp.hidePleaseWait();
+            }
+        });
         }
 
         function SetPlanButtons() {
@@ -559,14 +560,14 @@
                 }
                 else {
                     var url = '@Url.Content("~/Plan/Create/0")';
-                window.location.href = url;
-            }
-        });
-    }
+                    window.location.href = url;
+                }
+            });
+        }
 
-    function ShowChangeLog() {
-        $('.changes').html('');
-        var url = '@Url.Content("~/Home/LoadChangeLog/")';
+        function ShowChangeLog() {
+            $('.changes').html('');
+            var url = '@Url.Content("~/Home/LoadChangeLog/")';
         $('.changes').load(url + '?objectId=' + CurrentPlanId);
     }
 

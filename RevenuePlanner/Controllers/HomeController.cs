@@ -1571,7 +1571,7 @@ namespace RevenuePlanner.Controllers
             List<ProjectedRevenueClass> tacticList = ReportController.ProjectedRevenueCalculate(tid);
             im.Revenues = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 2);
             tacticList = ReportController.ProjectedRevenueCalculate(tid, true);
-            im.CWs = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(),2);
+            im.CWs = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 2);
             ViewBag.TacticDetail = im;
             bool isValidUser = true;
             if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
@@ -1867,14 +1867,13 @@ namespace RevenuePlanner.Controllers
                     db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
                     result = db.SaveChanges();
 
-
-
                     if (result >= 1)
                     {
                         if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                         {
+                            int PlanId = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanTacticId == planTacticId).Select(p => p.Plan_Campaign_Program.Plan_Campaign.PlanId).FirstOrDefault();
                             Plan_Campaign_Program_Tactic pct = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == planTacticId).SingleOrDefault();
-                            Common.mailSendForTactic(planTacticId, Enums.Custom_Notification.TacticCommentAdded.ToString(), pct.Title, true, comment, Convert.ToString(Enums.Section.Tactic).ToLower());
+                            Common.mailSendForTactic(planTacticId, Enums.Custom_Notification.TacticCommentAdded.ToString(), pct.Title, true, comment, Convert.ToString(Enums.Section.Tactic).ToLower(), Url.Action("Index", "Home", new { currentPlanId = PlanId, planTacticId = planTacticId }, Request.Url.Scheme));
                         }
                         else if (section == Convert.ToString(Enums.Section.Program).ToLower())
                         {
