@@ -1,21 +1,6 @@
-/* To be executed in Gameplan database */
+IF EXISTS (SELECT * FROM [Notification] WHERE NotificationInternalUseOnly = 'TacticCommentAdded')
+BEGIN
+	UPDATE [Notification] SET EmailContent ='Dear User,<br/><br/>Please note that comment has been added to the following tactic<br/><br/><table><tr><td>Tactic Name</td><td>:</td><td>[TacticNameToBeReplaced]</td></tr><tr><td>Plan Name</td><td>:</td><td>[PlanNameToBeReplaced]</td></tr><tr><td>Comment</td><td>:</td><td>[CommentToBeReplaced]</td></tr><tr><td>Comment added by</td><td>:</td><td>[UserNameToBeReplaced]</td></tr><tr><td>URL</td><td>:</td><td>[URL]</td></tr></table><br><br>Thank You,<br>Gameplan Admin'
+	WHERE NotificationInternalUseOnly = 'TacticCommentAdded'
+END
 
-ALTER TABLE Model ALTER COLUMN AddressableContacts BIGINT NOT NULL
-ALTER TABLE Model_Audience_Event ALTER COLUMN NumberofContacts BIGINT NULL
-ALTER TABLE Model_Funnel ALTER COLUMN ExpectedLeadCount BIGINT NOT NULL
-ALTER TABLE [Plan] ALTER COLUMN MQLs FLOAT NOT NULL
-ALTER TABLE Plan_Campaign ALTER COLUMN INQs BIGINT NULL
-ALTER TABLE Plan_Campaign ALTER COLUMN MQLs FLOAT NULL
-ALTER TABLE Plan_Campaign_Program ALTER COLUMN INQs BIGINT NULL
-ALTER TABLE Plan_Campaign_Program ALTER COLUMN MQLs FLOAT NULL
-ALTER TABLE Plan_Campaign_Program_Tactic ALTER COLUMN INQs BIGINT NOT NULL
-ALTER TABLE Plan_Campaign_Program_Tactic ALTER COLUMN INQsActual BIGINT NULL
-ALTER TABLE Plan_Campaign_Program_Tactic ALTER COLUMN MQLs FLOAT NOT NULL
-ALTER TABLE Plan_Campaign_Program_Tactic ALTER COLUMN MQLsActual FLOAT NULL
-ALTER TABLE Plan_Campaign_Program_Tactic ALTER COLUMN CWs FLOAT NULL
-ALTER TABLE Plan_Campaign_Program_Tactic ALTER COLUMN CWsActual FLOAT NULL
-ALTER TABLE Plan_Campaign_Program_Tactic_Actual ALTER COLUMN Actualvalue FLOAT NOT NULL
-ALTER TABLE Plan_Improvement_Campaign_Program_Tactic_Actual ALTER COLUMN Actualvalue FLOAT NOT NULL
-ALTER TABLE TacticType ALTER COLUMN ProjectedInquiries BIGINT NULL
-ALTER TABLE TacticType ALTER COLUMN ProjectedMQLs FLOAT NULL
-ALTER TABLE TacticType ALTER COLUMN ProjectedRevenue FLOAT NULL
