@@ -35,8 +35,8 @@
 @Html.HiddenFor(m => m.PlanId)
 <script type="text/javascript">
     //var CurrentPlanId = 0;
-    var CurrentBid = 0;		
-// Edited to add PlanYear option.
+    var CurrentBid = 0;
+    // Edited to add PlanYear option.
     var Currenttime = "planYear";
     function populateNF(items, id) {
         var $dropdown = $("#" + id);
@@ -134,6 +134,49 @@
         onClickBusinessUnit();
 
     });
+
+    function GetHealderData(intplanid) {
+        $.ajax(
+        {
+            type: "GET",
+            cache: false,
+            url: '@Url.Action("GetPlanByPlanID", "Plan")',
+            data: {
+                planid: intplanid
+
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data != null) {
+
+                    $.each(data.lstHomePlanModelHeader, function (index, obj) {
+                        if (index == "MQLs") {
+                            $("#pMQLs").html(obj);
+                            SetPriceValue("#pMQLs");
+                        }
+                        else if (index == "Budget") {
+                            $("#pbudget").html(obj);
+                            SetBudget("#pbudget");
+                        }
+                        else if (index == "TacticCount") {
+                            $("#ptacticcount").html(obj);
+                        }
+                        else if (index == "mqlLabel") {
+                            $("#pmqlLabel").html(obj);
+                        }
+                        else if (index == "costLabel") {
+                            $("#pcostLabel").html(obj);
+                        }
+
+                    });
+
+                }
+            },
+            error: function () {
+                myApp.hidePleaseWait();
+            }
+        });
+    }
 </script>
 @section Sidebar{
     <div class="padding-content padding-bottom0 ">
@@ -228,7 +271,7 @@
 <div class="tab-content all-height cf">
     <div class="tab-pane active all-height" id="panel-656352">
         <div class=" pl20 cf">
-            <div class="margin-left9 pull-left">
+            <div class="margin-left9 pull-left" id="divCollaborator">
                 @foreach (var userId in Model.CollaboratorId)
                 {
                     <img class="avatar-user img-border align_avatar_image" alt="User avatar" src="@Url.Action("LoadUserImage", "User", new { id = userId, width = 30, height = 30 })">
@@ -241,9 +284,9 @@
                     <div id="gantt_here"></div>
                 </div>
                 <div class="margin-top20">
-                   @* <a href="url">< @Html.ActionLink("Back", "Assortment", "Plan")
+                    @* <a href="url">< @Html.ActionLink("Back", "Assortment", "Plan")
                     </a>*@
-                    <a id="lnkGoBack" style="cursor:pointer;">Back</a>
+                    <a id="lnkGoBack" style="cursor: pointer;">Back</a>
                     @if (isViewOnly != "true")
                     {
                         using (Html.BeginForm("ApplyToCalendar", "Plan", FormMethod.Post, new { @id = "frmPublishPlan" }))
@@ -272,7 +315,7 @@
             $(this).attr("myValue", $(this).val());
         });
     }
-    
+
     $(document).on("click", "#lnkCampaigns", function (e) {
         displayconfirm('@Url.Action("Assortment", "Plan")');
     });
@@ -301,7 +344,7 @@
                         changed = true;
                     }
                 }
-                
+
             }
             else {
                 if ($(this).val() != iv) {
@@ -313,7 +356,7 @@
     }
     function displayconfirm(strURL) {
         if (isDataChanged()) {
-            $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a href='"+ strURL +"' style='font-weight:bold;color:gray'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+            $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a href='" + strURL + "' style='font-weight:bold;color:gray'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
             $("#errorMessageDuplicatePlan").slideDown(3000);
         }
         else {
@@ -409,6 +452,7 @@
        //// Function to make ajax request.
        function AjaxRequest() {
            GetNumberOfActivityPerMonByPlanId(CurrentPlanId);
+           GetCollaborators(CurrentPlanId);
            var isPublished = false;
            $.ajax(
          {
@@ -435,390 +479,449 @@
          });
      }
 
-     //// Function to start date of current quarter.
-     function getQarterStartDate() {
-         var currentDate = new Date();
-         var quater = Math.floor((currentDate.getMonth()) / 3) + 1;
-         var startDate;
-         var fullYear = currentDate.getFullYear();
-         switch (quater) {
-             case 1:
-                 startDate = new Date(fullYear, 00, 01);
-                 break;
-             case 2:
-                 startDate = new Date(fullYear, 03, 01);
-                 break;
-             case 3:
-                 startDate = new Date(fullYear, 06, 01);
-                 break;
-             case 4:
-                 startDate = new Date(fullYear, 09, 01);
-                 break;
-             default:
-                 startDate = currentDate;
-         }
+     // Function to get collaborators list
+    function GetCollaborators(planId) {
+         if (planId != null) {
+             $.ajax(
+            {
+                type: "GET",
+                cache: false,
+                url: '@Url.Action("GetCollaboratorDetails", "Plan")',
+                data: { currentPlanId: planId },
+                dataType: "json",
+                success: function (data) {
+                    // Set collaborator details
+                    $('#divCollaborator').empty(); // Clear collaborators div content
+                    var collaboratorCount = 0;
 
-         return startDate;
-     }
+                    // Get collaborator's image
+                    $.each(data.collaboratorList.split(','), function () {
+                        GetCollaboratorImage(this);
+                        collaboratorCount++;
+                    })
+
+                    $('#divCollaborator').append('<span class="bold margin_left6">' + collaboratorCount + ' Collaborator(s) </span>');
+                    $('#divCollaborator').append('<span class="font_size10 updated-text-align">Last updated ' + data.lastUpdateDate + '</span>');
+
+                },
+                error: function () {
+                    myApp.hidePleaseWait();
+                }
+            });
+        }
+    }
+
+    // Function to get collaborator's image
+    function GetCollaboratorImage(colId) {
+        if (colId != null) {
+            $.ajax(
+           {
+               type: "GET",
+               cache: false,
+               url: '@Url.Action("GetCollaboratorImage", "Plan")',
+               data: { collaboratorId: colId },
+               dataType: "json",
+               success: function (data) {
+                   // Get collaborator image
+                   imgs = data;
+
+                   // Set collaborator image
+                   var collaboratorImage = "<img class=\"avatar-user img-border align_avatar_image\""
+                    + "src='" + "data:image/jpg;base64,"
+                    + imgs.base64image + "'/>";
+                   $("#divCollaborator").prepend(collaboratorImage);
+               },
+               error: function () {
+                   myApp.hidePleaseWait();
+               }
+           });
+       }
+   }
+
+   //// Function to start date of current quarter.
+   function getQarterStartDate() {
+       var currentDate = new Date();
+       var quater = Math.floor((currentDate.getMonth()) / 3) + 1;
+       var startDate;
+       var fullYear = currentDate.getFullYear();
+       switch (quater) {
+           case 1:
+               startDate = new Date(fullYear, 00, 01);
+               break;
+           case 2:
+               startDate = new Date(fullYear, 03, 01);
+               break;
+           case 3:
+               startDate = new Date(fullYear, 06, 01);
+               break;
+           case 4:
+               startDate = new Date(fullYear, 09, 01);
+               break;
+           default:
+               startDate = currentDate;
+       }
+
+       return startDate;
+   }
 
 
-     function GetNumberOfActivityPerMonByPlanId(intplanid, strParam) {
-         $.ajax(
-         {
-             type: "GET",
-             cache: false,
-             url: '@Url.Action("GetNumberOfActivityPerMonthByPlanId", "Home")',
-          data: {
-              planid: intplanid,
-              strparam: strParam,
-              geographyIds: '', individualsIds: ''
-          },
-          dataType: "json",
-          success: function (data) {
-              if (data != null) {
-                  $(".dhx_canvas_text").remove();
-                  $("canvas").remove();
-                  setgraphdata(data);
+   function GetNumberOfActivityPerMonByPlanId(intplanid, strParam) {
+       $.ajax(
+       {
+           type: "GET",
+           cache: false,
+           url: '@Url.Action("GetNumberOfActivityPerMonthByPlanId", "Home")',
+           data: {
+               planid: intplanid,
+               strparam: strParam,
+               geographyIds: '', individualsIds: ''
+           },
+           dataType: "json",
+           success: function (data) {
+               if (data != null) {
+                   $(".dhx_canvas_text").remove();
+                   $("canvas").remove();
+                   setgraphdata(data);
 
-              }
-          },
-          error: function () {
-              myApp.hidePleaseWait();
-          }
-      });
-  }
-  function setgraphdata(data) {
+               }
+           },
+           error: function () {
+               myApp.hidePleaseWait();
+           }
+       });
+   }
+   function setgraphdata(data) {
 
-      var barChart2 = new dhtmlXChart({
-          view: "bar",
-          container: "chart2",
-          value: "#NoOfActivity#",
-          label: "#NoOfActivity#",
-          color: "#Color#",
-          radius: 3,
-          padding: {
-              top: 25,
-              bottom: 16,
-              right: 00,
-              left: 00
+       var barChart2 = new dhtmlXChart({
+           view: "bar",
+           container: "chart2",
+           value: "#NoOfActivity#",
+           label: "#NoOfActivity#",
+           color: "#Color#",
+           radius: 3,
+           padding: {
+               top: 25,
+               bottom: 16,
+               right: 00,
+               left: 00
 
-          },
-          xAxis: {
+           },
+           xAxis: {
 
-              template: "#Month#"
-          },
-      });
-      barChart2.parse(data.lstchart, "json");
-  }
+               template: "#Month#"
+           },
+       });
+       barChart2.parse(data.lstchart, "json");
+   }
 
 
-     //// Function to render gantt i.e. for this year or this quarter.
-     function renderGantt(taskData) {
-         var tasks = {
-             data: taskData
-         };
+   //// Function to render gantt i.e. for this year or this quarter.
+   function renderGantt(taskData) {
+       var tasks = {
+           data: taskData
+       };
 
-         $.each(tasks.data, function (index, objData) {
-             objData.start_date = new Date(objData.start_date);
-         });
+       $.each(tasks.data, function (index, objData) {
+           objData.start_date = new Date(objData.start_date);
+       });
 
-         gantt.eachTask(function (task) {
-             gantt.deleteTask(task.id)
-         })
+       gantt.eachTask(function (task) {
+           gantt.deleteTask(task.id)
+       })
 
-         //// Modified By: Maninder Singh Wadhva to fix TFS Bug#260 Plan - Apply to Calendar - The plotting of activity bars in the calendar doesn't align with the dates mentioned.
-         gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-         gantt.config.scale_height = 60;
-         gantt.config.round_dnd_dates = false;
-         gantt.config.scale_unit = "month";
-         gantt.config.date_scale = " %M";
-         gantt.config.subscales = [{ unit: "year", step: 1, date: "%Y" }];
-         gantt.templates.task_class = function (start, end, task) { return task.color + " cursorPointer"; };
+       //// Modified By: Maninder Singh Wadhva to fix TFS Bug#260 Plan - Apply to Calendar - The plotting of activity bars in the calendar doesn't align with the dates mentioned.
+       gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+       gantt.config.scale_height = 60;
+       gantt.config.round_dnd_dates = false;
+       gantt.config.scale_unit = "month";
+       gantt.config.date_scale = " %M";
+       gantt.config.subscales = [{ unit: "year", step: 1, date: "%Y" }];
+       gantt.templates.task_class = function (start, end, task) { return task.color + " cursorPointer"; };
 
-         if (isQuater == "thisquarter") {
-             //// Getting quarter
-             var startDate = getQarterStartDate();
-             var endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 1);
-             gantt.config.start_date = startDate;
-             gantt.config.end_date = endDate;
-             //// filtering quater data
-             var filteredData = $.grep(tasks.data,
-                                        function (value) {
-                                            return (value.start_date >= startDate && value.start_date <= endDate)
-                                        }
-                                      );
-             var filteredTasks = { data: filteredData };
+       if (isQuater == "thisquarter") {
+           //// Getting quarter
+           var startDate = getQarterStartDate();
+           var endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 1);
+           gantt.config.start_date = startDate;
+           gantt.config.end_date = endDate;
+           //// filtering quater data
+           var filteredData = $.grep(tasks.data,
+                                      function (value) {
+                                          return (value.start_date >= startDate && value.start_date <= endDate)
+                                      }
+                                    );
+           var filteredTasks = { data: filteredData };
 
-             gantt.init("gantt_here");
+           gantt.init("gantt_here");
 
-             var json_length = filteredTasks.data.length;
-             var gantt_div = document.getElementById("gantt_here");
-             gantt_div.style.height = ((json_length * 35) + 94) + "px";
-             gantt.parse(filteredTasks);
-         } else if (isQuater == "thisyear") {
-             var date = new Date();
-             gantt.config.start_date = new Date(date.getFullYear(), 00, 01);
-             gantt.config.end_date = new Date(date.getFullYear() + 1, 00, 01);
-             gantt.init("gantt_here");
+           var json_length = filteredTasks.data.length;
+           var gantt_div = document.getElementById("gantt_here");
+           gantt_div.style.height = ((json_length * 35) + 94) + "px";
+           gantt.parse(filteredTasks);
+       } else if (isQuater == "thisyear") {
+           var date = new Date();
+           gantt.config.start_date = new Date(date.getFullYear(), 00, 01);
+           gantt.config.end_date = new Date(date.getFullYear() + 1, 00, 01);
+           gantt.init("gantt_here");
 
-             var json_length = tasks.data.length;
-             var gantt_div = document.getElementById("gantt_here");
-             gantt_div.style.height = ((json_length * 35) + 94) + "px";
-             gantt.parse(tasks);
-         }
-         else if (isQuater == "thismonth") {
-             var date = new Date(), m = date.getMonth();
-             gantt.config.start_date = new Date(date.getFullYear(), m, 01);
-             gantt.config.end_date = new Date(date.getFullYear(), m + 1, 01);
-             gantt.init("gantt_here");
+           var json_length = tasks.data.length;
+           var gantt_div = document.getElementById("gantt_here");
+           gantt_div.style.height = ((json_length * 35) + 94) + "px";
+           gantt.parse(tasks);
+       }
+       else if (isQuater == "thismonth") {
+           var date = new Date(), m = date.getMonth();
+           gantt.config.start_date = new Date(date.getFullYear(), m, 01);
+           gantt.config.end_date = new Date(date.getFullYear(), m + 1, 01);
+           gantt.init("gantt_here");
 
-             var json_length = tasks.data.length;
-             var gantt_div = document.getElementById("gantt_here");
-             gantt_div.style.height = ((json_length * 35) + 94) + "px";
-             gantt.parse(tasks);
-         }
-         else if (isQuater == "nextyear") {
-             var date = new Date();
-             gantt.config.start_date = new Date(date.getFullYear() + 1, 00, 01);
-             gantt.config.end_date = new Date(date.getFullYear() + 2, 00, 01);
-             gantt.init("gantt_here");
+           var json_length = tasks.data.length;
+           var gantt_div = document.getElementById("gantt_here");
+           gantt_div.style.height = ((json_length * 35) + 94) + "px";
+           gantt.parse(tasks);
+       }
+       else if (isQuater == "nextyear") {
+           var date = new Date();
+           gantt.config.start_date = new Date(date.getFullYear() + 1, 00, 01);
+           gantt.config.end_date = new Date(date.getFullYear() + 2, 00, 01);
+           gantt.init("gantt_here");
 
-             var json_length = tasks.data.length;
-             var gantt_div = document.getElementById("gantt_here");
-             gantt_div.style.height = ((json_length * 35) + 94) + "px";
-             gantt.parse(tasks);
-         } else if (isQuater == "planYear") {	 
-// Edited to add PlanYear option.
-             gantt.config.start_date = new Date(planYear, 00, 01);
-             gantt.config.end_date = new Date(planYear + 1, 00, 01);
-             gantt.init("gantt_here");
+           var json_length = tasks.data.length;
+           var gantt_div = document.getElementById("gantt_here");
+           gantt_div.style.height = ((json_length * 35) + 94) + "px";
+           gantt.parse(tasks);
+       } else if (isQuater == "planYear") {
+           // Edited to add PlanYear option.
+           gantt.config.start_date = new Date(planYear, 00, 01);
+           gantt.config.end_date = new Date(planYear + 1, 00, 01);
+           gantt.init("gantt_here");
 
-             var json_length = tasks.data.length;
-             var gantt_div = document.getElementById("gantt_here");
-             gantt_div.style.height = ((json_length * 35) + 94) + "px";
-             gantt.parse(tasks);
-         }
+           var json_length = tasks.data.length;
+           var gantt_div = document.getElementById("gantt_here");
+           gantt_div.style.height = ((json_length * 35) + 94) + "px";
+           gantt.parse(tasks);
+       }
 
-         AttachEventToTactic();
-         HideDragHandleOfTask();
-     }
+       AttachEventToTactic();
+       HideDragHandleOfTask();
+   }
 
-     //// Function to hide drag handle.
-     function HideDragHandleOfTask() {
-         gantt.eachTask(function (task) {
-             if (task.IsHideDragHandleLeft || task.IsHideDragHandleRight) {
-                 HideDragHandleLeftOrRigth(task);
-             }
-         })
-     }
+   //// Function to hide drag handle.
+   function HideDragHandleOfTask() {
+       gantt.eachTask(function (task) {
+           if (task.IsHideDragHandleLeft || task.IsHideDragHandleRight) {
+               HideDragHandleLeftOrRigth(task);
+           }
+       })
+   }
 
-     //// Function to hide left right drag handle.
-     function HideDragHandleLeftOrRigth(task) {
-         $(".gantt_bars_area").find("div[task_id='" + task.id + "']").find('div[class="gantt_task_drag task_left"]').remove();
-         $(".gantt_bars_area").find("div[task_id='" + task.id + "']").find('div[class="gantt_task_drag task_right"]').remove();
-     }
+   //// Function to hide left right drag handle.
+   function HideDragHandleLeftOrRigth(task) {
+       $(".gantt_bars_area").find("div[task_id='" + task.id + "']").find('div[class="gantt_task_drag task_left"]').remove();
+       $(".gantt_bars_area").find("div[task_id='" + task.id + "']").find('div[class="gantt_task_drag task_right"]').remove();
+   }
 
-     gantt.attachEvent("onTaskSelected", function (id, item) {
-         HideDragHandleOfTask();
-     });
+   gantt.attachEvent("onTaskSelected", function (id, item) {
+       HideDragHandleOfTask();
+   });
 
-     gantt.attachEvent("onTaskOpened", function (id) {
-         HideDragHandleOfTask();
-     });
+   gantt.attachEvent("onTaskOpened", function (id) {
+       HideDragHandleOfTask();
+   });
 
-     gantt.attachEvent("onTaskClosed", function (id) {
-         HideDragHandleOfTask();
-     });
+   gantt.attachEvent("onTaskClosed", function (id) {
+       HideDragHandleOfTask();
+   });
 
-     //// Variable to hold double click event.
-     var eventTaskDoubleClick;
-     //// Function to attach event to show inspect model.
-     function AttachEventToTactic() {
-         //// Detaching double click event.
-         if (eventTaskDoubleClick != undefined) {
-             gantt.detachEvent(eventTaskDoubleClick);
-         }
+   //// Variable to hold double click event.
+   var eventTaskDoubleClick;
+   //// Function to attach event to show inspect model.
+   function AttachEventToTactic() {
+       //// Detaching double click event.
+       if (eventTaskDoubleClick != undefined) {
+           gantt.detachEvent(eventTaskDoubleClick);
+       }
 
-         //// Attaching double click event
-         eventTaskDoubleClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) { ShowSidePanel(taskId, e) });
-     }
+       //// Attaching double click event
+       eventTaskDoubleClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) { ShowSidePanel(taskId, e) });
+   }
 
-     function ShowSidePanel(taskId, e) {
-         var task = gantt.getTask(taskId);
+   function ShowSidePanel(taskId, e) {
+       var task = gantt.getTask(taskId);
 
-         //// Checking whether current task is tactic or not.
-         if (typeof task.plantacticid !== 'undefined') {
-             //// Getting plan tactic id.
+       //// Checking whether current task is tactic or not.
+       if (typeof task.plantacticid !== 'undefined') {
+           //// Getting plan tactic id.
 
-             ShowTactic(task.plantacticid)
-         }
-         else if (typeof task.PlanProgramId !== 'undefined') {
-             //// Getting plan program id.
-             ShowProgram(task.PlanProgramId)
-         }
-         else if (typeof task.PlanCampaignId !== 'undefined') {
-             ShowCampaign(task.PlanCampaignId)
-         }
-     }
+           ShowTactic(task.plantacticid)
+       }
+       else if (typeof task.PlanProgramId !== 'undefined') {
+           //// Getting plan program id.
+           ShowProgram(task.PlanProgramId)
+       }
+       else if (typeof task.PlanCampaignId !== 'undefined') {
+           ShowCampaign(task.PlanCampaignId)
+       }
+   }
 
-     //scroll right sidebar form
-     $(function () {
-         $('.scrolled_div_form').slimScroll({
-             height: 'auto',
-             alwaysVisible: true,
-             distance: '-10px',
-             wheelStep: 3,
-             allowPageScroll: false,
-             disableFadeOut: false
-         });
-     });
+   //scroll right sidebar form
+   $(function () {
+       $('.scrolled_div_form').slimScroll({
+           height: 'auto',
+           alwaysVisible: true,
+           distance: '-10px',
+           wheelStep: 3,
+           allowPageScroll: false,
+           disableFadeOut: false
+       });
+   });
 
-     function ShowCampaign(id) {
-         $("#slidepanel").css("display", "block");
+   function ShowCampaign(id) {
+       $("#slidepanel").css("display", "block");
        //  $("#slidepanel-container").css("display", "block");
-         var url = '@Url.Content("~/Plan/EditCampaign")';
-         //$('#slidepanel-container').load(url + '?id=' + id);
-         $('#slidepanel-container').load(url + '?id=' + id,AssignDefaultValue);
-         $("#slidepanel").css("right", "0px");
-         myApp.hidePleaseWait();
-     }
+       var url = '@Url.Content("~/Plan/EditCampaign")';
+       //$('#slidepanel-container').load(url + '?id=' + id);
+       $('#slidepanel-container').load(url + '?id=' + id, AssignDefaultValue);
+       $("#slidepanel").css("right", "0px");
+       myApp.hidePleaseWait();
+   }
 
-     function ShowProgram(id) {
-         $("#slidepanel").css("display", "block");
-        // $("#slidepanel-container").css("display", "block");
-         var url = '@Url.Content("~/Plan/EditProgram")';
-         //$('#slidepanel-container').load(url + '?id=' + id);
-         $('#slidepanel-container').load(url + '?id=' + id, AssignDefaultValue);
-         $("#slidepanel").css("right", "0px");
-         myApp.hidePleaseWait();
-     }
+   function ShowProgram(id) {
+       $("#slidepanel").css("display", "block");
+       // $("#slidepanel-container").css("display", "block");
+       var url = '@Url.Content("~/Plan/EditProgram")';
+       //$('#slidepanel-container').load(url + '?id=' + id);
+       $('#slidepanel-container').load(url + '?id=' + id, AssignDefaultValue);
+       $("#slidepanel").css("right", "0px");
+       myApp.hidePleaseWait();
+   }
 
-     function ShowTactic(id) {
-         $("#slidepanel").css("display", "block");
-//         $("#slidepanel-container").css("display", "block");
-         var url = '@Url.Content("~/Plan/EditTactic")';
-         //$('#slidepanel-container').load(url + '?id=' + id);
-         $('#slidepanel-container').load(url + '?id=' + id, AssignDefaultValue);
-               $("#slidepanel").css("right", "0px");
-         myApp.hidePleaseWait();
-     }
-     //// Function to set common properties of gantt.
-     function SetGantt() {
-         gantt.config.grid_width = 236;
-         gantt.config.readonly = false;
-         gantt.config.show_progress = false;
-         gantt.config.autofit = true;
-         gantt.config.drag_links = false;
-         gantt.config.drag_progress = false;
+   function ShowTactic(id) {
+       $("#slidepanel").css("display", "block");
+       //         $("#slidepanel-container").css("display", "block");
+       var url = '@Url.Content("~/Plan/EditTactic")';
+        //$('#slidepanel-container').load(url + '?id=' + id);
+        $('#slidepanel-container').load(url + '?id=' + id, AssignDefaultValue);
+        $("#slidepanel").css("right", "0px");
+        myApp.hidePleaseWait();
+    }
+    //// Function to set common properties of gantt.
+    function SetGantt() {
+        gantt.config.grid_width = 236;
+        gantt.config.readonly = false;
+        gantt.config.show_progress = false;
+        gantt.config.autofit = true;
+        gantt.config.drag_links = false;
+        gantt.config.drag_progress = false;
 
-         if ($('#IsViewOnly').val() != '') {
-             gantt.config.drag_resize = false;
-         }
-         else {
-             gantt.config.drag_resize = true;
-         }
-     }
+        if ($('#IsViewOnly').val() != '') {
+            gantt.config.drag_resize = false;
+        }
+        else {
+            gantt.config.drag_resize = true;
+        }
+    }
 
-     //// Attaching function to after task drag event handler.
-     gantt.attachEvent("onAfterTaskDrag", function (id, mode, e) { AfterTaskDrag(id, mode, e); });
+    //// Attaching function to after task drag event handler.
+    gantt.attachEvent("onAfterTaskDrag", function (id, mode, e) { AfterTaskDrag(id, mode, e); });
 
-     //// Attaching code to before task drag event handler to avoid move of task whose either or both dates are not plotted on current view.
-     gantt.attachEvent("onBeforeTaskDrag", function (id, mode, e) {
-         var modes = gantt.config.drag_mode;
-         if (mode == modes.move) {
-             var task = gantt.getTask(id);
-             if (task.IsHideDragHandleLeft || task.IsHideDragHandleRight) {
-                 return false;
-             }
-         }
-         return true;
-     });
+    //// Attaching code to before task drag event handler to avoid move of task whose either or both dates are not plotted on current view.
+    gantt.attachEvent("onBeforeTaskDrag", function (id, mode, e) {
+        var modes = gantt.config.drag_mode;
+        if (mode == modes.move) {
+            var task = gantt.getTask(id);
+            if (task.IsHideDragHandleLeft || task.IsHideDragHandleRight) {
+                return false;
+            }
+        }
+        return true;
+    });
 
     //// Function to set after start_date and duration.
     //// Modified By: Maninder Singh Wadhva to fix TFS Bug#260 Plan - Apply to Calendar - The plotting of activity bars in the calendar doesn't align with the dates mentioned.
-     function AfterTaskDrag(id, mode, e) {
-         var modes = gantt.config.drag_mode;
-         switch (mode) {
-             case modes.move:
-             case modes.resize:
-                 var task = gantt.getTask(id);
-                 if (typeof task.PlanCampaignId != 'undefined') {
-                     UpdateStartEndDate(task.PlanCampaignId, task.start_date, task.duration -1, true, false, false)
-                 } else if (typeof task.PlanProgramId != 'undefined') {
-                     UpdateStartEndDate(task.PlanProgramId, task.start_date, task.duration -1, false, true, false)
-                 } else if (typeof task.plantacticid != 'undefined') {
-                     UpdateStartEndDate(task.plantacticid, task.start_date, task.duration - 1, false, false, true)
-                 }
-                 break;
-         }
-     }
+    function AfterTaskDrag(id, mode, e) {
+        var modes = gantt.config.drag_mode;
+        switch (mode) {
+            case modes.move:
+            case modes.resize:
+                var task = gantt.getTask(id);
+                if (typeof task.PlanCampaignId != 'undefined') {
+                    UpdateStartEndDate(task.PlanCampaignId, task.start_date, task.duration - 1, true, false, false)
+                } else if (typeof task.PlanProgramId != 'undefined') {
+                    UpdateStartEndDate(task.PlanProgramId, task.start_date, task.duration - 1, false, true, false)
+                } else if (typeof task.plantacticid != 'undefined') {
+                    UpdateStartEndDate(task.plantacticid, task.start_date, task.duration - 1, false, false, true)
+                }
+                break;
+        }
+    }
 
-     function CheckDate(date, duration) {
-         var startDate = null;
-         var endDate = null;
-         updatedStartDate = null;
-         updatedDuration = null;
+    function CheckDate(date, duration) {
+        var startDate = null;
+        var endDate = null;
+        updatedStartDate = null;
+        updatedDuration = null;
 
-         if (isQuater == "thisquarter") {
-             //// Getting quarter
-             startDate = getQarterStartDate();
-             endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 0);
-         } else if (isQuater == "thisyear") {		  
-// Changed variable name.
-             var currentDate = new Date();
-             startDate = new Date(currentDate.getFullYear(), 00, 01);
-             endDate = new Date(currentDate.getFullYear() + 1, 00, 0);
-         }
-         else if (isQuater == "thismonth") {
-             var currentDate = new Date(), m = currentDate.getMonth();
-             startDate = new Date(currentDate.getFullYear(), m, 01);
-             endDate = new Date(currentDate.getFullYear(), m + 1, 0);
-         }
-         else if (isQuater == "nextyear") {
-             var currentDate = new Date();
-             startDate = new Date(currentDate.getFullYear() + 1, 00, 01);
-             endDate = new Date(currentDate.getFullYear() + 2, 00, 0);
-         } else if (isQuater == "planYear") { 
-			//Edited to add PlanYear option.
-             startDate = new Date(planYear, 00, 01);
-             endDate = new Date(planYear + 1, 00, 0);
-         }
+        if (isQuater == "thisquarter") {
+            //// Getting quarter
+            startDate = getQarterStartDate();
+            endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 0);
+        } else if (isQuater == "thisyear") {
+            // Changed variable name.
+            var currentDate = new Date();
+            startDate = new Date(currentDate.getFullYear(), 00, 01);
+            endDate = new Date(currentDate.getFullYear() + 1, 00, 0);
+        }
+        else if (isQuater == "thismonth") {
+            var currentDate = new Date(), m = currentDate.getMonth();
+            startDate = new Date(currentDate.getFullYear(), m, 01);
+            endDate = new Date(currentDate.getFullYear(), m + 1, 0);
+        }
+        else if (isQuater == "nextyear") {
+            var currentDate = new Date();
+            startDate = new Date(currentDate.getFullYear() + 1, 00, 01);
+            endDate = new Date(currentDate.getFullYear() + 2, 00, 0);
+        } else if (isQuater == "planYear") {
+            //Edited to add PlanYear option.
+            startDate = new Date(planYear, 00, 01);
+            endDate = new Date(planYear + 1, 00, 0);
+        }
 
-         var taskEndDate = new Date(date);
-         taskEndDate.setDate(date.getDate() + duration);
+        var taskEndDate = new Date(date);
+        taskEndDate.setDate(date.getDate() + duration);
 
-         if (date < startDate) {
-             updatedStartDate = startDate;
-             updatedDuration = Math.round(duration - ((startDate - date) / (1000 * 60 * 60 * 24)));
-         } else if (taskEndDate > endDate) {
-             updatedStartDate = date;
-             updatedDuration = Math.round((endDate - date) / (1000 * 60 * 60 * 24));
-         }
-         else {
-             updatedStartDate = date;
-             updatedDuration = duration;
-         }
-     }
+        if (date < startDate) {
+            updatedStartDate = startDate;
+            updatedDuration = Math.round(duration - ((startDate - date) / (1000 * 60 * 60 * 24)));
+        } else if (taskEndDate > endDate) {
+            updatedStartDate = date;
+            updatedDuration = Math.round((endDate - date) / (1000 * 60 * 60 * 24));
+        }
+        else {
+            updatedStartDate = date;
+            updatedDuration = duration;
+        }
+    }
 
-     var updatedStartDate = null;
-     var updatedDuration = null;
-     //// Function to update start or end date.
-     function UpdateStartEndDate(id, startDate, duration, isPlanCampaign, isPlanProgram, isPlanTactic) {
-         CheckDate(startDate, duration);
-         updatedStartDate = (updatedStartDate.getMonth() + 1) + '/' + (updatedStartDate.getDate()) + '/' + updatedStartDate.getFullYear();
+    var updatedStartDate = null;
+    var updatedDuration = null;
+    //// Function to update start or end date.
+    function UpdateStartEndDate(id, startDate, duration, isPlanCampaign, isPlanProgram, isPlanTactic) {
+        CheckDate(startDate, duration);
+        updatedStartDate = (updatedStartDate.getMonth() + 1) + '/' + (updatedStartDate.getDate()) + '/' + updatedStartDate.getFullYear();
 
-         $.ajax({
-             type: 'POST',
-             url: '@Url.Action("UpdateStartEndDate", "Plan")',
-             data: { id: id, startDate: updatedStartDate, duration: updatedDuration, isPlanCampaign: isPlanCampaign, isPlanProgram: isPlanProgram, isPlanTactic: isPlanTactic },
-             dataType: 'json',
-             success: function (data) {
-                 return data;
-             },
-             error: function () {
-                 myApp.hidePleaseWait();
-                 GetTactics();
-             }
-         });
-     }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("UpdateStartEndDate", "Plan")',
+            data: { id: id, startDate: updatedStartDate, duration: updatedDuration, isPlanCampaign: isPlanCampaign, isPlanProgram: isPlanProgram, isPlanTactic: isPlanTactic },
+            dataType: 'json',
+            success: function (data) {
+                return data;
+            },
+            error: function () {
+                myApp.hidePleaseWait();
+                GetTactics();
+            }
+        });
+    }
 </script>

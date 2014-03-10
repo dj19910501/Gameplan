@@ -8,6 +8,7 @@ using System.Linq;
 using System.Web.Mvc;
 using System.Transactions;
 using System.Data.Objects;
+using System.IO;
 
 
 
@@ -18,9 +19,11 @@ namespace RevenuePlanner.Controllers
         #region Variables
 
         private MRPEntities db = new MRPEntities();
+        private BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
 
         private DateTime CalendarStartDate;
         private DateTime CalendarEndDate;
+
         #endregion
 
         #region List
@@ -601,12 +604,14 @@ namespace RevenuePlanner.Controllers
             objHomePlan.plans = planList;
             return PartialView("_ApplytoCalendarPlanList", objHomePlan);
         }
+
         /// <summary>
         /// Getting list of collaborator for current plan.
         /// </summary>
         /// <param name="plan">Plan</param>
+        /// <param name="currentPlanId">PlanId</param>
         /// <returns>Returns list of collaborators for current plan.</returns>
-        private List<string> GetCollaborator(Plan plan)
+        public List<string> GetCollaborator(Plan plan)
         {
             List<string> collaboratorId = new List<string>();
             if (plan.ModifiedBy != null)
@@ -643,6 +648,118 @@ namespace RevenuePlanner.Controllers
             collaboratorId.AddRange(planTacticCommentCreatedBy);
             return collaboratorId.Distinct().ToList<string>();
         }
+
+        #region Get Collaborator Details
+
+        /// <summary>
+        /// Get Collaborator Details for current plan.
+        /// </summary>
+        /// <param name="currentPlanId">PlanId</param>
+        /// <returns>Json Result.</returns>
+        public JsonResult GetCollaboratorDetails(int currentPlanId)
+        {
+            var plan = db.Plans.Single(p => p.PlanId.Equals(currentPlanId));
+
+            List<string> collaboratorId = new List<string>();
+            if (plan.ModifiedBy != null)
+            {
+                collaboratorId.Add(plan.ModifiedBy.ToString());
+            }
+
+            if (plan.CreatedBy != null)
+            {
+                collaboratorId.Add(plan.CreatedBy.ToString());
+            }
+
+            var planTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId)).Select(t => t);
+
+            var planTacticModifiedBy = planTactic.ToList().Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
+            var planTacticCreatedBy = planTactic.ToList().Select(t => t.CreatedBy.ToString()).ToList();
+
+            var planProgramModifiedBy = planTactic.ToList().Where(t => t.Plan_Campaign_Program.ModifiedBy != null).Select(t => t.Plan_Campaign_Program.ModifiedBy.ToString()).ToList();
+            var planProgramCreatedBy = planTactic.ToList().Select(t => t.Plan_Campaign_Program.CreatedBy.ToString()).ToList();
+
+            var planCampaignModifiedBy = planTactic.ToList().Where(t => t.Plan_Campaign_Program.Plan_Campaign.ModifiedBy != null).Select(t => t.Plan_Campaign_Program.Plan_Campaign.ModifiedBy.ToString()).ToList();
+            var planCampaignCreatedBy = planTactic.ToList().Select(t => t.Plan_Campaign_Program.Plan_Campaign.CreatedBy.ToString()).ToList();
+
+            var planTacticComment = db.Plan_Campaign_Program_Tactic_Comment.Where(pc => pc.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId))
+                                                                           .Select(pc => pc);
+            var planTacticCommentCreatedBy = planTacticComment.ToList().Select(pc => pc.CreatedBy.ToString()).ToList();
+
+            collaboratorId.AddRange(planTacticCreatedBy);
+            collaboratorId.AddRange(planTacticModifiedBy);
+            collaboratorId.AddRange(planProgramCreatedBy);
+            collaboratorId.AddRange(planProgramModifiedBy);
+            collaboratorId.AddRange(planCampaignCreatedBy);
+            collaboratorId.AddRange(planCampaignModifiedBy);
+            collaboratorId.AddRange(planTacticCommentCreatedBy);
+
+            return Json(new
+            {
+                collaboratorList = string.Join(",", collaboratorId.Distinct().ToList<string>()),
+                lastUpdateDate = String.Format("{0:g}", GetLastUpdatedDate(plan))
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get Collaborator image.
+        /// </summary>
+        /// <param name="collaboratorId">Collaborator Id</param>
+        /// <returns>Json Result.</returns>
+        [HttpGet]
+        public ActionResult GetCollaboratorImage(string collaboratorId)
+        {
+            Guid userId = new Guid();
+            byte[] imageBytes = Common.ReadFile(Server.MapPath("~") + "/content/images/user_image_not_found.png");
+            try
+            {
+                if (collaboratorId != null)
+                {
+                    userId = Guid.Parse(collaboratorId);
+                    BDSService.User objUser = new BDSService.User();
+                    objUser = objBDSServiceClient.GetTeamMemberDetails(userId, Sessions.ApplicationId);
+                    if (objUser != null)
+                    {
+                        if (objUser.ProfilePhoto != null)
+                        {
+                            imageBytes = objUser.ProfilePhoto;
+                        }
+                    }
+                }
+                if (imageBytes != null)
+                {
+                    MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length);
+                    ms.Write(imageBytes, 0, imageBytes.Length);
+                    System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
+                    image = Common.ImageResize(image, 30, 30, true, false);
+                    imageBytes = Common.ImageToByteArray(image);
+                }
+            }
+            catch (Exception e)
+            {
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
+                else
+                {
+                    ErrorSignal.FromCurrentContext().Raise(e);
+                    imageBytes = Common.ReadFile(Server.MapPath("~") + "/content/images/user_image_not_found.png");
+                    MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length);
+                    ms.Write(imageBytes, 0, imageBytes.Length);
+                    System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
+                    image = Common.ImageResize(image, 30, 30, true, false);
+                    imageBytes = Common.ImageToByteArray(image);
+                }
+            }
+
+            return Json(new { base64image = Convert.ToBase64String(imageBytes) }
+                , JsonRequestBehavior.AllowGet);
+        }
+
+        #endregion
 
         /// <summary>
         /// Function to get last updated date time for current plan.
@@ -2518,13 +2635,14 @@ namespace RevenuePlanner.Controllers
             int CurrentYear = CurrentDate.Year;
             int diffYear = Convert.ToInt32(Year) - CurrentYear;
             DateTime returnDate = DateTime.Now;
-            if(isEndDate)
+            if (isEndDate)
             {
                 DateTime lastEndDate = new DateTime(CurrentDate.AddYears(diffYear).Year, 12, 31);
                 DateTime endDate = CurrentDate.AddYears(diffYear).AddMonths(1);
                 returnDate = endDate > lastEndDate ? lastEndDate : endDate;
             }
-            else{
+            else
+            {
                 returnDate = DateTime.Now.AddYears(diffYear);
             }
             return returnDate;

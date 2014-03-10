@@ -247,6 +247,171 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
+        #region Get Collaborator Details
+
+        /// <summary>
+        /// Get Collaborator Details for current plan.
+        /// </summary>
+        /// <param name="currentPlanId">PlanId</param>
+        /// <returns>Json Result.</returns>
+        public JsonResult GetCollaboratorDetails(int currentPlanId)
+        {
+            var plan = db.Plans.Single(p => p.PlanId.Equals(currentPlanId));
+
+            List<string> collaboratorId = new List<string>();
+            if (plan.ModifiedBy != null)
+            {
+                collaboratorId.Add(plan.ModifiedBy.ToString());
+            }
+
+            if (plan.CreatedBy != null)
+            {
+                collaboratorId.Add(plan.CreatedBy.ToString());
+            }
+
+            var planTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId)).Select(t => t);
+
+            var planTacticModifiedBy = planTactic.ToList().Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
+            var planTacticCreatedBy = planTactic.ToList().Select(t => t.CreatedBy.ToString()).ToList();
+
+            var planProgramModifiedBy = planTactic.ToList().Where(t => t.Plan_Campaign_Program.ModifiedBy != null).Select(t => t.Plan_Campaign_Program.ModifiedBy.ToString()).ToList();
+            var planProgramCreatedBy = planTactic.ToList().Select(t => t.Plan_Campaign_Program.CreatedBy.ToString()).ToList();
+
+            var planCampaignModifiedBy = planTactic.ToList().Where(t => t.Plan_Campaign_Program.Plan_Campaign.ModifiedBy != null).Select(t => t.Plan_Campaign_Program.Plan_Campaign.ModifiedBy.ToString()).ToList();
+            var planCampaignCreatedBy = planTactic.ToList().Select(t => t.Plan_Campaign_Program.Plan_Campaign.CreatedBy.ToString()).ToList();
+
+            var planTacticComment = db.Plan_Campaign_Program_Tactic_Comment.Where(pc => pc.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId))
+                                                                           .Select(pc => pc);
+            var planTacticCommentCreatedBy = planTacticComment.ToList().Select(pc => pc.CreatedBy.ToString()).ToList();
+
+            collaboratorId.AddRange(planTacticCreatedBy);
+            collaboratorId.AddRange(planTacticModifiedBy);
+            collaboratorId.AddRange(planProgramCreatedBy);
+            collaboratorId.AddRange(planProgramModifiedBy);
+            collaboratorId.AddRange(planCampaignCreatedBy);
+            collaboratorId.AddRange(planCampaignModifiedBy);
+            collaboratorId.AddRange(planTacticCommentCreatedBy);
+
+            return Json(new
+            {
+                collaboratorList = string.Join(",", collaboratorId.Distinct().ToList<string>()),
+                lastUpdateDate = String.Format("{0:g}", GetLastUpdatedDate(plan))
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get Collaborator image.
+        /// </summary>
+        /// <param name="collaboratorId">Collaborator Id</param>
+        /// <returns>Json Result.</returns>
+        [HttpGet]
+        public ActionResult GetCollaboratorImage(string collaboratorId)
+        {
+            Guid userId = new Guid();
+            byte[] imageBytes = Common.ReadFile(Server.MapPath("~") + "/content/images/user_image_not_found.png");
+            try
+            {
+                if (collaboratorId != null)
+                {
+                    userId = Guid.Parse(collaboratorId);
+                    BDSService.User objUser = new BDSService.User();
+                    objUser = objBDSUserRepository.GetTeamMemberDetails(userId, Sessions.ApplicationId);
+                    if (objUser != null)
+                    {
+                        if (objUser.ProfilePhoto != null)
+                        {
+                            imageBytes = objUser.ProfilePhoto;
+                        }
+                    }
+                }
+                if (imageBytes != null)
+                {
+                    MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length);
+                    ms.Write(imageBytes, 0, imageBytes.Length);
+                    System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
+                    image = Common.ImageResize(image, 30, 30, true, false);
+                    imageBytes = Common.ImageToByteArray(image);
+                }
+            }
+            catch (Exception e)
+            {
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
+                else
+                {
+                    ErrorSignal.FromCurrentContext().Raise(e);
+                    imageBytes = Common.ReadFile(Server.MapPath("~") + "/content/images/user_image_not_found.png");
+                    MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length);
+                    ms.Write(imageBytes, 0, imageBytes.Length);
+                    System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
+                    image = Common.ImageResize(image, 30, 30, true, false);
+                    imageBytes = Common.ImageToByteArray(image);
+                }
+            }
+
+            return Json(new { base64image = Convert.ToBase64String(imageBytes) }
+                , JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Function to get last updated date time for current plan.
+        /// </summary>
+        /// <param name="plan">Plan.</param>
+        /// <returns>Returns last updated date time.</returns>
+        private DateTime GetLastUpdatedDate(Plan plan)
+        {
+            List<DateTime?> lastUpdatedDate = new List<DateTime?>();
+            if (plan.CreatedDate != null)
+            {
+                lastUpdatedDate.Add(plan.CreatedDate);
+            }
+
+            if (plan.ModifiedDate != null)
+            {
+                lastUpdatedDate.Add(plan.ModifiedDate);
+            }
+
+            var planTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId)).Select(t => t);
+
+            if (planTactic.Count() > 0)
+            {
+
+                var planTacticModifiedDate = planTactic.ToList().Select(t => t.ModifiedDate).Max();
+                lastUpdatedDate.Add(planTacticModifiedDate);
+
+                var planTacticCreatedDate = planTactic.ToList().Select(t => t.CreatedDate).Max();
+                lastUpdatedDate.Add(planTacticCreatedDate);
+
+                var planProgramModifiedDate = planTactic.ToList().Select(t => t.Plan_Campaign_Program.ModifiedDate).Max();
+                lastUpdatedDate.Add(planProgramModifiedDate);
+
+                var planProgramCreatedDate = planTactic.ToList().Select(t => t.Plan_Campaign_Program.CreatedDate).Max();
+                lastUpdatedDate.Add(planProgramCreatedDate);
+
+                var planCampaignModifiedDate = planTactic.ToList().Select(t => t.Plan_Campaign_Program.Plan_Campaign.ModifiedDate).Max();
+                lastUpdatedDate.Add(planCampaignModifiedDate);
+
+                var planCampaignCreatedDate = planTactic.ToList().Select(t => t.Plan_Campaign_Program.Plan_Campaign.CreatedDate).Max();
+                lastUpdatedDate.Add(planCampaignCreatedDate);
+
+                var planTacticComment = db.Plan_Campaign_Program_Tactic_Comment.Where(pc => pc.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId))
+                                                                               .Select(pc => pc);
+                if (planTacticComment.Count() > 0)
+                {
+                    var planTacticCommentCreatedDate = planTacticComment.ToList().Select(pc => pc.CreatedDate).Max();
+                    lastUpdatedDate.Add(planTacticCommentCreatedDate);
+                }
+            }
+
+            return Convert.ToDateTime(lastUpdatedDate.Max());
+        }
+
+        #endregion
+
         #region "Getting list of collaborator for current plan"
 
         /// <summary>

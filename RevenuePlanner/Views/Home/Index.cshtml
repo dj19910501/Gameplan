@@ -380,7 +380,7 @@
 <div class="tab-content all-height cf">
     <div class="tab-pane active all-height" id="panel-656352">
         <div class=" pl20 cf">
-            <div class="margin-left9 pull-left">
+            <div class="margin-left9 pull-left" id="divCollaborator">
                 @foreach (var userId in Model.CollaboratorId)
                 {
                     <img class="avatar-user img-border align_avatar_image" alt="User avatar" src="@Url.Action("LoadUserImage", "User", new { id = userId, width = 30, height = 30 })">
@@ -541,906 +541,966 @@
             success: function (data) {
                 if (data.isSuccess == true) {
                     var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + $('#ActiveMenu').val() + '&currentPlanId=' + data.planId;
-                        window.location.href = url;
-                    }
-                    else {
-                        alert('Error');
-                    }
-                },
+                    window.location.href = url;
+                }
+                else {
+                    alert('Error');
+                }
+            },
             error: function () {
                 myApp.hidePleaseWait();
             }
         });
+    }
+
+    function SetPlanButtons() {
+        $('#BtnGroup').click(function (e) {
+            if ($(this).html().toLowerCase() == "duplicate") {
+                DuplicatePlan();
+            }
+            else {
+                var url = '@Url.Content("~/Plan/Create/0")';
+                window.location.href = url;
+            }
+        });
+    }
+
+    function ShowChangeLog() {
+        $('.changes').html('');
+        var url = '@Url.Content("~/Home/LoadChangeLog/")';
+            $('.changes').load(url + '?objectId=' + CurrentPlanId);
         }
 
-        function SetPlanButtons() {
-            $('#BtnGroup').click(function (e) {
-                if ($(this).html().toLowerCase() == "duplicate") {
-                    DuplicatePlan();
-                }
-                else {
-                    var url = '@Url.Content("~/Plan/Create/0")';
-                    window.location.href = url;
-                }
+        $(document).ready(
+            function () {
+                DuplicatePlanMessage();
+                SetPlanButtons();
+                var flg = false;
+                var strflg = "";
+                SetGantt();
+                AttachEventToFilter();
+                ShowInspectForPlanTacticId();
+                //functions added to show campagin and program popup from email url link click when email sent to user when comapign or program shared
+                ShowInspectForPlanCampaignId();
+                ShowInspectForPlanProgramId();
             });
+
+        function DuplicatePlanMessage() {
+            /*close x event on message*/
+            $("#successMessageDuplicatePlan").find(".close").click(function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
+                $(this).closest(".alert").slideUp(400);
+            });
+
+            $("#errorMessageDuplicatePlan").find(".close").click(function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
+                $(this).closest(".alert").slideUp(400);
+            });
+
+            if ($('#cSuccessDuplicatePlan').html() == '') {
+                $("#successMessageDuplicatePlan").slideUp(400);
+            }
+            else {
+                $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+                $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + $('#cSuccessDuplicatePlan').html())
+                $("#successMessageDuplicatePlan").slideDown(3000);
+                $("#successMessageDuplicatePlan").slideUp(1200, function () { $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height"); });
+            }
+
+            if ($('#cErrorDuplicatePlan').html() == '') {
+                $("#errorMessageDuplicatePlan").slideUp(400);
+            }
+            else {
+                $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+                $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + $('#cErrorDuplicatePlan').html())
+                $("#errorMessageDuplicatePlan").slideDown(400);
+            }
+
+            //if ($('#cSuccessDuplicatePlan').html() == '' && $('#cErrorDuplicatePlan').html() == '') {
+            //    $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
+            //} else {
+            //    $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+            //}
         }
 
-        function ShowChangeLog() {
-            $('.changes').html('');
-            var url = '@Url.Content("~/Home/LoadChangeLog/")';
-        $('.changes').load(url + '?objectId=' + CurrentPlanId);
-    }
-
-    $(document).ready(
-        function () {
-            DuplicatePlanMessage();
-            SetPlanButtons();
-            var flg = false;
-            var strflg = "";
-            SetGantt();
-            AttachEventToFilter();
-            ShowInspectForPlanTacticId();
-            //functions added to show campagin and program popup from email url link click when email sent to user when comapign or program shared
-            ShowInspectForPlanCampaignId();
-            ShowInspectForPlanProgramId();
-        });
-
-    function DuplicatePlanMessage() {
-        /*close x event on message*/
-        $("#successMessageDuplicatePlan").find(".close").click(function (e) {
-            e.stopPropagation();
-            e.preventDefault();
-            $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
-            $(this).closest(".alert").slideUp(400);
-        });
-
-        $("#errorMessageDuplicatePlan").find(".close").click(function (e) {
-            e.stopPropagation();
-            e.preventDefault();
-            $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
-            $(this).closest(".alert").slideUp(400);
-        });
-
-        if ($('#cSuccessDuplicatePlan').html() == '') {
-            $("#successMessageDuplicatePlan").slideUp(400);
-        }
-        else {
-            $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
-            $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + $('#cSuccessDuplicatePlan').html())
-            $("#successMessageDuplicatePlan").slideDown(3000);
-            $("#successMessageDuplicatePlan").slideUp(1200, function () { $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height"); });
+        function ShowInspectForPlanTacticId() {
+            var hdnshowInspectForPlanTacticId = $("#hdnshowInspectForPlanTacticId")
+            if (hdnshowInspectForPlanTacticId.val() != 0) {
+                ShowModel(null, true);
+                hdnshowInspectForPlanTacticId.val(0);
+            }
         }
 
-        if ($('#cErrorDuplicatePlan').html() == '') {
-            $("#errorMessageDuplicatePlan").slideUp(400);
-        }
-        else {
-            $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
-            $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + $('#cErrorDuplicatePlan').html())
-            $("#errorMessageDuplicatePlan").slideDown(400);
-        }
+        // Function to get collaborators list
+        function GetCollaborators(planId) {
+            if (planId != null) {
+                $.ajax(
+               {
+                   type: "GET",
+                   cache: false,
+                   url: '@Url.Action("GetCollaboratorDetails", "Plan")',
+                   data: { currentPlanId: planId },
+                   dataType: "json",
+                   success: function (data) {
+                       // Set collaborator details
+                       $('#divCollaborator').empty(); // Clear collaborators div content
+                       var collaboratorCount = 0;
 
-        //if ($('#cSuccessDuplicatePlan').html() == '' && $('#cErrorDuplicatePlan').html() == '') {
-        //    $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
-        //} else {
-        //    $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
-        //}
-    }
+                       // Get collaborator's image
+                       $.each(data.collaboratorList.split(','), function () {
+                           GetCollaboratorImage(this);
+                           collaboratorCount++;
+                       })
 
-    function ShowInspectForPlanTacticId() {
-        var hdnshowInspectForPlanTacticId = $("#hdnshowInspectForPlanTacticId")
-        if (hdnshowInspectForPlanTacticId.val() != 0) {
-            ShowModel(null, true);
-            hdnshowInspectForPlanTacticId.val(0);
-        }
-    }
+                       $('#divCollaborator').append('<span class="bold margin_left6">' + collaboratorCount + ' Collaborator(s) </span>');
+                       $('#divCollaborator').append('<span class="font_size10 updated-text-align">Last updated ' + data.lastUpdateDate + '</span>');
 
-    function ShowInspectForPlanCampaignId() {
-        var hdnshowInspectForPlanCampaignId = $("#hdnshowInspectForPlanCampaignId")
-        if (hdnshowInspectForPlanCampaignId.val() != 0) {
+                   },
+                   error: function () {
+                       myApp.hidePleaseWait();
+                   }
+               });
+           }
+       }
 
-            ShowModel(null, true);
-            hdnshowInspectForPlanCampaignId.val(0);
-        }
-    }
-    function ShowInspectForPlanProgramId() {
-        var hdnshowInspectForPlanProgramId = $("#hdnshowInspectForPlanProgramId")
-        if (hdnshowInspectForPlanProgramId.val() != 0) {
+       // Function to get collaborator's image
+       function GetCollaboratorImage(colId) {
+           if (colId != null) {
+               $.ajax(
+              {
+                  type: "GET",
+                  cache: false,
+                  url: '@Url.Action("GetCollaboratorImage", "Plan")',
+              data: { collaboratorId: colId },
+              dataType: "json",
+              success: function (data) {
+                  // Get collaborator image
+                  imgs = data;
 
-            ShowModel(null, true);
-            hdnshowInspectForPlanProgramId.val(0);
-        }
-    }
-    strflg = "";
-    //// Get tactic on click of tactic tab.
-    //$('#ATactics').click(GetTactics)
+                  // Set collaborator image
+                  var collaboratorImage = "<img class=\"avatar-user img-border align_avatar_image\""
+                   + "src='" + "data:image/jpg;base64,"
+                   + imgs.base64image + "'/>";
+                  $("#divCollaborator").prepend(collaboratorImage);
+              },
+              error: function () {
+                  myApp.hidePleaseWait();
+              }
+          });
+      }
+  }
 
-    ////// Get tactic on click of vertical tab.
-    //$('#AVertical').click(GetVertical)
+  function ShowInspectForPlanCampaignId() {
+      var hdnshowInspectForPlanCampaignId = $("#hdnshowInspectForPlanCampaignId")
+      if (hdnshowInspectForPlanCampaignId.val() != 0) {
 
-    ////// Get tactic on click of audience tab.
-    //$('#AAudience').click(GetAudience)
+          ShowModel(null, true);
+          hdnshowInspectForPlanCampaignId.val(0);
+      }
+  }
+  function ShowInspectForPlanProgramId() {
+      var hdnshowInspectForPlanProgramId = $("#hdnshowInspectForPlanProgramId")
+      if (hdnshowInspectForPlanProgramId.val() != 0) {
 
-    ////// Get tactic on click of business unit tab.
-    //$('#ABusinessUnit').click(GetBusinessUnit)
+          ShowModel(null, true);
+          hdnshowInspectForPlanProgramId.val(0);
+      }
+  }
+  strflg = "";
+  //// Get tactic on click of tactic tab.
+  //$('#ATactics').click(GetTactics)
 
-    ////// Get tactic on click of stage tab.
-    //$('#AStage').click(GetStage)
+  ////// Get tactic on click of vertical tab.
+  //$('#AVertical').click(GetVertical)
 
-    ////// Get tactic on click of request tab.
-    //$('#ARequest').click(GetRequest)
+  ////// Get tactic on click of audience tab.
+  //$('#AAudience').click(GetAudience)
 
-    function AttachEventToFilter() {
-        $("#accordion-filterGeography").find("a").click(ApplyOrRemoveFilter);
-        $("#accordion-filterIndividuals").find("a").click(ApplyOrRemoveFilter);
-    }
+  ////// Get tactic on click of business unit tab.
+  //$('#ABusinessUnit').click(GetBusinessUnit)
 
-    function ApplyOrRemoveFilter() {
-        ($(this).toggleClass("x-icon"));
-        filters.geographyIds = $.map($("#accordion-filterGeography").find("a.x-icon"), function (a) { return $(a).attr("filterId") });
-        filters.IndividualsIds = $.map($("#accordion-filterIndividuals").find("a.x-icon"), function (a) { return $(a).attr("filterId") });
-        RefreshCurrentTab();
+  ////// Get tactic on click of stage tab.
+  //$('#AStage').click(GetStage)
 
-    }
+  ////// Get tactic on click of request tab.
+  //$('#ARequest').click(GetRequest)
 
-    //// Function to get tactic.
-    function GetTactics() {
-        $('.pull-right').removeClass('active');
-        $('#ATactics').closest('li').addClass('active');
-        type = GanttTabs.Tactic;
-        AjaxRequest();
-    }
+  function AttachEventToFilter() {
+      $("#accordion-filterGeography").find("a").click(ApplyOrRemoveFilter);
+      $("#accordion-filterIndividuals").find("a").click(ApplyOrRemoveFilter);
+  }
 
-    //// Function to get audience.
-    function GetAudience() {
-        $('.pull-right').removeClass('active');
-        $('#AAudience').closest('li').addClass('active');
-        type = GanttTabs.Audience;
-        AjaxRequest();
-    }
+  function ApplyOrRemoveFilter() {
+      ($(this).toggleClass("x-icon"));
+      filters.geographyIds = $.map($("#accordion-filterGeography").find("a.x-icon"), function (a) { return $(a).attr("filterId") });
+      filters.IndividualsIds = $.map($("#accordion-filterIndividuals").find("a.x-icon"), function (a) { return $(a).attr("filterId") });
+      RefreshCurrentTab();
 
-    //// Function to get vertical.
-    function GetVertical() {
-        $('.pull-right').removeClass('active');
-        $('#AVertical').closest('li').addClass('active');
-        type = GanttTabs.Vertical;
-        AjaxRequest();
-    }
+  }
 
-    //// Function to get business unit.
-    function GetBusinessUnit() {
-        $('.pull-right').removeClass('active');
-        $('#ABusinessUnit').closest('li').addClass('active');
-        type = GanttTabs.BusinessUnit;
-        AjaxRequest();
-    }
+  //// Function to get tactic.
+  function GetTactics() {
+      $('.pull-right').removeClass('active');
+      $('#ATactics').closest('li').addClass('active');
+      type = GanttTabs.Tactic;
+      AjaxRequest();
+  }
 
-    //// Function to get stage.
-    function GetStage() {
-        $('.pull-right').removeClass('active');
-        $('#AStage').closest('li').addClass('active');
-        type = GanttTabs.Stage;
-        AjaxRequest();
-    }
+  //// Function to get audience.
+  function GetAudience() {
+      $('.pull-right').removeClass('active');
+      $('#AAudience').closest('li').addClass('active');
+      type = GanttTabs.Audience;
+      AjaxRequest();
+  }
 
-    //// Function to get request.
-    function GetRequest() {
-        $('.pull-right').removeClass('active');
-        $('#ARequest').closest('li').addClass('active');
-        type = GanttTabs.Request;
-        AjaxRequest();
-    }
+  //// Function to get vertical.
+  function GetVertical() {
+      $('.pull-right').removeClass('active');
+      $('#AVertical').closest('li').addClass('active');
+      type = GanttTabs.Vertical;
+      AjaxRequest();
+  }
 
-    //// Function to create tactic view control.
-    function AddAccordionToggleAndInnerTactic(data) {
-        var div = $('#DivAccordion');
-        div.empty();
-        $.each(data.tacticType, function (index1, objTactic) {
-            var colorCode = objTactic.ColorCode;
-            var tacticTypeId = objTactic.TacticTypeId;
+  //// Function to get business unit.
+  function GetBusinessUnit() {
+      $('.pull-right').removeClass('active');
+      $('#ABusinessUnit').closest('li').addClass('active');
+      type = GanttTabs.BusinessUnit;
+      AjaxRequest();
+  }
 
-            //// Filter plan campaign program tactic based on tactic type id.
-            var filteredTactic = $.grep(data.planCampaignProgramTactic, function (value) { return value.TacticTypeId == tacticTypeId; })
+  //// Function to get stage.
+  function GetStage() {
+      $('.pull-right').removeClass('active');
+      $('#AStage').closest('li').addClass('active');
+      type = GanttTabs.Stage;
+      AjaxRequest();
+  }
 
-            //// Adding Tactic type.
-            div.append("<div class='accordion-group' id='DivAccordionGroup" + tacticTypeId + "'></div>");
-            $("#DivAccordionGroup" + tacticTypeId).append("<div class='accordion-heading'>\
+  //// Function to get request.
+  function GetRequest() {
+      $('.pull-right').removeClass('active');
+      $('#ARequest').closest('li').addClass('active');
+      type = GanttTabs.Request;
+      AjaxRequest();
+  }
+
+  //// Function to create tactic view control.
+  function AddAccordionToggleAndInnerTactic(data) {
+      var div = $('#DivAccordion');
+      div.empty();
+      $.each(data.tacticType, function (index1, objTactic) {
+          var colorCode = objTactic.ColorCode;
+          var tacticTypeId = objTactic.TacticTypeId;
+
+          //// Filter plan campaign program tactic based on tactic type id.
+          var filteredTactic = $.grep(data.planCampaignProgramTactic, function (value) { return value.TacticTypeId == tacticTypeId; })
+
+          //// Adding Tactic type.
+          div.append("<div class='accordion-group' id='DivAccordionGroup" + tacticTypeId + "'></div>");
+          $("#DivAccordionGroup" + tacticTypeId).append("<div class='accordion-heading'>\
                                                 <a class='accordion-toggle item-" + colorCode + " collapsed chevron-right' data-toggle='collapse' data-parent='#DivAccordion' href='#accordion-element-" + tacticTypeId + "'>\
                                                     <div class='cf'>" + objTactic.Title + "<span class='pull-right'><span id='spn_" + tacticTypeId + "'>0</span>" + "/" + filteredTactic.length + "</span></div>\
                                                 </a>\
                                             </div>\
                                             <div id='accordion-element-" + tacticTypeId + "' class='accordion-body collapse'></div>");
 
-            //// Adding tactic title.
-            $.each(filteredTactic, function (index2, objfilteredTactic) {
-                $("#accordion-element-" + tacticTypeId).append("<a class='accordion-inner item-" + colorCode + "' href='#' taskid='" + objfilteredTactic.TaskId + "'>" + objfilteredTactic.Title + "</a>")
-                $("a[taskid='" + objfilteredTactic.TaskId + "']").click(function (event) {
-                    GanttOpenBranch($(this).attr('taskid'));
-                    //alert($(this).attr('taskid'));
-                });
-            });
-        });
-    }
+          //// Adding tactic title.
+          $.each(filteredTactic, function (index2, objfilteredTactic) {
+              $("#accordion-element-" + tacticTypeId).append("<a class='accordion-inner item-" + colorCode + "' href='#' taskid='" + objfilteredTactic.TaskId + "'>" + objfilteredTactic.Title + "</a>")
+              $("a[taskid='" + objfilteredTactic.TaskId + "']").click(function (event) {
+                  GanttOpenBranch($(this).attr('taskid'));
+                  //alert($(this).attr('taskid'));
+              });
+          });
+      });
+  }
 
-    function GanttOpenBranch(taskId) {
+  function GanttOpenBranch(taskId) {
 
-        var flag = false;
-        $(".gantt_grid_data").find('div[class^="gantt_row"]').each(function (index1) {
+      var flag = false;
+      $(".gantt_grid_data").find('div[class^="gantt_row"]').each(function (index1) {
 
-            var itaskid = $(this).attr('task_id');
-            if (taskId == itaskid) {
-                flag = true;
-            }
+          var itaskid = $(this).attr('task_id');
+          if (taskId == itaskid) {
+              flag = true;
+          }
 
-        });
+      });
 
-        if (flag == false) {
+      if (flag == false) {
 
-            var arr = taskId.split('_');
-            $.each(arr, function (index, item) {
-                var tId = '';
-                for (var counter = 0; counter <= index; counter++) {
-                    if (tId == '') {
-                        tId = arr[counter]
-                    }
-                    else {
-                        tId += '_' + arr[counter]
-                    }
-                }
-                gantt.open(tId);
+          var arr = taskId.split('_');
+          $.each(arr, function (index, item) {
+              var tId = '';
+              for (var counter = 0; counter <= index; counter++) {
+                  if (tId == '') {
+                      tId = arr[counter]
+                  }
+                  else {
+                      tId += '_' + arr[counter]
+                  }
+              }
+              gantt.open(tId);
 
-            });
-        }
+          });
+      }
 
 
-    }
+  }
 
-    //// Function to create audience view control.
-    function AddAccordionToggleAndInnerAudience(data) {
-        var div = $('#DivAccordion');
-        strflg = "";
-        div.empty();
-        $.each(data.audience, function (index1, objAudience) {
-            var colorCode = objAudience.ColorCode;
-            var audienceId = objAudience.AudienceId;
+  //// Function to create audience view control.
+  function AddAccordionToggleAndInnerAudience(data) {
+      var div = $('#DivAccordion');
+      strflg = "";
+      div.empty();
+      $.each(data.audience, function (index1, objAudience) {
+          var colorCode = objAudience.ColorCode;
+          var audienceId = objAudience.AudienceId;
 
-            filteredAudience = $.grep(data.audienceTactic, function (value) { return value.AudienceId == audienceId; }).sort(SortAlphabetically);
+          filteredAudience = $.grep(data.audienceTactic, function (value) { return value.AudienceId == audienceId; }).sort(SortAlphabetically);
 
-            ////// Adding Audience.
-            div.append("<div class='accordion-group' id='DivAccordionGroup" + audienceId + "'></div>");
-            $("#DivAccordionGroup" + audienceId).append("<div class='accordion-heading'>\
+          ////// Adding Audience.
+          div.append("<div class='accordion-group' id='DivAccordionGroup" + audienceId + "'></div>");
+          $("#DivAccordionGroup" + audienceId).append("<div class='accordion-heading'>\
                                                 <a class='accordion-toggle item-" + colorCode + " collapsed chevron-right' data-toggle='collapse' data-parent='#DivAccordion' href='#accordion-element-" + audienceId + "'>\
                                                     <div class='cf'>" + objAudience.Title + "<span class='pull-right'><span id='spnaud_" + audienceId + "'>0</span>" + "/" + filteredAudience.length + "</span></div>\
                                                 </a>\
                                             </div>\
                                             <div id='accordion-element-" + audienceId + "' class='accordion-body collapse'></div>");
 
-            //// Adding tactic title.
-            $.each(filteredAudience, function (index2, objfilteredAudience) {
-                $("#accordion-element-" + audienceId).append("<a class='accordion-inner item-" + colorCode + "' href='#' taskid='" + objfilteredAudience.TaskId + "'>" + objfilteredAudience.Title + "</a>")
-                $("a[taskid='" + objfilteredAudience.TaskId + "']").click(function (event) {
-                    GanttOpenBranch($(this).attr('taskid'));
-                });
-            });
-        });
-    }
+          //// Adding tactic title.
+          $.each(filteredAudience, function (index2, objfilteredAudience) {
+              $("#accordion-element-" + audienceId).append("<a class='accordion-inner item-" + colorCode + "' href='#' taskid='" + objfilteredAudience.TaskId + "'>" + objfilteredAudience.Title + "</a>")
+              $("a[taskid='" + objfilteredAudience.TaskId + "']").click(function (event) {
+                  GanttOpenBranch($(this).attr('taskid'));
+              });
+          });
+      });
+  }
 
-    //// Function to create vertical view control.
-    function AddAccordionToggleAndInnerVertical(data) {
-        var div = $('#DivAccordion');
-        div.empty();
-        $.each(data.vertical, function (index1, objVertical) {
-            var colorCode = objVertical.ColorCode;
-            var verticalId = objVertical.VerticalId;
+  //// Function to create vertical view control.
+  function AddAccordionToggleAndInnerVertical(data) {
+      var div = $('#DivAccordion');
+      div.empty();
+      $.each(data.vertical, function (index1, objVertical) {
+          var colorCode = objVertical.ColorCode;
+          var verticalId = objVertical.VerticalId;
 
-            filteredVertical = $.grep(data.verticalTactic, function (value) { return value.VerticalId == verticalId; }).sort(SortAlphabetically);
+          filteredVertical = $.grep(data.verticalTactic, function (value) { return value.VerticalId == verticalId; }).sort(SortAlphabetically);
 
-            ////// Adding Vertical.
-            div.append("<div class='accordion-group' id='DivAccordionGroup" + verticalId + "'></div>");
-            $("#DivAccordionGroup" + verticalId).append("<div class='accordion-heading'>\
+          ////// Adding Vertical.
+          div.append("<div class='accordion-group' id='DivAccordionGroup" + verticalId + "'></div>");
+          $("#DivAccordionGroup" + verticalId).append("<div class='accordion-heading'>\
                                                 <a class='accordion-toggle item-" + colorCode + " collapsed chevron-right' data-toggle='collapse' data-parent='#DivAccordion' href='#accordion-element-" + verticalId + "'>\
                                                     <div class='cf'>" + objVertical.Title + "<span class='pull-right'><span id='spnver_" + verticalId + "'>0</span>" + "/" + filteredVertical.length + "</span></div>\
                                                 </a>\
                                             </div>\
                                             <div id='accordion-element-" + verticalId + "' class='accordion-body collapse'></div>");
 
-            //// Adding tactic title.
-            $.each(filteredVertical, function (index2, objfilteredVertical) {
-                $("#accordion-element-" + verticalId).append("<a class='accordion-inner item-" + colorCode + "' href='#' taskid='" + objfilteredVertical.TaskId + "'>" + objfilteredVertical.Title + "</a>")
-                $("a[taskid='" + objfilteredVertical.TaskId + "']").click(function (event) {
-                    GanttOpenBranch($(this).attr('taskid'));
-                });
-            });
-        });
-    }
+          //// Adding tactic title.
+          $.each(filteredVertical, function (index2, objfilteredVertical) {
+              $("#accordion-element-" + verticalId).append("<a class='accordion-inner item-" + colorCode + "' href='#' taskid='" + objfilteredVertical.TaskId + "'>" + objfilteredVertical.Title + "</a>")
+              $("a[taskid='" + objfilteredVertical.TaskId + "']").click(function (event) {
+                  GanttOpenBranch($(this).attr('taskid'));
+              });
+          });
+      });
+  }
 
-    //// Function to create stage view control.
-    function AddAccordionToggleAndInnerStage(data) {
-        var div = $('#DivAccordion');
-        div.empty();
-        $.each(data.stage, function (index1, objStage) {
-            var colorCode = objStage.ColorCode;
-            var stageId = objStage.StageId;
+  //// Function to create stage view control.
+  function AddAccordionToggleAndInnerStage(data) {
+      var div = $('#DivAccordion');
+      div.empty();
+      $.each(data.stage, function (index1, objStage) {
+          var colorCode = objStage.ColorCode;
+          var stageId = objStage.StageId;
 
-            filteredStage = $.grep(data.stageTactic, function (value) { return value.StageId == stageId; }).sort(SortAlphabetically);
+          filteredStage = $.grep(data.stageTactic, function (value) { return value.StageId == stageId; }).sort(SortAlphabetically);
 
-            ////// Adding Stage.
-            div.append("<div class='accordion-group' id='DivAccordionGroup" + stageId + "'></div>");
-            $("#DivAccordionGroup" + stageId).append("<div class='accordion-heading'>\
+          ////// Adding Stage.
+          div.append("<div class='accordion-group' id='DivAccordionGroup" + stageId + "'></div>");
+          $("#DivAccordionGroup" + stageId).append("<div class='accordion-heading'>\
                                                 <a class='accordion-toggle item-" + colorCode + " collapsed chevron-right' data-toggle='collapse' data-parent='#DivAccordion' href='#accordion-element-" + stageId + "'>\
                                                     <div class='cf'>" + objStage.Title + "<span class='pull-right'><span id='spnstage_" + stageId + "'>0</span>" + "/" + filteredStage.length + "</span></div>\
                                                 </a>\
                                             </div>\
                                             <div id='accordion-element-" + stageId + "' class='accordion-body collapse'></div>");
 
-            //// Adding tactic title.
-            $.each(filteredStage, function (index2, objfilteredStage) {
-                $("#accordion-element-" + stageId).append("<a class='accordion-inner item-" + colorCode + "' href='#' taskid='" + objfilteredStage.TaskId + "'>" + objfilteredStage.Title + "</a>")
-                $("a[taskid='" + objfilteredStage.TaskId + "']").click(function (event) {
-                    GanttOpenBranch($(this).attr('taskid'));
-                });
-            });
-        });
-    }
+          //// Adding tactic title.
+          $.each(filteredStage, function (index2, objfilteredStage) {
+              $("#accordion-element-" + stageId).append("<a class='accordion-inner item-" + colorCode + "' href='#' taskid='" + objfilteredStage.TaskId + "'>" + objfilteredStage.Title + "</a>")
+              $("a[taskid='" + objfilteredStage.TaskId + "']").click(function (event) {
+                  GanttOpenBranch($(this).attr('taskid'));
+              });
+          });
+      });
+  }
 
-    //// Function to create business unit view control.
-    function AddAccordionToggleAndInnerBusinessUnit(data) {
-        var div = $('#DivAccordion');
-        div.empty();
-        $.each(data.businessUnit, function (index1, objBusinessUnit) {
-            var colorCode = objBusinessUnit.ColorCode;
-            var businessUnitId = objBusinessUnit.BusinessUnitId;
+  //// Function to create business unit view control.
+  function AddAccordionToggleAndInnerBusinessUnit(data) {
+      var div = $('#DivAccordion');
+      div.empty();
+      $.each(data.businessUnit, function (index1, objBusinessUnit) {
+          var colorCode = objBusinessUnit.ColorCode;
+          var businessUnitId = objBusinessUnit.BusinessUnitId;
 
-            filteredBusinessUnit = $.grep(data.businessUnitTactic, function (value) { return value.BusinessUnitId == businessUnitId; }).sort(SortAlphabetically);
+          filteredBusinessUnit = $.grep(data.businessUnitTactic, function (value) { return value.BusinessUnitId == businessUnitId; }).sort(SortAlphabetically);
 
-            ////// Adding Business Unit.
-            div.append("<div class='accordion-group' id='DivAccordionGroup" + businessUnitId + "'></div>");
-            $("#DivAccordionGroup" + businessUnitId).append("<div class='accordion-heading'>\
+          ////// Adding Business Unit.
+          div.append("<div class='accordion-group' id='DivAccordionGroup" + businessUnitId + "'></div>");
+          $("#DivAccordionGroup" + businessUnitId).append("<div class='accordion-heading'>\
                                                 <a class='accordion-toggle item-" + colorCode + " collapsed chevron-right' data-toggle='collapse' data-parent='#DivAccordion' href='#accordion-element-" + businessUnitId + "'>\
                                                     <div class='cf'>" + objBusinessUnit.Title + "<span class='pull-right'><span id='spnbus_" + businessUnitId + "'>0</span>" + "/" + filteredBusinessUnit.length + "</span></div>\
                                                 </a>\
                                             </div>\
                                             <div id='accordion-element-" + businessUnitId + "' class='accordion-body collapse'></div>");
 
-            //// Adding tactic title.
-            $.each(filteredBusinessUnit, function (index2, objfilteredBusinessUnit) {
-                $("#accordion-element-" + businessUnitId).append("<a class='accordion-inner item-" + colorCode + "' href='#' taskid='" + objfilteredBusinessUnit.TaskId + "'>" + objfilteredBusinessUnit.Title + "</a>")
-                $("a[taskid='" + objfilteredBusinessUnit.TaskId + "']").click(function (event) {
-                    GanttOpenBranch($(this).attr('taskid'));
-                });
-            });
-        });
-    }
-
-    //// Function to create request view control.
-    var activities = { data: '' };
-    function AddAccordionToggleAndInnerRequest(data) {
-        AddAccordionToggleAndInnerTactic(data);
-
-        onlyTactic = $.grep(data.taskData, function (value) {
-            return ((typeof value.isSubmitted != 'undefined') && (typeof value.isDeclined != 'undefined'))
-        });
-
-        submittedTactic = $.grep(onlyTactic, function (value) {
-            return (value.isSubmitted == true);
-        });
-
-        declinedTactic = $.grep(onlyTactic, function (value) {
-            return (value.isDeclined == true);
-        });
-
-        var submittedDeclinedTactic = submittedTactic.concat(declinedTactic);
-        activities = { data: submittedDeclinedTactic };
-
-        FillTacticsTable();
-
-        if ($('#IsViewOnly').val() != '') {
-            $("#table_activities th:nth-child(6), #table_activities td:nth-child(6)").remove();
-        }
-    }
-
-    //// Function to sort alphabetically.
-    function SortAlphabetically(obj1, obj2) {
-        var obj1Property = obj1.Title.toLowerCase();
-        var obj2Property = obj2.Title.toLowerCase();
-        return ((obj1Property < obj2Property) ? -1 : ((obj1Property > obj2Property) ? 1 : 0));
-    }
-
-    var planYear;
-    //// Function to make ajax request.
-    function AjaxRequest() {
-        $.ajax(
-      {
-          type: "GET",
-          cache: false,
-          url: '@Url.Action("GetViewControlDetail", "Home")',
-          data: { Type: type, PlanId: CurrentPlanId, IsQuarter: isQuater, geographyIds: filters.geographyIds.join(), individualsIds: filters.IndividualsIds.join(), isShowOnlyMyTactic: IsShowOnlyMyTactic },
-          dataType: "json",
-          success: function (data) {
-              $('#RequestCount').html(data.requestCount);
-              planYear = parseInt(data.planYear);
-
-              switch (type) {
-                  case GanttTabs.Tactic:
-                      AddAccordionToggleAndInnerTactic(data);
-                      break;
-                  case GanttTabs.Vertical:
-                      AddAccordionToggleAndInnerVertical(data);
-                      break;
-                  case GanttTabs.Stage:
-                      AddAccordionToggleAndInnerStage(data);
-                      break;
-                  case GanttTabs.Audience:
-                      AddAccordionToggleAndInnerAudience(data);
-                      break;
-                  case GanttTabs.BusinessUnit:
-                      AddAccordionToggleAndInnerBusinessUnit(data);
-                      break;
-                  case GanttTabs.Request:
-                      AddAccordionToggleAndInnerRequest(data);
-                      break;
-                  default:
-                      alert('No match');
-                      break;
-              }
-              AttachEventToGroupHeading();
-              renderGantt(data.taskData);
-              ShowChangeLog();
-              //// Hide/Show Tabulated data shown below gantt of request tab.
-              if (GanttTabs.Request == type) {
-                  $(".shadow-scroll-gantt").show();
-                  $("#table_activities").show();
-              } else {
-                  $("#table_activities").hide();
-                  $(".shadow-scroll-gantt").hide();
-              }
-          },
-          error: function () {
-              myApp.hidePleaseWait();
-          }
-      });
-  }
-
-  function AttachEventToGroupHeading() {
-      var divAccordionGroups = $("div[id^='DivAccordionGroup']").find("div.accordion-heading a");
-      $.each(divAccordionGroups, function (index, accGroup) {
-          var accordionGroup = $(this);
-          if (typeof accordionGroup != 'undefined') {
-              accordionGroup.click(function () {
-                  var anchor = $(this).parent().next().find("a");
-                  if (typeof anchor != 'undefined') {
-                      anchor.click();
-                  }
+          //// Adding tactic title.
+          $.each(filteredBusinessUnit, function (index2, objfilteredBusinessUnit) {
+              $("#accordion-element-" + businessUnitId).append("<a class='accordion-inner item-" + colorCode + "' href='#' taskid='" + objfilteredBusinessUnit.TaskId + "'>" + objfilteredBusinessUnit.Title + "</a>")
+              $("a[taskid='" + objfilteredBusinessUnit.TaskId + "']").click(function (event) {
+                  GanttOpenBranch($(this).attr('taskid'));
               });
-          }
-      })
+          });
+      });
   }
 
-  //// Function to start date of current quarter.
-  function getQarterStartDate() {
-      var currentDate = new Date();
-      var quater = Math.floor((currentDate.getMonth()) / 3) + 1;
-      var startDate;
-      var fullYear = currentDate.getFullYear();
-      switch (quater) {
-          case 1:
-              startDate = new Date(fullYear, 00, 01);
-              break;
-          case 2:
-              startDate = new Date(fullYear, 03, 01);
-              break;
-          case 3:
-              startDate = new Date(fullYear, 06, 01);
-              break;
-          case 4:
-              startDate = new Date(fullYear, 09, 01);
-              break;
-          default:
-              startDate = currentDate;
-      }
+  //// Function to create request view control.
+  var activities = { data: '' };
+  function AddAccordionToggleAndInnerRequest(data) {
+      AddAccordionToggleAndInnerTactic(data);
 
-      return startDate;
-  }
-
-  //// Function to set common properties of gantt.
-  function SetGantt() {
-      gantt.config.grid_width = 236;
-      gantt.config.readonly = true;
-      gantt.config.autofit = true;
-      gantt.config.drag_links = false;
-      gantt.config.drag_resize = false;
-      gantt.config.drag_progress = false;
-  }
-
-  //// Function to render gantt i.e. for this year or this quarter.
-  function renderGantt(taskData) {
-      //console.log(taskData);
-      var tasks = {
-          data: taskData
-      };
-
-      //var tasks = {
-      //    data: [
-      //        { id: 1, text: "ERP V10 Product Launch", start_date: new Date(2013, 00, 05), duration: 10, progress: 1, open: true },
-      //        { id: 2, text: "Q2 Lead Gen", start_date: new Date(2013, 02, 05), duration: 10, progress: 1, open: false }]
-      //};
-
-      $.each(tasks.data, function (index, objData) {
-          objData.start_date = new Date(objData.start_date);
+      onlyTactic = $.grep(data.taskData, function (value) {
+          return ((typeof value.isSubmitted != 'undefined') && (typeof value.isDeclined != 'undefined'))
       });
 
-      gantt.eachTask(function (task) {
-          gantt.deleteTask(task.id)
-      })
-      if (isQuater == "thisquarter") {
-          //// Setting scale.
-          gantt.config.scale_unit = "month";
-          gantt.config.step = 12;
-          gantt.config.date_scale = " %Y";
+      submittedTactic = $.grep(onlyTactic, function (value) {
+          return (value.isSubmitted == true);
+      });
 
-          gantt.config.scale_height = 60;
-          gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-          gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+      declinedTactic = $.grep(onlyTactic, function (value) {
+          return (value.isDeclined == true);
+      });
 
-          //// Getting quarter
-          var startDate = getQarterStartDate();
-          var endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 1);
-          gantt.config.start_date = startDate;
-          gantt.config.end_date = endDate;
-          //// filtering quater data
-          var filteredData = $.grep(tasks.data,
-                                     function (value) {
-                                         return (value.start_date >= startDate && value.start_date <= endDate)
-                                     }
-                                   );
-          var filteredTasks = { data: filteredData };
+      var submittedDeclinedTactic = submittedTactic.concat(declinedTactic);
+      activities = { data: submittedDeclinedTactic };
 
-          gantt.init("gantt_here");
+      FillTacticsTable();
 
-          var json_length = filteredTasks.data.length;
-          var gantt_div = document.getElementById("gantt_here");
-          gantt_div.style.height = ((json_length * 35) + 94) + "px";
-
-          //// Function to add class to each task bar.
-          gantt.templates.task_class = function (start, end, task) {
-              if (typeof task.plantacticid != 'undefined') {
-                  return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
-              } else {
-                  return task.color;
-              }
-          };
-          gantt.parse(filteredTasks);
-      } else if (isQuater == "thisyear") {
-          gantt.config.scale_unit = "year";
-          gantt.config.step = 1;
-          gantt.config.date_scale = "%Y";
-          gantt.config.scale_height = 60;
-          gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-          gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
-
-          //gantt.config.start_date = new Date(planYear, 00, 01);
-          //gantt.config.end_date = new Date(planYear + 1, 00, 01);
-
-          var date = new Date();
-          gantt.config.start_date = new Date(date.getFullYear(), 00, 01);
-          gantt.config.end_date = new Date(date.getFullYear() + 1, 00, 01);
-          gantt.init("gantt_here");
-
-          var json_length = tasks.data.length;
-          var gantt_div = document.getElementById("gantt_here");
-          gantt_div.style.height = ((json_length * 35) + 94) + "px";
-
-          //// Function to add class to each task bar.
-          gantt.templates.task_class = function (start, end, task) {
-              if (typeof task.plantacticid != 'undefined') {
-                  return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
-              } else {
-                  return task.color;
-              }
-          };
-
-          gantt.parse(tasks);
+      if ($('#IsViewOnly').val() != '') {
+          $("#table_activities th:nth-child(6), #table_activities td:nth-child(6)").remove();
       }
-      else if (isQuater == "thismonth") {
-          gantt.config.scale_unit = "month";
-          gantt.config.step = 12;
-          gantt.config.date_scale = " %Y";
-          gantt.config.scale_height = 60;
-          gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-          gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+  }
 
-          var date = new Date(), m = date.getMonth();
-          gantt.config.start_date = new Date(date.getFullYear(), m, 01);
-          gantt.config.end_date = new Date(date.getFullYear(), m + 1, 01);
+  //// Function to sort alphabetically.
+  function SortAlphabetically(obj1, obj2) {
+      var obj1Property = obj1.Title.toLowerCase();
+      var obj2Property = obj2.Title.toLowerCase();
+      return ((obj1Property < obj2Property) ? -1 : ((obj1Property > obj2Property) ? 1 : 0));
+  }
 
+  var planYear;
+  //// Function to make ajax request.
+  function AjaxRequest() {
+      GetCollaborators(CurrentPlanId);
+      $.ajax(
+    {
+        type: "GET",
+        cache: false,
+        url: '@Url.Action("GetViewControlDetail", "Home")',
+         data: { Type: type, PlanId: CurrentPlanId, IsQuarter: isQuater, geographyIds: filters.geographyIds.join(), individualsIds: filters.IndividualsIds.join(), isShowOnlyMyTactic: IsShowOnlyMyTactic },
+         dataType: "json",
+         success: function (data) {
+             $('#RequestCount').html(data.requestCount);
+             planYear = parseInt(data.planYear);
 
-          var filteredData = $.grep(tasks.data,
+             switch (type) {
+                 case GanttTabs.Tactic:
+                     AddAccordionToggleAndInnerTactic(data);
+                     break;
+                 case GanttTabs.Vertical:
+                     AddAccordionToggleAndInnerVertical(data);
+                     break;
+                 case GanttTabs.Stage:
+                     AddAccordionToggleAndInnerStage(data);
+                     break;
+                 case GanttTabs.Audience:
+                     AddAccordionToggleAndInnerAudience(data);
+                     break;
+                 case GanttTabs.BusinessUnit:
+                     AddAccordionToggleAndInnerBusinessUnit(data);
+                     break;
+                 case GanttTabs.Request:
+                     AddAccordionToggleAndInnerRequest(data);
+                     break;
+                 default:
+                     alert('No match');
+                     break;
+             }
+             AttachEventToGroupHeading();
+             renderGantt(data.taskData);
+             ShowChangeLog();
+             //// Hide/Show Tabulated data shown below gantt of request tab.
+             if (GanttTabs.Request == type) {
+                 $(".shadow-scroll-gantt").show();
+                 $("#table_activities").show();
+             } else {
+                 $("#table_activities").hide();
+                 $(".shadow-scroll-gantt").hide();
+             }
+         },
+         error: function () {
+             myApp.hidePleaseWait();
+         }
+     });
+ }
+
+ function AttachEventToGroupHeading() {
+     var divAccordionGroups = $("div[id^='DivAccordionGroup']").find("div.accordion-heading a");
+     $.each(divAccordionGroups, function (index, accGroup) {
+         var accordionGroup = $(this);
+         if (typeof accordionGroup != 'undefined') {
+             accordionGroup.click(function () {
+                 var anchor = $(this).parent().next().find("a");
+                 if (typeof anchor != 'undefined') {
+                     anchor.click();
+                 }
+             });
+         }
+     })
+ }
+
+ //// Function to start date of current quarter.
+ function getQarterStartDate() {
+     var currentDate = new Date();
+     var quater = Math.floor((currentDate.getMonth()) / 3) + 1;
+     var startDate;
+     var fullYear = currentDate.getFullYear();
+     switch (quater) {
+         case 1:
+             startDate = new Date(fullYear, 00, 01);
+             break;
+         case 2:
+             startDate = new Date(fullYear, 03, 01);
+             break;
+         case 3:
+             startDate = new Date(fullYear, 06, 01);
+             break;
+         case 4:
+             startDate = new Date(fullYear, 09, 01);
+             break;
+         default:
+             startDate = currentDate;
+     }
+
+     return startDate;
+ }
+
+ //// Function to set common properties of gantt.
+ function SetGantt() {
+     gantt.config.grid_width = 236;
+     gantt.config.readonly = true;
+     gantt.config.autofit = true;
+     gantt.config.drag_links = false;
+     gantt.config.drag_resize = false;
+     gantt.config.drag_progress = false;
+ }
+
+ //// Function to render gantt i.e. for this year or this quarter.
+ function renderGantt(taskData) {
+     //console.log(taskData);
+     var tasks = {
+         data: taskData
+     };
+
+     //var tasks = {
+     //    data: [
+     //        { id: 1, text: "ERP V10 Product Launch", start_date: new Date(2013, 00, 05), duration: 10, progress: 1, open: true },
+     //        { id: 2, text: "Q2 Lead Gen", start_date: new Date(2013, 02, 05), duration: 10, progress: 1, open: false }]
+     //};
+
+     $.each(tasks.data, function (index, objData) {
+         objData.start_date = new Date(objData.start_date);
+     });
+
+     gantt.eachTask(function (task) {
+         gantt.deleteTask(task.id)
+     })
+     if (isQuater == "thisquarter") {
+         //// Setting scale.
+         gantt.config.scale_unit = "month";
+         gantt.config.step = 12;
+         gantt.config.date_scale = " %Y";
+
+         gantt.config.scale_height = 60;
+         gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+         //// Getting quarter
+         var startDate = getQarterStartDate();
+         var endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 1);
+         gantt.config.start_date = startDate;
+         gantt.config.end_date = endDate;
+         //// filtering quater data
+         var filteredData = $.grep(tasks.data,
                                     function (value) {
                                         return (value.start_date >= startDate && value.start_date <= endDate)
                                     }
                                   );
-          var filteredTasks = { data: filteredData };
+         var filteredTasks = { data: filteredData };
 
-          gantt.init("gantt_here");
+         gantt.init("gantt_here");
 
-          var json_length = tasks.data.length;
-          var gantt_div = document.getElementById("gantt_here");
-          gantt_div.style.height = ((json_length * 35) + 94) + "px";
+         var json_length = filteredTasks.data.length;
+         var gantt_div = document.getElementById("gantt_here");
+         gantt_div.style.height = ((json_length * 35) + 94) + "px";
 
-          //// Function to add class to each task bar.
+         //// Function to add class to each task bar.
+         gantt.templates.task_class = function (start, end, task) {
+             if (typeof task.plantacticid != 'undefined') {
+                 return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+             } else {
+                 return task.color;
+             }
+         };
+         gantt.parse(filteredTasks);
+     } else if (isQuater == "thisyear") {
+         gantt.config.scale_unit = "year";
+         gantt.config.step = 1;
+         gantt.config.date_scale = "%Y";
+         gantt.config.scale_height = 60;
+         gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
-          gantt.templates.task_class = function (start, end, task) {
-              if (typeof task.plantacticid != 'undefined') {
-                  return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
-              } else {
-                  return task.color;
-              }
-          };
+         //gantt.config.start_date = new Date(planYear, 00, 01);
+         //gantt.config.end_date = new Date(planYear + 1, 00, 01);
 
-          gantt.parse(tasks);
-      }
-      else if (isQuater == "nextyear") {
+         var date = new Date();
+         gantt.config.start_date = new Date(date.getFullYear(), 00, 01);
+         gantt.config.end_date = new Date(date.getFullYear() + 1, 00, 01);
+         gantt.init("gantt_here");
 
-          gantt.config.scale_unit = "year";
-          gantt.config.step = 1;
-          gantt.config.date_scale = "%Y";
-          gantt.config.scale_height = 60;
-          gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-          gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+         var json_length = tasks.data.length;
+         var gantt_div = document.getElementById("gantt_here");
+         gantt_div.style.height = ((json_length * 35) + 94) + "px";
 
-          var date = new Date();
-          gantt.config.start_date = new Date(date.getFullYear() + 1, 00, 01);
-          gantt.config.end_date = new Date(date.getFullYear() + 2, 00, 01);
-          gantt.init("gantt_here");
+         //// Function to add class to each task bar.
+         gantt.templates.task_class = function (start, end, task) {
+             if (typeof task.plantacticid != 'undefined') {
+                 return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+             } else {
+                 return task.color;
+             }
+         };
 
-          var json_length = tasks.data.length;
-          var gantt_div = document.getElementById("gantt_here");
-          gantt_div.style.height = ((json_length * 35) + 94) + "px";
+         gantt.parse(tasks);
+     }
+     else if (isQuater == "thismonth") {
+         gantt.config.scale_unit = "month";
+         gantt.config.step = 12;
+         gantt.config.date_scale = " %Y";
+         gantt.config.scale_height = 60;
+         gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
-          //// Function to add class to each task bar.
-          gantt.templates.task_class = function (start, end, task) {
-              if (typeof task.plantacticid != 'undefined') {
-                  return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
-              } else {
-                  return task.color;
-              }
-          };
-
-          gantt.parse(tasks);
-      } else if (isQuater == "planYear") {
-          // Edited to add PlanYear option.
-          gantt.config.scale_unit = "year";
-          gantt.config.step = 1;
-          gantt.config.date_scale = "%Y";
-          gantt.config.scale_height = 60;
-          gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-          gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
-
-          gantt.config.start_date = new Date(planYear, 00, 01);
-          gantt.config.end_date = new Date(planYear + 1, 00, 01);
-          gantt.init("gantt_here");
-
-          var json_length = tasks.data.length;
-          var gantt_div = document.getElementById("gantt_here");
-          gantt_div.style.height = ((json_length * 35) + 94) + "px";
-
-          //// Function to add class to each task bar.
-          gantt.templates.task_class = function (start, end, task) {
-              if (typeof task.plantacticid != 'undefined') {
-                  return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
-              } else {
-                  return task.color;
-              }
-          };
-
-          gantt.parse(tasks);
-      }
-
-      //// Hide/Show Tabulated data shown below gantt of request tab.
-      if (GanttTabs.Request == type) {
-          //// Calculating height for grid
-          modSampleHeight();
-          var gantt_div1 = document.getElementById("gantt_here");
-          gantt_div1.style.height = ((6 * 35) + 94) + "px";
-          gantt.config.min_column_width = function (data) {
-              return 10;
-          };
-      }
-
-      gantt.eachTask(function (task) {
-          gantt.open(task.id)
-      })
-
-      AttachEventToTactic();
-  }
-
-  function Quarter() {
-      gantt.config.scale_unit = "month";
-      gantt.config.step = 12;
-      gantt.config.date_scale = " %Y";
-
-      gantt.config.scale_height = 60;
-      gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-      gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
-
-      //// Getting quarter
-      var startDate = getQarterStartDate();
-      var endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 1);
-      gantt.config.start_date = startDate;
-      gantt.config.end_date = endDate;
-
-      //// filtering quater data
-      var filteredData = $.grep(tasks.data,
-                                 function (value) {
-                                     return (value.start_date >= startDate && value.start_date <= endDate)
-                                 }
-                               );
-      var filteredTasks = { data: filteredData };
-
-      gantt.init("gantt_here");
-
-      var json_length = filteredTasks.data.length;
-      var gantt_div = document.getElementById("gantt_here");
-      gantt_div.style.height = ((json_length * 35) + 94) + "px";
-
-      //// Function to add class to each task bar.
-      gantt.templates.task_class = function (start, end, task) {
-          if (typeof task.plantacticid != 'undefined') {
-              return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
-          } else {
-              return task.color;
-          }
-      };
-      gantt.parse(filteredTasks);
-  }
-
-  function year() {
-      gantt.config.scale_unit = "year";
-      gantt.config.step = 1;
-      gantt.config.date_scale = "%Y";
-      gantt.config.scale_height = 60;
-      gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-      gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
-
-      gantt.config.start_date = new Date(planYear, 00, 01);
-      gantt.config.end_date = new Date(planYear + 1, 00, 01);
-      gantt.init("gantt_here");
-
-      var json_length = tasks.data.length;
-      var gantt_div = document.getElementById("gantt_here");
-      gantt_div.style.height = ((json_length * 35) + 94) + "px";
-
-      //// Function to add class to each task bar.
-      gantt.templates.task_class = function (start, end, task) {
-          if (typeof task.plantacticid != 'undefined') {
-              return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
-          } else {
-              return task.color;
-          }
-      };
-
-      gantt.parse(tasks);
-  }
-
-  function thismonth() {
-      gantt.config.scale_unit = "month";
-      gantt.config.step = 12;
-      gantt.config.date_scale = " %Y";
-
-      gantt.config.scale_height = 60;
-      gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-      gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
-
-      //// Getting quarter
-      var date = new Date();
-      var startDate = new Date(date.getFullYear(), date.getMonth(), 1);
-      var endDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-
-      //var startDate = getQarterStartDate();
-      //var endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 1);
-      gantt.config.start_date = startDate;
-      gantt.config.end_date = endDate;
-
-      //// filtering quater data
-      var filteredData = $.grep(tasks.data,
-                                 function (value) {
-                                     return (value.start_date >= startDate && value.start_date <= endDate)
-                                 }
-                               );
-      var filteredTasks = { data: filteredData };
-
-      gantt.init("gantt_here");
-
-      var json_length = filteredTasks.data.length;
-      var gantt_div = document.getElementById("gantt_here");
-      gantt_div.style.height = ((json_length * 35) + 94) + "px";
-
-      //// Function to add class to each task bar.
-      gantt.templates.task_class = function (start, end, task) {
-          if (typeof task.plantacticid != 'undefined') {
-              return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
-          } else {
-              return task.color;
-          }
-      };
-      gantt.parse(filteredTasks);
-  }
-
-  function nextyear() {
-      gantt.config.scale_unit = "year";
-      gantt.config.step = 1;
-      gantt.config.date_scale = "%Y";
-      gantt.config.scale_height = 60;
-      gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-      gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
-
-      gantt.config.start_date = new Date(planYear + 1, 00, 01);
-      gantt.config.end_date = new Date(planYear + 2, 00, 01);
-      gantt.init("gantt_here");
-
-      var json_length = tasks.data.length;
-      var gantt_div = document.getElementById("gantt_here");
-      gantt_div.style.height = ((json_length * 35) + 94) + "px";
-
-      //// Function to add class to each task bar.
-      gantt.templates.task_class = function (start, end, task) {
-          if (typeof task.plantacticid != 'undefined') {
-              return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
-          } else {
-              return task.color;
-          }
-      };
-
-      gantt.parse(tasks);
-  }
-
-  function modSampleHeight() {
-      var headHeight = 94;
-      var sch = document.getElementById("gantt_here");
-      sch.style.height = (parseInt(document.body.offsetHeight) - headHeight) + "px";
-      //var contbox = document.getElementById("contbox");
-      //contbox.style.width = (parseInt(document.body.offsetWidth)-300)+"px";
-
-      gantt.setSizes();
-  }
-
-  //// Variable to hold double click event.
-  var eventTaskDoubleClick;
-  //// Function to attach event to show inspect model.
-  function AttachEventToTactic() {
-      //// Detaching double click event.
-      if (eventTaskDoubleClick != undefined) {
-          gantt.detachEvent(eventTaskDoubleClick);
-      }
-
-      //// Attaching double click event
-      eventTaskDoubleClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) { ShowModel(taskId, null) });
-  }
-
-  function ShowModel(taskId, isShowInspect) {
-
-      var task, planTacticId, planProgramId, planCampaignId;
-      if (taskId != null) {
-          task = gantt.getTask(taskId);
-          planTacticId = task.plantacticid;
-          planProgramId = task.planprogramid;
-          planCampaignId = task.plancampaignid;
+         var date = new Date(), m = date.getMonth();
+         gantt.config.start_date = new Date(date.getFullYear(), m, 01);
+         gantt.config.end_date = new Date(date.getFullYear(), m + 1, 01);
 
 
-      } else if (isShowInspect) {
-          planTacticId = $("#hdnshowInspectForPlanTacticId").val();
-          planCampaignId = $("#hdnshowInspectForPlanCampaignId").val();
-          planProgramId = $("#hdnshowInspectForPlanProgramId").val();
-      }
+         var filteredData = $.grep(tasks.data,
+                                   function (value) {
+                                       return (value.start_date >= startDate && value.start_date <= endDate)
+                                   }
+                                 );
+         var filteredTasks = { data: filteredData };
+
+         gantt.init("gantt_here");
+
+         var json_length = tasks.data.length;
+         var gantt_div = document.getElementById("gantt_here");
+         gantt_div.style.height = ((json_length * 35) + 94) + "px";
+
+         //// Function to add class to each task bar.
+
+         gantt.templates.task_class = function (start, end, task) {
+             if (typeof task.plantacticid != 'undefined') {
+                 return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+             } else {
+                 return task.color;
+             }
+         };
+
+         gantt.parse(tasks);
+     }
+     else if (isQuater == "nextyear") {
+
+         gantt.config.scale_unit = "year";
+         gantt.config.step = 1;
+         gantt.config.date_scale = "%Y";
+         gantt.config.scale_height = 60;
+         gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+         var date = new Date();
+         gantt.config.start_date = new Date(date.getFullYear() + 1, 00, 01);
+         gantt.config.end_date = new Date(date.getFullYear() + 2, 00, 01);
+         gantt.init("gantt_here");
+
+         var json_length = tasks.data.length;
+         var gantt_div = document.getElementById("gantt_here");
+         gantt_div.style.height = ((json_length * 35) + 94) + "px";
+
+         //// Function to add class to each task bar.
+         gantt.templates.task_class = function (start, end, task) {
+             if (typeof task.plantacticid != 'undefined') {
+                 return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+             } else {
+                 return task.color;
+             }
+         };
+
+         gantt.parse(tasks);
+     } else if (isQuater == "planYear") {
+         // Edited to add PlanYear option.
+         gantt.config.scale_unit = "year";
+         gantt.config.step = 1;
+         gantt.config.date_scale = "%Y";
+         gantt.config.scale_height = 60;
+         gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+         gantt.config.start_date = new Date(planYear, 00, 01);
+         gantt.config.end_date = new Date(planYear + 1, 00, 01);
+         gantt.init("gantt_here");
+
+         var json_length = tasks.data.length;
+         var gantt_div = document.getElementById("gantt_here");
+         gantt_div.style.height = ((json_length * 35) + 94) + "px";
+
+         //// Function to add class to each task bar.
+         gantt.templates.task_class = function (start, end, task) {
+             if (typeof task.plantacticid != 'undefined') {
+                 return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+             } else {
+                 return task.color;
+             }
+         };
+
+         gantt.parse(tasks);
+     }
+
+     //// Hide/Show Tabulated data shown below gantt of request tab.
+     if (GanttTabs.Request == type) {
+         //// Calculating height for grid
+         modSampleHeight();
+         var gantt_div1 = document.getElementById("gantt_here");
+         gantt_div1.style.height = ((6 * 35) + 94) + "px";
+         gantt.config.min_column_width = function (data) {
+             return 10;
+         };
+     }
+
+     gantt.eachTask(function (task) {
+         gantt.open(task.id)
+     })
+
+     AttachEventToTactic();
+ }
+
+ function Quarter() {
+     gantt.config.scale_unit = "month";
+     gantt.config.step = 12;
+     gantt.config.date_scale = " %Y";
+
+     gantt.config.scale_height = 60;
+     gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+     gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+     //// Getting quarter
+     var startDate = getQarterStartDate();
+     var endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 1);
+     gantt.config.start_date = startDate;
+     gantt.config.end_date = endDate;
+
+     //// filtering quater data
+     var filteredData = $.grep(tasks.data,
+                                function (value) {
+                                    return (value.start_date >= startDate && value.start_date <= endDate)
+                                }
+                              );
+     var filteredTasks = { data: filteredData };
+
+     gantt.init("gantt_here");
+
+     var json_length = filteredTasks.data.length;
+     var gantt_div = document.getElementById("gantt_here");
+     gantt_div.style.height = ((json_length * 35) + 94) + "px";
+
+     //// Function to add class to each task bar.
+     gantt.templates.task_class = function (start, end, task) {
+         if (typeof task.plantacticid != 'undefined') {
+             return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+         } else {
+             return task.color;
+         }
+     };
+     gantt.parse(filteredTasks);
+ }
+
+ function year() {
+     gantt.config.scale_unit = "year";
+     gantt.config.step = 1;
+     gantt.config.date_scale = "%Y";
+     gantt.config.scale_height = 60;
+     gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+     gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+     gantt.config.start_date = new Date(planYear, 00, 01);
+     gantt.config.end_date = new Date(planYear + 1, 00, 01);
+     gantt.init("gantt_here");
+
+     var json_length = tasks.data.length;
+     var gantt_div = document.getElementById("gantt_here");
+     gantt_div.style.height = ((json_length * 35) + 94) + "px";
+
+     //// Function to add class to each task bar.
+     gantt.templates.task_class = function (start, end, task) {
+         if (typeof task.plantacticid != 'undefined') {
+             return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+         } else {
+             return task.color;
+         }
+     };
+
+     gantt.parse(tasks);
+ }
+
+ function thismonth() {
+     gantt.config.scale_unit = "month";
+     gantt.config.step = 12;
+     gantt.config.date_scale = " %Y";
+
+     gantt.config.scale_height = 60;
+     gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+     gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+     //// Getting quarter
+     var date = new Date();
+     var startDate = new Date(date.getFullYear(), date.getMonth(), 1);
+     var endDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+     //var startDate = getQarterStartDate();
+     //var endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 1);
+     gantt.config.start_date = startDate;
+     gantt.config.end_date = endDate;
+
+     //// filtering quater data
+     var filteredData = $.grep(tasks.data,
+                                function (value) {
+                                    return (value.start_date >= startDate && value.start_date <= endDate)
+                                }
+                              );
+     var filteredTasks = { data: filteredData };
+
+     gantt.init("gantt_here");
+
+     var json_length = filteredTasks.data.length;
+     var gantt_div = document.getElementById("gantt_here");
+     gantt_div.style.height = ((json_length * 35) + 94) + "px";
+
+     //// Function to add class to each task bar.
+     gantt.templates.task_class = function (start, end, task) {
+         if (typeof task.plantacticid != 'undefined') {
+             return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+         } else {
+             return task.color;
+         }
+     };
+     gantt.parse(filteredTasks);
+ }
+
+ function nextyear() {
+     gantt.config.scale_unit = "year";
+     gantt.config.step = 1;
+     gantt.config.date_scale = "%Y";
+     gantt.config.scale_height = 60;
+     gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+     gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+     gantt.config.start_date = new Date(planYear + 1, 00, 01);
+     gantt.config.end_date = new Date(planYear + 2, 00, 01);
+     gantt.init("gantt_here");
+
+     var json_length = tasks.data.length;
+     var gantt_div = document.getElementById("gantt_here");
+     gantt_div.style.height = ((json_length * 35) + 94) + "px";
+
+     //// Function to add class to each task bar.
+     gantt.templates.task_class = function (start, end, task) {
+         if (typeof task.plantacticid != 'undefined') {
+             return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+         } else {
+             return task.color;
+         }
+     };
+
+     gantt.parse(tasks);
+ }
+
+ function modSampleHeight() {
+     var headHeight = 94;
+     var sch = document.getElementById("gantt_here");
+     sch.style.height = (parseInt(document.body.offsetHeight) - headHeight) + "px";
+     //var contbox = document.getElementById("contbox");
+     //contbox.style.width = (parseInt(document.body.offsetWidth)-300)+"px";
+
+     gantt.setSizes();
+ }
+
+ //// Variable to hold double click event.
+ var eventTaskDoubleClick;
+ //// Function to attach event to show inspect model.
+ function AttachEventToTactic() {
+     //// Detaching double click event.
+     if (eventTaskDoubleClick != undefined) {
+         gantt.detachEvent(eventTaskDoubleClick);
+     }
+
+     //// Attaching double click event
+     eventTaskDoubleClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) { ShowModel(taskId, null) });
+ }
+
+ function ShowModel(taskId, isShowInspect) {
+
+     var task, planTacticId, planProgramId, planCampaignId;
+     if (taskId != null) {
+         task = gantt.getTask(taskId);
+         planTacticId = task.plantacticid;
+         planProgramId = task.planprogramid;
+         planCampaignId = task.plancampaignid;
 
 
-      //// Checking whether current task is tactic or not.
-      if (typeof planTacticId != 'undefined' && planTacticId != 0) {
-          modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
-          $("#modal-container-186470").modal('show');
-          $("#successMessage").css("display", "none");
-          $("#errorMessage").css("display", "none");
-          loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup");
+     } else if (isShowInspect) {
+         planTacticId = $("#hdnshowInspectForPlanTacticId").val();
+         planCampaignId = $("#hdnshowInspectForPlanCampaignId").val();
+         planProgramId = $("#hdnshowInspectForPlanProgramId").val();
+     }
+
+
+     //// Checking whether current task is tactic or not.
+     if (typeof planTacticId != 'undefined' && planTacticId != 0) {
+         modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
+         $("#modal-container-186470").modal('show');
+         $("#successMessage").css("display", "none");
+         $("#errorMessage").css("display", "none");
+         loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup");
       }
 
           //// Checking whether current task is tactic or not.
