@@ -15,7 +15,7 @@ ALTER TABLE Plan_Campaign_Program_Tactic ALTER COLUMN MQLsActual FLOAT NULL
 ALTER TABLE Plan_Campaign_Program_Tactic ALTER COLUMN CWs FLOAT NULL
 ALTER TABLE Plan_Campaign_Program_Tactic ALTER COLUMN CWsActual FLOAT NULL
 ALTER TABLE Plan_Campaign_Program_Tactic_Actual ALTER COLUMN Actualvalue FLOAT NOT NULL
-ALTER TABLE Plan_Improvement_Campaign_Program_Tactic_Actual ALTER COLUMN Actualvalue FLOAT NOT NULL
+--ALTER TABLE Plan_Improvement_Campaign_Program_Tactic_Actual ALTER COLUMN Actualvalue FLOAT NOT NULL
 ALTER TABLE TacticType ALTER COLUMN ProjectedInquiries BIGINT NULL
 ALTER TABLE TacticType ALTER COLUMN ProjectedMQLs FLOAT NULL
 ALTER TABLE TacticType ALTER COLUMN ProjectedRevenue FLOAT NULL
