@@ -40,10 +40,22 @@
 }
 
 /*//Add For Overwrite Class CSS - for popup not display as center*/
-.modal-inspect-review {height:495px;width:870px;position: fixed;top:0%;left: 40%;z-index: 1050;/*margin-left: -280px;*/background-color: #ffffff;
-  outline: none;padding:30px 20px 20px 20px;margin-top:1px;margin-bottom: 0px; border-radius: 5px 5px 5px 5px;}
+.modal-inspect-review {
+    height: 495px;
+    width: 870px;
+    position: fixed;
+    top: 0%;
+    left: 40%;
+    z-index: 1050; /*margin-left: -280px;*/
+    background-color: #ffffff;
+    outline: none;
+    padding: 30px 20px 20px 20px;
+    margin-top: 1px;
+    margin-bottom: 0px;
+    border-radius: 5px 5px 5px 5px;
+}
 
- /* changed by Nirav shah   on 10 feb 2014 for  Inspect screen : css changes as per new HTML
+/* changed by Nirav shah   on 10 feb 2014 for  Inspect screen : css changes as per new HTML
  .modal-inspect-review {height:495px;width:870px;position: fixed;top: 10%;left: 40%;z-index: 1050;margin-left: -280px;background-color: #ffffff;
   outline: none;padding:30px 20px 20px 20px;margin-top:1px;margin-bottom: 0px; border-radius: 5px 5px 5px 5px;} 
      */
@@ -146,17 +158,22 @@ span.green-arrow-up-icon, span.red-arrow-down-icon {
 .paddingleft20 {
     padding-left: 20px;
 }
-.width150px{width: 150px !important;}
+
+.width150px {
+    width: 150px !important;
+}
+
 .width52px {
     width: 52px;
 }
 
 /* Added for IE design issue. Date: 19 Feb 2014 Use in Actual Tab  */
-.text-align-right{text-align: right !important}
+.text-align-right {
+    text-align: right !important;
+}
 
 /* Report Cursor TFS BUG 235*/
-.report-chart label
-{
+.report-chart label {
     cursor: default;
 }
 
@@ -982,7 +999,7 @@ a {
 
 #table_reports4 .sbHolder a {
     color: #444;
-    font-family:'source_sans_proregular',Arial,"sans-serif" !important;
+    font-family: 'source_sans_proregular',Arial,"sans-serif" !important;
 }
 
 #table_reports4 ul li a:hover {
@@ -990,14 +1007,14 @@ a {
     text-shadow: none;
 }
 
-    .sbHolder a {
-        margin-right: 0px;
-        text-decoration: none !important;
-        color:#444;
-    }
+.sbHolder a {
+    margin-right: 0px;
+    text-decoration: none !important;
+    color: #444;
+}
 
-    .sbHolder:focus .sbSelector {
-    }
+.sbHolder:focus .sbSelector {
+}
 
 .sbSelector {
     display: block;
@@ -1017,7 +1034,7 @@ a {
     white-space: nowrap;
     width: 83%;
     padding-right: 14px;
-    font-size:11.9px;
+    font-size: 11.9px;
 }
 
     .sbSelector:link, .sbSelector:visited, .sbSelector:hover {
@@ -1120,24 +1137,34 @@ a {
         padding-left: 17px;
     }
 
-.sbToggleOpen{
+.sbToggleOpen {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
     background-color: #E6E6E6;
-    background-image:none;
+    background-image: none;
 }
 
 #ddlBusinessSelectBox {
     width: 140px;
 }
 
-.sbOptions a{display: block;outline: none;padding: 5px 20px;line-height:18px; font-size:14px;}
-.sbOptions a:link, .sbOptions a:visited{color: #333;text-decoration: none;}
+.sbOptions a {
+    display: block;
+    outline: none;
+    padding: 5px 20px;
+    line-height: 18px;
+    font-size: 14px;
+}
+
+    .sbOptions a:link, .sbOptions a:visited {
+        color: #333;
+        text-decoration: none;
+    }
 
 #table_reports4 .sbSelector {
     font-size: 11.9px;
 }
 
-    /*#ddlBusinessSelectBox .sbHolder {
+/*#ddlBusinessSelectBox .sbHolder {
         background: none;
         border: none;
     }
@@ -1380,26 +1407,28 @@ a {
 /* TFS Bug 255 : Plan Campaign screen - Add delete icon for tactic and campaign in the grid 
     Css provided by Kapil and added by Nirav Shah on 13 feb 2014
     */
-.close-icon .gray-title-steps{
-    padding-left:25px;
+.close-icon .gray-title-steps {
+    padding-left: 25px;
 }
 /* edited by kapil - 240213 - arrow position changed */
 .close-icon .accordion-campaign a.accordion-toggle {
     padding-left: 45px !important;
-    position:relative;
-    background-position:23px center;
+    position: relative;
+    background-position: 23px center;
 }
 /* added by kapil - 240213 - arrow position changed */
 .accordion-campaign .program-level a.accordion-toggle.chevron-right, .accordion-campaign .program-level a.accordion-toggle.chevron-down {
-    background-position:43px center;
+    background-position: 43px center;
 }
 /* */
 .close-icon .accordion-campaign a.accordion-toggle .chevron-right, .close-icon .accordion-campaign a.accordion-toggle .chevron-down {
     background-position: 25px center;
 }
+
 .close-icon .program-level a.accordion-toggle {
     padding-left: 65px !important;
 }
+
 .close-icon .accordion-campaign .program-level a.accordion-toggle .chevron-right, .close-icon .accordion-campaign .program-level a.accordion-toggle .chevron-down {
     background-position: 45px center;
 }
@@ -1417,7 +1446,7 @@ a {
     height: 14px;
     vertical-align: top;
     margin-top: 12px;
-    margin-left:10px;
+    margin-left: 10px;
 }
 /* changes ends here */
 
@@ -1425,30 +1454,33 @@ a {
 .chart_table_wrapper {
     width: 100%;
 }
+
 .report-chart3 {
     width: 95% !important;
     margin-left: 70px;
 }
+
 #table_reports2 {
     width: 100%;
 }
 /* */
 
-.collapse{width:100%;}
-#table_actuals
-{
+.collapse {
+    width: 100%;
+}
+
+#table_actuals {
     height: 236px;
 }
 
-#table_actuals td
-{
-    line-height: 25px;
-    vertical-align:middle;
-}
-#table_actuals th
-{
-    line-height: 38px;
-}
+    #table_actuals td {
+        line-height: 25px;
+        vertical-align: middle;
+    }
+
+    #table_actuals th {
+        line-height: 38px;
+    }
 /* edited by KAPIL - 240213 */
 #accordion2 .accordion-toggle {
     border-bottom: 1px solid #A8A8A8;
@@ -1456,27 +1488,61 @@ a {
 }
 /* */
 .glass-icon {
-    background-position:0 center;
+    background-position: 0 center;
 }
 
 /* Creted by KAPIL - bug 276 */
-.nav-tabs{margin-bottom:0;}
-.report-summry{margin-bottom:10px !important;}
-.report-summry .nl-field-toggle{background:#f2f2f2; border:1px solid #e6e6e6; padding:11px 12px; display:inline-block; font-size:20px; text-decoration:underline; line-height:24px;}
-.report-summry .nl-field ul{min-width:300px; /*height:150px;*/ background:#c6ebf3;}
-
-.report-summry .nl-field.nl-field-open{z-index:auto !important;}
-.report-summry .nl-field.nl-field-open ul{
-	z-index:10000 !important;
-	/*transform: translateY(calc(47% - 0px)) translateX(85px) scale(1.5) !important;*/
-	transform: translateY(calc(25% - 0px)) translateX(55px) scale(1.3) !important;
+.nav-tabs {
+    margin-bottom: 0;
 }
 
-.report-summry-select{margin-right:5px;}
-.report-summry-select .nl-field-toggle{padding-left:50px; background:url(../images/setting-icon.png) 13px center no-repeat #f2f2f2;}
-.report-summry-plans .nl-field-toggle{padding-left:50px; background:url(../images/plan-icon.png) 13px center no-repeat #f2f2f2;}
+.report-summry {
+    margin-bottom: 10px !important;
+}
 
-.report-summry .nl-field ul li:hover{background:#1a638a !important; color:#fff !important;}
+    .report-summry .nl-field-toggle {
+        background: #f2f2f2;
+        border: 1px solid #e6e6e6;
+        padding: 11px 12px;
+        display: inline-block;
+        font-size: 20px;
+        text-decoration: underline;
+        line-height: 24px;
+    }
+
+    .report-summry .nl-field ul {
+        min-width: 300px; /*height:150px;*/
+        background: #c6ebf3;
+    }
+
+    .report-summry .nl-field.nl-field-open {
+        z-index: auto !important;
+    }
+
+        .report-summry .nl-field.nl-field-open ul {
+            z-index: 10000 !important;
+            /*transform: translateY(calc(47% - 0px)) translateX(85px) scale(1.5) !important;*/
+            transform: translateY(calc(25% - 0px)) translateX(55px) scale(1.3) !important;
+        }
+
+.report-summry-select {
+    margin-right: 5px;
+}
+
+    .report-summry-select .nl-field-toggle {
+        padding-left: 50px;
+        background: url(../images/setting-icon.png) 13px center no-repeat #f2f2f2;
+    }
+
+.report-summry-plans .nl-field-toggle {
+    padding-left: 50px;
+    background: url(../images/plan-icon.png) 13px center no-repeat #f2f2f2;
+}
+
+.report-summry .nl-field ul li:hover {
+    background: #1a638a !important;
+    color: #fff !important;
+}
 /* */
 
 /* added by kapil for assortment - 200214 */
@@ -1487,9 +1553,31 @@ a {
 /* */
 
 /* added by kapil for #139 */
-.width56{width: 56% ;}
-.campaign-name-span{display: inline-block;max-height: 36px;max-width: 90% !important;overflow: hidden;margin-top: 3px;width: auto !important; white-space:nowrap; text-overflow:ellipsis;}
-.tactic-name-span{display: inline-block;max-height: 36px;max-width: 50% !important;overflow: hidden;margin-top: 3px;width: auto !important; white-space:nowrap; text-overflow:ellipsis;}
+.width56 {
+    width: 56%;
+}
+
+.campaign-name-span {
+    display: inline-block;
+    max-height: 36px;
+    max-width: 90% !important;
+    overflow: hidden;
+    margin-top: 3px;
+    width: auto !important;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.tactic-name-span {
+    display: inline-block;
+    max-height: 36px;
+    max-width: 50% !important;
+    overflow: hidden;
+    margin-top: 3px;
+    width: auto !important;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
 /* */
 
 #accordion2 .header-toogle-actual {
@@ -1500,9 +1588,9 @@ a {
     padding-left: 0;
 }
 
-#accordion2 .accordion-toggle .header-toogle-actual .header-toogle-actual-left {
-    padding-left: 15px;
-}
+    #accordion2 .accordion-toggle .header-toogle-actual .header-toogle-actual-left {
+        padding-left: 15px;
+    }
 
 #accordion2 .accordion-group .accordion-heading .accordion-toggle .chevron-right .header-toogle-actual-left {
     background: url("../images/arrow-right-accordion.png") no-repeat 0px 16px !important;
@@ -1515,7 +1603,14 @@ a {
 }
 
 /********* Added by Juned to handle longer stage name in Model creation screen ********/
-.ellipsis{width: 78%; white-space: nowrap;overflow: hidden;text-overflow: ellipsis;-o-text-overflow: ellipsis;margin-right: 1px;}
+.ellipsis {
+    width: 78%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    margin-right: 1px;
+}
 /**************************************************************************************/
 
 /* Added by KAPIL for plan header label alignment - #310 */
@@ -1525,35 +1620,48 @@ a {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.chart-gray > span{
+
+.chart-gray > span {
     display: block;
     overflow: hidden;
     padding: 0 5px;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
 .actual-popup-tile {
-    max-width:100px;
-    display:table-cell;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
+    max-width: 100px;
+    display: table-cell;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
+
 .inline-ellipsis label {
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
+
 .ellipsis-block {
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    display:block;
-    padding:0 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    padding: 0 5px;
 }
 /*Added by Nirav Shah on 4 March 2014 for TFS point 300 */
 
-.table-info-actual-width{
+.table-info-actual-width {
     float: right;
     width: 140px;
+}
+
+/*Added by Kuber Joshi on 11 March 2014 for TFS point 221 */
+.title-header.plan {
+    background: none repeat scroll 0 0 #F2F2F2;
+    border: 1px solid #E6E6E6;
+    color: #2384B8;
+    font-size: 24px;
+    padding: 2px 10px;
 }

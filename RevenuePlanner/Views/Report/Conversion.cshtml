@@ -54,6 +54,11 @@
 }
 
 @Html.Action("ConversionReportHeader", "Report", new { id = (string)ViewBag.SelectOption })
+<ul class="nav nav-tabs" style="border-bottom:0px;">
+    <li class="source-sans-proregular">
+         <h2 class="title-header plan">@ViewBag.PlanTitle</h2>
+    </li>
+</ul>
 <ul class="nav nav-tabs" id="ParentULConversionSummary">
     <li class="source-sans-proregular">
         <h2 class="title-header">Conversion Summary</h2>
@@ -634,38 +639,38 @@
                      type: "GET",
                      cache: false,
                      url: '@Url.Action("GetMQLPerformance", "Report")',
-                data: {
-                    filter: filter,
-                    selectOption: selectOption
-                },
-                dataType: "json",
-                success: function (data) {
-                    // console.log(data);
-                    dataset1 = null;
-                    dataset2 = null;
-                    dataset3 = null;
-                    var chartDataMQLPerformance = {
-                        ChartBusinessUnit: data.ChartBusinessUnit,
-                        ChartGeography: data.ChartGeography,
-                        ChartVertical: data.ChartVertical
-                    }
+                     data: {
+                         filter: filter,
+                         selectOption: selectOption
+                     },
+                     dataType: "json",
+                     success: function (data) {
+                         // console.log(data);
+                         dataset1 = null;
+                         dataset2 = null;
+                         dataset3 = null;
+                         var chartDataMQLPerformance = {
+                             ChartBusinessUnit: data.ChartBusinessUnit,
+                             ChartGeography: data.ChartGeography,
+                             ChartVertical: data.ChartVertical
+                         }
 
-                    $('#chartDataMQLPerformance').val(JSON.stringify(chartDataMQLPerformance));
+                         $('#chartDataMQLPerformance').val(JSON.stringify(chartDataMQLPerformance));
 
-                    dataset1 = data.ChartBusinessUnit;
-                    dataset2 = data.ChartGeography;
-                    dataset3 = data.ChartVertical;
-                    //dataset = data.chartData;
-                    //fill data on reports table
-                    FillChartSourcePerformanceBusinessUnit();
-                    FillChartSourcePerformanceGeography();
-                    FillChartSourcePerformanceVertical();
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
-                }
+                         dataset1 = data.ChartBusinessUnit;
+                         dataset2 = data.ChartGeography;
+                         dataset3 = data.ChartVertical;
+                         //dataset = data.chartData;
+                         //fill data on reports table
+                         FillChartSourcePerformanceBusinessUnit();
+                         FillChartSourcePerformanceGeography();
+                         FillChartSourcePerformanceVertical();
+                     },
+                     error: function () {
+                         myApp.hidePleaseWait();
+                     }
                  });
-        }
+             }
 
         function FillChartSourcePerformanceBusinessUnit() {
             $('#chartDiv1Parent').find('#chartDiv1').remove();

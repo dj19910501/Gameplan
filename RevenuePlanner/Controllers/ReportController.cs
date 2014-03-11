@@ -624,17 +624,27 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-            //// Get plan to show in report.
-            var plans = GetPlanForReport();
-            if (plans != null && plans.Count() != 0)
+            if (Sessions.ReportPlanId == 0)
             {
-                //// Getting current year's published plan for business unit of director/system admin/client admint for add actuals.
-                Plan sessionActivePlan = plans.Where(p => p.Model.BusinessUnitId.Equals(Sessions.User.BusinessUnitId)).Select(p => p).FirstOrDefault();
-                if (sessionActivePlan != null)
-                {
-                    Sessions.PlanId = sessionActivePlan.PlanId;
-                }
+                ViewBag.PlanTitle = "All Plans";
             }
+            else
+            {
+                var plan = db.Plans.Single(p => p.PlanId.Equals(Sessions.ReportPlanId));
+                ViewBag.PlanTitle = plan.Title;
+            }
+
+            //// Get plan to show in report.
+            //var plans = GetPlanForReport();
+            //if (plans != null && plans.Count() != 0)
+            //{
+            //    //// Getting current year's published plan for business unit of director/system admin/client admint for add actuals.
+            //    Plan sessionActivePlan = plans.Where(p => p.Model.BusinessUnitId.Equals(Sessions.User.BusinessUnitId)).Select(p => p).FirstOrDefault();
+            //    if (sessionActivePlan != null)
+            //    {
+            //        Sessions.PlanId = sessionActivePlan.PlanId;
+            //    }
+            //}
 
             ViewBag.MonthTitle = GetDisplayMonthList(id);
             ViewBag.SelectOption = id;
@@ -1265,7 +1275,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="ObjectType"></param>
         /// <param name="ObjectId"></param>
         /// <returns></returns>
-        private ConversionSummary GetConversionSummaryRow(int id, string title, List<int> TacticIds, List<int> ModelFunnelIds,string selectOption)
+        private ConversionSummary GetConversionSummaryRow(int id, string title, List<int> TacticIds, List<int> ModelFunnelIds, string selectOption)
         {
             ConversionSummary cm = new ConversionSummary();
             cm.id = id;
@@ -1289,7 +1299,7 @@ namespace RevenuePlanner.Controllers
             double Actual_Revenue = 0;
 
             List<string> includeMonth = GetMonthList(selectOption, true);
-           
+
             List<ProjectedRevenueClass> lstRev = ProjectedRevenueCalculate(TacticIds);
             List<TacticDataTable> tacticdata = (from t in db.Plan_Campaign_Program_Tactic.ToList()
                                                 join l in lstRev on t.PlanTacticId equals l.PlanTacticId
@@ -1546,6 +1556,17 @@ namespace RevenuePlanner.Controllers
             ViewBag.SelectOption = id;
 
             ViewBag.BusinessUnit = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId).OrderBy(b => b.Title);
+
+            if (Sessions.ReportPlanId == 0)
+            {
+                ViewBag.PlanTitle = "All Plans";
+            }
+            else
+            {
+                var plan = db.Plans.Single(p => p.PlanId.Equals(Sessions.ReportPlanId));
+                ViewBag.PlanTitle = plan.Title;
+            }
+
             return View();
         }
 

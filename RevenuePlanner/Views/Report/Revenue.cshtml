@@ -46,7 +46,11 @@
 }
 
 @Html.Action("ReportHeader", "Report", new { id = (string)ViewBag.SelectOption })
-
+<ul class="nav nav-tabs" style="border-bottom:0px;">
+    <li class="source-sans-proregular">
+        <h2 class="title-header plan">@ViewBag.PlanTitle</h2>
+    </li>
+</ul>
 <ul class="nav nav-tabs" id="ParentULRevenueSummary">
     <li class="source-sans-proregular">
         <h2 class="title-header">Revenue Summary</h2>
