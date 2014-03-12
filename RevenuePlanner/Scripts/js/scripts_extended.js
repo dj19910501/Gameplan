@@ -160,7 +160,7 @@ function SetFormatForLabel(lableId, maxSize)
     if (lengthvalue >= maxSize) {
         var firstString;
         var lastString;
-        var SK = "K";
+        var SK = "k";
         var SM = "M";
         var SB = "B";
         switch (lengthvalue) {
@@ -261,7 +261,7 @@ function GetAbberiviatedValue(value) {
     else if (absValue < 1000000) {
         value = (Math.round(parseFloat(absValue / 1000) * 100) / 100);
         value = Number(value).toFixed(2);
-        value = value.toString() + 'K';
+        value = value.toString() + 'k';
     }
     else if (absValue < 1000000000) {
         value = (Math.round(parseFloat(absValue / 1000000) * 100) / 100);
