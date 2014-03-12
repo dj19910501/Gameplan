@@ -15,11 +15,23 @@
 @*Reason: To remove chart canvas border and unwanted icon Refered to original css of dhtmlxchart Added By: Maninder Singh on 1/28/2014*@
 <link href="@Url.Content("~/Content/css/dhtmlxchart.css")" rel="stylesheet" type="text/css" />
 
-
 @section Sidebar
 {
     <div class="padding-content padding-bottom0">
         <h4 class="text-shadow-black source-sans-prolight">Reports</h4>
+        <form id="nl-formAct" class="nl-form-plan-title without-margin report-summry">
+            <span class="report-summry-select" id="nl-ReportSummry" style="float:left;">
+                <select id="reportSummry" data-default="0%" class="">
+                </select>
+                <div class="nl-overlay"></div>
+            </span>
+
+            <span class="report-summry-plans" id="nl-ReportSummry2">
+                <select id="reportSummry2" data-default="0%" class="">
+                </select>
+                <div class="nl-overlay"></div>
+            </span>
+        </form> 
         <div class="wraper-btns cf">
             <div class="span6">
                 @if (RevenuePlanner.Helpers.Sessions.PlanId != 0)
@@ -49,28 +61,20 @@
     </ul>
 }
 
+<ul class="nav nav-tabs" style="border-bottom: 0px;">
+    <li class="source-sans-proregular">
+        <h2 class="title-header plan">@ViewBag.PlanTitle</h2>
+    </li>
+</ul>
+
 <ul id="ulNav" class="nav nav-tabs">
     <li class="source-sans-proregular">
         <h2 class="title-header">Report Summaries</h2>
     </li>
 </ul>
 
-
-
 <div id="htmlContent" class="padding-content cf source-sans-proregular">
-    <form id="nl-formAct" class="nl-form-plan-title without-margin report-summry">
-        <span class="report-summry-select" id="nl-ReportSummry" style="float:left;">
-            <select id="reportSummry" data-default="0%" class="">
-            </select>
-            <div class="nl-overlay"></div>
-        </span>
-
-        <span class="report-summry-plans" id="nl-ReportSummry2">
-            <select id="reportSummry2" data-default="0%" class="">
-            </select>
-            <div class="nl-overlay"></div>
-        </span>
-    </form>
+  
     <div id="DivSummary"></div>
     <div id="DivNoPlanToShowReport" style="display: none;">
         <span class="pull-left margin_t30 bold">No saved plans to display report summary.</span>
@@ -96,15 +100,15 @@
                         CurrentBU = BU.Value;
                     } else {
                         $html += '<option value="' + BU.Value + '">' + BU.Text + '</option>';
-                }
-            });
+                    }
+                });
             }
             $dropdown.append($html);
             nlform = new NLForm(document.getElementById('nl-ReportSummry'));
             LoadSummaryDataForPlan("@RevenuePlanner.Helpers.Sessions.BusinessUnitId", "@RevenuePlanner.Helpers.Sessions.ReportPlanId" ); // Load data for all Business Unit for the first time
         }
 
-        var plans = @Html.Raw(Json.Encode(Model.lstAllPlans))
+       var plans = @Html.Raw(Json.Encode(Model.lstAllPlans))
        populateNF(plans, "reportSummry2");
 
         function populateNF(items, id) {
@@ -122,7 +126,7 @@
                     } else {
                         $html += '<option value="' + Plan.Value + '">' + Plan.Text + '</option>';
                     }
-            });
+                });
             }
             $dropdown.append($html);
             nlform = new NLForm(document.getElementById('nl-ReportSummry2'));
@@ -149,9 +153,9 @@
                     error: function () {
                         myApp.hidePleaseWait();
                     }
-            });
+                });
 
-        });
+            });
 
             $('#nl-ReportSummry2').on('click', 'div[class="nl-field nl-dd"] li', function (e) {
                 var BUTitle = $('#nl-ReportSummry .nl-field-toggle').text();
@@ -161,6 +165,7 @@
                 var PlanTitle = $(this).text();
                 var PlanOption = $.grep($('#reportSummry2 option'), function (value) { return $(value).text() == PlanTitle; });
                 SelectedPlanId = $(PlanOption[0]).val();
+
                 LoadSummaryDataForPlan(SelectedBUId, SelectedPlanId);
             });
         }

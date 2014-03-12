@@ -22,6 +22,23 @@
 {
     <div class="padding-content padding-bottom0">
         <h4 class="text-shadow-black source-sans-prolight">Reports</h4>
+
+        @*To resolve Bug 312: Report plan selector needs to be moved*@
+        <form class="nl-form-plan-title without-margin report-summry">
+            <span class="report-summry-select" id="nl-ReportSummry" style="float: left;">
+                <select id="reportSummry" data-default="0%" class="">
+                </select>
+                <div class="nl-overlay"></div>
+            </span>
+
+            <span class="report-summry-plans" id="nl-ReportSummry2">
+                <select id="reportSummry2" data-default="0%" class="">
+                </select>
+                <div class="nl-overlay"></div>
+            </span>
+        </form>
+        @*To resolve Bug 312: Report plan selector needs to be moved*@
+
         <div class="wraper-btns cf">
             <div class="span6">
                 @if (RevenuePlanner.Helpers.Sessions.PlanId != 0)
@@ -54,9 +71,9 @@
 }
 
 @Html.Action("ConversionReportHeader", "Report", new { id = (string)ViewBag.SelectOption })
-<ul class="nav nav-tabs" style="border-bottom:0px;">
+<ul class="nav nav-tabs" style="border-bottom: 0px;">
     <li class="source-sans-proregular">
-         <h2 class="title-header plan">@ViewBag.PlanTitle</h2>
+        <h2 class="title-header plan">@ViewBag.PlanTitle</h2>
     </li>
 </ul>
 <ul class="nav nav-tabs" id="ParentULConversionSummary">
@@ -186,6 +203,110 @@
     var TempreportTableInfo2; var Tempdataset;
     var tempreportDataPrevious; var tempDataSetPrevious;
     $(document).ready(function () {
+
+        /* To resolve Bug 312: Report plan selector needs to be moved */
+        var BU = @Html.Raw(Json.Encode(Model.lstBusinessUnit))
+        populateBU(BU, "reportSummry");
+        function populateBU(items, id) {
+            var $dropdown = $("#" + id);
+            var $html = '';
+            $html += '<option value=' + 0 + ' selected>' + "All Business Units" + '</option>';
+            if (items.length > 0) {
+                $.each(items, function (index, BU) {
+
+                    if (BU.Selected) {
+                        $html += '<option value="' + BU.Value + '" selected>' + BU.Text + '</option>';
+                        CurrentBU = BU.Value;
+                    } else {
+                        $html += '<option value="' + BU.Value + '">' + BU.Text + '</option>';
+                    }
+                });
+            }
+            $dropdown.append($html);
+            nlform = new NLForm(document.getElementById('nl-ReportSummry'));
+        }
+
+        var plans = @Html.Raw(Json.Encode(Model.lstAllPlans))
+        populateNF(plans, "reportSummry2");
+
+        function populateNF(items, id) {
+            var $dropdown = $("#" + id);
+            $('#nl-ReportSummry2 > div[class="nl-field nl-dd"]').children().empty();
+            $('#reportSummry2').empty();
+            var $html = '';
+            $html += '<option value=' + 0 + ' selected>' + "All Plans" + '</option>';
+            if (items.length > 0) {
+                $.each(items, function (index, Plan) {
+
+                    if (Plan.Selected) {
+                        $html += '<option value="' + Plan.Value + '" selected>' + Plan.Text + '</option>';
+                        CurrentBU = Plan.Value;
+                    } else {
+                        $html += '<option value="' + Plan.Value + '">' + Plan.Text + '</option>';
+                    }
+                });
+            }
+            $dropdown.append($html);
+            nlform = new NLForm(document.getElementById('nl-ReportSummry2'));
+        }
+
+        onClickActivity();
+
+        function onClickActivity() {
+            $('#nl-ReportSummry > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+                var Title = $(this).text();
+                var option = $.grep($('#reportSummry option'), function (value) { return $(value).text() == Title; })
+                SelectedBUId = $(option[0]).val();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Report/GetPlansListFromBusinessUnitId/")',
+                    data: {
+                        BusinessUnitId: SelectedBUId,
+                    },
+                    success: function (r) {
+                        populateNF(r.lstPlan, "reportSummry2");
+                        LoadRevenueReportForPlan(SelectedBUId);
+                        $('#nl-ReportSummry2 > .nl-field:not(:last)').remove(); // code to remove extra blocks for Plan dropdown
+                    },
+                    error: function () {
+                        myApp.hidePleaseWait();
+                    }
+                });
+            });
+
+            $('#nl-ReportSummry2').on('click', 'div[class="nl-field nl-dd"] li', function (e) {
+                var BUTitle = $('#nl-ReportSummry .nl-field-toggle').text();
+                var BUOption = $.grep($('#reportSummry option'), function (value) { return $(value).text() == BUTitle; });
+                SelectedBUId = $(BUOption[0]).val();
+
+                var PlanTitle = $(this).text();
+                var PlanOption = $.grep($('#reportSummry2 option'), function (value) { return $(value).text() == PlanTitle; });
+                SelectedPlanId = $(PlanOption[0]).val();
+
+                LoadConversionReportForPlan(SelectedBUId, SelectedPlanId);
+            });
+        }
+
+        // This function will load the data for selected parameters
+        function LoadConversionReportForPlan(SelectedBUId, SelectedPlanId) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Report/SetReportParameter/")',
+                data: {
+                    BusinessUnitId: SelectedBUId,
+                    PlanId: SelectedPlanId
+                 },
+                success: function (r) {
+                    location.reload();
+                },
+                error: function () {
+                    myApp.hidePleaseWait();
+                }
+            });
+        }
+
+        /* To resolve Bug 312: Report plan selector needs to be moved */
+
         $("#DivShareReport").hide();
 
         $("#BtnShareReport").click(function () {

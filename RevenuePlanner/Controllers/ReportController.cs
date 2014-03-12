@@ -80,12 +80,57 @@ namespace RevenuePlanner.Controllers
             {
                 lstPlans.Where(lp => lp.Value == Convert.ToString(Sessions.ReportPlanId)).ToList().ForEach(lp => lp.Selected = true);
             }
+            
+            if (Sessions.ReportPlanId == 0)
+            {
+                ViewBag.PlanTitle = "All Plans";
+            }
+            else
+            {
+                var plan = db.Plans.Single(p => p.PlanId.Equals(Sessions.ReportPlanId));
+                ViewBag.PlanTitle = plan.Title;
+            }
 
             FilterDropdownValues objFilterData = new FilterDropdownValues();
             objFilterData.lstBusinessUnit = lstBusinessUnits;
             objFilterData.lstAllPlans = lstPlans;
 
             return View(objFilterData);
+        }
+
+        public void SetReportParameter(string BusinessUnitId = "", string PlanId = "")
+        {
+            SummaryReportModel objSummaryReportModel = new SummaryReportModel();
+            ViewBag.IsPlanExistToShowReport = false;
+
+            //// Getting current year's all published plan for all business unit of clientid of director.
+            var plans = Common.GetPlan();
+            string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
+            string currentYear = DateTime.Now.Year.ToString();
+            plans = plans.Where(p => p.Status.Equals(planPublishedStatus) && p.Year.Equals(currentYear)).Select(p => p).ToList();
+
+            //Filter to filter out the plan based on the Selected businessunit and PlanId
+            if (!string.IsNullOrEmpty(PlanId) && PlanId != "0")
+            {
+                int int_PlanId = Convert.ToInt32(PlanId);
+                plans = plans.Where(p => p.PlanId.Equals(int_PlanId)).ToList();
+                Sessions.ReportPlanId = int_PlanId;
+            }
+            else if (PlanId == "0") // This means all plans are selected
+            {
+                Sessions.ReportPlanId = 0;
+            }
+
+            if (!string.IsNullOrEmpty(BusinessUnitId) && BusinessUnitId != "0" && BusinessUnitId != Convert.ToString(Guid.Empty))
+            {
+                Guid BusinessUnitGuid = new Guid(BusinessUnitId);
+                plans = plans.Where(pl => pl.Model.BusinessUnitId.Equals(BusinessUnitGuid)).ToList();
+                Sessions.BusinessUnitId = BusinessUnitGuid;
+            }
+            else if (BusinessUnitId == "0" && BusinessUnitId == Convert.ToString(Guid.Empty))
+            {
+                Sessions.BusinessUnitId = Guid.Empty;
+            }
         }
 
         /// <summary>
@@ -645,11 +690,40 @@ namespace RevenuePlanner.Controllers
             //        Sessions.PlanId = sessionActivePlan.PlanId;
             //    }
             //}
+            
+            /* To resolve Bug 312: Report plan selector needs to be moved */
+
+            string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
+            string currentYear = DateTime.Now.Year.ToString();
+
+            //List of Business Units
+            List<SelectListItem> lstBusinessUnits = Common.GetBussinessUnitIds(Sessions.User.ClientId).Select(p => new SelectListItem() { Text = p.Text, Value = p.Value.ToString(), Selected = false }).ToList();
+
+            //List of Plans
+            List<SelectListItem> lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Status.Equals(planPublishedStatus) && pl.Year.Equals(currentYear)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
+
+            if (Sessions.BusinessUnitId != Guid.Empty)
+            {
+                lstBusinessUnits.Where(lbu => lbu.Value == Convert.ToString(Sessions.BusinessUnitId)).ToList().ForEach(lbu => lbu.Selected = true);
+                lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Model.BusinessUnitId == Sessions.BusinessUnitId && pl.Status.Equals(planPublishedStatus) && pl.Year.Equals(currentYear)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
+            }
+
+
+            if (Sessions.ReportPlanId > 0)
+            {
+                lstPlans.Where(lp => lp.Value == Convert.ToString(Sessions.ReportPlanId)).ToList().ForEach(lp => lp.Selected = true);
+            }
+
+            SummaryReportModel objSummaryReportModel = new SummaryReportModel();
+            objSummaryReportModel.lstBusinessUnit = lstBusinessUnits;
+            objSummaryReportModel.lstAllPlans = lstPlans;
+
+            /* To resolve Bug 312: Report plan selector needs to be moved */
 
             ViewBag.MonthTitle = GetDisplayMonthList(id);
             ViewBag.SelectOption = id;
 
-            return View();
+            return View(objSummaryReportModel);
         }
 
         #region MQL Conversion Plan Report
@@ -1567,7 +1641,34 @@ namespace RevenuePlanner.Controllers
                 ViewBag.PlanTitle = plan.Title;
             }
 
-            return View();
+            /* To resolve Bug 312: Report plan selector needs to be moved */
+            string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
+            string currentYear = DateTime.Now.Year.ToString();
+
+            //List of Business Units
+            List<SelectListItem> lstBusinessUnits = Common.GetBussinessUnitIds(Sessions.User.ClientId).Select(p => new SelectListItem() { Text = p.Text, Value = p.Value.ToString(), Selected = false }).ToList();
+
+            //List of Plans
+            List<SelectListItem> lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Status.Equals(planPublishedStatus) && pl.Year.Equals(currentYear)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
+
+            if (Sessions.BusinessUnitId != Guid.Empty)
+            {
+                lstBusinessUnits.Where(lbu => lbu.Value == Convert.ToString(Sessions.BusinessUnitId)).ToList().ForEach(lbu => lbu.Selected = true);
+                lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Model.BusinessUnitId == Sessions.BusinessUnitId && pl.Status.Equals(planPublishedStatus) && pl.Year.Equals(currentYear)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
+            }
+
+
+            if (Sessions.ReportPlanId > 0)
+            {
+                lstPlans.Where(lp => lp.Value == Convert.ToString(Sessions.ReportPlanId)).ToList().ForEach(lp => lp.Selected = true);
+            }
+
+            FilterDropdownValues objFilterData = new FilterDropdownValues();
+            objFilterData.lstBusinessUnit = lstBusinessUnits;
+            objFilterData.lstAllPlans = lstPlans;
+            /* To resolve Bug 312: Report plan selector needs to be moved */
+
+            return View(objFilterData);
         }
 
         /// <summary>
