@@ -80,7 +80,7 @@ namespace RevenuePlanner.Controllers
             {
                 lstPlans.Where(lp => lp.Value == Convert.ToString(Sessions.ReportPlanId)).ToList().ForEach(lp => lp.Selected = true);
             }
-            
+
             if (Sessions.ReportPlanId == 0)
             {
                 ViewBag.PlanTitle = "All Plans";
@@ -116,7 +116,7 @@ namespace RevenuePlanner.Controllers
                 plans = plans.Where(p => p.PlanId.Equals(int_PlanId)).ToList();
                 Sessions.ReportPlanId = int_PlanId;
             }
-            else if (PlanId == "0") // This means all plans are selected
+            else if (PlanId == "0" || PlanId == "") // This means all plans are selected
             {
                 Sessions.ReportPlanId = 0;
             }
@@ -690,7 +690,7 @@ namespace RevenuePlanner.Controllers
             //        Sessions.PlanId = sessionActivePlan.PlanId;
             //    }
             //}
-            
+
             /* To resolve Bug 312: Report plan selector needs to be moved */
 
             string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
