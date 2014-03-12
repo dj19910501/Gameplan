@@ -25,6 +25,14 @@ namespace RevenuePlanner.Models
         public string MQLsStatus { get; set; }
         public string CWsStatus { get; set; }
         public List<WaterfallConversionSummaryChart> chartData = new List<WaterfallConversionSummaryChart>();
+
+        /* To resolve Bug 312: Report plan selector needs to be moved */
+        
+        //For BusinessUnit Selector / Plans selector
+        public List<SelectListItem> lstBusinessUnit { get; set; }
+        public List<SelectListItem> lstAllPlans { get; set; }
+
+        /* To resolve Bug 312: Report plan selector needs to be moved */
     }
 
     public class WaterfallConversionSummaryChart

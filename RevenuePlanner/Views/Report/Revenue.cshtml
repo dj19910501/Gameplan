@@ -1,4 +1,6 @@
-﻿@using RevenuePlanner.Helpers
+﻿@model RevenuePlanner.Models.FilterDropdownValues
+@using RevenuePlanner.Helpers
+
 @{
     ViewBag.Title = "Revenue";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Report;
@@ -16,6 +18,23 @@
 {
     <div class="padding-content padding-bottom0">
         <h4 class="text-shadow-black source-sans-prolight">Reports</h4>
+
+        @*To resolve Bug 312: Report plan selector needs to be moved*@
+        <form class="nl-form-plan-title without-margin report-summry">
+            <span class="report-summry-select" id="nl-ReportSummry" style="float: left;">
+                <select id="reportSummry" data-default="0%" class="">
+                </select>
+                <div class="nl-overlay"></div>
+            </span>
+
+            <span class="report-summry-plans" id="nl-ReportSummry2">
+                <select id="reportSummry2" data-default="0%" class="">
+                </select>
+                <div class="nl-overlay"></div>
+            </span>
+        </form>
+        @*To resolve Bug 312: Report plan selector needs to be moved*@
+
         <div class="wraper-btns cf">
             <div class="span6">
                 @if (RevenuePlanner.Helpers.Sessions.PlanId != 0)
@@ -46,7 +65,7 @@
 }
 
 @Html.Action("ReportHeader", "Report", new { id = (string)ViewBag.SelectOption })
-<ul class="nav nav-tabs" style="border-bottom:0px;">
+<ul class="nav nav-tabs" style="border-bottom: 0px;">
     <li class="source-sans-proregular">
         <h2 class="title-header plan">@ViewBag.PlanTitle</h2>
     </li>
@@ -314,6 +333,103 @@
     var sumColActualRevenue = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     $(document).ready(function () {
 
+        /* To resolve Bug 312: Report plan selector needs to be moved */
+        var BU = @Html.Raw(Json.Encode(Model.lstBusinessUnit))
+        populateBU(BU, "reportSummry");
+        function populateBU(items, id) {
+            var $dropdown = $("#" + id);
+            var $html = '';
+            $html += '<option value=' + 0 + ' selected>' + "All Business Units" + '</option>';
+            if (items.length > 0) {
+                $.each(items, function (index, BU) {
+
+                    if (BU.Selected) {
+                        $html += '<option value="' + BU.Value + '" selected>' + BU.Text + '</option>';
+                        CurrentBU = BU.Value;
+                    } else {
+                        $html += '<option value="' + BU.Value + '">' + BU.Text + '</option>';
+                    }
+                });
+            }
+            $dropdown.append($html);
+            nlform = new NLForm(document.getElementById('nl-ReportSummry'));
+        }
+
+        var plans = @Html.Raw(Json.Encode(Model.lstAllPlans))
+        populateNF(plans, "reportSummry2");
+
+        function populateNF(items, id) {
+            var $dropdown = $("#" + id);
+            $('#nl-ReportSummry2 > div[class="nl-field nl-dd"]').children().empty();
+            $('#reportSummry2').empty();
+            var $html = '';
+            $html += '<option value=' + 0 + ' selected>' + "All Plans" + '</option>';
+            if (items.length > 0) {
+                $.each(items, function (index, Plan) {
+
+                    if (Plan.Selected) {
+                        $html += '<option value="' + Plan.Value + '" selected>' + Plan.Text + '</option>';
+                        CurrentBU = Plan.Value;
+                    } else {
+                        $html += '<option value="' + Plan.Value + '">' + Plan.Text + '</option>';
+                    }
+                });
+            }
+            $dropdown.append($html);
+            nlform = new NLForm(document.getElementById('nl-ReportSummry2'));
+        }
+
+        onClickActivity();
+
+        function onClickActivity() {
+            $('#nl-ReportSummry > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+                var Title = $(this).text();
+                var option = $.grep($('#reportSummry option'), function (value) { return $(value).text() == Title; })
+                SelectedBUId = $(option[0]).val();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Report/GetPlansListFromBusinessUnitId/")',
+                    data: {
+                        BusinessUnitId: SelectedBUId,
+                    },
+                    success: function (r) {
+                        populateNF(r.lstPlan, "reportSummry2");
+                        LoadRevenueReportForPlan(SelectedBUId);
+                        $('#nl-ReportSummry2 > .nl-field:not(:last)').remove(); // code to remove extra blocks for Plan dropdown
+                    }
+                });
+            });
+
+            $('#nl-ReportSummry2').on('click', 'div[class="nl-field nl-dd"] li', function (e) {
+                var BUTitle = $('#nl-ReportSummry .nl-field-toggle').text();
+                var BUOption = $.grep($('#reportSummry option'), function (value) { return $(value).text() == BUTitle; });
+                SelectedBUId = $(BUOption[0]).val();
+
+                var PlanTitle = $(this).text();
+                var PlanOption = $.grep($('#reportSummry2 option'), function (value) { return $(value).text() == PlanTitle; });
+                SelectedPlanId = $(PlanOption[0]).val();
+
+                LoadRevenueReportForPlan(SelectedBUId, SelectedPlanId);
+            });
+        }
+
+        // This function will load the data for selected parameters
+        function LoadRevenueReportForPlan(SelectedBUId, SelectedPlanId) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Report/SetReportParameter/")',
+                data: {
+                    BusinessUnitId: SelectedBUId,
+                    PlanId: SelectedPlanId
+                },
+                success: function (r) {
+                    location.reload();
+                }
+            });
+        }
+
+        /* To resolve Bug 312: Report plan selector needs to be moved */
+
         $('#ParentULRevenueSummary').find('li:nth-child(2)').removeClass('disabled').addClass('active');
         var parentLabel = $('#ParentULRevenueSummary').find('li:nth-child(2)').children().text();
         LoadChildData();
@@ -372,9 +488,6 @@
                     if (r.length > 0) {
                         LoadChildClick();
                     }
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
                 }
             });
         }
@@ -393,9 +506,7 @@
                     reportTableInfo = r;
                     fillReportTable();
                     LoadCheckBoxClick();
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
+                    sumMQLTotals();
                 }
             });
         }
@@ -508,7 +619,7 @@
         }
         if (_type == 1) {
             var htmlappend = '';
-            htmlappend = '<tr index="Campaign"><td><input type="checkbox" id="' + _id + '"></td>' +
+            htmlappend = '<tr index="Campaign"><td><input type="checkbox" checked id="' + _id + '"></td>' +
                                 '<td class="border-r">' + _title + '</input></td>';
             var arrtProjectP = [];
             var arrtProjectV = [];
@@ -587,7 +698,7 @@
                         sumColActualRevenue[k] = sumColActualRevenue[k] + parseFloat(arrtActualRevenueV[indexra]);
                     }
                 }
-                htmlappend += '<td class="border-r"><div class="div-line" id="diva' + _id + k + '" avalue = "' + ActualValue + '">' + FormatINQMQL(ActualValue,true) + '</div><div class="div-below-line" id="divp' + _id + k + '" avalue = "' + projectedValue + '">' + FormatINQMQL(projectedValue,true) + '</div></td>';
+                htmlappend += '<td class="border-r"><div class="div-line" id="diva' + _id + k + '" avalue = "' + ActualValue + '">' + FormatINQMQL(ActualValue, true) + '</div><div class="div-below-line" id="divp' + _id + k + '" avalue = "' + projectedValue + '">' + FormatINQMQL(projectedValue, true) + '</div></td>';
                 k++;
             }
 
@@ -649,8 +760,8 @@
                         var pid = "#divp" + cid + (count + 1).toString();
                         text1 = $(aid).attr("avalue");
                         text2 = $(pid).attr("avalue");
-                       // alert(text1);
-                       // alert(text2);
+                        // alert(text1);
+                        // alert(text2);
                         //text1 = $(this).find(aid).text();
                         //text2 = $(this).find(pid).text();
                         if (text1 == "---" || text1 == "undefined" || text1 == "") {
@@ -676,8 +787,8 @@
                         $(amid).html(FormatINQMQL(blueMql1, true));
                         var pmid = "#totalMQLP" + cid;
                         $(pmid).html(FormatINQMQL(blueMql2, true));
-                       // $(this).find('.div-line').html(FormatINQMQL(blueMql1, false));
-                      //  $(this).find('.div-below-line').html(FormatINQMQL(blueMql2, false));
+                        // $(this).find('.div-line').html(FormatINQMQL(blueMql1, false));
+                        //  $(this).find('.div-below-line').html(FormatINQMQL(blueMql2, false));
                         sumCol[totalMonthIncluded] = sumCol[totalMonthIncluded] + blueMql1;
                         sumCol2[totalMonthIncluded] = sumCol2[totalMonthIncluded] + blueMql2;
                         return false;
@@ -736,7 +847,7 @@
                     $("#ddlCampaign").empty();
                     $("#ddlCampaign").append("<option value='0'>All Campaigns</option>");
                     fillProgramDropdown();
-                    myApp.hidePleaseWait();
+                    GoToLogin();
                 }
             });
 
@@ -774,7 +885,7 @@
                     $("#ddlProgram").empty();
                     $("#ddlProgram").append("<option value='0'>All Programs</option>");
                     fillTacticDropdown();
-                    myApp.hidePleaseWait();
+                    GoToLogin();
                 }
             });
 
@@ -817,7 +928,7 @@
                 $("#ddlTactic").empty();
                 $("#ddlTactic").append("<option value='0'>All Tactics</option>");
                 LoadDataRevenueRealization();
-                myApp.hidePleaseWait();
+                GoToLogin();
             }
         });
 
@@ -861,7 +972,7 @@
         },
         error: function () {
             $(".selectBox select").selectbox('attach');
-            myApp.hidePleaseWait();
+            GoToLogin();
         }
     });
 
@@ -1067,9 +1178,6 @@
                 success: function (r) {
                     reportTableInfo4 = r;
                     fillReportTable4();
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
                 }
             });
         }
@@ -1095,7 +1203,7 @@
                 error: function () {
                     $("#ddlBusinessUnitContribution").append("<option value='0'>All Business Units</option>");
                     $(".selectBox select").selectbox("attach");
-                    myApp.hidePleaseWait();
+                    GoToLogin();
                 }
             });
         }
@@ -1255,22 +1363,19 @@
                 $.ajax({
                     type: 'POST',
                     url: '@Url.Content("~/Report/GetChildLabelData/")',
-                data: {
-                    ParentLabel: parentLabelRevenueToPLan
-                },
-                success: function (r) {
-                    BindChildLabelRevenueToPlan(r);
-                    LoadChildClickRevenueToPlan();
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
-                }
-            });
-        } else {
-            $('#ChildULRevenueToPlan').hide();
-            LoadChildClickRevenueToPlan();
+                    data: {
+                        ParentLabel: parentLabelRevenueToPLan
+                    },
+                    success: function (r) {
+                        BindChildLabelRevenueToPlan(r);
+                        LoadChildClickRevenueToPlan();
+                    }
+                });
+            } else {
+                $('#ChildULRevenueToPlan').hide();
+                LoadChildClickRevenueToPlan();
+            }
         }
-    }
 
         $("#ParentULRevenueToPlan li").click(function () {
             var selectParent = $(this).children().text();
@@ -1341,106 +1446,74 @@
             if (selectOption == "@RevenuePlanner.Helpers.Enums.UpcomingActivities.thisquarter.ToString()") {
                 if (n <= 2) {
                     var Option = "@RevenuePlanner.Helpers.Enums.UpcomingActivities.previousyear.ToString()";
-                $.ajax(
-            {
-                type: "GET",
-                cache: false,
-                url: '@Url.Action("GetRevenueToPlan", "Report")',
-                data: {
-                    ParentLabel: parentLabelRevenueToPLan,
-                    id: Id,
-                    selectOption: Option,
-                    originalOption: selectOption
-                },
-                dataType: "json",
-                success: function (data) {
-                    TempreportTableInfo2 = {
-                        data: data
-                    };
-
-                    tempDataSetPrevious = data.chartData;
-                    if (typeof TempreportTableInfo2 != 'undefined') {
-                        if (TempreportTableInfo2.data != 'undefined' && TempreportTableInfo2.data.length != 0) {
-                            for (var k = 0; k <= 8; k++) {
-                                delete TempreportTableInfo2.data.projectedRevenue[k];
-                                delete TempreportTableInfo2.data.actualRevenue[k];
-                                delete TempreportTableInfo2.data.difference[k];
-                                delete TempreportTableInfo2.data.contribution[k];
-                                delete TempreportTableInfo2.data.revenueTrend[k];
-                                delete TempreportTableInfo2.data.totalRevenue[k];
-                                delete tempDataSetPrevious[k];
-                            }
-                        }
-                    }
-                    tempreportDataPrevious = TempreportTableInfo2;
-
-                    TempreportTableInfo2 = [];
-                    Option = "@RevenuePlanner.Helpers.Enums.UpcomingActivities.thisyear.ToString()";
                     $.ajax(
                 {
                     type: "GET",
                     cache: false,
                     url: '@Url.Action("GetRevenueToPlan", "Report")',
-                            data: {
-                                ParentLabel: parentLabelRevenueToPLan,
-                                id: Id,
-                                selectOption: Option,
-                                originalOption: selectOption
-                            },
-                            dataType: "json",
-                            success: function (data) {
-                                TempreportTableInfo2 = {
-                                    data: data
-                                };
+                    data: {
+                        ParentLabel: parentLabelRevenueToPLan,
+                        id: Id,
+                        selectOption: Option,
+                        originalOption: selectOption
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        TempreportTableInfo2 = {
+                            data: data
+                        };
 
-                                Tempdataset = data.chartData;
-                                if (typeof TempreportTableInfo2 != 'undefined') {
-                                    if (TempreportTableInfo2.data != 'undefined' && TempreportTableInfo2.data.length != 0) {
-                                        for (var k = 3; k <= 11; k++) {
-                                            delete TempreportTableInfo2.data.projectedRevenue[k];
-                                            delete TempreportTableInfo2.data.actualRevenue[k];
-                                            delete TempreportTableInfo2.data.difference[k];
-                                            delete TempreportTableInfo2.data.contribution[k];
-                                            delete TempreportTableInfo2.data.revenueTrend[k];
-                                            delete TempreportTableInfo2.data.totalRevenue[k];
-                                            delete Tempdataset[k];
-                                        }
-                                    }
-                                    else {
-                                        //// Modified By: Maninder Singh Wadhva Bug 298:Revenue to plan graph is incorrect.
-                                        TempreportTableInfo2 = {
-                                            data: {
-                                                "projectedRevenue": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
-                                                "actualRevenue": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
-                                                "difference": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
-                                                "contribution": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
-                                                "revenueTrend": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
-                                                "totalRevenue": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
-                                                "chartData": [{ "Month": "Jan", "Actual": 0, "Projected": 0, "Contribution": 0, "ColorActual": null, "ColorProjected": null, "ColorContibution": null },
-                                                    { "Month": "Feb", "Actual": 0, "Projected": 0, "Contribution": 0, "ColorActual": null, "ColorProjected": null, "ColorContibution": null },
-                                                    { "Month": "Mar", "Actual": 0, "Projected": 0, "Contribution": 0, "ColorActual": null, "ColorProjected": null, "ColorContibution": null }, ]
-                                            }
-                                        };
-
-                                        Tempdataset = TempreportTableInfo2.data.chartData;
-                                    }
+                        tempDataSetPrevious = data.chartData;
+                        if (typeof TempreportTableInfo2 != 'undefined') {
+                            if (TempreportTableInfo2.data != 'undefined' && TempreportTableInfo2.data.length != 0) {
+                                for (var k = 0; k <= 8; k++) {
+                                    delete TempreportTableInfo2.data.projectedRevenue[k];
+                                    delete TempreportTableInfo2.data.actualRevenue[k];
+                                    delete TempreportTableInfo2.data.difference[k];
+                                    delete TempreportTableInfo2.data.contribution[k];
+                                    delete TempreportTableInfo2.data.revenueTrend[k];
+                                    delete TempreportTableInfo2.data.totalRevenue[k];
+                                    delete tempDataSetPrevious[k];
                                 }
-                                if (typeof tempreportDataPrevious.data.length > 0) {
-                                    for (var k = 0 ; k <= 2; k++) {
-                                        tempreportDataPrevious.data.projectedRevenue.push(TempreportTableInfo2.data.projectedRevenue[k]);
-                                        tempreportDataPrevious.data.actualRevenue.push(TempreportTableInfo2.data.actualRevenue[k]);
-                                        tempreportDataPrevious.data.difference.push(TempreportTableInfo2.data.difference[k]);
-                                        tempreportDataPrevious.data.contribution.push(TempreportTableInfo2.data.contribution[k]);
-                                        tempreportDataPrevious.data.revenueTrend.push(TempreportTableInfo2.data.revenueTrend[k]);
-                                        tempreportDataPrevious.data.totalRevenue.push(TempreportTableInfo2.data.totalRevenue[k]);
-                                        tempDataSetPrevious.push(Tempdataset[k]);
-                                    }
-                                    reportTableInfo2 = tempreportDataPrevious;
+                            }
+                        }
+                        tempreportDataPrevious = TempreportTableInfo2;
 
+                        TempreportTableInfo2 = [];
+                        Option = "@RevenuePlanner.Helpers.Enums.UpcomingActivities.thisyear.ToString()";
+                        $.ajax(
+                    {
+                        type: "GET",
+                        cache: false,
+                        url: '@Url.Action("GetRevenueToPlan", "Report")',
+                        data: {
+                            ParentLabel: parentLabelRevenueToPLan,
+                            id: Id,
+                            selectOption: Option,
+                            originalOption: selectOption
+                        },
+                        dataType: "json",
+                        success: function (data) {
+                            TempreportTableInfo2 = {
+                                data: data
+                            };
+
+                            Tempdataset = data.chartData;
+                            if (typeof TempreportTableInfo2 != 'undefined') {
+                                if (TempreportTableInfo2.data != 'undefined' && TempreportTableInfo2.data.length != 0) {
+                                    for (var k = 3; k <= 11; k++) {
+                                        delete TempreportTableInfo2.data.projectedRevenue[k];
+                                        delete TempreportTableInfo2.data.actualRevenue[k];
+                                        delete TempreportTableInfo2.data.difference[k];
+                                        delete TempreportTableInfo2.data.contribution[k];
+                                        delete TempreportTableInfo2.data.revenueTrend[k];
+                                        delete TempreportTableInfo2.data.totalRevenue[k];
+                                        delete Tempdataset[k];
+                                    }
                                 }
                                 else {
                                     //// Modified By: Maninder Singh Wadhva Bug 298:Revenue to plan graph is incorrect.
-                                    reportTableInfo2 = {
+                                    TempreportTableInfo2 = {
                                         data: {
                                             "projectedRevenue": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
                                             "actualRevenue": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
@@ -1448,164 +1521,184 @@
                                             "contribution": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
                                             "revenueTrend": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
                                             "totalRevenue": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
-                                            "chartData": [{ "Month": "Oct", "Actual": 0, "Projected": 0, "Contribution": 0, "ColorActual": null, "ColorProjected": null, "ColorContibution": null },
-                                                { "Month": "Nov", "Actual": 0, "Projected": 0, "Contribution": 0, "ColorActual": null, "ColorProjected": null, "ColorContibution": null },
-                                                { "Month": "Dec", "Actual": 0, "Projected": 0, "Contribution": 0, "ColorActual": null, "ColorProjected": null, "ColorContibution": null }, ]
+                                            "chartData": [{ "Month": "Jan", "Actual": 0, "Projected": 0, "Contribution": 0, "ColorActual": null, "ColorProjected": null, "ColorContibution": null },
+                                                { "Month": "Feb", "Actual": 0, "Projected": 0, "Contribution": 0, "ColorActual": null, "ColorProjected": null, "ColorContibution": null },
+                                                { "Month": "Mar", "Actual": 0, "Projected": 0, "Contribution": 0, "ColorActual": null, "ColorProjected": null, "ColorContibution": null }, ]
                                         }
                                     };
-                                    tempDataSetPrevious = reportTableInfo2.data.chartData;
-                                    if (typeof TempreportTableInfo2 != 'undefined') {
-                                        if (TempreportTableInfo2.data != 'undefined' && TempreportTableInfo2.data.length != 0) {
-                                            for (var k = 0 ; k <= 2; k++) {
-                                                reportTableInfo2.data.projectedRevenue.push(TempreportTableInfo2.data.projectedRevenue[k]);
-                                                reportTableInfo2.data.actualRevenue.push(TempreportTableInfo2.data.actualRevenue[k]);
-                                                reportTableInfo2.data.difference.push(TempreportTableInfo2.data.difference[k]);
-                                                reportTableInfo2.data.contribution.push(TempreportTableInfo2.data.contribution[k]);
-                                                reportTableInfo2.data.revenueTrend.push(TempreportTableInfo2.data.revenueTrend[k]);
-                                                reportTableInfo2.data.totalRevenue.push(TempreportTableInfo2.data.totalRevenue[k]);
-                                                tempDataSetPrevious.push(Tempdataset[k]);
-                                            }
+
+                                    Tempdataset = TempreportTableInfo2.data.chartData;
+                                }
+                            }
+                            if (typeof tempreportDataPrevious.data.length > 0) {
+                                for (var k = 0 ; k <= 2; k++) {
+                                    tempreportDataPrevious.data.projectedRevenue.push(TempreportTableInfo2.data.projectedRevenue[k]);
+                                    tempreportDataPrevious.data.actualRevenue.push(TempreportTableInfo2.data.actualRevenue[k]);
+                                    tempreportDataPrevious.data.difference.push(TempreportTableInfo2.data.difference[k]);
+                                    tempreportDataPrevious.data.contribution.push(TempreportTableInfo2.data.contribution[k]);
+                                    tempreportDataPrevious.data.revenueTrend.push(TempreportTableInfo2.data.revenueTrend[k]);
+                                    tempreportDataPrevious.data.totalRevenue.push(TempreportTableInfo2.data.totalRevenue[k]);
+                                    tempDataSetPrevious.push(Tempdataset[k]);
+                                }
+                                reportTableInfo2 = tempreportDataPrevious;
+
+                            }
+                            else {
+                                //// Modified By: Maninder Singh Wadhva Bug 298:Revenue to plan graph is incorrect.
+                                reportTableInfo2 = {
+                                    data: {
+                                        "projectedRevenue": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
+                                        "actualRevenue": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
+                                        "difference": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
+                                        "contribution": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
+                                        "revenueTrend": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
+                                        "totalRevenue": [{ "Month": null, "Value": null }, { "Month": null, "Value": null }, { "Month": null, "Value": null }],
+                                        "chartData": [{ "Month": "Oct", "Actual": 0, "Projected": 0, "Contribution": 0, "ColorActual": null, "ColorProjected": null, "ColorContibution": null },
+                                            { "Month": "Nov", "Actual": 0, "Projected": 0, "Contribution": 0, "ColorActual": null, "ColorProjected": null, "ColorContibution": null },
+                                            { "Month": "Dec", "Actual": 0, "Projected": 0, "Contribution": 0, "ColorActual": null, "ColorProjected": null, "ColorContibution": null }, ]
+                                    }
+                                };
+                                tempDataSetPrevious = reportTableInfo2.data.chartData;
+                                if (typeof TempreportTableInfo2 != 'undefined') {
+                                    if (TempreportTableInfo2.data != 'undefined' && TempreportTableInfo2.data.length != 0) {
+                                        for (var k = 0 ; k <= 2; k++) {
+                                            reportTableInfo2.data.projectedRevenue.push(TempreportTableInfo2.data.projectedRevenue[k]);
+                                            reportTableInfo2.data.actualRevenue.push(TempreportTableInfo2.data.actualRevenue[k]);
+                                            reportTableInfo2.data.difference.push(TempreportTableInfo2.data.difference[k]);
+                                            reportTableInfo2.data.contribution.push(TempreportTableInfo2.data.contribution[k]);
+                                            reportTableInfo2.data.revenueTrend.push(TempreportTableInfo2.data.revenueTrend[k]);
+                                            reportTableInfo2.data.totalRevenue.push(TempreportTableInfo2.data.totalRevenue[k]);
+                                            tempDataSetPrevious.push(Tempdataset[k]);
                                         }
                                     }
                                 }
-
-                                fillReportTable2();
-                                dataset = [];
-                                for (member in tempDataSetPrevious) {
-                                    if (tempDataSetPrevious[member] != null) {
-                                        dataset.push(tempDataSetPrevious[member]);
-                                    }
-                                }
-                                FillChartRevenueToPlan();
-                            },
-                            error: function () {
-                                myApp.hidePleaseWait();
                             }
-                        });
 
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
-                }
-            });
+                            fillReportTable2();
+                            dataset = [];
+                            for (member in tempDataSetPrevious) {
+                                if (tempDataSetPrevious[member] != null) {
+                                    dataset.push(tempDataSetPrevious[member]);
+                                }
+                            }
+                            FillChartRevenueToPlan();
+                        }
+                    });
+
+                    }
+                });
 
 
 
-            }
-            else {
-                var Option = "@RevenuePlanner.Helpers.Enums.UpcomingActivities.thisyear.ToString()";
-                $.ajax(
-             {
-                 type: "GET",
-                 cache: false,
-                 url: '@Url.Action("GetRevenueToPlan", "Report")',
-                 data: {
-                     ParentLabel: parentLabelRevenueToPLan,
-                     id: Id,
-                     selectOption: Option,
-                     originalOption: selectOption
-                 },
-                 dataType: "json",
-                 success: function (data) {
+        }
+        else {
+            var Option = "@RevenuePlanner.Helpers.Enums.UpcomingActivities.thisyear.ToString()";
+                    $.ajax(
+                 {
+                     type: "GET",
+                     cache: false,
+                     url: '@Url.Action("GetRevenueToPlan", "Report")',
+                     data: {
+                         ParentLabel: parentLabelRevenueToPLan,
+                         id: Id,
+                         selectOption: Option,
+                         originalOption: selectOption
+                     },
+                     dataType: "json",
+                     success: function (data) {
 
-                     TempreportTableInfo2 = {
-                         data: data
-                     };
-                     Tempdataset = data.chartData;
-                     if (typeof TempreportTableInfo2 != 'undefined') {
-                         if (TempreportTableInfo2.data != 'undefined' && TempreportTableInfo2.data.length != 0) {
-                             if (quarter == 2) {
-                                 for (var k = 6 ; k <= 11; k++) {
-                                     delete TempreportTableInfo2.data.projectedRevenue[k];
-                                     delete TempreportTableInfo2.data.actualRevenue[k];
-                                     delete TempreportTableInfo2.data.difference[k];
-                                     delete TempreportTableInfo2.data.contribution[k];
-                                     delete TempreportTableInfo2.data.revenueTrend[k];
-                                     delete TempreportTableInfo2.data.totalRevenue[k];
-                                     delete Tempdataset[k];
+                         TempreportTableInfo2 = {
+                             data: data
+                         };
+                         Tempdataset = data.chartData;
+                         if (typeof TempreportTableInfo2 != 'undefined') {
+                             if (TempreportTableInfo2.data != 'undefined' && TempreportTableInfo2.data.length != 0) {
+                                 if (quarter == 2) {
+                                     for (var k = 6 ; k <= 11; k++) {
+                                         delete TempreportTableInfo2.data.projectedRevenue[k];
+                                         delete TempreportTableInfo2.data.actualRevenue[k];
+                                         delete TempreportTableInfo2.data.difference[k];
+                                         delete TempreportTableInfo2.data.contribution[k];
+                                         delete TempreportTableInfo2.data.revenueTrend[k];
+                                         delete TempreportTableInfo2.data.totalRevenue[k];
+                                         delete Tempdataset[k];
+                                     }
                                  }
-                             }
-                             else if (quarter == 3) {
-                                 for (var k = 0 ; k <= 2; k++) {
-                                     delete TempreportTableInfo2.data.projectedRevenue[k];
-                                     delete TempreportTableInfo2.data.actualRevenue[k];
-                                     delete TempreportTableInfo2.data.difference[k];
-                                     delete TempreportTableInfo2.data.contribution[k];
-                                     delete TempreportTableInfo2.data.revenueTrend[k];
-                                     delete TempreportTableInfo2.data.totalRevenue[k];
-                                     delete Tempdataset[k];
+                                 else if (quarter == 3) {
+                                     for (var k = 0 ; k <= 2; k++) {
+                                         delete TempreportTableInfo2.data.projectedRevenue[k];
+                                         delete TempreportTableInfo2.data.actualRevenue[k];
+                                         delete TempreportTableInfo2.data.difference[k];
+                                         delete TempreportTableInfo2.data.contribution[k];
+                                         delete TempreportTableInfo2.data.revenueTrend[k];
+                                         delete TempreportTableInfo2.data.totalRevenue[k];
+                                         delete Tempdataset[k];
+                                     }
+                                     for (var k = 9 ; k <= 11; k++) {
+                                         delete TempreportTableInfo2.data.projectedRevenue[k];
+                                         delete TempreportTableInfo2.data.actualRevenue[k];
+                                         delete TempreportTableInfo2.data.difference[k];
+                                         delete TempreportTableInfo2.data.contribution[k];
+                                         delete TempreportTableInfo2.data.revenueTrend[k];
+                                         delete TempreportTableInfo2.data.totalRevenue[k];
+                                         delete Tempdataset[k];
+                                     }
                                  }
-                                 for (var k = 9 ; k <= 11; k++) {
-                                     delete TempreportTableInfo2.data.projectedRevenue[k];
-                                     delete TempreportTableInfo2.data.actualRevenue[k];
-                                     delete TempreportTableInfo2.data.difference[k];
-                                     delete TempreportTableInfo2.data.contribution[k];
-                                     delete TempreportTableInfo2.data.revenueTrend[k];
-                                     delete TempreportTableInfo2.data.totalRevenue[k];
-                                     delete Tempdataset[k];
-                                 }
-                             }
-                             else if (quarter == 4) {
-                                 for (var k = 0 ; k <= 5; k++) {
-                                     delete TempreportTableInfo2.data.projectedRevenue[k];
-                                     delete TempreportTableInfo2.data.actualRevenue[k];
-                                     delete TempreportTableInfo2.data.difference[k];
-                                     delete TempreportTableInfo2.data.contribution[k];
-                                     delete TempreportTableInfo2.data.revenueTrend[k];
-                                     delete TempreportTableInfo2.data.totalRevenue[k];
-                                     delete Tempdataset[k];
+                                 else if (quarter == 4) {
+                                     for (var k = 0 ; k <= 5; k++) {
+                                         delete TempreportTableInfo2.data.projectedRevenue[k];
+                                         delete TempreportTableInfo2.data.actualRevenue[k];
+                                         delete TempreportTableInfo2.data.difference[k];
+                                         delete TempreportTableInfo2.data.contribution[k];
+                                         delete TempreportTableInfo2.data.revenueTrend[k];
+                                         delete TempreportTableInfo2.data.totalRevenue[k];
+                                         delete Tempdataset[k];
+                                     }
                                  }
                              }
                          }
-                     }
-                     reportTableInfo2 = TempreportTableInfo2;
-                     fillReportTable2();
-                     dataset = [];
-                     for (member in Tempdataset) {
-                         if (Tempdataset[member] != null) {
-                             dataset.push(Tempdataset[member]);
+                         reportTableInfo2 = TempreportTableInfo2;
+                         fillReportTable2();
+                         dataset = [];
+                         for (member in Tempdataset) {
+                             if (Tempdataset[member] != null) {
+                                 dataset.push(Tempdataset[member]);
+                             }
                          }
+                         FillChartRevenueToPlan();
                      }
-                     FillChartRevenueToPlan();
-                 },
-                 error: function () {
-                     myApp.hidePleaseWait();
-                 }
-             });
+                 });
 
 
+             }
          }
-     }
-     else {
-         $.ajax(
-          {
-              type: "GET",
-              cache: false,
-              url: '@Url.Action("GetRevenueToPlan", "Report")',
-              data: {
-                  ParentLabel: parentLabelRevenueToPLan,
-                  id: Id,
-                  selectOption: selectOption,
-                  originalOption: selectOption
-              },
-              dataType: "json",
-              success: function (data) {
-                  TempreportTableInfo2 = {
-                      data: data
-                  };
+         else {
+             $.ajax(
+              {
+                  type: "GET",
+                  cache: false,
+                  url: '@Url.Action("GetRevenueToPlan", "Report")',
+                  data: {
+                      ParentLabel: parentLabelRevenueToPLan,
+                      id: Id,
+                      selectOption: selectOption,
+                      originalOption: selectOption
+                  },
+                  dataType: "json",
+                  success: function (data) {
+                      TempreportTableInfo2 = {
+                          data: data
+                      };
 
-                  Tempdataset = data.chartData;
-                  reportTableInfo2 = TempreportTableInfo2;
-                  fillReportTable2();
-                  dataset = Tempdataset;
-                  FillChartRevenueToPlan();
-              },
-              error: function () {
-                  myApp.hidePleaseWait();
-              }
-          });
+                      Tempdataset = data.chartData;
+                      reportTableInfo2 = TempreportTableInfo2;
+                      fillReportTable2();
+                      dataset = Tempdataset;
+                      FillChartRevenueToPlan();
+                  }
+              });
+          }
       }
-  }
 
         function FillChartRevenueToPlan() {
             //// Added to check whether chart data is defined or not.
@@ -1817,39 +1910,36 @@
                       type: "GET",
                       cache: false,
                       url: '@Url.Action("GetSourcePerformance", "Report")',
-                  data: {
-                      filter: filter,
-                      selectOption: selectOption
-                  },
-                  dataType: "json",
-                  success: function (data) {
-                      console.log(data);
-                      dataset1 = null;
-                      dataset2 = null;
-                      dataset3 = null;
-                      var chartDataSourcePerformance = {
-                          ChartBusinessUnit: data.ChartBusinessUnit,
-                          ChartGeography: data.ChartGeography,
-                          ChartVertical: data.ChartVertical
+                      data: {
+                          filter: filter,
+                          selectOption: selectOption
+                      },
+                      dataType: "json",
+                      success: function (data) {
+                          console.log(data);
+                          dataset1 = null;
+                          dataset2 = null;
+                          dataset3 = null;
+                          var chartDataSourcePerformance = {
+                              ChartBusinessUnit: data.ChartBusinessUnit,
+                              ChartGeography: data.ChartGeography,
+                              ChartVertical: data.ChartVertical
+                          }
+
+                          //// Hidden field to store chart data that is consumed while generating PDF report.
+                          $('#chartDataSourcePerformance').val(JSON.stringify(chartDataSourcePerformance));
+
+                          dataset1 = data.ChartBusinessUnit;
+                          dataset2 = data.ChartGeography;
+                          dataset3 = data.ChartVertical;
+                          //dataset = data.chartData;
+                          //fill data on reports table
+                          FillChartSourcePerformanceBusinessUnit();
+                          FillChartSourcePerformanceGeography();
+                          FillChartSourcePerformanceVertical();
                       }
-
-                      //// Hidden field to store chart data that is consumed while generating PDF report.
-                      $('#chartDataSourcePerformance').val(JSON.stringify(chartDataSourcePerformance));
-
-                      dataset1 = data.ChartBusinessUnit;
-                      dataset2 = data.ChartGeography;
-                      dataset3 = data.ChartVertical;
-                      //dataset = data.chartData;
-                      //fill data on reports table
-                      FillChartSourcePerformanceBusinessUnit();
-                      FillChartSourcePerformanceGeography();
-                      FillChartSourcePerformanceVertical();
-                  },
-                  error: function () {
-                      myApp.hidePleaseWait();
-                  }
-              });
-          }
+                  });
+              }
 
         function FillChartSourcePerformanceBusinessUnit() {
             $('#chartDiv4Parent').find('#chartDiv4').remove();
@@ -1943,7 +2033,7 @@
 
             barChart4.parse(dataset3, "json");
         }
-     
+
         /*remove grid from charts*/
         $('canvas').each(function () {
             if ($(this).attr('canvas_id') == "undefined")
