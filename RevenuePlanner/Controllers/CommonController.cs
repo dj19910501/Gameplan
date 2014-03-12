@@ -54,6 +54,7 @@ namespace RevenuePlanner.Controllers
                 {
                     if (entity.ToString().ToLower().Trim() != "login")
                     {
+                        Common.SetCookie("IsSessionExist", "0");
                         filterContext.HttpContext.Response.StatusCode = 403;
                         Common.SetCookie("IsSessionExist", "0");
                     }

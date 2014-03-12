@@ -184,6 +184,25 @@
     $(document).ajaxStop(function () { //Called after every ajax request completed
         myApp.hidePleaseWait();
     });
+    function GoToLogin() {
+        myApp.hidePleaseWait();
+        //In case of error and it is due to session timed out -  the above code was not working in case of div.load, used to display slidepanel
+        var IsSessionExist = readCookie('IsSessionExist');
+        if (IsSessionExist == 0) {
+            alert("Sorry, your session has expired. Please login again by clicking on Ok button.");
+            window.location = "@Url.Content("~/login/Index")";
+        }
+    }
+    function readCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
     var myApp;
     myApp = myApp || (function () {
         var pleaseWaitDiv = $('<div style="z-index:99999" class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header">Please wait...</div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');

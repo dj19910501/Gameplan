@@ -267,9 +267,6 @@
                         populateNF(r.lstPlan, "reportSummry2");
                         LoadRevenueReportForPlan(SelectedBUId);
                         $('#nl-ReportSummry2 > .nl-field:not(:last)').remove(); // code to remove extra blocks for Plan dropdown
-                    },
-                    error: function () {
-                        myApp.hidePleaseWait();
                     }
                 });
             });
@@ -298,9 +295,6 @@
                  },
                 success: function (r) {
                     location.reload();
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
                 }
             });
         }
