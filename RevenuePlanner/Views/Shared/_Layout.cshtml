@@ -39,7 +39,7 @@
     }
     else
     {
-         <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap.min.css")" type="text/css" />
+        <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap.min.css")" type="text/css" />
         <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap-responsive.css")" type="text/css" />
         <link rel="stylesheet" href="@Url.Content("~/Content/css/style.css")" type="text/css" />
         <link rel="stylesheet" href="//cdn.jsdelivr.net/bootstrap.datepicker/0.1/css/datepicker.css" type="text/css" />
@@ -159,9 +159,28 @@
             }
         },
         error: function (x, e) { // Called when error occured
-            myApp.hidePleaseWait();
+            GoToLogin();
         }
     });
+    function GoToLogin() {
+        myApp.hidePleaseWait();
+        //In case of error and it is due to session timed out -  the above code was not working in case of div.load, used to display slidepanel
+        var IsSessionExist = readCookie('IsSessionExist');
+        if (IsSessionExist == 0) {
+            alert("Sorry, your session has expired. Please login again by clicking on Ok button.");
+            window.location = "@Url.Content("~/login/Index")";
+        }
+    }
+    function readCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
     $(document).ajaxStop(function () { //Called after every ajax request completed
         myApp.hidePleaseWait();
     });

@@ -372,9 +372,6 @@
                     if (r.length > 0) {
                         LoadChildClick();
                     }
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
                 }
             });
         }
@@ -393,9 +390,6 @@
                     reportTableInfo = r;
                     fillReportTable();
                     LoadCheckBoxClick();
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
                 }
             });
         }
@@ -736,7 +730,7 @@
                     $("#ddlCampaign").empty();
                     $("#ddlCampaign").append("<option value='0'>All Campaigns</option>");
                     fillProgramDropdown();
-                    myApp.hidePleaseWait();
+                    GoToLogin();
                 }
             });
 
@@ -774,7 +768,7 @@
                     $("#ddlProgram").empty();
                     $("#ddlProgram").append("<option value='0'>All Programs</option>");
                     fillTacticDropdown();
-                    myApp.hidePleaseWait();
+                    GoToLogin();
                 }
             });
 
@@ -817,7 +811,7 @@
                 $("#ddlTactic").empty();
                 $("#ddlTactic").append("<option value='0'>All Tactics</option>");
                 LoadDataRevenueRealization();
-                myApp.hidePleaseWait();
+                GoToLogin();
             }
         });
 
@@ -861,7 +855,7 @@
         },
         error: function () {
             $(".selectBox select").selectbox('attach');
-            myApp.hidePleaseWait();
+            GoToLogin();
         }
     });
 
@@ -1067,9 +1061,6 @@
                 success: function (r) {
                     reportTableInfo4 = r;
                     fillReportTable4();
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
                 }
             });
         }
@@ -1095,7 +1086,7 @@
                 error: function () {
                     $("#ddlBusinessUnitContribution").append("<option value='0'>All Business Units</option>");
                     $(".selectBox select").selectbox("attach");
-                    myApp.hidePleaseWait();
+                    GoToLogin();
                 }
             });
         }
@@ -1261,9 +1252,6 @@
                 success: function (r) {
                     BindChildLabelRevenueToPlan(r);
                     LoadChildClickRevenueToPlan();
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
                 }
             });
         } else {
@@ -1477,15 +1465,9 @@
                                     }
                                 }
                                 FillChartRevenueToPlan();
-                            },
-                            error: function () {
-                                myApp.hidePleaseWait();
                             }
                         });
 
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
                 }
             });
 
@@ -1567,9 +1549,6 @@
                          }
                      }
                      FillChartRevenueToPlan();
-                 },
-                 error: function () {
-                     myApp.hidePleaseWait();
                  }
              });
 
@@ -1599,9 +1578,6 @@
                   fillReportTable2();
                   dataset = Tempdataset;
                   FillChartRevenueToPlan();
-              },
-              error: function () {
-                  myApp.hidePleaseWait();
               }
           });
       }
@@ -1844,9 +1820,6 @@
                       FillChartSourcePerformanceBusinessUnit();
                       FillChartSourcePerformanceGeography();
                       FillChartSourcePerformanceVertical();
-                  },
-                  error: function () {
-                      myApp.hidePleaseWait();
                   }
               });
           }
