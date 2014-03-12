@@ -46,7 +46,7 @@ namespace RevenuePlanner.Controllers
             string[] arr = controller.Split('.');//Splet controller name
             string entity = arr[arr.Length - 1];
             entity = entity.Substring(0, entity.IndexOf("Controller"));//Get the name of entity from controller name
-
+            Common.SetCookie("IsSessionExist", "1");
             #region Check for Session
             if (filterContext.HttpContext.Request.IsAjaxRequest()) //It will check for ajax request and session is null
             {
@@ -54,6 +54,7 @@ namespace RevenuePlanner.Controllers
                 {
                     if (entity.ToString().ToLower().Trim() != "login")
                     {
+                        Common.SetCookie("IsSessionExist", "0");
                         filterContext.HttpContext.Response.StatusCode = 403;
                     }
                 }
@@ -66,6 +67,7 @@ namespace RevenuePlanner.Controllers
                     {
                         if (string.Compare(entity.Trim(), "login", true) != 0)//Check of request is not for login page then redirect user to login page
                         {
+                            Common.SetCookie("IsSessionExist", "0");
                             filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { action = "Index", Controller = "Login", ReturnUrl = Request.Url.ToString() }));
                         }
                     }

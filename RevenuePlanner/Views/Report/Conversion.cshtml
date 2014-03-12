@@ -267,9 +267,6 @@
                         populateNF(r.lstPlan, "reportSummry2");
                         LoadRevenueReportForPlan(SelectedBUId);
                         $('#nl-ReportSummry2 > .nl-field:not(:last)').remove(); // code to remove extra blocks for Plan dropdown
-                    },
-                    error: function () {
-                        myApp.hidePleaseWait();
                     }
                 });
             });
@@ -298,9 +295,6 @@
                  },
                 success: function (r) {
                     location.reload();
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
                 }
             });
         }
@@ -377,9 +371,6 @@
                             $("#ChildULConversionSummary").append('No Records found for This Selection.');
                         }
                     }
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
                 }
             });
         }
@@ -413,9 +404,6 @@
                 success: function (r) {
                     var reportTableInfo = r;
                     fillReportTable(reportTableInfo);
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
                 }
             });
         }
@@ -472,9 +460,6 @@
                 success: function (r) {
                     BindChildLabel(r);
                     LoadChildClick();
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
                 }
             });
         }
@@ -524,9 +509,6 @@
                 success: function (r) {
                     var reportTableInfo2 = r;
                     fillReportTable2(reportTableInfo2);
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
                 }
             });
         }
@@ -786,9 +768,6 @@
                          FillChartSourcePerformanceBusinessUnit();
                          FillChartSourcePerformanceGeography();
                          FillChartSourcePerformanceVertical();
-                     },
-                     error: function () {
-                         myApp.hidePleaseWait();
                      }
                  });
              }

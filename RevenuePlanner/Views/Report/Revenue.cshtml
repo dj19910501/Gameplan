@@ -396,9 +396,6 @@
                         populateNF(r.lstPlan, "reportSummry2");
                         LoadRevenueReportForPlan(SelectedBUId);
                         $('#nl-ReportSummry2 > .nl-field:not(:last)').remove(); // code to remove extra blocks for Plan dropdown
-                    },
-                    error: function () {
-                        myApp.hidePleaseWait();
                     }
                 });
             });
@@ -427,9 +424,6 @@
                 },
                 success: function (r) {
                     location.reload();
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
                 }
             });
         }
@@ -494,9 +488,6 @@
                     if (r.length > 0) {
                         LoadChildClick();
                     }
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
                 }
             });
         }
@@ -516,9 +507,6 @@
                     fillReportTable();
                     LoadCheckBoxClick();
                     sumMQLTotals();
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
                 }
             });
         }
@@ -859,7 +847,7 @@
                     $("#ddlCampaign").empty();
                     $("#ddlCampaign").append("<option value='0'>All Campaigns</option>");
                     fillProgramDropdown();
-                    myApp.hidePleaseWait();
+                    GoToLogin();
                 }
             });
 
@@ -897,7 +885,7 @@
                     $("#ddlProgram").empty();
                     $("#ddlProgram").append("<option value='0'>All Programs</option>");
                     fillTacticDropdown();
-                    myApp.hidePleaseWait();
+                    GoToLogin();
                 }
             });
 
@@ -940,7 +928,7 @@
                 $("#ddlTactic").empty();
                 $("#ddlTactic").append("<option value='0'>All Tactics</option>");
                 LoadDataRevenueRealization();
-                myApp.hidePleaseWait();
+                GoToLogin();
             }
         });
 
@@ -984,7 +972,7 @@
         },
         error: function () {
             $(".selectBox select").selectbox('attach');
-            myApp.hidePleaseWait();
+            GoToLogin();
         }
     });
 
@@ -1190,9 +1178,6 @@
                 success: function (r) {
                     reportTableInfo4 = r;
                     fillReportTable4();
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
                 }
             });
         }
@@ -1218,7 +1203,7 @@
                 error: function () {
                     $("#ddlBusinessUnitContribution").append("<option value='0'>All Business Units</option>");
                     $(".selectBox select").selectbox("attach");
-                    myApp.hidePleaseWait();
+                    GoToLogin();
                 }
             });
         }
@@ -1384,9 +1369,6 @@
                     success: function (r) {
                         BindChildLabelRevenueToPlan(r);
                         LoadChildClickRevenueToPlan();
-                    },
-                    error: function () {
-                        myApp.hidePleaseWait();
                     }
                 });
             } else {
@@ -1600,15 +1582,9 @@
                                 }
                             }
                             FillChartRevenueToPlan();
-                        },
-                        error: function () {
-                            myApp.hidePleaseWait();
                         }
                     });
 
-                    },
-                    error: function () {
-                        myApp.hidePleaseWait();
                     }
                 });
 
@@ -1690,9 +1666,6 @@
                              }
                          }
                          FillChartRevenueToPlan();
-                     },
-                     error: function () {
-                         myApp.hidePleaseWait();
                      }
                  });
 
@@ -1722,9 +1695,6 @@
                       fillReportTable2();
                       dataset = Tempdataset;
                       FillChartRevenueToPlan();
-                  },
-                  error: function () {
-                      myApp.hidePleaseWait();
                   }
               });
           }
@@ -1967,9 +1937,6 @@
                           FillChartSourcePerformanceBusinessUnit();
                           FillChartSourcePerformanceGeography();
                           FillChartSourcePerformanceVertical();
-                      },
-                      error: function () {
-                          myApp.hidePleaseWait();
                       }
                   });
               }
