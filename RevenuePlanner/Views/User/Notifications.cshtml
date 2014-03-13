@@ -186,9 +186,6 @@
            data: { notifications: checkedList.substring(0, checkedList.length - 1) },
            success: function (data) {
                window.location.href = "@Url.Content("~/User/Notifications")";
-           },
-           error: function () {
-               myApp.hidePleaseWait();
            }
        });
     });

@@ -182,9 +182,6 @@
                     $('.accordion-actuals').empty();
 
                     LoadPage();
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
                 }
             });
         }
@@ -595,9 +592,6 @@
                                 $("#spanMessageSuccess").text(data.msg);
                             }
                         }
-                    },
-                    error: function () {
-                        myApp.hidePleaseWait();
                     }
                 });
 

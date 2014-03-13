@@ -335,14 +335,8 @@
 
                                 }
                             }
-                        },
-                        error: function () {
-                            myApp.hidePleaseWait();
                         }
                     });
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
                 }
             });
 
@@ -378,14 +372,8 @@
                             $("#lblTitle").html('');
                             $("#lblTitle").html(r[i].Title + '<span class="gray source-sans-prolight">' + r[i].Status + '</span>');
                         }
-                    },
-                    error: function () {
-                        myApp.hidePleaseWait();
                     }
                 });
-            },
-            error: function () {
-                myApp.hidePleaseWait();
             }
         });
 
@@ -574,10 +562,7 @@
                         }
 
                     }
-            },
-                error: function () {
-                    myApp.hidePleaseWait();
-                }
+            }
             });
     }
     });

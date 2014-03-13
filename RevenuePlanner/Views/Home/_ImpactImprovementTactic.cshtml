@@ -36,10 +36,6 @@
                 success: function (data) {
                     ImprovementStages = data.data;
                     LoadImprovementData();
-                },
-                error: function () {
-                    ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
-                    myApp.hidePleaseWait();
                 }
             });
 

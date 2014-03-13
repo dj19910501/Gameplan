@@ -449,7 +449,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                 },
                 error: function () {
                     $('#isEmailExist').html('');
-                    myApp.hidePleaseWait();
+                    GoToLogin();
                 }
             });
         }

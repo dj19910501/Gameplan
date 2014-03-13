@@ -707,8 +707,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
              }
          },
          error: function () {
-             $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> ' + $("#ErrorOccured").val())
-             $("#errorMessage").slideDown(400);
+             GoToLogin();
          }
      });
      $('.changes').html('');
@@ -1101,9 +1100,6 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                     else {
                         $("#hdnmoelexist").val("false");
                     }
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
                 }
             });
         });
