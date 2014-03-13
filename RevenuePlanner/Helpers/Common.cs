@@ -440,7 +440,8 @@ namespace RevenuePlanner.Helpers
                 }
           else if (Section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
             {
-                emailBody = notification.EmailContent.Replace("[ImprovementTacticNameToBeReplaced]", TacticName).Replace("[PlanNameToBeReplaced]", PlanName).Replace("[UserNameToBeReplaced]", Sessions.User.FirstName + " " + Sessions.User.LastName).Replace("[CommentToBeReplaced]", Comment);
+                //// Modified By Maninder Singh Wadhva PL Ticket#47
+                emailBody = notification.EmailContent.Replace("[NameToBeReplaced]", CollaboratorUserName.ElementAt(i)).Replace("[ImprovementTacticNameToBeReplaced]", TacticName).Replace("[PlanNameToBeReplaced]", PlanName).Replace("[UserNameToBeReplaced]", Sessions.User.FirstName + " " + Sessions.User.LastName).Replace("[CommentToBeReplaced]", Comment);
             }
                 string email = EmailIds.ElementAt(i);
                 string Username = CollaboratorUserName.ElementAt(i);
