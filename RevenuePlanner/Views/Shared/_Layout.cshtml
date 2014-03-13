@@ -106,7 +106,7 @@
     $.ajaxSetup({
         cache: false
     });
-
+    var isAlerted = false;
     $(document).ready(function () {
 
         $('#ContactSupport').click(function () {
@@ -154,19 +154,24 @@
             403: function () {
                 myApp.hidePleaseWait();
                 //this will catch any and all access denied errors
-                alert("Sorry, your session has expired. Please login again by clicking on Ok button.");
-                window.location = "@Url.Content("~/login/Index")";
+                if (isAlerted == false) {
+                    isAlerted = true;
+                    alert("Sorry, your session has expired. Please login again by clicking on Ok button.");
+                    window.location = "@Url.Content("~/login/Index")";
+                }
             }
         },
         error: function (x, e) { // Called when error occured
             GoToLogin();
         }
     });
+   
     function GoToLogin() {
         myApp.hidePleaseWait();
         //In case of error and it is due to session timed out -  the above code was not working in case of div.load, used to display slidepanel
         var IsSessionExist = readCookie('IsSessionExist');
-        if (IsSessionExist == 0) {
+        if (IsSessionExist == 0 && isAlerted == false) {
+            isAlerted = true;
             alert("Sorry, your session has expired. Please login again by clicking on Ok button.");
             window.location = "@Url.Content("~/login/Index")";
         }
