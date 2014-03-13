@@ -190,10 +190,6 @@
                         return;
                     }
 
-                },
-                error: function () {
-                    ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
-                    myApp.hidePleaseWait();
                 }
             });
         });
@@ -202,12 +198,11 @@
             var tacticTypeId = $(this).val();
             var pcost = 0;
             if (tacticTypeId != '') {
-                LoadImprovementTacticStages();
-                $("#txtCost").val(FormatCurrency((ValueCost).toString(), false));
+                LoadImprovementTacticStages(true);
             }
         });
-        LoadImprovementTacticStages();
-        function LoadImprovementTacticStages() {
+        LoadImprovementTacticStages(false);
+        function LoadImprovementTacticStages(isCostUpdate) {
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/LoadImprovementStages")',
@@ -215,11 +210,11 @@
                 success: function (data) {
                     ImprovementStages = data.data;
                     ValueCost = data.cost;
+                    if (isCostUpdate)
+                    {
+                        $("#txtCost").val(FormatCurrency((ValueCost).toString(), false));
+                    }
                     LoadImprovementData();
-                },
-                error: function () {
-                    ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
-                    myApp.hidePleaseWait();
                 }
             });
             
@@ -247,9 +242,6 @@
                             return;
                         }
 
-                    },
-                    error: function () {
-                        myApp.hidePleaseWait();
                     }
                 });
             }
@@ -270,7 +262,7 @@
             $(this).datepicker('hide');
             var sdate = $('#t_startdate').val();
             if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
-            LoadImprovementTacticStages();
+            LoadImprovementTacticStages(false);
         });;
 
         
