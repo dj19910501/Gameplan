@@ -251,10 +251,9 @@
                           }
                       },
                       error: function () {
+                          GoToLogin();
                           $("#errorMessage").css("display", "block");
                           $("#spanMessageError").empty();
-                          $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
-                          myApp.hidePleaseWait();
                           return false;
                       }
                   });

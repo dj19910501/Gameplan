@@ -177,11 +177,7 @@
                 success: function (data) {
                     mqlConversion = data.mql;
                     $("#txtmql").val(FormatCommas(Math.round(mqlConversion * inqValue).toString(), false));
-                },
-                error: function () {
-                    ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
-                myApp.hidePleaseWait();
-            }
+                }
             });
     }
 
@@ -283,10 +279,6 @@
                         return;
                     }
 
-                },
-                error: function () {
-                    ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
-                    myApp.hidePleaseWait();
                 }
             });
         });
@@ -312,10 +304,6 @@
                         $("#txtCost").val(pcost);
                         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
                         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-                    },
-                    error: function () {
-                        ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
-                        myApp.hidePleaseWait();
                     }
                 });
             }
@@ -352,10 +340,6 @@
                         return;
                     }
 
-                },
-                error: function () {
-                    ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
-                    myApp.hidePleaseWait();
                 }
             });
         });
@@ -383,9 +367,6 @@
                             return;
                         }
 
-                    },
-                    error: function () {
-                        myApp.hidePleaseWait();
                     }
                 });
             }

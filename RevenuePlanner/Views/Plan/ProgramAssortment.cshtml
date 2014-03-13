@@ -162,9 +162,6 @@
             success: function (r) {
                 tactictype = r;
                 myApp.hidePleaseWait();
-            },
-            error: function () {
-                myApp.hidePleaseWait();
             }
         });
 
@@ -306,10 +303,6 @@
                         return;
                     }
 
-                },
-                error: function () {
-                    ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
-                    myApp.hidePleaseWait();
                 }
             });
         });
@@ -338,10 +331,6 @@
                         return;
                     }
 
-                },
-                error: function () {
-                    ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
-                    myApp.hidePleaseWait();
                 }
             });
         });
@@ -369,9 +358,6 @@
                             return;
                         }
 
-                    },
-                    error: function () {
-                        myApp.hidePleaseWait();
                     }
                 });
             }
