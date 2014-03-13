@@ -175,10 +175,8 @@ namespace RevenuePlanner.Controllers
                     {
                         Sessions.PlanId = plan.PlanId;
 
-                        //Create default Plan Improvement Campaign, Program and Tactic
-                        //ImprovementController improvementController = new ImprovementController();
-                        //int improvementPlanCampaignId = improvementController.CreatePlanImprovementCampaign();
-                        //int improvementPlanProgramId = improvementController.CreatePlanImprovementProgram(improvementPlanCampaignId);
+                        //Create default Plan Improvement Campaign, Program
+                        int returnValue = CreatePlanImprovementCampaignAndProgram();
                     }
 
                     return Json(new { id = Sessions.PlanId, redirect = Url.Action("Assortment", new { ismsg = "Plan Saved Successfully." }) });
@@ -1108,6 +1106,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.EditOjbect = EditObject;
             ViewBag.Msg = ismsg;
             ViewBag.isError = isError;
+            ViewBag.ImprovementPlanProgramId = db.Plan_Improvement_Campaign_Program.Where(p => p.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId).Select(p => p.ImprovementPlanProgramId).SingleOrDefault();
             return View("Assortment");
         }
 
@@ -2043,7 +2042,7 @@ namespace RevenuePlanner.Controllers
                                             if (pcpobj.EndDate != form.EndDate)
                                             {
                                                 pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
-                                                Common.mailSendForTactic(pcpobj.PlanTacticId, pcpobj.Status, pcpobj.Title);
+                                                Common.mailSendForTactic(pcpobj.PlanTacticId, pcpobj.Status, pcpobj.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
                                             }
                                         }
                                         else if (todaydate > form.EndDate)
@@ -2107,7 +2106,7 @@ namespace RevenuePlanner.Controllers
                                 if (isReSubmission && Common.CheckAfterApprovedStatus(status))
                                 {
                                     pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
-                                    Common.mailSendForTactic(pcpobj.PlanTacticId, pcpobj.Status, pcpobj.Title);
+                                    Common.mailSendForTactic(pcpobj.PlanTacticId, pcpobj.Status, pcpobj.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
                                 }
                                 result = db.SaveChanges();
                                 result = TacticValueCalculate(pcpobj.PlanProgramId);
@@ -2646,6 +2645,609 @@ namespace RevenuePlanner.Controllers
                 returnDate = DateTime.Now.AddYears(diffYear);
             }
             return returnDate;
+        }
+
+        #endregion
+
+        #region Improvement Tactic
+
+        /// <summary>
+        /// Added By: Kuber Joshi
+        /// Action to create default Plan Improvement Campaign
+        /// </summary>
+        /// <returns>Returns ImprovementPlanCampaignId or -1 if duplicate exists</returns>
+        public int CreatePlanImprovementCampaignAndProgram()
+        {
+            int retVal = -1;
+
+            try
+            {
+                //Fetch Plan details
+                Plan_Improvement_Campaign objPlan = new Plan_Improvement_Campaign();
+                objPlan = db.Plan_Improvement_Campaign.Where(p => p.ImprovePlanId == Sessions.PlanId).FirstOrDefault();
+                if (objPlan == null)
+                {
+                    string planImprovementCampaignTitle = "Improvement Campaign";
+
+                    Plan_Improvement_Campaign picobj = new Plan_Improvement_Campaign();
+                    picobj.ImprovePlanId = Sessions.PlanId;
+                    picobj.Title = planImprovementCampaignTitle;
+                    picobj.CreatedBy = Sessions.User.UserId;
+                    picobj.CreatedDate = DateTime.Now;
+                    db.Entry(picobj).State = EntityState.Added;
+                    int result = db.SaveChanges();
+                    retVal = picobj.ImprovementPlanCampaignId;
+                    if (retVal > 0)
+                    {
+                        Plan_Improvement_Campaign_Program pipobj = new Plan_Improvement_Campaign_Program();
+                        pipobj.CreatedBy = Sessions.User.UserId;
+                        pipobj.CreatedDate = DateTime.Now;
+                        pipobj.ImprovementPlanCampaignId = retVal;
+                        pipobj.Title = "Improvement Program";
+                        db.Entry(pipobj).State = EntityState.Added;
+                        result = db.SaveChanges();
+                        retVal = pipobj.ImprovementPlanProgramId;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        /// Added By: Bhavesh Dobariya.
+        /// Action to Get Improvement Tactic.
+        /// </summary>
+        /// <returns>Returns Json Result.</returns>
+        public JsonResult GetImprovementTactic()
+        {
+            var tactics = db.Plan_Improvement_Campaign_Program_Tactic.ToList().Where(pc => pc.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
+            var tacticobj = tactics.Select(p => new
+            {
+                id = p.ImprovementPlanTacticId,
+                title = p.Title,
+                cost = p.Cost,
+                ImprovementProgramId = p.ImprovementPlanProgramId,
+                isOwner = Sessions.User.UserId == p.CreatedBy ? 0 : 1,
+            }).Select(p => p).Distinct().OrderBy(p => p.id);
+
+            return Json(tacticobj, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Added By: Bhavesh Dobariya.
+        /// Action to Create Improvement Tactic.
+        /// </summary>
+        /// <returns>Returns Partial View Of Tactic.</returns>
+        public PartialViewResult CreateImprovementTactic(int id = 0)
+        {
+            ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
+            ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
+            ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
+            ViewBag.Tactics = from t in db.ImprovementTacticTypes
+                              where t.ClientId == Sessions.User.ClientId && t.IsDeployed == true
+                              orderby t.Title
+                              select t;
+            ViewBag.IsCreated = true;
+            PlanImprovementTactic pitm = new PlanImprovementTactic();
+            pitm.ImprovementPlanProgramId = id;
+            pitm.EffectiveDate = DateTime.Now;
+            ViewBag.IsOwner = false;
+            ViewBag.RedirectType = false;
+            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
+            return PartialView("ImprovementTactic", pitm);
+        }
+
+        /// <summary>
+        /// Added By: Bhavesh Dobariya.
+        /// Action to Create Tactic.
+        /// </summary>
+        /// <param name="id">Tactic Id.</param>
+        /// <param name="RedirectType">Redirect Type</param>
+        /// <returns>Returns Partial View Of Tactic.</returns>
+        public PartialViewResult EditImprovementTactic(int id = 0, string RedirectType = "")
+        {
+            ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
+            ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
+            ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
+            ViewBag.Tactics = from t in db.ImprovementTacticTypes
+                              where t.ClientId == Sessions.User.ClientId && t.IsDeployed == true
+                              orderby t.Title
+                              select t;
+            ViewBag.IsCreated = false;
+            if (RedirectType == "Assortment")
+            {
+                ViewBag.RedirectType = false;
+            }
+            else
+            {
+                ViewBag.RedirectType = true;
+
+            }
+            Plan_Improvement_Campaign_Program_Tactic pcpt = db.Plan_Improvement_Campaign_Program_Tactic.Where(pcptobj => pcptobj.ImprovementPlanTacticId.Equals(id)).SingleOrDefault();
+            if (pcpt == null)
+            {
+                return null;
+            }
+
+            PlanImprovementTactic pcptm = new PlanImprovementTactic();
+            pcptm.ImprovementPlanProgramId = pcpt.ImprovementPlanProgramId;
+            pcptm.ImprovementPlanTacticId = pcpt.ImprovementPlanTacticId;
+            pcptm.ImprovementTacticTypeId = pcpt.ImprovementTacticTypeId;
+            pcptm.Title = pcpt.Title;
+            pcptm.Description = pcpt.Description;
+            pcptm.VerticalId = pcpt.VerticalId;
+            pcptm.AudienceId = pcpt.AudienceId;
+            pcptm.GeographyId = pcpt.GeographyId;
+            pcptm.EffectiveDate = pcpt.EffectiveDate;
+            pcptm.Cost = pcpt.Cost;
+            if (Sessions.User.UserId == pcpt.CreatedBy)
+            {
+                ViewBag.IsOwner = true;
+            }
+            else
+            {
+                ViewBag.IsOwner = false;
+            }
+            ViewBag.Program = pcpt.Plan_Improvement_Campaign_Program.Title;
+            ViewBag.Campaign = pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Title;
+            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
+            return PartialView("ImprovementTactic", pcptm);
+        }
+
+        /// <summary>
+        /// Added By: Bhavesh Dobariya.
+        /// Action to Save Improvement Tactic.
+        /// </summary>
+        /// <param name="form">Form object of PlanImprovementTactic.</param>
+        /// <param name="RedirectType">Redirect Type.</param>
+        /// <returns>Returns Action Result.</returns>
+        [HttpPost]
+        public ActionResult SaveImprovementTactic(PlanImprovementTactic form, bool RedirectType)
+        {
+            try
+            {
+                if (form.ImprovementPlanTacticId == 0)
+                {
+                    using (MRPEntities mrp = new MRPEntities())
+                    {
+                        using (var scope = new TransactionScope())
+                        {
+                            var pcpvar = (from pcpt in db.Plan_Improvement_Campaign_Program_Tactic
+                                          where pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && pcpt.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && pcpt.IsDeleted.Equals(false)
+                                          select pcpt).FirstOrDefault();
+
+                            if (pcpvar != null)
+                            {
+                                return Json(new { errormsg = Common.objCached.DuplicateTacticExits });
+                            }
+                            else
+                            {
+                                Plan_Improvement_Campaign_Program_Tactic picpt = new Plan_Improvement_Campaign_Program_Tactic();
+                                picpt.ImprovementPlanProgramId = form.ImprovementPlanProgramId;
+                                picpt.Title = form.Title;
+                                picpt.ImprovementTacticTypeId = form.ImprovementTacticTypeId;
+                                picpt.Description = form.Description;
+                                picpt.VerticalId = form.VerticalId;
+                                picpt.AudienceId = form.AudienceId;
+                                picpt.GeographyId = form.GeographyId;
+                                picpt.Cost = form.Cost;
+                                picpt.EffectiveDate = form.EffectiveDate;
+                                picpt.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
+                                picpt.BusinessUnitId = (from m in db.Models
+                                                        join p in db.Plans on m.ModelId equals p.ModelId
+                                                        where p.PlanId == Sessions.PlanId
+                                                        select m.BusinessUnitId).FirstOrDefault();
+                                picpt.CreatedBy = Sessions.User.UserId;
+                                picpt.CreatedDate = DateTime.Now;
+                                db.Entry(picpt).State = EntityState.Added;
+                                int result = db.SaveChanges();
+                                result = Common.InsertChangeLog(Sessions.PlanId, null, picpt.ImprovementPlanTacticId, picpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                                if (result >= 1)
+                                {
+                                    scope.Complete();
+                                    return Json(new { redirect = Url.Action("Assortment") });
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+
+                    using (MRPEntities mrp = new MRPEntities())
+                    {
+                        using (var scope = new TransactionScope())
+                        {
+                            var pcpvar = (from pcpt in db.Plan_Improvement_Campaign_Program_Tactic
+                                          where pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && pcpt.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcpt.ImprovementPlanTacticId.Equals(form.ImprovementPlanTacticId) && pcpt.IsDeleted.Equals(false)
+                                          select pcpt).FirstOrDefault();
+
+                            if (pcpvar != null)
+                            {
+                                return Json(new { errormsg = Common.objCached.DuplicateTacticExits });
+                            }
+                            else
+                            {
+                                bool isReSubmission = false;
+                                bool isDirectorLevelUser = false;
+                                string status = string.Empty;
+                                if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
+                                {
+                                    isDirectorLevelUser = true;
+                                }
+                                Plan_Improvement_Campaign_Program_Tactic pcpobj = db.Plan_Improvement_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.ImprovementPlanTacticId.Equals(form.ImprovementPlanTacticId)).SingleOrDefault();
+                                pcpobj.Title = form.Title;
+                                status = pcpobj.Status;
+
+                                if (pcpobj.ImprovementTacticTypeId != form.ImprovementTacticTypeId)
+                                {
+                                    pcpobj.ImprovementTacticTypeId = form.ImprovementTacticTypeId;
+                                    if (!isDirectorLevelUser) isReSubmission = true;
+                                }
+                                pcpobj.Description = form.Description;
+                                if (pcpobj.VerticalId != form.VerticalId)
+                                {
+                                    pcpobj.VerticalId = form.VerticalId;
+                                    if (!isDirectorLevelUser) isReSubmission = true;
+                                }
+                                if (pcpobj.AudienceId != form.AudienceId)
+                                {
+                                    pcpobj.AudienceId = form.AudienceId;
+                                    if (!isDirectorLevelUser) isReSubmission = true;
+                                }
+                                if (pcpobj.GeographyId != form.GeographyId)
+                                {
+                                    pcpobj.GeographyId = form.GeographyId;
+                                    if (!isDirectorLevelUser) isReSubmission = true;
+                                }
+
+                                if (pcpobj.EffectiveDate != form.EffectiveDate)
+                                {
+                                    pcpobj.EffectiveDate = form.EffectiveDate;
+                                    if (!isDirectorLevelUser) isReSubmission = true;
+                                }
+
+                                if (pcpobj.Cost != form.Cost)
+                                {
+                                    pcpobj.Cost = form.Cost;
+                                    if (!isDirectorLevelUser) isReSubmission = true;
+                                }
+
+                                pcpobj.ModifiedBy = Sessions.User.UserId;
+                                pcpobj.ModifiedDate = DateTime.Now;
+                                db.Entry(pcpobj).State = EntityState.Modified;
+                                int result;
+                                if (Common.CheckAfterApprovedStatus(pcpobj.Status))
+                                {
+                                    result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.ImprovementPlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                                }
+                                if (isReSubmission && Common.CheckAfterApprovedStatus(status))
+                                {
+                                    pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
+                                    Common.mailSendForTactic(pcpobj.ImprovementPlanTacticId, pcpobj.Status, pcpobj.Title, section: Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
+                                }
+                                result = db.SaveChanges();
+                                if (result >= 1)
+                                {
+                                    scope.Complete();
+                                    if (RedirectType)
+                                    {
+                                        return Json(new { redirect = Url.Action("ApplyToCalendar") });
+                                    }
+                                    else
+                                    {
+                                        return Json(new { redirect = Url.Action("Assortment") });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+
+            return Json(new { });
+        }
+
+        [HttpPost]
+        public ActionResult DeleteImprovementTactic(int id = 0, bool RedirectType = false)
+        {
+            try
+            {
+                using (MRPEntities mrp = new MRPEntities())
+                {
+                    using (var scope = new TransactionScope())
+                    {
+                        int returnValue;
+                        string Title = "";
+                        Plan_Improvement_Campaign_Program_Tactic pcpt = db.Plan_Improvement_Campaign_Program_Tactic.Where(p => p.ImprovementPlanTacticId == id).SingleOrDefault();
+                        pcpt.IsDeleted = true;
+                        db.Entry(pcpt).State = EntityState.Modified;
+                        returnValue = db.SaveChanges();
+                        Title = pcpt.Title;
+                        returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcpt.ImprovementPlanTacticId, pcpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
+                        if (returnValue >= 1)
+                        {
+                            scope.Complete();
+                            TempData["SuccessMessageDeletedPlan"] = "Improvement Tactic " + Title + " Deleted Successfully.";
+                            if (RedirectType)
+                            {
+                                return Json(new { redirect = Url.Action("ApplyToCalendar") });
+                            }
+                            else
+                            {
+                                return Json(new { redirect = Url.Action("Assortment") });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            return Json(new { });
+        }
+
+        /// <summary>
+        /// Calculate Improvenet For Tactic Type & Date.
+        /// Added by Bhavesh Dobariya.
+        /// </summary>
+        /// <returns>JsonResult.</returns>
+        public JsonResult LoadImprovementStages(PlanImprovementTactic form)
+        {
+            int ImprovementPlanTacticId = form.ImprovementPlanTacticId;
+            int ImprovementTacticTypeId = form.ImprovementTacticTypeId;
+            DateTime EffectiveDate = form.EffectiveDate;
+            double Cost = db.ImprovementTacticTypes.Where(itt => itt.ImprovementTacticTypeId == ImprovementTacticTypeId).Select(iit => iit.Cost).SingleOrDefault();
+
+            List<ImprovementStage>  ImprovementMetric = GetImprovementStages(ImprovementPlanTacticId, ImprovementTacticTypeId, EffectiveDate);
+            
+            var tacticobj = ImprovementMetric.Select(p => new
+            {
+                MetricId = p.MetricId,
+                MetricCode = p.MetricCode,
+                MetricName = p.MetricName,
+                MetricType = p.MetricType,
+                BaseLineRate = p.BaseLineRate,
+                PlanWithoutTactic = p.PlanWithoutTactic,
+                PlanWithTactic = p.PlanWithTactic,
+            }).Select(p => p).Distinct().OrderBy(p => p.MetricId);
+
+            return Json(new { data = tacticobj, cost = Cost }, JsonRequestBehavior.AllowGet);
+        }
+
+        public List<ImprovementStage> GetImprovementStages(int ImprovementPlanTacticId, int ImprovementTacticTypeId, DateTime EffectiveDate)
+        {
+            List<ImprovementStage> ImprovementMetric = new List<ImprovementStage>();
+            ImprovementMetric = (from im in db.ImprovementTacticType_Metric
+                                 where im.ImprovementTacticTypeId == ImprovementTacticTypeId
+                                 select new ImprovementStage
+                                 {
+                                     MetricId = im.MetricId,
+                                     MetricCode = im.Metric.MetricCode,
+                                     MetricName = im.Metric.MetricName,
+                                     MetricType = im.Metric.MetricType,
+                                     BaseLineRate = 0,
+                                     PlanWithoutTactic = 0,
+                                     PlanWithTactic = 0,
+                                     ClientId = im.Metric.ClientId,
+                                 }).ToList();
+
+            int ModelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
+            ModelId = ReportController.GetModelId(EffectiveDate, ModelId);
+            DateTime? ModelEffectiveDate = db.Models.Where(m => m.ModelId == ModelId).Select(m => m.EffectiveDate).SingleOrDefault();
+            string Marketing = Enums.Funnel.Marketing.ToString();
+            int funnelId = db.Funnels.Where(f => f.Title == Marketing).Select(f => f.FunnelId).SingleOrDefault();
+
+            foreach (var im in ImprovementMetric)
+            {
+                double modelvalue = 0;
+                if (im.MetricType == Enums.MetricType.Size.ToString())
+                {
+                    modelvalue = db.Model_Funnel.Where(mf => mf.ModelId == ModelId && mf.FunnelId == funnelId).Select(mf => mf.AverageDealSize).SingleOrDefault();
+                }
+                else
+                {
+                    modelvalue = db.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == ModelId && mfs.Model_Funnel.FunnelId == funnelId && mfs.Stage.Code == im.MetricCode && mfs.StageType == im.MetricType && mfs.Stage.ClientId == im.ClientId).Select(mfs => mfs.Value).SingleOrDefault();
+                    if (im.MetricType == Enums.MetricType.CR.ToString())
+                    {
+                        modelvalue = modelvalue / 100;
+                    }
+                }
+                double bestInClassValue = db.BestInClasses.Where(bic => bic.MetricId == im.MetricId).Select(bic => bic.Value).SingleOrDefault();
+                int? CurrentMetricLevel = db.Metrics.Where(m => m.MetricId == im.MetricId).Select(m => m.Level).SingleOrDefault();
+                int ParentMetricId = db.Metrics.Where(itm => itm.Level == (CurrentMetricLevel - 1) && itm.MetricType == im.MetricType).Select(itm => itm.MetricId).SingleOrDefault();
+                int TotalCountWithTactic = 0;
+                double TotalWeightWithTactic = 0;
+
+                int TotalCountWithoutTactic = 0;
+                double TotalWeightWithoutTactic = 0;
+
+                if (ImprovementPlanTacticId == 0)
+                {
+
+                    var improveTacticList = (from pit in db.Plan_Improvement_Campaign_Program_Tactic
+                                             join itm in db.ImprovementTacticType_Metric on pit.ImprovementTacticTypeId equals itm.ImprovementTacticTypeId
+                                             where itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == im.MetricId && itm.Weight > 0 && pit.EffectiveDate >= ModelEffectiveDate
+                                             select new { ImprovemetPlanTacticId = pit.ImprovementPlanTacticId, Weight = itm.Weight }).ToList();
+                    var improveTacticParentList = (from pit in db.Plan_Improvement_Campaign_Program_Tactic
+                                                   join itm in db.ImprovementTacticType_Metric on pit.ImprovementTacticTypeId equals itm.ImprovementTacticTypeId
+                                                   where itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == ParentMetricId && itm.Weight > 0 && pit.EffectiveDate >= ModelEffectiveDate
+                                                   select new { ImprovemetPlanTacticId = pit.ImprovementPlanTacticId, Weight = itm.Weight }).ToList();
+
+                    int improvementCount = improveTacticList.Count();
+                    int improvementParentCount = improveTacticParentList.Count();
+                    TotalCountWithoutTactic = improvementCount + improvementParentCount;
+
+                    double improvementWeight = improveTacticList.Count() == 0 ? 0 : improveTacticList.Sum(itl => itl.Weight);
+                    double improvementParentWeight = improveTacticParentList.Count() == 0 ? 0 : improveTacticParentList.Sum(iptl => iptl.Weight);
+                    TotalWeightWithoutTactic = improvementWeight + improvementParentWeight;
+
+                    var improvementCountWithTacticList = (from itt in db.ImprovementTacticTypes
+                                                          join itm in db.ImprovementTacticType_Metric on itt.ImprovementTacticTypeId equals itm.ImprovementTacticTypeId
+                                                          where itt.IsDeployed == true && itm.MetricId == im.MetricId && itm.Weight > 0 && EffectiveDate >= ModelEffectiveDate
+                                                          select new { ImprovementTacticTypeId = itt.ImprovementTacticTypeId, Weight = itm.Weight }).ToList();
+                    var improveWithTacticParentList = (from pit in db.ImprovementTacticTypes
+                                                       join itm in db.ImprovementTacticType_Metric on pit.ImprovementTacticTypeId equals itm.ImprovementTacticTypeId
+                                                       where itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == ParentMetricId && itm.Weight > 0 && EffectiveDate >= ModelEffectiveDate
+                                                       select new { ImprovementTacticTypeId = pit.ImprovementTacticTypeId, Weight = itm.Weight }).ToList();
+
+                    TotalCountWithTactic = TotalCountWithoutTactic;
+                    TotalCountWithTactic += improvementCountWithTacticList.Count() >= 0 ? 1 : 0;
+                    TotalCountWithTactic += improveWithTacticParentList.Count() >= 0 ? 1 : 0;
+
+                    TotalWeightWithTactic = TotalWeightWithoutTactic;
+                    TotalWeightWithTactic += improvementCountWithTacticList.Count() == 0 ? 0 : improvementCountWithTacticList.Sum(itl => itl.Weight);
+                    TotalWeightWithTactic += improveWithTacticParentList.Count() == 0 ? 0 : improveWithTacticParentList.Sum(iptl => iptl.Weight);
+                }
+                else
+                {
+                    var improveTacticList = (from pit in db.Plan_Improvement_Campaign_Program_Tactic
+                                             join itm in db.ImprovementTacticType_Metric on pit.ImprovementTacticTypeId equals itm.ImprovementTacticTypeId
+                                             where itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == im.MetricId && itm.Weight > 0 && pit.EffectiveDate >= ModelEffectiveDate && pit.ImprovementPlanTacticId != ImprovementPlanTacticId
+                                             select new { ImprovemetPlanTacticId = pit.ImprovementPlanTacticId, Weight = itm.Weight }).ToList();
+                    var improveTacticParentList = (from pit in db.Plan_Improvement_Campaign_Program_Tactic
+                                                   join itm in db.ImprovementTacticType_Metric on pit.ImprovementTacticTypeId equals itm.ImprovementTacticTypeId
+                                                   where itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == ParentMetricId && itm.Weight > 0 && pit.EffectiveDate >= ModelEffectiveDate && pit.ImprovementPlanTacticId != ImprovementPlanTacticId
+                                                   select new { ImprovemetPlanTacticId = pit.ImprovementPlanTacticId, Weight = itm.Weight }).ToList();
+
+                    int improvementCount = improveTacticList.Count();
+                    int improvementParentCount = improveTacticParentList.Count();
+                    TotalCountWithoutTactic = improvementCount + improvementParentCount;
+
+                    double improvementWeight = improveTacticList.Count() == 0 ? 0 : improveTacticList.Sum(itl => itl.Weight);
+                    double improvementParentWeight = improveTacticParentList.Count() == 0 ? 0 : improveTacticParentList.Sum(iptl => iptl.Weight);
+                    TotalWeightWithoutTactic = improvementWeight + improvementParentWeight;
+
+                    var improvementCountWithTacticList = (from pit in db.Plan_Improvement_Campaign_Program_Tactic
+                                                          join itm in db.ImprovementTacticType_Metric on pit.ImprovementTacticTypeId equals itm.ImprovementTacticTypeId
+                                                          where itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == im.MetricId && itm.Weight > 0 && pit.EffectiveDate >= ModelEffectiveDate
+                                                          select new { ImprovemetPlanTacticId = pit.ImprovementPlanTacticId, Weight = itm.Weight }).ToList();
+                    var improveWithTacticParentList = (from pit in db.Plan_Improvement_Campaign_Program_Tactic
+                                                       join itm in db.ImprovementTacticType_Metric on pit.ImprovementTacticTypeId equals itm.ImprovementTacticTypeId
+                                                       where itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == ParentMetricId && itm.Weight > 0 && pit.EffectiveDate >= ModelEffectiveDate
+                                                       select new { ImprovemetPlanTacticId = pit.ImprovementPlanTacticId, Weight = itm.Weight }).ToList();
+
+                    TotalCountWithTactic += improvementCountWithTacticList.Count() >= 0 ? 1 : 0;
+                    TotalCountWithTactic += improveWithTacticParentList.Count() >= 0 ? 1 : 0;
+
+                    TotalWeightWithTactic += improvementCountWithTacticList.Count() == 0 ? 0 : improvementCountWithTacticList.Sum(itl => itl.Weight);
+                    TotalWeightWithTactic += improveWithTacticParentList.Count() == 0 ? 0 : improveWithTacticParentList.Sum(iptl => iptl.Weight);
+                }
+
+                if (im.MetricType == Enums.MetricType.CR.ToString())
+                {
+                    im.BaseLineRate = modelvalue * 100;
+                    im.PlanWithoutTactic = GetImprovement(im, bestInClassValue, modelvalue, TotalCountWithoutTactic, TotalWeightWithoutTactic) * 100;
+                    im.PlanWithTactic = GetImprovement(im, bestInClassValue, modelvalue, TotalCountWithTactic, TotalWeightWithTactic) * 100;
+                }
+                else
+                {
+                    im.BaseLineRate = modelvalue;
+                    im.PlanWithoutTactic = GetImprovement(im, bestInClassValue, modelvalue, TotalCountWithoutTactic, TotalWeightWithoutTactic);
+                    im.PlanWithTactic = GetImprovement(im, bestInClassValue, modelvalue, TotalCountWithTactic, TotalWeightWithTactic);
+                }
+            }
+
+            return ImprovementMetric;
+        }
+
+        public double GetImprovement(ImprovementStage im, double bestInClassValue, double modelvalue, double TotalCount, double TotalWeight)
+        {
+            double cFactor = 0;
+            double rFactor = 0;
+
+            if (TotalCount == 0)
+            {
+                rFactor = 0;
+            }
+            else
+            {
+                double wcValue = TotalWeight / TotalCount;
+                if (wcValue < 2)
+                {
+                    rFactor = 0.25;
+                }
+                else if (wcValue >= 2 && wcValue < 3)
+                {
+                    rFactor = 0.5;
+                }
+                else if (wcValue >= 3 && wcValue < 4)
+                {
+                    rFactor = 0.75;
+                }
+                else
+                {
+                    rFactor = 0.9;
+                }
+            }
+
+            if (TotalCount < 3)
+            {
+                cFactor = 0.4;
+            }
+            else if (TotalCount >= 3 && TotalCount < 5)
+            {
+                cFactor = 0.6;
+            }
+            else if (TotalCount >= 5 && TotalCount < 8)
+            {
+                cFactor = 0.8;
+            }
+            else
+            {
+                cFactor = 1;
+            }
+
+            double boostFactor = cFactor * rFactor;
+            double boostGap = 0;
+            if (im.MetricType == Enums.MetricType.CR.ToString())
+            {
+                boostGap = bestInClassValue - modelvalue;
+            }
+            else if (im.MetricType == Enums.MetricType.SV.ToString())
+            {
+                boostGap = modelvalue - bestInClassValue;
+            }
+            else if (im.MetricType == Enums.MetricType.Size.ToString())
+            {
+                // Divide by 100 because it percentage value
+                boostGap = bestInClassValue / 100;
+            }
+
+            double improvement = 0;
+            if (boostGap < 0)
+            {
+                improvement = 0;
+            }
+            else
+            {
+                improvement = boostGap * boostFactor;
+            }
+            double improvementValue = 0;
+            if (im.MetricType == Enums.MetricType.CR.ToString())
+            {
+                improvementValue = modelvalue + improvement;
+            }
+            else if (im.MetricType == Enums.MetricType.SV.ToString())
+            {
+                improvementValue = modelvalue - improvement;
+            }
+            else if (im.MetricType == Enums.MetricType.Size.ToString())
+            {
+                improvementValue = (1 + improvement) + modelvalue;
+            }
+
+            return improvementValue;
         }
 
         #endregion

@@ -16,11 +16,13 @@ namespace RevenuePlanner.Models
     {
         public int ImprovementTacticTypeId { get; set; }
         public int MetricId { get; set; }
-        public Nullable<System.Guid> ClientId { get; set; }
-        public bool IsDeleted { get; set; }
+        public double Weight { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
+    
+        public virtual ImprovementTacticType ImprovementTacticType { get; set; }
+        public virtual Metric Metric { get; set; }
     }
 }

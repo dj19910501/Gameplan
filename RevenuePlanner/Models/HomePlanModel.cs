@@ -162,6 +162,8 @@ namespace RevenuePlanner.Models
 
         public double ROIActual { get; set; }
 
+		public bool IsActual { get; set; }
+		
     }
 
     public class ActivityChart

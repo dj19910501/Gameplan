@@ -22,19 +22,10 @@ namespace RevenuePlanner.Models
         public int ImprovementPlanCampaignId { get; set; }
         public int ImprovePlanId { get; set; }
         public string Title { get; set; }
-        public string Description { get; set; }
-        public Nullable<int> VerticalId { get; set; }
-        public Nullable<int> AudienceId { get; set; }
-        public Nullable<System.Guid> GeographyId { get; set; }
-        public System.DateTime EffectiveDate { get; set; }
-        public Nullable<double> Cost { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
     
-        public virtual Audience Audience { get; set; }
-        public virtual Geography Geography { get; set; }
         public virtual Plan Plan { get; set; }
         public virtual ICollection<Plan_Improvement_Campaign_Program> Plan_Improvement_Campaign_Program { get; set; }
-        public virtual Vertical Vertical { get; set; }
     }
 }

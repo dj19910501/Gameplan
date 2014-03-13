@@ -851,6 +851,20 @@ namespace RevenuePlanner.Helpers
                 _ModelPublishComfirmation = value;
             }
         }
+
+        private string _ImprovementTacticStatusSuccessfully;
+        public string ImprovementTacticStatusSuccessfully
+        {
+            get
+            {
+                return _ImprovementTacticStatusSuccessfully;
+            }
+            set
+            {
+                _ImprovementTacticStatusSuccessfully = value;
+            }
+        }
+
         #endregion
 
         #region  Functions
@@ -1111,6 +1125,9 @@ namespace RevenuePlanner.Helpers
                                             break;
                                         case "ModelPublishComfirmation":
                                             _ModelPublishComfirmation = strMsgValue;
+                                            break;
+                                        case "ImprovementTacticStatusSuccessfully":
+                                            _ImprovementTacticStatusSuccessfully = strMsgValue;
                                             break;
                                     }
                                 }
