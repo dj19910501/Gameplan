@@ -19,7 +19,7 @@ using System.Reflection;
  *  Author: Manoj Limbachiya
  *  Created Date: 10/22/2013
  *  Screen: 002_000_home - Home
- *  Purpose: Home page 
+ *  Purpose: Home page  
   */
 namespace RevenuePlanner.Controllers
 {
@@ -42,9 +42,10 @@ namespace RevenuePlanner.Controllers
         /// Home index page
         /// In Plan Header, values of MQLs, Budget and number of Tactics of current plan shown from database.
         /// planCampaignId and planProgramId parameter added for plan and campaign popup
+        /// Modified By Maninder Singh Wadhva PL Ticket#47
         /// </summary>
         /// <returns></returns>
-        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0)
+        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false)
         {
             if (Sessions.RolePermission != null)
             {
@@ -67,6 +68,9 @@ namespace RevenuePlanner.Controllers
             ViewBag.ShowInspectForPlanTacticId = planTacticId;
             ViewBag.ShowInspectForPlanCampaignId = planCampaignId;
             ViewBag.ShowInspectForPlanProgramId = planProgramId;
+
+            //// Modified By Maninder Singh Wadhva PL Ticket#47
+            ViewBag.IsImprovement = isImprovement;
 
             ViewBag.SuccessMessageDuplicatePlan = TempData["SuccessMessageDuplicatePlan"];
             ViewBag.ErrorMessageDuplicatePlan = TempData["ErrorMessageDuplicatePlan"];
