@@ -15,9 +15,11 @@ namespace RevenuePlanner.Models
     public partial class Plan_Improvement_Campaign_Program_Tactic_Comment
     {
         public int ImprovementPlanTacticCommentId { get; set; }
-        public Nullable<int> ImprovementPlanTacticId { get; set; }
+        public int ImprovementPlanTacticId { get; set; }
         public string Comment { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
+    
+        public virtual Plan_Improvement_Campaign_Program_Tactic Plan_Improvement_Campaign_Program_Tactic { get; set; }
     }
 }

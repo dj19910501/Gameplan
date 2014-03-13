@@ -16,7 +16,6 @@ namespace RevenuePlanner.Models
     {
         public Stage()
         {
-            this.BestInClasses = new HashSet<BestInClass>();
             this.Model_Funnel_Stage = new HashSet<Model_Funnel_Stage>();
             this.TacticTypes = new HashSet<TacticType>();
         }
@@ -35,7 +34,6 @@ namespace RevenuePlanner.Models
         public string Funnel { get; set; }
         public string Code { get; set; }
     
-        public virtual ICollection<BestInClass> BestInClasses { get; set; }
         public virtual ICollection<Model_Funnel_Stage> Model_Funnel_Stage { get; set; }
         public virtual ICollection<TacticType> TacticTypes { get; set; }
     }

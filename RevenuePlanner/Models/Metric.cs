@@ -14,14 +14,27 @@ namespace RevenuePlanner.Models
     
     public partial class Metric
     {
+        public Metric()
+        {
+            this.BestInClasses = new HashSet<BestInClass>();
+            this.ImprovementTacticType_Metric = new HashSet<ImprovementTacticType_Metric>();
+            this.ImprovementTacticType_Touches = new HashSet<ImprovementTacticType_Touches>();
+        }
+    
         public int MetricId { get; set; }
-        public int MetricTypeId { get; set; }
-        public string MetricCode { get; set; }
+        public string MetricType { get; set; }
         public string MetricName { get; set; }
+        public string MetricCode { get; set; }
+        public Nullable<System.Guid> ClientId { get; set; }
+        public Nullable<int> Level { get; set; }
         public bool IsDeleted { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
+    
+        public virtual ICollection<BestInClass> BestInClasses { get; set; }
+        public virtual ICollection<ImprovementTacticType_Metric> ImprovementTacticType_Metric { get; set; }
+        public virtual ICollection<ImprovementTacticType_Touches> ImprovementTacticType_Touches { get; set; }
     }
 }

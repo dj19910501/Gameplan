@@ -1656,12 +1656,189 @@ a {
     float: right;
     width: 140px;
 }
-
-/*Added by Kuber Joshi on 11 March 2014 for TFS point 221 */
+ /*Added by Kuber Joshi on 11 March 2014 for TFS point 221 */
 .title-header.plan {
     background: none repeat scroll 0 0 #F2F2F2;
     border: 1px solid #E6E6E6;
     color: #2384B8;
     font-size: 24px;
     padding: 2px 10px;
+}
+/* added by kapil - 250213 - Boost & Boost Details */
+#table_boost{color: #908d88 !important;}
+#table_boost.table-striped tbody > tr:nth-child(2n+1) > td, .table-striped tbody > tr:nth-child(2n+1) > th { background-color: #e9f6fd;}
+#table_boost td.gray{background-color: #f7f7f7 !important;}
+#table_boost th, #table_boost td {border-top: none !important; text-align: right;}
+#table_boost tr th:first-child, #table_boost tr td:first-child{text-align: left;}
+#table_boost th.border-r, #table_boost td.border-r {border-right: 1px solid #c7ced1 !important;}
+#table_boost tbody tr{cursor: pointer;}
+#table_boost tbody tr td{line-height: 26px;}
+#table_boost tbody{border-top: 1px solid #c7ced1; border-bottom: 1px solid #c7ced1;}
+
+.boost-table{}
+.boost-table tr td:nth-child(2), .boost-table tr th:nth-child(2){text-align:left !important;}
+
+.width340{min-width:340px;}
+.width452{min-width:452px;}
+
+#table_boost.boost-table tbody > tr:nth-child(2n+1) > td, .boost-table tbody > tr:nth-child(2n+1) > th { background-color: #f7f7f7;}
+#table_boost.boost-table tr:hover td{background-color: #F6D87F;}
+#table_boost.boost-table tbody > tr:hover:nth-child(2n+1) > td{ background-color: #F6D87F;}
+
+.improve-trget{display:inline-block; background:#d4d4d4; color:#fff; text-align:center; width:41px !important; height:14px !important; font-size:15px; line-height:15px; padding:2px 3px; border-radius:10px; margin-left:8px; text-transform:uppercase; font-family: 'source_sans_probold', Arial, sans-serif;}
+.improve-trget:first-child{margin-left:0;}
+.improve-trget.active{background:#5693b3;}
+
+/* Sidebar accordion */
+.sidebar-accordion{border-top:1px solid #666;}
+.sidebar-accordion .accordion-group{border-bottom:1px solid #666 !important;}
+.sidebar-accordion .accordion-body.in{border-top:1px solid #666;}
+.sidebar-accordion .accordion-heading{padding:0;}
+.sidebar-accordion .collapsed.accordion-toggle{color:#999;}
+.sidebar-accordion .accordion-toggle{padding:7px 20px 7px 13px !important; color:#CCC; text-decoration:none; font-size:16px;}
+.sidebar-accordion .accordion-toggle:hover{text-decoration:none;}
+
+.sidebar-accordion .accordion-toggle span{display:inline-block; vertical-align:middle;}
+.sidebar-accordion .collapsed.accordion-toggle .filter-icon{background:url(../images/filter-icon.png) left top no-repeat; width:24px; height:24px; margin-right:15px;}
+.sidebar-accordion .accordion-toggle .filter-icon{background:url(../images/filter-icon-active.png) left top no-repeat; width:24px; height:24px; margin-right:15px;}
+
+.sidebar-accordion .collapsed.accordion-toggle .meter-icon{background:url(../images/meter-icon.png) left top no-repeat; width:24px; height:24px; margin-right:15px;}
+.sidebar-accordion .accordion-toggle .meter-icon{background:url(../images/meter-icon-active.png) left top no-repeat; width:24px; height:24px; margin-right:15px;}
+
+.sidebar-accordion .collapsed.accordion-toggle .size-icon{background:url(../images/deal-icon.png) left top no-repeat; width:24px; height:24px; margin-right:15px;}
+.sidebar-accordion .accordion-toggle .size-icon{background:url(../images/deal-icon-active.png) left top no-repeat; width:24px; height:24px; margin-right:15px;}
+
+.sidebar-accordion .collapsed.accordion-toggle .arrow-right-icon{background:url(../images/arrow-right-icon.png) left top no-repeat; width:9px; height:9px; margin:0 3px; margin-bottom:3px;}
+.sidebar-accordion .accordion-toggle .arrow-right-icon{background:url(../images/arrow-right-icon-active.png) left top no-repeat; width:9px; height:9px; margin:0 3px; margin-bottom:3px;}
+
+.sidebar-accordion .collapsed.accordion-toggle .arrow-down-icon{background:url(../images/arrow-d-icon.png) left top no-repeat; width:10px; height:6px; float:right; margin-top:9px;}
+.sidebar-accordion .accordion-toggle .arrow-down-icon{background:url(../images/arrow-d-icon-active.png) left top no-repeat; width:10px; height:6px; float:right; margin-top:9px;}
+
+
+.sidebar-accordion .accordion-body{background:#4a4a4a;}
+.sidebar-accordion .accordion-body ul{list-style:none; margin:3px 19px; padding:0;}
+.sidebar-accordion .accordion-body ul li{line-height:26px; font-size:15px; padding:0 5px 0 5px; border-bottom:1px solid #787878;}
+.sidebar-accordion .accordion-body ul li:last-child{border-bottom:none;}
+.sidebar-accordion .accordion-body ul li span{margin-right:5px;}
+/* */
+/* */
+.width150px{width:150px;}
+/* added by kapil - 280213 - Improvement Activities */
+.improvement-area{padding-top:10px; font-family: 'source_sans_prosemibold',Arial,"sans-serif"; font-size: 24px;}
+.improvement-area .accordion-inner{background:none; padding:0 !important; margin:0;}
+.improvement-area .tactic-level .accordion-inner span.underline{padding-left:45px !important;}
+.stripe-border{background:url(../images/stripe-pattern.gif) left top repeat;}
+
+.improvement-area .cf{position:relative;}
+.improvement-area .gray-add-container{
+	position:absolute;
+	float:none;
+	right:0;
+	top:40px;
+	height:auto;
+	width:451px;
+	box-shadow:none;
+}
+.improvement-area .gray-add-container p:first-child{margin:0 20px; padding-top:10px; border-top:1px solid #A8A8A8;}
+/* */
+/* Added by KAPIL - 030314 - Boost Detail 46 */
+.form-inspect-delete-tactic{
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	z-index: 1050;
+	text-align: center;
+	width:320px;
+	height:350px;
+	padding:15px 20px 5px 20px;
+	margin:-175px 0 0 -160px;
+	background-color:#3f3f3f;
+	-webkit-border-radius:5px;
+	-moz-border-radius:5px;
+	border-radius:5px;
+	-webkit-box-shadow:-3px -16px 4px -13px #262626 inset, 0 5px 8px rgba(0, 0, 0, 0.6);
+	-moz-box-shadow:-3px -16px 4px -13px #262626 inset, 0 5px 8px rgba(0, 0, 0, 0.6);
+	box-shadow:-3px -16px 4px -13px #262626 inset, 0 5px 8px rgba(0, 0, 0, 0.6);
+	font-size:21px;
+	color:#fff;
+}
+.form-inspect-delete-tactic *{text-shadow:none;}
+.form-inspect-delete-tactic p{line-height:30px;}
+.form-inspect-delete-tactic .tactic-options{background:#c6605a; font-size:18px; padding:2px 0;}
+.form-inspect-delete-tactic label{font-size: 21px; color: #FFFFFF;}
+.form-inspect-delete-tactic button{
+	float:left;
+	height:17px;
+	background:url("../images/btn-login.jpg") repeat-x #3b9de4;
+	background-color: #3b9de4;
+	border:none;
+	font-size:18px;
+	margin-top:20px;
+	margin-right:15px;
+	color:#fff;
+	text-shadow: 0 -1px 1px #235d86;
+	padding-left:15px;
+	padding-right:15px;
+}
+.form-inspect-delete-tactic .cancel{background:none; box-shadow:none; text-shadow: 0 -1px 1px #222;}
+.form-inspect-delete-tactic .cancel:hover{text-decoration:underline;}
+/* */
+
+/* Added by KAPIL - 030314 - Boost Detail 47 */
+/* Left Nav */
+.left-nav{margin-right:20px; margin-bottom:15px !important; background:url(../images/left-nav-border.png) right top repeat-y;}
+.left-nav .link-alone{margin-left:20px; display:block; border-bottom:1px solid #d1d1d1; padding:5px 15px;}
+.left-nav .link-alone label{margin:0;}
+.left-nav .accordion-toggle > div{/*width:calc(100% - 10px);*/ border-top:1px solid #d1d1d1; border-left:7px solid #8c8a85; background:#d1d1d1;}
+.left-nav .accordion-body a{background:none;}
+.left-nav .accordion-body .accordion-toggle > div{border-top:none; background:none;}
+.left-nav .accordion-body .accordion-inner{padding-left:15px; margin-left:21px;}
+.left-nav .accordion-heading{padding-left:11px;}
+
+.left-nav .accordion-body .accordion-body{background:#D7D7D7; margin-left:20px; width:calc(100% - 20px);}
+.left-nav .accordion-body .accordion-body.in{padding-bottom:5px; padding-top:5px;}
+.left-nav .accordion-body .accordion-body a{margin-left:8px; line-height:16px; padding-top:3px !important; padding-bottom:3px !important;}
+
+.item-32208d{border-left:7px solid #32208d;}
+.item-c5c5c5{border-left:7px solid #c5c5c5;}
+.item-heading-c5c5c5 > div{border-left:7px solid #c5c5c5;}
+.item-18bf39{border-left:7px solid #18bf39;}
+.item-641c8c > div{border-left:7px solid #641c8c !important;}
+.item-641c8c > div:hover{background:#c6c4d3;}
+.item-7f7f7f{border-left:7px solid #7f7f7f;}
+.item-1068b9{border-left:7px solid #1068b9;}
+.item-006235{border-left:7px solid #006235;}
+
+.improvements .item-641c8c{border-left:7px solid #641c8c !important;}
+.improvements .item-641c8c:hover{background:#c6c4d3;}
+
+.improvements .item-641c8c > div{border-left:none !important;}
+.item-641c8c > div:hover{background:none;}
+
+.left-nav .cf span{padding-right:15px !important; margin-right:0 !important;}
+.left-nav .cf span span{padding-right:0 !important;}
+
+.improvements .accordion-body a:last-child {
+    border-bottom: 1px solid #D1D1D1;
+}
+/* */
+
+.white-chart .small-value{display: block; font-size: 16px;}
+.bullhorn-bg{background-image:url(../images/bullhorn-bg.png); background-position:right bottom; background-repeat:no-repeat;}
+/* ======================================= */
+
+/* Added by KAPIL - #47 - Boost - Impact Tab*/
+.impact th{width:150px;}
+.impact th:first-child{width:180px;}
+.impact .right-arrow{background:url(../images/arrow-right-icon-dark.png) left top no-repeat; width:9px; height:9px; vertical-align:middle; display:inline-block; margin:0 4px 5px;}
+/* ======================================= */
+
+/* By Bhavesh Dobariya */
+.marginTop-5px
+{
+    margin-top: -5px;
+}
+.margin-top3px
+{
+    margin-top: 3px;
 }

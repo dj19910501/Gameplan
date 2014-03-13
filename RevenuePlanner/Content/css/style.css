@@ -6273,3 +6273,57 @@ input.delete-icon + span:hover, span.delete-tactic:hover, .delete-temp-program:h
 h2.title-header {
     color: #333;
 }
+
+/* Added by KAPIL - #48 - Boost Feature*/
+.bullhorn-icon
+{
+    background: url(../images/bullhorn-blue.png) left top no-repeat;
+    width: 17px;
+    height: 13px;
+    float: left;
+    margin-top: 6px;
+    margin-right: 10px;
+}
+
+/* Added by KAPIL - 030314 - Boost Detail 47 */
+/* Left Nav */
+.left-nav{margin-right:20px; margin-bottom:15px !important; background:url(../images/left-nav-border.png) right top repeat-y;}
+.left-nav .link-alone{margin-left:20px; display:block; border-bottom:1px solid #d1d1d1; padding:5px 15px;}
+.left-nav .link-alone label{margin:0;}
+.left-nav .accordion-toggle > div{/*width:calc(100% - 10px);*/ border-top:1px solid #d1d1d1; border-left:7px solid #8c8a85; background:#d1d1d1;}
+.left-nav .accordion-body a{background:none;}
+.left-nav .accordion-body .accordion-toggle > div{border-top:none; background:none;}
+.left-nav .accordion-body .accordion-inner{padding-left:15px; margin-left:21px;}
+.left-nav .accordion-heading{padding-left:11px;}
+
+.left-nav .accordion-body .accordion-body{background:#D7D7D7; margin-left:20px; width:calc(100% - 20px);}
+.left-nav .accordion-body .accordion-body.in{padding-bottom:5px; padding-top:5px;}
+.left-nav .accordion-body .accordion-body a{margin-left:8px; line-height:16px; padding-top:3px !important; padding-bottom:3px !important;}
+
+.item-32208d{border-left:7px solid #32208d;}
+.item-c5c5c5{border-left:7px solid #c5c5c5;}
+.item-heading-c5c5c5 > div{border-left:7px solid #c5c5c5;}
+.item-18bf39{border-left:7px solid #18bf39;}
+.item-641c8c > div{border-left:7px solid #641c8c !important;}
+.item-641c8c > div:hover{background:#c6c4d3;}
+.item-7f7f7f{border-left:7px solid #7f7f7f;}
+.item-1068b9{border-left:7px solid #1068b9;}
+.item-006235{border-left:7px solid #006235;}
+
+.improvements .item-641c8c{border-left:7px solid #641c8c !important;}
+.improvements .item-641c8c:hover{background:#c6c4d3;}
+
+.improvements .item-641c8c > div{border-left:none !important;}
+.item-641c8c > div:hover{background:none;}
+
+.left-nav .cf span{padding-right:15px !important; margin-right:0 !important;}
+.left-nav .cf span span{padding-right:0 !important;}
+
+.improvements .accordion-body a:last-child {
+    border-bottom: 1px solid #D1D1D1;
+}
+/* */
+
+.white-chart .small-value{display: block; font-size: 16px;}
+.bullhorn-bg{background-image:url(../images/bullhorn-bg.png); background-position:right bottom; background-repeat:no-repeat;}
+/* ======================================= */

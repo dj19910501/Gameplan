@@ -9,11 +9,11 @@ $(document).ready(function () {
     $('.accordion').collapse({
         toggle: false
     }).on('show', function (e) {
-
-        $(e.target).parent().find(".chevron-right").removeClass("chevron-right").addClass("chevron-down");
+        /// Modified By Maninder Singh Wadhva PL Ticket#47
+        $(e.target).prev().find(".chevron-right").removeClass("chevron-right").addClass("chevron-down");
     }).on('hide', function (e) {
-
-        $(e.target).parent().find(".chevron-down").removeClass("chevron-down").addClass("chevron-right");
+        /// Modified By Maninder Singh Wadhva PL Ticket#47
+        $(e.target).prev().find(".chevron-down").removeClass("chevron-down").addClass("chevron-right");
     });
 
     //function to change arrows on accordions 

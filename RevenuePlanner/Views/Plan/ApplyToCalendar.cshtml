@@ -706,18 +706,32 @@
        HideDragHandleOfTask();
    }
 
+     /// Modified By Maninder Singh Wadhva PL Ticket#47
    //// Function to hide drag handle.
    function HideDragHandleOfTask() {
        gantt.eachTask(function (task) {
-           if (task.IsHideDragHandleLeft || task.IsHideDragHandleRight) {
-               HideDragHandleLeftOrRigth(task);
+
+             if ((task.IsHideDragHandleLeft || task.IsHideDragHandleRight) && typeof task.isImprovement == 'undefined') {
+                 HideDragHandleLeft(task);
+                 HideDragHandleRight(task);
+             }
+             else if (typeof task.isImprovement != 'undefined' && task.isImprovement == true) {
+                 HideDragHandleRight(task);
+                 if (task.IsHideDragHandleLeft == true) {
+                     HideDragHandleLeft(task);
+                 }
            }
        })
    }
 
-   //// Function to hide left right drag handle.
-   function HideDragHandleLeftOrRigth(task) {
+     /// Modified By Maninder Singh Wadhva PL Ticket#47
+     //// Function to hide left drag handle.
+     function HideDragHandleLeft(task) {
        $(".gantt_bars_area").find("div[task_id='" + task.id + "']").find('div[class="gantt_task_drag task_left"]').remove();
+     }
+
+    //// Function to hide right drag handle.
+     function HideDragHandleRight(task) {
        $(".gantt_bars_area").find("div[task_id='" + task.id + "']").find('div[class="gantt_task_drag task_right"]').remove();
    }
 
@@ -839,13 +853,16 @@
 
     //// Function to set after start_date and duration.
     //// Modified By: Maninder Singh Wadhva to fix TFS Bug#260 Plan - Apply to Calendar - The plotting of activity bars in the calendar doesn't align with the dates mentioned.
+     //// Modified By: Maninder Singh Wadhva PL Ticket#47
     function AfterTaskDrag(id, mode, e) {
         var modes = gantt.config.drag_mode;
         switch (mode) {
             case modes.move:
             case modes.resize:
                 var task = gantt.getTask(id);
-                if (typeof task.PlanCampaignId != 'undefined') {
+                 if (typeof task.isImprovement != 'undefined' && task.isImprovement == true && typeof task.ImprovementPlanTacticId != 'undefined') {
+                     UpdateEffectiveDateImprovement(task.ImprovementPlanTacticId, task.start_date)
+                 } else if (typeof task.PlanCampaignId != 'undefined') {
                     UpdateStartEndDate(task.PlanCampaignId, task.start_date, task.duration - 1, true, false, false)
                 } else if (typeof task.PlanProgramId != 'undefined') {
                     UpdateStartEndDate(task.PlanProgramId, task.start_date, task.duration - 1, false, true, false)
@@ -914,6 +931,27 @@
             type: 'POST',
             url: '@Url.Action("UpdateStartEndDate", "Plan")',
             data: { id: id, startDate: updatedStartDate, duration: updatedDuration, isPlanCampaign: isPlanCampaign, isPlanProgram: isPlanProgram, isPlanTactic: isPlanTactic },
+             dataType: 'json',
+             success: function (data) {
+                 return data;
+             },
+             error: function () {
+                 myApp.hidePleaseWait();
+                 GetTactics();
+             }
+         });
+     }
+
+    //// Function to update start or end date.
+    //// Added By: Maninder Singh Wadhva PL Ticket#47
+     function UpdateEffectiveDateImprovement(id, startDate) {
+         CheckDate(startDate, 0);
+         updatedStartDate = (updatedStartDate.getMonth() + 1) + '/' + (updatedStartDate.getDate()) + '/' + updatedStartDate.getFullYear();
+
+         $.ajax({
+             type: 'POST',
+             url: '@Url.Action("UpdateEffectiveDateImprovement", "Plan")',
+             data: { id: id, effectiveDate: updatedStartDate },
             dataType: 'json',
             success: function (data) {
                 return data;

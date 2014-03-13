@@ -280,6 +280,11 @@ namespace RevenuePlanner.Helpers
             ProgramCommentAdded,
             CampaignCommentAdded,
             ShareReport,  //// Added By: Maninder Singh Wadhva for Share report functionality.
+            ImprovementTacticCommentAdded, /// Added By Bhavesh Dobariya.
+            ImprovementTacticApproved,
+            ImprovementTacticDeclined,
+            ImprovementTacticSubmitted,
+            ShareImprovementTactic
         }
         #endregion
 
@@ -418,7 +423,9 @@ namespace RevenuePlanner.Helpers
             [Description("")]
             empty,
             [Description("updated to")]
-            updatedto
+            updatedto,
+            [Description("improvement tactic")]
+            improvetactic,
 
         }
         #endregion
@@ -490,7 +497,8 @@ namespace RevenuePlanner.Helpers
         {
             Campaign,
             Program,
-            Tactic
+            Tactic,
+            ImprovementTactic
         }
         #endregion
 
@@ -545,6 +553,23 @@ namespace RevenuePlanner.Helpers
             {ReportMonthDisplay.Nov.ToString(), "Nov"},
             {ReportMonthDisplay.Dec.ToString(), "Dec"}
         };
+
+        #endregion
+
+        #region Improvement
+
+        /// <summary>
+        /// Added By: Bhavesh Dobariya
+        /// Date: 3/06/2014
+        /// Enum for Metric Type.
+        /// </summary>
+        public enum MetricType
+        {
+            CR,
+            SV,
+            Size,
+            Volume
+        }
 
         #endregion
     }

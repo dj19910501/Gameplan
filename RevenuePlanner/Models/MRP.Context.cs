@@ -36,11 +36,10 @@ namespace RevenuePlanner.Models
         public DbSet<Funnel> Funnels { get; set; }
         public DbSet<Funnel_Field> Funnel_Field { get; set; }
         public DbSet<Geography> Geographies { get; set; }
-        public DbSet<ImprovementTacticStageTransitionMap> ImprovementTacticStageTransitionMaps { get; set; }
         public DbSet<ImprovementTacticType> ImprovementTacticTypes { get; set; }
         public DbSet<ImprovementTacticType_Metric> ImprovementTacticType_Metric { get; set; }
+        public DbSet<ImprovementTacticType_Touches> ImprovementTacticType_Touches { get; set; }
         public DbSet<Metric> Metrics { get; set; }
-        public DbSet<MetricType> MetricTypes { get; set; }
         public DbSet<Model> Models { get; set; }
         public DbSet<Model_Audience_Event> Model_Audience_Event { get; set; }
         public DbSet<Model_Audience_Inbound> Model_Audience_Inbound { get; set; }
@@ -58,7 +57,6 @@ namespace RevenuePlanner.Models
         public DbSet<Plan_Improvement_Campaign> Plan_Improvement_Campaign { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program> Plan_Improvement_Campaign_Program { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program_Tactic> Plan_Improvement_Campaign_Program_Tactic { get; set; }
-        public DbSet<Plan_Improvement_Campaign_Program_Tactic_Actual> Plan_Improvement_Campaign_Program_Tactic_Actual { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program_Tactic_Comment> Plan_Improvement_Campaign_Program_Tactic_Comment { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program_Tactic_Share> Plan_Improvement_Campaign_Program_Tactic_Share { get; set; }
         public DbSet<Plan_Team> Plan_Team { get; set; }

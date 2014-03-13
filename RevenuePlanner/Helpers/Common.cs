@@ -438,6 +438,10 @@ namespace RevenuePlanner.Helpers
                 {
                     emailBody = notification.EmailContent.Replace("[NameToBeReplaced]", CollaboratorUserName.ElementAt(i)).Replace("[CampaignNameToBeReplaced]", TacticName).Replace("[PlanNameToBeReplaced]", PlanName).Replace("[UserNameToBeReplaced]", Sessions.User.FirstName + " " + Sessions.User.LastName).Replace("[CommentToBeReplaced]", Comment);
                 }
+          else if (Section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+            {
+                emailBody = notification.EmailContent.Replace("[ImprovementTacticNameToBeReplaced]", TacticName).Replace("[PlanNameToBeReplaced]", PlanName).Replace("[UserNameToBeReplaced]", Sessions.User.FirstName + " " + Sessions.User.LastName).Replace("[CommentToBeReplaced]", Comment);
+            }
                 string email = EmailIds.ElementAt(i);
                 string Username = CollaboratorUserName.ElementAt(i);
                 //Common.SendMailToMultipleUser(EmailIds, Common.FromMail, emailBody, notification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High));
@@ -455,6 +459,21 @@ namespace RevenuePlanner.Helpers
             var planTacticModifiedBy = planTactic.ToList().Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
             var planTacticCreatedBy = planTactic.ToList().Select(t => t.CreatedBy.ToString()).ToList();
             var planTacticComment = db.Plan_Campaign_Program_Tactic_Comment.Where(pc => pc.PlanTacticId == PlanTacticId);
+            var planTacticCommentCreatedBy = planTacticComment.ToList().Select(pc => pc.CreatedBy.ToString()).ToList();
+            collaboratorId.AddRange(planTacticCreatedBy);
+            collaboratorId.AddRange(planTacticModifiedBy);
+            collaboratorId.AddRange(planTacticCommentCreatedBy);
+            return collaboratorId.Distinct().ToList<string>();
+        }
+
+        public static List<string> GetCollaboratorForImprovementTactic(int ImprovementPlanTacticId)
+        {
+            MRPEntities db = new MRPEntities();
+            List<string> collaboratorId = new List<string>();
+            var planTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.ImprovementPlanTacticId == ImprovementPlanTacticId);
+            var planTacticModifiedBy = planTactic.ToList().Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
+            var planTacticCreatedBy = planTactic.ToList().Select(t => t.CreatedBy.ToString()).ToList();
+            var planTacticComment = db.Plan_Improvement_Campaign_Program_Tactic_Comment.Where(pc => pc.ImprovementPlanTacticId == ImprovementPlanTacticId);
             var planTacticCommentCreatedBy = planTacticComment.ToList().Select(pc => pc.CreatedBy.ToString()).ToList();
             collaboratorId.AddRange(planTacticCreatedBy);
             collaboratorId.AddRange(planTacticModifiedBy);
@@ -513,6 +532,10 @@ namespace RevenuePlanner.Helpers
             {
                 lst_CollaboratorId = GetCollaboratorForCampaign(planTacticId);
             }
+            else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+            {
+                lst_CollaboratorId = GetCollaboratorForImprovementTactic(planTacticId);
+            }
             if (lst_CollaboratorId.Count > 0)
             {
                 var csv = string.Join(", ", lst_CollaboratorId);
@@ -535,6 +558,10 @@ namespace RevenuePlanner.Helpers
                 {
                     PlanName = db.Plan_Campaign.Where(pc => pc.PlanCampaignId == planTacticId).Select(pc => pc.Plan.Title).SingleOrDefault();
                 }
+                else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                {
+                    PlanName = db.Plan_Improvement_Campaign_Program_Tactic.Where(pc => pc.ImprovementPlanTacticId == planTacticId).Select(pc => pc.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Title).SingleOrDefault();
+                }
                 if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
                 {
                     if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
@@ -548,6 +575,10 @@ namespace RevenuePlanner.Helpers
                     else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                     {
                         SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.CampaignApproved.ToString(), "", Convert.ToString(Enums.Section.Campaign).ToLower());
+                    } 
+else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                    {
+                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ImprovementTacticApproved.ToString(), "", Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
                     }
                 }
                 else if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
@@ -564,6 +595,10 @@ namespace RevenuePlanner.Helpers
                     else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                     {
                         SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.CampaignDeclined.ToString(), "", Convert.ToString(Enums.Section.Campaign).ToLower());
+                    }	  
+else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                    {
+                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ImprovementTacticDeclined.ToString(), "", Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
                     }
                 }
                 else if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()))
@@ -585,6 +620,10 @@ namespace RevenuePlanner.Helpers
                     {
                         SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.CampaignSubmitted.ToString(), "", Convert.ToString(Enums.Section.Campaign).ToLower());
                     }
+else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                    {
+                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ImprovementTacticSubmitted.ToString(), "", Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
+                    }
                 }
                 else if (status.Equals(Enums.Custom_Notification.TacticCommentAdded.ToString()) && iscomment)
                 {
@@ -605,6 +644,13 @@ namespace RevenuePlanner.Helpers
                     if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                     {
                         SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.CampaignCommentAdded.ToString(), comment, Convert.ToString(Enums.Section.Campaign).ToLower());
+                    }
+                }
+else if (status.Equals(Enums.Custom_Notification.ImprovementTacticCommentAdded.ToString()) && iscomment)
+                {
+                    if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                    {
+                        SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ImprovementTacticCommentAdded.ToString(), comment, Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
                     }
                 }
             }
@@ -1319,6 +1365,114 @@ namespace RevenuePlanner.Helpers
                 db = null;
                 return string.Empty;
             }
+        }
+        #endregion
+
+        #region Improvement
+        /// <summary>
+        /// Function to append improvement task data to existing task data.
+        /// </summary>
+        /// <param name="taskData">Current task data.</param>
+        /// <param name="improvementTactics">Improvement tactic of current plan.</param>
+        /// <param name="calendarStartDate">Calendar start date.</param>
+        /// <param name="calendarEndDate">Calendar end date.</param>
+        /// <param name="isApplyTocalendar">Flag to indicate whether it is called from apply to calendar.</param>
+        /// <returns>Returns task data after appending improvement task data.</returns>
+        public static List<object> AppendImprovementTaskData(List<object> taskData, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics, DateTime calendarStartDate, DateTime calendarEndDate, bool isApplyTocalendar)
+        {
+            var improvementTacticTaskData = GetImprovementTacticTaskData(improvementTactics, calendarStartDate, calendarEndDate, isApplyTocalendar);
+            if (improvementTacticTaskData.Count() > 0)
+            {
+                taskData = improvementTacticTaskData.Concat<object>(taskData).ToList<object>();
+                var improvementActivityTaskData = GetImprovementActivityTaskData(improvementTactics, calendarStartDate, calendarEndDate, isApplyTocalendar);
+                taskData.Insert(0, improvementActivityTaskData);
+            }
+
+            return taskData;
+        }
+
+        /// <summary>
+        /// Function to get improvement tactic task data.
+        /// </summary>
+        /// <param name="improvementTactics">Improvement tactic of current plan.</param>
+        /// <param name="calendarStartDate">Calendar start date.</param>
+        /// <param name="calendarEndDate">Calendar end date.</param>
+        /// <param name="isApplyTocalendar">Flag to indicate whether it is called from apply to calendar.</param>
+        /// <returns>Return list of object containing improvement tactic task data.</returns>
+        private static List<object> GetImprovementTacticTaskData(List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics, DateTime calendarStartDate, DateTime calendarEndDate, bool isApplyTocalendar)
+        {
+            //// Getting Task Data.
+            string tacticStatusSubmitted = Enums.TacticStatusValues.Single(s => s.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value;
+            string tacticStatusDeclined = Enums.TacticStatusValues.Single(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value;
+
+            //// Getting task data of plan improvement tactic.
+            var taskDataImprovementTactic = improvementTactics.Select(improvementTactic => new
+            {
+                id = string.Format("M{0}_I{1}_Y{2}", 1, improvementTactic.ImprovementPlanTacticId, improvementTactic.ImprovementTacticTypeId),
+                text = improvementTactic.Title,
+                start_date = Common.GetStartDateAsPerCalendar(calendarStartDate, improvementTactic.EffectiveDate),
+                duration = Common.GetEndDateAsPerCalendar(calendarStartDate,
+                                                          calendarEndDate,
+                                                          improvementTactic.EffectiveDate,
+                                                          calendarEndDate) - 1,
+                progress = 0,
+                open = true,
+                parent = string.Format("M{0}", 1),
+                color = (isApplyTocalendar ? Common.COLORC6EBF3_WITH_BORDER : string.Concat(GANTT_BAR_CSS_CLASS_PREFIX, improvementTactic.ImprovementTacticType.ColorCode.ToLower())),
+                isSubmitted = improvementTactic.Status.Equals(tacticStatusSubmitted),
+                isDeclined = improvementTactic.Status.Equals(tacticStatusDeclined),
+                inqs = 0,
+                mqls = 0,
+                cost = improvementTactic.Cost,
+                cws = 0,
+                improvementTactic.ImprovementPlanTacticId,
+                isImprovement = true,
+                IsHideDragHandleLeft = improvementTactic.EffectiveDate < calendarStartDate,
+                IsHideDragHandleRight = true
+            }).OrderBy(t => t.text);
+
+            return taskDataImprovementTactic.ToList<object>();
+        }
+
+        /// <summary>
+        /// Function to get improvement activity task data.
+        /// </summary>
+        /// <param name="improvementTactics">Improvement tactic of current plan.</param>
+        /// <param name="calendarStartDate">Calendar start date.</param>
+        /// <param name="calendarEndDate">Calendar end date.</param>
+        /// <param name="isApplyTocalendar">Flag to indicate whether it is called from apply to calendar.</param>
+        /// <returns>Return improvement activity task data.</returns>
+        private static object GetImprovementActivityTaskData(List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics, DateTime calendarStartDate, DateTime calendarEndDate, bool isApplyTocalendar)
+        {
+            string color = "";
+            if (isApplyTocalendar)
+            {
+                color = Common.COLOR27A4E5;
+            }
+
+            //// Getting start date for improvement activity task.
+            DateTime startDate = improvementTactics.Select(improvementTactic => improvementTactic.EffectiveDate).Min();
+
+            //// Creating task Data for the only parent of all plan improvement tactic.
+            var taskDataImprovementActivity = new
+            {
+                id = string.Format("M{0}", "1"),
+                text = "Improvement Activities",
+                start_date = Common.GetStartDateAsPerCalendar(calendarStartDate, startDate),
+                duration = Common.GetEndDateAsPerCalendar(calendarStartDate,
+                                                          calendarEndDate,
+                                                          startDate,
+                                                          calendarEndDate) - 1,
+                progress = 0,
+                open = true,
+                color = color,
+                ImprovementActivityId = 1,
+                isImprovement = true,
+                IsHideDragHandleLeft = startDate < calendarStartDate,
+                IsHideDragHandleRight = true
+            };
+
+            return taskDataImprovementActivity;
         }
         #endregion
     }

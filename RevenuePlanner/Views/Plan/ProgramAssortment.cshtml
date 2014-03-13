@@ -176,11 +176,11 @@
             $(this).closest(".alert").slideUp(400);
         });
         if (isredirect == 'True') {
-            $('.dropdown-menu').css("display", "none");
+            $('.datepicker.dropdown-menu').css("display", "none");
         }
         $('.close-form', this.$panel).click(function (e) {
             if (isredirect == 'True') {
-                $('.dropdown-menu').css("display", "none");
+                $('.datepicker.dropdown-menu').css("display", "none");
             }
             $("#slidepanel").css("display", "none");
             $("#slidepanel-container").empty();
@@ -218,6 +218,20 @@
             });
         });
 
+        $('form').find(".sbSelector").each(function () {
+            $(this).next().find('li').click(function () {
+                if ($(this).parent().parent().prev().attr('require') == 'true') {
+                    if ($(this).parent().prev().text() == 'Please Select') {
+                        $(this).parent().prev().addClass("error");
+                        iserror = true;
+                    }
+                    else {
+                        $(this).parent().prev().removeClass("error");
+                    }
+                }
+            });
+        });
+
         $("#save_campaign_program").click(function () {
             var iserror = false;
             $('form').find('input[type=text], select, textarea').each(function () {
@@ -231,6 +245,20 @@
                     }
                 }
             });
+
+            //sbSelector
+            $('form').find('.sbSelector').each(function () {
+                if ($(this).parent().prev().attr('require') == 'true') {
+                    if ($(this).text() == 'Please Select') {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                }
+            });
+
             if (iserror) {
                 ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
                 return false;

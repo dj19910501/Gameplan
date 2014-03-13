@@ -16,7 +16,8 @@ namespace RevenuePlanner.Models
     {
         public Plan_Improvement_Campaign_Program_Tactic()
         {
-            this.ImprovementTacticStageTransitionMaps = new HashSet<ImprovementTacticStageTransitionMap>();
+            this.Plan_Improvement_Campaign_Program_Tactic_Comment = new HashSet<Plan_Improvement_Campaign_Program_Tactic_Comment>();
+            this.Plan_Improvement_Campaign_Program_Tactic_Share = new HashSet<Plan_Improvement_Campaign_Program_Tactic_Share>();
         }
     
         public int ImprovementPlanTacticId { get; set; }
@@ -24,28 +25,26 @@ namespace RevenuePlanner.Models
         public int ImprovementTacticTypeId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public Nullable<int> VerticalId { get; set; }
-        public Nullable<int> AudienceId { get; set; }
-        public Nullable<System.Guid> GeographyId { get; set; }
+        public int VerticalId { get; set; }
+        public int AudienceId { get; set; }
+        public System.Guid GeographyId { get; set; }
         public System.Guid BusinessUnitId { get; set; }
         public System.DateTime EffectiveDate { get; set; }
         public double Cost { get; set; }
-        public Nullable<double> CostActual { get; set; }
         public string Status { get; set; }
+        public bool IsDeleted { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
-        public bool IsDeleted { get; set; }
     
+        public virtual Audience Audience { get; set; }
         public virtual BusinessUnit BusinessUnit { get; set; }
         public virtual Geography Geography { get; set; }
-        public virtual ICollection<ImprovementTacticStageTransitionMap> ImprovementTacticStageTransitionMaps { get; set; }
         public virtual ImprovementTacticType ImprovementTacticType { get; set; }
-        public virtual ImprovementTacticType ImprovementTacticType1 { get; set; }
         public virtual Plan_Improvement_Campaign_Program Plan_Improvement_Campaign_Program { get; set; }
-        public virtual Plan_Improvement_Campaign_Program_Tactic Plan_Improvement_Campaign_Program_Tactic1 { get; set; }
-        public virtual Plan_Improvement_Campaign_Program_Tactic Plan_Improvement_Campaign_Program_Tactic2 { get; set; }
+        public virtual ICollection<Plan_Improvement_Campaign_Program_Tactic_Comment> Plan_Improvement_Campaign_Program_Tactic_Comment { get; set; }
+        public virtual ICollection<Plan_Improvement_Campaign_Program_Tactic_Share> Plan_Improvement_Campaign_Program_Tactic_Share { get; set; }
         public virtual Vertical Vertical { get; set; }
     }
 }

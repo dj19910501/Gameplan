@@ -225,18 +225,44 @@
         }
     </div>
 
+    <!--First Static Accordion-->
+    <!--Modified By Maninder Singh Wadhva PL Ticket#47-->
+    <div class="accordion colors left-nav" id="marketing-activities">
+        <div class="accordion-group source-sans-proregular">
+            <div class="accordion-heading">
+                <a href="#DivAccordionMarketingActivities" data-parent="marketing-activities" data-toggle="collapse" class="accordion-toggle item-741f98 collapsed">
+                    <div class="cf source-sans-probold">Marketing Activities</div>
+                </a>
+            </div>
+            <div class="accordion-body in collapse" id="DivAccordionMarketingActivities">
+            </div>
+        </div>
+        <a class="link-alone" id="AShowOnlyMyTactic" href="#">
+            <label>Show only My Tactics</label></a>
+    </div>
+    <!--First Static Accordion END-->
+    <!--Second Static Accordion-->
+    <div class="accordion colors left-nav improvements" id="improvements">
+        <div class="accordion-group source-sans-proregular">
+            <div class="accordion-heading">
+                <a href="#DivAccordionImprovementActivities" data-parent="improvements" data-toggle="collapse" class="accordion-toggle item-741f98 collapsed">
+                    <div class="cf source-sans-probold">Improvements</div>
+                </a>
+            </div>
+            <div class="accordion-body collapse" id="DivAccordionImprovementActivities">
+            </div>
+        </div>
+    </div>
+    <!--Second Static Accordion END-->
 
     <!--First Accordion-->
-    <div class="scrolled_div">
+    @* <div class="scrolled_div">
         <div class="accordion colors" id="DivAccordion"></div>
     </div>
 
-    <div class="shadow-scroll"></div>
+    <div class="shadow-scroll"></div>*@
 
     <div class="padding-content padding-top0">
-        <a class="link-alone" id="AShowOnlyMyTactic" href="#">
-            <label>Show only My Tactics</label></a>
-
         <h4 class="text-shadow-black source-sans-prolight">Filters</h4>
 
         <!--Second Accordion-->
@@ -790,35 +816,75 @@
       AjaxRequest();
   }
 
+    //// Modified By Maninder Singh Wadhva PL Ticket#47
+    //// Function to add html for improvement activities.
+    function AddImprovementActivities(colorCode, parentTitle, parentId, filteredData) {
+        var accordionDiv = $('#DivAccordionImprovementActivities');
+        accordionDiv.append("<div class='accordion-heading'>\
+                                    <a href='#accordion-element-improvement-" + parentId + "' data-toggle='collapse' class='accordion-toggle item-heading-" + colorCode + " collapsed chevron-right'>\
+                                        <div class='cf'>" + parentTitle + "<span class='pull-right'><span id='spnimprovement_" + parentId + "'>0</span>/" + filteredData.length + "</span></div>\
+                                    </a>\
+                                </div>\
+                                <div class='accordion-body collapse' id='accordion-element-improvement-" + parentId + "'>\
+                                </div>");
+
+        $.each(filteredData, function (index2, objfilteredData) {
+            $("#accordion-element-improvement-" + parentId).append("<a taskid='" + objfilteredData.TaskId + "' href='#' class='accordion-inner item-" + colorCode + "'>" + objfilteredData.Title + "</a>")
+            $("a[taskid='" + objfilteredData.TaskId + "']").click(function (event) {
+                GanttOpenBranch($(this).attr('taskid'));
+            });
+        })
+    }
+
+    //// Modified By Maninder Singh Wadhva PL Ticket#47
+    //// Function to add marketing activities.
+    function AddMarketingActivities(colorCode, parentTitle, parentId, filteredData) {
+        var accordionDiv = $('#DivAccordionMarketingActivities');
+        accordionDiv.append("<div class='accordion-heading'>\
+                                    <a href='#accordion-element-" + parentId + "' data-toggle='collapse' class='accordion-toggle item-heading-" + colorCode + " collapsed chevron-right'>\
+                                        <div class='cf'>" + parentTitle + "<span class='pull-right'><span id='spn_" + parentId + "'>0</span>/" + filteredData.length + "</span></div>\
+                                    </a>\
+                                </div>\
+                                <div class='accordion-body collapse' id='accordion-element-" + parentId + "'>\
+                                </div>");
+
+        $.each(filteredData, function (index2, objfilteredData) {
+            $("#accordion-element-" + parentId).append("<a taskid='" + objfilteredData.TaskId + "' href='#' class='accordion-inner item-" + colorCode + "'>" + objfilteredData.Title + "</a>")
+            $("a[taskid='" + objfilteredData.TaskId + "']").click(function (event) {
+                GanttOpenBranch($(this).attr('taskid'));
+                //alert($(this).attr('taskid'));
+            });
+        })
+    }
+
+    //// Modified By Maninder Singh Wadhva PL Ticket#47
+    //// Function to add improvement activities.
+    function AddAccordionToggleAndInnerImprovementTactic(improvementTacticTypeForAccordion, improvementTacticForAccordion) {
+        var accordionDiv = $('#DivAccordionImprovementActivities');
+        accordionDiv.empty();
+        $.each(improvementTacticTypeForAccordion, function (index1, tactic) {
+            var colorCode = tactic.ColorCode;
+            var improvementTacticTypeId = tactic.ImprovementTacticTypeId;
+
+            //// Filter plan improvement tactic based on improvement tactic type id.
+            var filteredTactic = $.grep(improvementTacticForAccordion, function (value) { return value.ImprovementTacticTypeId == improvementTacticTypeId; })
+            AddImprovementActivities(colorCode, tactic.Title, improvementTacticTypeId, filteredTactic);
+        })
+    }
+
+    //// Modified By Maninder Singh Wadhva PL Ticket#47
   //// Function to create tactic view control.
   function AddAccordionToggleAndInnerTactic(data) {
-      var div = $('#DivAccordion');
-      div.empty();
+        var accordionDiv = $('#DivAccordionMarketingActivities');
+        accordionDiv.empty();
       $.each(data.tacticType, function (index1, objTactic) {
           var colorCode = objTactic.ColorCode;
           var tacticTypeId = objTactic.TacticTypeId;
 
           //// Filter plan campaign program tactic based on tactic type id.
           var filteredTactic = $.grep(data.planCampaignProgramTactic, function (value) { return value.TacticTypeId == tacticTypeId; })
-
-          //// Adding Tactic type.
-          div.append("<div class='accordion-group' id='DivAccordionGroup" + tacticTypeId + "'></div>");
-          $("#DivAccordionGroup" + tacticTypeId).append("<div class='accordion-heading'>\
-                                                <a class='accordion-toggle item-" + colorCode + " collapsed chevron-right' data-toggle='collapse' data-parent='#DivAccordion' href='#accordion-element-" + tacticTypeId + "'>\
-                                                    <div class='cf'>" + objTactic.Title + "<span class='pull-right'><span id='spn_" + tacticTypeId + "'>0</span>" + "/" + filteredTactic.length + "</span></div>\
-                                                </a>\
-                                            </div>\
-                                            <div id='accordion-element-" + tacticTypeId + "' class='accordion-body collapse'></div>");
-
-          //// Adding tactic title.
-          $.each(filteredTactic, function (index2, objfilteredTactic) {
-              $("#accordion-element-" + tacticTypeId).append("<a class='accordion-inner item-" + colorCode + "' href='#' taskid='" + objfilteredTactic.TaskId + "'>" + objfilteredTactic.Title + "</a>")
-              $("a[taskid='" + objfilteredTactic.TaskId + "']").click(function (event) {
-                  GanttOpenBranch($(this).attr('taskid'));
-                  //alert($(this).attr('taskid'));
-              });
-          });
-      });
+            AddMarketingActivities(colorCode, objTactic.Title, tacticTypeId, filteredTactic);
+        })
   }
 
   function GanttOpenBranch(taskId) {
@@ -854,120 +920,59 @@
 
   }
 
+    //// Modified By Maninder Singh Wadhva PL Ticket#47
   //// Function to create audience view control.
   function AddAccordionToggleAndInnerAudience(data) {
-      var div = $('#DivAccordion');
-      strflg = "";
-      div.empty();
+        var accordionDiv = $('#DivAccordionMarketingActivities');
+        accordionDiv.empty();
       $.each(data.audience, function (index1, objAudience) {
           var colorCode = objAudience.ColorCode;
           var audienceId = objAudience.AudienceId;
 
-          filteredAudience = $.grep(data.audienceTactic, function (value) { return value.AudienceId == audienceId; }).sort(SortAlphabetically);
-
-          ////// Adding Audience.
-          div.append("<div class='accordion-group' id='DivAccordionGroup" + audienceId + "'></div>");
-          $("#DivAccordionGroup" + audienceId).append("<div class='accordion-heading'>\
-                                                <a class='accordion-toggle item-" + colorCode + " collapsed chevron-right' data-toggle='collapse' data-parent='#DivAccordion' href='#accordion-element-" + audienceId + "'>\
-                                                    <div class='cf'>" + objAudience.Title + "<span class='pull-right'><span id='spnaud_" + audienceId + "'>0</span>" + "/" + filteredAudience.length + "</span></div>\
-                                                </a>\
-                                            </div>\
-                                            <div id='accordion-element-" + audienceId + "' class='accordion-body collapse'></div>");
-
-          //// Adding tactic title.
-          $.each(filteredAudience, function (index2, objfilteredAudience) {
-              $("#accordion-element-" + audienceId).append("<a class='accordion-inner item-" + colorCode + "' href='#' taskid='" + objfilteredAudience.TaskId + "'>" + objfilteredAudience.Title + "</a>")
-              $("a[taskid='" + objfilteredAudience.TaskId + "']").click(function (event) {
-                  GanttOpenBranch($(this).attr('taskid'));
-              });
-          });
-      });
+            var filteredAudience = $.grep(data.audienceTactic, function (value) { return value.AudienceId == audienceId; }).sort(SortAlphabetically);
+            AddMarketingActivities(colorCode, objAudience.Title, audienceId, filteredAudience);
+        })
   }
 
+    //// Modified By Maninder Singh Wadhva PL Ticket#47
   //// Function to create vertical view control.
   function AddAccordionToggleAndInnerVertical(data) {
-      var div = $('#DivAccordion');
-      div.empty();
+        var accordionDiv = $('#DivAccordionMarketingActivities');
+        accordionDiv.empty();
+
       $.each(data.vertical, function (index1, objVertical) {
           var colorCode = objVertical.ColorCode;
           var verticalId = objVertical.VerticalId;
-
-          filteredVertical = $.grep(data.verticalTactic, function (value) { return value.VerticalId == verticalId; }).sort(SortAlphabetically);
-
-          ////// Adding Vertical.
-          div.append("<div class='accordion-group' id='DivAccordionGroup" + verticalId + "'></div>");
-          $("#DivAccordionGroup" + verticalId).append("<div class='accordion-heading'>\
-                                                <a class='accordion-toggle item-" + colorCode + " collapsed chevron-right' data-toggle='collapse' data-parent='#DivAccordion' href='#accordion-element-" + verticalId + "'>\
-                                                    <div class='cf'>" + objVertical.Title + "<span class='pull-right'><span id='spnver_" + verticalId + "'>0</span>" + "/" + filteredVertical.length + "</span></div>\
-                                                </a>\
-                                            </div>\
-                                            <div id='accordion-element-" + verticalId + "' class='accordion-body collapse'></div>");
-
-          //// Adding tactic title.
-          $.each(filteredVertical, function (index2, objfilteredVertical) {
-              $("#accordion-element-" + verticalId).append("<a class='accordion-inner item-" + colorCode + "' href='#' taskid='" + objfilteredVertical.TaskId + "'>" + objfilteredVertical.Title + "</a>")
-              $("a[taskid='" + objfilteredVertical.TaskId + "']").click(function (event) {
-                  GanttOpenBranch($(this).attr('taskid'));
-              });
-          });
+            var filteredVertical = $.grep(data.verticalTactic, function (value) { return value.VerticalId == verticalId; }).sort(SortAlphabetically);
+            AddMarketingActivities(colorCode, objVertical.Title, verticalId, filteredVertical);
       });
   }
 
+    //// Modified By Maninder Singh Wadhva PL Ticket#47
   //// Function to create stage view control.
   function AddAccordionToggleAndInnerStage(data) {
-      var div = $('#DivAccordion');
-      div.empty();
+        var accordionDiv = $('#DivAccordionMarketingActivities');
+        accordionDiv.empty();
       $.each(data.stage, function (index1, objStage) {
           var colorCode = objStage.ColorCode;
           var stageId = objStage.StageId;
 
-          filteredStage = $.grep(data.stageTactic, function (value) { return value.StageId == stageId; }).sort(SortAlphabetically);
-
-          ////// Adding Stage.
-          div.append("<div class='accordion-group' id='DivAccordionGroup" + stageId + "'></div>");
-          $("#DivAccordionGroup" + stageId).append("<div class='accordion-heading'>\
-                                                <a class='accordion-toggle item-" + colorCode + " collapsed chevron-right' data-toggle='collapse' data-parent='#DivAccordion' href='#accordion-element-" + stageId + "'>\
-                                                    <div class='cf'>" + objStage.Title + "<span class='pull-right'><span id='spnstage_" + stageId + "'>0</span>" + "/" + filteredStage.length + "</span></div>\
-                                                </a>\
-                                            </div>\
-                                            <div id='accordion-element-" + stageId + "' class='accordion-body collapse'></div>");
-
-          //// Adding tactic title.
-          $.each(filteredStage, function (index2, objfilteredStage) {
-              $("#accordion-element-" + stageId).append("<a class='accordion-inner item-" + colorCode + "' href='#' taskid='" + objfilteredStage.TaskId + "'>" + objfilteredStage.Title + "</a>")
-              $("a[taskid='" + objfilteredStage.TaskId + "']").click(function (event) {
-                  GanttOpenBranch($(this).attr('taskid'));
-              });
-          });
+            var filteredStage = $.grep(data.stageTactic, function (value) { return value.StageId == stageId; }).sort(SortAlphabetically);
+            AddMarketingActivities(colorCode, objStage.Title, stageId, filteredStage);
       });
   }
 
+    //// Modified By Maninder Singh Wadhva PL Ticket#47
   //// Function to create business unit view control.
   function AddAccordionToggleAndInnerBusinessUnit(data) {
-      var div = $('#DivAccordion');
-      div.empty();
+        var accordionDiv = $('#DivAccordionMarketingActivities');
+        accordionDiv.empty();
       $.each(data.businessUnit, function (index1, objBusinessUnit) {
           var colorCode = objBusinessUnit.ColorCode;
           var businessUnitId = objBusinessUnit.BusinessUnitId;
 
-          filteredBusinessUnit = $.grep(data.businessUnitTactic, function (value) { return value.BusinessUnitId == businessUnitId; }).sort(SortAlphabetically);
-
-          ////// Adding Business Unit.
-          div.append("<div class='accordion-group' id='DivAccordionGroup" + businessUnitId + "'></div>");
-          $("#DivAccordionGroup" + businessUnitId).append("<div class='accordion-heading'>\
-                                                <a class='accordion-toggle item-" + colorCode + " collapsed chevron-right' data-toggle='collapse' data-parent='#DivAccordion' href='#accordion-element-" + businessUnitId + "'>\
-                                                    <div class='cf'>" + objBusinessUnit.Title + "<span class='pull-right'><span id='spnbus_" + businessUnitId + "'>0</span>" + "/" + filteredBusinessUnit.length + "</span></div>\
-                                                </a>\
-                                            </div>\
-                                            <div id='accordion-element-" + businessUnitId + "' class='accordion-body collapse'></div>");
-
-          //// Adding tactic title.
-          $.each(filteredBusinessUnit, function (index2, objfilteredBusinessUnit) {
-              $("#accordion-element-" + businessUnitId).append("<a class='accordion-inner item-" + colorCode + "' href='#' taskid='" + objfilteredBusinessUnit.TaskId + "'>" + objfilteredBusinessUnit.Title + "</a>")
-              $("a[taskid='" + objfilteredBusinessUnit.TaskId + "']").click(function (event) {
-                  GanttOpenBranch($(this).attr('taskid'));
-              });
-          });
+            var filteredBusinessUnit = $.grep(data.businessUnitTactic, function (value) { return value.BusinessUnitId == businessUnitId; }).sort(SortAlphabetically);
+            AddMarketingActivities(colorCode, objBusinessUnit.Title, businessUnitId, filteredBusinessUnit);
       });
   }
 
@@ -1006,6 +1011,7 @@
   }
 
   var planYear;
+    //// Modified By Maninder Singh Wadhva PL Ticket#47
   //// Function to make ajax request.
   function AjaxRequest() {
       GetCollaborators(CurrentPlanId);
@@ -1014,11 +1020,35 @@
         type: "GET",
         cache: false,
         url: '@Url.Action("GetViewControlDetail", "Home")',
-        data: { Type: type, PlanId: CurrentPlanId, IsQuarter: isQuater, geographyIds: filters.geographyIds.join(), individualsIds: filters.IndividualsIds.join(), isShowOnlyMyTactic: IsShowOnlyMyTactic },
+          data: {
+              Type: type,
+              PlanId: CurrentPlanId,
+              IsQuarter: isQuater,
+              geographyIds: filters.geographyIds.join(),
+              individualsIds: filters.IndividualsIds.join(),
+              activeMenu: $('#ActiveMenu').val(),
+              isShowOnlyMyTactic: IsShowOnlyMyTactic
+          },
         dataType: "json",
         success: function (data) {
             $('#RequestCount').html(data.requestCount);
             planYear = parseInt(data.planYear);
+
+              //// Modified By Maninder Singh Wadhva PL Ticket#47
+              if (typeof data.improvementTacticTypeForAccordion != 'undefined' &&
+                  typeof data.improvementTacticForAccordion != 'undefined' &&
+                  data.improvementTacticForAccordion.length > 0 &&
+                  data.improvementTacticTypeForAccordion.length > 0) {
+                  $('#improvements').show()
+                  AddAccordionToggleAndInnerImprovementTactic(data.improvementTacticTypeForAccordion, data.improvementTacticForAccordion);
+              }
+              else {
+                  $('#improvements').hide();
+              }
+
+              //// Modified By Maninder Singh Wadhva PL Ticket#47
+              if (data.taskData.length > 0) {
+                  $('#marketing-activities').show()
 
             switch (type) {
                 case GanttTabs.Tactic:
@@ -1043,7 +1073,13 @@
                     alert('No match');
                     break;
             }
+
             AttachEventToGroupHeading();
+              }
+              else {
+                  $('#marketing-activities').hide()
+              }
+
             renderGantt(data.taskData);
             ShowChangeLog();
             //// Hide/Show Tabulated data shown below gantt of request tab.
@@ -1112,9 +1148,9 @@ function SetGantt() {
     gantt.config.drag_progress = false;
 }
 
+  //// Modified By Maninder Singh Wadhva PL Ticket#47
 //// Function to render gantt i.e. for this year or this quarter.
 function renderGantt(taskData) {
-    //console.log(taskData);
     var tasks = {
         data: taskData
     };
@@ -1163,7 +1199,7 @@ function renderGantt(taskData) {
 
         //// Function to add class to each task bar.
         gantt.templates.task_class = function (start, end, task) {
-            if (typeof task.plantacticid != 'undefined') {
+              if (typeof task.plantacticid != 'undefined' || (typeof task.isImprovement != 'undefined' && task.isImprovement == true)) {
                 return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
             } else {
                 return task.color;
@@ -1192,7 +1228,7 @@ function renderGantt(taskData) {
 
         //// Function to add class to each task bar.
         gantt.templates.task_class = function (start, end, task) {
-            if (typeof task.plantacticid != 'undefined') {
+              if (typeof task.plantacticid != 'undefined' || (typeof task.isImprovement != 'undefined' && task.isImprovement == true)) {
                 return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
             } else {
                 return task.color;
@@ -1230,7 +1266,7 @@ function renderGantt(taskData) {
         //// Function to add class to each task bar.
 
         gantt.templates.task_class = function (start, end, task) {
-            if (typeof task.plantacticid != 'undefined') {
+              if (typeof task.plantacticid != 'undefined' || (typeof task.isImprovement != 'undefined' && task.isImprovement == true)) {
                 return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
             } else {
                 return task.color;
@@ -1259,7 +1295,7 @@ function renderGantt(taskData) {
 
         //// Function to add class to each task bar.
         gantt.templates.task_class = function (start, end, task) {
-            if (typeof task.plantacticid != 'undefined') {
+              if (typeof task.plantacticid != 'undefined' || (typeof task.isImprovement != 'undefined' && task.isImprovement == true)) {
                 return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
             } else {
                 return task.color;
@@ -1286,7 +1322,7 @@ function renderGantt(taskData) {
 
         //// Function to add class to each task bar.
         gantt.templates.task_class = function (start, end, task) {
-            if (typeof task.plantacticid != 'undefined') {
+              if (typeof task.plantacticid != 'undefined' || (typeof task.isImprovement != 'undefined' && task.isImprovement == true)) {
                 return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
             } else {
                 return task.color;
@@ -1485,14 +1521,11 @@ function ShowModel(taskId, isShowInspect) {
         planTacticId = task.plantacticid;
         planProgramId = task.planprogramid;
         planCampaignId = task.plancampaignid;
-
-
     } else if (isShowInspect) {
         planTacticId = $("#hdnshowInspectForPlanTacticId").val();
         planCampaignId = $("#hdnshowInspectForPlanCampaignId").val();
         planProgramId = $("#hdnshowInspectForPlanProgramId").val();
     }
-
 
     //// Checking whether current task is tactic or not.
     if (typeof planTacticId != 'undefined' && planTacticId != 0) {
@@ -1540,6 +1573,7 @@ function loadInspectPopup(id, section, tabValue) {
 
 //End Script Of Bhaveh
 
+//// Modified By Maninder Singh Wadhva PL Ticket#47
 //Start Creating and Populating tabulated data
 function FillTacticsTable() {
     $('#table_activities > tbody >tr').remove();
@@ -1547,32 +1581,51 @@ function FillTacticsTable() {
         if (activities.data.length) {
             for (i in activities.data) {
                 addRowTactic(i, activities.data[i].id, activities.data[i].text, activities.data[i].inqs,
-                    activities.data[i].mqls, activities.data[i].cws, activities.data[i].cost, activities.data[i].isDeclined, activities.data[i].isSubmitted);
+                    activities.data[i].mqls, activities.data[i].cws, activities.data[i].cost, activities.data[i].isDeclined, activities.data[i].isSubmitted, activities.data[i].isImprovement);
             }
         }
     }
 }
 
+//// Modified By Maninder Singh Wadhva PL Ticket#47
 //add row in tactics table
-function addRowTactic(index, id, text, inqs, mqls, cws, cost, isDeclined, isSubmitted) {
+function addRowTactic(index, id, text, inqs, mqls, cws, cost, isDeclined, isSubmitted, isImprovement) {
     var $activitiesTable = $('#table_activities > tbody');
     var $html = "";
+    if (isImprovement) {
+        var valueForImprovement = '---';
+        inqs = valueForImprovement;
+        mqls = valueForImprovement;
+        cws = valueForImprovement;
+    }
     if (isDeclined) {
         $html += '<tr class="rejected" id="' + id + '" data-index="' + index + '">' +
-                    '<td class="border-r sm"><span class="title-baseline-model">' + text + '</span><span class="search-icon"></span></td>' +
+                    '<td class="border-r sm">'
+
+        if (isImprovement) {
+            $html += '<span class="bullhorn-icon"></span>'
+        }
+
+        $html += '<span class="title-baseline-model">' + text + '</span><span class="search-icon"></span></td>' +
                     '<td class="sm">' + inqs + '</td>' +
                     '<td class="sm">' + mqls + '</td>' +
-                    '<td class="sm">$' + cws + '</td>' +
-                    '<td class="border-r sm">$' + cost + '</td>' +
+                    '<td class="sm">' + FormatCurrency(cws, false) + '</td>' +
+                    '<td class="border-r sm">' + FormatCurrency(cost, false) + '</td>' +
                     '<td><span class="reject-icon active"></span><span class="accept-icon"></span></td>' +
                 '</tr>';
     } else if (isSubmitted) {
         $html += '<tr class="pending"  id="' + id + '" data-index="' + index + '">' +
-                    '<td class="border-r sm"><span class="title-baseline-model">' + text + '</span><span class="search-icon"></span></td>' +
+                    '<td class="border-r sm">'
+
+        if (isImprovement) {
+            $html += '<span class="bullhorn-icon"></span>'
+        }
+
+        $html += '<span class="title-baseline-model">' + text + '</span><span class="search-icon"></span></td>' +
                     '<td class="sm">' + inqs + '</td>' +
                     '<td class="sm">' + mqls + '</td>' +
-                    '<td class="sm">$' + cws + '</td>' +
-                    '<td class="border-r sm">$' + cost + '</td>' +
+                    '<td class="sm">' + FormatCurrency(cws, false) + '</td>' +
+                    '<td class="border-r sm">' + FormatCurrency(cost, false) + '</td>' +
                     '<td><span class="reject-icon"></span><span class="accept-icon"></span></td>' +
                 '</tr>';
     }
@@ -1586,13 +1639,25 @@ $(document).on("click", ".accept-icon", function () {
     ApproveTactic(this, task);
 })
 
+//// Modified By Maninder Singh Wadhva PL Ticket#47
 function ApproveTactic(e, task) {
+    var approveDeclineTacticId;
+    var isImprovement = false;
+    if (typeof task.isImprovement != 'undefined' && task.isImprovement == true) {
+        approveDeclineTacticId = task.ImprovementPlanTacticId;
+        isImprovement = true;
+    }
+    else {
+        approveDeclineTacticId = task.plantacticid;
+    }
+
     $.ajax({
         type: 'POST',
         url: '@Url.Content("~/Home/ApproveDeclineTactic/")',
         data: {
-            planTacticId: task.plantacticid,
-            isApprove: true
+            planTacticId: approveDeclineTacticId,
+            isApprove: true,
+            isImprovement: isImprovement
         },
         dataType: "json",
         success: function (data) {
@@ -1625,13 +1690,25 @@ $(document).on("click", ".reject-icon", function () {
     DeclineTactic(this, task);
 })
 
+//// Modified By Maninder Singh Wadhva PL Ticket#47
 function DeclineTactic(e, task) {
+    var approveDeclineTacticId;
+    var isImprovement = false;
+    if (typeof task.isImprovement != 'undefined' && task.isImprovement == true) {
+        approveDeclineTacticId = task.ImprovementPlanTacticId;
+        isImprovement = true;
+    }
+    else {
+        approveDeclineTacticId = task.plantacticid;
+    }
+
     $.ajax({
         type: 'POST',
         url: '@Url.Content("~/Home/ApproveDeclineTactic/")',
         data: {
-            planTacticId: task.plantacticid,
-            isApprove: false
+            planTacticId: approveDeclineTacticId,
+            isApprove: false,
+            isImprovement: isImprovement
         },
         dataType: "json",
         success: function (data) {
@@ -1760,7 +1837,7 @@ function setgraphdata(data) {
     barChart2.parse(data.lstchart, "json");
 }
 
-
+//// Modified By Maninder Singh Wadhva PL Ticket#47
 gantt.attachEvent("onTaskOpened", function (id) {
     var planid = CurrentPlanId;
     if (id.substring(0, 1) == "C") {
@@ -1769,7 +1846,7 @@ gantt.attachEvent("onTaskOpened", function (id) {
             intid = id.substring(id.indexOf('P') + 1);
         }
         if (intid != 0) {
-            $("#DivAccordion").find('span[id^="spn_"]').each(function (index1) {
+            $("#DivAccordionMarketingActivities").find('span[id^="spn_"]').each(function (index1) {
                 var tid = this.id.substring(this.id.indexOf('_') + 1);
                 var cnt = 0;
                 var a = gantt.getChildren(id);
@@ -1801,7 +1878,7 @@ gantt.attachEvent("onTaskOpened", function (id) {
         }
         if (intid != 0) {
 
-            $("#DivAccordion").find('span[id^="spnstage_"]').each(function (index1) {
+            $("#DivAccordionMarketingActivities").find('span[id^="spn_"]').each(function (index1) {
 
                 var tid = this.id.substring(this.id.indexOf('_') + 1);
 
@@ -1837,7 +1914,7 @@ gantt.attachEvent("onTaskOpened", function (id) {
         }
         if (intid != 0) {
 
-            $("#DivAccordion").find('span[id^="spnver_"]').each(function (index1) {
+            $("#DivAccordionMarketingActivities").find('span[id^="spn_"]').each(function (index1) {
 
                 var tid = this.id.substring(this.id.indexOf('_') + 1);
 
@@ -1873,7 +1950,7 @@ gantt.attachEvent("onTaskOpened", function (id) {
         }
         if (intid != 0) {
 
-            $("#DivAccordion").find('span[id^="spnaud_"]').each(function (index1) {
+            $("#DivAccordionMarketingActivities").find('span[id^="spn_"]').each(function (index1) {
 
                 var tid = this.id.substring(this.id.indexOf('_') + 1);
 
@@ -1910,7 +1987,7 @@ gantt.attachEvent("onTaskOpened", function (id) {
         }
         if (intid != 0) {
 
-            $("#DivAccordion").find('span[id^="spnbus_"]').each(function (index1) {
+            $("#DivAccordionMarketingActivities").find('span[id^="spn_"]').each(function (index1) {
 
                 var tid = this.id.substring(this.id.indexOf('_') + 1);
 
@@ -1942,8 +2019,7 @@ gantt.attachEvent("onTaskOpened", function (id) {
 
 });
 
-
-
+//// Modified By Maninder Singh Wadhva PL Ticket#47
 gantt.attachEvent("onTaskClosed", function (id) {
 
 
@@ -1957,7 +2033,7 @@ gantt.attachEvent("onTaskClosed", function (id) {
         }
         if (intid != 0) {
 
-            $("#DivAccordion").find('span[id^="spn_"]').each(function (index1) {
+            $("#DivAccordionMarketingActivities").find('span[id^="spn_"]').each(function (index1) {
 
                 var tid = this.id.substring(this.id.indexOf('_') + 1);
 
@@ -1994,7 +2070,7 @@ gantt.attachEvent("onTaskClosed", function (id) {
         }
         if (intid != 0) {
 
-            $("#DivAccordion").find('span[id^="spnstage_"]').each(function (index1) {
+            $("#DivAccordionMarketingActivities").find('span[id^="spn_"]').each(function (index1) {
 
                 var tid = this.id.substring(this.id.indexOf('_') + 1);
 
@@ -2030,7 +2106,7 @@ gantt.attachEvent("onTaskClosed", function (id) {
         }
         if (intid != 0) {
 
-            $("#DivAccordion").find('span[id^="spnver_"]').each(function (index1) {
+            $("#DivAccordionMarketingActivities").find('span[id^="spn_"]').each(function (index1) {
 
                 var tid = this.id.substring(this.id.indexOf('_') + 1);
 
@@ -2066,7 +2142,7 @@ gantt.attachEvent("onTaskClosed", function (id) {
         }
         if (intid != 0) {
 
-            $("#DivAccordion").find('span[id^="spnaud_"]').each(function (index1) {
+            $("#DivAccordionMarketingActivities").find('span[id^="spn_"]').each(function (index1) {
 
                 var tid = this.id.substring(this.id.indexOf('_') + 1);
 
@@ -2102,7 +2178,7 @@ gantt.attachEvent("onTaskClosed", function (id) {
         }
         if (intid != 0) {
 
-            $("#DivAccordion").find('span[id^="spnbus_"]').each(function (index1) {
+            $("#DivAccordionMarketingActivities").find('span[id^="spn_"]').each(function (index1) {
 
                 var tid = this.id.substring(this.id.indexOf('_') + 1);
 

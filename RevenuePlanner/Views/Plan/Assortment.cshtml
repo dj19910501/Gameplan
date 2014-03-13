@@ -105,7 +105,28 @@
     <!--Second Accordion-->
     <div id="accordion" class="accordion-campaign">
 
-        <div class='accordion-group'>
+        <div class='accordion-group' id="campaignAccordion">
+
+            <!--elements are add dynamically with javascript (view script.js file)-->
+
+        </div>
+        <!--accordion-group-->
+    </div>
+    <!--end accordion-->
+</div>
+<div class="light-blue-background close-icon margin5 padding15 padding-bottom0">
+    <div class="gray-title-steps source-sans-probold cf">
+        <span class="pull-left width55">3.Improvement Activities</span>
+        <span class="pull-right width100px text-right margin-right50">Programs</span>
+        <span class="pull-right width150px text-right">Cost</span>
+        <span class="pull-right width100px text-right">@Html.LabelForMQL("MQL")</span>
+
+
+    </div>
+    <!--Second Accordion-->
+    <div id="improvementaccordion" class="accordion-campaign">
+
+        <div class='accordion-group' id="improvementAccordionGroup">
 
             <!--elements are add dynamically with javascript (view script.js file)-->
 
@@ -121,9 +142,14 @@
 @Html.Hidden("hdnisError", (bool)ViewBag.isError, new { id = "hdnisError" })
 <script type="text/javascript">
     var campaign = null;
+    var ImprovementTactic = null;
+    var mqlTotal = 0;
+    var costTotal = 0;
+    var programTotal = 0;
     var isApply = false;
     CampaignID = @ViewBag.CampaignID
     ProgramID = @ViewBag.ProgramID
+    ImprovementPlanProgramId = @ViewBag.ImprovementPlanProgramId
     $("#spanMQl").text(FormatCommas($("#spanMQl").text(), false));
     $("#spanBudget").text(FormatCurrency($("#spanBudget").text(), false));
     var spantitle = $("#spanTitle").html();
@@ -489,7 +515,7 @@
             success: function (r) {
                 campaign = r;
                 fillCampaignsTable();
-                NumberFormatterTipsy(".tipsyclass", 9);
+                LoadImprovementTactic();
                 if('@ViewBag.EditOjbect' == "Tactic" && '@ViewBag.TacticId' != 0)
                 {
                     $("[id=divTactic][index=" + @ViewBag.TacticId + "]").click();
@@ -522,6 +548,56 @@
             }
         });
 
+        function LoadImprovementTactic() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/GetImprovementTactic/")',
+                data: {
+                },
+                success: function (r) {
+                    ImprovementTactic = r;
+                    fillImprovementTacticTable();
+                     NumberFormatterTipsy(".tipsyclass", 9);
+                    if ('@ViewBag.EditOjbect' == "ImprovementTactic" && '@ViewBag.TacticId' != 0) {
+                        $("[id=divimpTactic][index=" + @ViewBag.TacticId + "]").click();
+                        return false;
+                    }
+                },
+                error: function () {
+                    myApp.hidePleaseWait();
+                }
+            });
+        }
+
+        $(document).on("click", ".add-icon.impTactic", function (e) {
+            e.stopPropagation();
+            $.ajaxSetup({ cache: false });
+            $("#slidepanel").css("display", "block");
+            var idProgram = $(this).attr('data-id-program');
+            var url = '@Url.Content("~/Plan/CreateImprovementTactic")';
+             $('#slidepanel-container').load(url + '?id=' + idProgram, AssignDefaultValue);
+            $("#slidepanel").css("right", "0px");
+            myApp.hidePleaseWait();
+        });
+
+        $(document).on("click", "#divimpTactic", function (e) {
+            e.stopPropagation();
+            $.ajaxSetup({ cache: false });
+            var idTactic = $(this).attr("index");
+            $("#slidepanel").css("display", "block");
+            if (idTactic == 0) {
+                var idProgram = $(this).attr('data-id-program');
+                var url = '@Url.Content("~/Plan/CreateImprovementTactic")';
+                $('#slidepanel-container').load(url + '?id=' + idProgram, AssignDefaultValue);
+            }
+            else {
+                var url = '@Url.Content("~/Plan/EditImprovementTactic")';
+                $('#slidepanel-container').load(url + '?id=' + idTactic + '&RedirectType=' + Assortment, AssignDefaultValue);
+            }
+             $("#slidepanel").css("right", "0px");
+             myApp.hidePleaseWait();
+        });
+
         function CallForRedirectToApplyToCalender() {
             //add css class to disable hover on left navigation link when no data found
             //Start : date : 01/21/2014
@@ -535,9 +611,7 @@
         function fillCampaignsTable() {
             if (typeof campaign != 'undefined') {
                 var $html = '';
-                var mqlTotal = 0;
-                var costTotal = 0;
-                var programTotal = 0;
+                
                 if (campaign.length) {
                     for (i in campaign) {
                         mqlTotal = mqlTotal + parseFloat(campaign[i].mqls);
@@ -572,7 +646,7 @@
                                 '<div class="total pull-right width100px text-right tipsyclass">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
                             '</div>';
 
-                var $tableCampaigns = $('.accordion-campaign > .accordion-group');
+                var $tableCampaigns = $('.accordion-campaign > #campaignAccordion');
 
                 $tableCampaigns.append($html);
 
@@ -586,7 +660,7 @@
                      before changed :        function addRowCampaign(_index, _id, _title, _description, _cost, _inqs, _mqls, _programs, _programCount) {
                     */
         function addRowCampaign(_index, _id, _title, _description, _cost, _inqs, _mqls, _isOwner, _programs, _programCount) {
-            var $tableCampaigns = $('.accordion-campaign > .accordion-group');
+            var $tableCampaigns = $('.accordion-campaign > #campaignAccordion');
             var num = parseInt(_index) + 1;
             var $html = '<div class="accordion-header">' +
                         '<a id="' + _id + '" class="accordion-toggle';
@@ -720,6 +794,64 @@
                 orientation: 'right',
                 mode: 'overlay'
             });
+        }
+
+        //fill campaign table with data from json
+        function fillImprovementTacticTable() {
+            if (typeof ImprovementTactic != 'undefined') {
+                var $html = '';
+                if (ImprovementTactic.length) {
+                    for (i in ImprovementTactic) {
+                        costTotal = costTotal + parseFloat(ImprovementTactic[i].cost);
+                        addRowImprovementTactic(i, ImprovementTactic[i].id, ImprovementTactic[i].title, ImprovementTactic[i].cost, ImprovementTactic[i].isOwner, ImprovementTactic[i].ImprovementProgramId);
+                    }
+                } 
+            }
+
+            $html += '<div class="accordion-header campaign-default">' +
+                           '<a class="accordion-toggle" data-toggle="collapse" data-id-program="' + ImprovementPlanProgramId  + '" id="divimpTactic" index="0">' +
+                               '<span class="pull-left width55"><span class="pull-left font-black"></span><span class="font-black underline">Select Improvement Tactic</span></span>' +
+                               '<span class="pull-right width50px"><div class="add-icon impTactic" data-slidepanel="panel"></div></span>' +
+                               '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
+                               '<span class="pull-right width150px text-right font-black tipsyclass">$' + 0 + '</span>' +
+                               '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
+                           '</a>' +
+                       '</div>';
+
+            $html += '<div class="cf padding-left20">' +
+                                '<div class="pull-left width55"></div>' +
+                                '<div class="height40 pull-right width50px"></div>' +
+                                '<div class="total pull-right width100px text-right tipsyclass">' + FormatCommas(programTotal.toString(), false) + '</div>' +
+                                '<div class="total pull-right width150px text-right tipsyclass">$' + FormatCommas(costTotal.toString(), false) + '</div>' +
+                                '<div class="total pull-right width100px text-right">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
+                            '</div>';
+
+                var $tableImprovementCampaigns = $('.accordion-campaign > #improvementAccordionGroup');
+
+                $tableImprovementCampaigns.append($html);
+
+                addEventTriggerSlidepanel();
+            
+        }
+
+        function addRowImprovementTactic(_index, _id, _title, _cost, _isOwner, _programId) {
+            var $tableImprovementCampaigns = $('.accordion-campaign > #improvementAccordionGroup');
+            var $html = '';
+            $html += '<div class="accordion-header campaign-default">' +
+                            '<a class="accordion-toggle" id="divimpTactic" index="' + _id + '" data-id-program="' + _programId  + '">';
+            if (_isOwner == 0) {
+                $html += '<span class="delete-program width5" id="delimpTactic"></span>';
+            }
+            $html += '<span class="pull-left width55"><span class="pull-left font-black"></span><span class="font-black underline">' + _title + '</span></span>' +
+                                '<span class="pull-right width50px"><div class="add-icon impTactic" data-slidepanel="panel"></div></span>' +
+                                '<span class="pull-right width100px text-right font-black tipsyclass">&nbsp;</span>' +
+                                '<span class="pull-right width150px text-right font-black tipsyclass">$' + FormatCommas(_cost.toString(), false) + '</span>' +
+                                '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
+                            '</a>' +
+                        '</div>';
+
+            $tableImprovementCampaigns.append($html);
+
         }
 
 

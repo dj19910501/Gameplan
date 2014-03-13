@@ -62,6 +62,11 @@ function validateDateCompare(sdate, edate, msg) {
 }
 
 function FormatCurrency(amount, showDecimals) {
+    /// Modified By Maninder Singh Wadhva PL Ticket#47
+    if (isNaN(amount)) {
+        return amount;
+    }
+
     if (showDecimals == null)
         showDecimals = true;
     var i = parseFloat(amount);
@@ -106,7 +111,7 @@ function FormatCommas(amount, showDecimals) {
         amount = n;
     }
     else {
-        if (d.length < 1) { amount = n; }
+        if (isNaN(d) || d.length < 1) { amount = n; }
         else { amount = n + '.' + d; }
     }
     amount = minus + amount;
@@ -446,4 +451,21 @@ function GetAxisConfiguration(dataset) {
 
     return [{ "stepValue": stepValue, "endValue": endValue }];
 
+}
+
+function FormatForBoostStagesValue(value, number) {
+    if (number == 1)
+    {
+        value = FormatNumber((Math.round(value * 100) / 100), true);
+    }
+    else if (number == 2) {
+        value = (Math.round(value * 100)/100) + " Days";
+    }
+    else if (number == 3) {
+        value = (Math.round(value * 100) / 100);
+    }
+    else if (number == 4) {
+        value = (Math.round(value * 100) / 100);
+    }
+    return value;
 }
