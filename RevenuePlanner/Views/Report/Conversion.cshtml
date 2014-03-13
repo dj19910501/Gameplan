@@ -265,7 +265,7 @@
                     },
                     success: function (r) {
                         populateNF(r.lstPlan, "reportSummry2");
-                        LoadRevenueReportForPlan(SelectedBUId);
+                        LoadConversionReportForPlan(SelectedBUId);
                         $('#nl-ReportSummry2 > .nl-field:not(:last)').remove(); // code to remove extra blocks for Plan dropdown
                     }
                 });
@@ -295,7 +295,7 @@
                  },
                 success: function (r) {
                     location.reload();
-                }
+                } 
             });
         }
 
