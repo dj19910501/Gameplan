@@ -207,9 +207,6 @@
                 else {
                     alert('Error');
                 }
-            },
-            error: function () {
-                myApp.hidePleaseWait();
             }
         });
     }
@@ -427,10 +424,6 @@
                             ShowError(data.errormsg);
                             return;
                         }
-                    },
-                    error: function () {
-                        ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
-                        myApp.hidePleaseWait();
                     }
                 });
             }
@@ -458,9 +451,6 @@
                             return;
                         }
 
-                    },
-                    error: function () {
-                        myApp.hidePleaseWait();
                     }
                 });
             }
@@ -492,9 +482,6 @@
                             return;
                         }
 
-                    },
-                    error: function () {
-                        myApp.hidePleaseWait();
                     }
                 });
                 $("#slidepanel").css("display", "none");
@@ -506,6 +493,38 @@
             }
         });
       
+        // Added By Bhavesh for Delete Improvement Tactic: Date 13-March-2014
+        $(document).on('click', '#divimpTactic #delimpTactic', function (e) {
+            if (confirm('Are you sure you want to delete this improvement tactic?')) {
+                e.stopPropagation();
+                var idTactic = $(this).parent().attr('index');
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Plan/DeleteImprovementTactic")',
+                    data: {
+                        ID: idTactic,
+                        RedirectType: false
+                    },
+                    success: function (data) {
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                            return;
+                        }
+                        if (data.errormsg) {
+                            alert(data.errormsg);
+                            return;
+                        }
+
+                    }
+                });
+                $("#slidepanel").css("display", "none");
+            }
+            else {
+                $("#slidepanel").css("display", "none");
+                e.stopPropagation();
+                return false;
+            }
+        });
 
         $.ajax({
             type: 'POST',
@@ -542,9 +561,6 @@
                     });
                 }
                 NumberFormatterTipsyTitle(".tipsyclassTitle", 40);
-            },
-            error: function () {
-                myApp.hidePleaseWait();
             }
         });
 
@@ -562,9 +578,6 @@
                         $("[id=divimpTactic][index=" + @ViewBag.TacticId + "]").click();
                         return false;
                     }
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
                 }
             });
         }
