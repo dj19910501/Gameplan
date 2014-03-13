@@ -15,6 +15,7 @@
     bool tflag = false;
     bool sflag = false;
     string ShowModelResultsTab = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ShowModelResultsTab"]);
+    string ShowModelAudienceTab = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ShowModelAudienceTab"]);
     /*Added by Nirav Shah on 18 feb 2014 for TFS Point 252: Editing a published model*/
     string ModelPublishEdit = ViewBag.ModelPublishEdit;
     string ModelPublishCreateNew = ViewBag.ModelPublishCreateNew;
@@ -61,9 +62,12 @@
         <li class="item active">
             <a class="source-sans-probold inputs" id="aInput" href="#"><span></span>@Html.Raw("INPUTS")</a>
         </li>
-        <li class="item">
-            <a class="source-sans-probold audience leftnav" id="aAudience" href="#"><span></span>@Html.Raw("AUDIENCE")</a>
-        </li>
+        @if (ShowModelAudienceTab == null || ShowModelAudienceTab == "" || ShowModelAudienceTab.ToLower() == "true")
+        {
+            <li class="item">
+                <a class="source-sans-probold audience leftnav" id="aAudience" href="#"><span></span>@Html.Raw("AUDIENCE")</a>
+            </li>
+        }
         <li class="item">
             <a class="source-sans-probold tactics leftnav" id="aTactics" href="#"><span></span>@Html.Raw("TACTICS")</a>
         </li>
@@ -103,8 +107,8 @@
     </div>
   
     TempData["ErrorMessage"] = "";
-    <div id="DivBackgroundModel" class="modal-backdrop fade in" style="z-index: 1501;display: none;"></div>
-    <div id="DivPublishModelPopup" class="form-inspect-share hide fade in" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none; height: 205px;z-index: 1502;">
+    <div id="DivBackgroundModel" class="modal-backdrop fade in" style="z-index: 1501; display: none;"></div>
+    <div id="DivPublishModelPopup" class="form-inspect-share hide fade in" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none; height: 205px; z-index: 1502;">
         <h2 class="primary-title source-sans-prosemibold">Select effective date</h2>
         <div class="dp datepicker input-append date  calendar-width" id="dp_start" data-date="today();" data-date-format="@RevenuePlanner.Helpers.Common.dateFormat">
             <input id="t_startdate" class="black-border-right font-size13 height30px" style="background-color: #ffffff; border-color: #f3f3f3; color: #000000; width: 240px; margin-top: 0px; border-radius: 4px;" size="16" type="text">
@@ -854,10 +858,10 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
  });
  $('.dp').datepicker({
      format: "@RevenuePlanner.Helpers.Common.dateFormat",
-        autoclose: true,
-    }).on('changeDate', function (ev) {
-        $(this).datepicker('hide');
-    });;
+     autoclose: true,
+ }).on('changeDate', function (ev) {
+     $(this).datepicker('hide');
+ });;
      $(".savebtn").click(function () {
 
          if ($("#hdnmoelexist").val() == "true") {
@@ -895,21 +899,21 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
          } else if ($(this).attr('id') == 'btnsave') {
              $("#whichButton").val('save');
          @*Added by Nirav Shah on 18 feb 2014 for TFS Point 252: Editing a published model*@
-         if (ModelId != 0 && $("#latestModelId").val() != undefined) {
-             if (modelStatus.toLocaleLowerCase() != 'draft') {
-                 if ($("#publishModelDisabled").hasClass("btn-blue-disable")) {
-                     if (confirm($("#ModelPublishEdit").val())) {
-                         return true;
-                     }
-                     else {
-                         return false;
+             if (ModelId != 0 && $("#latestModelId").val() != undefined) {
+                 if (modelStatus.toLocaleLowerCase() != 'draft') {
+                     if ($("#publishModelDisabled").hasClass("btn-blue-disable")) {
+                         if (confirm($("#ModelPublishEdit").val())) {
+                             return true;
+                         }
+                         else {
+                             return false;
+                         }
                      }
                  }
              }
          }
-     }
-     else if ($(this).attr('id') == 'button-save') {
-         $("#whichButton").val('version');
+         else if ($(this).attr('id') == 'button-save') {
+             $("#whichButton").val('version');
          @*Added by Nirav Shah on 18 feb 2014 for TFS Point 252: Editing a published model*@
          if (modelStatus.toLocaleLowerCase() != 'draft') {
              if ($("#publishModelDisabled").hasClass("btn-blue-disable")) {
@@ -925,109 +929,109 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
      else {
          $("#whichButton").val('');
      }
-     needAlert = false;
+         needAlert = false;
 
-     $('.nl-field').each(function () {
+         $('.nl-field').each(function () {
 
-         if ($(this).next().attr('datadefault') == "Title") {
-             $(this).children('a').attr('id', 'lnkTitle');
-             var tValue = $(this).children('a').text();
-             if (tValue == '' || tValue == "Baseline Model") {
-                 $(this).children('a').addClass("error-form");
-                 needAlert = true;
+             if ($(this).next().attr('datadefault') == "Title") {
+                 $(this).children('a').attr('id', 'lnkTitle');
+                 var tValue = $(this).children('a').text();
+                 if (tValue == '' || tValue == "Baseline Model") {
+                     $(this).children('a').addClass("error-form");
+                     needAlert = true;
+                 }
+                 else {
+                     $(this).children('a').removeClass("error-form");
+                 }
+                 if ($("#Title").val() == '' || $("#Title").val() == "Baseline Model") {
+                     $(this).children('a').addClass("error-form");
+                     needAlert = true;
+                 }
+                 else {
+                     $(this).children('a').removeClass("error-form");
+                 }
              }
-             else {
-                 $(this).children('a').removeClass("error-form");
+             else if ($(this).next().attr('datadefault') == "AddressableContract") {
+                 var tValue = $(this).children('a').text();
+                 if (tValue == '' || tValue == '0') {
+                     $(this).children('a').addClass("error-form");
+                     needAlert = true;
+                 }
+                 else {
+                     $(this).children('a').removeClass("error-form");
+                 }
+                 //Manoj : 31Jan2014 - to resolve the issue in nlForm editing: it makes 0 when we click on pop-up
+                 if ($("#AddressableContract").val() == '' || $("#AddressableContract").val() == "0") {
+                     $(this).children('a').addClass("error-form");
+                     needAlert = true;
+                 }
+                 else {
+                     $(this).children('a').removeClass("error-form");
+                 }
              }
-             if ($("#Title").val() == '' || $("#Title").val() == "Baseline Model") {
-                 $(this).children('a').addClass("error-form");
-                 needAlert = true;
+             else if ($(this).next().attr('datadefault') == "ML") {
+                 var tValue = $(this).children('a').text();
+                 if (tValue == '' || tValue == '0') {
+                     $(this).children('a').addClass("error-form");
+                     needAlert = true;
+                 }
+                 else {
+                     $(this).children('a').removeClass("error-form");
+                 }
+                 //Manoj : 31Jan2014 - to resolve the issue in nlForm editing: it makes 0 when we click on pop-up
+                 if ($("#MarketingLeads").val() == '' || $("#MarketingLeads").val() == "0") {
+                     $(this).children('a').addClass("error-form");
+                     needAlert = true;
+                 }
+                 else {
+                     $(this).children('a').removeClass("error-form");
+                 }
              }
-             else {
-                 $(this).children('a').removeClass("error-form");
+             else if ($(this).next().attr('datadefault') == "MS") {
+                 var tValue = $(this).children('a').text();
+                 if (tValue == '' || tValue == '0' || tValue == '$0' || tValue == '$') {
+                     $(this).children('a').addClass("error-form");
+                     needAlert = true;
+                 }
+                 else {
+                     $(this).children('a').removeClass("error-form");
+                 }
+                 //Manoj : 31Jan2014 - to resolve the issue in nlForm editing: it makes 0 when we click on pop-up
+                 if ($("#MarketingDealSize").val() == '' || $("#MarketingDealSize").val() == "0") {
+                     $(this).children('a').addClass("error-form");
+                     needAlert = true;
+                 }
+                 else {
+                     $(this).children('a').removeClass("error-form");
+                 }
              }
-         }
-         else if ($(this).next().attr('datadefault') == "AddressableContract") {
-             var tValue = $(this).children('a').text();
-             if (tValue == '' || tValue == '0') {
-                 $(this).children('a').addClass("error-form");
-                 needAlert = true;
-             }
-             else {
-                 $(this).children('a').removeClass("error-form");
-             }
-             //Manoj : 31Jan2014 - to resolve the issue in nlForm editing: it makes 0 when we click on pop-up
-             if ($("#AddressableContract").val() == '' || $("#AddressableContract").val() == "0") {
-                 $(this).children('a').addClass("error-form");
-                 needAlert = true;
-             }
-             else {
-                 $(this).children('a').removeClass("error-form");
-             }
-         }
-         else if ($(this).next().attr('datadefault') == "ML") {
-             var tValue = $(this).children('a').text();
-             if (tValue == '' || tValue == '0') {
-                 $(this).children('a').addClass("error-form");
-                 needAlert = true;
-             }
-             else {
-                 $(this).children('a').removeClass("error-form");
-             }
-             //Manoj : 31Jan2014 - to resolve the issue in nlForm editing: it makes 0 when we click on pop-up
-             if ($("#MarketingLeads").val() == '' || $("#MarketingLeads").val() == "0") {
-                 $(this).children('a').addClass("error-form");
-                 needAlert = true;
-             }
-             else {
-                 $(this).children('a').removeClass("error-form");
-             }
-         }
-         else if ($(this).next().attr('datadefault') == "MS") {
-             var tValue = $(this).children('a').text();
-             if (tValue == '' || tValue == '0' || tValue == '$0' || tValue == '$') {
-                 $(this).children('a').addClass("error-form");
-                 needAlert = true;
-             }
-             else {
-                 $(this).children('a').removeClass("error-form");
-             }
-             //Manoj : 31Jan2014 - to resolve the issue in nlForm editing: it makes 0 when we click on pop-up
-             if ($("#MarketingDealSize").val() == '' || $("#MarketingDealSize").val() == "0") {
-                 $(this).children('a').addClass("error-form");
-                 needAlert = true;
-             }
-             else {
-                 $(this).children('a').removeClass("error-form");
-             }
-         }
-     });
-     if (needAlert == true) {
-         $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> ' + $("#ValidateForEmptyField").val())
-         $("#errorMessage").slideDown(400);
-         $("html, body").animate({ scrollTop: 0 }, 1000); // added by juned to slide up the page on error.
-         return false;
-     }
-     else {
-         $("#errorMessage").slideUp(400);
-     }
-     var bln = 0;
-     $('.doubleTextPerc').each(function () {
-         if ($(this).val() != '' && $(this).val() > 100) {
-             $(this).css('borderColor', '#C6605A');
-             $(this).css('background-color', '#F1DBDE');
-             bln = 1;
+         });
+         if (needAlert == true) {
+             $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> ' + $("#ValidateForEmptyField").val())
+             $("#errorMessage").slideDown(400);
+             $("html, body").animate({ scrollTop: 0 }, 1000); // added by juned to slide up the page on error.
+             return false;
          }
          else {
-             $(this).css('borderColor', '#CCCCCC');
-             $(this).css('background-color', '#FFFFFF');
+             $("#errorMessage").slideUp(400);
          }
-     });
-     if (bln == 1) {
-         $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> ' + $("#ValidateForEmptyField").val())
-         $("#errorMessage").slideDown(400);
-         return false;
-     }
+         var bln = 0;
+         $('.doubleTextPerc').each(function () {
+             if ($(this).val() != '' && $(this).val() > 100) {
+                 $(this).css('borderColor', '#C6605A');
+                 $(this).css('background-color', '#F1DBDE');
+                 bln = 1;
+             }
+             else {
+                 $(this).css('borderColor', '#CCCCCC');
+                 $(this).css('background-color', '#FFFFFF');
+             }
+         });
+         if (bln == 1) {
+             $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> ' + $("#ValidateForEmptyField").val())
+             $("#errorMessage").slideDown(400);
+             return false;
+         }
          @*if ($("#CurrentModelId").val() == '' || $("#CurrentModelId").val() == '0') {
              $.ajax(
             {
@@ -1053,7 +1057,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                }
            });
        }*@
- });
+     });
 
     $(".doubleText").keyup(function (event) {
         var $this = $(this);
@@ -1103,7 +1107,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                 }
             });
         });
-    
+
     }
 </script>
 

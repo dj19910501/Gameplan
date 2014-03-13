@@ -7,6 +7,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     string isViewOnly = ViewBag.IsViewOnly;
     string ShowModelResultsTab = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ShowModelResultsTab"]);
+    string ShowModelAudienceTab = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ShowModelAudienceTab"]);
     @Html.Hidden("hdnShowModelResultsTab", ShowModelResultsTab);
                                                                string PublishedMsg = ViewBag.ModelPublishComfirmation;
     @Html.Hidden("PublishedMsg", PublishedMsg);
@@ -37,9 +38,12 @@
         <li class="item">
             <a class="source-sans-probold inputs leftnav" id="aInput" href="#"><span></span>@Html.Raw("INPUTS")</a>
         </li>
-        <li class="item">
-            <a class="source-sans-probold audience leftnav" id="aAudience" href="#"><span></span>@Html.Raw("AUDIENCE")</a>
-        </li>
+        @if (ShowModelAudienceTab == null || ShowModelAudienceTab == "" || ShowModelAudienceTab.ToLower() == "true")
+        {
+            <li class="item">
+                <a class="source-sans-probold audience leftnav" id="aAudience" href="#"><span></span>@Html.Raw("AUDIENCE")</a>
+            </li>
+        }
         <li class="item active">
             <a class="source-sans-probold tactics" id="aTactics" href="#"><span></span>@Html.Raw("TACTICS")</a>
         </li>
