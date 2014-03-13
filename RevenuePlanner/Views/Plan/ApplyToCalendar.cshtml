@@ -72,7 +72,6 @@
         var $html = '';
         if (items.length > 0) {
             $.each(items, function (index, time) {
-
                 if (time.Selected) {
                     $html += '<option value="' + time.Value + '" selected>' + time.Text + '</option>';
                     Currenttime = time.Value;
