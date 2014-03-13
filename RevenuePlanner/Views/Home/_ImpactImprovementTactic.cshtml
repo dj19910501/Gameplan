@@ -1,0 +1,121 @@
+﻿<div style="height: 335px; overflow-y: scroll;">
+<table class="table source-sans-probold impact" id="Improvementaccordion">
+    <thead>
+        <tr class="height25">
+            <th class="source-sans-proregular font908D88">Improvement</th>
+            <th class="source-sans-proregular font908D88 text-align-right">Type</th>
+            <th class="source-sans-proregular font908D88 text-align-right">Baseline Value</th>
+            <th class="source-sans-proregular font908D88 text-align-right">Plan Without Tactic</th>
+            <th class="source-sans-proregular font908D88 text-align-right">Plan With Tactic</th>
+        </tr>
+    </thead>
+    <tbody>
+        @*// load Code here*@
+    </tbody>
+</table>
+    </div>
+<div style="float: right; margin-top: 25px;">
+<div class="cf ">
+					                        <div class="btn-container without-border-top pull-left">                     
+					                            <button class="btn btn-blue text-shadow-blue source-sans-proregular share-tactic-icon button-inspect-result-modal pull-right" type="button"><span class="flag-icon"></span>Share Tactic</button>
+					                            </div>
+    </div>
+    </div>
+<script>
+    var ImprovementStages = null;
+    $(document).ready(function () {
+        LoadImprovementTacticStages();
+        function LoadImprovementTacticStages() {
+            var Id = $('#hdnPlanTacticId').val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Home/LoadImpactImprovementStages")',
+                data: {
+                    ImprovementPlanTacticId: Id
+                },
+                success: function (data) {
+                    ImprovementStages = data.data;
+                    LoadImprovementData();
+                },
+                error: function () {
+                    ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                    myApp.hidePleaseWait();
+                }
+            });
+
+        }
+
+        function LoadImprovementData() {
+            var $html = '';
+            $('#Improvementaccordion > tbody').empty();
+            if (typeof ImprovementStages != 'undefined') {
+                if (ImprovementStages.length) {
+                    for (i in ImprovementStages) {
+                        addRowImprovementStagesTactic(i, ImprovementStages[i].MetricCode, ImprovementStages[i].MetricName, ImprovementStages[i].MetricType, ImprovementStages[i].BaseLineRate, ImprovementStages[i].PlanWithoutTactic, ImprovementStages[i].PlanWithTactic);
+                    }
+                } else {
+                    $html += '<div>No Stages are Associated with this improvement tactic type.</div>';
+                    $('#Improvementaccordion').append($html);
+                }
+            }
+            else {
+                $html += '<div>No Stages are Associated with this improvement tactic type.</div>';
+                $('#Improvementaccordion').append($html);
+            }
+        }
+
+            function addRowImprovementStagesTactic(_index, _MetricCode, _MetricName, _MetricType, _BaseLineRate, _PlanWithoutTactic, _PlanWithTactic) {
+                var $html = '';
+
+                $html += '<tr>';
+                var classForIcon = 1;
+                if (_MetricType == "@RevenuePlanner.Helpers.Enums.MetricType.CR.ToString()") {
+                    classForIcon = 1
+                }
+                else if (_MetricType == "@RevenuePlanner.Helpers.Enums.MetricType.SV.ToString()") {
+                    classForIcon = 2;
+                }
+                else if (_MetricType == "@RevenuePlanner.Helpers.Enums.MetricType.Size.ToString()") {
+                    classForIcon = 3;
+                }
+                else if (_MetricType == "@RevenuePlanner.Helpers.Enums.MetricType.Volume.ToString()") {
+                    classForIcon = 4;
+                }
+
+        var BRate = _BaseLineRate;
+        var PWithoutTactic = _PlanWithoutTactic;
+        var PWithTactic = _PlanWithTactic;
+
+        BRate = FormatForBoostStagesValue(BRate, classForIcon);
+        PWithoutTactic = FormatForBoostStagesValue(PWithoutTactic, classForIcon);
+        PWithTactic = FormatForBoostStagesValue(PWithTactic, classForIcon);
+
+        if (classForIcon == 1) {
+            var arrText = _MetricName.split("->");
+            $html += '<td class="font_size16 font3F3F3F">' + arrText[0] + '<span class="right-arrow"></span>' + arrText[1] + '</td>';
+            $html += '<td class="font3F3F3F text-align-right">Conversion Rate</td>';
+            //$html += '<span class="filter-icon"></span>' + arrText[0] + '<span class="arrow-right-icon"></span>' + arrText[1] + '<span class="arrow-down-icon"></span>';
+        }
+        else if (classForIcon == 2) {
+            $html += '<td class="font_size16 font3F3F3F">' + _MetricName + '</td>';
+            $html += '<td class="font3F3F3F text-align-right">Velocity</td>';
+        }
+        else if (classForIcon == 3) {
+            $html += '<td class="font_size16 font3F3F3F">' + _MetricName + '</td>';
+            $html += '<td class="font3F3F3F text-align-right">Size</td>';
+        }
+        else if (classForIcon == 4) {
+            $html += '<td class="font_size16 font3F3F3F">' + _MetricName + '</td>';
+            $html += '<td class="font3F3F3F text-align-right">Volume</td>';
+        }
+        $html += '<td class="font3F3F3F text-align-right">' + BRate + '</td>' +
+                    '<td class="font3F3F3F text-align-right">' + PWithoutTactic + '</td>' +
+                    '<td class="blue-text text-align-right">' + PWithTactic + '</td>' +
+                '</tr>';
+
+        $('#Improvementaccordion  > tbody').append($html);
+
+    }
+    });
+
+</script>

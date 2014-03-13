@@ -1,0 +1,323 @@
+﻿@using RevenuePlanner.Helpers
+@{
+    var tacticReview = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
+}
+<div class="span5 width360" id="inspect-modal-right-div">
+    <div class="font-size18">Overview</div>
+    <div id="campaign-title" class="bold padding-top16 font-size18">@tacticReview.CampaignTitle</div>
+    <div id="program-title" class="font-size18">@tacticReview.ProgramTitle</div>
+    <div class="cf source-sans-proregular padding-top32">
+        <div class="chart-gray pull-left size65x38 without-padding">
+            <div class="padding-top16"><span id="startDay-id" class="font_size30">@tacticReview.StartDate.ToString("dd")</span></div>
+            <span id="startMonth-id" class="font_size16">@tacticReview.StartDate.ToString("MMM")</span>
+            <div class="margin-top20">Effective</div>
+        </div>
+    </div>
+    <div class="cf margin-top40 textalign-mozcenter">
+        <div class="pull-left size65x38 ">
+            <div class="busunit"></div>
+            <div>Bus. Unit</div>
+            <span id="busunit-id" class="blue-text bold">@ViewBag.BudinessUnitTitle</span>
+        </div>
+        <div class="pull-left size65x38  margin-left20">
+            <div class="owner"></div>
+            <div>Owner</div>
+            <span id="owner-id" class="blue-text bold">@tacticReview.Owner</span>
+        </div>
+        <div class="pull-left size65x38 margin-left20">
+            <div class="vertical"></div>
+            <div>Vertical</div>
+            <span id="vertical-id" class="blue-text bold">@tacticReview.VerticalTitle</span>
+        </div>
+        <div class="pull-left size65x38 margin-left20">
+            <div class="audience-review"></div>
+            <div>
+                <label id="audience">Audience</label></div>
+            <span id="audience-id" class="blue-text bold">@tacticReview.AudiencTitle</span>
+        </div>
+    </div>
+</div>
+
+<div class="span2 width50" id="inspect-modal-left-column2">
+    <div>Notes</div>
+
+    <div id="divComment" class="chat-div" style="overflow: auto;">
+        <div id="divInnerComment">
+            @foreach (var item in ViewBag.ReviewModel)
+            {
+                <div class="post-div" style="clear: both; width: 100%; border-bottom: solid 1px #A8A8A8;">
+                    <div style="float: left; width: 10%;">
+                        <img class="avatar-user" src="@Url.Action("LoadUserImage", "Home", new { id = item.CreatedBy })" alt="User avatar" /></div>
+                    <div style="float: left; width: 90%;">
+                        <span class="bold">@item.CommentedBy</span>
+                        <span>@item.Comment</span><br />
+                        <span class="font_size10" style="clear: both;">@item.CommentDate.ToString("MMM dd") at @item.CommentDate.ToString("hh:mmtt")</span>
+                    </div>
+                    <div style="clear: both;"></div>
+                </div>
+                                        
+            }
+        </div>
+        <div></div>
+    </div>
+    <div class="padding-top10 border-bottom-div">
+
+        <img class="avatar-user vertical-aligntop" src="@Url.Action("LoadUserImage", "Home", new { id = RevenuePlanner.Helpers.Sessions.User.UserId })" alt="User avatar" />
+        @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment" })
+        <button id="btnComment" class="btn btn-blue text-shadow-blue source-sans-proregular new-comment-buttom " type="button">Comment</button>
+    </div>
+    <div class="cf pull-left">
+     
+        <div style="float: right; margin-top: 10px;">
+            <button class="btn btn-blue text-shadow-blue source-sans-proregular  button-inspect-result-modal pull-right  resize-button margin-left20 btn-blue share-tactic-icon" id="BtnShareTactic" type="button"><span class="flag-icon"></span>Share </button>
+        </div>
+       
+        @{
+            string Submit = "Submit for Approval";
+            string Approve = "Approve";
+            string Reject = "Reject";
+            List<string> aryStatus = new List<string>();
+            bool isVisibleStatus = true;
+            if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString()))
+            {
+                
+                 if (!(bool)ViewBag.IsValidUser)
+                 {
+                     aryStatus.Add(Submit);
+                 }
+            }
+            else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()))
+            {
+                if ((bool)ViewBag.IsValidUser)
+                {
+                    aryStatus.Add(Approve);
+                    aryStatus.Add(Reject);
+                }
+                else
+                {
+                    isVisibleStatus = false;
+                }
+            }
+            else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()))
+            {
+                if ((bool)ViewBag.IsValidUser)
+                {
+                    aryStatus.Add(Reject);
+                }
+                else
+                {
+                    isVisibleStatus = false;
+                }
+            }
+            else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()))
+            {
+                if ((bool)ViewBag.IsValidUser)
+                {
+                    aryStatus.Add(Approve);
+                }
+                else
+                {
+                    aryStatus.Add(Submit);
+                }
+            }
+            else
+            {
+                if ((bool)ViewBag.IsValidUser)
+                {
+                    aryStatus.Add(Reject);
+                }
+                else
+                {
+                    isVisibleStatus = false;
+                }
+            }
+
+            if (isVisibleStatus)
+            {
+                int len = aryStatus.Count;
+                if(len > 0)
+                {
+                string firstStatus = aryStatus[0];
+                
+            <div class="btn-container div-container-buttom " style="float: right;">
+                <div id="btn_change_status" class="btn-group dropup">
+                    <button id="btnApproved" data-toggle="dropdown" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular">
+                        <span class="flag-icon approve-icon-dropdown"></span>
+                        <span id="spanTactic">@firstStatus</span>
+                    </button>
+                     @Html.Hidden("hdnStatusValue", firstStatus, new { id = "hdnStatusValue"});
+                    @if (len >= 2)
+                    {
+                        <button data-toggle="dropdown" class="btn dropdown-toggle height25 btn-blue displayinherit">
+                            <span class="caret "></span>
+                        </button>
+                                              
+                        <ul class="dropdown-menu " id="uldiv">
+                            @foreach (string s in aryStatus)
+                            {
+                                <li>
+                                    <a>@s</a>
+                                </li>
+                            }
+                        </ul>
+                    }
+
+                </div>
+
+            </div> 
+            }
+            }
+        }
+    </div>
+</div>
+<div id="DivPartialShareTactic">
+</div>
+<script type="text/javascript">
+    $(document).ready(
+      function () {
+
+          SetFormatForLabel("#inq-id", 5);
+          SetFormatForLabel("#mqls-id", 5);
+          $("#BtnShareTactic").click(function () {
+              $("#DivPartialShareTactic").empty();
+              var url = '@Url.Content("~/Home/ShowShareTactic/")';
+              $("#DivPartialShareTactic").load(url + '?planTacticId=' + $('#hdnPlanTacticId').val() + '&section=@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()'); // section parameter added to open share tactic popup
+          });
+
+          $("#uldiv li a").click(function () {
+              $("#spanTactic").html($(this).text());
+              $("#hdnStatusValue").val($(this).text());
+          });
+
+          var divheight = $("#divInnerComment").height();
+          $("#divComment").scrollTop(divheight);
+
+          // On Comment Button Save Commnet
+          $("#btnComment").click(function () {
+              $("#successMessage").css("display", "none");
+              $("#errorMessage").css("display", "none");
+              var commentText = $('#txtAreaComment').val();
+              if (commentText == '') {
+                  var msgspan = "Make sure all fields are filled and valid,try again.";
+                  $("#errorMessage").css("display", "block");
+                  /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                  var topsize = $(document).scrollTop() + 41;
+
+                  $("#modal-container-186470").css("top", topsize + "px");
+                  $("#txtAreaComment").addClass("error");
+                  $("#spanMessageError").text(msgspan);
+                  return false;
+              }
+              else {
+                  if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test(commentText)) {
+                      var msgspan = "Special character are not allowed, try again.";
+                      $("#errorMessage").css("display", "block");
+                      /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                      var topsize = $(document).scrollTop() + 41;
+                      $("#modal-container-186470").css("top", topsize + "px");
+                      $("#txtAreaComment").addClass("error");
+                      $("#spanMessageError").text(msgspan);
+                      return false;
+                  }
+                  $("#txtAreaComment").removeClass("error");
+              }
+
+              var PlanTacticId = $('#hdnPlanTacticId').val();
+              $.ajax({
+                  type: 'POST',
+                  url: '@Url.Content("~/Home/SaveComment/")',
+                  data: {
+                      comment: commentText,
+                      planTacticId: PlanTacticId,
+                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()" //section parameter added to save tactic comment
+                  },
+                  success: function (data) {
+                      if (data != 'undefined') {
+                          if (data.id != 0) {
+                              $("#successMessage").css("display", "block");
+                              /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                              var topsize = $(document).scrollTop() + 41;
+                              $("#modal-container-186470").css("top", topsize + "px");
+                              $("#spanMessageSuccess").empty();
+                              $("#spanMessageSuccess").text(data.msg);
+                              loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", data.TabValue);//section parameter passed to open tactic popup
+                          }
+                          else {
+                              $("#errorMessage").css("display", "block");
+                              var topsize = $(document).scrollTop() + 41;
+                              $("#modal-container-186470").css("top", topsize + "px");
+                              $("#spanMessageError").empty();
+                              $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                          }
+                      }
+                  },
+                  error: function () {
+                      $("#errorMessage").css("display", "block");
+                      var topsize = $(document).scrollTop() + 41;
+                      $("#modal-container-186470").css("top", topsize + "px");
+                      $("#spanMessageError").empty();
+                      $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                      myApp.hidePleaseWait();
+                      return false;
+                  }
+              });
+          });
+
+          // Click on Approved Button Save Comment & Change Status
+          $("#btnApproved").click(function () {
+              $("#successMessage").css("display", "none");
+              $("#errorMessage").css("display", "none");
+              statusValue = $("#hdnStatusValue").val();
+              var PlanTacticId = $('#hdnPlanTacticId').val();
+              var stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
+              if (statusValue == "Submit for Approval") {
+                  stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()";
+              }
+              else if (statusValue == "Approve") {
+                  stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
+              }
+              else if (statusValue == "Reject") {
+                  stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()";
+              }
+              $.ajax({
+                  type: 'POST',
+                  url: '@Url.Content("~/Home/ApprovedTactic/")',
+                  data: {
+                      status: stat,
+                      planTacticId: PlanTacticId,
+                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()" //section parameter added to approve tactic
+                  },
+                  success: function (data) {
+                      if (data != 'undefined') {
+                          if (data.id != 0) {
+                              $("#successMessage").css("display", "block");
+                              var topsize = $(document).scrollTop() + 41;
+                              $("#modal-container-186470").css("top", topsize + "px");
+                              $("#spanMessageSuccess").empty();
+                              $("#spanMessageSuccess").text(data.msg);
+                              loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", data.TabValue); //section parameter passed to open tactic popup
+                          }
+                          else {
+                              $("#errorMessage").css("display", "block");
+                              var topsize = $(document).scrollTop() + 41;
+                              $("#modal-container-186470").css("top", topsize + "px");
+                              $("#spanMessageError").empty();
+                              $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                          }
+                      }
+                  },
+                  error: function () {
+                      $("#errorMessage").css("display", "block");
+                      var topsize = $(document).scrollTop() + 41;
+                      $("#modal-container-186470").css("top", topsize + "px");
+                      $("#spanMessageError").empty();
+                      $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                      myApp.hidePleaseWait();
+                      return false;
+                  }
+              });
+          });
+
+
+      });
+</script>
