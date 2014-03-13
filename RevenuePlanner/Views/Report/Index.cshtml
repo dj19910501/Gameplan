@@ -63,7 +63,7 @@
 
 <ul class="nav nav-tabs" style="border-bottom: 0px;">
     <li class="source-sans-proregular">
-        <h2 class="title-header plan">@ViewBag.PlanTitle</h2>
+        <h2 class="title-header plan" id="h2PlanTitle">@ViewBag.PlanTitle</h2>
     </li>
 </ul>
 
@@ -162,7 +162,7 @@
                 var PlanTitle = $(this).text();
                 var PlanOption = $.grep($('#reportSummry2 option'), function (value) { return $(value).text() == PlanTitle; });
                 SelectedPlanId = $(PlanOption[0]).val();
-
+                $('#h2PlanTitle').html(PlanTitle);
                 LoadSummaryDataForPlan(SelectedBUId, SelectedPlanId);
             });
         }

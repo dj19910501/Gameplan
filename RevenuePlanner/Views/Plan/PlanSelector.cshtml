@@ -144,9 +144,6 @@
                             }
                             TabClick();
                             myApp.hidePleaseWait();
-                        },
-                        error: function () {
-                            myApp.hidePleaseWait();
                         }
                     });
                 }
@@ -175,9 +172,6 @@
                 BindYearTabs(r);
                 //TabClick();
                 myApp.hidePleaseWait();
-            },
-            error: function () {
-                myApp.hidePleaseWait();
             }
         });
     }
@@ -196,7 +190,7 @@
                     if ($(this).text() == Year) {
                         $(this).parent().removeClass("disabled");
                         $(this).parent().addClass("active");
-                        TabClick();
+                        //TabClick();/* commented by Nirav shah for TFS Point : 218 on 13 March 2014*/
                     }
                 });
             }
@@ -224,9 +218,6 @@
             success: function (r) {
                 BindBUTabs(r);
                 TabClick();
-                myApp.hidePleaseWait();
-            },
-            error: function () {
                 myApp.hidePleaseWait();
             }
         });
@@ -296,9 +287,6 @@
             success: function (r) {
                 baselinesModels = r;
                 fillBaselineTable();
-                myApp.hidePleaseWait();
-            },
-            error: function () {
                 myApp.hidePleaseWait();
             }
         });
