@@ -267,20 +267,21 @@
             </li>
         }
     </ul>
-    <table id="table_reports4" class="table table-striped">
+  
+     <table id="table_reports4" class="table table-striped">
         <thead>
             <tr>
                 <th class="width130 border-r main_table_header">BUSINESS UNIT</th>
                 <th class="width53 main_table_header">REVENUE</th>
                 <th class="width53 main_table_header"></th>
-                <th class="width53 main_table_header"></th>
+            @*    <th class="width53 main_table_header"></th>*@
                 <th class="width53 border-r main_table_header"></th>
                 <th class="width53 main_table_header">COST</th>
                 <th class="width53 main_table_header"></th>
-                <th class="width53 main_table_header"></th>
+@*                <th class="width53 main_table_header"></th>*@
                 <th class="width53 border-r main_table_header"></th>
                 <th class="width53 main_table_header"></th>
-                <th class="width53 main_table_header"></th>
+            @*    <th class="width53 main_table_header"></th>*@
                 <th class="width53 main_table_header"></th>
             </tr>
             <tr>
@@ -296,15 +297,15 @@
                 }
                 <th class="table_header">Plan</th>
                 <th class="table_header">Actual</th>
-                <th class="table_header">Trend</th>
+                @*<th class="table_header">Trend</th>*@
                 <th class="border-r table_header"></th>
                 <th class="table_header">Plan</th>
                 <th class="table_header">Actual</th>
-                <th class="table_header">Trend</th>
+       @*         <th class="table_header">Trend</th>*@
                 <th class="border-r table_header"></th>
-                <th class="table_header">Run Rate</th>
-                <th class="table_header">Pipeline Converage</th>
-                <th class="table_header">Rev vs. Spend</th>
+                <th class="table_header">Trend</th>
+                @*<th class="table_header">Pipeline Converage</th>*@
+                <th class="table_header">Rev vs. Spend to ROI</th>
             </tr>
         </thead>
         <tbody>
@@ -1237,8 +1238,8 @@
         htmlLastRow += '<tr>' +
                            '<td class="total-row border-r">Total</td>' +
                            '<td class="total-row">' + FormatNumber(planRevenueTotal, false) + '</td>' +
-                           '<td class="total-row">' + FormatNumber(actualRevenueTotal, false) + '</td>' +
-                           '<td class="total-row">' + FormatNumber(trendRevenueTotal, false) + '</td>';
+                           '<td class="total-row">' + FormatNumber(actualRevenueTotal, false) + '</td>';// +
+                           //'<td class="total-row">' + FormatNumber(trendRevenueTotal, false) + '</td>';
         var perTotalRevenue = 0;
         if (planRevenueTotal != 0) {
             perTotalRevenue = ((parseFloat(actualRevenueTotal) - parseFloat(planRevenueTotal)) / parseFloat(planRevenueTotal)) * 100;
@@ -1252,8 +1253,8 @@
         }
         //'<td class="total-row border-r green-value"><span class="green-arrow-up-icon"></span><span class="pull-left">0</span></td>' +
         htmlLastRow += '<td class="total-row">' + FormatNumber(planCostTotal, false) + '</td>' +
-           '<td class="total-row">' + FormatNumber(actualCostTotal, false) + '</td>' +
-           '<td class="total-row">' + FormatNumber(trendCostTotal, false) + '</td>';
+           '<td class="total-row">' + FormatNumber(actualCostTotal, false) + '</td>';// +
+           //'<td class="total-row">' + FormatNumber(trendCostTotal, false) + '</td>';
 
         var perTotalCost = 0;
         if (planCostTotal != 0) {
@@ -1267,8 +1268,8 @@
             htmlLastRow += '<td class="total-row border-r green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(perTotalCost, true) + '</span></td>';
         }
 
-        htmlLastRow += '<td class="total-row">' + FormatNumber(runRateTotal, false) + '</td>' +
-            '<td class="total-row">' + FormatNumber(pipelineTotal, false) + '</td>';
+        htmlLastRow += '<td class="total-row">' + FormatNumber(runRateTotal, false) + '</td>' ;//+
+            //'<td class="total-row">' + FormatNumber(pipelineTotal, false) + '</td>';
 
         var perRevSpend = 0;
         if (totalRevSpendCost != 0) {
@@ -1306,8 +1307,8 @@
         htmlCon += '<tr>' +
                             '<td class="border-r">' + _title + '</td>' +
                             '<td>' + FormatNumber(_PlanRevenue, false) + '</td>' +
-                            '<td>' + FormatNumber(_ActualRevenue, false) + '</td>' +
-                            '<td>' + FormatNumber(_TrendRevenue, false) + '</td>';
+                            '<td>' + FormatNumber(_ActualRevenue, false) + '</td>';// +
+                            //'<td>' + FormatNumber(_TrendRevenue, false) + '</td>';
         var perRevenue = 0;
         if (_PlanRevenue != 0) {
             perRevenue = ((parseFloat(_ActualRevenue) - parseFloat(_PlanRevenue)) / parseFloat(_PlanRevenue)) * 100;
@@ -1320,8 +1321,8 @@
             htmlCon += '<td class="border-r green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(perRevenue, true) + '</span></td>';
         }
         htmlCon += '<td>' + FormatNumber(_PlanCost, false) + '</td>' +
-                                '<td>' + FormatNumber(_ActualCost, false) + '</td>' +
-                                '<td>' + FormatNumber(_TrendCost, false) + '</td>';
+                                '<td>' + FormatNumber(_ActualCost, false) + '</td>';// +
+                                //'<td>' + FormatNumber(_TrendCost, false) + '</td>';
         var perCost = 0;
         if (_PlanCost != 0) {
             perCost = ((parseFloat(_ActualCost) - parseFloat(_PlanCost)) / parseFloat(_PlanCost)) * 100;
@@ -1334,8 +1335,8 @@
             htmlCon += '<td class="border-r green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(perCost, true) + '</span></td>';
         }
 
-        htmlCon += '<td>' + FormatNumber(_RunRate, false) + '</td>' +
-                  '<td>' + FormatNumber(_PipelineCoverage, false) + '</td>';
+        htmlCon += '<td>' + FormatNumber(_RunRate, false) + '</td>'; //+
+                  //'<td>' + FormatNumber(_PipelineCoverage, false) + '</td>';
         if (_RevSpend < 0) {
             htmlCon += '<td class="border-r red-value"><span class="red-arrow-down-icon"></span><span>' + numberWithCommas(Math.round(Math.abs(_RevSpend) * 100) / 100) + '</span></td>';
         }
