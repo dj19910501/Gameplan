@@ -440,7 +440,7 @@ namespace RevenuePlanner.Helpers
                 }
           else if (Section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
             {
-                //// Modified By Maninder Singh Wadhva PL Ticket#47
+                ////Modified By Maninder Singh Wadhva PL Ticket#47
                 emailBody = notification.EmailContent.Replace("[NameToBeReplaced]", CollaboratorUserName.ElementAt(i)).Replace("[ImprovementTacticNameToBeReplaced]", TacticName).Replace("[PlanNameToBeReplaced]", PlanName).Replace("[UserNameToBeReplaced]", Sessions.User.FirstName + " " + Sessions.User.LastName).Replace("[CommentToBeReplaced]", Comment);
             }
                 string email = EmailIds.ElementAt(i);
