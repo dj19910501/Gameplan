@@ -74,22 +74,28 @@ namespace RevenuePlanner.Controllers
                 lstBusinessUnits.Where(lbu => lbu.Value == Convert.ToString(Sessions.BusinessUnitId)).ToList().ForEach(lbu => lbu.Selected = true);
                 lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Model.BusinessUnitId == Sessions.BusinessUnitId && pl.Status.Equals(planPublishedStatus) && pl.Year.Equals(currentYear)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
             }
-
-
+            /* added by Nirav shah for TFS Point : 218*/
+            if (Sessions.PlanId != 0)
+            {
+                Sessions.ReportPlanId = Sessions.PlanId;
+            }
             if (Sessions.ReportPlanId > 0)
             {
                 lstPlans.Where(lp => lp.Value == Convert.ToString(Sessions.ReportPlanId)).ToList().ForEach(lp => lp.Selected = true);
             }
 
+
             if (Sessions.ReportPlanId == 0)
             {
                 ViewBag.PlanTitle = "All Plans";
+                Sessions.PlanId = 0;/* added by Nirav shah for TFS Point : 218*/
             }
             else
             {
                 var plan = db.Plans.Single(p => p.PlanId.Equals(Sessions.ReportPlanId));
                 ViewBag.PlanTitle = plan.Title;
             }
+
 
             FilterDropdownValues objFilterData = new FilterDropdownValues();
             objFilterData.lstBusinessUnit = lstBusinessUnits;
@@ -119,6 +125,7 @@ namespace RevenuePlanner.Controllers
             else if (PlanId == "0" || PlanId == "") // This means all plans are selected
             {
                 Sessions.ReportPlanId = 0;
+                Sessions.PlanId = 0;/* added by Nirav shah for TFS Point : 218*/
             }
 
             if (!string.IsNullOrEmpty(BusinessUnitId) && BusinessUnitId != "0" && BusinessUnitId != Convert.ToString(Guid.Empty))
@@ -157,10 +164,12 @@ namespace RevenuePlanner.Controllers
                 int int_PlanId = Convert.ToInt32(PlanId);
                 plans = plans.Where(p => p.PlanId.Equals(int_PlanId)).ToList();
                 Sessions.ReportPlanId = int_PlanId;
+                Sessions.PlanId = int_PlanId;/* added by Nirav shah for TFS Point : 218*/
             }
             else if (PlanId == "0") // This means all plans are selected
             {
                 Sessions.ReportPlanId = 0;
+                Sessions.PlanId = 0;/* added by Nirav shah for TFS Point : 218*/
             }
 
             if (!string.IsNullOrEmpty(BusinessUnitId) && BusinessUnitId != "0" && BusinessUnitId != Convert.ToString(Guid.Empty))
@@ -189,20 +198,20 @@ namespace RevenuePlanner.Controllers
             if (plans != null && plans.Count() != 0)
             {
                 ViewBag.IsPlanExistToShowReport = true;
+                /* commented by Nirav shah for TFS Point : 218*/
+                //{
+                //    //// Getting current year's published plan for business unit of director.
+                //    Plan sessionActivePlan = plans.Where(p => p.Model.BusinessUnitId.Equals(Sessions.User.BusinessUnitId)).Select(p => p).FirstOrDefault();
+                //    if (sessionActivePlan != null)
+                //    {
+                //        Sessions.PlanId = sessionActivePlan.PlanId;
+                //    }
+                //}
 
-                {
-                    //// Getting current year's published plan for business unit of director.
-                    Plan sessionActivePlan = plans.Where(p => p.Model.BusinessUnitId.Equals(Sessions.User.BusinessUnitId)).Select(p => p).FirstOrDefault();
-                    if (sessionActivePlan != null)
-                    {
-                        Sessions.PlanId = sessionActivePlan.PlanId;
-                    }
-                }
-
-                if (!string.IsNullOrEmpty(PlanId) && Convert.ToString(PlanId) != "0")
-                {
-                    Sessions.PlanId = Convert.ToInt32(PlanId);
-                }
+                //if (!string.IsNullOrEmpty(PlanId) && Convert.ToString(PlanId) != "0")
+                //{
+                //    Sessions.PlanId = Convert.ToInt32(PlanId);
+                //}
 
 
                 foreach (var plan in plans)
