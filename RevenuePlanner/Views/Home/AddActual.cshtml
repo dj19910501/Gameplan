@@ -540,7 +540,8 @@
                                 TotalRevenueActual: totalRevenueActual,
                                 TotalCostActual: totalCostActual,
                                 ROI: totalROI,
-                                ROIActual: totalROIActual
+                                ROIActual: totalROIActual,
+                                IsActual: true
                             });
                             isData = true;
                         }
@@ -562,10 +563,20 @@
                     return false;
                 }
                 if (!isData) {
-                    $("#errorMessage").css("display", "block");
-                    $("#spanMessageError").empty();
-                    $("#spanMessageError").text("To upload result you require to add value for one of the field.");
-                    return false;
+                    _tactic.push({
+                        PlanTacticId: tacticId,
+                        StageTitle: 0,
+                        Period: 0,
+                        ActualValue: 0,
+                        TotalINQActual: totalINQActual,
+                        TotalMQLActual: totalMQLActual,
+                        TotalCWActual: totalCWActual,
+                        TotalRevenueActual: totalRevenueActual,
+                        TotalCostActual: totalCostActual,
+                        ROI: totalROI,
+                        ROIActual: totalROIActual,
+                        IsActual: false
+                    });
                 }
                 $("#errorMessage").css("display", "none");
                 _tactic = JSON.stringify({ 'tacticactual': _tactic });
@@ -627,7 +638,7 @@
                         if (isShow) {
                             indexValue = indexValue + 1;
                             isFilterFound = true;
-                            addRowActual(indexValue, actuals[i].id, actuals[i].title, actuals[i].inqProjected, actuals[i].inqActual, actuals[i].mqlProjected, actuals[i].mqlActual, actuals[i].cwProjected, actuals[i].cwActual, actuals[i].revenueProjected, actuals[i].revenueActual, actuals[i].costProjected, actuals[i].costActual, actuals[i].roiProjected, actuals[i].roiActual, actuals[i].actualData);
+                            addRowActual(indexValue, actuals[i].id, actuals[i].title, actuals[i].inqProjected, actuals[i].inqActual, actuals[i].mqlProjected, actuals[i].mqlActual, actuals[i].cwProjected, actuals[i].cwActual, actuals[i].revenueProjected, actuals[i].revenueActual, actuals[i].costProjected, actuals[i].costActual, actuals[i].roiProjected, actuals[i].roiActual, actuals[i].actualData, actuals[i].modifiedBy);
                         }
                     }
                     if (!isFilterFound) {
@@ -652,7 +663,7 @@
         }
 
         //add row in actuals table
-        function addRowActual(_index, _id, _title, _inqProjected, _inqActual, _mqlProjected, _mqlActual, _cwProjected, _cwActual, _revenueProjected, _revenueActual, _costProjected, _costActual, _roiProjected, _roiActual, _actualData) {
+        function addRowActual(_index, _id, _title, _inqProjected, _inqActual, _mqlProjected, _mqlActual, _cwProjected, _cwActual, _revenueProjected, _revenueActual, _costProjected, _costActual, _roiProjected, _roiActual, _actualData, _modifiedBy) {
             var $tableActuals = $('.accordion-actuals');
             var num = parseInt(_index);
             var updateBy = '', stat;
@@ -724,7 +735,11 @@
                 }
                 $html += '</tr>';
             }
-
+            if (updateBy == "") {
+                if (_costActual != 0) {
+                    updateBy = _modifiedBy;
+                }
+            }
             $html += '</tbody>' +
                 '</table>' +
                 '</div>' +
