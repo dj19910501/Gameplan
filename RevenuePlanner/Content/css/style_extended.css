@@ -1497,15 +1497,15 @@ a {
 }
 
 .report-summry {
-    margin-bottom: 10px !important;
+    margin-bottom: 16px !important;
 }
 
     .report-summry .nl-field-toggle {
         background: #f2f2f2;
         border: 1px solid #e6e6e6;
-        padding: 11px 12px;
+        padding: 7px 12px;
         display: inline-block;
-        font-size: 20px;
+        font-size: 18px;
         text-decoration: underline;
         line-height: 24px;
     }
@@ -1525,18 +1525,16 @@ a {
             transform: translateY(calc(25% - 0px)) translateX(55px) scale(1.3) !important;
         }
 
-.report-summry-select {
-    margin-right: 5px;
-}
-
     .report-summry-select .nl-field-toggle {
         padding-left: 50px;
-        background: url(../images/setting-icon.png) 13px center no-repeat #f2f2f2;
+        background: url(../images/setting-icon.png) 13px center no-repeat #D5D5D5;
+        display:block;
     }
 
 .report-summry-plans .nl-field-toggle {
     padding-left: 50px;
-    background: url(../images/plan-icon.png) 13px center no-repeat #f2f2f2;
+    background: url(../images/plan-icon.png) 13px center no-repeat #D5D5D5;
+    display:block;
 }
 
 .report-summry .nl-field ul li:hover {
@@ -1841,4 +1839,8 @@ a {
 .margin-top3px
 {
     margin-top: 3px;
+}
+
+.report-summry-select div, .report-summry-plans div {
+    width: 100%;
 }
