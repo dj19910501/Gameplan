@@ -62,6 +62,11 @@ function validateDateCompare(sdate, edate, msg) {
 }
 
 function FormatCurrency(amount, showDecimals) {
+    /// Modified By Maninder Singh Wadhva PL Ticket#47
+    if (isNaN(amount)) {
+        return amount;
+    }
+
     if (showDecimals == null)
         showDecimals = true;
     var i = parseFloat(amount);

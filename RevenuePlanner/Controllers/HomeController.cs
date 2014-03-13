@@ -1,5 +1,4 @@
-﻿
-using RevenuePlanner.Helpers;
+﻿using RevenuePlanner.Helpers;
 using RevenuePlanner.Models;
 using System;
 using System.Collections.Generic;
@@ -480,6 +479,7 @@ namespace RevenuePlanner.Controllers
         #region "View Control & GANTT Chart"
         /// <summary>
         /// Added By: Maninder Singh Wadhva.
+        /// Modified By Maninder Singh Wadhva PL Ticket#47
         /// Date: 11/15/2013
         /// Function to get tactic for view control.
         /// Modfied By: Maninder Singh Wadhva.
@@ -487,7 +487,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="planVersionId">Plan version Id.</param>
         /// <returns>Returns tactic type and paln campaign program tactic as Json Result.</returns>
-        public JsonResult GetViewControlDetail(int type, int planId, string isQuarter, string geographyIds, string individualsIds, bool isShowOnlyMyTactic = false)
+        public JsonResult GetViewControlDetail(int type, int planId, string isQuarter, string geographyIds, string individualsIds, string activeMenu, bool isShowOnlyMyTactic = false)
         {
             #region "For all users"
             //// Setting plan id in session.
@@ -557,11 +557,32 @@ namespace RevenuePlanner.Controllers
                                                                        (filterIndividual.Count.Equals(0) || filterIndividual.Contains(pcpt.CreatedBy.ToString()) || filterIndividual.Contains(pcpt.ModifiedBy.ToString()) || tacticId.Contains(pcpt.PlanTacticId)))
                                                         .Select(pcpt => pcpt);
 
-            string requestCount = string.Empty;
+            //// Modified By Maninder Singh Wadhva PL Ticket#47
+            List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(improveTactic => improveTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(planId) &&
+                                                                                      improveTactic.IsDeleted.Equals(false) &&
+                                                                                      (improveTactic.EffectiveDate > CalendarEndDate).Equals(false))
+                                                                               .Select(improveTactic => improveTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
             string tacticStatus = Enums.TacticStatusValues.Single(s => s.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value;
-            requestCount = Convert.ToString(tactic.Where(t => t.Status.Equals(tacticStatus)).Count());
+            //// Modified By Maninder Singh Wadhva PL Ticket#47
+            string requestCount = Convert.ToString(tactic.Where(t => t.Status.Equals(tacticStatus)).Count() + improvementTactic.Where(improveTactic => improveTactic.Status.Equals(tacticStatus)).Count());
 
             GanttTabs currentGanttTab = (GanttTabs)type;
+
+            //// Modified By Maninder Singh Wadhva PL Ticket#47
+            //// Show submitted/apporved/in-progress/complete improvement tactic.
+            Enums.ActiveMenu objactivemenu = Common.GetKey<Enums.ActiveMenu>(Enums.ActiveMenuValues, activeMenu.ToLower());
+            if (objactivemenu.Equals(Enums.ActiveMenu.Home))
+            {
+                List<string> status = GetStatusAsPerTab(currentGanttTab);
+                improvementTactic = improvementTactic.Where(improveTactic => status.Contains(improveTactic.Status))
+                                                       .Select(improveTactic => improveTactic)
+                                                       .ToList<Plan_Improvement_Campaign_Program_Tactic>();
+            }
+
+
+            var improvementTacticForAccordion = GetImprovementTacticForAccordion(improvementTactic);
+            var improvementTacticTypeForAccordion = GetImprovementTacticTypeForAccordion(improvementTactic);
+
             switch (currentGanttTab)
             {
                 case GanttTabs.Tactic:
@@ -582,13 +603,20 @@ namespace RevenuePlanner.Controllers
                         ColorCode = pcpt.ColorCode
                     }).Distinct().OrderBy(pcpt => pcpt.Title);
 
+                    //// Modified By Maninder Singh Wadhva PL Ticket#47
+                    List<object> tacticAndRequestTaskData = GetTaskDetailTactic(tactic.ToList());
+                    tacticAndRequestTaskData = Common.AppendImprovementTaskData(tacticAndRequestTaskData, improvementTactic, CalendarStartDate, CalendarEndDate, false);
+
+                    //// Modified By Maninder Singh Wadhva PL Ticket#47
                     return Json(new
                     {
                         planCampaignProgramTactic = planCampaignProgramTactic.ToList(),
                         tacticType = tacticType.ToList(),
-                        taskData = GetTaskDetailTactic(tactic.ToList()),
+                        taskData = tacticAndRequestTaskData,
                         requestCount = requestCount,
-                        planYear = planYear
+                        planYear = planYear,
+                        improvementTacticForAccordion = improvementTacticForAccordion,
+                        improvementTacticTypeForAccordion = improvementTacticTypeForAccordion
                     }, JsonRequestBehavior.AllowGet);
                     #endregion
                 case GanttTabs.Vertical:
@@ -608,13 +636,19 @@ namespace RevenuePlanner.Controllers
                         ColorCode = vertical.ColorCode
                     }).Distinct().OrderBy(vertical => vertical.Title);
 
+                    //// Modified By Maninder Singh Wadhva PL Ticket#47
+                    List<object> verticalTaskData = GetTaskDetailVertical(campaign.ToList(), program.ToList(), tactic.ToList());
+                    verticalTaskData = Common.AppendImprovementTaskData(verticalTaskData, improvementTactic, CalendarStartDate, CalendarEndDate, false);
+
                     return Json(new
                     {
                         verticalTactic = verticalTactic.ToList(),
                         vertical = verticals.ToList(),
-                        taskData = GetTaskDetailVertical(campaign.ToList(), program.ToList(), tactic.ToList()),
+                        taskData = verticalTaskData,
                         requestCount = requestCount,
-                        planYear = planYear
+                        planYear = planYear,
+                        improvementTacticForAccordion = improvementTacticForAccordion,
+                        improvementTacticTypeForAccordion = improvementTacticTypeForAccordion
                     }, JsonRequestBehavior.AllowGet);
                     #endregion
                 case GanttTabs.Stage:
@@ -634,6 +668,11 @@ namespace RevenuePlanner.Controllers
                         TaskId = string.Format("S{0}_C{1}_P{2}_T{3}", t.TacticType.StageId, t.Plan_Campaign_Program.PlanCampaignId, t.PlanProgramId, t.PlanTacticId)
                     });
 
+                    //// Modified By Maninder Singh Wadhva PL Ticket#47
+                    List<object> stageTaskData = GetTaskDetailStage(campaign.ToList(), program.ToList(), tactic.ToList());
+                    stageTaskData = Common.AppendImprovementTaskData(stageTaskData, improvementTactic, CalendarStartDate, CalendarEndDate, false);
+
+                    //// Modified By Maninder Singh Wadhva PL Ticket#47
                     return Json(new
                     {
                         //// For View Control.
@@ -643,9 +682,11 @@ namespace RevenuePlanner.Controllers
                         stage = queryStages.ToList(),
 
                         //// For Gantt.
-                        taskData = GetTaskDetailStage(campaign.ToList(), program.ToList(), tactic.ToList()),
+                        taskData = stageTaskData,
                         requestCount = requestCount,
-                        planYear = planYear
+                        planYear = planYear,
+                        improvementTacticForAccordion = improvementTacticForAccordion,
+                        improvementTacticTypeForAccordion = improvementTacticTypeForAccordion
                     }, JsonRequestBehavior.AllowGet);
                     #endregion
                 case GanttTabs.Audience:
@@ -665,13 +706,20 @@ namespace RevenuePlanner.Controllers
                         ColorCode = audience.ColorCode
                     }).Distinct().OrderBy(audience => audience.Title);
 
+                    //// Modified By Maninder Singh Wadhva PL Ticket#47
+                    List<object> audienceTaskData = GetTaskDetailAudience(campaign.ToList(), program.ToList(), tactic.ToList());
+                    audienceTaskData = Common.AppendImprovementTaskData(audienceTaskData, improvementTactic, CalendarStartDate, CalendarEndDate, false);
+
+                    //// Modified By Maninder Singh Wadhva PL Ticket#47
                     return Json(new
                     {
                         audienceTactic = audienceTactic.ToList(),
                         audience = audiences.ToList(),
-                        taskData = GetTaskDetailAudience(campaign.ToList(), program.ToList(), tactic.ToList()),
+                        taskData = audienceTaskData,
                         requestCount = requestCount,
-                        planYear = planYear
+                        planYear = planYear,
+                        improvementTacticForAccordion = improvementTacticForAccordion,
+                        improvementTacticTypeForAccordion = improvementTacticTypeForAccordion
                     }, JsonRequestBehavior.AllowGet);
                     #endregion
                 case GanttTabs.BusinessUnit:
@@ -689,6 +737,11 @@ namespace RevenuePlanner.Controllers
                         TaskId = string.Format("B{0}_C{1}_P{2}_T{3}", businessUnit.BusinessUnitId, pt.Plan_Campaign_Program.PlanCampaignId, pt.PlanProgramId, pt.PlanTacticId)
                     });
 
+                    //// Modified By Maninder Singh Wadhva PL Ticket#47
+                    List<object> businessUnitTaskData = GetTaskDetailBusinessUnit(businessUnit, tactic.ToList());
+                    businessUnitTaskData = Common.AppendImprovementTaskData(businessUnitTaskData, improvementTactic, CalendarStartDate, CalendarEndDate, false);
+
+                    //// Modified By Maninder Singh Wadhva PL Ticket#47
                     if (queryBusinessUnitTacticType.Count() > 0)
                     {
                         return Json(new
@@ -700,9 +753,11 @@ namespace RevenuePlanner.Controllers
                               businessUnit = new[] { new { businessUnit.BusinessUnitId, businessUnit.Title, businessUnit.ColorCode } },
 
                               //// For Gantt.
-                              taskData = GetTaskDetailBusinessUnit(businessUnit, tactic.ToList()),
+                              taskData = businessUnitTaskData,
                               requestCount = requestCount,
-                              planYear = planYear
+                              planYear = planYear,
+                              improvementTacticForAccordion = improvementTacticForAccordion,
+                              improvementTacticTypeForAccordion = improvementTacticTypeForAccordion
                           }, JsonRequestBehavior.AllowGet);
                     }
                     else
@@ -717,7 +772,65 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
+        /// Added By Maninder Singh Wadhva PL Ticket#47
+        /// Function to get status as per tab.
+        /// </summary>
+        /// <param name="currentTab">Current Tab.</param>
+        /// <returns>Returns list of status as per tab.</returns>
+        private List<string> GetStatusAsPerTab(GanttTabs currentTab)
+        {
+            List<string> status = Common.GetStatusListAfterApproved();
+
+            if (currentTab.Equals(GanttTabs.Request))
+            {
+                status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+                status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+            }
+
+            return status;
+        }
+
+        /// <summary>
+        /// Function to get improvement tactic type for accordion.
+        /// Added By Maninder Singh Wadhva PL Ticket#47
+        /// </summary>
+        /// <param name="improvementTactics">Improvement Tactic of current plan.</param>
+        /// <returns>Returns improvement tactic type for accordion.</returns>
+        private object GetImprovementTacticTypeForAccordion(List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics)
+        {
+            //// Getting distinct improvement tactic type for left accordion.
+            var improvementTacticType = improvementTactics.Select(improveTacticType => new
+            {
+                improveTacticType.ImprovementTacticTypeId,
+                improveTacticType.ImprovementTacticType.Title,
+                improveTacticType.ImprovementTacticType.ColorCode
+            }).Distinct().OrderBy(improveTacticType => improveTacticType.Title);
+
+            return improvementTacticType;
+        }
+
+        /// <summary>
+        /// Function to get improvement tactic for accordion.
+        /// </summary>
+        /// <param name="improvementTactics">Improvement tactic of current plan.</param>
+        /// <returns>Return improvement tactic for accordion</returns>
+        private object GetImprovementTacticForAccordion(List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics)
+        {
+            //// Getting plan improvement tactic for left accordion.
+            var improvementPlanTactic = improvementTactics.Select(improvementTactic => new
+            {
+                improvementTactic.ImprovementPlanTacticId,
+                improvementTactic.ImprovementTacticTypeId,
+                improvementTactic.Title,
+                TaskId = string.Format("M{0}_I{1}_Y{2}", 1, improvementTactic.ImprovementPlanTacticId, improvementTactic.ImprovementTacticTypeId)
+            });
+
+            return improvementPlanTactic;
+        }
+
+        /// <summary>
         /// Added By: Maninder Singh Wadhva.
+        /// Modified By Maninder Singh Wadhva PL Ticket#47
         /// Date: 11/22/2013
         /// Function to get GANTT chart task detail for Business unit.
         /// Modfied By: Maninder Singh Wadhva.
@@ -726,7 +839,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="modelBusinessUnit">Model and business unit.</param>
         /// <param name="planTactic">Plan tactic.</param>
         /// <returns>Returns list of task for GANNT CHART.</returns>
-        private object GetTaskDetailBusinessUnit(BusinessUnit businessUnit, List<Plan_Campaign_Program_Tactic> planTactic)
+        private List<object> GetTaskDetailBusinessUnit(BusinessUnit businessUnit, List<Plan_Campaign_Program_Tactic> planTactic)
         {
             //// Business Unit.
             var queryBusinessUnitTacticType = new
@@ -1239,12 +1352,13 @@ namespace RevenuePlanner.Controllers
 
         /// <summary>
         /// Added By: Maninder Singh.
+        /// Modified By Maninder Singh Wadhva PL Ticket#47
         /// Action to Save Comment & Update Status as of selected tactic.
         /// </summary>
         /// <param name="planTacticId">Plan Tactic Id.</param>
         /// <returns>Returns flag to indicate whether operation was successfull or not.</returns>
         [HttpPost]
-        public JsonResult ApproveDeclineTactic(int planTacticId, bool isApprove)
+        public JsonResult ApproveDeclineTactic(int planTacticId, bool isApprove, bool isImprovement)
         {
             int result = 0;
             try
@@ -1256,6 +1370,43 @@ namespace RevenuePlanner.Controllers
                         if (ModelState.IsValid)
                         {
                             string status = isApprove ? Enums.TacticStatusValues.Single(t => t.Key.Equals(Enums.TacticStatus.Approved.ToString())).Value : Enums.TacticStatusValues.Single(t => t.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value;
+
+                            /// Modified By Maninder Singh Wadhva PL Ticket#47
+                            if (isImprovement)
+                            {
+                                Plan_Improvement_Campaign_Program_Tactic improvementPlanTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(improvementTactic => improvementTactic.ImprovementPlanTacticId.Equals(planTacticId)).SingleOrDefault();
+                                improvementPlanTactic.Status = status;
+                                improvementPlanTactic.ModifiedBy = Sessions.User.UserId;
+                                improvementPlanTactic.ModifiedDate = DateTime.Now;
+
+                                Plan_Improvement_Campaign_Program_Tactic_Comment improvementPlanTacticComment = new Plan_Improvement_Campaign_Program_Tactic_Comment()
+                                {
+                                    ImprovementPlanTacticId = planTacticId,
+                                    Comment = string.Format("Improvement Tactic {0} by {1}", status, Sessions.User.DisplayName),
+                                    CreatedDate = DateTime.Now,
+                                    CreatedBy = Sessions.User.UserId
+                                };
+
+                                db.Entry(improvementPlanTacticComment).State = EntityState.Added;
+                                db.Entry(improvementPlanTactic).State = EntityState.Modified;
+                                result = db.SaveChanges();
+                                if (result == 2)
+                                {
+                                    if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
+                                    {
+                                        result = Common.InsertChangeLog(improvementPlanTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, 0, planTacticId, improvementPlanTactic.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved);
+                                    }
+
+                                    Common.mailSendForTactic(planTacticId, status, improvementPlanTactic.Title, section: Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
+                                    if (result >= 1)
+                                    {
+                                        scope.Complete();
+                                        return Json(new { result = true }, JsonRequestBehavior.AllowGet);
+                                    }
+                                }
+                            }
+                            else
+                            {
                             Plan_Campaign_Program_Tactic tactic = db.Plan_Campaign_Program_Tactic.Where(pt => pt.PlanTacticId == planTacticId).SingleOrDefault();
                             tactic.Status = status;
                             tactic.ModifiedBy = Sessions.User.UserId;
@@ -1285,12 +1436,11 @@ namespace RevenuePlanner.Controllers
                                     return Json(new { result = true }, JsonRequestBehavior.AllowGet);
                                 }
                             }
-                            else
-                            {
-                                return Json(new { result = false }, JsonRequestBehavior.AllowGet);
                             }
 
-                        }
+                            /// Modified By Maninder Singh Wadhva PL Ticket#47
+                                return Json(new { result = false }, JsonRequestBehavior.AllowGet);
+                            }
                     }
                 }
             }
@@ -2921,13 +3071,30 @@ namespace RevenuePlanner.Controllers
                                 notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationShare));
                                 emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage).Replace("[URL]", Url.Action("Index", "Home", new { currentPlanId = plan.PlanId, planCampaignId = planTacticId }, Request.Url.Scheme));
                             }
-
-                            //string notificationShareTactic = Enums.Custom_Notification.ShareTactic.ToString();
-                            //Notification notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationShareTactic));
-                            //string emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage).Replace("[URL]", Url.Action("Index", "Home", new { currentPlanId = plan.PlanId, planTacticId = planTacticId }, Request.Url.Scheme));
+                            else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                            {
+                                plan = db.Plan_Improvement_Campaign_Program_Tactic.Single(pt => pt.ImprovementPlanTacticId.Equals(planTacticId)).Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan;
+                                notificationShare = Enums.Custom_Notification.ShareImprovementTactic.ToString();
+                                notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationShare));
+                                emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage).Replace("[URL]", Url.Action("Index", "Home", new { currentPlanId = plan.PlanId, planTacticId = planTacticId }, Request.Url.Scheme));
+                            }
 
                             foreach (string toEmail in toEmailIds.Split(','))
                             {
+                                if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                                {
+                                    Plan_Improvement_Campaign_Program_Tactic_Share improvementTacticShare = new Plan_Improvement_Campaign_Program_Tactic_Share();
+                                    improvementTacticShare.ImprovementPlanTacticId = planTacticId;
+                                    improvementTacticShare.EmailId = toEmail;
+                                    improvementTacticShare.EmailBody = string.Format("{0} {1}", notification.EmailContent, optionalMessage);
+                                    improvementTacticShare.CreatedDate = DateTime.Now;
+                                    improvementTacticShare.CreatedBy = Sessions.User.UserId;
+                                    db.Entry(improvementTacticShare).State = EntityState.Added;
+                                    db.Plan_Improvement_Campaign_Program_Tactic_Share.Add(improvementTacticShare);
+                                    result = db.SaveChanges();
+                                }
+                                else
+                                {
                                 Tactic_Share tacticShare = new Tactic_Share();
                                 if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                                 {
@@ -2948,6 +3115,8 @@ namespace RevenuePlanner.Controllers
                                 db.Entry(tacticShare).State = EntityState.Added;
                                 db.Tactic_Share.Add(tacticShare);
                                 result = db.SaveChanges();
+                                }
+
                                 if (result == 1)
                                 {
                                     Common.sendMail(toEmail, Common.FromMail, emailBody, notification.Subject, string.Empty);
@@ -2980,6 +3149,9 @@ namespace RevenuePlanner.Controllers
                 Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Single(p => p.PlanTacticId.Equals(planTacticId));
                 ViewBag.PlanTacticId = planTacticId;
                 ViewBag.TacticTitle = planTactic.Title;
+
+                //// Modified By Maninder Singh Wadhva PL Ticket#47
+                ViewBag.IsImprovement = false;
             }
 
             else if (section == Convert.ToString(Enums.Section.Program).ToLower())
@@ -2994,6 +3166,15 @@ namespace RevenuePlanner.Controllers
                 Plan_Campaign planCampaign = db.Plan_Campaign.Single(p => p.PlanCampaignId.Equals(planTacticId));
                 ViewBag.PlanCampaignId = planTacticId;
                 ViewBag.CampaignTitle = planCampaign.Title;
+            }
+            else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+            {
+                Plan_Improvement_Campaign_Program_Tactic improvementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Single(p => p.ImprovementPlanTacticId.Equals(planTacticId));
+                ViewBag.PlanTacticId = planTacticId;
+                ViewBag.TacticTitle = improvementTactic.Title;
+
+                //// Modified By Maninder Singh Wadhva PL Ticket#47
+                ViewBag.IsImprovement = true;
             }
 
             BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
@@ -3014,6 +3195,7 @@ namespace RevenuePlanner.Controllers
             {
                 return PartialView("_ShareCampaign");
             }
+
             return PartialView("ShareTactic");
         }
 

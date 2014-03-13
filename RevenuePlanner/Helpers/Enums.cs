@@ -284,6 +284,7 @@ namespace RevenuePlanner.Helpers
             ImprovementTacticApproved,
             ImprovementTacticDeclined,
             ImprovementTacticSubmitted,
+            ShareImprovementTactic
         }
         #endregion
 

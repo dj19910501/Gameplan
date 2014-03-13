@@ -414,6 +414,8 @@
     <Content Include="Content\images\btn-login.jpg" />
     <Content Include="Content\images\bulldog-logo-old.png" />
     <Content Include="Content\images\bulldog-logo.png" />
+    <Content Include="Content\images\bullhorn-bg.png" />
+    <Content Include="Content\images\bullhorn-blue.png" />
     <Content Include="Content\images\busunit.png" />
     <Content Include="Content\images\check-green.png" />
     <Content Include="Content\images\check-red.png" />
@@ -458,6 +460,7 @@
     <Content Include="Content\images\info-blue-icon.png" />
     <Content Include="Content\images\info-icon.png" />
     <Content Include="Content\images\left-double-arrow.png" />
+    <Content Include="Content\images\left-nav-border.png" />
     <Content Include="Content\images\magnifying_glass.png" />
     <Content Include="Content\images\meter-icon-active.png" />
     <Content Include="Content\images\meter-icon.png" />

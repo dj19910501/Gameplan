@@ -1367,5 +1367,113 @@ else if (status.Equals(Enums.Custom_Notification.ImprovementTacticCommentAdded.T
             }
         }
         #endregion
+
+        #region Improvement
+        /// <summary>
+        /// Function to append improvement task data to existing task data.
+        /// </summary>
+        /// <param name="taskData">Current task data.</param>
+        /// <param name="improvementTactics">Improvement tactic of current plan.</param>
+        /// <param name="calendarStartDate">Calendar start date.</param>
+        /// <param name="calendarEndDate">Calendar end date.</param>
+        /// <param name="isApplyTocalendar">Flag to indicate whether it is called from apply to calendar.</param>
+        /// <returns>Returns task data after appending improvement task data.</returns>
+        public static List<object> AppendImprovementTaskData(List<object> taskData, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics, DateTime calendarStartDate, DateTime calendarEndDate, bool isApplyTocalendar)
+        {
+            var improvementTacticTaskData = GetImprovementTacticTaskData(improvementTactics, calendarStartDate, calendarEndDate, isApplyTocalendar);
+            if (improvementTacticTaskData.Count() > 0)
+            {
+                taskData = improvementTacticTaskData.Concat<object>(taskData).ToList<object>();
+                var improvementActivityTaskData = GetImprovementActivityTaskData(improvementTactics, calendarStartDate, calendarEndDate, isApplyTocalendar);
+                taskData.Insert(0, improvementActivityTaskData);
+            }
+
+            return taskData;
+        }
+
+        /// <summary>
+        /// Function to get improvement tactic task data.
+        /// </summary>
+        /// <param name="improvementTactics">Improvement tactic of current plan.</param>
+        /// <param name="calendarStartDate">Calendar start date.</param>
+        /// <param name="calendarEndDate">Calendar end date.</param>
+        /// <param name="isApplyTocalendar">Flag to indicate whether it is called from apply to calendar.</param>
+        /// <returns>Return list of object containing improvement tactic task data.</returns>
+        private static List<object> GetImprovementTacticTaskData(List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics, DateTime calendarStartDate, DateTime calendarEndDate, bool isApplyTocalendar)
+        {
+            //// Getting Task Data.
+            string tacticStatusSubmitted = Enums.TacticStatusValues.Single(s => s.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value;
+            string tacticStatusDeclined = Enums.TacticStatusValues.Single(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value;
+
+            //// Getting task data of plan improvement tactic.
+            var taskDataImprovementTactic = improvementTactics.Select(improvementTactic => new
+            {
+                id = string.Format("M{0}_I{1}_Y{2}", 1, improvementTactic.ImprovementPlanTacticId, improvementTactic.ImprovementTacticTypeId),
+                text = improvementTactic.Title,
+                start_date = Common.GetStartDateAsPerCalendar(calendarStartDate, improvementTactic.EffectiveDate),
+                duration = Common.GetEndDateAsPerCalendar(calendarStartDate,
+                                                          calendarEndDate,
+                                                          improvementTactic.EffectiveDate,
+                                                          calendarEndDate) - 1,
+                progress = 0,
+                open = true,
+                parent = string.Format("M{0}", 1),
+                color = (isApplyTocalendar ? Common.COLORC6EBF3_WITH_BORDER : string.Concat(GANTT_BAR_CSS_CLASS_PREFIX, improvementTactic.ImprovementTacticType.ColorCode.ToLower())),
+                isSubmitted = improvementTactic.Status.Equals(tacticStatusSubmitted),
+                isDeclined = improvementTactic.Status.Equals(tacticStatusDeclined),
+                inqs = 0,
+                mqls = 0,
+                cost = improvementTactic.Cost,
+                cws = 0,
+                improvementTactic.ImprovementPlanTacticId,
+                isImprovement = true,
+                IsHideDragHandleLeft = improvementTactic.EffectiveDate < calendarStartDate,
+                IsHideDragHandleRight = true
+            }).OrderBy(t => t.text);
+
+            return taskDataImprovementTactic.ToList<object>();
+        }
+
+        /// <summary>
+        /// Function to get improvement activity task data.
+        /// </summary>
+        /// <param name="improvementTactics">Improvement tactic of current plan.</param>
+        /// <param name="calendarStartDate">Calendar start date.</param>
+        /// <param name="calendarEndDate">Calendar end date.</param>
+        /// <param name="isApplyTocalendar">Flag to indicate whether it is called from apply to calendar.</param>
+        /// <returns>Return improvement activity task data.</returns>
+        private static object GetImprovementActivityTaskData(List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics, DateTime calendarStartDate, DateTime calendarEndDate, bool isApplyTocalendar)
+        {
+            string color = "";
+            if (isApplyTocalendar)
+            {
+                color = Common.COLOR27A4E5;
+            }
+
+            //// Getting start date for improvement activity task.
+            DateTime startDate = improvementTactics.Select(improvementTactic => improvementTactic.EffectiveDate).Min();
+
+            //// Creating task Data for the only parent of all plan improvement tactic.
+            var taskDataImprovementActivity = new
+            {
+                id = string.Format("M{0}", "1"),
+                text = "Improvement Activities",
+                start_date = Common.GetStartDateAsPerCalendar(calendarStartDate, startDate),
+                duration = Common.GetEndDateAsPerCalendar(calendarStartDate,
+                                                          calendarEndDate,
+                                                          startDate,
+                                                          calendarEndDate) - 1,
+                progress = 0,
+                open = true,
+                color = color,
+                ImprovementActivityId = 1,
+                isImprovement = true,
+                IsHideDragHandleLeft = startDate < calendarStartDate,
+                IsHideDragHandleRight = true
+            };
+
+            return taskDataImprovementActivity;
+        }
+        #endregion
     }
 }

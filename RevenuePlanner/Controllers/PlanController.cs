@@ -815,6 +815,7 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Function to get gantt data.
         /// Added By: Maninde Singh Wadhva.
+        /// Modified By Maninder Singh Wadhva PL Ticket#47
         /// Date: 12/04/2013
         /// </summary>
         /// <param name="planId">Plan id for which gantt data to be fetched.</param>
@@ -824,10 +825,21 @@ namespace RevenuePlanner.Controllers
             Sessions.PlanId = planId;
             Plan plan = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId));
             bool isPublished = plan.Status.Equals(Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString());
+            List<object> ganttTaskData = GetTaskDetailTactic(plan, isQuater);
+
+            //// Modified By Maninder Singh Wadhva PL Ticket#47
+            List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(improveTactic => improveTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(planId) &&
+                                                                                      improveTactic.IsDeleted.Equals(false) &&
+                                                                                      (improveTactic.EffectiveDate > CalendarEndDate).Equals(false))
+                                                                               .Select(improveTactic => improveTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
+
+            ganttTaskData = Common.AppendImprovementTaskData(ganttTaskData, improvementTactic, CalendarStartDate, CalendarEndDate, true);
+
+            //// Modified By Maninder Singh Wadhva PL Ticket#47
             #region "Tactic"
             return Json(new
             {
-                taskData = GetTaskDetailTactic(plan, isQuater),
+                taskData = ganttTaskData,
                 planYear = plan.Year,
                 isPublished = isPublished
             }, JsonRequestBehavior.AllowGet);
@@ -1046,7 +1058,6 @@ namespace RevenuePlanner.Controllers
                     Common.InsertChangeLog(Sessions.PlanId, 0, planTactic.PlanTacticId, planTactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
                 }
             }
-
 
             //// Checking whether operation was successfully or not.
             if (returnValue > 0)
@@ -2650,6 +2661,55 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Improvement Tactic
+        /// <summary>
+        /// Function to update effective date of improvement tactic.
+        /// </summary>
+        /// <param name="id">Improvement tactic id.</param>
+        /// <param name="effectiveDate">Effective date.</param>
+        /// <returns>Returns flag to indicate whether effective date is updated successfully or not.</returns>
+        public JsonResult UpdateEffectiveDateImprovement(int id, string effectiveDate)
+        {
+            try
+            {
+                using (var scope = new TransactionScope())
+                {
+                    //// Getting plan tactic to be updated.
+                    var planImprovementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Single(improvementTactic => improvementTactic.ImprovementPlanTacticId.Equals(id));
+
+                    bool isApproved = planImprovementTactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
+
+                    //// Changing status of tactic to submitted.
+                    planImprovementTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
+
+                    //// Setting start and end date.
+                    planImprovementTactic.EffectiveDate = DateTime.Parse(effectiveDate);
+
+                    //// Setting modified date and modified by field.
+                    planImprovementTactic.ModifiedBy = Sessions.User.UserId;
+                    planImprovementTactic.ModifiedDate = DateTime.Now;
+
+                    //// Saving changes.
+                    int returnValue = db.SaveChanges();
+
+                    if (isApproved)
+                    {
+                        returnValue = Common.InsertChangeLog(planImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, 0, planImprovementTactic.ImprovementPlanTacticId, planImprovementTactic.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                    }
+
+                    if (returnValue > 0)
+                    {
+                        scope.Complete();
+                        return Json(true, JsonRequestBehavior.AllowGet);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+
+            return Json(false, JsonRequestBehavior.AllowGet);
+        }
 
         /// <summary>
         /// Added By: Kuber Joshi
