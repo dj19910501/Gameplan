@@ -171,9 +171,6 @@
                     });
 
                 }
-            },
-            error: function () {
-                myApp.hidePleaseWait();
             }
         });
     }
@@ -398,9 +395,6 @@
                    else {
                        alert('Error');
                    }
-               },
-               error: function () {
-                   myApp.hidePleaseWait();
                }
            });
        }
@@ -472,9 +466,6 @@
                  else {
                      $("#BtnPublishPlan").show();
                  }
-             },
-             error: function () {
-                 myApp.hidePleaseWait();
              }
          });
      }
@@ -503,9 +494,6 @@
                     $('#divCollaborator').append('<span class="bold margin_left6">' + collaboratorCount + ' Collaborator(s) </span>');
                     $('#divCollaborator').append('<span class="font_size10 updated-text-align">Last updated ' + data.lastUpdateDate + '</span>');
 
-                },
-                error: function () {
-                    myApp.hidePleaseWait();
                 }
             });
         }
@@ -530,9 +518,6 @@
                     + "src='" + "data:image/jpg;base64,"
                     + imgs.base64image + "'/>";
                    $("#divCollaborator").prepend(collaboratorImage);
-               },
-               error: function () {
-                   myApp.hidePleaseWait();
                }
            });
        }
@@ -584,9 +569,6 @@
                    setgraphdata(data);
 
                }
-           },
-           error: function () {
-               myApp.hidePleaseWait();
            }
        });
    }
@@ -760,13 +742,17 @@
        eventTaskDoubleClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) { ShowSidePanel(taskId, e) });
    }
 
+    //// Modified By Maninder Singh Wadhva PL Ticket#47
    function ShowSidePanel(taskId, e) {
        var task = gantt.getTask(taskId);
 
        //// Checking whether current task is tactic or not.
-       if (typeof task.plantacticid !== 'undefined') {
+       if (typeof task.ImprovementPlanTacticId != 'undefined' && typeof task.isImprovement != 'undefined' && task.isImprovement == true) {
+           ShowImprovementTactic(task.ImprovementPlanTacticId)
+       }
+       //// Checking whether current task is tactic or not.
+       else if (typeof task.plantacticid !== 'undefined') {
            //// Getting plan tactic id.
-
            ShowTactic(task.plantacticid)
        }
        else if (typeof task.PlanProgramId !== 'undefined') {
@@ -819,6 +805,18 @@
         $("#slidepanel").css("right", "0px");
         myApp.hidePleaseWait();
     }
+
+    //// Modified By Maninder Singh Wadhva PL Ticket#47
+    function ShowImprovementTactic(id) {
+        $("#slidepanel").css("display", "block");
+        //         $("#slidepanel-container").css("display", "block");
+        var url = '@Url.Content("~/Plan/EditImprovementTactic")';
+        //$('#slidepanel-container').load(url + '?id=' + id);
+       $('#slidepanel-container').load(url + '?id=' + id, AssignDefaultValue);
+       $("#slidepanel").css("right", "0px");
+       myApp.hidePleaseWait();
+    }
+
     //// Function to set common properties of gantt.
     function SetGantt() {
         gantt.config.grid_width = 236;
@@ -936,7 +934,7 @@
                  return data;
              },
              error: function () {
-                 myApp.hidePleaseWait();
+                 GoToLogin();
                  GetTactics();
              }
          });
@@ -957,7 +955,7 @@
                 return data;
             },
             error: function () {
-                myApp.hidePleaseWait();
+                GoToLogin();
                 GetTactics();
             }
         });

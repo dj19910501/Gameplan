@@ -8,12 +8,17 @@
     int showInspectForPlanCampaignId = ViewBag.ShowInspectForPlanCampaignId; // variable added to show campagin popup from email url link click when email sent to user when comapign shared
     int showInspectForPlanProgramId = ViewBag.ShowInspectForPlanProgramId; // variable added to show program popup from email url link click when email sent to user when program shared
     bool showBid = ViewBag.showBid;
+    //// Modified By Maninder Singh Wadhva PL Ticket#47
+    bool isImprovement = Convert.ToBoolean(ViewBag.IsImprovement);
 }
 
 @Html.Hidden("IsViewOnly", isViewOnly)
 @Html.Hidden("hdnshowInspectForPlanTacticId", showInspectForPlanTacticId)
 @Html.Hidden("hdnshowInspectForPlanCampaignId", showInspectForPlanCampaignId)
 @Html.Hidden("hdnshowInspectForPlanProgramId", showInspectForPlanProgramId)
+
+<!--Modified By Maninder Singh Wadhva PL Ticket#47-->
+@Html.Hidden("hdnIsImprovement", isImprovement)
 
 <script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
 <link href="@Url.Content("~/Content/css/dhtmlxchart_1.css")" rel="stylesheet" type="text/css" />
@@ -572,9 +577,6 @@
                 else {
                     alert('Error');
                 }
-            },
-            error: function () {
-                myApp.hidePleaseWait();
             }
         });
     }
@@ -653,11 +655,14 @@
         //}
     }
 
+    //// Modified By Maninder Singh Wadhva PL Ticket#47
     function ShowInspectForPlanTacticId() {
         var hdnshowInspectForPlanTacticId = $("#hdnshowInspectForPlanTacticId")
+        var hdnIsImprovement = $('#hdnIsImprovement');
         if (hdnshowInspectForPlanTacticId.val() != 0) {
             ShowModel(null, true);
             hdnshowInspectForPlanTacticId.val(0);
+            hdnIsImprovement.val(false);
         }
     }
 
@@ -685,9 +690,6 @@
                    $('#divCollaborator').append('<span class="bold margin_left6">' + collaboratorCount + ' Collaborator(s) </span>');
                    $('#divCollaborator').append('<span class="font_size10 updated-text-align">Last updated ' + data.lastUpdateDate + '</span>');
 
-               },
-               error: function () {
-                   myApp.hidePleaseWait();
                }
            });
        }
@@ -712,9 +714,6 @@
                    + "src='" + "data:image/jpg;base64,"
                    + imgs.base64image + "'/>";
                   $("#divCollaborator").prepend(collaboratorImage);
-              },
-              error: function () {
-                  myApp.hidePleaseWait();
               }
           });
       }
@@ -1047,7 +1046,9 @@
               }
 
               //// Modified By Maninder Singh Wadhva PL Ticket#47
-              if (data.taskData.length > 0) {
+            //// filtering non improvement task data.
+            var filteredNonImprovementData = $.grep(data.taskData, function (value) { return (typeof value.isImprovement == 'undefined') });
+            if (filteredNonImprovementData.length > 0) {
                   $('#marketing-activities').show()
 
             switch (type) {
@@ -1078,6 +1079,9 @@
               }
               else {
                   $('#marketing-activities').hide()
+
+                //// Modified By Maninder Singh Wadhva PL Ticket#47
+                $('#table_activities > tbody >tr').remove();
               }
 
             renderGantt(data.taskData);
@@ -1090,9 +1094,6 @@
                 $("#table_activities").hide();
                 $(".shadow-scroll-gantt").hide();
             }
-        },
-        error: function () {
-            myApp.hidePleaseWait();
         }
     });
 }
@@ -1513,22 +1514,41 @@ function AttachEventToTactic() {
     eventTaskDoubleClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) { ShowModel(taskId, null) });
 }
 
+//// Modified By Maninder Singh Wadhva PL Ticket#47
 function ShowModel(taskId, isShowInspect) {
-
     var task, planTacticId, planProgramId, planCampaignId;
+    var isImprovement = false;
+
     if (taskId != null) {
         task = gantt.getTask(taskId);
-        planTacticId = task.plantacticid;
-        planProgramId = task.planprogramid;
         planCampaignId = task.plancampaignid;
+        planProgramId = task.planprogramid;
+
+        isImprovement = (typeof task.isImprovement != 'undefined' && task.isImprovement == true)
+
+        if (isImprovement) {
+            planTacticId = task.ImprovementPlanTacticId;
+        }
+        else {
+            planTacticId = task.plantacticid;
+        }
     } else if (isShowInspect) {
         planTacticId = $("#hdnshowInspectForPlanTacticId").val();
         planCampaignId = $("#hdnshowInspectForPlanCampaignId").val();
         planProgramId = $("#hdnshowInspectForPlanProgramId").val();
+        isImprovement = Boolean($('#hdnIsImprovement').val());
     }
 
+    //// Checking whether current task is improvement tactic or not.
+    if (typeof planTacticId != 'undefined' && planTacticId != 0 && isImprovement == true) {
+        modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
+        $("#modal-container-186470").modal('show');
+        $("#successMessage").css("display", "none");
+        $("#errorMessage").css("display", "none");
+        loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", "Setup");
+    }
     //// Checking whether current task is tactic or not.
-    if (typeof planTacticId != 'undefined' && planTacticId != 0) {
+    else if (typeof planTacticId != 'undefined' && planTacticId != 0) {
         modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
         $("#modal-container-186470").modal('show');
         $("#successMessage").css("display", "none");
@@ -1678,9 +1698,6 @@ function ApproveTactic(e, task) {
             else {
                 alert('Not Approved');
             }
-        },
-        error: function () {
-            myApp.hidePleaseWait();
         }
     });
 }
@@ -1729,9 +1746,6 @@ function DeclineTactic(e, task) {
             else {
                 alert('Not Declined');
             }
-        },
-        error: function () {
-            myApp.hidePleaseWait();
         }
     });
 }
@@ -1782,9 +1796,6 @@ function GetHealderData(intplanid) {
                 });
 
             }
-        },
-        error: function () {
-            myApp.hidePleaseWait();
         }
     });
 }
@@ -1807,9 +1818,6 @@ function GetNumberOfActivityPerMonByPlanId(intplanid, strParam) {
                 setgraphdata(data);
 
             }
-        },
-        error: function () {
-            myApp.hidePleaseWait();
         }
     });
 }
