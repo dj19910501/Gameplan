@@ -15,7 +15,6 @@
     bool tflag = false;
     bool sflag = false;
     string ShowModelResultsTab = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ShowModelResultsTab"]);
-    string ShowModelAudienceTab = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ShowModelAudienceTab"]);
     /*Added by Nirav Shah on 18 feb 2014 for TFS Point 252: Editing a published model*/
     string ModelPublishEdit = ViewBag.ModelPublishEdit;
     string ModelPublishCreateNew = ViewBag.ModelPublishCreateNew;
@@ -62,7 +61,7 @@
         <li class="item active">
             <a class="source-sans-probold inputs" id="aInput" href="#"><span></span>@Html.Raw("INPUTS")</a>
         </li>
-        @if (ShowModelAudienceTab == null || ShowModelAudienceTab == "" || ShowModelAudienceTab.ToLower() == "true")
+        @if (ShowModelResultsTab == null || ShowModelResultsTab == "" || ShowModelResultsTab.ToLower() == "true")
         {
             <li class="item">
                 <a class="source-sans-probold audience leftnav" id="aAudience" href="#"><span></span>@Html.Raw("AUDIENCE")</a>
