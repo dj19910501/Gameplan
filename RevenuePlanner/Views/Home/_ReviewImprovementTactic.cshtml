@@ -209,16 +209,16 @@
                   return false;
               }
               else {
-                  if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test(commentText)) {
-                      var msgspan = "Special character are not allowed, try again.";
-                      $("#errorMessage").css("display", "block");
-                      /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-                      var topsize = $(document).scrollTop() + 41;
-                      $("#modal-container-186470").css("top", topsize + "px");
-                      $("#txtAreaComment").addClass("error");
-                      $("#spanMessageError").text(msgspan);
-                      return false;
-                  }
+                  //if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test(commentText)) {
+                  //    var msgspan = "Special character are not allowed, try again.";
+                  //    $("#errorMessage").css("display", "block");
+                  //    /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                  //    var topsize = $(document).scrollTop() + 41;
+                  //    $("#modal-container-186470").css("top", topsize + "px");
+                  //    $("#txtAreaComment").addClass("error");
+                  //    $("#spanMessageError").text(msgspan);
+                  //    return false;
+                  //}
                   $("#txtAreaComment").removeClass("error");
               }
 
