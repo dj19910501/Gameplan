@@ -389,12 +389,10 @@
             if (idTactic == 0) {
                 var idProgram = $(this).parent().attr('data-id-program');
                 var url = '@Url.Content("~/Plan/CreateTactic")';
-                //$('#slidepanel').load(url + '?id=' + idProgram);
                 $('#slidepanel-container').load(url + '?id=' + idProgram, AssignDefaultValue);
             }
             else {
                 var url = '@Url.Content("~/Plan/EditTactic")';
-                //$('#slidepanel').load(url + '?id=' + idTactic + '&RedirectType=' + Assortment);
                 $('#slidepanel-container').load(url + '?id=' + idTactic + '&RedirectType=' + Assortment, AssignDefaultValue);
             }
             $("#slidepanel").css("right", "0px");
@@ -534,7 +532,6 @@
             success: function (r) {
                 campaign = r;
                 fillCampaignsTable();
-                LoadImprovementTactic();
                 if('@ViewBag.EditOjbect' == "Tactic" && '@ViewBag.TacticId' != 0)
                 {
                     $("[id=divTactic][index=" + @ViewBag.TacticId + "]").click();
@@ -560,6 +557,8 @@
                         }
                     });
                 }
+                // call load improvement tactic beacuase it execute after campaign activity process over.
+                LoadImprovementTactic();
                 NumberFormatterTipsyTitle(".tipsyclassTitle", 40);
             }
         });
@@ -761,7 +760,7 @@
                                     if (_programs[i].tactics[k].isOwner == 0) {
                                         $html += '<span class="delete-program width5" id="delTactic"></span>';
                                     }
-                                    $html += '<span class="underline tipsyclassTitle tactic-name-span">' + _programs[i].tactics[k].title + '</span>' +
+                                    $html += '<span class="underline tipsyclassTitle">' + _programs[i].tactics[k].title + '</span>' +
                                                     '<span class="pull-right width50px text-right font-black">&nbsp;</span>' +
                                               '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
                                               '<span class="pull-right width150px text-right font-black tipsyclass">$' + FormatCommas(_programs[i].tactics[k].cost.toString(), false) + '</span>' +

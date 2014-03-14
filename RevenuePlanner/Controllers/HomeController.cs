@@ -1658,7 +1658,6 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Review Tab.</returns>
         public ActionResult LoadReview(int id)
         {
-            int plantacticid = 0;
             InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower());
             var tacticComment = (from tc in db.Plan_Campaign_Program_Tactic_Comment
                                  where tc.PlanTacticId == id
@@ -1715,7 +1714,7 @@ namespace RevenuePlanner.Controllers
             bool isValidUser = false;
             if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
             {
-                isValidUser = true;
+                if(im.OwnerId != Sessions.User.UserId) isValidUser = true;
             }
             ViewBag.IsValidUser = isValidUser;
             return PartialView("Review");
@@ -1965,7 +1964,7 @@ namespace RevenuePlanner.Controllers
             bool isValidUser = true;
             if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
             {
-                isValidUser = false;
+                if (im.OwnerId != Sessions.User.UserId) isValidUser = false;
             }
             ViewBag.IsValidUser = isValidUser;
             return PartialView("Actual");
@@ -3373,7 +3372,7 @@ namespace RevenuePlanner.Controllers
             bool isValidUser = false;
             if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
             {
-                isValidUser = true;
+                if (im.OwnerId != Sessions.User.UserId) isValidUser = true;
             }
             ViewBag.IsValidUser = isValidUser;
             return PartialView("_ReviewProgram");
@@ -3507,7 +3506,7 @@ namespace RevenuePlanner.Controllers
             bool isValidUser = false;
             if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
             {
-                isValidUser = true;
+                if (im.OwnerId != Sessions.User.UserId) isValidUser = true;
             }
             ViewBag.IsValidUser = isValidUser;
             return PartialView("_ReviewCampaign");
@@ -3615,7 +3614,7 @@ namespace RevenuePlanner.Controllers
             bool isValidUser = false;
             if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
             {
-                isValidUser = true;
+                if (im.OwnerId != Sessions.User.UserId) isValidUser = true;
             }
             ViewBag.IsValidUser = isValidUser;
             return PartialView("_ReviewImprovementTactic");

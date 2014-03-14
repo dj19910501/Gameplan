@@ -2012,11 +2012,12 @@ namespace RevenuePlanner.Controllers
                                 bool isReSubmission = false;
                                 bool isDirectorLevelUser = false;
                                 string status = string.Empty;
+                                
+                                Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(form.PlanTacticId)).SingleOrDefault();
                                 if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
                                 {
-                                    isDirectorLevelUser = true;
+                                    if(pcpobj.CreatedBy != Sessions.User.UserId) isDirectorLevelUser = true;
                                 }
-                                Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(form.PlanTacticId)).SingleOrDefault();
                                 pcpobj.Title = form.Title;
                                 status = pcpobj.Status;
                                 if (pcpobj.TacticTypeId != form.TacticTypeId)
@@ -2713,8 +2714,8 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
-        /// Added By: Kuber Joshi
-        /// Action to create default Plan Improvement Campaign
+        /// Added By: Bhavesh Dobariya.
+        /// Action to create default Plan Improvement Campaign & Program
         /// </summary>
         /// <returns>Returns ImprovementPlanCampaignId or -1 if duplicate exists</returns>
         public int CreatePlanImprovementCampaignAndProgram()
@@ -2728,6 +2729,7 @@ namespace RevenuePlanner.Controllers
                 objPlan = db.Plan_Improvement_Campaign.Where(p => p.ImprovePlanId == Sessions.PlanId).FirstOrDefault();
                 if (objPlan == null)
                 {
+                    // Setup default title for improvement campaign.
                     string planImprovementCampaignTitle = "Improvement Campaign";
 
                     Plan_Improvement_Campaign picobj = new Plan_Improvement_Campaign();
@@ -2744,6 +2746,7 @@ namespace RevenuePlanner.Controllers
                         pipobj.CreatedBy = Sessions.User.UserId;
                         pipobj.CreatedDate = DateTime.Now;
                         pipobj.ImprovementPlanCampaignId = retVal;
+                        // Setup default title for improvement Program.
                         pipobj.Title = "Improvement Program";
                         db.Entry(pipobj).State = EntityState.Added;
                         result = db.SaveChanges();
@@ -2761,7 +2764,7 @@ namespace RevenuePlanner.Controllers
 
         /// <summary>
         /// Added By: Bhavesh Dobariya.
-        /// Action to Get Improvement Tactic.
+        /// Action to Get Improvement Tactic list for Plan Campaign.
         /// </summary>
         /// <returns>Returns Json Result.</returns>
         public JsonResult GetImprovementTactic()
@@ -2796,6 +2799,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsCreated = true;
             PlanImprovementTactic pitm = new PlanImprovementTactic();
             pitm.ImprovementPlanProgramId = id;
+            // Set today date as default for effective date.
             pitm.EffectiveDate = DateTime.Now;
             ViewBag.IsOwner = false;
             ViewBag.RedirectType = false;
@@ -2805,7 +2809,7 @@ namespace RevenuePlanner.Controllers
 
         /// <summary>
         /// Added By: Bhavesh Dobariya.
-        /// Action to Create Tactic.
+        /// Action to Edit Improvement Tactic.
         /// </summary>
         /// <param name="id">Tactic Id.</param>
         /// <param name="RedirectType">Redirect Type</param>
@@ -2878,6 +2882,7 @@ namespace RevenuePlanner.Controllers
                     {
                         using (var scope = new TransactionScope())
                         {
+                            //// Check for duplicate exits or not.
                             var pcpvar = (from pcpt in db.Plan_Improvement_Campaign_Program_Tactic
                                           where pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && pcpt.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && pcpt.IsDeleted.Equals(false)
                                           select pcpt).FirstOrDefault();
@@ -2899,6 +2904,7 @@ namespace RevenuePlanner.Controllers
                                 picpt.Cost = form.Cost;
                                 picpt.EffectiveDate = form.EffectiveDate;
                                 picpt.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
+                                //// Get Businessunit id from model.
                                 picpt.BusinessUnitId = (from m in db.Models
                                                         join p in db.Plans on m.ModelId equals p.ModelId
                                                         where p.PlanId == Sessions.PlanId
@@ -2907,6 +2913,7 @@ namespace RevenuePlanner.Controllers
                                 picpt.CreatedDate = DateTime.Now;
                                 db.Entry(picpt).State = EntityState.Added;
                                 int result = db.SaveChanges();
+                                //// Insert change log entry.
                                 result = Common.InsertChangeLog(Sessions.PlanId, null, picpt.ImprovementPlanTacticId, picpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                                 if (result >= 1)
                                 {
@@ -2924,6 +2931,7 @@ namespace RevenuePlanner.Controllers
                     {
                         using (var scope = new TransactionScope())
                         {
+                            //// Check for Duplicate or not.
                             var pcpvar = (from pcpt in db.Plan_Improvement_Campaign_Program_Tactic
                                           where pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && pcpt.Title.Trim().ToLower().Equals(form.Title.Trim().ToLower()) && !pcpt.ImprovementPlanTacticId.Equals(form.ImprovementPlanTacticId) && pcpt.IsDeleted.Equals(false)
                                           select pcpt).FirstOrDefault();
@@ -3018,6 +3026,12 @@ namespace RevenuePlanner.Controllers
             return Json(new { });
         }
 
+        /// <summary>
+        /// Delete improvement tactic.
+        /// </summary>
+        /// <param name="id">Id</param>
+        /// <param name="RedirectType">Redirect Type</param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult DeleteImprovementTactic(int id = 0, bool RedirectType = false)
         {
@@ -3029,6 +3043,7 @@ namespace RevenuePlanner.Controllers
                     {
                         int returnValue;
                         string Title = "";
+                        // Chage flag isDeleted to true.
                         Plan_Improvement_Campaign_Program_Tactic pcpt = db.Plan_Improvement_Campaign_Program_Tactic.Where(p => p.ImprovementPlanTacticId == id).SingleOrDefault();
                         pcpt.IsDeleted = true;
                         db.Entry(pcpt).State = EntityState.Modified;
@@ -3059,7 +3074,7 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
-        /// Calculate Improvenet For Tactic Type & Date.
+        /// Loag Improvement Stages for Tactic.
         /// Added by Bhavesh Dobariya.
         /// </summary>
         /// <returns>JsonResult.</returns>
@@ -3070,6 +3085,7 @@ namespace RevenuePlanner.Controllers
             DateTime EffectiveDate = form.EffectiveDate;
             double Cost = db.ImprovementTacticTypes.Where(itt => itt.ImprovementTacticTypeId == ImprovementTacticTypeId).Select(iit => iit.Cost).SingleOrDefault();
 
+            // Call function for calculate improvement for each Stage.
             List<ImprovementStage>  ImprovementMetric = GetImprovementStages(ImprovementPlanTacticId, ImprovementTacticTypeId, EffectiveDate);
             
             var tacticobj = ImprovementMetric.Select(p => new
@@ -3086,9 +3102,18 @@ namespace RevenuePlanner.Controllers
             return Json(new { data = tacticobj, cost = Cost }, JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// Get Improvement Stage With Improvement Calculation.
+        /// </summary>
+        /// <param name="ImprovementPlanTacticId">ImprovementPlanTacticId</param>
+        /// <param name="ImprovementTacticTypeId">ImprovementTacticTypeId</param>
+        /// <param name="EffectiveDate">EffectiveDate</param>
+        /// <returns>Return list of ImprovementStages object.</returns>
         public List<ImprovementStage> GetImprovementStages(int ImprovementPlanTacticId, int ImprovementTacticTypeId, DateTime EffectiveDate)
         {
             List<ImprovementStage> ImprovementMetric = new List<ImprovementStage>();
+
+            //// Get List of Stages Associated with selected Improvement Tactic Type.
             ImprovementMetric = (from im in db.ImprovementTacticType_Metric
                                  where im.ImprovementTacticTypeId == ImprovementTacticTypeId
                                  select new ImprovementStage
@@ -3103,14 +3128,23 @@ namespace RevenuePlanner.Controllers
                                      ClientId = im.Metric.ClientId,
                                  }).ToList();
 
+            //// Get Model Id.
             int ModelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
+
+            //// Get Model id based on effective Date.
             ModelId = ReportController.GetModelId(EffectiveDate, ModelId);
+
+            //// Get Effective Date of Model.
             DateTime? ModelEffectiveDate = db.Models.Where(m => m.ModelId == ModelId).Select(m => m.EffectiveDate).SingleOrDefault();
+
+            //// Get Funnelid for Marketing Funnel.
             string Marketing = Enums.Funnel.Marketing.ToString();
             int funnelId = db.Funnels.Where(f => f.Title == Marketing).Select(f => f.FunnelId).SingleOrDefault();
 
+            //// Loop Execute for Each Stage/Metric.
             foreach (var im in ImprovementMetric)
             {
+                //// Get Baseline value based on MetricType.
                 double modelvalue = 0;
                 if (im.MetricType == Enums.MetricType.Size.ToString())
                 {
@@ -3124,88 +3158,116 @@ namespace RevenuePlanner.Controllers
                         modelvalue = modelvalue / 100;
                     }
                 }
+
+                //// Get BestInClas value for MetricId.
                 double bestInClassValue = db.BestInClasses.Where(bic => bic.MetricId == im.MetricId).Select(bic => bic.Value).SingleOrDefault();
+
+                //// Get Level of Metric.
                 int? CurrentMetricLevel = db.Metrics.Where(m => m.MetricId == im.MetricId).Select(m => m.Level).SingleOrDefault();
+                
+                //// Get Parent MetricId based on Improvement Tactic Type & Metric Relation.
                 var maxLevelList = db.ImprovementTacticType_Metric.Where(m => m.Metric.MetricType == im.MetricType && m.ImprovementTacticTypeId == ImprovementTacticTypeId && m.Metric.Level < CurrentMetricLevel).Select(m => m.Metric).ToList();
                 int ParentMetricId = maxLevelList.Where(m => m.Level == (maxLevelList.Max(mt => mt.Level))).Select(m => m.MetricId).SingleOrDefault();
+                
+                //// Declare variable.
                 int TotalCountWithTactic = 0;
                 double TotalWeightWithTactic = 0;
-
                 int TotalCountWithoutTactic = 0;
                 double TotalWeightWithoutTactic = 0;
 
+                //// If ImprovementPlanTacticId is 0 i.e. Improvement Tactic In Create Mode.
                 if (ImprovementPlanTacticId == 0)
                 {
 
+                    //// Get ImprovementTactic & its Weight based on filter criteria for MetricId.
                     var improveTacticList = (from pit in db.Plan_Improvement_Campaign_Program_Tactic
                                              join itm in db.ImprovementTacticType_Metric on pit.ImprovementTacticTypeId equals itm.ImprovementTacticTypeId
-                                             where itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == im.MetricId && itm.Weight > 0 && pit.EffectiveDate >= ModelEffectiveDate
+                                             where itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == im.MetricId && itm.Weight > 0 && pit.EffectiveDate >= ModelEffectiveDate && pit.IsDeleted == false
                                              select new { ImprovemetPlanTacticId = pit.ImprovementPlanTacticId, Weight = itm.Weight }).ToList();
+
+                    //// Get ImprovementTactic & its Weight based on filter criteria for ParentMetricId.
                     var improveTacticParentList = (from pit in db.Plan_Improvement_Campaign_Program_Tactic
                                                    join itm in db.ImprovementTacticType_Metric on pit.ImprovementTacticTypeId equals itm.ImprovementTacticTypeId
-                                                   where itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == ParentMetricId && itm.Weight > 0 && pit.EffectiveDate >= ModelEffectiveDate
+                                                   where itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == ParentMetricId && itm.Weight > 0 && pit.EffectiveDate >= ModelEffectiveDate && pit.IsDeleted == false
                                                    select new { ImprovemetPlanTacticId = pit.ImprovementPlanTacticId, Weight = itm.Weight }).ToList();
 
+                    //// Calculate Total ImprovementCount for PlanWithoutTactic
                     int improvementCount = improveTacticList.Count();
                     int improvementParentCount = improveTacticParentList.Count();
                     TotalCountWithoutTactic = improvementCount + improvementParentCount;
 
+                    //// Calculate Total ImprovementWeight for PlanWithoutTactic
                     double improvementWeight = improveTacticList.Count() == 0 ? 0 : improveTacticList.Sum(itl => itl.Weight);
                     double improvementParentWeight = improveTacticParentList.Count() == 0 ? 0 : improveTacticParentList.Sum(iptl => iptl.Weight);
                     TotalWeightWithoutTactic = improvementWeight + improvementParentWeight;
 
-                    var improvementCountWithTacticList = (from itt in db.ImprovementTacticTypes
-                                                          join itm in db.ImprovementTacticType_Metric on itt.ImprovementTacticTypeId equals itm.ImprovementTacticTypeId
-                                                          where itt.IsDeployed == true && itm.MetricId == im.MetricId && itm.Weight > 0 && EffectiveDate >= ModelEffectiveDate
-                                                          select new { ImprovementTacticTypeId = itt.ImprovementTacticTypeId, Weight = itm.Weight }).ToList();
-                    var improveWithTacticParentList = (from pit in db.ImprovementTacticTypes
-                                                       join itm in db.ImprovementTacticType_Metric on pit.ImprovementTacticTypeId equals itm.ImprovementTacticTypeId
-                                                       where itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == ParentMetricId && itm.Weight > 0 && EffectiveDate >= ModelEffectiveDate
-                                                       select new { ImprovementTacticTypeId = pit.ImprovementTacticTypeId, Weight = itm.Weight }).ToList();
+                    //// Get ImprovementTacticType & its Weight based on filter criteria for MetricId & current ImprovementTacticType.
+                    var improvementCountWithTacticList = (from itt in db.ImprovementTacticType_Metric
+                                                          where itt.ImprovementTacticType.IsDeployed == true && itt.MetricId == im.MetricId && itt.Weight > 0 && EffectiveDate >= ModelEffectiveDate && itt.ImprovementTacticTypeId == ImprovementTacticTypeId
+                                                          select new { ImprovementTacticTypeId = itt.ImprovementTacticTypeId, Weight = itt.Weight }).ToList();
 
+                    //// Get ImprovementTacticType & its Weight based on filter criteria for ParentMetricId & current ImprovementTacticType.
+                    var improveWithTacticParentList = (from pit in db.ImprovementTacticType_Metric
+                                                       where pit.ImprovementTacticType.IsDeployed == true && pit.MetricId == ParentMetricId && pit.Weight > 0 && EffectiveDate >= ModelEffectiveDate && pit.ImprovementTacticTypeId == ImprovementTacticTypeId
+                                                       select new { ImprovementTacticTypeId = pit.ImprovementTacticTypeId, Weight = pit.Weight }).ToList();
+
+                    //// Calculate Total ImprovementCount for PlanWithTactic
                     TotalCountWithTactic = TotalCountWithoutTactic;
-                    TotalCountWithTactic += improvementCountWithTacticList.Count() >= 0 ? 1 : 0;
-                    TotalCountWithTactic += improveWithTacticParentList.Count() >= 0 ? 1 : 0;
+                    TotalCountWithTactic += improvementCountWithTacticList.Count() > 0 ? 1 : 0;
+                    TotalCountWithTactic += improveWithTacticParentList.Count() > 0 ? 1 : 0;
 
+                    //// Calculate Total ImprovementWeight for PlanWithTactic
                     TotalWeightWithTactic = TotalWeightWithoutTactic;
                     TotalWeightWithTactic += improvementCountWithTacticList.Count() == 0 ? 0 : improvementCountWithTacticList.Sum(itl => itl.Weight);
                     TotalWeightWithTactic += improveWithTacticParentList.Count() == 0 ? 0 : improveWithTacticParentList.Sum(iptl => iptl.Weight);
                 }
+                //// If ImprovementPlanTacticId is not 0 i.e. Improvement Tactic In Edit Mode.
                 else
                 {
+                    //// Get ImprovementTactic & its Weight based on filter criteria for MetricId & without current improvement tactic.
                     var improveTacticList = (from pit in db.Plan_Improvement_Campaign_Program_Tactic
                                              join itm in db.ImprovementTacticType_Metric on pit.ImprovementTacticTypeId equals itm.ImprovementTacticTypeId
-                                             where itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == im.MetricId && itm.Weight > 0 && pit.EffectiveDate >= ModelEffectiveDate && pit.ImprovementPlanTacticId != ImprovementPlanTacticId
+                                             where itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == im.MetricId && itm.Weight > 0 && pit.EffectiveDate >= ModelEffectiveDate && pit.ImprovementPlanTacticId != ImprovementPlanTacticId && pit.IsDeleted == false
                                              select new { ImprovemetPlanTacticId = pit.ImprovementPlanTacticId, Weight = itm.Weight }).ToList();
+
+                    //// Get ImprovementTactic & its Weight based on filter criteria for ParentMetricId & without current improvement tactic.
                     var improveTacticParentList = (from pit in db.Plan_Improvement_Campaign_Program_Tactic
                                                    join itm in db.ImprovementTacticType_Metric on pit.ImprovementTacticTypeId equals itm.ImprovementTacticTypeId
-                                                   where itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == ParentMetricId && itm.Weight > 0 && pit.EffectiveDate >= ModelEffectiveDate && pit.ImprovementPlanTacticId != ImprovementPlanTacticId
+                                                   where itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == ParentMetricId && itm.Weight > 0 && pit.EffectiveDate >= ModelEffectiveDate && pit.ImprovementPlanTacticId != ImprovementPlanTacticId && pit.IsDeleted == false
                                                    select new { ImprovemetPlanTacticId = pit.ImprovementPlanTacticId, Weight = itm.Weight }).ToList();
 
+                    //// Calculate Total ImprovementCount for PlanWithoutTactic
                     int improvementCount = improveTacticList.Count();
                     int improvementParentCount = improveTacticParentList.Count();
                     TotalCountWithoutTactic = improvementCount + improvementParentCount;
 
+                    //// Calculate Total ImprovementWeight for PlanWithoutTactic
                     double improvementWeight = improveTacticList.Count() == 0 ? 0 : improveTacticList.Sum(itl => itl.Weight);
                     double improvementParentWeight = improveTacticParentList.Count() == 0 ? 0 : improveTacticParentList.Sum(iptl => iptl.Weight);
                     TotalWeightWithoutTactic = improvementWeight + improvementParentWeight;
 
+                    //// Get ImprovementTactic & its Weight based on filter criteria for MetricId with current tactic.
                     var improvementCountWithTacticList = (from pit in db.Plan_Improvement_Campaign_Program_Tactic
                                                           join itm in db.ImprovementTacticType_Metric on pit.ImprovementTacticTypeId equals itm.ImprovementTacticTypeId
-                                                          where itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == im.MetricId && itm.Weight > 0 && pit.EffectiveDate >= ModelEffectiveDate
+                                                          where itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == im.MetricId && itm.Weight > 0 && pit.EffectiveDate >= ModelEffectiveDate && pit.IsDeleted == false
                                                           select new { ImprovemetPlanTacticId = pit.ImprovementPlanTacticId, Weight = itm.Weight }).ToList();
+
+                    //// Get ImprovementTactic & its Weight based on filter criteria for ParentMetricId with current tactic.
                     var improveWithTacticParentList = (from pit in db.Plan_Improvement_Campaign_Program_Tactic
                                                        join itm in db.ImprovementTacticType_Metric on pit.ImprovementTacticTypeId equals itm.ImprovementTacticTypeId
-                                                       where itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == ParentMetricId && itm.Weight > 0 && pit.EffectiveDate >= ModelEffectiveDate
+                                                       where itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == ParentMetricId && itm.Weight > 0 && pit.EffectiveDate >= ModelEffectiveDate && pit.IsDeleted == false
                                                        select new { ImprovemetPlanTacticId = pit.ImprovementPlanTacticId, Weight = itm.Weight }).ToList();
 
-                    TotalCountWithTactic += improvementCountWithTacticList.Count() >= 0 ? 1 : 0;
-                    TotalCountWithTactic += improveWithTacticParentList.Count() >= 0 ? 1 : 0;
+                    //// Calculate Total ImprovementCount for PlanWithTactic
+                    TotalCountWithTactic += improvementCountWithTacticList.Count() > 0 ? 1 : 0;
+                    TotalCountWithTactic += improveWithTacticParentList.Count() > 0 ? 1 : 0;
 
+                    //// Calculate Total ImprovementWeight for PlanWithTactic
                     TotalWeightWithTactic += improvementCountWithTacticList.Count() == 0 ? 0 : improvementCountWithTacticList.Sum(itl => itl.Weight);
                     TotalWeightWithTactic += improveWithTacticParentList.Count() == 0 ? 0 : improveWithTacticParentList.Sum(iptl => iptl.Weight);
                 }
 
+                //// Calculate value based on Metric type.
                 if (im.MetricType == Enums.MetricType.CR.ToString())
                 {
                     im.BaseLineRate = modelvalue * 100;
@@ -3223,11 +3285,29 @@ namespace RevenuePlanner.Controllers
             return ImprovementMetric;
         }
 
+        /// <summary>
+        /// Calculate Improvement For Satge/Metric.
+        /// </summary>
+        /// <param name="im">ImprovementStage object</param>
+        /// <param name="bestInClassValue">BestIn Class Value</param>
+        /// <param name="modelvalue">ModelValue</param>
+        /// <param name="TotalCount">TotalCount</param>
+        /// <param name="TotalWeight">TotalWeight</param>
+        /// <returns>Return Improvement Value</returns>
         public double GetImprovement(ImprovementStage im, double bestInClassValue, double modelvalue, double TotalCount, double TotalWeight)
         {
+            //// Declate CFactor & rFactor Variable
             double cFactor = 0;
             double rFactor = 0;
 
+            
+            #region rFactor
+
+            //// Calculate rFactor if TotalCount = 0 then 0
+            //// Else if TotalWeight/TotalCount < 2 then 0.25
+            //// Else if TotalWeight/TotalCount < 3 then 0.5
+            //// Else if TotalWeight/TotalCount < 4 then 0.75
+            //// Else  0.9
             if (TotalCount == 0)
             {
                 rFactor = 0;
@@ -3253,6 +3333,15 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
+            #endregion
+
+            #region cFactor
+
+            //// Calculate cFactor if TotalCount < 3 then 0.4
+            //// Else if TotalCount >= 3 AND TotalCount < 5 then 0.6
+            //// Else if TotalCount >= 5 AND TotalCount < 8 then 0.8
+            //// Else  1
+
             if (TotalCount < 3)
             {
                 cFactor = 0.4;
@@ -3270,8 +3359,12 @@ namespace RevenuePlanner.Controllers
                 cFactor = 1;
             }
 
+            #endregion
+
+            //// Calculate BoostFactor
             double boostFactor = cFactor * rFactor;
             double boostGap = 0;
+            //// Calculate boostGap
             if (im.MetricType == Enums.MetricType.CR.ToString())
             {
                 boostGap = bestInClassValue - modelvalue;
@@ -3286,15 +3379,13 @@ namespace RevenuePlanner.Controllers
                 boostGap = bestInClassValue / 100;
             }
 
-            double improvement = 0;
-            if (boostGap < 0)
+            //// Calculate Improvement
+            double improvement = boostGap * boostFactor;
+            if (improvement < 0)
             {
                 improvement = 0;
             }
-            else
-            {
-                improvement = boostGap * boostFactor;
-            }
+            
             double improvementValue = 0;
             if (im.MetricType == Enums.MetricType.CR.ToString())
             {
@@ -3306,7 +3397,7 @@ namespace RevenuePlanner.Controllers
             }
             else if (im.MetricType == Enums.MetricType.Size.ToString())
             {
-                improvementValue = (1 + improvement) + modelvalue;
+                improvementValue = (1 + improvement) * modelvalue;
             }
 
             return improvementValue;
