@@ -3125,7 +3125,8 @@ namespace RevenuePlanner.Controllers
                 }
                 double bestInClassValue = db.BestInClasses.Where(bic => bic.MetricId == im.MetricId).Select(bic => bic.Value).SingleOrDefault();
                 int? CurrentMetricLevel = db.Metrics.Where(m => m.MetricId == im.MetricId).Select(m => m.Level).SingleOrDefault();
-                int ParentMetricId = db.Metrics.Where(itm => itm.Level == (CurrentMetricLevel - 1) && itm.MetricType == im.MetricType).Select(itm => itm.MetricId).SingleOrDefault();
+                var maxLevelList = db.ImprovementTacticType_Metric.Where(m => m.Metric.MetricType == im.MetricType && m.ImprovementTacticTypeId == ImprovementTacticTypeId && m.Metric.Level < CurrentMetricLevel).Select(m => m.Metric).ToList();
+                int ParentMetricId = maxLevelList.Where(m => m.Level == (maxLevelList.Max(mt => mt.Level))).Select(m => m.MetricId).SingleOrDefault();
                 int TotalCountWithTactic = 0;
                 double TotalWeightWithTactic = 0;
 
