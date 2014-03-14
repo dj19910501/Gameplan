@@ -2,7 +2,18 @@
     int planTacticId = Convert.ToInt32(ViewBag.PlanTacticId);
     string tacticTitle = Convert.ToString(ViewBag.TacticTitle);
     @Html.Hidden("planTacticId", planTacticId);
+                                              bool isImprovement = Convert.ToBoolean(ViewBag.IsImprovement);
+                                              if (isImprovement)
+                                              {
+    @Html.Hidden("hdnSection", Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower());
+                                              }
+                                              else
+                                              {
+    @Html.Hidden("hdnSection", Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower());
+                                              }
+    
 }
+
 
 <link href="@Url.Content("~/Content/css/Select2/select2.css")" rel="stylesheet" />
 <script src="~/Scripts/js/Select2/select2.js"></script>
@@ -104,6 +115,7 @@
     });
     //Start Share Tactic
     function ShareTactic(email, optionalMessage) {
+        var section = $('#hdnSection').val();
         var planTacticId = $('#planTacticId').val();
         $.ajax({
             type: 'POST',
@@ -112,7 +124,7 @@
                 planTacticId: planTacticId,
                 toEmailIds: email,
                 optionalMessage: optionalMessage,
-                section : "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()" // section parameter passed to share tactic
+                section : section //section parameter passed to share tactic
             },
             success: function (data) {
                 if (data != 'undefined' && data != false) {

@@ -621,7 +621,7 @@ namespace RevenuePlanner.Controllers
                             {
                                 UpdateMQL(Sessions.ModelId);
                             }
-                            redirectModelZero = "Audience";
+                            redirectModelZero = "Tactics";
                             scope.Complete();
                         }
                         //Save Model Calculations
@@ -662,9 +662,9 @@ namespace RevenuePlanner.Controllers
                 TempData["ErrorMessage"] = string.Empty;
                 return RedirectToAction("ModelZero");
             }
-            else if (redirectModelZero == "Audience")
+            else if (redirectModelZero == "Tactics")
             {
-                return RedirectToAction("Audience", new { id = intModelid });
+                return RedirectToAction("Tactics", new { id = intModelid });
             }
             ViewBag.ModelId = currentModelId;
             ViewBag.BusinessUnitId = Convert.ToString(tempBU);

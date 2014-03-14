@@ -2660,9 +2660,10 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 
-        #region Improvement Tactic
+        #region "Boost Method"
         /// <summary>
         /// Function to update effective date of improvement tactic.
+        /// Added By Maninder Singh Wadhva for PL Ticket#47.
         /// </summary>
         /// <param name="id">Improvement tactic id.</param>
         /// <param name="effectiveDate">Effective date.</param>

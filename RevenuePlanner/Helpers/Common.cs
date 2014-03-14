@@ -1369,7 +1369,7 @@ else if (status.Equals(Enums.Custom_Notification.ImprovementTacticCommentAdded.T
         }
         #endregion
 
-        #region Improvement
+        #region "Boost Method"
         /// <summary>
         /// Function to append improvement task data to existing task data.
         /// </summary>

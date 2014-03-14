@@ -1519,7 +1519,6 @@ function AttachEventToTactic() {
 function ShowModel(taskId, isShowInspect) {
     var task, planTacticId, planProgramId, planCampaignId;
     var isImprovement = false;
-
     if (taskId != null) {
         task = gantt.getTask(taskId);
         planCampaignId = task.plancampaignid;
@@ -1537,11 +1536,11 @@ function ShowModel(taskId, isShowInspect) {
         planTacticId = $("#hdnshowInspectForPlanTacticId").val();
         planCampaignId = $("#hdnshowInspectForPlanCampaignId").val();
         planProgramId = $("#hdnshowInspectForPlanProgramId").val();
-        isImprovement = Boolean($('#hdnIsImprovement').val());
+        isImprovement = $('#hdnIsImprovement').val().toLowerCase();       
     }
 
     //// Checking whether current task is improvement tactic or not.
-    if (typeof planTacticId != 'undefined' && planTacticId != 0 && isImprovement == true) {
+    if (typeof planTacticId != 'undefined' && planTacticId != 0 && isImprovement == 'true') {
         modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
         $("#modal-container-186470").modal('show');
         $("#successMessage").css("display", "none");

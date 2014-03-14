@@ -3088,7 +3088,7 @@ namespace RevenuePlanner.Controllers
                                 plan = db.Plan_Improvement_Campaign_Program_Tactic.Single(pt => pt.ImprovementPlanTacticId.Equals(planTacticId)).Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan;
                                 notificationShare = Enums.Custom_Notification.ShareImprovementTactic.ToString();
                                 notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationShare));
-                                emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage).Replace("[URL]", Url.Action("Index", "Home", new { currentPlanId = plan.PlanId, planTacticId = planTacticId }, Request.Url.Scheme));
+                                emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage).Replace("[URL]", Url.Action("Index", "Home", new { currentPlanId = plan.PlanId, planTacticId = planTacticId, isImprovement = true }, Request.Url.Scheme));
                             }
 
                             foreach (string toEmail in toEmailIds.Split(','))
@@ -3513,7 +3513,7 @@ namespace RevenuePlanner.Controllers
             return PartialView("_ReviewCampaign");
         }
 
-        #region Improvement Tactic Inspect
+        #region "Boost Method"
 
         /// <summary>
         /// Added By: Bhavesh Dobariya.
