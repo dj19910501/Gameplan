@@ -1191,9 +1191,14 @@ else if (status.Equals(Enums.Custom_Notification.ImprovementTacticCommentAdded.T
             List<Guid> businessUnitIds = new List<Guid>();
             try
             {
-                if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsDirector)
+                if (Sessions.IsSystemAdmin)
                 {
-                    var clientBusinessUnit = mydb.BusinessUnits.Where(b => b.ClientId.Equals(Sessions.User.ClientId)).Select(b => b.BusinessUnitId).ToList<Guid>();
+                    var clientBusinessUnit = mydb.BusinessUnits.Where(b => b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
+                    businessUnitIds = clientBusinessUnit.ToList();
+                }
+                else if (Sessions.IsDirector || Sessions.IsClientAdmin)
+                {
+                    var clientBusinessUnit = mydb.BusinessUnits.Where(b => b.ClientId.Equals(Sessions.User.ClientId) && b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
                     businessUnitIds = clientBusinessUnit.ToList();
                 }
                 else
@@ -1208,19 +1213,23 @@ else if (status.Equals(Enums.Custom_Notification.ImprovementTacticCommentAdded.T
                 var models = mydb.Models.Where(m => businessUnitIds.Contains(m.BusinessUnitId) && m.IsDeleted == false).Select(m => m);
 
                 var allModelIds = models.Select(m => m.ModelId).ToList();
-                if (allModelIds == null || allModelIds.Count == 0)
+                if (allModelIds == null || allModelIds.Count == 0 && from == Enums.ActiveMenu.None)
                 {
-                    if (from == Enums.ActiveMenu.None)
-                    {
-                        return new MVCUrl { actionName = "HomeZero", controllerName = "Home", queryString = "" };// "Home/HomeZero";
-                    }
-                    else
-                    {
-                        return new MVCUrl { actionName = "ModelZero", controllerName = "Model", queryString = "" };// "Model/ModelZero";
-                    }
+                    return new MVCUrl { actionName = "HomeZero", controllerName = "Home", queryString = "" };
                 }
                 else
                 {
+                    if (allModelIds == null || allModelIds.Count == 0 && from == Enums.ActiveMenu.Home)
+                    {
+                        if (Sessions.IsPlanner)
+                        {
+                            return new MVCUrl { actionName = "PlanSelector", controllerName = "Plan", queryString = "" };
+                        }
+                        else
+                        {
+                            return new MVCUrl { actionName = "ModelZero", controllerName = "Model", queryString = "" };
+                        }
+                    }
                     var publishedModelIds = models.Where(m => m.Status.Equals(modelPublished)).Select(m => m.ModelId).ToList();
                     var draftModelIds = models.Where(m => m.Status.Equals(modelDraft)).Select(m => m.ModelId).ToList();
 
@@ -1229,22 +1238,19 @@ else if (status.Equals(Enums.Custom_Notification.ImprovementTacticCommentAdded.T
 
                     if (publishedPlan != null && publishedPlan.Count() > 0)
                     {
-                        return new MVCUrl { actionName = "Index", controllerName = "Home", queryString = "Home" };// "Plan/PlanZero?activeMenu=Plan";
+                        return new MVCUrl { actionName = "Index", controllerName = "Home", queryString = "Home" };
                     }
                     else if (draftPlan != null && draftPlan.Count() > 0)
                     {
-                        return new MVCUrl { actionName = "Index", controllerName = "Home", queryString = "Plan" };// "Plan/PlanZero?activeMenu=Home";
+                        return new MVCUrl { actionName = "Index", controllerName = "Home", queryString = "Plan" };
+                    }
+                    else if (allModelIds != null || allModelIds.Count > 0)
+                    {
+                        return new MVCUrl { actionName = "PlanSelector", controllerName = "Plan", queryString = "" };
                     }
                     else
                     {
-                        if (from == Enums.ActiveMenu.None)
-                        {
-                            return new MVCUrl { actionName = "PlanZero", controllerName = "Plan", queryString = "Plan" };// "Home/HomeZero";
-                        }
-                        else
-                        {
-                            return new MVCUrl { actionName = "ModelZero", controllerName = "Model", queryString = "" };// "Model/ModelZero";
-                        }
+                        return new MVCUrl { actionName = "ModelZero", controllerName = "Model", queryString = "" };
                     }
                 }
             }

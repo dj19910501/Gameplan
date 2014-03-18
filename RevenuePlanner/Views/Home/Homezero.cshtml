@@ -2,6 +2,8 @@
 @{
     ViewBag.Title = "Home";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    string url = ViewBag.defaultURL;
+    @Html.Hidden("hdnURL", Url.Content(url))
 }
 @section Sidebar
 {
@@ -173,7 +175,7 @@
                 </div>
                 <div>
 
-                    <button id="btnContinue" class="btn btn-blue text-shadow-blue source-sans-proregular button-welcome-modal" data-dismiss="modal" aria-hidden="true" href="@Url.Action("PlanZero", "Plan", new { activeMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Home })" >Continue</button>
+                    <button id="btnContinue" class="btn btn-blue text-shadow-blue source-sans-proregular button-welcome-modal" data-dismiss="modal" aria-hidden="true" href="@Url.Content(url)">Continue</button>
                 </div>
             </div>
         </div>

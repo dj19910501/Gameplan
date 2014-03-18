@@ -81,24 +81,23 @@ namespace RevenuePlanner.Controllers
 
             List<Guid> businessUnitIds = new List<Guid>();
 
-            if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
+            if (Sessions.IsSystemAdmin)
             {
-                //// Getting all business unit for client of director.
-                var clientBusinessUnit = db.BusinessUnits.Where(b => b.ClientId.Equals(Sessions.User.ClientId)).Select(b => b.BusinessUnitId).ToList<Guid>();
+                var clientBusinessUnit = db.BusinessUnits.Where(b => b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
                 businessUnitIds = clientBusinessUnit.ToList();
-
-                planmodel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId);
+                //planmodel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId); //commented due to not used any where
+                ViewBag.showBid = true;
+            }
+            else if (Sessions.IsDirector || Sessions.IsClientAdmin)
+            {
+                var clientBusinessUnit = db.BusinessUnits.Where(b => b.ClientId.Equals(Sessions.User.ClientId) && b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
+                businessUnitIds = clientBusinessUnit.ToList();
+                //planmodel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId); //commented due to not used any where
                 ViewBag.showBid = true;
             }
             else
             {
                 businessUnitIds.Add(Sessions.User.BusinessUnitId);
-                //   var list = db.BusinessUnits.Where(s => s.BusinessUnitId.Equals(Sessions.User.BusinessUnitId) && s.IsDeleted == false).ToList().Select(u => new SelectListItem
-                //   {
-                //       Text = u.Title,
-                //       Value = u.BusinessUnitId.ToString()
-                //   });
-                //   planmodel.BusinessUnitIds = new List<SelectListItem>(list);
                 ViewBag.showBid = false;
             }
 
@@ -178,22 +177,10 @@ namespace RevenuePlanner.Controllers
                 }
                 return View(planmodel);
             }
-            else if (modelIds != null && modelIds.Count > 0)
-            {
-                models = models.Where(m => m.Status == modelPublishedStatus);
-                if (models != null && models.Count() > 0)
-                {
-                    return RedirectToAction("PlanZero", "Plan");
-                }
-                else
-                {
-                    return RedirectToAction("ModelZero", "Model");
-                }
-
-            }
             else
             {
-                return RedirectToAction("Homezero", "Home");
+                TempData["ErrorMessage"] = "No plan available, please create a plan";
+                return RedirectToAction("PlanSelector", "Plan");
             }
 
         }
@@ -2515,6 +2502,13 @@ namespace RevenuePlanner.Controllers
         #region "Home-Zero"
         public ActionResult Homezero()
         {
+            string strURL = "#";
+            MVCUrl defaultURL = Common.DefaultRedirectURL(Enums.ActiveMenu.Home);
+            if (defaultURL != null)
+            {
+                strURL = "~/" + defaultURL.controllerName + "/" + defaultURL.actionName + defaultURL.queryString;
+            }
+            ViewBag.defaultURL = strURL;
             return View();
         }
         #endregion
