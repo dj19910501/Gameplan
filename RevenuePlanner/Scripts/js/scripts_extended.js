@@ -469,3 +469,10 @@ function FormatForBoostStagesValue(value, number) {
     }
     return value;
 }
+
+function GetCurrentQuarter() {
+    var d = new Date();
+    var curr_month = d.getMonth();
+    var quartervalue = Math.floor(curr_month / 3) + 1;
+    return quartervalue;
+}

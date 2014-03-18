@@ -1833,12 +1833,50 @@
             }
             var htmlplan = '';
             if (_type == 1 || _type == 2 || _type == 5) {
-
+                var qvalue = GetCurrentQuarter();
+                var d=new Date();
+                var curr_month = d.getMonth() + 1;
+                var isDisplay = false;
+                if (selectOption == "@RevenuePlanner.Helpers.Enums.UpcomingActivities.previousyear.ToString()")
+                {
+                    curr_month = 0;
+                }
                 htmlplan += '<tr>' +
                                     '<td>' + _title + '</td>';
-                for (member in _goal) {
-                    if (_goal[member] != null) {
-                        htmlplan += '<td>' + FormatNumber(_goal[member].Value, false) + '</td>';
+                if (_type == 5) {
+                    for (member in _goal) {
+                        if (_goal[member] != null) {
+                            if (selectOption == "@RevenuePlanner.Helpers.Enums.UpcomingActivities.thisquarter.ToString()") {
+                                if (qvalue == 1) {
+                                    if (_goal[member].Month > curr_month && _goal[member].Month <= 3) {
+                                        isDisplay = true;
+                                    }
+                                }
+                                else {
+                                    if (_goal[member].Month > curr_month) {
+                                        isDisplay = true;
+                                    }
+                                }
+                            }
+                            else {
+                                if (_goal[member].Month > curr_month) {
+                                    isDisplay = true;
+                                }
+                            }
+                            if (isDisplay) {
+                                htmlplan += '<td>---</td>';
+                            }
+                            else {
+                                htmlplan += '<td>' + FormatNumber(_goal[member].Value, false) + '</td>';
+                            }
+                        }
+                    }
+                }
+                else {
+                    for (member in _goal) {
+                        if (_goal[member] != null) {
+                            htmlplan += '<td>' + FormatNumber(_goal[member].Value, false) + '</td>';
+                        }
                     }
                 }
                 htmlplan += '</tr>';
