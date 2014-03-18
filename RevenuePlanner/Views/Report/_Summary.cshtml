@@ -60,10 +60,10 @@
     <div class="report-info">
         <h4>Waterfall Conversion Summary</h4>
         <p>
-            Your overall conversion is <strong>@Model.OverallConversionPlanStatus.</strong><br />
+            @*Your overall conversion is <strong>@Model.OverallConversionPlanStatus.</strong><br />*@
             @Html.LabelForINQ("INQ") : <strong>@Model.ISQsStatus.</strong><br />
             @Html.LabelForMQL("MQL") : <strong>@Model.MQLsStatus.</strong><br />
-            @Html.LabelForCW("CW") : <strong>@Model.CWsStatus.</strong><br />
+          @*  @Html.LabelForCW("CW") : <strong>@Model.CWsStatus.</strong><br />*@
         </p>
         <a id="AViewDetailReportConversion" class="CursorHand" onclick="window.location.href='@Url.Action("Conversion", "Report")'">View Details<span></span></a>
     </div>
