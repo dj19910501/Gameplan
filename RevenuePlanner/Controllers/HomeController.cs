@@ -1938,15 +1938,15 @@ namespace RevenuePlanner.Controllers
             DateTime? modifiedDate = null;
             if (db.Plan_Campaign_Program_Tactic_Actual.Where(t => t.PlanTacticId == im.PlanTacticId).Count() > 0)
             {
-                modifiedDate = db.Plan_Campaign_Program_Tactic_Actual.Where(t => t.PlanTacticId == im.PlanTacticId).Select(t => t.CreatedDate).SingleOrDefault();
-                createdBy = db.Plan_Campaign_Program_Tactic_Actual.Where(t => t.PlanTacticId == im.PlanTacticId).Select(t => t.CreatedBy).SingleOrDefault().ToString();
+                modifiedDate = db.Plan_Campaign_Program_Tactic_Actual.Where(t => t.PlanTacticId == im.PlanTacticId).Select(t => t.CreatedDate).FirstOrDefault();
+                createdBy = db.Plan_Campaign_Program_Tactic_Actual.Where(t => t.PlanTacticId == im.PlanTacticId).Select(t => t.CreatedBy).FirstOrDefault().ToString();
             }
             else
             {
                 if (im.CostActual != 0)
                 {
-                    modifiedDate = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == im.PlanTacticId).Select(t => t.ModifiedDate).SingleOrDefault();
-                    createdBy = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == im.PlanTacticId).Select(t => t.ModifiedBy).SingleOrDefault().ToString();
+                    modifiedDate = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == im.PlanTacticId).Select(t => t.ModifiedDate).FirstOrDefault();
+                    createdBy = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == im.PlanTacticId).Select(t => t.ModifiedBy).FirstOrDefault().ToString();
                 }
             }
 
