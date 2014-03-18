@@ -195,7 +195,11 @@
                 });
             }
             else {
-                $("#YearTabs").append('No Records found for This Selection.');
+                //$("#YearTabs").append('No Records found for This Selection.');
+                $('#errorMessage').css("display", "block");
+                $('#cError').html('<strong>Error.</strong> No plan available, please create a plan')
+                $("#errorMessage").slideDown(1200); // Show the Alert
+                $('#successMessage').css("display", "none");
             }
         }
     }

@@ -142,7 +142,22 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-                            return RedirectToAction("Index", "Home");
+                            MVCUrl defaultURL = Common.DefaultRedirectURL(Enums.ActiveMenu.None);
+                            if (defaultURL != null)
+                            {
+                                if (!string.IsNullOrEmpty(defaultURL.queryString))
+                                {
+                                    return RedirectToAction(defaultURL.actionName, defaultURL.controllerName, new { activeMenu = defaultURL.queryString });
+                                }
+                                else
+                                {
+                                    return RedirectToAction(defaultURL.actionName, defaultURL.controllerName);
+                                }
+                            }
+                            else
+                            {
+                                return RedirectToAction("Index", "Home");
+                            }
                         }
                     }
                     else

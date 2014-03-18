@@ -1029,7 +1029,7 @@ namespace RevenuePlanner.Controllers
             {
                 if (Sessions.RolePermission != null)
                 {
-                    Common.Permission permission = Common.GetPermission(ActionItem.Pref);
+                    Common.Permission permission = Common.GetPermission(ActionItem.Model);
                     switch (permission)
                     {
                         case Common.Permission.FullAccess:
@@ -1249,7 +1249,7 @@ namespace RevenuePlanner.Controllers
                 Model objModel = db.Models.Where(model => model.ModelId == id).FirstOrDefault();
                 if (objModel != null)
                 {
-                    var objPlan = db.Plans.Where(plan => plan.ModelId == id).ToList();
+                    var objPlan = db.Plans.Where(plan => plan.ModelId == id && plan.IsDeleted == false).ToList();
                     if (objPlan.Count == 0)
                     {
                         /*TFS point 252: editing a published model
@@ -1268,7 +1268,7 @@ namespace RevenuePlanner.Controllers
                                 objModel.IsDeleted = true;
                                 if (objModel.Status.ToLower() != Enums.ModelStatus.Draft.ToString().ToLower())
                                 {
-                                    objPlan = db.Plans.Where(plan => plan.ModelId == objModel.ModelId).ToList();
+                                    objPlan = db.Plans.Where(plan => plan.ModelId == objModel.ModelId && plan.IsDeleted == false).ToList();
                                     if (objPlan.Count != 0)
                                     {
                                         return Json(new { errorMsg = string.Format(Common.objCached.ModelDeleteParentDependency, objModel.Title, objModel.Version) }, JsonRequestBehavior.AllowGet);

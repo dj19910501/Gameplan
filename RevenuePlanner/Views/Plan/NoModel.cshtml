@@ -5,9 +5,6 @@
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Model;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-/*test*/
-
-
 <div id="modal-container-186470" class="modal-inspect-no-baseline-model hide fade" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true">
      
     <buttom class="close-x-icon" data-dismiss="modal" aria-hidden="true"></buttom>
@@ -22,14 +19,9 @@
         <input type="submit" id="btnsubmit" class="btn btn-blue text-shadow-blue source-sans-proregular button-inspect-result-modal pull-right margin-top60" value="Create Baseline Model" href="@Url.Content("~/Model/ModelZero")"></input>
     </div>
 </div>
-
-
 <script type="text/javascript">
     $("#modal-container-186470").modal('show');
     $("#btnsubmit").click(function () {
         window.location.href = $(this).attr('href');
     });
-
 </script>
-
-/*test brij123*/
