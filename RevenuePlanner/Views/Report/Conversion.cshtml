@@ -113,7 +113,8 @@
                     <th class="width275" id="ActivityName">Audience</th>
                 }
                 <th class="width83">New @Html.LabelForINQ("INQ")</th>
-                <th class="width83">@Html.LabelForINQ("INQ")→@Html.LabelForMQL("MQL")</th>
+                @* Comment line as per Pl Ticket 356. *@
+                @*<th class="width83">@Html.LabelForINQ("INQ")→@Html.LabelForMQL("MQL")</th>*@
                 <th class="width83">@Html.LabelForMQL("MQL")</th>
                 <th class="width83">@Html.LabelForCW("CW")</th>
                 <th class="width83">ADS</th>
@@ -543,7 +544,8 @@
                 $tableReports.append('<tr><td></td>' +
                                     '<td class="border-r">' + _title + '</td>' +
                                     '<td class="border-r large-bold-text">' + FormatWithRoundValue(_newInq) + '</td>' +
-                                    '<td class="border-r"><div class="div-line">' + FormatWithRoundValue(_inqMql[0].val) + '</div><div>' + FormatWithRoundValue(_inqMql[1].val) + '</div></td>' +
+                                    // Comment line as per Pl Ticket 356.
+                                    //'<td class="border-r"><div class="div-line">' + FormatWithRoundValue(_inqMql[0].val) + '</div><div>' + FormatWithRoundValue(_inqMql[1].val) + '</div></td>' +
                                     '<td class="border-r large-bold-text">' + FormatWithRoundValue(_mql) + '</td>' +
                                     '<td class="border-r large-bold-text">' + FormatWithRoundValue(_cw) + '</td>' +
                                     '<td class="border-r"><div class="div-line">' + FormatNumber(_ads[0].val, false) + '</div><div>' + FormatNumber(_ads[1].val, false) + '</div></td>' +
@@ -554,7 +556,8 @@
                 $tableReports.append('<tr><td class="report-gray-row"></td>' +
                                    '<td class="border-r report-gray-row">' + _title + '</td>' +
                                    '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(_newInq) + '</td>' +
-                                   '<td class="border-r report-gray-row"><div class="div-line">' + FormatWithRoundValue(_inqMql[0].val) + '</div><div>' + FormatWithRoundValue(_inqMql[1].val) + '</div></td>' +
+                                   // Comment line as per Pl Ticket 356.
+                                   //'<td class="border-r report-gray-row"><div class="div-line">' + FormatWithRoundValue(_inqMql[0].val) + '</div><div>' + FormatWithRoundValue(_inqMql[1].val) + '</div></td>' +
                                    '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(_mql) + '</td>' +
                                    '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(_cw) + '</td>' +
                                    '<td class="border-r report-gray-row"><div class="div-line">' + FormatNumber(_ads[0].val, false) + '</div><div>' + FormatNumber(_ads[1].val, false) + '</div></td>' +
