@@ -843,7 +843,9 @@ namespace RevenuePlanner.Controllers
                 //// Getting campaign to be updated.
                 var planCampaign = db.Plan_Campaign.Single(pc => pc.PlanCampaignId.Equals(id));
                 bool isApproved = planCampaign.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
-                planCampaign.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
+                //Start Manoj Limbachiya  Ticket #363 Tactic Creation - Do not automatically submit a tactic
+                //planCampaign.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
+                //End Manoj Limbachiya  Ticket #363 Tactic Creation - Do not automatically submit a tactic
                 //// Setting start and end date.
                 planCampaign.StartDate = DateTime.Parse(startDate);
 
@@ -868,7 +870,9 @@ namespace RevenuePlanner.Controllers
                 //// Getting program to be updated.
                 var planProgram = db.Plan_Campaign_Program.Single(pc => pc.PlanProgramId.Equals(id));
                 bool isApproved = planProgram.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
-                planProgram.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
+                //Start Manoj Limbachiya  Ticket #363 Tactic Creation - Do not automatically submit a tactic
+                //planProgram.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
+                //End Manoj Limbachiya  Ticket #363 Tactic Creation - Do not automatically submit a tactic
                 //// Setting start and end date.
                 planProgram.StartDate = DateTime.Parse(startDate);
 
@@ -894,7 +898,37 @@ namespace RevenuePlanner.Controllers
 
                 bool isApproved = planTactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
                 //// Changing status of tactic to submitted.
-                planTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
+                //Start Manoj Limbachiya  Ticket #363 Tactic Creation - Do not automatically submit a tactic
+                //planTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
+                bool isDirectorLevelUser = false;
+                if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
+                {
+                    if (planTactic.CreatedBy != Sessions.User.UserId) isDirectorLevelUser = true;
+                }
+                if (!isDirectorLevelUser)
+                {
+                    DateTime todaydate = DateTime.Now;
+                    DateTime startDateform = DateTime.Parse(startDate);
+                    DateTime endDateform = DateTime.Parse(startDate);
+                    endDateform = endDateform.AddDays(duration);
+                    if (Common.CheckAfterApprovedStatus(planTactic.Status))
+                    {
+                        if (todaydate > startDateform && todaydate < endDateform)
+                        {
+                            planTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
+                            if (planTactic.EndDate != endDateform)
+                            {
+                                planTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
+                                Common.mailSendForTactic(planTactic.PlanTacticId, planTactic.Status, planTactic.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
+                            }
+                        }
+                        else if (todaydate > planTactic.EndDate)
+                        {
+                            planTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
+                        }
+                    }
+                }
+                //End Manoj Limbachiya  Ticket #363 Tactic Creation - Do not automatically submit a tactic
 
                 //// Setting start and end date.
                 planTactic.StartDate = DateTime.Parse(startDate);
