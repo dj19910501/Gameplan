@@ -153,7 +153,7 @@ namespace RevenuePlanner.Helpers
             Sessions.IsPlanner = false;
             Sessions.AppMenus = null;
             Sessions.RolePermission = null;
-            Sessions.PlanId = 0;
+            HttpContext.Current.Session["PlanId"] = 0;
             Sessions.ModelId = 0;
             Sessions.BusinessUnitId = Guid.Empty;
             Sessions.ReportPlanId = 0;
@@ -172,7 +172,10 @@ namespace RevenuePlanner.Helpers
             }
             set
             {
-                HttpContext.Current.Session["PlanId"] = value;
+                if (Common.IsPlanPublished(value))
+                {
+                    HttpContext.Current.Session["PlanId"] = value;
+                }
             }
         }
 

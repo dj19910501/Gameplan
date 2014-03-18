@@ -1482,5 +1482,30 @@ else if (status.Equals(Enums.Custom_Notification.ImprovementTacticCommentAdded.T
             return taskDataImprovementActivity;
         }
         #endregion
+
+        #region Check the status of plan before assign to Session
+        public static bool IsPlanPublished(int PlanId)
+        {
+            MRPEntities db = new MRPEntities();
+            try
+            {
+                var plan = db.Plans.Where(p => p.PlanId == PlanId && p.IsDeleted == false && p.Status.ToLower() == "published").Select(m => m).FirstOrDefault();
+                if (plan != null)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                db = null;
+                return false;
+                throw;
+            }
+        }
+        #endregion
     }
 }
