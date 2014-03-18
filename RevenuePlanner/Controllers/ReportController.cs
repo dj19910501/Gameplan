@@ -2322,9 +2322,9 @@ namespace RevenuePlanner.Controllers
                 TrendCost = GetTrendCostDataContribution(p.planTacticList, lastMonth),
                 RunRate = GetTrendRevenueDataContribution(p.planTacticList, lastMonth),
                 PipelineCoverage = GetPipelineCoverage(p.planTacticList, lastMonth),
-                RevSpend = GetRevenueVSSpendContribution(p.planTacticList),
+                RevSpend = GetRevenueVSSpendContribution(p.planTacticList, selectOption),
                 RevenueTotal = GetActualRevenueTotal(p.planTacticList),
-                CostTotal = GetActualCostTotal(p.planTacticList),
+                CostTotal = GetActualCostTotal(p.planTacticList, selectOption),
             }).Select(p => p).Distinct().OrderBy(p => p.Title);
 
             return Json(campaignListFinal, JsonRequestBehavior.AllowGet);
@@ -2409,7 +2409,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="cl"></param>
         /// <returns></returns>
-        public double GetRevenueVSSpendContribution(List<int> planTacticList)
+        public double GetRevenueVSSpendContribution(List<int> planTacticList, string selectOption)
         {
             List<TacticDataTable> tacticdata = (from td in db.Plan_Campaign_Program_Tactic
                                                 where planTacticList.Contains(td.PlanTacticId)
@@ -2417,8 +2417,9 @@ namespace RevenuePlanner.Controllers
 
             string revenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
             List<string> monthList = GetUpToCurrentMonth();
+            List<string> monthWithYearList = GetUpToCurrentMonthWithYear(selectOption, true);
 
-            double costTotal = GetDatatable(tacticdata).AsEnumerable().AsQueryable().Where(c => monthList.Contains(c.Field<string>(ColumnMonth))).Sum(r => r.Field<double>(ColumnValue));
+            double costTotal = GetDatatable(tacticdata).AsEnumerable().AsQueryable().Where(c => monthWithYearList.Contains(c.Field<string>(ColumnMonth))).Sum(r => r.Field<double>(ColumnValue));
 
             double revenueTotal = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => planTacticList.Contains(ta.PlanTacticId) && monthList.Contains(ta.Period) && ta.StageTitle == revenue).ToList().Sum(a => a.Actualvalue);
 
@@ -2549,16 +2550,16 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="cl"></param>
         /// <returns></returns>
-        public double GetActualCostTotal(List<int> planTacticList)
+        public double GetActualCostTotal(List<int> planTacticList, string selectOption)
         {
             List<TacticDataTable> tacticdata = (from td in db.Plan_Campaign_Program_Tactic
                                                 where planTacticList.Contains(td.PlanTacticId)
                                                 select new TacticDataTable { TacticId = td.PlanTacticId, Value = td.CostActual.HasValue ? (double)td.CostActual : 0, StartMonth = td.StartDate.Month, EndMonth = td.EndDate.Month, StartYear = td.StartDate.Year, EndYear = td.EndDate.Year }).ToList();
 
             string revenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
-            List<string> monthList = GetUpToCurrentMonth();
+            List<string> monthWithYearList = GetUpToCurrentMonthWithYear(selectOption, true);
 
-            double costTotal = GetDatatable(tacticdata).AsEnumerable().AsQueryable().Where(c => monthList.Contains(c.Field<string>(ColumnMonth))).Sum(r => r.Field<double>(ColumnValue));
+            double costTotal = GetDatatable(tacticdata).AsEnumerable().AsQueryable().Where(c => monthWithYearList.Contains(c.Field<string>(ColumnMonth))).Sum(r => r.Field<double>(ColumnValue));
             return costTotal;
         }
 
@@ -3285,18 +3286,75 @@ namespace RevenuePlanner.Controllers
                 }
                 else if (currentQuarter == 2)
                 {
-                    startMonth = 1;
+                    startMonth = !isQuarterOnly ? 1 : 4;
                     EndMonth = 6;
                 }
                 else if (currentQuarter == 3)
                 {
-                    startMonth = 4;
+                    startMonth = !isQuarterOnly ? 4 : 7;
                     EndMonth = 9;
                 }
                 else
                 {
-                    startMonth = 7;
+                    startMonth = !isQuarterOnly ? 7 : 10;
                     EndMonth = 12;
+                }
+
+                for (int i = startMonth; i <= EndMonth; i++)
+                {
+                    includeMonth.Add(DateTime.Now.Year.ToString() + PeriodPrefix + i);
+                }
+            }
+            else if (selectOption == Enums.UpcomingActivities.previousyear.ToString())
+            {
+                for (int i = 1; i <= 12; i++)
+                {
+                    includeMonth.Add(DateTime.Now.AddYears(-1).Year.ToString() + PeriodPrefix + i);
+                }
+            }
+            return includeMonth;
+        }
+
+        /// <summary>
+        /// Get Upto Current Month List With year.
+        /// </summary>
+        /// <returns>list.</returns>
+        private List<string> GetUpToCurrentMonthWithYear(string selectOption, bool isQuarterOnly = false)
+        {
+            List<string> includeMonth = new List<string>();
+            int startMonth = 1, EndMonth = currentMonth;
+            if (selectOption == Enums.UpcomingActivities.thisyear.ToString())
+            {
+                for (int i = startMonth; i <= EndMonth; i++)
+                {
+                    includeMonth.Add(DateTime.Now.Year.ToString() + PeriodPrefix + i);
+                }
+            }
+            else if (selectOption == Enums.UpcomingActivities.thisquarter.ToString())
+            {
+                int currentQuarter = ((DateTime.Now.Month - 1) / 3) + 1;
+
+                if (currentQuarter == 1)
+                {
+                    if (!isQuarterOnly)
+                    {
+                        for (int i = 10; i <= 12; i++)
+                        {
+                            includeMonth.Add(DateTime.Now.AddYears(-1).Year.ToString() + PeriodPrefix + i);
+                        }
+                    }
+                }
+                else if (currentQuarter == 2)
+                {
+                    startMonth = !isQuarterOnly ? 1 : 4;
+                }
+                else if (currentQuarter == 3)
+                {
+                    startMonth = !isQuarterOnly ? 4 : 7;
+                }
+                else
+                {
+                    startMonth = !isQuarterOnly ? 7 : 10;
                 }
 
                 for (int i = startMonth; i <= EndMonth; i++)

@@ -1275,12 +1275,13 @@
         if (totalRevSpendCost != 0) {
             perRevSpend = ((parseFloat(totalRevSpendRevenue) - parseFloat(totalRevSpendCost)) / parseFloat(totalRevSpendCost));
         }
-        perRevSpend = (Math.round(perRevSpend * 100) / 100)
+        // Change for PL issue 353 to percentage.
+        //perRevSpend = (Math.round(perRevSpend * 100) / 100)
         if (perRevSpend < 0) {
-            htmlLastRow += '<td class="total-row border-r red-value"><span class="red-arrow-down-icon"></span><span>' + Math.abs(perRevSpend) + '</span></td>';
+            htmlLastRow += '<td class="total-row border-r red-value"><span class="red-arrow-down-icon"></span><span>' + FormatNumber(Math.abs(perRevSpend) * 100, true) + '</span></td>';
         }
         else {
-            htmlLastRow += '<td class="total-row border-r green-value"><span class="green-arrow-up-icon"></span><span>' + perRevSpend + '</span></td>';
+            htmlLastRow += '<td class="total-row border-r green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(perRevSpend * 100, true) + '</span></td>';
         }
         htmlLastRow += '</tr>';
         $('#table_reports4 > tbody').append(htmlLastRow);
@@ -1338,10 +1339,13 @@
         htmlCon += '<td>' + FormatNumber(_RunRate, false) + '</td>'; //+
                   //'<td>' + FormatNumber(_PipelineCoverage, false) + '</td>';
         if (_RevSpend < 0) {
-            htmlCon += '<td class="border-r red-value"><span class="red-arrow-down-icon"></span><span>' + numberWithCommas(Math.round(Math.abs(_RevSpend) * 100) / 100) + '</span></td>';
+            // Change related to PL Ticket 353, ROI in percentage
+            //htmlCon += '<td class="border-r red-value"><span class="red-arrow-down-icon"></span><span>' + numberWithCommas(Math.round(Math.abs(_RevSpend) * 100) / 100) + '</span></td>';
+            htmlCon += '<td class="border-r red-value"><span class="red-arrow-down-icon"></span><span>' + FormatNumber(Math.abs(_RevSpend) * 100, true) + '</span></td>';
         }
         else {
-            htmlCon += '<td class="border-r green-value"><span class="green-arrow-up-icon"></span><span>' + numberWithCommas(Math.round(_RevSpend * 100) / 100) + '</span></td>';
+            //htmlCon += '<td class="border-r green-value"><span class="green-arrow-up-icon"></span><span>' + numberWithCommas(Math.round(_RevSpend * 100) / 100) + '</span></td>';
+            htmlCon += '<td class="border-r green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(_RevSpend * 100, true) + '</span></td>';
         }
         htmlCon += '</tr>';
         $tableReports4.append(htmlCon);
