@@ -1,4 +1,4 @@
-/* 01_TFS_300_Unable to enter actuals greater than $9,999,999 */
+/*  01_TFS_300_Unable to enter actuals greater than $9,999,999 */
 
 ALTER TABLE Model ALTER COLUMN AddressableContacts BIGINT NOT NULL
 ALTER TABLE Model_Audience_Event ALTER COLUMN NumberofContacts BIGINT NULL
