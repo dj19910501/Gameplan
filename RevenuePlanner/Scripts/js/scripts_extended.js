@@ -201,6 +201,11 @@ function SetFormatForLabel(lableId, maxSize)
                 firstString = txtvalue.substring(0, 3);
                 lastString = SB;
                 break;
+            default:
+                var defaultValue = lengthvalue - 10;
+                firstString = txtvalue.substring(0, defaultValue);
+                lastString = SB;
+                break;
         }
         $(lableId).text(firstString + lastString);
         $(lableId).attr('title', txtvalue);
