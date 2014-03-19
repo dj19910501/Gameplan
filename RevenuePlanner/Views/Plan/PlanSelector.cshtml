@@ -71,7 +71,7 @@
 
     $(document).ready(function () {
         LoadYearsData(); //function call to load Years tabs
-        LoadBUData(); //function call to load Business Units tabs
+        //LoadBUData(); //function call to load Business Units tabs
 
         // Code to set Error/Success message
         if ($('#cSuccess').html() != '') {
@@ -171,6 +171,7 @@
             success: function (r) {
                 BindYearTabs(r);
                 //TabClick();
+                LoadBUData(); //function call to load Business Units tabs
                 myApp.hidePleaseWait();
             }
         });
