@@ -146,13 +146,13 @@ namespace RevenuePlanner.Models
 
         public string Period { get; set; }
 
-        public int ActualValue { get; set; }
+        public long ActualValue { get; set; }
 
-        public int TotalINQActual { get; set; }
+        public long TotalINQActual { get; set; }
 
-        public int TotalMQLActual { get; set; }
+        public long TotalMQLActual { get; set; }
 
-        public int TotalCWActual { get; set; }
+        public long TotalCWActual { get; set; }
 
         public double TotalRevenueActual { get; set; }
 
