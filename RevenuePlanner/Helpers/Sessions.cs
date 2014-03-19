@@ -154,6 +154,7 @@ namespace RevenuePlanner.Helpers
             Sessions.AppMenus = null;
             Sessions.RolePermission = null;
             HttpContext.Current.Session["PlanId"] = 0;
+            HttpContext.Current.Session["PublishedPlanId"] = 0;
             Sessions.ModelId = 0;
             Sessions.BusinessUnitId = Guid.Empty;
             Sessions.ReportPlanId = 0;
@@ -172,13 +173,24 @@ namespace RevenuePlanner.Helpers
             }
             set
             {
+                HttpContext.Current.Session["PlanId"] = value;
                 if (Common.IsPlanPublished(value))
                 {
-                    HttpContext.Current.Session["PlanId"] = value;
+                    HttpContext.Current.Session["PublishedPlanId"] = value;
                 }
             }
         }
-
+        public static Int32 PublishedPlanId
+        {
+            get
+            {
+                return Convert.ToInt32(HttpContext.Current.Session["PublishedPlanId"]);
+            }
+            set
+            {
+                HttpContext.Current.Session["PublishedPlanId"] = value;
+            }
+        }
         /// <summary>
         /// Added By: Kunal
         /// Store Model Id.

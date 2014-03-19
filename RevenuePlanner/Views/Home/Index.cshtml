@@ -169,10 +169,10 @@
                     <!-- start -->
                     @{
                         
-            if (RevenuePlanner.Helpers.Sessions.PlanId != null)
+            if (Model.PlanId != null)
             {
-                int pid = 0;
-                int.TryParse(Convert.ToString(RevenuePlanner.Helpers.Sessions.PlanId), out pid);
+                int pid = Model.PlanId;
+                //int.TryParse(Convert.ToString(RevenuePlanner.Helpers.Sessions.PlanId), out pid);
                         <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Create", "Plan", new { id = pid })'">Edit Plan</button>
             }
             else
@@ -213,10 +213,10 @@
                     <!-- change by kunal for edit plan - 01-17-2012 -->
                     <!-- start -->
                     @{
-            if (RevenuePlanner.Helpers.Sessions.PlanId != null)
+            if (Model.PlanId != null)
             {
-                int pid = 0;
-                int.TryParse(Convert.ToString(RevenuePlanner.Helpers.Sessions.PlanId), out pid);
+                int pid = Model.PlanId;
+                //int.TryParse(Convert.ToString(RevenuePlanner.Helpers.Sessions.PlanId), out pid);
                         <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Create", "Plan", new { id = pid })'">Edit Plan</button>
             }
             else
@@ -1540,7 +1540,8 @@ function ShowModel(taskId, isShowInspect) {
     }
 
     //// Checking whether current task is improvement tactic or not.
-    if (typeof planTacticId != 'undefined' && planTacticId != 0 && isImprovement == 'true') {
+    if (typeof planTacticId != 'undefined' && planTacticId != 0 && isImprovement == true) {
+
         modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
         $("#modal-container-186470").modal('show');
         $("#successMessage").css("display", "none");

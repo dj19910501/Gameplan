@@ -77,7 +77,14 @@ namespace RevenuePlanner.Controllers
             /* added by Nirav shah for TFS Point : 218*/
             if (Sessions.PlanId != 0)
             {
-                Sessions.ReportPlanId = Sessions.PlanId;
+                if (Common.IsPlanPublished(Sessions.PlanId))
+                {
+                    Sessions.ReportPlanId = Sessions.PlanId;
+                }
+                else
+                {
+                    Sessions.ReportPlanId = Sessions.PublishedPlanId;
+                }
             }
             if (Sessions.ReportPlanId > 0)
             {
@@ -88,7 +95,8 @@ namespace RevenuePlanner.Controllers
             if (Sessions.ReportPlanId == 0)
             {
                 ViewBag.PlanTitle = "All Plans";
-                Sessions.PlanId = 0;/* added by Nirav shah for TFS Point : 218*/
+                //Sessions.PlanId = 0;/* added by Nirav shah for TFS Point : 218*/
+                Sessions.PublishedPlanId = 0;
             }
             else
             {
@@ -125,7 +133,8 @@ namespace RevenuePlanner.Controllers
             else if (PlanId == "0" || PlanId == "") // This means all plans are selected
             {
                 Sessions.ReportPlanId = 0;
-                Sessions.PlanId = 0;/* added by Nirav shah for TFS Point : 218*/
+                //Sessions.PlanId = 0;/* added by Nirav shah for TFS Point : 218*/
+                Sessions.PublishedPlanId = 0;
             }
 
             if (!string.IsNullOrEmpty(BusinessUnitId) && BusinessUnitId != "0" && BusinessUnitId != Convert.ToString(Guid.Empty))
@@ -169,7 +178,8 @@ namespace RevenuePlanner.Controllers
             else if (PlanId == "0") // This means all plans are selected
             {
                 Sessions.ReportPlanId = 0;
-                Sessions.PlanId = 0;/* added by Nirav shah for TFS Point : 218*/
+                //Sessions.PlanId = 0;/* added by Nirav shah for TFS Point : 218*/
+                Sessions.PublishedPlanId = 0;
             }
 
             if (!string.IsNullOrEmpty(BusinessUnitId) && BusinessUnitId != "0" && BusinessUnitId != Convert.ToString(Guid.Empty))

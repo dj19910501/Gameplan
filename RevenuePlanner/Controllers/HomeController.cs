@@ -126,13 +126,25 @@ namespace RevenuePlanner.Controllers
                     {
                         currentPlan = activePlan.Where(p => p.PlanId.Equals(currentPlanId)).Select(p => p).FirstOrDefault();
                     }
+                    else if (!Common.IsPlanPublished(Sessions.PlanId))
+                    {
+                        /* added by Nirav shah for TFS Point : 218*/
+                        if (Sessions.PublishedPlanId == 0)
+                        {
+                            currentPlan = activePlan.Select(p => p).FirstOrDefault();
+                        }
+                        else
+                        {
+                            currentPlan = activePlan.Where(p => p.PlanId.Equals(Sessions.PublishedPlanId)).Select(p => p).FirstOrDefault();
+                        }
+                    }
                     else
                     {
                         /* added by Nirav shah for TFS Point : 218*/
                         if (Sessions.PlanId == 0)
                         {
-                        currentPlan = activePlan.Select(p => p).FirstOrDefault();
-                    }
+                            currentPlan = activePlan.Select(p => p).FirstOrDefault();
+                        }
                         else
                         {
                             currentPlan = activePlan.Where(p => p.PlanId.Equals(Sessions.PlanId)).Select(p => p).FirstOrDefault();
