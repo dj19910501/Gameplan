@@ -607,8 +607,12 @@ else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                     var clientId = Sessions.User.ClientId;
                     var directorRoleCode = Enums.RoleCodes.D.ToString();
                     var lst_user = objBDSUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, Sessions.IsSystemAdmin);
-                    List<string> lst_director = lst_user.Where(ld => ld.RoleCode.Equals(directorRoleCode)).Select(l => l.Email).ToList();
-                    foreach (var item in lst_director) lst_CollaboratorEmail.Add(item);
+                    var lst_director = lst_user.Where(ld => ld.RoleCode.Equals(directorRoleCode)).Select(l => l).ToList();
+                    foreach (var item in lst_director) 
+                    { 
+                        lst_CollaboratorEmail.Add(item.Email);
+                        lst_CollaboratorUserName.Add(item.FirstName);
+                    }
                     if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
                         SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.TacticSubmitted.ToString(), "", Convert.ToString(Enums.Section.Tactic).ToLower());
