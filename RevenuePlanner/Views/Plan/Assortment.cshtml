@@ -823,7 +823,7 @@
                                 '<div class="height40 pull-right width50px"></div>' +
                                 '<div class="total pull-right width100px text-right tipsyclass">' + FormatCommas(programTotal.toString(), false) + '</div>' +
                                 '<div class="total pull-right width150px text-right tipsyclass">$' + FormatCommas(costTotal.toString(), false) + '</div>' +
-                                '<div class="total pull-right width100px text-right">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
+                                '<div class="total pull-right width100px text-right" id="DivImprovementTotal">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
                                 '<div class="gray-add-container" id="grayImprovementContainer" style="display:none;">' +
                                 //'<p class="text1">Executing these improvement tactics could deliver...</p>' +
                                 //'<p class="text2"><strong>28</strong> more MQLs yielding <strong>8</strong> more CWs,<br>' +
@@ -871,39 +871,44 @@
                 },
                 success: function (data) {
                     if (typeof data != 'undefined') {
-                        alert(JSON.stringify(data));
                         var $html = '<p class="text1">Executing these improvement tactics could deliver...</p>' +
                             '<p class="text2"><strong>';
                         var mqlValue = parseFloat(data.MQL);
                         if (mqlValue < 0) {
-                            $html += mqlValue + '</strong> fewer';
+                            $html += FormatCommas(Math.abs(mqlValue).toString(), false) + '</strong> fewer';
                         }
                         else {
-                            $html += mqlValue + '</strong> more';
+                            $html += FormatCommas(mqlValue.toString(), false) + '</strong> more';
                         }
+
+                        var withImprovedMQL = mqlTotal + mqlValue;
+                        $('#DivImprovementTotal').html(FormatCommas(withImprovedMQL.toString(), false))
+
                         $html += ' MQLs yielding <strong>';
                         var cwValue = parseFloat(data.CW);
                         if (cwValue < 0) {
-                            $html += cwValue + '</strong> fewer';
+                            $html += FormatCommas(Math.abs(cwValue).toString(), false) + '</strong> fewer';
                         }
                         else {
-                            $html += cwValue + '</strong> more';
+                            $html += FormatCommas(cwValue.toString(), false) + '</strong> more';
                         }
+
                         $html += ' CWs,<br><strong>';
                         var adsValue = parseFloat(data.ADS);
                         if (adsValue < 0) {
-                            $html += adsValue + '</strong> smaller';
+                            $html += FormatCurrency(Math.abs(adsValue).toString(), false) + '</strong> smaller';
                         }
                         else {
-                            $html += adsValue + '</strong> larger';
+                            $html += FormatCurrency(adsValue.toString(), false) + '</strong> larger';
                         }
+
                         $html += ' Average Deal Size and<br><strong>';
                         var velocityValue = parseFloat(data.Velocity);
                         if (velocityValue < 0) {
-                            $html += velocityValue + '</strong> fewer';
+                            $html += FormatCommas(Math.abs(velocityValue).toString(), false) + '</strong> fewer';
                         }
                         else {
-                            $html += velocityValue + '</strong> more';
+                            $html += FormatCommas(velocityValue.toString(), false) + '</strong> more';
                         }
 
                         $html += ' days in the funnel with</p>' +
@@ -911,20 +916,20 @@
                         
                         var revenueValue = parseFloat(data.Revenue);
                         if (revenueValue < 0) {
-                            $html += '' + revenueValue;
+                            $html += '-' + FormatCurrency(Math.abs(revenueValue).toString(), false);
                         }
                         else {
-                            $html += '' + revenueValue;
+                            $html += '' + FormatCurrency(revenueValue.toString(), false);
                         }
 
                         $html += '<br> on ';
                         
                         var costValue = parseFloat(data.Cost);
                         if (costValue < 0) {
-                            $html += costValue + ' decresed';
+                            $html += FormatCurrency(Math.abs(costValue).toString(), false) + ' decresed';
                         }
                         else {
-                            $html += costValue + ' incresed';
+                            $html += FormatCurrency(costValue.toString(), false) + ' incresed';
                         }
 
                         $html += ' spend.</p>';

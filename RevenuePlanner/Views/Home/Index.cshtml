@@ -237,7 +237,7 @@
         <div class="accordion-group source-sans-proregular">
             <div class="accordion-heading">
                 <a href="#DivAccordionMarketingActivities" data-parent="marketing-activities" data-toggle="collapse" class="accordion-toggle item-741f98 collapsed">
-                    <div class="cf source-sans-probold">Marketing Activities</div>
+                    <div class="cf source-sans-prosemibold">Marketing Activities</div>
                 </a>
             </div>
             <div class="accordion-body in collapse" id="DivAccordionMarketingActivities">
@@ -252,7 +252,7 @@
         <div class="accordion-group source-sans-proregular">
             <div class="accordion-heading">
                 <a href="#DivAccordionImprovementActivities" data-parent="improvements" data-toggle="collapse" class="accordion-toggle item-741f98 collapsed">
-                    <div class="cf source-sans-probold">Improvements</div>
+                    <div class="cf source-sans-prosemibold">Improvements</div>
                 </a>
             </div>
             <div class="accordion-body collapse" id="DivAccordionImprovementActivities">
@@ -1792,6 +1792,33 @@ function GetHealderData(intplanid) {
                     }
                     else if (index == "costLabel") {
                         $("#pcostLabel").html(obj);
+                    }
+                    else if (index == "PercentageMQLImproved") {
+                        /// Added By: Maninder Singh Wadhva
+                        /// Addressed PL Ticket: 37,38,47,49
+
+                        var pMQLImproved = $("#pMQLImproved");
+                        pMQLImproved.removeClass("greenfont");
+                        pMQLImproved.removeClass("redfont");
+
+                        var divBullhornbg = $('#DivBullhornbg');
+                        divBullhornbg.removeClass("bullhorn-bg-disabled");
+                        divBullhornbg.removeClass("bullhorn-bg");
+                        if (obj != null) {
+                            divBullhornbg.addClass("bullhorn-bg");
+                            if (obj < 0) {
+                                pMQLImproved.html(FormatNumber(obj, true))
+                                pMQLImproved.addClass("redfont");
+                            }
+                            else {
+                                pMQLImproved.html("+" + FormatNumber(obj, true))
+                                pMQLImproved.addClass("greenfont");
+                            }
+                        }
+                        else {
+                            divBullhornbg.addClass("bullhorn-bg-disabled");
+                            pMQLImproved.html('---');
+                        }
                     }
 
                 });

@@ -1,26 +1,26 @@
 ﻿<div style="height: 335px; overflow-y: scroll;">
-<table class="table source-sans-probold impact" id="Improvementaccordion">
-    <thead>
-        <tr class="height25">
-            <th class="source-sans-proregular font908D88">Improvement</th>
-            <th class="source-sans-proregular font908D88 text-align-right">Type</th>
-            <th class="source-sans-proregular font908D88 text-align-right">Baseline Value</th>
-            <th class="source-sans-proregular font908D88 text-align-right">Plan Without Tactic</th>
-            <th class="source-sans-proregular font908D88 text-align-right">Plan With Tactic</th>
-        </tr>
-    </thead>
-    <tbody>
-        @*// load Code here*@
-    </tbody>
-</table>
-    </div>
+    <table class="table source-sans-probold impact" id="Improvementaccordion">
+        <thead>
+            <tr class="height25">
+                <th class="source-sans-proregular font908D88">Improvement</th>
+                <th class="source-sans-proregular font908D88 text-align-right">Type</th>
+                <th class="source-sans-proregular font908D88 text-align-right">Baseline Value</th>
+                <th class="source-sans-proregular font908D88 text-align-right">Plan Without Tactic</th>
+                <th class="source-sans-proregular font908D88 text-align-right">Plan With Tactic</th>
+            </tr>
+        </thead>
+        <tbody>
+            @*// load Code here*@
+        </tbody>
+    </table>
+</div>
 <div style="float: right; margin-top: 25px;">
-<div class="cf ">
-					                        <div class="btn-container without-border-top pull-left">                     
-					                            <button class="btn btn-blue text-shadow-blue source-sans-proregular share-tactic-icon button-inspect-result-modal pull-right" type="button"><span class="flag-icon"></span>Share Tactic</button>
-					                            </div>
+    <div class="cf ">
+        <div class="btn-container without-border-top pull-left">
+            @*					                            <button class="btn btn-blue text-shadow-blue source-sans-proregular share-tactic-icon button-inspect-result-modal pull-right" type="button"><span class="flag-icon"></span>Share Tactic</button>*@
+        </div>
     </div>
-    </div>
+</div>
 <script>
     var ImprovementStages = null;
     $(document).ready(function () {
@@ -60,12 +60,12 @@
             }
         }
 
-            function addRowImprovementStagesTactic(_index, _MetricCode, _MetricName, _MetricType, _BaseLineRate, _PlanWithoutTactic, _PlanWithTactic) {
-                var $html = '';
+        function addRowImprovementStagesTactic(_index, _MetricCode, _MetricName, _MetricType, _BaseLineRate, _PlanWithoutTactic, _PlanWithTactic) {
+            var $html = '';
 
-                $html += '<tr>';
-                var classForIcon = 1;
-                if (_MetricType == "@RevenuePlanner.Helpers.Enums.MetricType.CR.ToString()") {
+            $html += '<tr>';
+            var classForIcon = 1;
+            if (_MetricType == "@RevenuePlanner.Helpers.Enums.MetricType.CR.ToString()") {
                     classForIcon = 1
                 }
                 else if (_MetricType == "@RevenuePlanner.Helpers.Enums.MetricType.SV.ToString()") {
