@@ -3,7 +3,7 @@
     var campaign = (RevenuePlanner.Models.InspectModel)ViewBag.CampaignDetail;
 }
 
-@using (Html.BeginForm("SaveTactic", "Inspect", FormMethod.Post, new { @name = "SaveTacticForm" }))
+@using (Html.BeginForm())
 {
     @Html.HiddenFor(model => model.PlanCampaignId)
     <div class="span7" id="inspect-modal-right-div">
@@ -51,4 +51,9 @@
     <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular gear-icon button-inspect-review-modal pull-right"
         id="button-review-tactic" name="button-save" value="Review Tactic" style="display: none;"></input>
 }
-
+<script type="text/javascript">
+    $(document).ready(
+      function () {
+          $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+      });
+</script>

@@ -3,7 +3,7 @@
     var program = (RevenuePlanner.Models.InspectModel)ViewBag.ProgramDetail;
 }
 
-@using (Html.BeginForm("SaveTactic", "Inspect", FormMethod.Post, new { @name = "SaveTacticForm" }))
+@using (Html.BeginForm())
 {
     @Html.HiddenFor(model => model.PlanProgramId)
     <div class="span7" id="inspect-modal-right-div">
@@ -53,83 +53,9 @@
     <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular gear-icon button-inspect-review-modal pull-right"
         id="button-review-tactic" name="button-save" value="Review Tactic" style="display: none;"></input>
 }
-
-@*<script type="text/javascript">
+<script type="text/javascript">
     $(document).ready(
       function () {
-          // Click of Camaign Dropdown Event Change , Fill Data Of Program Dropdown using Json
-          $('#ddlCampaign').change(function () {
-              var CampaignId = $(this).val();
-              $.ajax({
-                  type: 'POST',
-                  url: '@Url.Content("~/Home/LoadProgram")',
-                  data: { campaignId: CampaignId },
-                  success: function (data) {
-                      $("#ddlProgram").empty();
-                      $("#ddlProgram").append("<option value='Please Select'>Please Select</option>");
-                      $.each(data, function (index, optionData) {
-                          $("#ddlProgram").append("<option value='" + optionData.PlanProgramId + "'>" + optionData.Title + "</option>");
-                      });
-                  },
-                  error: function () {
-                      $("#ddlProgram").empty();
-                      $("#ddlProgram").append("<option value='Please Select'>Please Select</option>");
-                  }
-              });
-          });
-
           $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-
-          // Click On Button in Setup Tab check validation of Empty field, Dropdown Value Selected or Not & Date Format
-          $("#button-review-tactic").click(function () {
-              var isError = true;
-              $('.nl-field').each(function () {
-                  var isvalidate = true;
-                  if ($(this).next().attr('datadefault') == 'date') {
-                      var sdate = $(this).children('a').text().trim();
-                      isvalidate = isDate(sdate);
-                  }
-
-                  if ($(this).children('a').text() == '' || $(this).children('a').text() == 'Please Select' || isvalidate == false) {
-                      $(this).children('a').addClass("error-form");
-                      isError = false;
-                  }
-                  else {
-                      $(this).children('a').removeClass("error-form");
-                  }
-              });
-
-              // Display Error Message Div Panel
-              if (isError == false) {
-                  $("#errorMessage").css("display", "block");    // Show the Alert
-                  $("#spanMessageError").empty();
-                  $("#spanMessageError").text("Make sure all fields are filled and try again.");
-              }
-              else {
-                  $("#errorMessage").css("display", "none");
-              }
-              $("#txtCost").val(ReplaceCC($("#txtCost").val()));
-              // There is validate form Than Save Tactic Details
-              if (isError) {
-                  $.ajax({
-                      type: 'POST',
-                      url: '@Url.Content("~/Home/SaveTactic")',
-                      data: $("form[name=SaveTacticForm]").serialize(),
-                      success: function (data) {
-                          if (data != 'undefined') {
-                              loadInspectPopup(data.id, "tactic", data.TabValue);
-                          }
-                      },
-                      error: function () {
-                          alert('error');
-                      }
-                  });
-              }
-
-              return isError;
-          });
-
-          
-
       });
-</script>*@
+</script>

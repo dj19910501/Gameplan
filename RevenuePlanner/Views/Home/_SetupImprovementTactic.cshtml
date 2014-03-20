@@ -3,7 +3,7 @@
     var tactic = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
 }
 
-@using (Html.BeginForm("SaveTactic", "Inspect", FormMethod.Post, new { @name = "SaveTacticForm" }))
+@using (Html.BeginForm())
 {
     @Html.HiddenFor(model => model.PlanTacticId)
     <div class="span7" id="inspect-modal-right-div">

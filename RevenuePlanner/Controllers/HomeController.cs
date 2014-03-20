@@ -1573,29 +1573,6 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Setup Tab.</returns>
         public ActionResult LoadSetup(int id)
         {
-            // Dropdown for Tactic type
-            //ViewBag.TacticType = db.TacticTypes.Where(tactic => tactic.IsDeleted == false);
-            ViewBag.TacticType = from t in db.TacticTypes
-                                 join p in db.Plans on t.ModelId equals p.ModelId
-                                 where p.PlanId == Sessions.PlanId
-                                 select t;
-            // Dropdown for Verticals
-            // ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false);
-            /* clientID add by Nirav shah on 15 jan 2014 for get verical by client wise*/
-            ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
-
-            // Default Value list of Status Of tactic
-            IEnumerable<SelectListItem> statusList = new[]
-            {
-                new SelectListItem {  Value= Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(), Text = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString()  }, 
-                new SelectListItem {  Value= Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString(), Text = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()  }, 
-                new SelectListItem {  Value= Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString(), Text = Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()  }, 
-                new SelectListItem {  Value= Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString(), Text = Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()  }, 
-                new SelectListItem {  Value= Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString(), Text = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString()  }, 
-                new SelectListItem {  Value= Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString(), Text = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString()  }, 
-            };
-            ViewBag.StatusList = statusList;
-
             InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower());
             List<Guid> userListId = new List<Guid>();
             userListId.Add(im.OwnerId);
@@ -1618,33 +1595,8 @@ namespace RevenuePlanner.Controllers
             im.Owner = (userName.FirstName + " " + userName.LastName).ToString();
             ViewBag.TacticDetail = im;
 
-            var businessunittitle = (from bun in db.BusinessUnits
-                                     where bun.BusinessUnitId == im.BusinessUnitId
-                                     select bun.Title).FirstOrDefault();
-            ViewBag.BudinessUnitTitle = businessunittitle.ToString();
-            //if (im.Status.ToLower() != "Approved".ToLower())
-            //{
-            //    int planId = (from pcpt in db.Plan_Campaign_Program_Tactic
-            //                  join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
-            //                  join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-            //                  where pcpt.PlanTacticId == id
-            //                  select pc.PlanId).FirstOrDefault();
-            //    //ViewBag.ApprovedStatus = false;
-            //    ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false);
-            //    ViewBag.Campaign = db.Plan_Campaign.Where(c => c.PlanId == planId);
-            //    ViewBag.Program = from pcp in db.Plan_Campaign_Program
-            //                      join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-            //                      where pc.PlanId == planId
-            //                      select pcp;
-            //}
-            //else
-            {
-                ViewBag.ApprovedStatus = true;
-                var audiencetitle = (from au in db.Audiences
-                                     where au.AudienceId == im.AudienceId
-                                     select au.Title).FirstOrDefault();
-                ViewBag.Audience = audiencetitle.ToString();
-            }
+            ViewBag.BudinessUnitTitle = db.BusinessUnits.Where(b => b.BusinessUnitId == im.BusinessUnitId).Select(b => b.Title).SingleOrDefault();
+            ViewBag.Audience = db.Audiences.Where(a => a.AudienceId == im.AudienceId).Select(a => a.Title).SingleOrDefault();
 
             return PartialView("SetUp", im);
         }
@@ -2509,6 +2461,211 @@ namespace RevenuePlanner.Controllers
             return Json(new { id = 0 });
         }
 
+        /// <summary>
+        /// Added By: Kunal.
+        /// Action to Load Program Setup Tab.
+        /// </summary>
+        /// <param name="id">Plan Program Id.</param>
+        /// <returns>Returns Partial View Of Setup Tab.</returns>
+        public ActionResult LoadSetupProgram(int id)
+        {
+            InspectModel im = GetInspectModel(id, "program");
+            List<Guid> userListId = new List<Guid>();
+            userListId.Add(im.OwnerId);
+            User userName = new User();
+            try
+            {
+                userName = objBDSUserRepository.GetTeamMemberDetails(im.OwnerId, Sessions.ApplicationId);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
+            }
+            im.Owner = (userName.FirstName + " " + userName.LastName).ToString();
+            ViewBag.ProgramDetail = im;
+            ViewBag.BudinessUnitTitle = db.BusinessUnits.Where(b => b.BusinessUnitId == im.BusinessUnitId).Select(b => b.Title).SingleOrDefault();
+            ViewBag.Audience = db.Audiences.Where(a => a.AudienceId == im.AudienceId).Select(a => a.Title).SingleOrDefault();
+
+            return PartialView("_SetupProgram", im);
+        }
+
+        /// <summary>
+        /// Added By: Kunal.
+        /// Action to Load Program Review Tab.
+        /// </summary>
+        /// <param name="id">Plan Program Id.</param>
+        /// <returns>Returns Partial View Of Review Tab.</returns>
+        public ActionResult LoadReviewProgram(int id)
+        {
+            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Program).ToLower());
+            var tacticComment = (from tc in db.Plan_Campaign_Program_Tactic_Comment
+                                 where tc.PlanProgramId == id && tc.PlanProgramId.HasValue
+                                 select tc).ToArray();
+            List<Guid> userListId = new List<Guid>();
+            userListId = (from ta in tacticComment select ta.CreatedBy).ToList<Guid>();
+            userListId.Add(im.OwnerId);
+            string userList = string.Join(",", userListId.Select(s => s.ToString()).ToArray());
+            List<User> userName = new List<User>();
+
+            try
+            {
+                userName = objBDSUserRepository.GetMultipleTeamMemberDetails(userList, Sessions.ApplicationId);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
+            }
+
+            ViewBag.ReviewModel = (from tc in tacticComment
+                                   where (tc.PlanProgramId.HasValue)
+                                   select new InspectReviewModel
+                                   {
+                                       PlanProgramId = Convert.ToInt32(tc.PlanProgramId),
+                                       Comment = tc.Comment,
+                                       CommentDate = tc.CreatedDate,
+                                       CommentedBy = userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.FirstName).FirstOrDefault() + " " + userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.LastName).FirstOrDefault(),
+                                       CreatedBy = tc.CreatedBy
+                                   }).ToList();
+
+            var ownername = (from u in userName
+                             where u.UserId == im.OwnerId
+                             select u.FirstName + " " + u.LastName).FirstOrDefault();
+            if (ownername != null)
+            {
+                im.Owner = ownername.ToString();
+            }
+            ViewBag.ProgramDetail = im;
+
+            var businessunittitle = (from bun in db.BusinessUnits
+                                     where bun.BusinessUnitId == im.BusinessUnitId
+                                     select bun.Title).FirstOrDefault();
+            ViewBag.BudinessUnitTitle = businessunittitle.ToString();
+            bool isValidUser = false;
+            if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
+            {
+                if (im.OwnerId != Sessions.User.UserId) isValidUser = true;
+            }
+            ViewBag.IsValidUser = isValidUser;
+            return PartialView("_ReviewProgram");
+        }
+
+        /// <summary>
+        /// Added By: Kunal.
+        /// Action to Load Campaign Setup Tab.
+        /// </summary>
+        /// <param name="id">Plan Campaign Id.</param>
+        /// <returns>Returns Partial View Of Setup Tab.</returns>
+        public ActionResult LoadSetupCampaign(int id)
+        {
+
+            InspectModel im = GetInspectModel(id, "campaign");
+            List<Guid> userListId = new List<Guid>();
+            userListId.Add(im.OwnerId);
+            User userName = new User();
+            try
+            {
+                userName = objBDSUserRepository.GetTeamMemberDetails(im.OwnerId, Sessions.ApplicationId);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
+            }
+            im.Owner = (userName.FirstName + " " + userName.LastName).ToString();
+            ViewBag.CampaignDetail = im;
+            ViewBag.BudinessUnitTitle = db.BusinessUnits.Where(b => b.BusinessUnitId == im.BusinessUnitId).Select(b => b.Title).SingleOrDefault();
+            ViewBag.Audience = db.Audiences.Where(a => a.AudienceId == im.AudienceId).Select(a => a.Title).SingleOrDefault();
+
+            return PartialView("_SetupCampaign", im);
+        }
+
+        /// <summary>
+        /// Added By: Kunal.
+        /// Action to Load Campaign Review Tab.
+        /// </summary>
+        /// <param name="id">Plan Campaign Id.</param>
+        /// <returns>Returns Partial View Of Review Tab.</returns>
+        public ActionResult LoadReviewCampaign(int id)
+        {
+            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Campaign).ToLower());
+            var tacticComment = (from tc in db.Plan_Campaign_Program_Tactic_Comment
+                                 where tc.PlanCampaignId == id && tc.PlanCampaignId.HasValue
+                                 select tc).ToArray();
+            List<Guid> userListId = new List<Guid>();
+            userListId = (from ta in tacticComment select ta.CreatedBy).ToList<Guid>();
+            userListId.Add(im.OwnerId);
+            string userList = string.Join(",", userListId.Select(s => s.ToString()).ToArray());
+            List<User> userName = new List<User>();
+
+            try
+            {
+                userName = objBDSUserRepository.GetMultipleTeamMemberDetails(userList, Sessions.ApplicationId);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
+            }
+
+            ViewBag.ReviewModel = (from tc in tacticComment
+                                   where (tc.PlanCampaignId.HasValue)
+                                   select new InspectReviewModel
+                                   {
+                                       PlanCampaignId = Convert.ToInt32(tc.PlanCampaignId),
+                                       Comment = tc.Comment,
+                                       CommentDate = tc.CreatedDate,
+                                       CommentedBy = userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.FirstName).FirstOrDefault() + " " + userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.LastName).FirstOrDefault(),
+                                       CreatedBy = tc.CreatedBy
+                                   }).ToList();
+
+            var ownername = (from u in userName
+                             where u.UserId == im.OwnerId
+                             select u.FirstName + " " + u.LastName).FirstOrDefault();
+            if (ownername != null)
+            {
+                im.Owner = ownername.ToString();
+            }
+            ViewBag.CampaignDetail = im;
+
+            var businessunittitle = (from bun in db.BusinessUnits
+                                     where bun.BusinessUnitId == im.BusinessUnitId
+                                     select bun.Title).FirstOrDefault();
+            ViewBag.BudinessUnitTitle = businessunittitle.ToString();
+            bool isValidUser = false;
+            if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
+            {
+                if (im.OwnerId != Sessions.User.UserId) isValidUser = true;
+            }
+            ViewBag.IsValidUser = isValidUser;
+            return PartialView("_ReviewCampaign");
+        }
+
         #endregion
 
         #region "Home-Zero"
@@ -2833,6 +2990,9 @@ namespace RevenuePlanner.Controllers
 
         }
         #endregion
+
+        #region "Get QuarterWisegraph"
+
         /// <summary>
         /// Function to generate activity graph quarter wise
         /// </summary>
@@ -2945,6 +3105,8 @@ namespace RevenuePlanner.Controllers
 
             return montharray;
         }
+
+        #endregion
 
         #region "Add Actual"
 
@@ -3248,275 +3410,6 @@ namespace RevenuePlanner.Controllers
         }
 
         #endregion
-
-
-        /// <summary>
-        /// Added By: Kunal.
-        /// Action to Load Program Setup Tab.
-        /// </summary>
-        /// <param name="id">Plan Program Id.</param>
-        /// <returns>Returns Partial View Of Setup Tab.</returns>
-        public ActionResult LoadSetupProgram(int id)
-        {
-
-            // Dropdown for Tactic type
-            //ViewBag.TacticType = db.TacticTypes.Where(tactic => tactic.IsDeleted == false);
-
-            // Dropdown for Verticals
-            // ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false);
-            /* clientID add by Nirav shah on 15 jan 2014 for get verical by client wise*/
-            ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
-
-            // Default Value list of Status Of tactic
-            IEnumerable<SelectListItem> statusList = new[]
-            {
-                new SelectListItem {  Value= Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(), Text = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString()  }, 
-                new SelectListItem {  Value= Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString(), Text = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()  }, 
-                new SelectListItem {  Value= Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString(), Text = Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()  }, 
-                new SelectListItem {  Value= Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString(), Text = Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()  }, 
-                new SelectListItem {  Value= Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString(), Text = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString()  }, 
-                new SelectListItem {  Value= Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString(), Text = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString()  }, 
-            };
-            ViewBag.StatusList = statusList;
-
-            InspectModel im = GetInspectModel(id, "program");
-            List<Guid> userListId = new List<Guid>();
-            userListId.Add(im.OwnerId);
-            User userName = new User();
-            try
-            {
-                userName = objBDSUserRepository.GetTeamMemberDetails(im.OwnerId, Sessions.ApplicationId);
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
-                }
-            }
-            im.Owner = (userName.FirstName + " " + userName.LastName).ToString();
-            ViewBag.ProgramDetail = im;
-
-            var businessunittitle = (from bun in db.BusinessUnits
-                                     where bun.BusinessUnitId == im.BusinessUnitId
-                                     select bun.Title).FirstOrDefault();
-            ViewBag.BudinessUnitTitle = businessunittitle.ToString();
-
-            ViewBag.ApprovedStatus = true;
-            var audiencetitle = (from au in db.Audiences
-                                 where au.AudienceId == im.AudienceId
-                                 select au.Title).FirstOrDefault();
-            ViewBag.Audience = audiencetitle.ToString();
-
-
-            return PartialView("_SetupProgram", im);
-        }
-
-
-        /// <summary>
-        /// Added By: Kunal.
-        /// Action to Load Program Review Tab.
-        /// </summary>
-        /// <param name="id">Plan Program Id.</param>
-        /// <returns>Returns Partial View Of Review Tab.</returns>
-        public ActionResult LoadReviewProgram(int id)
-        {
-            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Program).ToLower());
-            var tacticComment = (from tc in db.Plan_Campaign_Program_Tactic_Comment
-                                 where tc.PlanProgramId == id && tc.PlanProgramId.HasValue
-                                 select tc).ToArray();
-            List<Guid> userListId = new List<Guid>();
-            userListId = (from ta in tacticComment select ta.CreatedBy).ToList<Guid>();
-            userListId.Add(im.OwnerId);
-            string userList = string.Join(",", userListId.Select(s => s.ToString()).ToArray());
-            List<User> userName = new List<User>();
-
-            try
-            {
-                userName = objBDSUserRepository.GetMultipleTeamMemberDetails(userList, Sessions.ApplicationId);
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
-                }
-            }
-
-            ViewBag.ReviewModel = (from tc in tacticComment
-                                   where (tc.PlanProgramId.HasValue)
-                                   select new InspectReviewModel
-                                   {
-                                       PlanProgramId = Convert.ToInt32(tc.PlanProgramId),
-                                       Comment = tc.Comment,
-                                       CommentDate = tc.CreatedDate,
-                                       CommentedBy = userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.FirstName).FirstOrDefault() + " " + userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.LastName).FirstOrDefault(),
-                                       CreatedBy = tc.CreatedBy
-                                   }).ToList();
-
-            var ownername = (from u in userName
-                             where u.UserId == im.OwnerId
-                             select u.FirstName + " " + u.LastName).FirstOrDefault();
-            if (ownername != null)
-            {
-                im.Owner = ownername.ToString();
-            }
-            ViewBag.ProgramDetail = im;
-
-            var businessunittitle = (from bun in db.BusinessUnits
-                                     where bun.BusinessUnitId == im.BusinessUnitId
-                                     select bun.Title).FirstOrDefault();
-            ViewBag.BudinessUnitTitle = businessunittitle.ToString();
-            bool isValidUser = false;
-            if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
-            {
-                if (im.OwnerId != Sessions.User.UserId) isValidUser = true;
-            }
-            ViewBag.IsValidUser = isValidUser;
-            return PartialView("_ReviewProgram");
-        }
-
-        /// <summary>
-        /// Added By: Kunal.
-        /// Action to Load Campaign Setup Tab.
-        /// </summary>
-        /// <param name="id">Plan Campaign Id.</param>
-        /// <returns>Returns Partial View Of Setup Tab.</returns>
-        public ActionResult LoadSetupCampaign(int id)
-        {
-
-            // Dropdown for Tactic type
-            //ViewBag.TacticType = db.TacticTypes.Where(tactic => tactic.IsDeleted == false);
-
-            // Dropdown for Verticals
-            // ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false);
-            /* clientID add by Nirav shah on 15 jan 2014 for get verical by client wise*/
-            ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
-
-            // Default Value list of Status Of tactic
-            IEnumerable<SelectListItem> statusList = new[]
-            {
-                new SelectListItem {  Value= Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(), Text = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString()  }, 
-                new SelectListItem {  Value= Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString(), Text = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()  }, 
-                new SelectListItem {  Value= Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString(), Text = Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()  }, 
-                new SelectListItem {  Value= Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString(), Text = Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()  }, 
-                new SelectListItem {  Value= Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString(), Text = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString()  }, 
-                new SelectListItem {  Value= Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString(), Text = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString()  }, 
-            };
-            ViewBag.StatusList = statusList;
-
-            InspectModel im = GetInspectModel(id, "campaign");
-            List<Guid> userListId = new List<Guid>();
-            userListId.Add(im.OwnerId);
-            User userName = new User();
-            try
-            {
-                userName = objBDSUserRepository.GetTeamMemberDetails(im.OwnerId, Sessions.ApplicationId);
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
-                }
-            }
-            im.Owner = (userName.FirstName + " " + userName.LastName).ToString();
-            ViewBag.CampaignDetail = im;
-
-            var businessunittitle = (from bun in db.BusinessUnits
-                                     where bun.BusinessUnitId == im.BusinessUnitId
-                                     select bun.Title).FirstOrDefault();
-            ViewBag.BudinessUnitTitle = businessunittitle.ToString();
-
-            ViewBag.ApprovedStatus = true;
-            var audiencetitle = (from au in db.Audiences
-                                 where au.AudienceId == im.AudienceId
-                                 select au.Title).FirstOrDefault();
-            ViewBag.Audience = audiencetitle.ToString();
-
-
-            return PartialView("_SetupCampaign", im);
-        }
-
-
-        /// <summary>
-        /// Added By: Kunal.
-        /// Action to Load Campaign Review Tab.
-        /// </summary>
-        /// <param name="id">Plan Campaign Id.</param>
-        /// <returns>Returns Partial View Of Review Tab.</returns>
-        public ActionResult LoadReviewCampaign(int id)
-        {
-            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Campaign).ToLower());
-            var tacticComment = (from tc in db.Plan_Campaign_Program_Tactic_Comment
-                                 where tc.PlanCampaignId == id && tc.PlanCampaignId.HasValue
-                                 select tc).ToArray();
-            List<Guid> userListId = new List<Guid>();
-            userListId = (from ta in tacticComment select ta.CreatedBy).ToList<Guid>();
-            userListId.Add(im.OwnerId);
-            string userList = string.Join(",", userListId.Select(s => s.ToString()).ToArray());
-            List<User> userName = new List<User>();
-
-            try
-            {
-                userName = objBDSUserRepository.GetMultipleTeamMemberDetails(userList, Sessions.ApplicationId);
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
-                }
-            }
-
-            ViewBag.ReviewModel = (from tc in tacticComment
-                                   where (tc.PlanCampaignId.HasValue)
-                                   select new InspectReviewModel
-                                   {
-                                       PlanCampaignId = Convert.ToInt32(tc.PlanCampaignId),
-                                       Comment = tc.Comment,
-                                       CommentDate = tc.CreatedDate,
-                                       CommentedBy = userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.FirstName).FirstOrDefault() + " " + userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.LastName).FirstOrDefault(),
-                                       CreatedBy = tc.CreatedBy
-                                   }).ToList();
-
-            var ownername = (from u in userName
-                             where u.UserId == im.OwnerId
-                             select u.FirstName + " " + u.LastName).FirstOrDefault();
-            if (ownername != null)
-            {
-                im.Owner = ownername.ToString();
-            }
-            ViewBag.CampaignDetail = im;
-
-            var businessunittitle = (from bun in db.BusinessUnits
-                                     where bun.BusinessUnitId == im.BusinessUnitId
-                                     select bun.Title).FirstOrDefault();
-            ViewBag.BudinessUnitTitle = businessunittitle.ToString();
-            bool isValidUser = false;
-            if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
-            {
-                if (im.OwnerId != Sessions.User.UserId) isValidUser = true;
-            }
-            ViewBag.IsValidUser = isValidUser;
-            return PartialView("_ReviewCampaign");
-        }
 
         #region "Boost Method"
 
