@@ -85,14 +85,14 @@ namespace RevenuePlanner.Controllers
             {
                 var clientBusinessUnit = db.BusinessUnits.Where(b => b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
                 businessUnitIds = clientBusinessUnit.ToList();
-                //planmodel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId); //commented due to not used any where
+                planmodel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId); //commented due to not used any where
                 ViewBag.showBid = true;
             }
             else if (Sessions.IsDirector || Sessions.IsClientAdmin)
             {
                 var clientBusinessUnit = db.BusinessUnits.Where(b => b.ClientId.Equals(Sessions.User.ClientId) && b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
                 businessUnitIds = clientBusinessUnit.ToList();
-                //planmodel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId); //commented due to not used any where
+                planmodel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId); //commented due to not used any where
                 ViewBag.showBid = true;
             }
             else
