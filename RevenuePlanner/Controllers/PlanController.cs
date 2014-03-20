@@ -3382,6 +3382,15 @@ namespace RevenuePlanner.Controllers
             return PartialView("_DeleteImprovementTactic");
         }
 
+        /// <summary>
+        /// Get Container value for improvement tactic.
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetImprovementContainerValue()
+        {
+            return Json(new { MQL = -28, CW = -8, ADS = -8000, Velocity = -4, Revenue = -98138, Cost = -55000 }, JsonRequestBehavior.AllowGet);
+        }
+
         #endregion
     }
 }

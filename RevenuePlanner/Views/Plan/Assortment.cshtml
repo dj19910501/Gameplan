@@ -554,7 +554,12 @@
                 success: function (r) {
                     ImprovementTactic = r;
                     fillImprovementTacticTable();
-                    FillGrayImprovementContainer();
+                    if (typeof ImprovementTactic != 'undefined') {
+                        if (ImprovementTactic.length) {
+                            $("#grayImprovementContainer").css("display", "block");
+                            FillGrayImprovementContainer();
+                        }
+                    }
                      NumberFormatterTipsy(".tipsyclass", 9);
                     if ('@ViewBag.EditOjbect' == "ImprovementTactic" && '@ViewBag.TacticId' != 0) {
                         $("[id=divimpTactic][index=" + @ViewBag.TacticId + "]").click();
@@ -819,7 +824,7 @@
                                 '<div class="total pull-right width100px text-right tipsyclass">' + FormatCommas(programTotal.toString(), false) + '</div>' +
                                 '<div class="total pull-right width150px text-right tipsyclass">$' + FormatCommas(costTotal.toString(), false) + '</div>' +
                                 '<div class="total pull-right width100px text-right">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
-                                '<div class="gray-add-container" id="grayImprovementContainer">' +
+                                '<div class="gray-add-container" id="grayImprovementContainer" style="display:none;">' +
                                 //'<p class="text1">Executing these improvement tactics could deliver...</p>' +
                                 //'<p class="text2"><strong>28</strong> more MQLs yielding <strong>8</strong> more CWs,<br>' +
                                 //'<strong>$8,000</strong> larger Average Deal Size and<br>' +
@@ -858,16 +863,81 @@
         }
 
         function FillGrayImprovementContainer() {
-            var $html = '<p class="text1">Executing these improvement tactics could deliver...</p>' +
-            '<p class="text2"><strong>28</strong> more MQLs yielding <strong>8</strong> more CWs,<br>' +
-            '<strong>$8,000</strong> larger Average Deal Size and<br>' +
-            '<strong>4</strong> fewer days in the funnel with</p>' +
-            '<p class="text3">Net Revenue Impact of $98,138<br>' +
-            'on $55,000 incresed spend.</p>';
 
-            var $ContainerImprovement = $('#grayImprovementContainer');
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/GetImprovementContainerValue/")',
+                data: {
+                },
+                success: function (data) {
+                    if (typeof data != 'undefined') {
+                        alert(JSON.stringify(data));
+                        var $html = '<p class="text1">Executing these improvement tactics could deliver...</p>' +
+                            '<p class="text2"><strong>';
+                        var mqlValue = parseFloat(data.MQL);
+                        if (mqlValue < 0) {
+                            $html += mqlValue + '</strong> fewer';
+                        }
+                        else {
+                            $html += mqlValue + '</strong> more';
+                        }
+                        $html += ' MQLs yielding <strong>';
+                        var cwValue = parseFloat(data.CW);
+                        if (cwValue < 0) {
+                            $html += cwValue + '</strong> fewer';
+                        }
+                        else {
+                            $html += cwValue + '</strong> more';
+                        }
+                        $html += ' CWs,<br><strong>';
+                        var adsValue = parseFloat(data.ADS);
+                        if (adsValue < 0) {
+                            $html += adsValue + '</strong> smaller';
+                        }
+                        else {
+                            $html += adsValue + '</strong> larger';
+                        }
+                        $html += ' Average Deal Size and<br><strong>';
+                        var velocityValue = parseFloat(data.Velocity);
+                        if (velocityValue < 0) {
+                            $html += velocityValue + '</strong> fewer';
+                        }
+                        else {
+                            $html += velocityValue + '</strong> more';
+                        }
 
-            $ContainerImprovement.append($html);
+                        $html += ' days in the funnel with</p>' +
+                            '<p class="text3">Net Revenue Impact of ';
+                        
+                        var revenueValue = parseFloat(data.Revenue);
+                        if (revenueValue < 0) {
+                            $html += '' + revenueValue;
+                        }
+                        else {
+                            $html += '' + revenueValue;
+                        }
+
+                        $html += '<br> on ';
+                        
+                        var costValue = parseFloat(data.Cost);
+                        if (costValue < 0) {
+                            $html += costValue + ' decresed';
+                        }
+                        else {
+                            $html += costValue + ' incresed';
+                        }
+
+                        $html += ' spend.</p>';
+
+                        var $ContainerImprovement = $('#grayImprovementContainer');
+
+                        $ContainerImprovement.append($html);
+                    }
+
+                }
+            });
+
+            
         }
 
     });
