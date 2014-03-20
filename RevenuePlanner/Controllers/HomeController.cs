@@ -3556,6 +3556,7 @@ namespace RevenuePlanner.Controllers
                                      select bun.Title).FirstOrDefault();
             ViewBag.BudinessUnitTitle = businessunittitle.ToString();
              ViewBag.ApprovedStatus = true;
+             ViewBag.NoOfTacticBoosts = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && t.StartDate >= im.StartDate && t.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId).ToList().Count();
 
             return PartialView("_SetupImprovementTactic", im);
         }

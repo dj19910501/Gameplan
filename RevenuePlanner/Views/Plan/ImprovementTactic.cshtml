@@ -90,6 +90,8 @@
     }
 
 </div>
+
+<div id="divBackgroundInnerSidebar" class="modal-backdrop fade in" style="display: none"></div>
 <script type="text/javascript">
     var ImprovementStages = null;
     
@@ -223,32 +225,12 @@
 
 
         $("#deleteTactic").click(function () {
-            if (confirm('Are you sure you want to delete this tactic?')) {
-                var idTactic = $("#hdnPlanTacticId").val();
-                var isAssortment = $("#hdnRedirectType").val();
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Content("~/Plan/DeleteImprovementTactic")',
-                    data: {
-                        ID: idTactic,
-                        RedirectType: isAssortment
-                    },
-                    success: function (data) {
-                        if (data.redirect) {
-                            window.location.href = data.redirect;
-                            return;
-                        }
-                        if (data.errormsg) {
-                            alert(data.errormsg);
-                            return;
-                        }
-
-                    }
-                });
-            }
-            else {
-                return false;
-            }
+            var idTactic = $("#hdnPlanTacticId").val();
+            $("#DivPartialViewForDeleteImpTactic").empty();
+            var AssortmentType = false;
+            $("#divBackgroundInnerSidebar").css("display", "block");
+            var url = '@Url.Content("~/Plan/ShowDeleteImprovementTactic/")';
+            $("#DivPartialViewForDeleteImpTactic").load(url + '?id=' + idTactic + '&AssortmentType=' + AssortmentType + '&RedirectType=' + isAssortment);
         });
         function ShowError(value) {
             $("#errorMessage").slideDown(400);

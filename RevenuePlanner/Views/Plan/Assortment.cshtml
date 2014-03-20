@@ -114,7 +114,8 @@
     </div>
     <!--end accordion-->
 </div>
-<div class="light-blue-background close-icon margin5 padding15 padding-bottom0">
+<div class="stripe-border improvement-area margin5">
+<div class="light-blue-background close-icon  padding15 padding-bottom0">
     <div class="gray-title-steps source-sans-probold cf">
         <span class="pull-left width55">3.Improvement Activities</span>
         <span class="pull-right width100px text-right margin-right50">Programs</span>
@@ -135,9 +136,13 @@
     </div>
     <!--end accordion-->
 </div>
+    </div>
 <div class="padding-content">
     <button class="btn btn-blue btn-large text-shadow-blue source-sans-proregular pull-left font-size14" type="button" id="btnSaveAndContinue">Save & Continue</button>
 </div>
+<div id="DivPartialViewForDeleteImpTactic">
+</div>
+<div id="divBackground" class="modal-backdrop fade in" style="display: none"></div>
 @Html.Hidden("hdnMsg", (string)ViewBag.Msg, new { id = "hdnMsg" })
 @Html.Hidden("hdnisError", (bool)ViewBag.isError, new { id = "hdnisError" })
 <script type="text/javascript">
@@ -493,35 +498,12 @@
       
         // Added By Bhavesh for Delete Improvement Tactic: Date 13-March-2014
         $(document).on('click', '#divimpTactic #delimpTactic', function (e) {
-            if (confirm('Are you sure you want to delete this improvement tactic?')) {
-                e.stopPropagation();
-                var idTactic = $(this).parent().attr('index');
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Content("~/Plan/DeleteImprovementTactic")',
-                    data: {
-                        ID: idTactic,
-                        RedirectType: false
-                    },
-                    success: function (data) {
-                        if (data.redirect) {
-                            window.location.href = data.redirect;
-                            return;
-                        }
-                        if (data.errormsg) {
-                            alert(data.errormsg);
-                            return;
-                        }
-
-                    }
-                });
-                $("#slidepanel").css("display", "none");
-            }
-            else {
-                $("#slidepanel").css("display", "none");
-                e.stopPropagation();
-                return false;
-            }
+            var idTactic = $(this).parent().attr('index');
+            var AssortmentType = true;
+            $("#DivPartialViewForDeleteImpTactic").empty();
+            $("#divBackground").css("display", "block");
+            var url = '@Url.Content("~/Plan/ShowDeleteImprovementTactic/")';
+            $("#DivPartialViewForDeleteImpTactic").load(url + '?id=' + idTactic + '&AssortmentType=' + AssortmentType + '&RedirectType=' + false);
         });
 
         $.ajax({
@@ -572,6 +554,7 @@
                 success: function (r) {
                     ImprovementTactic = r;
                     fillImprovementTacticTable();
+                    FillGrayImprovementContainer();
                      NumberFormatterTipsy(".tipsyclass", 9);
                     if ('@ViewBag.EditOjbect' == "ImprovementTactic" && '@ViewBag.TacticId' != 0) {
                         $("[id=divimpTactic][index=" + @ViewBag.TacticId + "]").click();
@@ -592,13 +575,13 @@
             myApp.hidePleaseWait();
         });
 
-        $(document).on("click", "#divimpTactic", function (e) {
+        $(document).on("click", "#divimpTactic #divPanelImp", function (e) {
             e.stopPropagation();
             $.ajaxSetup({ cache: false });
-            var idTactic = $(this).attr("index");
+            var idTactic = $(this).parent().attr("index");
             $("#slidepanel").css("display", "block");
             if (idTactic == 0) {
-                var idProgram = $(this).attr('data-id-program');
+                var idProgram = $(this).parent().attr('data-id-program');
                 var url = '@Url.Content("~/Plan/CreateImprovementTactic")';
                 $('#slidepanel-container').load(url + '?id=' + idProgram, AssignDefaultValue);
             }
@@ -822,7 +805,7 @@
 
             $html += '<div class="accordion-header campaign-default">' +
                            '<a class="accordion-toggle" data-toggle="collapse" data-id-program="' + ImprovementPlanProgramId  + '" id="divimpTactic" index="0">' +
-                               '<span class="pull-left width55"><span class="pull-left font-black"></span><span class="font-black underline">Select Improvement Tactic</span></span>' +
+                               '<span class="pull-left width55" id="divPanelImp"><span class="pull-left font-black"></span><span class="font-black underline">Select Improvement Tactic</span></span>' +
                                '<span class="pull-right width50px"><div class="add-icon impTactic" data-slidepanel="panel"></div></span>' +
                                '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
                                '<span class="pull-right width150px text-right font-black tipsyclass">$' + 0 + '</span>' +
@@ -836,6 +819,14 @@
                                 '<div class="total pull-right width100px text-right tipsyclass">' + FormatCommas(programTotal.toString(), false) + '</div>' +
                                 '<div class="total pull-right width150px text-right tipsyclass">$' + FormatCommas(costTotal.toString(), false) + '</div>' +
                                 '<div class="total pull-right width100px text-right">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
+                                '<div class="gray-add-container" id="grayImprovementContainer">' +
+                                //'<p class="text1">Executing these improvement tactics could deliver...</p>' +
+                                //'<p class="text2"><strong>28</strong> more MQLs yielding <strong>8</strong> more CWs,<br>' +
+                                //'<strong>$8,000</strong> larger Average Deal Size and<br>' +
+                                //'<strong>4</strong> fewer days in the funnel with</p>' +
+                                //'<p class="text3">Net Revenue Impact of $98,138<br>' +
+                                //'on $55,000 incresed spend.</p>' +
+										                    '</div>' +
                             '</div>';
 
                 var $tableImprovementCampaigns = $('.accordion-campaign > #improvementAccordionGroup');
@@ -854,7 +845,7 @@
             if (_isOwner == 0) {
                 $html += '<span class="delete-program width5" id="delimpTactic"></span>';
             }
-            $html += '<span class="pull-left width55"><span class="pull-left font-black"></span><span class="font-black underline">' + _title + '</span></span>' +
+            $html += '<span class="pull-left width55" id="divPanelImp"><span class="pull-left font-black"></span><span class="font-black underline">' + _title + '</span></span>' +
                                 '<span class="pull-right width50px"><div class="add-icon impTactic" data-slidepanel="panel"></div></span>' +
                                 '<span class="pull-right width100px text-right font-black tipsyclass">&nbsp;</span>' +
                                 '<span class="pull-right width150px text-right font-black tipsyclass">$' + FormatCommas(_cost.toString(), false) + '</span>' +
@@ -866,6 +857,18 @@
 
         }
 
+        function FillGrayImprovementContainer() {
+            var $html = '<p class="text1">Executing these improvement tactics could deliver...</p>' +
+            '<p class="text2"><strong>28</strong> more MQLs yielding <strong>8</strong> more CWs,<br>' +
+            '<strong>$8,000</strong> larger Average Deal Size and<br>' +
+            '<strong>4</strong> fewer days in the funnel with</p>' +
+            '<p class="text3">Net Revenue Impact of $98,138<br>' +
+            'on $55,000 incresed spend.</p>';
+
+            var $ContainerImprovement = $('#grayImprovementContainer');
+
+            $ContainerImprovement.append($html);
+        }
 
     });
 </script>

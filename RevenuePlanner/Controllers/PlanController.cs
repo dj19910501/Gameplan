@@ -1011,7 +1011,17 @@ namespace RevenuePlanner.Controllers
             ViewBag.EditOjbect = EditObject;
             ViewBag.Msg = ismsg;
             ViewBag.isError = isError;
-            ViewBag.ImprovementPlanProgramId = db.Plan_Improvement_Campaign_Program.Where(p => p.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId).Select(p => p.ImprovementPlanProgramId).SingleOrDefault();
+            
+            int improvementProgramId = db.Plan_Improvement_Campaign_Program.Where(p => p.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId).Select(p => p.ImprovementPlanProgramId).SingleOrDefault();
+            if (improvementProgramId != 0)
+            {
+                ViewBag.ImprovementPlanProgramId = improvementProgramId;
+            }
+            else
+            {
+                CreatePlanImprovementCampaignAndProgram();
+                ViewBag.ImprovementPlanProgramId = db.Plan_Improvement_Campaign_Program.Where(p => p.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId).Select(p => p.ImprovementPlanProgramId).SingleOrDefault();
+            }
             return View("Assortment");
         }
 
@@ -3295,6 +3305,81 @@ namespace RevenuePlanner.Controllers
             }
 
             return improvementValue;
+        }
+
+        /// <summary>
+        /// Added By: Bhavesh Dobariya.
+        /// Action to Delete Improvement Tactic.
+        /// </summary>
+        /// <returns>Returns Partial View Of Delete Improvement Tactic.</returns>
+        public PartialViewResult ShowDeleteImprovementTactic(int id = 0, bool AssortmentType = false, bool RedirectType = false)
+        {
+            ViewBag.AssortmentType = AssortmentType;
+            ViewBag.ImprovementPlanTacticId = id;
+            ViewBag.RedirectType = RedirectType;
+            int ImprovementTacticTypeId = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.ImprovementPlanTacticId == id).Select(t => t.ImprovementTacticTypeId).SingleOrDefault();
+            DateTime EffectiveDate = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.ImprovementPlanTacticId == id).Select(t => t.EffectiveDate).SingleOrDefault();
+            List<ImprovementStage> ImprovementMetric = GetImprovementStages(id, ImprovementTacticTypeId, EffectiveDate);
+            string CR = Enums.MetricType.CR.ToString();
+            string SV = Enums.MetricType.SV.ToString();
+            double conversionRateHigher = ImprovementMetric.Where(im => im.MetricType == CR).Select(im => im.PlanWithTactic).Sum();
+            double conversionRateLower = ImprovementMetric.Where(im => im.MetricType == CR).Select(im => im.PlanWithoutTactic).Sum();
+
+            double stageVelocityHigher = ImprovementMetric.Where(im => im.MetricType == SV).Select(im => im.PlanWithTactic).Sum();
+            double stageVelocityLower = ImprovementMetric.Where(im => im.MetricType == SV).Select(im => im.PlanWithoutTactic).Sum();
+
+            string conversionUpDownString = string.Empty;
+            string velocityUpDownString = string.Empty;
+            string planNegativePositive = string.Empty;
+            string Decreases = "Decreases";
+            string Increases = "Increases";
+            string Negative = "negatively";
+            string Positive = "positively";
+            double ConversionValue = conversionRateHigher - conversionRateLower;
+            if (ConversionValue < 0)
+            {
+                conversionUpDownString = Increases;
+            }
+            else
+            {
+                conversionUpDownString = Decreases;
+            }
+
+            double VelocityValue = stageVelocityHigher - stageVelocityLower;
+            if (VelocityValue < 0)
+            {
+                velocityUpDownString = Increases;
+                planNegativePositive = Negative;
+            }
+            else
+            {
+                velocityUpDownString = Decreases;
+                planNegativePositive = Positive;
+            }
+
+            ViewBag.ConversionValue = Math.Abs(Math.Round(ConversionValue,2));
+            ViewBag.VelocityValue = Math.Abs(Math.Round(VelocityValue, 2));
+            ViewBag.ConversionUpDownString = conversionUpDownString;
+            ViewBag.VelocityUpDownString = velocityUpDownString;
+            ViewBag.NegativePositiveString = planNegativePositive;
+
+            int NoOfTactic = 0;
+            var ListOfLessEffectiveDate = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.ImprovementPlanTacticId != id && t.EffectiveDate <= EffectiveDate && t.IsDeleted == false && t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId).ToList();
+            if (ListOfLessEffectiveDate.Count() == 0)
+            {
+                var ListOfGreaterEffectiveDate = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.ImprovementPlanTacticId != id && t.IsDeleted == false && t.EffectiveDate >= EffectiveDate && t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId).Select(t => t).OrderBy(t => t.EffectiveDate).ToList();
+                if (ListOfGreaterEffectiveDate.Count() == 0)
+                {
+                    NoOfTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.StartDate >= EffectiveDate && t.IsDeleted == false && t.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId).ToList().Count();
+                }
+                else
+                {
+                    DateTime NextEffectiveDate = ListOfGreaterEffectiveDate.Min(l => l.EffectiveDate);
+                    NoOfTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.StartDate >= EffectiveDate && t.StartDate < NextEffectiveDate && t.IsDeleted == false && t.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId).ToList().Count();
+                }
+            }
+            ViewBag.NumberOfTactic = NoOfTactic;
+            return PartialView("_DeleteImprovementTactic");
         }
 
         #endregion

@@ -1,0 +1,67 @@
+﻿<div class="container-fluid all-height">
+     @Html.Hidden("hdnAssortmentType", (bool)ViewBag.AssortmentType, new { id = "hdnAssortmentType" })
+    @Html.Hidden("hdnImprovementPlanTacticId", (int)ViewBag.ImprovementPlanTacticId, new { id = "hdnImprovementPlanTacticId" })
+    @Html.Hidden("hdnRedirect", (bool)ViewBag.RedirectType, new { id = "hdnRedirectType" })
+    <div class="row-fluid calc-height">
+
+        <div class="span12">
+            <div id="modal-container-186470" class="form-inspect-delete-tactic fade in" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block">
+                <div class="login-wrapper source-sans-prosemibold">
+                        <h2 class="primary-title">Delete Tactic</h2>
+                        <p class="source-sans-prolight">Deleting this improvement tactic<br>
+                            will @ViewBag.NegativePositiveString affect your plan.</p>
+                        <p class="tactic-options">@ViewBag.NumberOfTactic Tactics Revert <span class="source-sans-prolight">to Baseline Yield</span></p>
+                        <p class="tactic-options">Conversion @ViewBag.ConversionUpDownString <span class="source-sans-prolight">by @ViewBag.ConversionValue %</span></p>
+                        <p class="tactic-options">Stage Velocity @ViewBag.VelocityUpDownString <span class="source-sans-prolight">by @ViewBag.VelocityValue  Day</span></p>
+                        <button id="btnDeleteImpTactic" class="btn btn-large">Yes, Delete Tactic</button>
+                        <button id="btnCancel" class="btn-large cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var AssortmentType = $("#hdnAssortmentType").val();
+        $("#btnCancel").click(function () {
+            if (AssortmentType == 'True') {
+                $("#divBackground").css("display", "none");
+                $("#DivPartialViewForDeleteImpTactic").empty();
+            }
+            else {
+                $("#divBackgroundInnerSidebar").css("display", "none");
+                $("#DivPartialViewForDeleteImpTactic").empty();
+            }
+        });
+
+        $("#btnDeleteImpTactic").click(function () {
+            var idTactic = $("#hdnImprovementPlanTacticId").val();
+              if (confirm('Are you sure you want to delete this improvement tactic?')) {
+                var isAssortment = $("#hdnRedirectType").val();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Plan/DeleteImprovementTactic")',
+                    data: {
+                        ID: idTactic,
+                        RedirectType: isAssortment
+                    },
+                    success: function (data) {
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                            return;
+                        }
+                        if (data.errormsg) {
+                            alert(data.errormsg);
+                            return;
+                        }
+
+                    }
+                });
+            }
+            else {
+                return false;
+            }
+        });
+    });
+
+</script>
