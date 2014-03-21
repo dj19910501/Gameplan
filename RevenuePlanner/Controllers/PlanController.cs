@@ -3132,7 +3132,7 @@ namespace RevenuePlanner.Controllers
                                                           select new { ImprovemetPlanTacticId = pit.ImprovementPlanTacticId, Weight = itm.Weight }).ToList();
 
                     //// Calculate Total ImprovementCount for PlanWithTactic
-                    TotalCountWithTactic += improvementCountWithTacticList.Count() > 0 ? 1 : 0;
+                    TotalCountWithTactic += improvementCountWithTacticList.Count();
 
                     //// Calculate Total ImprovementWeight for PlanWithTactic
                     TotalWeightWithTactic += improvementCountWithTacticList.Count() == 0 ? 0 : improvementCountWithTacticList.Sum(itl => itl.Weight);
