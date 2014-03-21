@@ -166,6 +166,33 @@
                         else if (index == "costLabel") {
                             $("#pcostLabel").html(obj);
                         }
+                        else if (index == "PercentageMQLImproved") {
+                            /// Added By: Maninder Singh Wadhva
+                            /// Addressed PL Ticket: 37,38,47,49
+
+                            var pMQLImproved = $("#pMQLImproved");
+                            pMQLImproved.removeClass("greenfont");
+                            pMQLImproved.removeClass("redfont");
+
+                            var divBullhornbg = $('#DivBullhornbg');
+                            divBullhornbg.removeClass("bullhorn-bg-disabled");
+                            divBullhornbg.removeClass("bullhorn-bg");
+                            if (obj != null) {
+                                divBullhornbg.addClass("bullhorn-bg");
+                                if (obj < 0) {
+                                    pMQLImproved.html(FormatNumber(obj, true))
+                                    pMQLImproved.addClass("redfont");
+                                }
+                                else {
+                                    pMQLImproved.html("+" + FormatNumber(obj, true))
+                                    pMQLImproved.addClass("greenfont");
+                                }
+                            }
+                            else {
+                                divBullhornbg.addClass("bullhorn-bg-disabled");
+                                pMQLImproved.html('---');
+                            }
+                        }
 
                     });
 

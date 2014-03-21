@@ -414,6 +414,7 @@
     <Content Include="Content\images\btn-login.jpg" />
     <Content Include="Content\images\bulldog-logo-old.png" />
     <Content Include="Content\images\bulldog-logo.png" />
+    <Content Include="Content\images\bullhorn-bg-disabled.png" />
     <Content Include="Content\images\bullhorn-bg.png" />
     <Content Include="Content\images\bullhorn-blue.png" />
     <Content Include="Content\images\bullhorn-flag-white.png" />

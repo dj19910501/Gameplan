@@ -451,7 +451,7 @@ INSERT [dbo].[Metric] ([MetricId], [MetricType], [MetricName], [MetricCode], [Cl
 GO
 INSERT [dbo].[Metric] ([MetricId], [MetricType], [MetricName], [MetricCode], [ClientId], [Level], [IsDeleted], [CreatedDate], [CreatedBy], [ModifiedDate], [ModifiedBy]) VALUES (3, N'CR', N'AQL->TAL', N'AQL', N'464eb808-ad1f-4481-9365-6aada15023bd', 3, 0, CAST(0x0000A2E600000000 AS DateTime), N'e5ef88eb-4748-4436-9acc-aba6b2c5f6a9', NULL, NULL)
 GO
-INSERT [dbo].[Metric] ([MetricId], [MetricType], [MetricName], [MetricCode], [ClientId], [Level], [IsDeleted], [CreatedDate], [CreatedBy], [ModifiedDate], [ModifiedBy]) VALUES (4, N'CR', N'TAL->TQL', N'TAL', N'464eb808-ad1f-4481-9365-6aada15023bd', 4, 0, CAST(0x0000A2E600000000 AS DateTime), N'e5ef88eb-4748-4436-9acc-aba6b2c5f6a9', NULL, NULL)
+INSERT [dbo].[Metric] ([MetricId], [MetricType], [MetricName], [MetricCode], [ClientId], [Level], [IsDeleted], [CreatedDate], [CreatedBy], [ModifiedDate], [ModifiedBy]) VALUES (4, N'CR', N'TAL->TQL', N'MQL', N'464eb808-ad1f-4481-9365-6aada15023bd', 4, 0, CAST(0x0000A2E600000000 AS DateTime), N'e5ef88eb-4748-4436-9acc-aba6b2c5f6a9', NULL, NULL)
 GO
 INSERT [dbo].[Metric] ([MetricId], [MetricType], [MetricName], [MetricCode], [ClientId], [Level], [IsDeleted], [CreatedDate], [CreatedBy], [ModifiedDate], [ModifiedBy]) VALUES (5, N'CR', N'TQL->SAL', N'TQL', N'464eb808-ad1f-4481-9365-6aada15023bd', 5, 0, CAST(0x0000A2E600000000 AS DateTime), N'e5ef88eb-4748-4436-9acc-aba6b2c5f6a9', NULL, NULL)
 GO
@@ -465,7 +465,7 @@ INSERT [dbo].[Metric] ([MetricId], [MetricType], [MetricName], [MetricCode], [Cl
 GO
 INSERT [dbo].[Metric] ([MetricId], [MetricType], [MetricName], [MetricCode], [ClientId], [Level], [IsDeleted], [CreatedDate], [CreatedBy], [ModifiedDate], [ModifiedBy]) VALUES (10, N'SV', N'AQL', N'AQL', N'464eb808-ad1f-4481-9365-6aada15023bd', 3, 0, CAST(0x0000A2E600000000 AS DateTime), N'e5ef88eb-4748-4436-9acc-aba6b2c5f6a9', NULL, NULL)
 GO
-INSERT [dbo].[Metric] ([MetricId], [MetricType], [MetricName], [MetricCode], [ClientId], [Level], [IsDeleted], [CreatedDate], [CreatedBy], [ModifiedDate], [ModifiedBy]) VALUES (11, N'SV', N'TAL', N'TAL', N'464eb808-ad1f-4481-9365-6aada15023bd', 4, 0, CAST(0x0000A2E600000000 AS DateTime), N'e5ef88eb-4748-4436-9acc-aba6b2c5f6a9', NULL, NULL)
+INSERT [dbo].[Metric] ([MetricId], [MetricType], [MetricName], [MetricCode], [ClientId], [Level], [IsDeleted], [CreatedDate], [CreatedBy], [ModifiedDate], [ModifiedBy]) VALUES (11, N'SV', N'TAL', N'MQL', N'464eb808-ad1f-4481-9365-6aada15023bd', 4, 0, CAST(0x0000A2E600000000 AS DateTime), N'e5ef88eb-4748-4436-9acc-aba6b2c5f6a9', NULL, NULL)
 GO
 INSERT [dbo].[Metric] ([MetricId], [MetricType], [MetricName], [MetricCode], [ClientId], [Level], [IsDeleted], [CreatedDate], [CreatedBy], [ModifiedDate], [ModifiedBy]) VALUES (12, N'SV', N'TQL', N'TQL', N'464eb808-ad1f-4481-9365-6aada15023bd', 5, 0, CAST(0x0000A2E600000000 AS DateTime), N'e5ef88eb-4748-4436-9acc-aba6b2c5f6a9', NULL, NULL)
 GO

@@ -420,14 +420,14 @@ namespace RevenuePlanner.Helpers
         // Section parameter added to decide to send SendNotificationMail for Tactic, Program or Campaign Section
         public static void SendNotificationMail(List<string> EmailIds, List<string> CollaboratorUserName, string TacticName, string PlanName, string Action, string Comment = "", string Section = "", int planTacticId = 0, int planId = 0, string URL = "")
         {
-            for (int i = 0; i <= EmailIds.Count-1; i++)
+            for (int i = 0; i <= EmailIds.Count - 1; i++)
             {
                 string emailBody = "";
                 MRPEntities db = new MRPEntities();
                 Notification notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(Action));
                 if (Section == Convert.ToString(Enums.Section.Tactic).ToLower())
                 {
-                    emailBody = notification.EmailContent.Replace("[NameToBeReplaced]",CollaboratorUserName.ElementAt(i)).Replace("[TacticNameToBeReplaced]", TacticName).Replace("[PlanNameToBeReplaced]", PlanName).Replace("[UserNameToBeReplaced]", Sessions.User.FirstName + " " + Sessions.User.LastName).Replace("[CommentToBeReplaced]", Comment);
+                    emailBody = notification.EmailContent.Replace("[NameToBeReplaced]", CollaboratorUserName.ElementAt(i)).Replace("[TacticNameToBeReplaced]", TacticName).Replace("[PlanNameToBeReplaced]", PlanName).Replace("[UserNameToBeReplaced]", Sessions.User.FirstName + " " + Sessions.User.LastName).Replace("[CommentToBeReplaced]", Comment);
                     emailBody = emailBody.Replace("[URL]", URL);
                 }
                 else if (Section == Convert.ToString(Enums.Section.Program).ToLower())
@@ -438,11 +438,11 @@ namespace RevenuePlanner.Helpers
                 {
                     emailBody = notification.EmailContent.Replace("[NameToBeReplaced]", CollaboratorUserName.ElementAt(i)).Replace("[CampaignNameToBeReplaced]", TacticName).Replace("[PlanNameToBeReplaced]", PlanName).Replace("[UserNameToBeReplaced]", Sessions.User.FirstName + " " + Sessions.User.LastName).Replace("[CommentToBeReplaced]", Comment);
                 }
-          else if (Section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
-            {
-                ////Modified By Maninder Singh Wadhva PL Ticket#47
-                emailBody = notification.EmailContent.Replace("[NameToBeReplaced]", CollaboratorUserName.ElementAt(i)).Replace("[ImprovementTacticNameToBeReplaced]", TacticName).Replace("[PlanNameToBeReplaced]", PlanName).Replace("[UserNameToBeReplaced]", Sessions.User.FirstName + " " + Sessions.User.LastName).Replace("[CommentToBeReplaced]", Comment);
-            }
+                else if (Section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                {
+                    ////Modified By Maninder Singh Wadhva PL Ticket#47
+                    emailBody = notification.EmailContent.Replace("[NameToBeReplaced]", CollaboratorUserName.ElementAt(i)).Replace("[ImprovementTacticNameToBeReplaced]", TacticName).Replace("[PlanNameToBeReplaced]", PlanName).Replace("[UserNameToBeReplaced]", Sessions.User.FirstName + " " + Sessions.User.LastName).Replace("[CommentToBeReplaced]", Comment);
+                }
                 string email = EmailIds.ElementAt(i);
                 string Username = CollaboratorUserName.ElementAt(i);
                 //Common.SendMailToMultipleUser(EmailIds, Common.FromMail, emailBody, notification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High));
@@ -576,8 +576,8 @@ namespace RevenuePlanner.Helpers
                     else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                     {
                         SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.CampaignApproved.ToString(), "", Convert.ToString(Enums.Section.Campaign).ToLower());
-                    } 
-else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                    }
+                    else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                     {
                         SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ImprovementTacticApproved.ToString(), "", Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
                     }
@@ -596,8 +596,8 @@ else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                     else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                     {
                         SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.CampaignDeclined.ToString(), "", Convert.ToString(Enums.Section.Campaign).ToLower());
-                    }	  
-else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                    }
+                    else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                     {
                         SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ImprovementTacticDeclined.ToString(), "", Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
                     }
@@ -608,8 +608,8 @@ else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                     var directorRoleCode = Enums.RoleCodes.D.ToString();
                     var lst_user = objBDSUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, Sessions.IsSystemAdmin);
                     var lst_director = lst_user.Where(ld => ld.RoleCode.Equals(directorRoleCode)).Select(l => l).ToList();
-                    foreach (var item in lst_director) 
-                    { 
+                    foreach (var item in lst_director)
+                    {
                         lst_CollaboratorEmail.Add(item.Email);
                         lst_CollaboratorUserName.Add(item.FirstName);
                     }
@@ -625,7 +625,7 @@ else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                     {
                         SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.CampaignSubmitted.ToString(), "", Convert.ToString(Enums.Section.Campaign).ToLower());
                     }
-else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                    else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                     {
                         SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.ImprovementTacticSubmitted.ToString(), "", Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
                     }
@@ -651,7 +651,7 @@ else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                         SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.CampaignCommentAdded.ToString(), comment, Convert.ToString(Enums.Section.Campaign).ToLower());
                     }
                 }
-else if (status.Equals(Enums.Custom_Notification.ImprovementTacticCommentAdded.ToString()) && iscomment)
+                else if (status.Equals(Enums.Custom_Notification.ImprovementTacticCommentAdded.ToString()) && iscomment)
                 {
                     if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                     {
@@ -1176,6 +1176,18 @@ else if (status.Equals(Enums.Custom_Notification.ImprovementTacticCommentAdded.T
                     objHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Cost.ToString()].ToString();
                 }
 
+                /// Added By: Maninder Singh Wadhva
+                /// Addressed PL Ticket: 37,38,47,49
+                //// Getting improved MQL.
+                double? improvedMQL = Common.CalculateImprovedMQL(planId, true);
+
+                //// Calculating percentage increase.
+                if (improvedMQL.HasValue && objHomePlanModelHeader.MQLs != 0)
+                {
+                    objHomePlanModelHeader.PercentageMQLImproved = ((improvedMQL - objHomePlanModelHeader.MQLs) / objHomePlanModelHeader.MQLs) * 100;
+                    objHomePlanModelHeader.MQLs = Convert.ToDouble(improvedMQL);
+                }
+
                 if (totalValue != null)
                 {
                     objHomePlanModelHeader.TacticCount = totalValue.Count();
@@ -1484,6 +1496,654 @@ else if (status.Equals(Enums.Custom_Notification.ImprovementTacticCommentAdded.T
             };
 
             return taskDataImprovementActivity;
+        }
+
+        /// <summary>
+        /// Function to calculate improved MQL.
+        /// Added By: Maninder Singh Wadhva
+        /// Addressed PL Ticket: 37,38,47,49
+        /// </summary>
+        /// <param name="planId">Current plan id.</param>
+        /// <returns>Returns calculated improved MQL.</returns>
+        public static double? CalculateImprovedMQL(int planId, bool isApporvedOnly)
+        {
+            MRPEntities db = new MRPEntities();
+
+            //// Getting list of status.
+            List<string> tacticStatus = Common.GetStatusListAfterApproved();
+
+            //// Getting list of approved, in-progress and completed marketing activites.
+            List<Plan_Campaign_Program_Tactic> marketingActivities = null;
+            List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = null;
+
+            if (isApporvedOnly)
+            {
+                marketingActivities = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(planId) &&
+                                                                                                                      t.IsDeleted == false &&
+                                                                                                                      tacticStatus.Contains(t.Status))
+                                                                     .Select(t => t)
+                                                                     .ToList();
+
+                //// Getting list of approved, in-progress and completed improvement activites.
+                improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(planId) && t.IsDeleted == false && tacticStatus.Contains(t.Status)).Select(t => t).ToList();
+            }
+            else
+            {
+                marketingActivities = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(planId) &&
+                                                                                                      t.IsDeleted == false)
+                                                     .Select(t => t)
+                                                     .ToList();
+
+                //// Getting list of improvement activites.
+                improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(planId) && t.IsDeleted == false).Select(t => t).ToList();
+            }
+
+
+
+
+            double? mql = null;
+
+            //// Checking whether marketing and improvement activities exist.
+            if (marketingActivities.Count() > 0 && improvementActivities.Count() > 0)
+            {
+                //// Getting MQL improved based on marketing and improvement activities.
+                mql = Common.GetImprovedMQL(planId, marketingActivities, improvementActivities);
+                return Convert.ToDouble(mql);
+            }
+
+            return mql;
+        }
+
+        /// <summary>
+        /// Function to calculate improved Projected revenue or Closed won.
+        /// Added By: Maninder Singh Wadhva
+        /// Addressed PL Ticket: 37,38,47,49
+        /// </summary>
+        /// <param name="planId">Current plan id.</param>
+        /// <param name="isProjectedRevenue">Flag to indicate whether to calculate projected revenue or closed won.</param>
+        /// <returns>Returns calculated projected revenue or closed won based on isProjectedReveneue flag.</returns>
+        public static double? CalculateImprovedProjectedRevenueOrCW(int planId, bool isProjectedRevenue)
+        {
+            MRPEntities db = new MRPEntities();
+
+            //// Getting list of marketing activites.
+            List<Plan_Campaign_Program_Tactic> marketingActivities = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(planId) && t.IsDeleted == false).Select(t => t).ToList();
+
+            //// Getting list of improvement activites.
+            List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(planId) && t.IsDeleted == false).Select(t => t).ToList();
+
+            double? improvedValue = null;
+
+            //// Checking whether marketing and improvement activities exist.
+            if (marketingActivities.Count() > 0 && improvementActivities.Count() > 0)
+            {
+                //// Getting Projected Reveneue or Closed Won improved based on marketing and improvement activities.
+                improvedValue = Common.GetImprovedProjectedRevenueOrCW(planId, marketingActivities, improvementActivities, isProjectedRevenue);
+                return Convert.ToDouble(improvedValue);
+            }
+
+            return improvedValue;
+        }
+
+        /// <summary>
+        /// Function to calculate improved deal size.
+        /// Added By: Maninder Singh Wadhva
+        /// Addressed PL Ticket: 37,38,47,49
+        /// </summary>
+        /// <param name="planId">Current plan id.</param>
+        /// <returns>Returns improved deal size.</returns>
+        public static double? CalculateImprovedDealSize(int planId)
+        {
+            MRPEntities db = new MRPEntities();
+
+            //// Getting list of improvement activites.
+            List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(planId) && t.IsDeleted == false).Select(t => t).ToList();
+
+            double? dealSize = null;
+
+            //// Checking whether improvement activities exist.
+            if (improvementActivities.Count() > 0)
+            {
+                //// Getting deal size improved based on improvement activities.
+                dealSize = Common.GetImprovedDealSize(planId, improvementActivities);
+                return Convert.ToDouble(dealSize);
+            }
+
+            return dealSize;
+        }
+
+        /// <summary>
+        /// Function to calculate improved velocity.
+        /// </summary>
+        /// <param name="planId">Current plan id.</param>
+        /// <returns>Returns improved velocity.</returns>
+        public static double? CalculateImprovedVelocity(int planId)
+        {
+            MRPEntities db = new MRPEntities();
+
+            //// Getting list of improvement activites.
+            List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(planId) && t.IsDeleted == false).Select(t => t).ToList();
+
+            double? velocity = null;
+
+            //// Checking whether improvement activities exist.
+            if (improvementActivities.Count() > 0)
+            {
+                //// Getting velocity improved based on improvement activities.
+                velocity = Common.GetImprovedVelocity(planId, improvementActivities);
+                return Convert.ToDouble(velocity);
+            }
+
+            return velocity;
+        }
+
+        /// <summary>
+        /// Function to get Improved MQL based on marketing activites and improvement activities.
+        /// Added By: Maninder Singh Wadhva
+        /// Addressed PL Ticket: 37,38,47,49
+        /// </summary>
+        /// <param name="marketingActivities">Marketing Activities.</param>
+        /// <param name="improvementActivities">Improvement Activities.</param>
+        /// <returns>Returns MQL value after applying improvement activities.</returns>
+        private static double GetImprovedMQL(int planId, List<Plan_Campaign_Program_Tactic> marketingActivities, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities)
+        {
+            MRPEntities db = new MRPEntities();
+
+            //// Sorting marketing activities based on start date.
+            marketingActivities = marketingActivities.OrderBy(tactic => tactic.StartDate).ToList();
+
+            //// Sorting improvement activities based on effective date.
+            improvementActivities = improvementActivities.OrderBy(improvementTactic => improvementTactic.EffectiveDate).ToList();
+
+            double improvedMQL = 0;
+            List<int> affectedMarketingActivityIds = new List<int>();
+
+            //// Iterating improvement activities.
+            foreach (var improvementActivity in improvementActivities)
+            {
+                //// Calculating Effective From and To date of current hypothetical model.
+                DateTime hypotheticalModelEffectiveDateFrom = improvementActivity.EffectiveDate;
+                int indexEffectiveTo = improvementActivities.FindIndex(improvementTactic => improvementTactic.EffectiveDate > hypotheticalModelEffectiveDateFrom);
+                DateTime? hypotheticalModelEffectiveDateTo = null;
+                if (indexEffectiveTo >= 0)
+                {
+                    hypotheticalModelEffectiveDateTo = improvementActivities[indexEffectiveTo].EffectiveDate;
+                }
+
+                //// Getting list of marketing activites getting affected as per Effective From and To date of current hypothetical model.
+                List<Plan_Campaign_Program_Tactic> affectedMarketingActivities = marketingActivities.Where(plantactic => (plantactic.StartDate >= hypotheticalModelEffectiveDateFrom && plantactic.StartDate < hypotheticalModelEffectiveDateTo) ||
+                                                                                                         (plantactic.StartDate >= hypotheticalModelEffectiveDateFrom && hypotheticalModelEffectiveDateTo == null)).ToList();
+
+                if (affectedMarketingActivities.Count() > 0)
+                {
+                    //// Adding to global variable which maintain list of marketing activities getting affected by current hypothetical model.
+                    affectedMarketingActivityIds.AddRange(affectedMarketingActivities.Select(tactic => tactic.PlanTacticId));
+
+                    //// Getting list of improvement activities which need to be considered for calculating hypothetical model.
+                    List<Plan_Improvement_Campaign_Program_Tactic> improvementActivitiesForHypotheticalModel = improvementActivities.Where(improvementTactic => improvementTactic.EffectiveDate <= hypotheticalModelEffectiveDateFrom)
+                                                                                                                                    .Select(improvementTactic => improvementTactic)
+                                                                                                                                    .ToList();
+
+                    //// Getting Model based on hypothetical model effective date From.
+                    //// Getting model based on plan id.
+                    int ModelId = db.Plans.Where(p => p.PlanId == planId).Select(p => p.ModelId).SingleOrDefault();
+                    //// Get Model id based on effective date From.
+                    ModelId = RevenuePlanner.Controllers.ReportController.GetModelId(hypotheticalModelEffectiveDateFrom, ModelId);
+                    //// Getting model.
+                    Model effectiveModel = db.Models.Single(model => model.ModelId.Equals(ModelId));
+
+                    //// Getting hypothetical model - conversion rate.
+                    string metricTypeCR = Enums.MetricType.CR.ToString();
+                    HypotheticalModel hypotheticalModel = GetHypotheticalModel(metricTypeCR, effectiveModel, improvementActivitiesForHypotheticalModel);
+
+                    //// Getting metric to calculate MQL and calculating the same i.e. Stage >= INQ and Stages < MQL .
+                    string mqlMetricCode = Enums.Stage.MQL.ToString();
+                    string inqMetricCode = Enums.Stage.INQ.ToString();
+                    int? levelMQL = db.Metrics.Single(metric => metric.MetricType == metricTypeCR && metric.MetricCode == mqlMetricCode && metric.ClientId == effectiveModel.BusinessUnit.ClientId).Level;
+                    int? levelINQ = db.Metrics.Single(metric => metric.MetricType == metricTypeCR && metric.MetricCode == inqMetricCode && metric.ClientId == effectiveModel.BusinessUnit.ClientId).Level;
+                    var mqlConversionQuery = hypotheticalModel.ImprovedMetrics.Where(mqlConversion => mqlConversion.Level >= levelINQ && mqlConversion.Level < levelMQL)
+                                                                              .OrderBy(mqlConversion => mqlConversion.Level);
+                    double mqlConversionRate = 0;
+                    if (mqlConversionQuery != null && mqlConversionQuery.Count() != 0)
+                    {
+                        mqlConversionRate = mqlConversionQuery.Aggregate(1.0, (accumulated, mqlConversion) => accumulated * (mqlConversion.Value / 100));
+                    }
+
+                    //// Adding to improved MQL 
+                    improvedMQL += affectedMarketingActivities.Select(affectedTactic => affectedTactic.INQs * mqlConversionRate).Sum();
+                }
+            }
+
+            //// Getting MQL of all unaffected marketing activities.
+            double unaffectedMarketingActivitiesMQLs = marketingActivities.Where(tactic => !affectedMarketingActivityIds.Contains(tactic.PlanTacticId)).Select(tactic => tactic.MQLs).Sum();
+
+            //// Adding to improved MQL.
+            improvedMQL += unaffectedMarketingActivitiesMQLs;
+
+            return improvedMQL;
+        }
+
+        /// <summary>
+        /// Function to get improved Projected revenue or Closed Won.
+        /// Added By: Maninder Singh Wadhva
+        /// Addressed PL Ticket: 37,38,47,49
+        /// </summary>
+        /// <param name="planId">Current plan id.</param>
+        /// <param name="marketingActivities">marketing activities.</param>
+        /// <param name="improvementActivities">improvement activities.</param>
+        /// <param name="isProjectedRevenue">Flag to indicate whether to get improved projected revenue or closed won.</param>
+        /// <returns>Returns improved projected revenue or closed won based on isProjectedRevenue flag.</returns>
+        private static double GetImprovedProjectedRevenueOrCW(int planId, List<Plan_Campaign_Program_Tactic> marketingActivities, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities, bool isProjectedRevenue)
+        {
+            MRPEntities db = new MRPEntities();
+
+            //// Sorting marketing activities based on start date.
+            marketingActivities = marketingActivities.OrderBy(tactic => tactic.StartDate).ToList();
+
+            //// Sorting improvement activities based on effective date.
+            improvementActivities = improvementActivities.OrderBy(improvementTactic => improvementTactic.EffectiveDate).ToList();
+
+            double improvedValue = 0;
+            List<int> affectedMarketingActivityIds = new List<int>();
+
+            string funnelMarketing = Enums.Funnel.Marketing.ToString();
+
+            //// Iterating improvement activities.
+            foreach (var improvementActivity in improvementActivities)
+            {
+                //// Calculating Effective From and To date of current hypothetical model.
+                DateTime hypotheticalModelEffectiveDateFrom = improvementActivity.EffectiveDate;
+                int indexEffectiveTo = improvementActivities.FindIndex(improvementTactic => improvementTactic.EffectiveDate > hypotheticalModelEffectiveDateFrom);
+                DateTime? hypotheticalModelEffectiveDateTo = null;
+                if (indexEffectiveTo >= 0)
+                {
+                    hypotheticalModelEffectiveDateTo = improvementActivities[indexEffectiveTo].EffectiveDate;
+                }
+
+                //// Getting list of marketing activites getting affected as per Effective From and To date of current hypothetical model.
+                List<Plan_Campaign_Program_Tactic> affectedMarketingActivities = marketingActivities.Where(plantactic => (plantactic.StartDate >= hypotheticalModelEffectiveDateFrom && plantactic.StartDate < hypotheticalModelEffectiveDateTo) ||
+                                                                                                         (plantactic.StartDate >= hypotheticalModelEffectiveDateFrom && hypotheticalModelEffectiveDateTo == null)).ToList();
+
+                if (affectedMarketingActivities.Count() > 0)
+                {
+                    //// Adding to global variable which maintain list of marketing activities getting affected by current hypothetical model.
+                    affectedMarketingActivityIds.AddRange(affectedMarketingActivities.Select(tactic => tactic.PlanTacticId));
+
+                    //// Getting list of improvement activities which need to be considered for calculating hypothetical model.
+                    List<Plan_Improvement_Campaign_Program_Tactic> improvementActivitiesForHypotheticalModel = improvementActivities.Where(improvementTactic => improvementTactic.EffectiveDate <= hypotheticalModelEffectiveDateFrom)
+                                                                                                                                    .Select(improvementTactic => improvementTactic)
+                                                                                                                                    .ToList();
+
+                    //// Getting Model based on hypothetical model effective date From.
+                    //// Getting model based on plan id.
+                    int ModelId = db.Plans.Where(p => p.PlanId == planId).Select(p => p.ModelId).SingleOrDefault();
+                    //// Get Model id based on effective date From.
+                    ModelId = RevenuePlanner.Controllers.ReportController.GetModelId(hypotheticalModelEffectiveDateFrom, ModelId);
+                    //// Getting model.
+                    Model effectiveModel = db.Models.Single(model => model.ModelId.Equals(ModelId));
+
+                    double averageDealSizeMarketing = 0;
+                    if (isProjectedRevenue)
+                    {
+                        averageDealSizeMarketing = db.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == effectiveModel.ModelId &&
+                                                        modelFunnel.Funnel.Title.Equals(funnelMarketing))
+                                  .Select(mf => mf.AverageDealSize)
+                                  .SingleOrDefault();
+                    }
+
+                    //// Getting hypothetical model - conversion rate.
+                    string metricTypeCR = Enums.MetricType.CR.ToString();
+                    HypotheticalModel hypotheticalModel = GetHypotheticalModel(metricTypeCR, effectiveModel, improvementActivitiesForHypotheticalModel);
+
+                    //// Getting metric to calculate CW and calculating the same i.e. Stage >= INQ.
+                    string inqMetricCode = Enums.Stage.INQ.ToString();
+                    int? levelINQ = db.Metrics.Single(metric => metric.MetricType == metricTypeCR && metric.MetricCode == inqMetricCode && metric.ClientId == effectiveModel.BusinessUnit.ClientId).Level;
+                    var cwConversionQuery = hypotheticalModel.ImprovedMetrics.Where(cwConversion => cwConversion.Level >= levelINQ)
+                                                                              .OrderBy(cwConversion => cwConversion.Level);
+                    double cwConversionRate = 0;
+                    if (cwConversionQuery != null && cwConversionQuery.Count() != 0)
+                    {
+                        cwConversionRate = cwConversionQuery.Aggregate(1.0, (accumulated, cwConversion) => accumulated * (cwConversion.Value / 100));
+                    }
+
+                    //// Adding to improved value 
+                    if (isProjectedRevenue)
+                    {
+                        improvedValue += affectedMarketingActivities.Select(affectedTactic => affectedTactic.INQs * cwConversionRate * averageDealSizeMarketing).Sum();
+                    }
+                    else
+                    {
+                        improvedValue += affectedMarketingActivities.Select(affectedTactic => affectedTactic.INQs * cwConversionRate).Sum();
+                    }
+                }
+            }
+
+            List<int> unaffectedMarketingActivitiesIds = marketingActivities.Where(tactic => !affectedMarketingActivityIds.Contains(tactic.PlanTacticId)).Select(tactic => tactic.PlanTacticId).ToList();
+            if (unaffectedMarketingActivitiesIds.Count > 0)
+            {
+                List<ProjectedRevenueClass> unaffectedMarketingActivities = null;
+
+                if (isProjectedRevenue)
+                {
+                    unaffectedMarketingActivities = RevenuePlanner.Controllers.ReportController.ProjectedRevenueCalculate(unaffectedMarketingActivitiesIds);
+                }
+                else
+                {
+                    unaffectedMarketingActivities = RevenuePlanner.Controllers.ReportController.ProjectedRevenueCalculate(unaffectedMarketingActivitiesIds, true);
+                }
+
+                //// Getting CW of all unaffected marketing activities.
+                double unaffectedMarketingActivitiesImprovedValues = unaffectedMarketingActivities.Select(tactic => tactic.ProjectedRevenue).Sum();
+
+                //// Adding to improved CW.
+                improvedValue += unaffectedMarketingActivitiesImprovedValues;
+            }
+
+            return improvedValue;
+        }
+
+        /// <summary>
+        /// Function to get improved deal size.
+        /// Added By: Maninder Singh Wadhva
+        /// Addressed PL Ticket: 37,38,47,49
+        /// </summary>
+        /// <param name="planId">Current plan id.</param>
+        /// <param name="improvementActivities">Improvement activities.</param>
+        /// <returns>Returns improved deal size.</returns>
+        private static double GetImprovedDealSize(int planId, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities)
+        {
+            MRPEntities db = new MRPEntities();
+
+            //// Getting Model based on hypothetical model effective date From.
+            //// Getting model based on plan id.
+            int ModelId = db.Plans.Where(p => p.PlanId == planId).Select(p => p.ModelId).SingleOrDefault();
+            //// Get Model id based on effective date From.
+            ModelId = RevenuePlanner.Controllers.ReportController.GetModelId(improvementActivities.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), ModelId);
+            //// Getting model.
+            Model effectiveModel = db.Models.Single(model => model.ModelId.Equals(ModelId));
+
+            //// Getting hypothetical model - size.
+            string metricTypeSize = Enums.MetricType.Size.ToString();
+            HypotheticalModel hypotheticalModel = GetHypotheticalModel(metricTypeSize, effectiveModel, improvementActivities);
+
+            double improvedDealSize = 0;
+            if (hypotheticalModel.ImprovedMetrics.Count() > 0)
+            {
+                improvedDealSize = hypotheticalModel.ImprovedMetrics[0].Value;
+            }
+
+            return improvedDealSize;
+        }
+
+        /// <summary>
+        /// Function to get improved velocity.
+        /// Added By: Maninder Singh Wadhva
+        /// Addressed PL Ticket: 37,38,47,49
+        /// </summary>
+        /// <param name="planId">Current plan Id.</param>
+        /// <param name="improvementActivities">Improvement activities.</param>
+        /// <returns>Returns improved velocity.</returns>
+        private static double GetImprovedVelocity(int planId, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities)
+        {
+            MRPEntities db = new MRPEntities();
+
+            //// Getting Model based on hypothetical model effective date From.
+            //// Getting model based on plan id.
+            int ModelId = db.Plans.Where(p => p.PlanId == planId).Select(p => p.ModelId).SingleOrDefault();
+            //// Get Model id based on effective date From.
+            ModelId = RevenuePlanner.Controllers.ReportController.GetModelId(improvementActivities.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), ModelId);
+            //// Getting model.
+            Model effectiveModel = db.Models.Single(model => model.ModelId.Equals(ModelId));
+
+            //// Getting hypothetical model - stage velocity.
+            string metricTypeSV = Enums.MetricType.SV.ToString();
+            HypotheticalModel hypotheticalModel = GetHypotheticalModel(metricTypeSV, effectiveModel, improvementActivities);
+
+            double improvedVelocity = hypotheticalModel.ImprovedMetrics.Select(improvedMetric => improvedMetric.Value).Sum();
+            return improvedVelocity;
+        }
+
+        /// <summary>
+        /// Function to get hypothetical model based on improvement activities.
+        /// Added By: Maninder Singh Wadhva
+        /// Addressed PL Ticket: 37,38,47,49
+        /// </summary>
+        /// <param name="metricType">Metric Type.</param>
+        /// <param name="model">Current Model.</param>
+        /// <param name="improvementActivitiesForHypotheticalModel">Improvement Activities.</param>
+        /// <returns>Returns hypothetical model.</returns>
+        private static HypotheticalModel GetHypotheticalModel(string metricType, Model model, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivitiesForHypotheticalModel)
+        {
+            MRPEntities db = new MRPEntities();
+            //// Get List of metric associated with selected client of current model.
+            List<ImprovedMetric> improvedMetrics = db.Metrics.Where(metric => metric.ClientId == model.BusinessUnit.ClientId &&
+                                                 metric.MetricType == metricType)
+                                          .OrderBy(metric => metric.Level)
+                                          .Select(metric => new ImprovedMetric
+                                          {
+                                              MetricId = metric.MetricId,
+                                              MetricType = metric.MetricType,
+                                              MetricCode = metric.MetricCode,
+                                              Level = metric.Level,
+                                              Value = 0
+                                          })
+                                          .ToList();
+
+            //// Getting best in class BIC value based on metric id.
+            List<int> metricIds = improvedMetrics.Select(metric => metric.MetricId).ToList();
+            List<BestInClass> bestInClassValues = db.BestInClasses.Where(bic => metricIds.Contains(bic.MetricId)).ToList();
+
+            string funnelMarketing = Enums.Funnel.Marketing.ToString();
+            List<Model_Funnel_Stage> modelFunnelStage = null;
+            if (!metricType.Equals(Enums.MetricType.Size.ToString()))
+            {
+                //// Getting stage value for marketing funnel.
+                int funnelId = db.Funnels.Single(f => f.Title.Equals(funnelMarketing)).FunnelId;
+                modelFunnelStage = db.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId.Equals(model.ModelId) &&
+                                                                         mfs.Model_Funnel.FunnelId.Equals(funnelId))
+                                                         .ToList();
+            }
+
+
+            //// Iterating over each improved metrics.
+            foreach (ImprovedMetric improvedMetric in improvedMetrics)
+            {
+                //// Getting baseline value for current metric.
+                double modelvalue = 0;
+
+                if (metricType.Equals(Enums.MetricType.CR.ToString()) || metricType.Equals(Enums.MetricType.SV.ToString()))
+                {
+                    //// Getting baseline value for current metric.
+                    modelvalue = modelFunnelStage.Where(mfs => mfs.Stage.Code.Equals(improvedMetric.MetricCode) &&
+                                                                    mfs.StageType.Equals(improvedMetric.MetricType))
+                                                      .Select(mfs => mfs.Value).SingleOrDefault();
+                    if (metricType.Equals(Enums.MetricType.CR.ToString()))
+                    {
+                        modelvalue = modelvalue / 100;
+                    }
+                }
+                else if (metricType.Equals(Enums.MetricType.Size.ToString()))
+                {
+                    modelvalue = db.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == model.ModelId &&
+                                                                      modelFunnel.Funnel.Title.Equals(funnelMarketing))
+                                                .Select(mf => mf.AverageDealSize)
+                                                .SingleOrDefault();
+                }
+
+                //// Get BestInClass BIC value for current metric id.
+                double bestInClassValue = bestInClassValues.Where(bic => bic.MetricId.Equals(improvedMetric.MetricId))
+                                                           .Select(bic => bic.Value)
+                                                           .SingleOrDefault();
+
+                //// Get ImprovementTactic & its Weight for current metric.
+                var improvementActivitiesAndWeight = (from planImprovementTactic in improvementActivitiesForHypotheticalModel
+                                                      join improvementTacticTypeMetric in db.ImprovementTacticType_Metric on planImprovementTactic.ImprovementTacticTypeId equals improvementTacticTypeMetric.ImprovementTacticTypeId
+                                                      where improvementTacticTypeMetric.ImprovementTacticType.IsDeployed.Equals(true) &&
+                                                            improvementTacticTypeMetric.MetricId.Equals(improvedMetric.MetricId) &&
+                                                            improvementTacticTypeMetric.Weight > 0
+                                                      select new
+                                                      {
+                                                          ImprovemetPlanTacticId = planImprovementTactic.ImprovementPlanTacticId,
+                                                          Weight = improvementTacticTypeMetric.Weight
+                                                      }).ToList();
+
+                //// Calculate Total ImprovementCount 
+                int totalCount = improvementActivitiesAndWeight.Count();
+
+                //// Calculate Total ImprovementWeight
+                double totalWeight = improvementActivitiesAndWeight.Sum(improvementActivity => improvementActivity.Weight);
+
+                //// Getting improved value for metric
+                if (metricType.Equals(Enums.MetricType.CR.ToString()))
+                {
+                    improvedMetric.Value = GetImprovedMetricValue(improvedMetric, bestInClassValue, modelvalue, totalCount, totalWeight) * 100;
+                }
+                else
+                {
+                    improvedMetric.Value = GetImprovedMetricValue(improvedMetric, bestInClassValue, modelvalue, totalCount, totalWeight);
+                }
+            }
+
+            HypotheticalModel hypotheticalModel = new HypotheticalModel();
+            hypotheticalModel.ImprovedMetrics = improvedMetrics;
+            return hypotheticalModel;
+        }
+
+        /// <summary>
+        /// Added By: Maninder Singh Wadhva
+        /// Addressed PL Ticket: 37,38,47,49
+        /// Function to get improved value for a metric based on best in class BIC, baseline, total count and total weight.
+        /// </summary>
+        /// <param name="improvedMetric">Metric to be improved.</param>
+        /// <param name="bestInClassValue">Best in class Value.</param>
+        /// <param name="baselineValue">Baseline value</param>
+        /// <param name="totalCount">Total count of improvement activities.</param>
+        /// <param name="totalWeight">Total wieght of improvement activities.</param>
+        /// <returns>Returns improved value for current metric.</returns>
+        private static double GetImprovedMetricValue(ImprovedMetric improvedMetric, double bestInClassValue, double baselineValue, double totalCount, double totalWeight)
+        {
+            double cFactor = 0;
+            double rFactor = 0;
+
+            #region rFactor
+            //// Calculate rFactor if TotalCount = 0 then 0
+            //// Else if TotalWeight/TotalCount < 2 then 0.25
+            //// Else if TotalWeight/TotalCount < 3 then 0.5
+            //// Else if TotalWeight/TotalCount < 4 then 0.75
+            //// Else  0.9
+            if (totalCount > 0)
+            {
+                double wcValue = totalWeight / totalCount;
+                if (wcValue < 2)
+                {
+                    rFactor = 0.25;
+                }
+                else if (wcValue >= 2 && wcValue < 3)
+                {
+                    rFactor = 0.5;
+                }
+                else if (wcValue >= 3 && wcValue < 4)
+                {
+                    rFactor = 0.75;
+                }
+                else
+                {
+                    rFactor = 0.9;
+                }
+            }
+            #endregion
+
+            #region cFactor
+            //// Calculate cFactor if TotalCount < 3 then 0.4
+            //// Else if TotalCount >= 3 AND TotalCount < 5 then 0.6
+            //// Else if TotalCount >= 5 AND TotalCount < 8 then 0.8
+            //// Else  1
+
+            if (totalCount < 3)
+            {
+                cFactor = 0.4;
+            }
+            else if (totalCount >= 3 && totalCount < 5)
+            {
+                cFactor = 0.6;
+            }
+            else if (totalCount >= 5 && totalCount < 8)
+            {
+                cFactor = 0.8;
+            }
+            else
+            {
+                cFactor = 1;
+            }
+            #endregion
+
+            //// Calculating BoostFactor
+            double boostFactor = cFactor * rFactor;
+            double boostGap = 0;
+            //// Calculating boostGap
+            if (improvedMetric.MetricType.Equals(Enums.MetricType.CR.ToString()))
+            {
+                boostGap = bestInClassValue - baselineValue;
+            }
+            else if (improvedMetric.MetricType.Equals(Enums.MetricType.SV.ToString()))
+            {
+                boostGap = baselineValue - bestInClassValue;
+            }
+            else if (improvedMetric.MetricType.Equals(Enums.MetricType.Size.ToString()))
+            {
+                // Divide by 100 because it percentage value
+                boostGap = bestInClassValue / 100;
+            }
+
+            //// Calculate Improvement
+            double improvement = boostGap * boostFactor;
+            if (improvement < 0)
+            {
+                improvement = 0;
+            }
+
+            double improvementValue = 0;
+            if (improvedMetric.MetricType.Equals(Enums.MetricType.CR.ToString()))
+            {
+                improvementValue = baselineValue + improvement;
+            }
+            else if (improvedMetric.MetricType.Equals(Enums.MetricType.SV.ToString()))
+            {
+                improvementValue = baselineValue - improvement;
+            }
+            else if (improvedMetric.MetricType.Equals(Enums.MetricType.Size.ToString()))
+            {
+                improvementValue = (1 + improvement) * baselineValue;
+            }
+
+            return improvementValue;
+        }
+
+        /// <summary>
+        /// Added By: Maninder Singh Wadhva
+        /// Addressed PL Ticket: 37,38,47,49
+        /// Class for hypothetical model.
+        /// </summary>
+        public class HypotheticalModel
+        {
+            /// <summary>
+            /// Member to hold improved metrics
+            /// </summary>
+            public List<ImprovedMetric> ImprovedMetrics { get; set; }
+        }
+
+        /// <summary>
+        /// Added By: Maninder Singh Wadhva
+        /// Addressed PL Ticket: 37,38,47,49
+        /// Class for improved metric.
+        /// </summary>
+        public class ImprovedMetric
+        {
+            public int MetricId { get; set; }
+            public string MetricType { get; set; }
+            public string MetricCode { get; set; }
+            public int? Level { get; set; }
+            public double Value { get; set; }
         }
         #endregion
 

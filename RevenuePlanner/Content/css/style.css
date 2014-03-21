@@ -235,7 +235,7 @@ ul.drop-down-menu {
 }
 
     .light-blue-chart .white-chart {
-        background: #ffffff;
+        background-color: #ffffff;
         width: 150px;
         height: 92px;
         margin-left: 20px;
@@ -6326,4 +6326,5 @@ h2.title-header {
 
 .white-chart .small-value{display: block; font-size: 16px;}
 .bullhorn-bg{background-image:url(../images/bullhorn-bg.png); background-position:right bottom; background-repeat:no-repeat;}
+.bullhorn-bg-disabled{background-image:url(../images/bullhorn-bg-disabled.png); background-position:right bottom; background-repeat:no-repeat;}
 /* ======================================= */

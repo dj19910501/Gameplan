@@ -16,9 +16,13 @@
     <p class="source-sans-probold" id="pcostLabel" title="@Html.DisplayFor(model => model.costLabel)">@Html.DisplayFor(model => model.costLabel)</p>
     <p class="value source-sans-prolight" id="pbudget">$ @Html.DisplayFor(model => model.Budget)</p>
 </div>
-<div class="white-chart">
+<div id="DivBullhornbg" class="white-chart">
     <p class="source-sans-probold" id="pmqlLabel" title="@Html.DisplayFor(model => model.mqlLabel)">@Html.DisplayFor(model => model.mqlLabel)</p>
     <p class="value source-sans-prolight" id="pMQLs">@Html.DisplayFor(model => model.MQLs)</p>
+                
+    <!--Added By: Maninder Singh Wadhva-->
+    <!--Addressed PL Ticket: 37,38,47,49-->
+    <p id="pMQLImproved" class="small-value source-sans-proregular">@Html.DisplayFor(model => model.PercentageMQLImproved)</p>
 </div>
 
 <div class="wraper-title">
