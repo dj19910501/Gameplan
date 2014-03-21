@@ -2584,9 +2584,12 @@ namespace RevenuePlanner.Controllers
 
                     bool isApproved = planImprovementTactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
 
-                    //// Changing status of tactic to submitted.
-                    planImprovementTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
-
+                    if (isApproved)
+                    {
+                        //// Add condition if it is approved than it require to change status as submitted.
+                        //// Changing status of tactic to submitted.
+                        planImprovementTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
+                    }
                     //// Setting start and end date.
                     planImprovementTactic.EffectiveDate = DateTime.Parse(effectiveDate);
 
