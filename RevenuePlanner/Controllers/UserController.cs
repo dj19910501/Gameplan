@@ -1149,7 +1149,7 @@ namespace RevenuePlanner.Controllers
             {
                 Text = q.Title,
                 Value = Convert.ToString(q.BusinessUnitId),
-            });
+            }).OrderBy(t => t.Text);
 
             return Json(businessUnitData, JsonRequestBehavior.AllowGet);
         }
@@ -1175,7 +1175,7 @@ namespace RevenuePlanner.Controllers
             {
                 Text = q.Title,
                 Value = Convert.ToString(q.GeographyId),
-            });
+            }).OrderBy(g => g.Text);
 
             return Json(geographyData, JsonRequestBehavior.AllowGet);
         }
