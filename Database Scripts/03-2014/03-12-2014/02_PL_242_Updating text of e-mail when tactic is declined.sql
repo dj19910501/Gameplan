@@ -15,3 +15,4 @@
 				) and EmailContent like '%<br><br>Thank You,<br>Gameplan Admin'
 
 
+
