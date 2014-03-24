@@ -2584,9 +2584,12 @@ namespace RevenuePlanner.Controllers
 
                     bool isApproved = planImprovementTactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
 
-                    //// Changing status of tactic to submitted.
-                    planImprovementTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
-
+                    if (isApproved)
+                    {
+                        //// Add condition if it is approved than it require to change status as submitted.
+                        //// Changing status of tactic to submitted.
+                        planImprovementTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
+                    }
                     //// Setting start and end date.
                     planImprovementTactic.EffectiveDate = DateTime.Parse(effectiveDate);
 
@@ -3086,7 +3089,7 @@ namespace RevenuePlanner.Controllers
                     //// Get ImprovementTactic & its Weight based on filter criteria for MetricId.
                     var improveTacticList = (from pit in db.Plan_Improvement_Campaign_Program_Tactic
                                              join itm in db.ImprovementTacticType_Metric on pit.ImprovementTacticTypeId equals itm.ImprovementTacticTypeId
-                                             where pit.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == im.MetricId && itm.Weight > 0 && pit.EffectiveDate >= ModelEffectiveDate && pit.IsDeleted == false
+                                             where pit.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == im.MetricId && itm.Weight > 0 && pit.IsDeleted == false
                                              select new { ImprovemetPlanTacticId = pit.ImprovementPlanTacticId, Weight = itm.Weight }).ToList();
 
                     //// Calculate Total ImprovementCount for PlanWithoutTactic
@@ -3098,7 +3101,7 @@ namespace RevenuePlanner.Controllers
 
                     //// Get ImprovementTacticType & its Weight based on filter criteria for MetricId & current ImprovementTacticType.
                     var improvementCountWithTacticList = (from itt in db.ImprovementTacticType_Metric
-                                                          where itt.ImprovementTacticType.IsDeployed == true && itt.MetricId == im.MetricId && itt.Weight > 0 && EffectiveDate >= ModelEffectiveDate && itt.ImprovementTacticTypeId == ImprovementTacticTypeId
+                                                          where itt.ImprovementTacticType.IsDeployed == true && itt.MetricId == im.MetricId && itt.Weight > 0 && itt.ImprovementTacticTypeId == ImprovementTacticTypeId
                                                           select new { ImprovementTacticTypeId = itt.ImprovementTacticTypeId, Weight = itt.Weight }).ToList();
 
                     //// Calculate Total ImprovementCount for PlanWithTactic
@@ -3115,7 +3118,7 @@ namespace RevenuePlanner.Controllers
                     //// Get ImprovementTactic & its Weight based on filter criteria for MetricId & without current improvement tactic.
                     var improveTacticList = (from pit in db.Plan_Improvement_Campaign_Program_Tactic
                                              join itm in db.ImprovementTacticType_Metric on pit.ImprovementTacticTypeId equals itm.ImprovementTacticTypeId
-                                             where pit.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == im.MetricId && itm.Weight > 0 && pit.EffectiveDate >= ModelEffectiveDate && pit.ImprovementPlanTacticId != ImprovementPlanTacticId && pit.IsDeleted == false
+                                             where pit.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == im.MetricId && itm.Weight > 0 && pit.ImprovementPlanTacticId != ImprovementPlanTacticId && pit.IsDeleted == false
                                              select new { ImprovemetPlanTacticId = pit.ImprovementPlanTacticId, Weight = itm.Weight }).ToList();
 
                     //// Calculate Total ImprovementCount for PlanWithoutTactic
@@ -3128,7 +3131,7 @@ namespace RevenuePlanner.Controllers
                     //// Get ImprovementTactic & its Weight based on filter criteria for MetricId with current tactic.
                     var improvementCountWithTacticList = (from pit in db.Plan_Improvement_Campaign_Program_Tactic
                                                           join itm in db.ImprovementTacticType_Metric on pit.ImprovementTacticTypeId equals itm.ImprovementTacticTypeId
-                                                          where pit.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == im.MetricId && itm.Weight > 0 && pit.EffectiveDate >= ModelEffectiveDate && pit.IsDeleted == false
+                                                          where pit.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == im.MetricId && itm.Weight > 0 && pit.IsDeleted == false
                                                           select new { ImprovemetPlanTacticId = pit.ImprovementPlanTacticId, Weight = itm.Weight }).ToList();
 
                     //// Calculate Total ImprovementCount for PlanWithTactic
