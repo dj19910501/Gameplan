@@ -12,6 +12,6 @@
 					'CampaignApproved','CampaignDeclined','CampaignCommentAdded','CampaignSubmitted',
 					'ProgramApproved','ProgramDeclined','ProgramCommentAdded','ProgramSubmitted',
 					'TacticApproved','TacticDeclined','TacticCommentAdded','TacticSubmitted'
-				)
+				) and EmailContent like '%<br><br>Thank You,<br>Gameplan Admin'
 
 
