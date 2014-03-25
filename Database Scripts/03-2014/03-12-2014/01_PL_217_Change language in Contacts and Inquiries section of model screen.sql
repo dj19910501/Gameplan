@@ -1,0 +1,3 @@
+Update Funnel set Description ='I use marketing to generate #MarketingLeads leads annually from my website, blogs and social media efforts with an average deal size of #MarketingDealSize.' where Title='Marketing' 
+Update Funnel set Description ='I use teleprospecting to generate #TeleprospectingLeads leads annually from outbound cold calling (TGL) with an average deal size of #TeleprospectingDealSize.' where Title='Teleprospecting' 
+Update Funnel set Description ='I use sales to generate #SalesLeads leads annually from outbound cold calling and existing relationships (SGL) with an average deal size of #SalesDealSize.' where Title='Sales' 
