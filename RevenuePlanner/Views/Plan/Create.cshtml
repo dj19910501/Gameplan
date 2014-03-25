@@ -4,6 +4,7 @@
     ViewBag.Title = "Plan Definition";
     Layout = "~/Views/Shared/_Layout.cshtml";
     string strPlanid = Convert.ToString(Model.PlanId);
+    
 }
 
 @section nlFormContent{
@@ -11,7 +12,7 @@
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
 }
-
+@Html.Hidden("hdnPlanId", strPlanid, new { id = "hdnPlanId" })
 
 @section Sidebar
 {
@@ -83,11 +84,16 @@
             }
         </li>
 
-        <li class="nav-header">
+    </ul>
+     @if (strPlanid != "0")
+        {
+    <ul class="nav nav-list nav-gray-plan">
+        <li id="change-log" class="nav-header">
             <span>Change Log</span>
+            <div class="changes"></div>
         </li>
     </ul>
-
+    }
 
 
 
@@ -164,6 +170,13 @@
 
     $(document).ready(
       function () {
+          var hdnPlanId = $("#hdnPlanId").val();
+          if (hdnPlanId != 0) {
+              $('.changes').html('');
+              var url = '@Url.Content("~/Home/LoadChangeLog")';
+              $('.changes').load(url + '?objectId=' + "@RevenuePlanner.Helpers.Sessions.PlanId");
+          }
+
           $('#BtnGroup').click(function (e) {
               var url = '@Url.Content("~/Plan/Create/0")';
               window.location.href = url;
