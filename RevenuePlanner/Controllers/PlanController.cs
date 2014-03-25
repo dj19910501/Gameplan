@@ -3323,7 +3323,7 @@ namespace RevenuePlanner.Controllers
             }
 
             double VelocityValue = stageVelocityHigher - stageVelocityLower;
-            if (VelocityValue < 0)
+            if (VelocityValue <= 0)
             {
                 velocityUpDownString = Increases;
                 planNegativePositive = Negative;
