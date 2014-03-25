@@ -6328,3 +6328,129 @@ h2.title-header {
 .bullhorn-bg{background-image:url(../images/bullhorn-bg.png); background-position:right bottom; background-repeat:no-repeat;}
 .bullhorn-bg-disabled{background-image:url(../images/bullhorn-bg-disabled.png); background-position:right bottom; background-repeat:no-repeat;}
 /* ======================================= */
+/*Added By Maninder for DHTMLX gantt improvement task PL Ticket#47, 337*/
+.improvement .gantt_task_drag
+{
+    display: block;
+    width: 14px;
+    height: 16px;
+    cursor: auto;
+    left: -7px !important;
+    top: -6px !important;
+}
+
+.resize .gantt_task_drag
+{
+    cursor: e-resize;
+}
+
+.improvement .gantt_task_drag:after
+    {
+        border-style: solid;
+        border-width: 8px 7px 0;
+        border-left-color: rgba(0, 0, 0, 0);
+        border-right-color: rgba(0, 0, 0, 0);
+        bottom: -8px;
+        content: "";
+        height: 0;
+        left: 0;
+        position: absolute;
+        width: 0;
+    }
+
+.border-top.gantt_task_line
+{
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
+    border-style: solid none none;
+    border-width: 6px medium medium;
+    border-radius: 0px;
+}
+
+.improvementcolorC6EBF3-with-border.gantt_task_line{border-color: #27A4E5;}
+.improvementcolorC6EBF3-with-border .gantt_task_drag{background: none repeat scroll 0 0 #27A4E5 !important;}
+.improvementcolorC6EBF3-with-border .gantt_task_drag:after{border-top-color: #27A4E5;}
+
+.improvementcolor2384B8.gantt_task_line{border-color: #2384B8;}
+.improvementcolor2384B8 .gantt_task_drag{background: none repeat scroll 0 0 #2384B8 !important;}
+.improvementcolor2384B8 .gantt_task_drag:after{border-top-color: #2384B8;}
+
+.improvementcolor144D6B.gantt_task_line{border-color: #144D6B;}
+.improvementcolor144D6B .gantt_task_drag{background: none repeat scroll 0 0 #144D6B !important;}
+.improvementcolor144D6B .gantt_task_drag:after{border-top-color: #144D6B;}
+
+.improvementcolor0F3A50.gantt_task_line{border-color: #0F3A50;}
+.improvementcolor0F3A50 .gantt_task_drag{background: none repeat scroll 0 0 #0F3A50 !important;}
+.improvementcolor0F3A50 .gantt_task_drag:after{border-top-color: #0F3A50;}
+
+.improvementcolor407B22.gantt_task_line{border-color: #407B22;}
+.improvementcolor407B22 .gantt_task_drag{background: none repeat scroll 0 0 #407B22 !important;}
+.improvementcolor407B22 .gantt_task_drag:after{border-top-color: #407B22;}
+
+.improvementcolor5BAE30.gantt_task_line{border-color: #5BAE30;}
+.improvementcolor5BAE30 .gantt_task_drag{background: none repeat scroll 0 0 #5BAE30 !important;}
+.improvementcolor5BAE30 .gantt_task_drag:after{border-top-color: #5BAE30;}
+
+.improvementcolor09AF8F.gantt_task_line{border-color: #09AF8F;}
+.improvementcolor09AF8F .gantt_task_drag{background: none repeat scroll 0 0 #09AF8F !important;}
+.improvementcolor09AF8F .gantt_task_drag:after{border-top-color: #09AF8F;}
+
+.improvementcolor83DB45.gantt_task_line{border-color: #83DB45;}
+.improvementcolor83DB45 .gantt_task_drag{background: none repeat scroll 0 0 #83DB45 !important;}
+.improvementcolor83DB45 .gantt_task_drag:after{border-top-color: #83DB45;}
+
+.improvementcolor6ae11f.gantt_task_line{border-color: #6ae11f;}
+.improvementcolor6ae11f .gantt_task_drag{background: none repeat scroll 0 0 #6ae11f !important;}
+.improvementcolor6ae11f .gantt_task_drag:after{border-top-color: #6ae11f;}
+
+.improvementcolorbbb748.gantt_task_line{border-color: #bbb748;}
+.improvementcolorbbb748 .gantt_task_drag{background: none repeat scroll 0 0 #bbb748 !important;}
+.improvementcolorbbb748 .gantt_task_drag:after{border-top-color: #bbb748;}
+
+.improvementcolorbf6a4b.gantt_task_line{border-color: #bf6a4b;}
+.improvementcolorbf6a4b .gantt_task_drag{background: none repeat scroll 0 0 #bf6a4b !important;}
+.improvementcolorbf6a4b .gantt_task_drag:after{border-top-color: #bf6a4b;}
+
+.improvementcolorca3cce.gantt_task_line{border-color: #ca3cce;}
+.improvementcolorca3cce .gantt_task_drag{background: none repeat scroll 0 0 #ca3cce !important;}
+.improvementcolorca3cce .gantt_task_drag:after{border-top-color: #ca3cce;}
+
+.improvementcolor7c4bbf.gantt_task_line{border-color: #7c4bbf;}
+.improvementcolor7c4bbf .gantt_task_drag{background: none repeat scroll 0 0 #7c4bbf !important;}
+.improvementcolor7c4bbf .gantt_task_drag:after{border-top-color: #7c4bbf;}
+
+.improvementcolor1af3c9.gantt_task_line{border-color: #1af3c9;}
+.improvementcolor1af3c9 .gantt_task_drag{background: none repeat scroll 0 0 #1af3c9 !important;}
+.improvementcolor1af3c9 .gantt_task_drag:after{border-top-color: #1af3c9;}
+
+.improvementcolorf1eb13.gantt_task_line{border-color: #f1eb13;}
+.improvementcolorf1eb13 .gantt_task_drag{background: none repeat scroll 0 0 #f1eb13 !important;}
+.improvementcolorf1eb13 .gantt_task_drag:after{border-top-color: #f1eb13;}
+
+.improvementcolorc7893b.gantt_task_line{border-color: #c7893b;}
+.improvementcolorc7893b .gantt_task_drag{background: none repeat scroll 0 0 #c7893b !important;}
+.improvementcolorc7893b .gantt_task_drag:after{border-top-color: #c7893b;}
+
+.improvementcolore42233.gantt_task_line{border-color: #e42233;}
+.improvementcolore42233 .gantt_task_drag{background: none repeat scroll 0 0 #e42233 !important;}
+.improvementcolore42233 .gantt_task_drag:after{border-top-color: #e42233;}
+
+.improvementcolora636d6.gantt_task_line{border-color: #a636d6;}
+.improvementcolora636d6 .gantt_task_drag{background: none repeat scroll 0 0 #a636d6 !important;}
+.improvementcolora636d6 .gantt_task_drag:after{border-top-color: #a636d6;}
+
+.improvementcolor2940e2.gantt_task_line{border-color: #2940e2;}
+.improvementcolor2940e2 .gantt_task_drag{background: none repeat scroll 0 0 #2940e2 !important;}
+.improvementcolor2940e2 .gantt_task_drag:after{border-top-color: #2940e2;}
+
+.improvementcolor0b3d58.gantt_task_line{border-color: #0b3d58;}
+.improvementcolor0b3d58 .gantt_task_drag{background: none repeat scroll 0 0 #0b3d58 !important;}
+.improvementcolor0b3d58 .gantt_task_drag:after{border-top-color: #0b3d58;}
+
+.improvementcolor244c0a.gantt_task_line{border-color: #244c0a;}
+.improvementcolor244c0a .gantt_task_drag{background: none repeat scroll 0 0 #244c0a !important;}
+.improvementcolor244c0a .gantt_task_drag:after{border-top-color: #244c0a;}
+
+.no_drag .gantt_task_drag.task_left,.gantt_task_drag.task_right
+{
+    display: none !important;
+}

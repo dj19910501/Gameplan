@@ -57,7 +57,12 @@ namespace RevenuePlanner.Helpers
         public static readonly int imgHeight = 50;
 
         public const string GANTT_BAR_CSS_CLASS_PREFIX = "color";
+
+        ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
+        public const string GANTT_BAR_CSS_CLASS_PREFIX_IMPROVEMENT = "improvementcolor";
         public const string COLORC6EBF3_WITH_BORDER = "colorC6EBF3-with-border";
+        ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
+        public const string COLORC6EBF3_WITH_BORDER_IMPROVEMENT = "improvementcolorC6EBF3-with-border";
         public const string COLOR27A4E5 = "color27a4e5";
 
         public const string dateFormat = "mm/dd/yyyy";
@@ -1429,6 +1434,7 @@ namespace RevenuePlanner.Helpers
             string tacticStatusDeclined = Enums.TacticStatusValues.Single(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value;
 
             //// Getting task data of plan improvement tactic.
+            //// Modified By Maninder Singh Wadhva PL Ticket#47, 337
             var taskDataImprovementTactic = improvementTactics.Select(improvementTactic => new
             {
                 id = string.Format("M{0}_I{1}_Y{2}", 1, improvementTactic.ImprovementPlanTacticId, improvementTactic.ImprovementTacticTypeId),
@@ -1441,7 +1447,7 @@ namespace RevenuePlanner.Helpers
                 progress = 0,
                 open = true,
                 parent = string.Format("M{0}", 1),
-                color = (isApplyTocalendar ? Common.COLORC6EBF3_WITH_BORDER : string.Concat(GANTT_BAR_CSS_CLASS_PREFIX, improvementTactic.ImprovementTacticType.ColorCode.ToLower())),
+                color = (isApplyTocalendar ? Common.COLORC6EBF3_WITH_BORDER_IMPROVEMENT : string.Concat(GANTT_BAR_CSS_CLASS_PREFIX_IMPROVEMENT, improvementTactic.ImprovementTacticType.ColorCode.ToLower())),
                 isSubmitted = improvementTactic.Status.Equals(tacticStatusSubmitted),
                 isDeclined = improvementTactic.Status.Equals(tacticStatusDeclined),
                 inqs = 0,
@@ -1468,10 +1474,17 @@ namespace RevenuePlanner.Helpers
         private static object GetImprovementActivityTaskData(List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics, DateTime calendarStartDate, DateTime calendarEndDate, bool isApplyTocalendar)
         {
             string color = "";
-            if (isApplyTocalendar)
-            {
-                color = Common.COLOR27A4E5;
-            }
+            ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
+            //if (isApplyTocalendar)
+            //{
+            //    color = Common.COLOR27A4E5;
+            //}
+            //else
+            //{
+            //    color = Common.COLORC6EBF3_WITH_BORDER;
+            //}
+
+            color = Common.COLORC6EBF3_WITH_BORDER;
 
             //// Getting start date for improvement activity task.
             DateTime startDate = improvementTactics.Select(improvementTactic => improvementTactic.EffectiveDate).Min();

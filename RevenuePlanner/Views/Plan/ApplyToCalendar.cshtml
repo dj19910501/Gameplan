@@ -622,6 +622,18 @@
        barChart2.parse(data.lstchart, "json");
    }
 
+////Modified By Maninder Singh Wadhva PL Ticket#47, 337
+   function getCSSForTask(task) {
+       var cssClass = task.color + ' cursorPointer';
+
+       if (typeof task.isImprovement != 'undefined' &&
+           task.isImprovement == true &&
+           typeof task.ImprovementPlanTacticId != 'undefined') {
+           cssClass += ' improvement border-top resize';
+           }
+
+       return cssClass;
+   }
 
    //// Function to render gantt i.e. for this year or this quarter.
    function renderGantt(taskData) {
@@ -643,8 +655,9 @@
        gantt.config.round_dnd_dates = false;
        gantt.config.scale_unit = "month";
        gantt.config.date_scale = " %M";
-       gantt.config.subscales = [{ unit: "year", step: 1, date: "%Y" }];
-       gantt.templates.task_class = function (start, end, task) { return task.color + " cursorPointer"; };
+       gantt.config.subscales = [{ unit: "year", step: 1, date: "%Y" }];   
+        ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
+       gantt.templates.task_class = function (start, end, task) { return getCSSForTask(task) };
 
        if (isQuater == "thisquarter") {
            //// Getting quarter
