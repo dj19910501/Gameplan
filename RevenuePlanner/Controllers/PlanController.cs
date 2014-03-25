@@ -170,7 +170,14 @@ namespace RevenuePlanner.Controllers
                     }
 
                     int result = db.SaveChanges();
-                    Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                    if (objPlanModel.PlanId == 0)
+                    {
+                        Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                    }
+                    else
+                    {
+                        Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                    }
                     if (result > 0)
                     {
                         Sessions.PlanId = plan.PlanId;
