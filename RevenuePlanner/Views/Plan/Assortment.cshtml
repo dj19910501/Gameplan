@@ -557,7 +557,7 @@
                     if (typeof ImprovementTactic != 'undefined') {
                         if (ImprovementTactic.length) {
                             $("#grayImprovementContainer").css("display", "block");
-                            FillGrayImprovementContainer();
+                            FillGrayImprovementContainer(ImprovementTactic.length);
                         }
                     }
                      NumberFormatterTipsy(".tipsyclass", 9);
@@ -862,7 +862,7 @@
 
         }
 
-        function FillGrayImprovementContainer() {
+        function FillGrayImprovementContainer(impcount) {
 
             $.ajax({
                 type: 'POST',
@@ -871,11 +871,18 @@
                 },
                 success: function (data) {
                     if (typeof data != 'undefined') {
-                        var $html = '<p class="text1">Executing these improvement tactics could deliver...</p>' +
+                        var $html = '<p class="text1">Executing ';
+                        if (impcount > 1) {
+                            $html += 'these';
+                        }
+                        else {
+                            $html += 'this';
+                        }
+                        $html +=' improvement tactics could deliver...</p>' +
                             '<p class="text2"><strong>';
                         var mqlValue = parseFloat(data.MQL);
                         if (mqlValue < 0) {
-                            $html += FormatCommas(Math.abs(mqlValue).toString(), false) + '</strong> fewer';
+                            $html += FormatCommas(Math.abs(mqlValue).toString(), false) + '</strong> less';
                         }
                         else {
                             $html += FormatCommas(mqlValue.toString(), false) + '</strong> more';
@@ -887,13 +894,17 @@
                         $html += ' MQLs yielding <strong>';
                         var cwValue = parseFloat(data.CW);
                         if (cwValue < 0) {
-                            $html += FormatCommas(Math.abs(cwValue).toString(), false) + '</strong> fewer';
+                            $html += FormatCommas(Math.abs(cwValue).toString(), false) + '</strong> less';
                         }
                         else {
                             $html += FormatCommas(cwValue.toString(), false) + '</strong> more';
                         }
-
-                        $html += ' CWs,<br><strong>';
+                        if (cwValue <= 1) {
+                            $html += ' CW,<br><strong>';
+                        }
+                        else {
+                            $html += ' CWs,<br><strong>';
+                        }
                         var adsValue = parseFloat(data.ADS);
                         if (adsValue < 0) {
                             $html += FormatCurrency(Math.abs(adsValue).toString(), false) + '</strong> smaller';
@@ -904,8 +915,8 @@
 
                         $html += ' Average Deal Size and<br><strong>';
                         var velocityValue = parseFloat(data.Velocity);
-                        if (velocityValue < 0) {
-                            $html += FormatCommas(Math.abs(velocityValue).toString(), false) + '</strong> fewer';
+                        if (velocityValue <= 0) {
+                            $html += FormatCommas(Math.abs(velocityValue).toString(), false) + '</strong> less';
                         }
                         else {
                             $html += FormatCommas(velocityValue.toString(), false) + '</strong> more';
