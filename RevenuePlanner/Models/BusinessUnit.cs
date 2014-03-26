@@ -16,8 +16,8 @@ namespace RevenuePlanner.Models
     {
         public BusinessUnit()
         {
-            this.Models = new HashSet<Model>();
             this.Plan_Campaign_Program_Tactic = new HashSet<Plan_Campaign_Program_Tactic>();
+            this.Models = new HashSet<Model>();
             this.Plan_Improvement_Campaign_Program_Tactic = new HashSet<Plan_Improvement_Campaign_Program_Tactic>();
         }
     
@@ -32,8 +32,8 @@ namespace RevenuePlanner.Models
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
     
-        public virtual ICollection<Model> Models { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
+        public virtual ICollection<Model> Models { get; set; }
         public virtual ICollection<Plan_Improvement_Campaign_Program_Tactic> Plan_Improvement_Campaign_Program_Tactic { get; set; }
     }
 }

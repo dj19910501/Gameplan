@@ -1850,18 +1850,14 @@ namespace RevenuePlanner.Controllers
                                   ProgramTitle = pcpt.Plan_Improvement_Campaign_Program.Title,
                                   Status = pcpt.Status,
                                   TacticTypeId = pcpt.ImprovementTacticTypeId,
-                                  VerticalId = pcpt.VerticalId,
                                   ColorCode = pcpt.ImprovementTacticType.ColorCode,
                                   Description = pcpt.Description,
-                                  AudienceId = pcpt.AudienceId,
                                   PlanCampaignId = pcpt.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId,
                                   PlanProgramId = pcpt.ImprovementPlanProgramId,
                                   OwnerId = pcpt.CreatedBy,
                                   BusinessUnitId = pcpt.BusinessUnitId,
                                   Cost = pcpt.Cost,
-                                  StartDate = pcpt.EffectiveDate,
-                                  VerticalTitle = pcpt.Vertical.Title,
-                                  AudiencTitle = pcpt.Audience.Title
+                                  StartDate = pcpt.EffectiveDate
                               }).SingleOrDefault();
                 }
 

@@ -638,9 +638,6 @@
     <Content Include="Views\Plan\PlanSelector.cshtml">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="Web.config">
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="Views\Shared\_ChangeLog.cshtml" />
     <Content Include="Views\Home\_PlanDropdown.cshtml" />
     <Content Include="Views\Model\Results.cshtml" />
@@ -717,15 +714,6 @@
     <Content Include="Views\Home\_ReviewImprovementTactic.cshtml" />
     <Content Include="Views\Home\_SetupImprovementTactic.cshtml" />
     <Content Include="Views\Plan\_DeleteImprovementTactic.cshtml" />
-    <None Include="Web.BulldogProduction.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
     <None Include="Properties\PublishProfiles\MRP-Dev.pubxml" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\dhtmlxchart.js" />
@@ -838,8 +826,13 @@
     <Content Include="Views\Model\_modeloverview.cshtml" />
     <Content Include="Views\Model\_contactinquiry.cshtml" />
     <Content Include="Views\Home\ShareTactic.cshtml" />
-    <None Include="Web.BulldogStaging.config">
-      <DependentUpon>Web.config</DependentUpon>
+    <Content Include="Web.Config" />
+    <None Include="Web.BulldogProduction.config" />
+    <None Include="Web.Debug.Config">
+      <DependentUpon>Web.Config</DependentUpon>
+    </None>
+    <None Include="Web.Release.Config">
+      <DependentUpon>Web.Config</DependentUpon>
     </None>
   </ItemGroup>
   <ItemGroup>

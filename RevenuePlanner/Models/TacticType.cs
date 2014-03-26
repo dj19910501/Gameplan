@@ -35,8 +35,8 @@ namespace RevenuePlanner.Models
         public Nullable<System.Guid> ModifiedBy { get; set; }
         public Nullable<int> PreviousTacticTypeId { get; set; }
     
-        public virtual Model Model { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
         public virtual Stage Stage { get; set; }
+        public virtual Model Model { get; set; }
     }
 }

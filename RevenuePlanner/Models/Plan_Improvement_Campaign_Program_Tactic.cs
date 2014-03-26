@@ -25,9 +25,6 @@ namespace RevenuePlanner.Models
         public int ImprovementTacticTypeId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public int VerticalId { get; set; }
-        public int AudienceId { get; set; }
-        public System.Guid GeographyId { get; set; }
         public System.Guid BusinessUnitId { get; set; }
         public System.DateTime EffectiveDate { get; set; }
         public double Cost { get; set; }
@@ -38,13 +35,10 @@ namespace RevenuePlanner.Models
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
     
-        public virtual Audience Audience { get; set; }
         public virtual BusinessUnit BusinessUnit { get; set; }
-        public virtual Geography Geography { get; set; }
         public virtual ImprovementTacticType ImprovementTacticType { get; set; }
         public virtual Plan_Improvement_Campaign_Program Plan_Improvement_Campaign_Program { get; set; }
         public virtual ICollection<Plan_Improvement_Campaign_Program_Tactic_Comment> Plan_Improvement_Campaign_Program_Tactic_Comment { get; set; }
         public virtual ICollection<Plan_Improvement_Campaign_Program_Tactic_Share> Plan_Improvement_Campaign_Program_Tactic_Share { get; set; }
-        public virtual Vertical Vertical { get; set; }
     }
 }

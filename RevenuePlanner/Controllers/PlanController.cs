@@ -2703,9 +2703,6 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Tactic.</returns>
         public PartialViewResult CreateImprovementTactic(int id = 0)
         {
-            ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
-            ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
-            ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
             ViewBag.Tactics = from t in db.ImprovementTacticTypes
                               where t.ClientId == Sessions.User.ClientId && t.IsDeployed == true
                               orderby t.Title
@@ -2730,9 +2727,6 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Tactic.</returns>
         public PartialViewResult EditImprovementTactic(int id = 0, string RedirectType = "")
         {
-            ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
-            ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
-            ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
             ViewBag.Tactics = from t in db.ImprovementTacticTypes
                               where t.ClientId == Sessions.User.ClientId && t.IsDeployed == true
                               orderby t.Title
@@ -2759,9 +2753,6 @@ namespace RevenuePlanner.Controllers
             pcptm.ImprovementTacticTypeId = pcpt.ImprovementTacticTypeId;
             pcptm.Title = pcpt.Title;
             pcptm.Description = pcpt.Description;
-            pcptm.VerticalId = pcpt.VerticalId;
-            pcptm.AudienceId = pcpt.AudienceId;
-            pcptm.GeographyId = pcpt.GeographyId;
             pcptm.EffectiveDate = pcpt.EffectiveDate;
             pcptm.Cost = pcpt.Cost;
             if (Sessions.User.UserId == pcpt.CreatedBy)
@@ -2812,9 +2803,6 @@ namespace RevenuePlanner.Controllers
                                 picpt.Title = form.Title;
                                 picpt.ImprovementTacticTypeId = form.ImprovementTacticTypeId;
                                 picpt.Description = form.Description;
-                                picpt.VerticalId = form.VerticalId;
-                                picpt.AudienceId = form.AudienceId;
-                                picpt.GeographyId = form.GeographyId;
                                 picpt.Cost = form.Cost;
                                 picpt.EffectiveDate = form.EffectiveDate;
                                 picpt.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
@@ -2873,22 +2861,7 @@ namespace RevenuePlanner.Controllers
                                     if (!isDirectorLevelUser) isReSubmission = true;
                                 }
                                 pcpobj.Description = form.Description;
-                                if (pcpobj.VerticalId != form.VerticalId)
-                                {
-                                    pcpobj.VerticalId = form.VerticalId;
-                                    if (!isDirectorLevelUser) isReSubmission = true;
-                                }
-                                if (pcpobj.AudienceId != form.AudienceId)
-                                {
-                                    pcpobj.AudienceId = form.AudienceId;
-                                    if (!isDirectorLevelUser) isReSubmission = true;
-                                }
-                                if (pcpobj.GeographyId != form.GeographyId)
-                                {
-                                    pcpobj.GeographyId = form.GeographyId;
-                                    if (!isDirectorLevelUser) isReSubmission = true;
-                                }
-
+                               
                                 if (pcpobj.EffectiveDate != form.EffectiveDate)
                                 {
                                     pcpobj.EffectiveDate = form.EffectiveDate;

@@ -48,15 +48,7 @@
             <label>Description</label>
             @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", rows = "3" })
 
-            <label>Vertical</label>
-            <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
-
-            <label>Audience</label>
-            <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
-
-            <label>Geography</label>
-            <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
-            @Html.Hidden("hdnRedirect", (bool)ViewBag.RedirectType, new { id = "hdnRedirectType" })
+           @Html.Hidden("hdnRedirect", (bool)ViewBag.RedirectType, new { id = "hdnRedirectType" })
            
                 <div class="cf margin-top10 margin-left-4">
                     <div class="pull-left width50">

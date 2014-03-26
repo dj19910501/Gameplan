@@ -561,8 +561,8 @@
                         }
                     }
                      NumberFormatterTipsy(".tipsyclass", 9);
-                    if ('@ViewBag.EditOjbect' == "ImprovementTactic" && '@ViewBag.TacticId' != 0) {
-                        $("[id=divimpTactic][index=" + @ViewBag.TacticId + "]").click();
+                     if ('@ViewBag.EditOjbect' == "ImprovementTactic" && '@ViewBag.TacticId' != 0) {
+                         $("[id=divimpTactic][index=" + @ViewBag.TacticId + "]").find("#divPanelImp").click();
                         return false;
                     }
                 }

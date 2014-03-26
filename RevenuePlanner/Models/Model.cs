@@ -26,7 +26,6 @@ namespace RevenuePlanner.Models
         }
     
         public int ModelId { get; set; }
-        public Nullable<int> ParentModelId { get; set; }
         public string Title { get; set; }
         public string Version { get; set; }
         public int Year { get; set; }
@@ -39,6 +38,7 @@ namespace RevenuePlanner.Models
         public System.Guid CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
+        public Nullable<int> ParentModelId { get; set; }
         public Nullable<bool> IsBenchmarked { get; set; }
         public Nullable<System.DateTime> EffectiveDate { get; set; }
     
