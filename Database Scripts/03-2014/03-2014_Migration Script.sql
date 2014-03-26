@@ -48,7 +48,7 @@ Update [Notification] set [EmailContent]=REPLACE(EmailContent,'Dear User','Dear 
 					'CampaignApproved','CampaignDeclined','CampaignCommentAdded','CampaignSubmitted',
 					'ProgramApproved','ProgramDeclined','ProgramCommentAdded','ProgramSubmitted',
 					'TacticApproved','TacticDeclined','TacticCommentAdded','TacticSubmitted'
-				)
+				)and EmailContent like '%<br><br>Thank You,<br>Gameplan Admin'
 
 
 /* 001_PL_43_Boost_table_creation_and_data_insertion */
