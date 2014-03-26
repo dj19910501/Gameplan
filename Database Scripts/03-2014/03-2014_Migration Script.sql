@@ -644,6 +644,58 @@ BEGIN
 INSERT [dbo].[Notification] ([NotificationInternalUseOnly], [Title], [Description], [NotificationType], [EmailContent], [IsDeleted], [CreatedDate], [CreatedBy], [ModifiedDate], [ModifiedBy], [Subject]) VALUES (N'ImprovementTacticSubmitted', N'Improvement Tactic Submitted', N'When improvement tactic is submitted', N'CM', N'Dear [NameToBeReplaced],<br/><br/>Please note that following improvement tactic has been submitted for approval.<br><br><table><tr><td>Improvement Tactic Name</td><td>:</td><td>[ImprovementTacticNameToBeReplaced]</td></tr><tr><td>Plan Name</td><td>:</td><td>[PlanNameToBeReplaced]</td></tr><tr><td>Submitted by</td><td>:</td><td>[UserNameToBeReplaced]</td></tr></table><br><br>Thank You,<br>Gameplan Admin', 0, CAST(0x0000A2A400000000 AS DateTime), N'092f54df-4c71-4f2f-9d21-0ae16155e5c1', NULL, NULL, N'Gameplan : Improvement Tactic has been submitted for approval')
 END
 
+/* Added By Bhavesh Dobariya PL Ticket 380*/
+Go
+IF NOT EXISTS (SELECT * FROM sys.objects o WHERE o.object_id = object_id(N'[dbo].[FK_Model_BusinessUnit]') AND OBJECTPROPERTY(o.object_id, N'IsForeignKey') = 1)
+BEGIN
+	  ALTER TABLE Model ADD CONSTRAINT FK_Model_BusinessUnit FOREIGN KEY (BusinessUnitId) REFERENCES BusinessUnit(BusinessUnitId)
+END
+
+Go
+IF EXISTS(SELECT * FROM sys.columns 
+        WHERE [name] = N'BusinessUnitId' AND [object_id] = OBJECT_ID(N'Model'))
+BEGIN
+    Alter table Model Alter Column BusinessUnitId uniqueidentifier NOT NULL
+END
+
+GO
+IF EXISTS (SELECT * FROM sys.objects o WHERE o.object_id = object_id(N'[dbo].[FK_Plan_Improvement_Campaign_Program_Tactic_Audience]') AND OBJECTPROPERTY(o.object_id, N'IsForeignKey') = 1)
+BEGIN
+   Alter table Plan_Improvement_Campaign_Program_Tactic drop constraint FK_Plan_Improvement_Campaign_Program_Tactic_Audience
+END
+
+GO
+IF EXISTS(SELECT * FROM sys.columns 
+        WHERE [name] = N'AudienceId' AND [object_id] = OBJECT_ID(N'Plan_Improvement_Campaign_Program_Tactic'))
+BEGIN
+    Alter table Plan_Improvement_Campaign_Program_Tactic drop column AudienceId
+END
+
+GO
+IF EXISTS (SELECT * FROM sys.objects o WHERE o.object_id = object_id(N'[dbo].[FK_Plan_Improvement_Campaign_Program_Tactic_Geography]') AND OBJECTPROPERTY(o.object_id, N'IsForeignKey') = 1)
+BEGIN
+   Alter table Plan_Improvement_Campaign_Program_Tactic drop constraint FK_Plan_Improvement_Campaign_Program_Tactic_Geography
+END
+
+GO
+IF EXISTS(SELECT * FROM sys.columns 
+        WHERE [name] = N'GeographyId' AND [object_id] = OBJECT_ID(N'Plan_Improvement_Campaign_Program_Tactic'))
+BEGIN
+    Alter table Plan_Improvement_Campaign_Program_Tactic drop column GeographyId
+END
+
+GO
+IF EXISTS (SELECT * FROM sys.objects o WHERE o.object_id = object_id(N'[dbo].[FK_Plan_Improvement_Campaign_Program_Tactic_Vertical]') AND OBJECTPROPERTY(o.object_id, N'IsForeignKey') = 1)
+BEGIN
+   Alter table Plan_Improvement_Campaign_Program_Tactic drop constraint FK_Plan_Improvement_Campaign_Program_Tactic_Vertical
+END
+
+GO
+IF EXISTS(SELECT * FROM sys.columns 
+        WHERE [name] = N'VerticalId' AND [object_id] = OBJECT_ID(N'Plan_Improvement_Campaign_Program_Tactic'))
+BEGIN
+    Alter table Plan_Improvement_Campaign_Program_Tactic drop column VerticalId
+END
 
 
 
