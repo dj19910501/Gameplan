@@ -1654,6 +1654,7 @@ namespace RevenuePlanner.Helpers
         /// Function to get Improved MQL based on marketing activites and improvement activities.
         /// Added By: Maninder Singh Wadhva
         /// Addressed PL Ticket: 37,38,47,49
+        /// Modified By Manidner Singh Wadhva Addressed PL Ticket: 383, 393
         /// </summary>
         /// <param name="marketingActivities">Marketing Activities.</param>
         /// <param name="improvementActivities">Improvement Activities.</param>
@@ -1662,25 +1663,25 @@ namespace RevenuePlanner.Helpers
         {
             MRPEntities db = new MRPEntities();
 
+            //// Getting distinct effective dates from improvement activities.
+            List<DateTime> effectiveDates = improvementActivities.Select(improvementTactic => improvementTactic.EffectiveDate).Distinct().OrderBy(improvementTactic => improvementTactic).ToList<DateTime>();
+
             //// Sorting marketing activities based on start date.
             marketingActivities = marketingActivities.OrderBy(tactic => tactic.StartDate).ToList();
-
-            //// Sorting improvement activities based on effective date.
-            improvementActivities = improvementActivities.OrderBy(improvementTactic => improvementTactic.EffectiveDate).ToList();
 
             double improvedMQL = 0;
             List<int> affectedMarketingActivityIds = new List<int>();
 
-            //// Iterating improvement activities.
-            foreach (var improvementActivity in improvementActivities)
+            //// Iterating effective dates.
+            foreach (DateTime effectiveDate in effectiveDates)
             {
                 //// Calculating Effective From and To date of current hypothetical model.
-                DateTime hypotheticalModelEffectiveDateFrom = improvementActivity.EffectiveDate;
-                int indexEffectiveTo = improvementActivities.FindIndex(improvementTactic => improvementTactic.EffectiveDate > hypotheticalModelEffectiveDateFrom);
+                DateTime hypotheticalModelEffectiveDateFrom = effectiveDate;
+                int indexEffectiveTo = effectiveDates.FindIndex(improvementTacticEffective => improvementTacticEffective > hypotheticalModelEffectiveDateFrom);
                 DateTime? hypotheticalModelEffectiveDateTo = null;
                 if (indexEffectiveTo >= 0)
                 {
-                    hypotheticalModelEffectiveDateTo = improvementActivities[indexEffectiveTo].EffectiveDate;
+                    hypotheticalModelEffectiveDateTo = effectiveDates[indexEffectiveTo];
                 }
 
                 //// Getting list of marketing activites getting affected as per Effective From and To date of current hypothetical model.
@@ -1725,6 +1726,8 @@ namespace RevenuePlanner.Helpers
                     //// Adding to improved MQL 
                     improvedMQL += affectedMarketingActivities.Select(affectedTactic => affectedTactic.INQs * mqlConversionRate).Sum();
                 }
+
+
             }
 
             //// Getting MQL of all unaffected marketing activities.
@@ -1740,6 +1743,7 @@ namespace RevenuePlanner.Helpers
         /// Function to get improved Projected revenue or Closed Won.
         /// Added By: Maninder Singh Wadhva
         /// Addressed PL Ticket: 37,38,47,49
+        /// Modified By Manidner Singh Wadhva Addressed PL Ticket: 383, 393
         /// </summary>
         /// <param name="planId">Current plan id.</param>
         /// <param name="marketingActivities">marketing activities.</param>
@@ -1750,27 +1754,27 @@ namespace RevenuePlanner.Helpers
         {
             MRPEntities db = new MRPEntities();
 
+            //// Getting distinct effective dates from improvement activities.
+            List<DateTime> effectiveDates = improvementActivities.Select(improvementTactic => improvementTactic.EffectiveDate).Distinct().OrderBy(improvementTactic => improvementTactic).ToList<DateTime>();
+
             //// Sorting marketing activities based on start date.
             marketingActivities = marketingActivities.OrderBy(tactic => tactic.StartDate).ToList();
-
-            //// Sorting improvement activities based on effective date.
-            improvementActivities = improvementActivities.OrderBy(improvementTactic => improvementTactic.EffectiveDate).ToList();
 
             double improvedValue = 0;
             List<int> affectedMarketingActivityIds = new List<int>();
 
             string funnelMarketing = Enums.Funnel.Marketing.ToString();
 
-            //// Iterating improvement activities.
-            foreach (var improvementActivity in improvementActivities)
+            //// Iterating effective dates.
+            foreach (DateTime effectiveDate in effectiveDates)
             {
                 //// Calculating Effective From and To date of current hypothetical model.
-                DateTime hypotheticalModelEffectiveDateFrom = improvementActivity.EffectiveDate;
-                int indexEffectiveTo = improvementActivities.FindIndex(improvementTactic => improvementTactic.EffectiveDate > hypotheticalModelEffectiveDateFrom);
+                DateTime hypotheticalModelEffectiveDateFrom = effectiveDate;
+                int indexEffectiveTo = effectiveDates.FindIndex(improvementTacticEffective => improvementTacticEffective > hypotheticalModelEffectiveDateFrom);
                 DateTime? hypotheticalModelEffectiveDateTo = null;
                 if (indexEffectiveTo >= 0)
                 {
-                    hypotheticalModelEffectiveDateTo = improvementActivities[indexEffectiveTo].EffectiveDate;
+                    hypotheticalModelEffectiveDateTo = effectiveDates[indexEffectiveTo];
                 }
 
                 //// Getting list of marketing activites getting affected as per Effective From and To date of current hypothetical model.
@@ -1798,10 +1802,12 @@ namespace RevenuePlanner.Helpers
                     double averageDealSizeMarketing = 0;
                     if (isProjectedRevenue)
                     {
-                        averageDealSizeMarketing = db.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == effectiveModel.ModelId &&
-                                                        modelFunnel.Funnel.Title.Equals(funnelMarketing))
-                                  .Select(mf => mf.AverageDealSize)
-                                  .SingleOrDefault();
+                        //averageDealSizeMarketing = db.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == effectiveModel.ModelId &&
+                        //                                modelFunnel.Funnel.Title.Equals(funnelMarketing))
+                        //          .Select(mf => mf.AverageDealSize)
+                        //          .SingleOrDefault();
+
+                        averageDealSizeMarketing = GetImprovedDealSize(planId, improvementActivitiesForHypotheticalModel);
                     }
 
                     //// Getting hypothetical model - conversion rate.
@@ -1822,7 +1828,7 @@ namespace RevenuePlanner.Helpers
                     //// Adding to improved value 
                     if (isProjectedRevenue)
                     {
-                        improvedValue += affectedMarketingActivities.Select(affectedTactic => affectedTactic.INQs * cwConversionRate * averageDealSizeMarketing).Sum();
+                        improvedValue += affectedMarketingActivities.Select(affectedTactic => Math.Round(affectedTactic.INQs * cwConversionRate) * averageDealSizeMarketing).Sum();
                     }
                     else
                     {
