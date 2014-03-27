@@ -122,10 +122,11 @@
                     @Html.LabelFor(model => model.ClientId)
                     @if (isSysAdmin)
                     {
-                        <div class="btn-group">
+                        //Modified by :- Sohel on 27 March 2014 for ticket #334
+                        <div class="selectBox" id="ddlClientIdSelectBox">
                             @Html.DropDownListFor(c => c.ClientId, new SelectList((System.Collections.IEnumerable)ViewData["Clients"], "ClientId", "Name"), "Please Select")
-                            @Html.ValidationMessageFor(model => model.ClientId)
                         </div>
+                        @Html.ValidationMessageFor(model => model.ClientId)
                     }
                     else
                     {
@@ -137,7 +138,8 @@
 
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.BusinessUnitId)
-                    <div class="btn-group">
+                    @*Modified by :- Sohel on 27 March 2014 for ticket #334*@
+                    <div class="selectBox" id="ddlBusinessUnitIdSelectBox">
                         @if (ViewData["BusinessUnits"] != null)
                         {
                             @Html.DropDownListFor(c => c.BusinessUnitId, new SelectList((System.Collections.IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Title"), "Please Select")
@@ -146,13 +148,14 @@
                         {
                             @Html.DropDownListFor(c => c.BusinessUnitId, Enumerable.Empty<SelectListItem>(), "Please Select")
                         }
-                        @Html.ValidationMessageFor(model => model.BusinessUnitId)
                     </div>
+                    @Html.ValidationMessageFor(model => model.BusinessUnitId)
                 </div>
 
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.GeographyId)
-                    <div class="btn-group">
+                    @*Modified by :- Sohel on 27 March 2014 for ticket #334*@
+                    <div class="selectBox" id="ddlGeographyIdSelectBox">
                         @if (ViewData["Geographies"] != null)
                         {
                             @Html.DropDownListFor(c => c.GeographyId, new SelectList((System.Collections.IEnumerable)ViewData["Geographies"], "GeographyId", "Title"), "Please Select")
@@ -161,16 +164,17 @@
                         {
                             @Html.DropDownListFor(c => c.GeographyId, Enumerable.Empty<SelectListItem>(), "Please Select")
                         }
-                        @Html.ValidationMessageFor(model => model.GeographyId)
                     </div>
+                    @Html.ValidationMessageFor(model => model.GeographyId)
                 </div>
                 
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.RoleId)
-                    <div class="btn-group">
+                    @*Modified by :- Sohel on 27 March 2014 for ticket #334*@
+                    <div class="selectBox" id="ddlRoleIdSelectBox">
                         @Html.DropDownListFor(c => c.RoleId, new SelectList((System.Collections.IEnumerable)ViewData["Roles"], "RoleId", "Title"), "Please Select")
-                        @Html.ValidationMessageFor(model => model.RoleId)
                     </div>
+                    @Html.ValidationMessageFor(model => model.RoleId)                    
                 </div>
                 
                         if (isViewOnly != "true")
@@ -188,6 +192,52 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
+
+        //Added by :- Sohel on 27 March 2014 for ticket #334
+        $(".selectBox select").selectbox();
+        
+        $('#btnSubmit').click(function () {
+            var isValid = true;
+
+            //ClientId Dropdown Required Validtion
+            if (($("#ClientId option").eq(0).val() == "" && $("#ClientId").val() == "")) {
+                $("#ddlClientIdSelectBox .sbHolder").addClass("selectBoxError");
+                isValid = false;
+            }
+            else {
+                $("#ddlClientIdSelectBox .sbHolder").removeClass("selectBoxError");
+            }
+
+            //BusinessID Dropdown Required Validtion
+            if (($("#BusinessUnitId option").eq(0).val() == "" && $("#BusinessUnitId").val() == "")) {
+                $("#ddlBusinessUnitIdSelectBox .sbHolder").addClass("selectBoxError");
+                isValid = false;
+            }
+            else {
+                $("#ddlBusinessUnitIdSelectBox .sbHolder").removeClass("selectBoxError");
+            }
+            
+            //GeographyId Dropdown Required Validtion
+            if (($("#GeographyId option").eq(0).val() == "" && $("#GeographyId").val() == "")) {
+                $("#ddlGeographyIdSelectBox .sbHolder").addClass("selectBoxError");
+                isValid = false;
+            }
+            else {
+                $("#ddlGeographyIdSelectBox .sbHolder").removeClass("selectBoxError");
+            }
+
+            //RoleID Dropdown Required Validtion
+            if (($("#RoleId option").eq(0).val() == "" && $("#RoleId").val() == "")) {
+                $("#ddlRoleIdSelectBox .sbHolder").addClass("selectBoxError");
+                isValid = false;
+            }
+            else {
+                $("#ddlRoleIdSelectBox .sbHolder").removeClass("selectBoxError");
+            }
+
+            return isValid;
+        });
+        //
 
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
 
@@ -273,49 +323,58 @@
                 loadGeography(clientId);
             }
         });
-
+                
         function loadBusinessUnit(clientId) {
             if (clientId != "" && clientId != "0" && clientId != "null") {
                 $.getJSON("@Url.Content("~/User/GetBusinessUnit")", { id: clientId },
-function (businessUnitData) {
-    var select = $("#BusinessUnitId");
-    select.empty();
-    $.each(businessUnitData, function (index, itemData) {
-        select.append($('<option/>', {
-            value: itemData.Value,
-            text: itemData.Text
-        }));
-    });
-    if ($("#BusinessUnitId option").eq(0).val() != "") {
-        $("#BusinessUnitId option").eq(0).before($("<option></option>").val("").text("Please select"));
-    }
-    if ($("#BusinessUnitId option").eq(0).val() == undefined) {
-        $("#BusinessUnitId").append($("<option></option>").val("").text("Please select"));
-    }
-    $("#BusinessUnitId").val("");
-});
+                    function (businessUnitData) {
+                        var select = $("#BusinessUnitId");
+                        select.empty();
+                        $.each(businessUnitData, function (index, itemData) {
+                            select.append($('<option/>', {
+                                value: itemData.Value,
+                                text: itemData.Text
+                            }));
+                        });
+                        if ($("#BusinessUnitId option").eq(0).val() != "") {
+                            $("#BusinessUnitId option").eq(0).before($("<option></option>").val("").text("Please select"));
+                        }
+                        if ($("#BusinessUnitId option").eq(0).val() == undefined) {
+                            $("#BusinessUnitId").append($("<option></option>").val("").text("Please select"));
+                        }
+                        $("#BusinessUnitId").val("");
+
+                        //Added by :- Sohel on 27 March 2014 for ticket #334
+                        $(".selectBox select").selectbox('detach');
+                        $(".selectBox select").selectbox("attach");
+                    });
+                }
         }
-    }
+                
         function loadGeography(clientId) {
             if (clientId != "" && clientId != "0" && clientId != "null") {
                 $.getJSON("@Url.Content("~/User/GetGeography")", { id: clientId },
-            function (geographyData) {
-                var select = $("#GeographyId");
-                select.empty();
-                $.each(geographyData, function (index, itemData) {
-                    select.append($('<option/>', {
-                        value: itemData.Value,
-                        text: itemData.Text
-                    }));
+                function (geographyData) {
+                    var select = $("#GeographyId");
+                    select.empty();
+                    $.each(geographyData, function (index, itemData) {
+                        select.append($('<option/>', {
+                            value: itemData.Value,
+                            text: itemData.Text
+                        }));
+                    });
+                    if ($("#GeographyId option").eq(0).val() != "") {
+                        $("#GeographyId option").eq(0).before($("<option></option>").val("").text("Please select"));
+                    }
+                    if ($("#GeographyId option").eq(0).val() == undefined) {
+                        $("#GeographyId").append($("<option></option>").val("").text("Please select"));
+                    }
+                    $("#GeographyId").val("");
+
+                    //Added by :- Sohel on 27 March 2014 for ticket #334
+                    $(".selectBox select").selectbox('detach');
+                    $(".selectBox select").selectbox("attach");
                 });
-                if ($("#GeographyId option").eq(0).val() != "") {
-                    $("#GeographyId option").eq(0).before($("<option></option>").val("").text("Please select"));
-                }
-                if ($("#GeographyId option").eq(0).val() == undefined) {
-                    $("#GeographyId").append($("<option></option>").val("").text("Please select"));
-                }
-                $("#GeographyId").val("");
-            });
             }
         }
     });

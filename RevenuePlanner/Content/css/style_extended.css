@@ -1852,3 +1852,38 @@ a {
     float: left;
     margin: 0 10px 0 -35px;
 }
+
+/* Added by Kapil on 12 March 2014 for #334 */
+.inputs-aligned-horizontal > .selectBox {
+    margin-bottom: 15px;
+    margin-left: 20px;
+    width:249px;
+}
+.inputs-aligned-horizontal .selectBox .sbHolder {
+    min-height:28px;
+}
+.inputs-aligned-horizontal .selectBox .sbSelector {
+    /* Commented by Sohel on 27 March 2014 for #334 */
+    /*border-right: 1px solid #CCC;*/
+    font-size:14px;
+    width: 235px; /*85%;*/
+    font-family:Arial;
+    line-height:28px;
+}
+.inputs-aligned-horizontal .selectBox .sbHolder.sbToggleOpen {
+    z-index: 9999;
+}
+/**/
+
+/* Added by Sohel on 27 March 2014 for #334 */
+#ddlIsDeletedSelectBox {
+    width: 65px;
+    margin-left: 15px;
+    margin-top:10px;
+}
+
+.selectBoxError {
+    background-color: #F1DBDE !important;
+    border: 1px solid #C6605A !important;
+}
+/* =============================================== */
