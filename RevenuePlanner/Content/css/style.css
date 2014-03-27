@@ -6450,7 +6450,13 @@ h2.title-header {
 .improvementcolor244c0a .gantt_task_drag{background: none repeat scroll 0 0 #244c0a !important;}
 .improvementcolor244c0a .gantt_task_drag:after{border-top-color: #244c0a;}
 
-.no_drag .gantt_task_drag.task_left,.gantt_task_drag.task_right
+/*Added By Maninder for DHTMLX gantt improvement task PL Ticket#47, 337*/
+.no_drag .gantt_task_drag.task_left
+{
+    display: none !important;
+}
+
+.no_drag .gantt_task_drag.task_right
 {
     display: none !important;
 }
