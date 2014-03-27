@@ -194,10 +194,11 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                     @Html.LabelFor(model => model.ClientId)
                     @if (Model.IsSystemAdmin)
                     {
-                        <div class="btn-group">
+                        //Modified by :- Sohel on 27 March 2014 for ticket #334
+                        <div class="selectBox" id="ddlClientIdSelectBox">
                             @Html.DropDownListFor(c => c.ClientId, new SelectList((System.Collections.IEnumerable)ViewData["Clients"], "ClientId", "Name"), "Please Select")
-                            @Html.ValidationMessageFor(model => model.ClientId)
                         </div>
+                        @Html.ValidationMessageFor(model => model.ClientId)
                     }
                     else
                     {
@@ -211,10 +212,11 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                     @if (permRoleCodesForDel.Contains(Model.RoleCode) || (Model.IsSystemAdmin && currentUserId == Convert.ToString(Model.UserId)))
                     //@if ((Convert.ToString(Model.UserId) == currentUserId) || permRoleCodesForDel.Contains(Model.RoleCode))
                     {
-                        <div class="btn-group" style="margin-bottom: 6px;">
+                        //Modified by :- Sohel on 27 March 2014 for ticket #334
+                        <div class="selectBox" style="margin-bottom: 6px;" id="ddlBusinessUnitIdSelectBox">
                             @Html.DropDownListFor(c => c.BusinessUnitId, new SelectList((System.Collections.IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Title"), "Please Select")
-                            @Html.ValidationMessageFor(model => model.BusinessUnitId)
                         </div>
+                        @Html.ValidationMessageFor(model => model.BusinessUnitId)
                     }
                     else
                     {
@@ -229,10 +231,11 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                     @if (permRoleCodesForDel.Contains(Model.RoleCode) || (Model.IsSystemAdmin && currentUserId == Convert.ToString(Model.UserId)))
                     //@if ((Convert.ToString(Model.UserId) == currentUserId) || permRoleCodesForDel.Contains(Model.RoleCode))
                     {
-                        <div class="btn-group" style="margin-bottom: 6px;">
+                        //Modified by :- Sohel on 27 March 2014 for ticket #334
+                        <div class="selectBox" style="margin-bottom: 6px;" id="ddlGeographyIdSelectBox">
                             @Html.DropDownListFor(c => c.GeographyId, new SelectList((System.Collections.IEnumerable)ViewData["Geographies"], "GeographyId", "Title"), "Please Select")
-                            @Html.ValidationMessageFor(model => model.GeographyId)
                         </div>
+                        @Html.ValidationMessageFor(model => model.GeographyId)
                     }
                     else
                     {
@@ -246,10 +249,11 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                     @if (permRoleCodesForDel.Contains(Model.RoleCode) || (Model.IsSystemAdmin && currentUserId == Convert.ToString(Model.UserId)))
                     //@if ((Convert.ToString(Model.UserId) == currentUserId) || permRoleCodesForDel.Contains(Model.RoleCode))
                     {
-                        <div class="btn-group" style="margin-bottom: 6px;">
+                        //Modified by :- Sohel on 27 March 2014 for ticket #334
+                        <div class="selectBox" style="margin-bottom: 6px;" id="ddlRoleIdSelectBox">
                             @Html.DropDownListFor(c => c.RoleId, new SelectList((System.Collections.IEnumerable)ViewData["Roles"], "RoleId", "Title"), "Please Select")
-                            @Html.ValidationMessageFor(model => model.RoleId)
                         </div>
+                        @Html.ValidationMessageFor(model => model.RoleId)
                     }
                     else
                     {
@@ -268,7 +272,10 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                             @{
                             var items = new List<System.Web.UI.WebControls.ListItem> { new System.Web.UI.WebControls.ListItem { Text = "No", Value = System.Boolean.FalseString }, new System.Web.UI.WebControls.ListItem { Text = "Yes", Value = System.Boolean.TrueString } };
                             }
-                            @Html.DropDownListFor(c => c.IsDeleted, new SelectList(items), new { style = "width:54px; height:23px;float:right;margin-top:10px;margin-right:12px;" })
+                            @*Modified by :- Sohel on 27 March 2014 for ticket #334*@
+                            <div class="selectBox" id="ddlIsDeletedSelectBox">
+                                @Html.DropDownListFor(c => c.IsDeleted, new SelectList(items), new { style = "width:54px; height:23px;float:right;margin-top:10px;margin-right:12px;" })
+                            </div>
                         </div>
                         }
                     }
@@ -300,6 +307,52 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
 
 <script type="text/javascript">
     $(document).ready(function () {
+
+        //Added by :- Sohel on 27 March 2014 for ticket #334
+        $(".selectBox select").selectbox();
+
+        $('#btnSubmit').click(function () {
+            var isValid = true;
+
+            //ClientId Dropdown Required Validtion
+            if (($("#ClientId option").eq(0).val() == "" && $("#ClientId").val() == "")) {
+                $("#ddlClientIdSelectBox .sbHolder").addClass("selectBoxError");
+                isValid = false;
+            }
+            else {
+                $("#ddlClientIdSelectBox .sbHolder").removeClass("selectBoxError");
+            }
+
+            //BusinessID Dropdown Required Validtion
+            if (($("#BusinessUnitId option").eq(0).val() == "" && $("#BusinessUnitId").val() == "")) {
+                $("#ddlBusinessUnitIdSelectBox .sbHolder").addClass("selectBoxError");
+                isValid = false;
+            }
+            else {
+                $("#ddlBusinessUnitIdSelectBox .sbHolder").removeClass("selectBoxError");
+            }
+
+            //GeographyId Dropdown Required Validtion
+            if (($("#GeographyId option").eq(0).val() == "" && $("#GeographyId").val() == "")) {
+                $("#ddlGeographyIdSelectBox .sbHolder").addClass("selectBoxError");
+                isValid = false;
+            }
+            else {
+                $("#ddlGeographyIdSelectBox .sbHolder").removeClass("selectBoxError");
+            }
+
+            //RoleID Dropdown Required Validtion
+            if (($("#RoleId option").eq(0).val() == "" && $("#RoleId").val() == "")) {
+                $("#ddlRoleIdSelectBox .sbHolder").addClass("selectBoxError");
+                isValid = false;
+            }
+            else {
+                $("#ddlRoleIdSelectBox .sbHolder").removeClass("selectBoxError");
+            }
+
+            return isValid;
+        });
+        //
 
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
 
@@ -378,6 +431,10 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                 $("#BusinessUnitId").append($("<option></option>").val("").text("Please select"));
             }
             $("#BusinessUnitId").val("");
+
+            //Added by :- Sohel on 27 March 2014 for ticket #334
+            $(".selectBox select").selectbox('detach');
+            $(".selectBox select").selectbox("attach");
         });
         }
     }
@@ -400,6 +457,10 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                     $("#GeographyId").append($("<option></option>").val("").text("Please select"));
                 }
                 $("#GeographyId").val("");
+
+                //Added by :- Sohel on 27 March 2014 for ticket #334
+                $(".selectBox select").selectbox('detach');
+                $(".selectBox select").selectbox("attach");
             });
             }
         }
