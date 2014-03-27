@@ -641,9 +641,9 @@
                                 '<div class="pull-left width55"></div>' +
                                 '<div class="height40 pull-right width50px"></div>' +
                                 //'<div class="total height40 pull-right width3"></div>' +
-                                '<div class="total pull-right width100px text-right">' + FormatCommas(programTotal.toString(), false) + '</div>' +
-                                '<div class="total pull-right width150px text-right tipsyclass">$' + FormatCommas(costTotal.toString(), false) + '</div>' +
-                                '<div class="total pull-right width100px text-right tipsyclass">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
+                                '<div class="total markTotal pull-right width100px text-right">' + FormatCommas(programTotal.toString(), false) + '</div>' +
+                                '<div class="total markTotal pull-right width150px text-right tipsyclass">$' + FormatCommas(costTotal.toString(), false) + '</div>' +
+                                '<div class="total markTotal pull-right width100px text-right tipsyclass">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
                             '</div>';
 
                 var $tableCampaigns = $('.accordion-campaign > #campaignAccordion');
@@ -798,9 +798,14 @@
 
         //fill campaign table with data from json
         function fillImprovementTacticTable() {
+            var isImpCount = false;
             if (typeof ImprovementTactic != 'undefined') {
                 var $html = '';
                 if (ImprovementTactic.length) {
+                    isImpCount = true;
+                    $(".markTotal").each(function () {
+                        $(this).css("color", "#D4D4D4");
+                    });
                     for (i in ImprovementTactic) {
                         costTotal = costTotal + parseFloat(ImprovementTactic[i].cost);
                         addRowImprovementTactic(i, ImprovementTactic[i].id, ImprovementTactic[i].title, ImprovementTactic[i].cost, ImprovementTactic[i].isOwner, ImprovementTactic[i].ImprovementProgramId);
@@ -821,9 +826,9 @@
             $html += '<div class="cf padding-left20">' +
                                 '<div class="pull-left width55"></div>' +
                                 '<div class="height40 pull-right width50px"></div>' +
-                                '<div class="total pull-right width100px text-right tipsyclass">' + FormatCommas(programTotal.toString(), false) + '</div>' +
-                                '<div class="total pull-right width150px text-right tipsyclass">$' + FormatCommas(costTotal.toString(), false) + '</div>' +
-                                '<div class="total pull-right width100px text-right" id="DivImprovementTotal">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
+                                '<div class="total improvementTotal pull-right width100px text-right tipsyclass">' + FormatCommas(programTotal.toString(), false) + '</div>' +
+                                '<div class="total improvementTotal pull-right width150px text-right tipsyclass">$' + FormatCommas(costTotal.toString(), false) + '</div>' +
+                                '<div class="total improvementTotal pull-right width100px text-right" id="DivImprovementTotal">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
                                 '<div class="gray-add-container" id="grayImprovementContainer" style="display:none;">' +
                                 //'<p class="text1">Executing these improvement tactics could deliver...</p>' +
                                 //'<p class="text2"><strong>28</strong> more MQLs yielding <strong>8</strong> more CWs,<br>' +
@@ -837,7 +842,11 @@
                 var $tableImprovementCampaigns = $('.accordion-campaign > #improvementAccordionGroup');
 
                 $tableImprovementCampaigns.append($html);
-
+                if (!isImpCount) {
+                    $(".improvementTotal").each(function () {
+                        $(this).css("color", "#D4D4D4");
+                    });
+                }
                 addEventTriggerSlidepanel();
             
         }
