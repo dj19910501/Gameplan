@@ -3798,6 +3798,15 @@ namespace RevenuePlanner.Controllers
             ViewBag.ReportType = reportType;
             BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
             var individuals = bdsUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, Sessions.IsSystemAdmin);
+
+            ////Added by :- Sohel Pathan on 27 March 2014 For Ticket #358
+            if (Sessions.User != null)
+            {
+                individuals.Add(Sessions.User);
+                individuals = individuals.OrderBy(a => a.FirstName).ToList();
+            }
+            ////
+
             if (individuals.Count != 0)
             {
                 ViewBag.EmailIds = individuals.Select(member => member.Email).ToList<string>();
