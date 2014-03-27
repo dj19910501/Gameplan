@@ -213,7 +213,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                     //@if ((Convert.ToString(Model.UserId) == currentUserId) || permRoleCodesForDel.Contains(Model.RoleCode))
                     {
                         //Modified by :- Sohel on 27 March 2014 for ticket #334
-                        <div class="selectBox" style="margin-bottom: 6px;" id="ddlBusinessUnitIdSelectBox">
+                        <div class="selectBox" id="ddlBusinessUnitIdSelectBox">
                             @Html.DropDownListFor(c => c.BusinessUnitId, new SelectList((System.Collections.IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Title"), "Please Select")
                         </div>
                         @Html.ValidationMessageFor(model => model.BusinessUnitId)
@@ -232,7 +232,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                     //@if ((Convert.ToString(Model.UserId) == currentUserId) || permRoleCodesForDel.Contains(Model.RoleCode))
                     {
                         //Modified by :- Sohel on 27 March 2014 for ticket #334
-                        <div class="selectBox" style="margin-bottom: 6px;" id="ddlGeographyIdSelectBox">
+                        <div class="selectBox" id="ddlGeographyIdSelectBox">
                             @Html.DropDownListFor(c => c.GeographyId, new SelectList((System.Collections.IEnumerable)ViewData["Geographies"], "GeographyId", "Title"), "Please Select")
                         </div>
                         @Html.ValidationMessageFor(model => model.GeographyId)
@@ -250,7 +250,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                     //@if ((Convert.ToString(Model.UserId) == currentUserId) || permRoleCodesForDel.Contains(Model.RoleCode))
                     {
                         //Modified by :- Sohel on 27 March 2014 for ticket #334
-                        <div class="selectBox" style="margin-bottom: 6px;" id="ddlRoleIdSelectBox">
+                        <div class="selectBox" id="ddlRoleIdSelectBox">
                             @Html.DropDownListFor(c => c.RoleId, new SelectList((System.Collections.IEnumerable)ViewData["Roles"], "RoleId", "Title"), "Please Select")
                         </div>
                         @Html.ValidationMessageFor(model => model.RoleId)
