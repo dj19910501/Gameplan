@@ -2644,7 +2644,7 @@ namespace RevenuePlanner.Controllers
                 if (objPlan == null)
                 {
                     // Setup default title for improvement campaign.
-                    string planImprovementCampaignTitle = "Improvement Campaign";
+                    string planImprovementCampaignTitle = Common.ImprovementActivities;
 
                     Plan_Improvement_Campaign picobj = new Plan_Improvement_Campaign();
                     picobj.ImprovePlanId = Sessions.PlanId;
@@ -2661,7 +2661,7 @@ namespace RevenuePlanner.Controllers
                         pipobj.CreatedDate = DateTime.Now;
                         pipobj.ImprovementPlanCampaignId = retVal;
                         // Setup default title for improvement Program.
-                        pipobj.Title = "Improvement Program";
+                        pipobj.Title = Common.ImprovementProgram;
                         db.Entry(pipobj).State = EntityState.Added;
                         result = db.SaveChanges();
                         retVal = pipobj.ImprovementPlanProgramId;
@@ -3346,8 +3346,12 @@ namespace RevenuePlanner.Controllers
 
             //// Calculating MQL difference.
             double? improvedMQL = Common.CalculateImprovedMQL(Sessions.PlanId, false);
-            double planMQL = db.Plan_Campaign_Program_Tactic.Where(tactic => tacticIds.Contains(tactic.PlanTacticId))
-                                                            .Sum(tactic => tactic.MQLs);
+            double planMQL = 0;
+            if (tacticIds.Count > 0)
+            {
+                planMQL = db.Plan_Campaign_Program_Tactic.Where(tactic => tacticIds.Contains(tactic.PlanTacticId))
+                                                                .Sum(tactic => tactic.MQLs);
+            }
             double differenceMQL = Convert.ToDouble(improvedMQL) - planMQL;
 
 

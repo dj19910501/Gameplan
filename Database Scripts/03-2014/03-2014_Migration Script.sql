@@ -670,7 +670,11 @@ BEGIN
 END
 
 
-
+/* PL Ticket 395 There is no Parent Campaign field in our system 
+Date: 27-03-2014 
+Added By Bhavesh Dobariya */
+Update Plan_Improvement_Campaign SET Title = 'Improvement Activities'
+Update Plan_Improvement_Campaign_Program SET Title = 'Improvement Program'
 
 
 

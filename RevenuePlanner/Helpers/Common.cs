@@ -115,6 +115,10 @@ namespace RevenuePlanner.Helpers
         //Suffix for Plan Improvement - Added By Kuber 
         public const string defaultImprovementSuffix = "_Imp";
 
+        // Default Improvement campaign Title
+        public static string ImprovementActivities = "Improvement Activities";
+        public static string ImprovementProgram = "Improvement Program";
+
         #endregion
 
         #region Enums
@@ -1429,6 +1433,14 @@ namespace RevenuePlanner.Helpers
         /// <returns>Return list of object containing improvement tactic task data.</returns>
         private static List<object> GetImprovementTacticTaskData(List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics, DateTime calendarStartDate, DateTime calendarEndDate, bool isApplyTocalendar)
         {
+            //// Modified By: Maninder Singh Wadhva to address Ticket 395
+            MRPEntities db = new MRPEntities();
+            int improvementPlanCampaignId = 0;
+            if (improvementTactics.Count() > 0)
+            {
+                improvementPlanCampaignId = improvementTactics[0].Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId;
+            }
+
             //// Getting Task Data.
             string tacticStatusSubmitted = Enums.TacticStatusValues.Single(s => s.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value;
             string tacticStatusDeclined = Enums.TacticStatusValues.Single(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value;
@@ -1437,7 +1449,7 @@ namespace RevenuePlanner.Helpers
             //// Modified By Maninder Singh Wadhva PL Ticket#47, 337
             var taskDataImprovementTactic = improvementTactics.Select(improvementTactic => new
             {
-                id = string.Format("M{0}_I{1}_Y{2}", 1, improvementTactic.ImprovementPlanTacticId, improvementTactic.ImprovementTacticTypeId),
+                id = string.Format("M{0}_I{1}_Y{2}", improvementPlanCampaignId, improvementTactic.ImprovementPlanTacticId, improvementTactic.ImprovementTacticTypeId),
                 text = improvementTactic.Title,
                 start_date = Common.GetStartDateAsPerCalendar(calendarStartDate, improvementTactic.EffectiveDate),
                 duration = Common.GetEndDateAsPerCalendar(calendarStartDate,
@@ -1446,7 +1458,7 @@ namespace RevenuePlanner.Helpers
                                                           calendarEndDate) - 1,
                 progress = 0,
                 open = true,
-                parent = string.Format("M{0}", 1),
+                parent = string.Format("M{0}", improvementPlanCampaignId),
                 color = (isApplyTocalendar ? Common.COLORC6EBF3_WITH_BORDER_IMPROVEMENT : string.Concat(GANTT_BAR_CSS_CLASS_PREFIX_IMPROVEMENT, improvementTactic.ImprovementTacticType.ColorCode.ToLower())),
                 isSubmitted = improvementTactic.Status.Equals(tacticStatusSubmitted),
                 isDeclined = improvementTactic.Status.Equals(tacticStatusDeclined),
@@ -1473,18 +1485,11 @@ namespace RevenuePlanner.Helpers
         /// <returns>Return improvement activity task data.</returns>
         private static object GetImprovementActivityTaskData(List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics, DateTime calendarStartDate, DateTime calendarEndDate, bool isApplyTocalendar)
         {
-            string color = "";
-            ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
-            //if (isApplyTocalendar)
-            //{
-            //    color = Common.COLOR27A4E5;
-            //}
-            //else
-            //{
-            //    color = Common.COLORC6EBF3_WITH_BORDER;
-            //}
+            //// Modified By: Maninder Singh Wadhva to address Ticket 395
+            MRPEntities db = new MRPEntities();
+            Plan_Improvement_Campaign improvementCampaign = improvementTactics[0].Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign;
 
-            color = Common.COLORC6EBF3_WITH_BORDER;
+            string color = Common.COLORC6EBF3_WITH_BORDER;
 
             //// Getting start date for improvement activity task.
             DateTime startDate = improvementTactics.Select(improvementTactic => improvementTactic.EffectiveDate).Min();
@@ -1492,8 +1497,8 @@ namespace RevenuePlanner.Helpers
             //// Creating task Data for the only parent of all plan improvement tactic.
             var taskDataImprovementActivity = new
             {
-                id = string.Format("M{0}", "1"),
-                text = "Improvement Activities",
+                id = string.Format("M{0}", improvementCampaign.ImprovementPlanCampaignId),
+                text = improvementCampaign.Title,
                 start_date = Common.GetStartDateAsPerCalendar(calendarStartDate, startDate),
                 duration = Common.GetEndDateAsPerCalendar(calendarStartDate,
                                                           calendarEndDate,
@@ -1502,7 +1507,7 @@ namespace RevenuePlanner.Helpers
                 progress = 0,
                 open = true,
                 color = color,
-                ImprovementActivityId = 1,
+                ImprovementActivityId = improvementCampaign.ImprovementPlanCampaignId,
                 isImprovement = true,
                 IsHideDragHandleLeft = startDate < calendarStartDate,
                 IsHideDragHandleRight = true

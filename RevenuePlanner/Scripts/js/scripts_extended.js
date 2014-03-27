@@ -168,6 +168,7 @@ function SetFormatForLabel(lableId, maxSize)
         var SK = "k";
         var SM = "M";
         var SB = "B";
+        var ST = "T";
         switch (lengthvalue) {
             case 5:
                 firstString = txtvalue.substring(0, 2);
@@ -201,10 +202,22 @@ function SetFormatForLabel(lableId, maxSize)
                 firstString = txtvalue.substring(0, 3);
                 lastString = SB;
                 break;
+            case 13:
+                firstString = txtvalue.substring(0, 1);
+                lastString = ST;
+                break;
+            case 14:
+                firstString = txtvalue.substring(0, 2);
+                lastString = ST;
+                break;
+            case 15:
+                firstString = txtvalue.substring(0, 3);
+                lastString = ST;
+                break;
             default:
-                var defaultValue = lengthvalue - 10;
+                var defaultValue = lengthvalue - 13;
                 firstString = txtvalue.substring(0, defaultValue);
-                lastString = SB;
+                lastString = ST;
                 break;
         }
         $(lableId).text(firstString + lastString);
@@ -259,7 +272,7 @@ function FormatNumber(value, isPercentage) {
 
 //// Added By Maninder Singh 
 //// Date 1/28/2014
-//// Function to append abberiviation i.e. K - for thousand, M- for million and B - for billion.
+//// Function to append abberiviation i.e. K - for thousand, M- for million ,B - for billion and T - for trillion.
 function GetAbberiviatedValue(value) {
     var absValue = Math.abs(value);
     absValue = absValue.toFixed();
@@ -278,10 +291,15 @@ function GetAbberiviatedValue(value) {
         value = Number(value).toFixed(2);
         value = value.toString() + 'M';
     }
-    else {
+    else if (absValue < 1000000000000) {
         value = (Math.round(parseFloat(absValue / 1000000000) * 100) / 100);
         value = Number(value).toFixed(2);
         value = value.toString() + 'B';
+    }
+    else {
+            value = (Math.round(parseFloat(absValue / 1000000000000) * 100) / 100);
+        value = Number(value).toFixed(2);
+        value = value.toString() + 'T';
     }
 
     return (isNegative ? '-' + value : value);

@@ -827,13 +827,20 @@ namespace RevenuePlanner.Controllers
         /// <returns>Return improvement tactic for accordion</returns>
         private object GetImprovementTacticForAccordion(List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics)
         {
+            //// Modified By: Maninder Singh Wadhva to address Ticket 395
+            int improvementPlanCampaignId = 0;
+            if (improvementTactics.Count() > 0)
+            {
+                improvementPlanCampaignId = improvementTactics[0].Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId;
+            }
+
             //// Getting plan improvement tactic for left accordion.
             var improvementPlanTactic = improvementTactics.Select(improvementTactic => new
             {
                 improvementTactic.ImprovementPlanTacticId,
                 improvementTactic.ImprovementTacticTypeId,
                 improvementTactic.Title,
-                TaskId = string.Format("M{0}_I{1}_Y{2}", 1, improvementTactic.ImprovementPlanTacticId, improvementTactic.ImprovementTacticTypeId)
+                TaskId = string.Format("M{0}_I{1}_Y{2}", improvementPlanCampaignId, improvementTactic.ImprovementPlanTacticId, improvementTactic.ImprovementTacticTypeId)
             });
 
             return improvementPlanTactic;
