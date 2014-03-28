@@ -10,7 +10,8 @@
             <a class="close">×</a>
             <strong>Error!</strong><span id="spanMessageErrorShareReportPopup"></span>
         </div>
-        <div id="modal-container-186470" class="form-inspect-share hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        @*Modified by Sohel on 28th March to remove fixed height of pop-up. height-auto class has been added*@ 
+        <div id="modal-container-186470" class="form-inspect-share hide fade height-auto" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="login-wrapper">
                 <form name="share-report">
                     <h2 class="primary-title source-sans-prosemibold">Share Report</h2>
@@ -29,7 +30,8 @@
 
 <div class="row-fluid calc-height" id="DivShareReportConfirmationContainer">
     <div class="span12">
-        <div id="modal-container-confirmation" class="form-inspect-share-confirmation hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        @*Modified by Sohel on 28th March to remove fixed height of pop-up. height-auto class has been added*@ 
+        <div id="modal-container-confirmation" class="form-inspect-share-confirmation hide fade height-auto" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="login-wrapper">
                 <form name="login-register">
                     <h2 class="primary-title source-sans-prosemibold">Report Successfully<br />
@@ -125,6 +127,9 @@
                 },
                 success: function (data) {
                     if (data != 'undefined' && data != false) {
+                        ////Added by Sohel on 28th March 2014 for Wrapping the emaild ids.
+                        email = email.replace(/,/g, ", ");
+                        ////
                         ShowConfirmation(email);
                         return false;
                     }

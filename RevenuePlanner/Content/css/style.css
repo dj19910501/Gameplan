@@ -5670,6 +5670,7 @@ span.left-arrow {
         margin-top: 25px !important;
         color: #fff!important;
         text-shadow: 0 1px 1px #235d86 !important;
+        margin-bottom: 5px;     /*Added by Sohel on 28th March 2014 to give bottom margin of button in Confirmation popup*/
     }
 
 .error-over-modal {
@@ -6460,3 +6461,9 @@ h2.title-header {
 {
     display: none !important;
 }
+
+/* Added by Sohel on 28th March 2014 for Share Report View Height issue*/
+.height-auto {
+    height:auto;
+}
+/**/
