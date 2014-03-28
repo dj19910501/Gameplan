@@ -37,7 +37,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="activeMenu"></param>
         /// <returns></returns>
-        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Report)
+        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Report, bool isFromReport = false)
         {
             if (Sessions.RolePermission != null)
             {
@@ -75,7 +75,7 @@ namespace RevenuePlanner.Controllers
                 lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Model.BusinessUnitId == Sessions.BusinessUnitId && pl.Status.Equals(planPublishedStatus) && pl.Year.Equals(currentYear)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
             }
             /* added by Nirav shah for TFS Point : 218*/
-            if (Sessions.PlanId != 0)
+            if (Sessions.PlanId != 0 && !isFromReport)
             {
                 if (Common.IsPlanPublished(Sessions.PlanId))
                 {

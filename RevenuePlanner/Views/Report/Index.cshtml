@@ -27,7 +27,7 @@
             </span>
 
             <span class="report-summry-plans" id="nl-ReportSummry2">
-                <select id="reportSummry2" data-default="0%" class="">
+                <select id="reportSummry2" data-default="0%" class="" maxlength="18">
                 </select>
                 <div class="nl-overlay"></div>
             </span>
@@ -160,7 +160,7 @@
                 var BUOption = $.grep($('#reportSummry option'), function (value) { return $(value).text() == BUTitle; });
                 SelectedBUId = $(BUOption[0]).val();
 
-                var PlanTitle = $(this).text();
+                var PlanTitle = $(this).attr('originalValue');
                 var PlanOption = $.grep($('#reportSummry2 option'), function (value) { return $(value).text() == PlanTitle; });
                 SelectedPlanId = $(PlanOption[0]).val();
                 $('#h2PlanTitle').html(PlanTitle);

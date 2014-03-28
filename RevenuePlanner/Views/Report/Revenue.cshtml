@@ -28,7 +28,7 @@
             </span>
 
             <span class="report-summry-plans" id="nl-ReportSummry2">
-                <select id="reportSummry2" data-default="0%" class="">
+                <select id="reportSummry2" data-default="0%" class="" maxlength="18">
                 </select>
                 <div class="nl-overlay"></div>
             </span>
@@ -53,7 +53,7 @@
     </div>
     <ul class="nav nav-list nav-gray-reports">
         <li class="item">
-            <a class="source-sans-probold summary" onclick="window.location.href='@Url.Action("Index", "Report")'"><span></span>SUMMARY</a>
+            <a class="source-sans-probold summary" onclick="window.location.href='@Url.Action("Index", "Report", new { isFromReport = true})'"><span></span>SUMMARY</a>
         </li>
         <li class="item active">
             <a class="source-sans-probold revenue" onclick="window.location.href='@Url.Action("Revenue", "Report")'"><span></span>REVENUE</a>

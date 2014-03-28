@@ -5,7 +5,7 @@
 
         <form id="nl-form2" class="nl-form-plan-title without-margin">
 
-            <select id="dropdown-plan-title" data-default="0%" class="">
+            <select id="dropdown-plan-title" data-default="0%" class="" maxlength="40">
                 <script>
                     var plan = @Html.Raw(Json.Encode(Model.plans));
                     populateNF(plan, "dropdown-plan-title");
