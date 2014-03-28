@@ -13,7 +13,8 @@
                 <a class="close">×</a>
                 <strong>Error!</strong><span id="spanMessageErrorShareTacticPopup"></span>
             </div>
-            <div id="DivShareTacticPopup" class="form-inspect-share hide fade in" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block">
+            @*Modified by Sohel on 28th March to remove fixed height of pop-up. height-auto class has been added*@ 
+            <div id="DivShareTacticPopup" class="form-inspect-share hide fade in height-auto" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block">
                 <div class="login-wrapper">
                     <form name="share-tactic">
                         <h2 class="primary-title source-sans-prosemibold">Share Program</h2>
@@ -34,7 +35,8 @@
 <div class="container-fluid all-height" id="DivShareTacticPopupConfirmationMain">
     <div class="row-fluid calc-height">
         <div class="span12">
-            <div id="DivShareTacticPopupConfirmation" class="form-inspect-share-confirmation hide fade in" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none">
+            @*Modified by Sohel on 28th March to remove fixed height of pop-up. height-auto class has been added*@ 
+            <div id="DivShareTacticPopupConfirmation" class="form-inspect-share-confirmation hide fade in height-auto" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none">
                 <div class="login-wrapper">
                     <form name="login-register">
                         <h2 class="primary-title source-sans-prosemibold">Program Successfully<br />
@@ -116,6 +118,9 @@
             },
             success: function (data) {
                 if (data != 'undefined' && data != false) {
+                    ////Added by Sohel on 28th March 2014 for Wrapping the emaild ids.
+                    email = email.replace(/,/g, ", ");
+                    ////
                     ShowConfirmation(email);
                     return false;
                 }
