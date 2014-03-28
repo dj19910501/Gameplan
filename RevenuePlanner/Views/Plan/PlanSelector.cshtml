@@ -274,13 +274,14 @@
         var $baselineTable = $('#table_baseline > tbody');
         var $html = "";
         $html += '<tr id="' + _PlanId + '">' +
-                '<td><span class="delete-temp-program width5"></span><span class="title-baseline-model">' + _Title + '</span><span class="search-icon"></span></td>' +
+                '<td><span class="delete-temp-program width5"></span><span class="title-baseline-model truncate">' + _Title + '</span><span class="search-icon"></span></td>' +
                 '<td>' + _LastUpdated + '</td>' +
                 '<td>' + _MQLs + '</td>' +
                 '<td>$' + _Budget + '</td>' +
                 '<td>' + _Status + '</td>' +
                 '</tr>';
         $baselineTable.append($html);
+        
     }
 
     function LoadPlanData(SelectedYear, SelectedBU) {
@@ -292,6 +293,7 @@
             success: function (r) {
                 baselinesModels = r;
                 fillBaselineTable();
+                TruncateTitle();
                 myApp.hidePleaseWait();
             }
         });
@@ -307,4 +309,15 @@
         LoadPlanData(SelectedYear, SelectedBU);
     }
 
+    function TruncateTitle() {
+        $("#table_baseline").find('.truncate').each(function () {
+            var title = $(this).text();
+            var mainText = title;
+            if (title.length >= 50) {
+                title = title.substring(0, 50) + "...";
+                $(this).prop('title', mainText);
+            }
+            $(this).text(title);
+        });
+    }
 </script>

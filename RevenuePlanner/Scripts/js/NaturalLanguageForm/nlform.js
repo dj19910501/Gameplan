@@ -100,7 +100,11 @@
 			Array.prototype.slice.call(this.elOriginal.querySelectorAll('option')).forEach(function (el, i) {
 			    // Addded by Bhavesh Dobariya
 			    // Text is large then Dropdown issue occur - resolved
-                // Date: 28-3-2014
+			    // Date: 28-3-2014
+			    var ddValue;
+			    if (el.hasAttribute('value')) {
+			        ddValue = el.getAttribute('value');
+			    }
                 var ddtextValue = el.innerHTML;
 			    var isLarge = false;
 			    if (ddtextValue.length > 30) {
@@ -119,7 +123,7 @@
 			    if (isLarge) {
 			        ihtml += ' title="' + el.innerHTML + '"';
 			    }
-			    ihtml += ' originalValue="' + el.innerHTML + '">' + ddtextValue + '</li>';
+			    ihtml += ' value="' + ddValue + '" originalValue="' + el.innerHTML + '">' + ddtextValue + '</li>';
 
 			} );
 			this.optionsList.innerHTML = ihtml;

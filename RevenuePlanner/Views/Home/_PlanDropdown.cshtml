@@ -7,16 +7,16 @@
 
             <select id="dropdown-plan-title" data-default="0%" class="" maxlength="40">
                 <script>
-                    var plan = @Html.Raw(Json.Encode(Model.plans));
+                    var plan = @Html.Raw(Json.Encode(Model.plans))
                     populateNF(plan, "dropdown-plan-title");
                 </script>
             </select>
-
+            <div class="nl-overlay"></div>
             <!--<div class="nl-overlay"></div>-->
             <script>
                 var nlform = new NLForm(document.getElementById('nl-form2'));
             </script>
-            <div class="nl-overlay"></div>
+            
         </form>
     </li>
     <li>
