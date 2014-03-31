@@ -3397,9 +3397,10 @@ namespace RevenuePlanner.Controllers
                                                .Sum(stage => stage.Value);
             double differenceSV = Convert.ToDouble(improvedSV) - sv;
 
-            double? improvedProjectedRevenue = Common.CalculateImprovedProjectedRevenueOrCW(Sessions.PlanId, true);
-            double projectedRevenue = ReportController.ProjectedRevenueCalculate(tacticIds).Sum(cw => cw.ProjectedRevenue);
-            double differenceProjectedRevenue = Convert.ToDouble(improvedProjectedRevenue) - projectedRevenue;
+            //// Modified By:Maninder Singh Wadhva, Ticket#404 Revenue increase should be a multiple of ADS
+            //double? improvedProjectedRevenue = Common.CalculateImprovedProjectedRevenueOrCW(Sessions.PlanId, true);
+            //double projectedRevenue = ReportController.ProjectedRevenueCalculate(tacticIds).Sum(cw => cw.ProjectedRevenue);
+            double differenceProjectedRevenue = Math.Round(differenceDealSize) * Math.Round(differenceCW);
 
             double improvedCost = improvementActivities.Sum(improvementActivity => improvementActivity.Cost);
             return Json(new
