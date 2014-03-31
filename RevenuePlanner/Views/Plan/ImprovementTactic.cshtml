@@ -53,7 +53,7 @@
                 <div class="cf margin-top10 margin-left-4">
                     <div class="pull-left width50">
                         <label class="padding-left4">Effective date</label>
-                        <div class="dp datepicker input-append date without-margin calendar-width" id="dp_start" data-date="today();" data-date-format="@RevenuePlanner.Helpers.Common.dateFormat">
+                        <div class="dp datepicker input-append date without-margin calendar-width" id="dp_start" data-date="@Model.EffectiveDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.dateFormat">
                             @Html.TextBoxFor(model => model.EffectiveDate, new { @class = "span2 black-border-right font-size13", id = "t_startdate" })
                             <span class="add-on height20">
                                 <img class="marginTop-5px" src="~/Content/images/gray-calendar-icon.png"></span>
@@ -166,8 +166,12 @@
                 ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
                 return false;
             }
-                var sdate = $('#t_startdate').val();
-                if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
+            var sdate = $('#t_startdate').val();
+            if (!isDate(sdate)) {
+                alert('please select valid effective date.');
+                return false;
+            }
+            if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
             $("#txtCost").val(ReplaceCC($("#txtCost").val()));
 
             $.ajax({
