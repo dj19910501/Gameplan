@@ -1029,6 +1029,14 @@ namespace RevenuePlanner.Controllers
                 CreatePlanImprovementCampaignAndProgram();
                 ViewBag.ImprovementPlanProgramId = db.Plan_Improvement_Campaign_Program.Where(p => p.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId).Select(p => p.ImprovementPlanProgramId).SingleOrDefault();
             }
+            string mqlStage = Enums.Stage.MQL.ToString();
+            string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
+            if (!string.IsNullOrEmpty(MQLStageLabel))
+            {
+                mqlStage = MQLStageLabel;
+            }
+            ViewBag.MQLLabel = mqlStage;
+
             return View("Assortment");
         }
 
