@@ -680,7 +680,14 @@
 
            var json_length = filteredTasks.data.length;
            var gantt_div = document.getElementById("gantt_here");
-           gantt_div.style.height = ((json_length * 35) + 94) + "px";
+           ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
+           if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
+               gantt_div.style.height = ((json_length * 35) + 94) + "px";
+           }
+           else {
+               gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
+           }
+           ////
            gantt.parse(filteredTasks);
        } else if (isQuater == "thisyear") {
            var date = new Date();
@@ -690,7 +697,14 @@
 
            var json_length = tasks.data.length;
            var gantt_div = document.getElementById("gantt_here");
-           gantt_div.style.height = ((json_length * 35) + 94) + "px";
+           ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
+           if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
+               gantt_div.style.height = ((json_length * 35) + 94) + "px";
+           }
+           else {
+               gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
+           }
+           ////
            gantt.parse(tasks);
        }
        else if (isQuater == "thismonth") {
@@ -701,7 +715,14 @@
 
            var json_length = tasks.data.length;
            var gantt_div = document.getElementById("gantt_here");
-           gantt_div.style.height = ((json_length * 35) + 94) + "px";
+           ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
+           if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
+               gantt_div.style.height = ((json_length * 35) + 94) + "px";
+           }
+           else {
+               gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
+           }
+           ////
            gantt.parse(tasks);
        }
        else if (isQuater == "nextyear") {
@@ -712,7 +733,14 @@
 
            var json_length = tasks.data.length;
            var gantt_div = document.getElementById("gantt_here");
-           gantt_div.style.height = ((json_length * 35) + 94) + "px";
+           ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
+           if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
+               gantt_div.style.height = ((json_length * 35) + 94) + "px";
+           }
+           else {
+               gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
+           }
+           ////
            gantt.parse(tasks);
        } else if (isQuater == "planYear") {
            // Edited to add PlanYear option.
@@ -722,7 +750,14 @@
 
            var json_length = tasks.data.length;
            var gantt_div = document.getElementById("gantt_here");
-           gantt_div.style.height = ((json_length * 35) + 94) + "px";
+           ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
+           if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
+               gantt_div.style.height = ((json_length * 35) + 94) + "px";
+           }
+           else {
+               gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
+           }
+           ////
            gantt.parse(tasks);
        }
 

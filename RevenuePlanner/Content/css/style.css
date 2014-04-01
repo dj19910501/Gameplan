@@ -1053,8 +1053,15 @@ body {
     height: 17px;
     position: relative;
     top: -17px;
+    margin-left:6px;    /*Added by Sohel on 31st March 2014 for PL #362*/
+    width:98.5%;        /*Added by Sohel on 31st March 2014 for PL #362*/
 }
 
+/*Added by Sohel on 31st March 2014 for PL #362*/
+.full-width {
+    width: 100%;
+}
+/**/
 #sidebar p a.link-alone {
     color: #808080;
     font-size: 13px;
