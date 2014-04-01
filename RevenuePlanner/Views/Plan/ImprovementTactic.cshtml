@@ -40,20 +40,20 @@
             @Html.HiddenFor(model => model.ImprovementPlanTacticId, new { id = "hdnPlanTacticId" })
 
             <label class="t_title">Improvement Tactic Title</label>
-            @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true" })
+            @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true", maxlength = "255" })
 
             <label>Improvement Tactic Type</label>
             <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.ImprovementTacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "ImprovementTacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true", Id = "ddlTacticType" })</span>
 
             <label>Description</label>
-            @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", rows = "3" })
+            @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", rows = "3", maxlength = "4000" })
 
            @Html.Hidden("hdnRedirect", (bool)ViewBag.RedirectType, new { id = "hdnRedirectType" })
            
                 <div class="cf margin-top10 margin-left-4">
                     <div class="pull-left width50">
                         <label class="padding-left4">Effective date</label>
-                        <div class="dp datepicker input-append date without-margin calendar-width" id="dp_start" data-date="today();" data-date-format="@RevenuePlanner.Helpers.Common.dateFormat">
+                        <div class="dp datepicker input-append date without-margin calendar-width" id="dp_start" data-date="@Model.EffectiveDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.dateFormat">
                             @Html.TextBoxFor(model => model.EffectiveDate, new { @class = "span2 black-border-right font-size13", id = "t_startdate" })
                             <span class="add-on height20">
                                 <img class="marginTop-5px" src="~/Content/images/gray-calendar-icon.png"></span>
@@ -107,7 +107,9 @@
             $("#slidepanel").css("display", "none");
             $("#slidepanel-container").empty();
         });
-
+        $('form').find('input[type=text], textarea').each(function () {
+            ValidationForTitle(this);
+        });
         $('form').find('input[type=text], select, textarea').each(function () {
             $(this).change(function () {
                 if ($(this).attr('require') == 'true') {
@@ -166,8 +168,12 @@
                 ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
                 return false;
             }
-                var sdate = $('#t_startdate').val();
-                if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
+            var sdate = $('#t_startdate').val();
+            if (!isDate(sdate)) {
+                alert('please select valid effective date.');
+                return false;
+            }
+            if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
             $("#txtCost").val(ReplaceCC($("#txtCost").val()));
 
             $.ajax({

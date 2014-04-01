@@ -5,18 +5,18 @@
 
         <form id="nl-form2" class="nl-form-plan-title without-margin">
 
-            <select id="dropdown-plan-title" data-default="0%" class="">
+            <select id="dropdown-plan-title" data-default="0%" class="" maxlength="40">
                 <script>
                     var plans = @Html.Raw(Json.Encode(Model.plans))
                     populateNF(plans, "dropdown-plan-title");
                 </script>
             </select>
-
+            <div class="nl-overlay"></div>
             <!--<div class="nl-overlay"></div>-->
             <script>
                 var nlform = new NLForm(document.getElementById('nl-form2'));
             </script>
-            <div class="nl-overlay2"></div>
+            
         </form>
     </li>
     <li>

@@ -1402,6 +1402,7 @@ a {
 
     .verticalIdSelectBox .sbToggleOpen {
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
+        background:none;
     }
 /* Drop down list customization ends here */
 /* TFS Bug 255 : Plan Campaign screen - Add delete icon for tactic and campaign in the grid 

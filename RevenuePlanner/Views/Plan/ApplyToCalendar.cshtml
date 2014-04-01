@@ -59,9 +59,13 @@
 
     function onClickPlanTitle() {
         $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
-            var planTitle = $(this).text();
-            var option = $.grep($('#dropdown-plan-title option'), function (value) { return $(value).text() == planTitle; })
-            CurrentPlanId = $(option[0]).val();
+            // Comment by bhavesh , Now we can use direct value for nl form dropdown
+            // PL Ticket 399
+            // Date : 28-3-2014
+            //var planTitle = $(this).text();
+            //var option = $.grep($('#dropdown-plan-title option'), function (value) { return $(value).text() == planTitle; })
+            //CurrentPlanId = $(option[0]).val();
+            CurrentPlanId = $(this).attr('value');
             RefreshCalendar();
             GetHealderData(CurrentPlanId);
             GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);

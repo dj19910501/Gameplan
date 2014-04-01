@@ -499,3 +499,24 @@ function GetCurrentQuarter() {
     var quartervalue = Math.floor(curr_month / 3) + 1;
     return quartervalue;
 }
+
+function ValidationForTitle(r) {
+    $(r).bind('keypress', function (e) {
+        var specialKeys = new Array();
+        specialKeys.push(8); //Backspace
+        specialKeys.push(9); //Tab
+        specialKeys.push(46); //Delete
+        specialKeys.push(36); //Home
+        specialKeys.push(35); //End
+        specialKeys.push(37); //Left
+        specialKeys.push(38); //Up
+        specialKeys.push(39); //Right
+        specialKeys.push(40); //Down
+        var keyCode = e.keyCode == 0 ? e.charCode : e.keyCode;
+        var ret = ((keyCode >= 48 && keyCode <= 57) || (keyCode >= 65 && keyCode <= 90) || (keyCode >= 97 && keyCode <= 122) || keyCode === 32 || (specialKeys.indexOf(e.keyCode) != -1 && e.charCode != e.keyCode));
+        if (!ret) {
+            e.preventDefault();
+            return false;
+        }
+    });
+}

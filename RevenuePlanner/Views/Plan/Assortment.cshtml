@@ -899,8 +899,8 @@
 
                         var withImprovedMQL = mqlTotal + mqlValue;
                         $('#DivImprovementTotal').html(FormatCommas(withImprovedMQL.toString(), false))
-
-                        $html += ' MQLs yielding <strong>';
+                        var mqltext = "@ViewBag.MQLLabel"
+                        $html += ' ' + mqltext +' yielding <strong>';
                         var cwValue = parseFloat(data.CW);
                         if (cwValue < 0) {
                             $html += FormatCommas(Math.abs(cwValue).toString(), false) + '</strong> less';
@@ -916,7 +916,7 @@
                         }
                         var adsValue = parseFloat(data.ADS);
                         if (adsValue < 0) {
-                            $html += FormatCurrency(Math.abs(adsValue).toString(), false) + '</strong> smaller';
+                            $html += FormatCurrency(Math.abs(adsValue).toString(), false) + '</strong> less';
                         }
                         else {
                             $html += FormatCurrency(adsValue.toString(), false) + '</strong> larger';
@@ -946,10 +946,10 @@
                         
                         var costValue = parseFloat(data.Cost);
                         if (costValue < 0) {
-                            $html += FormatCurrency(Math.abs(costValue).toString(), false) + ' decresed';
+                            $html += FormatCurrency(Math.abs(costValue).toString(), false) + ' decreased';
                         }
                         else {
-                            $html += FormatCurrency(costValue.toString(), false) + ' incresed';
+                            $html += FormatCurrency(costValue.toString(), false) + ' increased';
                         }
 
                         $html += ' spend.</p>';
