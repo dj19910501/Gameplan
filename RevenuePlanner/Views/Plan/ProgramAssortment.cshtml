@@ -44,10 +44,10 @@
             @Html.HiddenFor(model => model.TEndDate, new { id = "hdnTEndDate" })
 
             <label class="t_title">Program Title</label>
-            @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true" })
+            @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true", maxlength = "255" })
 
             <label>Description</label>
-            @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", rows = "3" })
+            @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", rows = "3", maxlength = "4000" })
 
             @if ((bool)ViewBag.RedirectType)
             {
@@ -201,7 +201,9 @@
             $(this).prev().remove();
             $(this).remove();
         });
-
+        $('form').find('input[type=text], textarea').each(function () {
+            ValidationForTitle(this);
+        });
         $('form').find('input[type=text], select, textarea').each(function () {
             $(this).change(function () {
                 if ($(this).attr('require') == 'true') {

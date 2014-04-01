@@ -46,13 +46,13 @@
 
 
             <label class="t_title">Tactic Title</label>
-            @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true" })
+            @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true", maxlength = "255" })
 
             <label>Tactic Type</label>
             <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true", Id = "ddlTacticType" })</span>
 
             <label>Description</label>
-            @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", rows = "3" })
+            @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", rows = "3", maxlength = "4000" })
 
             @if ((bool)ViewBag.RedirectType)
             {
@@ -180,6 +180,9 @@
                 }
             });
     }
+        $('form').find('input[type=text], textarea').each(function () {
+                ValidationForTitle(this);
+        });
 
         $('form').find('input[type=text], select, textarea').each(function () {
             $(this).change(function () {
