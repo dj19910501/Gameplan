@@ -1576,11 +1576,12 @@ namespace RevenuePlanner.Helpers
         /// Function to calculate improved Projected revenue or Closed won.
         /// Added By: Maninder Singh Wadhva
         /// Addressed PL Ticket: 37,38,47,49
+        /// Modified By Maninder Singh Wadhva, Ticket#406.
         /// </summary>
         /// <param name="planId">Current plan id.</param>
         /// <param name="isProjectedRevenue">Flag to indicate whether to calculate projected revenue or closed won.</param>
         /// <returns>Returns calculated projected revenue or closed won based on isProjectedReveneue flag.</returns>
-        public static double? CalculateImprovedProjectedRevenueOrCW(int planId, bool isProjectedRevenue)
+        public static double? CalculateImprovedProjectedRevenueOrCW(int planId, bool isProjectedRevenue, double averageDealSize)
         {
             MRPEntities db = new MRPEntities();
 
@@ -1596,7 +1597,7 @@ namespace RevenuePlanner.Helpers
             if (marketingActivities.Count() > 0 && improvementActivities.Count() > 0)
             {
                 //// Getting Projected Reveneue or Closed Won improved based on marketing and improvement activities.
-                improvedValue = Common.GetImprovedProjectedRevenueOrCW(planId, marketingActivities, improvementActivities, isProjectedRevenue);
+                improvedValue = Common.GetImprovedProjectedRevenueOrCW(planId, marketingActivities, improvementActivities, isProjectedRevenue, averageDealSize);
                 return Convert.ToDouble(improvedValue);
             }
 
@@ -1749,13 +1750,14 @@ namespace RevenuePlanner.Helpers
         /// Added By: Maninder Singh Wadhva
         /// Addressed PL Ticket: 37,38,47,49
         /// Modified By Manidner Singh Wadhva Addressed PL Ticket: 383, 393
+        /// Modified By Maninder Singh Wadhva, Ticket#406.
         /// </summary>
         /// <param name="planId">Current plan id.</param>
         /// <param name="marketingActivities">marketing activities.</param>
         /// <param name="improvementActivities">improvement activities.</param>
         /// <param name="isProjectedRevenue">Flag to indicate whether to get improved projected revenue or closed won.</param>
         /// <returns>Returns improved projected revenue or closed won based on isProjectedRevenue flag.</returns>
-        private static double GetImprovedProjectedRevenueOrCW(int planId, List<Plan_Campaign_Program_Tactic> marketingActivities, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities, bool isProjectedRevenue)
+        private static double GetImprovedProjectedRevenueOrCW(int planId, List<Plan_Campaign_Program_Tactic> marketingActivities, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities, bool isProjectedRevenue, double averageDealSize)
         {
             MRPEntities db = new MRPEntities();
 
@@ -1804,16 +1806,17 @@ namespace RevenuePlanner.Helpers
                     //// Getting model.
                     Model effectiveModel = db.Models.Single(model => model.ModelId.Equals(ModelId));
 
-                    double averageDealSizeMarketing = 0;
-                    if (isProjectedRevenue)
-                    {
-                        //averageDealSizeMarketing = db.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == effectiveModel.ModelId &&
-                        //                                modelFunnel.Funnel.Title.Equals(funnelMarketing))
-                        //          .Select(mf => mf.AverageDealSize)
-                        //          .SingleOrDefault();
+                    //// Modified By Manidner Singh Wadhva Addressed PL Ticket: 406
+                    //double averageDealSizeMarketing = 0;
+                    //if (isProjectedRevenue)
+                    //{
+                    //    //averageDealSizeMarketing = db.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == effectiveModel.ModelId &&
+                    //    //                                modelFunnel.Funnel.Title.Equals(funnelMarketing))
+                    //    //          .Select(mf => mf.AverageDealSize)
+                    //    //          .SingleOrDefault();
 
-                        averageDealSizeMarketing = GetImprovedDealSize(planId, improvementActivitiesForHypotheticalModel);
-                    }
+                    //    averageDealSizeMarketing = GetImprovedDealSize(planId, improvementActivitiesForHypotheticalModel);
+                    //}
 
                     //// Getting hypothetical model - conversion rate.
                     string metricTypeCR = Enums.MetricType.CR.ToString();
@@ -1833,7 +1836,7 @@ namespace RevenuePlanner.Helpers
                     //// Adding to improved value 
                     if (isProjectedRevenue)
                     {
-                        improvedValue += affectedMarketingActivities.Select(affectedTactic => Math.Round(affectedTactic.INQs * cwConversionRate) * averageDealSizeMarketing).Sum();
+                        improvedValue += affectedMarketingActivities.Select(affectedTactic => affectedTactic.INQs * cwConversionRate * averageDealSize).Sum();
                     }
                     else
                     {

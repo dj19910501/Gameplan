@@ -3342,6 +3342,7 @@ namespace RevenuePlanner.Controllers
 
         /// <summary>
         /// Get Container value for improvement tactic.
+        /// Modified By Maninder Singh Wadhva, Ticket#406.
         /// </summary>
         /// <returns></returns>
         public JsonResult GetImprovementContainerValue()
@@ -3365,7 +3366,7 @@ namespace RevenuePlanner.Controllers
 
 
             //// Calculating CW difference.
-            double? improvedCW = Common.CalculateImprovedProjectedRevenueOrCW(Sessions.PlanId, false);
+            double? improvedCW = Common.CalculateImprovedProjectedRevenueOrCW(Sessions.PlanId, false, 0);
             double planCW = ReportController.ProjectedRevenueCalculate(tacticIds, true).Sum(cw => cw.ProjectedRevenue);
             double differenceCW = Convert.ToDouble(improvedCW) - planCW;
 
@@ -3397,10 +3398,15 @@ namespace RevenuePlanner.Controllers
                                                .Sum(stage => stage.Value);
             double differenceSV = Convert.ToDouble(improvedSV) - sv;
 
-            //// Modified By:Maninder Singh Wadhva, Ticket#404 Revenue increase should be a multiple of ADS
-            //double? improvedProjectedRevenue = Common.CalculateImprovedProjectedRevenueOrCW(Sessions.PlanId, true);
-            //double projectedRevenue = ReportController.ProjectedRevenueCalculate(tacticIds).Sum(cw => cw.ProjectedRevenue);
-            double differenceProjectedRevenue = Math.Round(differenceDealSize) * Math.Round(differenceCW);
+            // Modified By:Maninder Singh Wadhva, Ticket#404 Revenue increase should be a multiple of ADS
+            double improvedAverageDealSizeForProjectedRevenue = averageDealSize;
+            if (improvedDealSize != null)
+            {
+                improvedAverageDealSizeForProjectedRevenue = Convert.ToDouble(improvedDealSize);
+            }
+            double? improvedProjectedRevenue = Common.CalculateImprovedProjectedRevenueOrCW(Sessions.PlanId, true, improvedAverageDealSizeForProjectedRevenue);
+            double projectedRevenue = ReportController.ProjectedRevenueCalculate(tacticIds).Sum(cw => cw.ProjectedRevenue);
+            double differenceProjectedRevenue = Convert.ToDouble(improvedProjectedRevenue) - projectedRevenue;
 
             double improvedCost = improvementActivities.Sum(improvementActivity => improvementActivity.Cost);
             return Json(new
