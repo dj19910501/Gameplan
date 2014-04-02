@@ -302,7 +302,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="strMsg"></param>
         /// <param name="Subject"></param>
         /// <param name="Priority"></param>
-        public static int sendMail(string emailid, string fromemailid, string strMsg, string Subject, string Priority, string CustomAlias = "")
+        public static int sendMail(string emailid, string fromemailid, string strMsg, string Subject, string Priority, string CustomAlias = "", string ReplyTo = "")
         {
             int retval = 0;
             MailMessage objEmail = new MailMessage();
@@ -322,6 +322,8 @@ namespace RevenuePlanner.Helpers
                 objEmail.Subject = HttpUtility.HtmlDecode(Subject);
                 objEmail.Body = strMsg;
                 objEmail.IsBodyHtml = true;
+                if (ReplyTo != "")
+                    objEmail.ReplyToList.Add(new MailAddress(ReplyTo));
                 objEmail.Priority = MailPriority.Normal;
                 SmtpClient smtp = new SmtpClient(strSMTPServer);
                 smtp.Send(objEmail);
