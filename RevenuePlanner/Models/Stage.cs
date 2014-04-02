@@ -31,8 +31,8 @@ namespace RevenuePlanner.Models
         public System.Guid CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
-        public string Funnel { get; set; }
         public string Code { get; set; }
+        public string Funnel { get; set; }
     
         public virtual ICollection<Model_Funnel_Stage> Model_Funnel_Stage { get; set; }
         public virtual ICollection<TacticType> TacticTypes { get; set; }

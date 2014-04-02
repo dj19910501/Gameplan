@@ -19,8 +19,6 @@ namespace RevenuePlanner.Models
         public double Weight { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
-        public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public Nullable<System.Guid> ModifiedBy { get; set; }
     
         public virtual ImprovementTacticType ImprovementTacticType { get; set; }
         public virtual Metric Metric { get; set; }

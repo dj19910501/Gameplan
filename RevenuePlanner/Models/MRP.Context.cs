@@ -40,6 +40,7 @@ namespace RevenuePlanner.Models
         public DbSet<ImprovementTacticType_Metric> ImprovementTacticType_Metric { get; set; }
         public DbSet<ImprovementTacticType_Touches> ImprovementTacticType_Touches { get; set; }
         public DbSet<Metric> Metrics { get; set; }
+        public DbSet<Model> Models { get; set; }
         public DbSet<Model_Audience_Event> Model_Audience_Event { get; set; }
         public DbSet<Model_Audience_Inbound> Model_Audience_Inbound { get; set; }
         public DbSet<Model_Audience_Outbound> Model_Audience_Outbound { get; set; }
@@ -55,6 +56,7 @@ namespace RevenuePlanner.Models
         public DbSet<Plan_Campaign_Program_Tactic_Comment> Plan_Campaign_Program_Tactic_Comment { get; set; }
         public DbSet<Plan_Improvement_Campaign> Plan_Improvement_Campaign { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program> Plan_Improvement_Campaign_Program { get; set; }
+        public DbSet<Plan_Improvement_Campaign_Program_Tactic> Plan_Improvement_Campaign_Program_Tactic { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program_Tactic_Comment> Plan_Improvement_Campaign_Program_Tactic_Comment { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program_Tactic_Share> Plan_Improvement_Campaign_Program_Tactic_Share { get; set; }
         public DbSet<Plan_Team> Plan_Team { get; set; }
@@ -65,8 +67,6 @@ namespace RevenuePlanner.Models
         public DbSet<User_Filter> User_Filter { get; set; }
         public DbSet<User_Notification> User_Notification { get; set; }
         public DbSet<Vertical> Verticals { get; set; }
-        public DbSet<Model> Models { get; set; }
-        public DbSet<Plan_Improvement_Campaign_Program_Tactic> Plan_Improvement_Campaign_Program_Tactic { get; set; }
     
         public virtual int Plan_Campaign_Program_Tactic_ActualDelete(Nullable<int> planTacticId, ObjectParameter returnValue)
         {

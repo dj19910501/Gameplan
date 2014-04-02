@@ -175,6 +175,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\BoostController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -202,6 +203,7 @@
     <Compile Include="Models\BestInClass.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\BoostModel.cs" />
     <Compile Include="Models\BusinessUnit.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
@@ -495,6 +497,7 @@
     <Content Include="Content\images\support-login-blue-icon.png" />
     <Content Include="Content\images\support-login-icon.png" />
     <Content Include="Content\images\to-approve-bar.jpg" />
+    <Content Include="Content\images\trophy-02.png" />
     <Content Include="Content\images\user_image_not_found.png" />
     <Content Include="Content\images\vertical.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
@@ -625,6 +628,23 @@
     <Content Include="Content\fonts\sourcesanspro-semibold-webfont.woff" />
     <Content Include="Scripts\jquery.selectbox-0.2.js" />
     <Content Include="Scripts\js\jquery-migrate-1.2.1.min.js" />
+    <EntityDeploy Include="Models\MRP.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>MRP.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\MRP.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>MRP.edmx</DependentUpon>
+      <LastGenOutput>MRP.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\MRP.edmx.diagram">
+      <DependentUpon>MRP.edmx</DependentUpon>
+    </Content>
+    <Content Include="Models\MRP.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>MRP.edmx</DependentUpon>
+      <LastGenOutput>MRP.cs</LastGenOutput>
+    </Content>
     <None Include="Service References\BDSService\BDSService.disco" />
     <None Include="Service References\BDSService\configuration91.svcinfo" />
     <None Include="Service References\BDSService\configuration.svcinfo" />
@@ -644,23 +664,6 @@
     <Content Include="Views\NoAccess\Index.cshtml" />
     <Content Include="Views\Report\Index.cshtml" />
     <Content Include="Views\Shared\_SupportPartial.cshtml" />
-    <EntityDeploy Include="Models\MRP.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>MRP.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <Content Include="Models\MRP.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>MRP.edmx</DependentUpon>
-      <LastGenOutput>MRP.Context.cs</LastGenOutput>
-    </Content>
-    <Content Include="Models\MRP.edmx.diagram">
-      <DependentUpon>MRP.edmx</DependentUpon>
-    </Content>
-    <Content Include="Models\MRP.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>MRP.edmx</DependentUpon>
-      <LastGenOutput>MRP.cs</LastGenOutput>
-    </Content>
     <Content Include="Views\Plan\_ApplytoCalendarPlanList.cshtml">
       <SubType>Code</SubType>
     </Content>
@@ -827,6 +830,9 @@
     <Content Include="Views\Model\_contactinquiry.cshtml" />
     <Content Include="Views\Home\ShareTactic.cshtml" />
     <Content Include="Web.Config" />
+    <Content Include="Views\Boost\BestInClass.cshtml" />
+    <Content Include="Views\Boost\CreateImprovementTactic.cshtml" />
+    <Content Include="Views\Boost\Index.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

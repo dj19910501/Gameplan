@@ -23,9 +23,6 @@ namespace RevenuePlanner.Models
         public Nullable<double> RegistrationRate { get; set; }
         public string Quarter { get; set; }
         public Nullable<int> ListAcquisitions { get; set; }
-        public Nullable<double> ListAcquisitionsNormalErosion { get; set; }
-        public Nullable<double> ListAcquisitionsUnsubscribeRate { get; set; }
-        public Nullable<double> ListAcquisitionsCTRDelivered { get; set; }
         public Nullable<double> Acquisition_CostperContact { get; set; }
         public Nullable<int> Acquisition_NumberofTouches { get; set; }
         public Nullable<double> Acquisition_RegistrationRate { get; set; }
@@ -33,6 +30,9 @@ namespace RevenuePlanner.Models
         public System.Guid CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
+        public Nullable<double> ListAcquisitionsNormalErosion { get; set; }
+        public Nullable<double> ListAcquisitionsUnsubscribeRate { get; set; }
+        public Nullable<double> ListAcquisitionsCTRDelivered { get; set; }
         public Nullable<bool> IsBenchmarked { get; set; }
     
         public virtual Model Model { get; set; }

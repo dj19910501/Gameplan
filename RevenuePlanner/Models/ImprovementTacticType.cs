@@ -31,8 +31,6 @@ namespace RevenuePlanner.Models
         public bool IsDeleted { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
-        public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public Nullable<System.Guid> ModifiedBy { get; set; }
     
         public virtual ICollection<ImprovementTacticType_Metric> ImprovementTacticType_Metric { get; set; }
         public virtual ICollection<ImprovementTacticType_Touches> ImprovementTacticType_Touches { get; set; }

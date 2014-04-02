@@ -1,0 +1,246 @@
+﻿@model RevenuePlanner.Models.BoostImprovementTacticModel
+@using RevenuePlanner.Helpers
+@{
+    string MetricType_CR = Enums.MetricType.CR.ToString();
+    string MetricType_SV = Enums.MetricType.SV.ToString();
+    string MetricType_Size = Enums.MetricType.Size.ToString();
+}
+<div class="head">
+    <span class="close-form source-sans-proregular">» CLOSE MENU</span>
+    <div class="cf">
+        <h2 class="source-sans-prolight">@ViewBag.Title </h2>
+    </div>
+</div>
+<div id="errorMsg" class="alert alert-error hide message-position-small">
+    <a class="close">×</a>
+    <strong>Error!</strong> <span id="spanMessage"></span>
+</div>
+<form id="frm_tactics" name="frm_tactics" class="slidepanel-form" style="width: 290px !important">
+    <div class="content">
+        @Html.HiddenFor(model => model.ImprovementTacticTypeId, new { id = "ImprovementTacticTypeId" })
+        <label>Improvement Tactic Type</label>
+        @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", id = "hdntitle", require = "true", maxlength = "18" })
+        <label>Description</label>
+        @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", id = "hdndesc" })
+        <table>
+            <tr>
+                <td>
+                    <label>Cost</label>
+                    @Html.TextBoxFor(model => model.Cost, new { require = "true", id = "hdnCost", @class = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                </td>
+                <td>
+                    <label>Status</label>
+                    @Html.TextBoxFor(model => model.IsDeployed, new { @readonly = true, id = "t_status" })
+                </td>
+            </tr>
+        </table>
+        <label>Improvement Weight(1-5)</label>
+        <div class="accordion sidebar-accordion" id="accordion-1">
+            <table id="tblCR_SV">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th title="Conversion">Conversion
+                        </th>
+                        <th title="Velocity">Velocity
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.listMetrics.Where(m => m.MetricType == MetricType_CR || m.MetricType == MetricType_SV))
+                    {
+                        <tr>
+                            <td title="@item.MetricName">
+                                @Html.DisplayFor(model => item.MetricName)
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => item.ConversionValue, new { placeholder = "Required", require = "true", maxlength = "1", id = @item.MetricID_CR })
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => item.VelocityValue, new { placeholder = "Required", require = "true", maxlength = "1", id = @item.MetricID_SV })
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <table id="tblSize">
+                <thead>
+                    <tr>
+                        <th title=""></th>
+                        <th title="Improvement">Improvement
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.listMetricssize.Where(m => m.MetricType == MetricType_Size))
+                    {
+                        <tr>
+                            <td title="@item.MetricName">
+                                @Html.DisplayFor(model => item.MetricName)
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => item.ConversionValue, new { placeholder = "Required", require = "true", maxlength = "1", id = @item.MetricID_Size })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="wraper-btns cf">
+        <div class="span6">
+            <button id="save_tactic" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
+        </div>
+        <div class="span6">
+            <button class="close-form btn-link source-sans-proregular" type="button">cancel</button>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        $('.close-form', this.$panel).click(function (e) {
+            $("#slidepanel").css("display", "none");
+            $("#slidepanel-container").empty();
+        });
+        var status = $("#frm_tactics #t_status").val();
+        if (status != "True") {
+            $("#frm_tactics #t_status").val("Not Deployed");
+            $("#frm_tactics #t_status").addClass("icon-check-gray");
+        }
+        else {
+            $("#frm_tactics #t_status").val("Deployed");
+            $("#frm_tactics #t_status").addClass("icon-check-blue");
+        }
+        $('.close').click(function () {
+            $("#errorMsg").css("display", "none");
+        });
+        $("#frm_tactics #t_status").click(function () {
+            if ($(this).hasClass("icon-check-blue")) {
+                $(this).val("Not Deployed");
+                $(this).addClass("icon-check-gray");
+                $(this).removeClass("icon-check-blue");
+            } else {
+                $(this).val("Deployed");
+                $(this).addClass("icon-check-blue");
+                $(this).removeClass("icon-check-gray");
+            }
+        });
+
+        $('form').find('input[type=text], select, textarea').each(function () {
+            var iserror = false;
+            $(this).change(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val() == '') {
+                        $(this).addClass("error");
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                }
+                if ($(this).attr('id') == 'hdnCost') {
+                    var tValue = ReplaceCC($("#hdnCost").val());
+                    if (isNaN(tValue)) {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                }
+            });
+            if (iserror) {
+                ShowError("Make sure all fields are filled and try again.");
+                return false;
+            }
+        });
+
+        $("#save_tactic").click(function () {
+            var iserror = false;
+            if ($(this).attr('require') == 'true') {
+                if ($(this).val() == '') {
+                    $(this).addClass("error");
+                }
+                else {
+                    $(this).removeClass("error");
+                }
+            }
+            if ($(this).attr('id') == 'hdnCost') {
+                var tValue = ReplaceCC($("#hdnCost").val());
+                if (isNaN(tValue)) {
+                    $(this).addClass("error");
+                    iserror = true;
+                }
+            }
+            if (iserror) {
+                ShowError("Make sure all fields are filled and try again.");
+                return false;
+            }
+            var id = $("#ImprovementTacticTypeId").val();
+            var val = 0;
+            var cntFill = 0;
+            var cntNotFill = 0;
+            var wrongval = 0
+            $('#accordion-1 input[type=text]').each(function () {
+                var val = $(this).val();
+                if (val > 0) {
+                    cntFill = cntFill + 1;
+                    if (val > 5) {
+                        wrongval = wrongval + 1;
+                        $(this).addClass("error");
+                    }
+                }
+                else {
+                    cntNotFill = cntNotFill + 1;
+                }
+            });
+            if (cntFill < 1) {
+                ShowError("User must select at least one improvement weight for the improvement tactic to be valid.");
+                $('#accordion-1 input[type=text]').each(function () {
+                    $(this).addClass("error");
+                });
+                return false;
+            }
+            if (wrongval != 0) {
+                ShowError("A valid entry must be an integer between 0 and 5.");
+                return false;
+            }
+            var status = false;
+            if ($("#t_status").hasClass("icon-check-blue")) {
+                status = true;
+            }
+            var ids = [];
+            $('#accordion-1 input[type=text]').each(function () {
+                var val = $(this).val();
+                var id = $(this).attr('id');
+                if (val > 0) {
+                    var value = id + "," + val;
+                    ids.push(value);
+                }
+            });
+            $.ajax({
+                type: 'post',
+                url: '@Url.Content("~/Boost/saveImprovementTacticData")',
+                data: 'improvementId=' + $("#ImprovementTacticTypeId").val() + '&improvementDetails=' + ids + '&status=' + status + '&cost=' + ReplaceCC($("#hdnCost").val()) + '&desc=' + $("#hdndesc").val()
+                       + '&title=' + $("#hdntitle").val(),
+                success: function (data) {
+                    if (data.redirect) {
+                        $("#slidepanel").css("display", "none");
+                        $("#slidepanel-container").empty();
+                        window.location.href = data.redirect;
+                        return;
+                    }
+                    if (data.errormsg) {
+                        ShowError(data.errormsg);
+                        return false;
+                    }
+
+                }
+            });
+        });
+        function ShowError(value) {
+            $("#errorMsg").slideDown(400);
+            $("#spanMessage").empty();
+            $("#spanMessage").text(value);
+        }
+    });
+</script>

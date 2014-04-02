@@ -865,6 +865,44 @@ namespace RevenuePlanner.Helpers
             }
         }
 
+        private string _NewImprovementTacticSaveSucess;
+        public string NewImprovementTacticSaveSucess
+        {
+            get
+            {
+                return _NewImprovementTacticSaveSucess;
+            }
+            set
+            {
+                _NewImprovementTacticSaveSucess = value;
+            }
+        }
+        private string _EditImprovementTacticSaveSucess;
+        public string EditImprovementTacticSaveSucess
+        {
+            get
+            {
+                return _EditImprovementTacticSaveSucess;
+            }
+            set
+            {
+                _EditImprovementTacticSaveSucess = value;
+            }
+        }
+
+        private string _DuplicateImprovementTacticExits;
+        public string DuplicateImprovementTacticExits
+        {
+            get
+            {
+                return _DuplicateImprovementTacticExits;
+            }
+            set
+            {
+                _DuplicateImprovementTacticExits = value;
+            }
+        }
+
         #endregion
 
         #region  Functions
@@ -1128,6 +1166,15 @@ namespace RevenuePlanner.Helpers
                                             break;
                                         case "ImprovementTacticStatusSuccessfully":
                                             _ImprovementTacticStatusSuccessfully = strMsgValue;
+                                            break;
+                                        case "NewImprovementTacticSaveSucess":
+                                            _NewImprovementTacticSaveSucess = strMsgValue;
+                                            break;
+                                        case "EditImprovementTacticSaveSucess":
+                                            _EditImprovementTacticSaveSucess = strMsgValue;
+                                            break;
+                                        case "DuplicateImprovementTacticExits":
+                                            _DuplicateImprovementTacticExits = strMsgValue;
                                             break;
                                     }
                                 }

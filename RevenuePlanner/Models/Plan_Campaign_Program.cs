@@ -17,8 +17,8 @@ namespace RevenuePlanner.Models
         public Plan_Campaign_Program()
         {
             this.Plan_Campaign_Program_Tactic_Comment = new HashSet<Plan_Campaign_Program_Tactic_Comment>();
-            this.Plan_Campaign_Program_Tactic = new HashSet<Plan_Campaign_Program_Tactic>();
             this.Tactic_Share = new HashSet<Tactic_Share>();
+            this.Plan_Campaign_Program_Tactic = new HashSet<Plan_Campaign_Program_Tactic>();
         }
     
         public int PlanProgramId { get; set; }
@@ -33,19 +33,19 @@ namespace RevenuePlanner.Models
         public Nullable<long> INQs { get; set; }
         public Nullable<double> MQLs { get; set; }
         public Nullable<double> Cost { get; set; }
-        public bool IsDeleted { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
+        public bool IsDeleted { get; set; }
         public string Status { get; set; }
     
         public virtual Audience Audience { get; set; }
         public virtual Geography Geography { get; set; }
         public virtual Plan_Campaign Plan_Campaign { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic_Comment> Plan_Campaign_Program_Tactic_Comment { get; set; }
+        public virtual ICollection<Tactic_Share> Tactic_Share { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
         public virtual Vertical Vertical { get; set; }
-        public virtual ICollection<Tactic_Share> Tactic_Share { get; set; }
     }
 }

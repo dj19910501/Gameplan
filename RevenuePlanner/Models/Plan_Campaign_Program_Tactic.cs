@@ -36,20 +36,20 @@ namespace RevenuePlanner.Models
         public Nullable<long> INQsActual { get; set; }
         public double MQLs { get; set; }
         public Nullable<double> MQLsActual { get; set; }
-        public Nullable<double> CWs { get; set; }
-        public Nullable<double> CWsActual { get; set; }
-        public Nullable<double> Revenues { get; set; }
-        public Nullable<double> RevenuesActual { get; set; }
         public double Cost { get; set; }
         public Nullable<double> CostActual { get; set; }
-        public Nullable<double> ROI { get; set; }
-        public Nullable<double> ROIActual { get; set; }
         public string Status { get; set; }
-        public bool IsDeleted { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
+        public Nullable<double> CWs { get; set; }
+        public Nullable<double> CWsActual { get; set; }
+        public Nullable<double> Revenues { get; set; }
+        public Nullable<double> RevenuesActual { get; set; }
+        public Nullable<double> ROI { get; set; }
+        public Nullable<double> ROIActual { get; set; }
+        public bool IsDeleted { get; set; }
     
         public virtual Audience Audience { get; set; }
         public virtual BusinessUnit BusinessUnit { get; set; }

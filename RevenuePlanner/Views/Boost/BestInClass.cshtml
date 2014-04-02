@@ -1,0 +1,247 @@
+﻿@model IEnumerable<RevenuePlanner.Models.BestInClassModel>
+@using RevenuePlanner.Helpers
+
+<script src="@Url.Content("~/Scripts/jquery.validate.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")"></script>
+
+@{
+    ViewBag.Title = "Best In Class Metrics";
+    ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Boost;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string MetricType_CR = Enums.MetricType.CR.ToString();
+    string MetricType_SV = Enums.MetricType.SV.ToString();
+    string MetricType_Size = Enums.MetricType.Size.ToString();
+}
+
+@section Sidebar {
+    <div class="padding-content2">
+        <h4 class="text-shadow-black source-sans-prolight">Boost Summary</h4>
+    </div>
+    <ul class="nav nav-list nav-gray">
+        <li class="item">
+            <a class="source-sans-probold inputs tactics" id="aTactic" href="#"><span></span>TACTICS</a>
+        </li>
+        <li class="item active">
+            <a class="source-sans-probold organization" href="#"><span class="trophy"></span>BEST IN CLASS</a>
+        </li>
+    </ul>
+}
+
+<!--success message-->
+<div id="successMessage" class="alert hide alert-success message-position">
+    <a class="close">×</a>
+    <strong>Success.</strong> <span id="spanMessageSuccess"></span>
+</div>
+<!--success message-->
+
+<!--error message-->
+<div id="errorMessage" class="alert hide alert-error message-position">
+    <a class="close">×</a>
+    <strong>Error!</strong> <span id="spanMessageError"></span>
+</div>
+<!--error message-->
+
+<ul class="nav nav-tabs">
+    <li class="source-sans-proregular">
+        <h2 class="title-header">Best In Class Metrics</h2>
+    </li>
+</ul>
+<div class="padding-content cf source-sans-proregular">
+    <div class="row">
+        <div class="span2 column-left">
+            <div class="padding-right70">
+                <label class="align-top">Add Best-in-Class values to be used when applying Boost calculations.</label>
+            </div>
+        </div>
+        <div class="span10 column-right">
+            <table class="table table-striped table-hover table-header" id="tblCR_SV">
+                <thead>
+                    <tr>
+                        <th title="Stage">Stage
+                        </th>
+                        <th title="Conversion (%)">Conversion (%)
+                        </th>
+                        <th title="Velocity (Days)">Velocity (Days)
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Where(m => m.MetricType == MetricType_CR || m.MetricType == MetricType_SV))
+                    {
+                        <tr class="bestInClassRow">
+                            <td title="@item.MetricName" class="title1">
+                                @Html.DisplayFor(model => item.MetricName)
+                            </td>
+                            <td>
+                                <input id="@item.MetricID_CR" class="backgroundC6EBF3 text-align-right width88px input-table priceValue inputCR" value="@item.ConversionValue" />
+                            </td>
+                            <td>
+                                <input id="@item.MetricID_SV" class="backgroundC6EBF3 text-align-right width88px input-table priceValue inputSV" value="@item.VelocityValue"/>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <br />
+            <table class="table table-striped table-hover table-header2" id="tblSize">
+                <thead>
+                    <tr>
+                        <th title=""></th>
+                        <th title="Improvement (%)">Improvement (%)
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Where(m => m.MetricType == MetricType_Size))
+                    {
+                        <tr class="bestInClassRow">
+                            <td title="@item.MetricName" class="title1">
+                                @Html.DisplayFor(model => item.MetricName)
+                            </td>
+                            <td>
+                                <input id="@item.MetricID_Size" class="backgroundC6EBF3 text-align-right width88px input-table priceValue inputSize" value="@item.ConversionValue" />
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="cf inputs-aligned-horizontal">
+                <div class="container-button">
+                    <input id="btnSubmit" type="submit" value="Save" title="Save" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#aTactic").click(function () {
+            url = '@Url.Content("~/Boost/Index")';
+                 window.location.href = url;
+             });
+        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+
+        var _BIC = [];
+
+        $("#btnSubmit").click(function () {
+
+            $("#errorMessage").css("display", "none");
+            $("#successMessage").css("display", "none");
+
+            $('#tblCR_SV').find('input').each(function () {
+                var thisValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
+                var metricType = null;
+                var thisId = $(this).attr('id');
+
+                if ($(this).hasClass('inputCR')) {
+                    metricType = 'CR';
+                    _BIC.push({
+                        MetricID_CR: thisId,
+                        MetricID_SV: null,
+                        MetricID_Size: null,
+                        MetricName: null,
+                        MetricType: metricType,
+                        ConversionValue: thisValue,
+                        VelocityValue: null
+                    });
+                }
+                else if ($(this).hasClass('inputSV')) {
+                    metricType = 'SV';
+                    _BIC.push({
+                        MetricID_CR: null,
+                        MetricID_SV: thisId,
+                        MetricID_Size: null,
+                        MetricName: null,
+                        MetricType: metricType,
+                        ConversionValue: null,
+                        VelocityValue: thisValue
+                    });
+                }
+            });
+
+            $('#tblSize').find('input').each(function () {
+                var thisValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
+                var thisId = $(this).attr('id');
+                var metricType = null;
+
+                if ($(this).hasClass('inputSize')) {
+                    metricType = 'Size';
+
+                    _BIC.push({
+                        MetricID_CR: null,
+                        MetricID_SV: null,
+                        MetricID_Size: thisId,
+                        MetricName: null,
+                        MetricType: metricType,
+                        ConversionValue: thisValue,
+                        VelocityValue: null
+                    });
+                }
+            });
+
+            _BIC = JSON.stringify({ 'bic': _BIC });
+
+            $.ajax({
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                type: 'POST',
+                url: '@Url.Content("~/Boost/SaveBIC/")',
+                data: _BIC,
+                success: function (data) {
+                    if (data != 'undefined') {
+                        if (data.msg != '') {
+                            $("#successMessage").css("display", "block");
+                            var topsize = $(document).scrollTop() + 41;
+                            $("#modal-container-186470").css("top", topsize + "px");
+                            $("#spanMessageSuccess").empty();
+                            $("#spanMessageSuccess").text(data.msg);
+                        }
+                        else {
+                            $("#errorMessage").css("display", "block");
+                            $("#spanMessageError").empty();
+                            $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                        }
+                    }
+                    else {
+                        $("#errorMessage").css("display", "block");
+                        $("#spanMessageError").empty();
+                        $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                    }
+                },
+                error: function () {
+                    $("#errorMessage").css("display", "block");
+                    var topsize = $(document).scrollTop() + 41;
+                    $("#modal-container-186470").css("top", topsize + "px");
+                    $("#spanMessageError").empty();
+                    GoToLogin();
+                    return false;
+                }
+            });
+
+        });
+
+        $('.inputCR').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isDouble: true });
+
+        $('.inputSize').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isDouble: true });
+
+        $('.inputSV').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+       
+        //function to add or remove class ERROR when inputs text are empty.
+        $('input').blur(function () {
+            if ($(this).attr('type') == 'text') {
+                if ($(this).val() == '') {
+                    $(this).addClass("error");
+                } else {
+                    $(this).removeClass("error");
+                }
+            }
+        });
+    });
+
+</script>
+
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@
