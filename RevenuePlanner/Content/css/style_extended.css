@@ -826,13 +826,14 @@ a {
 /* CSS for Revenue Report : Added By Maninder*/
 .report-chart-group .report-chart {
     margin: 1%;
-    width: 337px;
+    width: 298px; /* edited by kapil - to resolve wrap issue of last div position */
     position: relative;
 }
 
 .report-chart-group {
     margin: 0 auto; /*;width: 997px;*/
     padding-top: 8px;
+    min-width:958px;
 }
 /*chart 4*/
 .report-chart4 {
@@ -1457,7 +1458,7 @@ a {
 }
 
 .report-chart3 {
-    width: 95% !important;
+    width: 93% !important;
     margin-left: 70px;
 }
 
@@ -1796,8 +1797,8 @@ a {
 .left-nav .accordion-heading{padding-left:11px;}
 
 .left-nav .accordion-body .accordion-body{background:#D7D7D7; margin-left:20px; width:calc(100% - 20px);}
-.left-nav .accordion-body .accordion-body.in{padding-bottom:5px; padding-top:5px;}
-.left-nav .accordion-body .accordion-body a{margin-left:8px; line-height:16px; padding-top:3px !important; padding-bottom:3px !important;}
+.left-nav .accordion-body .accordion-body.in{padding-bottom:0px; padding-top:0px;}
+.left-nav .accordion-body .accordion-body a{margin-left:1px; line-height:16px; padding-top:3px !important; padding-bottom:3px !important;}
 
 .item-32208d{border-left:7px solid #32208d;}
 .item-c5c5c5{border-left:7px solid #c5c5c5;}
@@ -1893,3 +1894,9 @@ a {
 .nl-field ul li:hover {
     color: white !important;
 }
+
+/* added style for sidebar inner divs height - added by kapil */
+#slidepanel-container, .slimScrollDiv {
+    height: 100%;
+}
+/* */

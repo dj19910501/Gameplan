@@ -423,7 +423,7 @@
                 offset = $("#sbHolder_" + inst.uid).offset(),
                 scrollTop = $(window).scrollTop(),
                 height = el.prev().height(),
-                diff = viewportHeight - (offset.top - scrollTop) - height / 2 - 100,
+                diff = viewportHeight - (offset.top - scrollTop) - height / 2 - 15,
                 onOpen = this._get(inst, 'onOpen');
             el.css({
                 "top": height + "px",
