@@ -403,9 +403,10 @@
                     </tr>
                     }
                 }
-
-                @*Display TELEPROSPECTING Fields*@
-                @if (Model.Where(m => m.Funnel == Enums.Funnel.Teleprospecting.ToString().ToLower()).Count() > 0)
+               @* /*changed by Nirav Shah on 2 APR 2013*/*@
+                @*
+                Display TELEPROSPECTING Fields*@
+            @*    @if (Model.Where(m => m.Funnel == Enums.Funnel.Teleprospecting.ToString().ToLower()).Count() > 0)
                 {
                     <tr>
                         <td class="red-row row-title">TELEPROSPECTING</td>
@@ -591,10 +592,10 @@
                             <td></td>
                         }
                     </tr>
-                }
+                }*@
 
                 @*Display SALES Fields*@
-                @if (Model.Where(m => m.Funnel == Enums.Funnel.Sales.ToString().ToLower()).Count() > 0)
+               @* @if (Model.Where(m => m.Funnel == Enums.Funnel.Sales.ToString().ToLower()).Count() > 0)
                 {
                     <tr>
                         <td class="blue-row row-title">SALES</td>
@@ -780,7 +781,7 @@
                             <td></td>
                         }
                     </tr>
-                }
+                }*@
 
                 @foreach (var item in Model.Where(m => m.Funnel == Enums.Funnel.Marketing.ToString().ToLower()))
                 {

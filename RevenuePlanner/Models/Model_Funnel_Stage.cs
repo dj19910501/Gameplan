@@ -23,6 +23,7 @@ namespace RevenuePlanner.Models
         public System.Guid CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
+        public bool AllowedTargetStage { get; set; }
     
         public virtual Model_Funnel Model_Funnel { get; set; }
         public virtual Stage Stage { get; set; }

@@ -223,8 +223,9 @@ namespace RevenuePlanner.Controllers
                     if (s.Level < maxlevel)
                     {
                         int NextLevel = Convert.ToInt32(s.Level) + 1;
-                        string stage1 = s.Title;
-                        string stage2 = StageList.Where(stg => stg.Level == NextLevel).Select(stg => stg.Title).FirstOrDefault();
+                        /*changed by Nirav Shah on 2 APR 2013*/
+                        string stage1 = s.Code;
+                        string stage2 = StageList.Where(stg => stg.Level == NextLevel).Select(stg => stg.Code).FirstOrDefault();
                         objModelStage.ConversionTitle = stage1 + " → " + stage2;
                         //Start Manoj 03Feb2014 - Bug 115:Model Creation - Velocity Labels same as Conversion Labels
                         objModelStage.VelocityTitle = stage1 + " → " + stage2;
@@ -278,7 +279,9 @@ namespace RevenuePlanner.Controllers
         /// <param name="txtSales"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult Create(FormCollection collection, ICollection<string> hdnSTAGEMCR, ICollection<string> txtMCR, ICollection<string> hdnSTAGEMSV, ICollection<string> txtMSV, ICollection<string> hdnSTAGETCR, ICollection<string> txtTCR, ICollection<string> hdnSTAGETSV, ICollection<string> txtTSV, ICollection<string> hdnSTAGESCR, ICollection<string> txtSCR, ICollection<string> hdnSTAGESSV, ICollection<string> txtSSV, ICollection<string> txtMarketing, ICollection<string> txtTeleprospecting, ICollection<string> txtSales)
+        //public ActionResult Create(FormCollection collection, ICollection<string> hdnSTAGEMCR, ICollection<string> txtMCR, ICollection<string> hdnSTAGEMSV, ICollection<string> txtMSV, ICollection<string> hdnSTAGETCR, ICollection<string> txtTCR, ICollection<string> hdnSTAGETSV, ICollection<string> txtTSV, ICollection<string> hdnSTAGESCR, ICollection<string> txtSCR, ICollection<string> hdnSTAGESSV, ICollection<string> txtSSV, ICollection<string> txtMarketing, ICollection<string> txtTeleprospecting, ICollection<string> txtSales)
+        /*changed by Nirav Shah on 2 APR 2013*/
+        public ActionResult Create(FormCollection collection, ICollection<string> txtStageId, ICollection<string> txtTargetStage, ICollection<string> txtMCR, ICollection<string> txtMSV, ICollection<string> txtMarketing, ICollection<string> txtTeleprospecting, ICollection<string> txtSales)
         {
             int intFunnelMarketing = 0;
             int intFunnelTeleprospecting = 0;
@@ -510,49 +513,64 @@ namespace RevenuePlanner.Controllers
                         }
                         if (IsBenchmarked == false)
                         {
+                            /*changed by Nirav Shah on 2 APR 2013*/
+                            string[] strtxtTargetStage = txtTargetStage.ToArray();
+                            string[] strhdnSTAGEId = txtStageId.ToArray();
                             //Marketing Conversion Rates
-                            if (hdnSTAGEMCR != null && txtMCR != null)
+                            if (txtStageId != null && txtMCR != null)
                             {
-                                string[] strhdnSTAGEMCR = hdnSTAGEMCR.ToArray();
                                 string[] strtxtMCR = txtMCR.ToArray();
-                                SaveInputs(strhdnSTAGEMCR, strtxtMCR, intFunnelMarketing, Enums.StageType.CR.ToString());
+                                SaveInputs(strhdnSTAGEId, strtxtMCR, strtxtTargetStage, intFunnelMarketing, Enums.StageType.CR.ToString());
                             }
-
                             //Marketing Stage Velocity
-                            if (hdnSTAGEMSV != null && txtMSV != null)
+                            if (txtStageId != null && txtMSV != null)
                             {
-                                string[] strhdnSTAGEMSV = hdnSTAGEMSV.ToArray();
                                 string[] strtxtMSV = txtMSV.ToArray();
-                                SaveInputs(strhdnSTAGEMSV, strtxtMSV, intFunnelMarketing, Enums.StageType.SV.ToString());
+                                SaveInputs(strhdnSTAGEId, strtxtMSV, strtxtTargetStage, intFunnelMarketing, Enums.StageType.SV.ToString());
                             }
-                            //Teleprospecting Conversion Rates
-                            if (hdnSTAGETCR != null && txtTCR != null)
-                            {
-                                string[] strhdnSTAGETCR = hdnSTAGETCR.ToArray();
-                                string[] strtxtTCR = txtTCR.ToArray();
-                                SaveInputs(strhdnSTAGETCR, strtxtTCR, intFunnelTeleprospecting, Enums.StageType.CR.ToString());
-                            }
-                            //Teleprospecting Stage Velocity
-                            if (hdnSTAGETSV != null && txtTSV != null)
-                            {
-                                string[] strhdnSTAGETSV = hdnSTAGETSV.ToArray();
-                                string[] strtxtTSV = txtTSV.ToArray();
-                                SaveInputs(strhdnSTAGETSV, strtxtTSV, intFunnelTeleprospecting, Enums.StageType.SV.ToString());
-                            }
-                            //Sales Conversion Rates
-                            if (hdnSTAGESCR != null && txtSCR != null)
-                            {
-                                string[] strhdnSTAGESCR = hdnSTAGESCR.ToArray();
-                                string[] strtxtSCR = txtSCR.ToArray();
-                                SaveInputs(strhdnSTAGESCR, strtxtSCR, intFunnelSales, Enums.StageType.CR.ToString());
-                            }
-                            //Sales Stage Velocity
-                            if (hdnSTAGESSV != null && txtSSV != null)
-                            {
-                                string[] strhdnSTAGESSV = hdnSTAGESSV.ToArray();
-                                string[] strtxtSSV = txtSSV.ToArray();
-                                SaveInputs(strhdnSTAGESSV, strtxtSSV, intFunnelSales, Enums.StageType.SV.ToString());
-                            }
+                            ////Marketing Conversion Rates
+                            //if (hdnSTAGEMCR != null && txtMCR != null)
+                            //{
+                            //    string[] strhdnSTAGEMCR = hdnSTAGEMCR.ToArray();
+                            //    string[] strtxtMCR = txtMCR.ToArray();
+                            //    SaveInputs(strhdnSTAGEMCR, strtxtMCR, intFunnelMarketing, Enums.StageType.CR.ToString());
+                            //}
+
+                            ////Marketing Stage Velocity
+                            //if (hdnSTAGEMSV != null && txtMSV != null)
+                            //{
+                            //    string[] strhdnSTAGEMSV = hdnSTAGEMSV.ToArray();
+                            //    string[] strtxtMSV = txtMSV.ToArray();
+                            //    SaveInputs(strhdnSTAGEMSV, strtxtMSV, intFunnelMarketing, Enums.StageType.SV.ToString());
+                            //}
+                            ////Teleprospecting Conversion Rates
+                            //if (hdnSTAGETCR != null && txtTCR != null)
+                            //{
+                            //    string[] strhdnSTAGETCR = hdnSTAGETCR.ToArray();
+                            //    string[] strtxtTCR = txtTCR.ToArray();
+                            //    SaveInputs(strhdnSTAGETCR, strtxtTCR, intFunnelTeleprospecting, Enums.StageType.CR.ToString());
+                            //}
+                            ////Teleprospecting Stage Velocity
+                            //if (hdnSTAGETSV != null && txtTSV != null)
+                            //{
+                            //    string[] strhdnSTAGETSV = hdnSTAGETSV.ToArray();
+                            //    string[] strtxtTSV = txtTSV.ToArray();
+                            //    SaveInputs(strhdnSTAGETSV, strtxtTSV, intFunnelTeleprospecting, Enums.StageType.SV.ToString());
+                            //}
+                            ////Sales Conversion Rates
+                            //if (hdnSTAGESCR != null && txtSCR != null)
+                            //{
+                            //    string[] strhdnSTAGESCR = hdnSTAGESCR.ToArray();
+                            //    string[] strtxtSCR = txtSCR.ToArray();
+                            //    SaveInputs(strhdnSTAGESCR, strtxtSCR, intFunnelSales, Enums.StageType.CR.ToString());
+                            //}
+                            ////Sales Stage Velocity
+                            //if (hdnSTAGESSV != null && txtSSV != null)
+                            //{
+                            //    string[] strhdnSTAGESSV = hdnSTAGESSV.ToArray();
+                            //    string[] strtxtSSV = txtSSV.ToArray();
+                            //    SaveInputs(strhdnSTAGESSV, strtxtSSV, intFunnelSales, Enums.StageType.SV.ToString());
+                            //}
                         }
                         else
                         {
@@ -689,7 +707,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="itemLabels">Funnel Item Labels.</param>
         /// <param name="funnelId">Funnel Id.</param>
         /// <param name="stageType">Stage Type: CR/ SV.</param>
-        private void SaveInputs(string[] itemIds, string[] itemLabels, int funnelId, string stageType)
+        private void SaveInputs(string[] itemIds, string[] itemLabels, string[] strtxtTargetStage, int funnelId, string stageType)
         {
             if (itemIds.Length > 0 && itemLabels.Length > 0 && funnelId > 0 && !string.IsNullOrWhiteSpace(stageType))
             {
@@ -697,13 +715,16 @@ namespace RevenuePlanner.Controllers
                 {
                     double doubleValue = 0.0;
                     double.TryParse(Convert.ToString(itemLabels[i]).Replace(",", "").Replace("$", ""), out doubleValue);
+                  
+                    bool boolValue = false;
+                    bool.TryParse(strtxtTargetStage[i], out boolValue);
 
                     Model_Funnel_Stage objModel_Funnel_Stage = new Model_Funnel_Stage();
                     objModel_Funnel_Stage.ModelFunnelId = funnelId;
                     objModel_Funnel_Stage.StageId = Convert.ToInt32(itemIds[i]);
                     objModel_Funnel_Stage.StageType = stageType;
                     objModel_Funnel_Stage.Value = doubleValue;
-
+                    objModel_Funnel_Stage.AllowedTargetStage = boolValue;
                     Model_Funnel_Stage mModel_Funnel_Stage = db.Model_Funnel_Stage.Where(f => f.ModelFunnelId == objModel_Funnel_Stage.ModelFunnelId && f.StageId == objModel_Funnel_Stage.StageId && f.StageType == objModel_Funnel_Stage.StageType).FirstOrDefault();
                     if (mModel_Funnel_Stage == null)
                     {
@@ -717,6 +738,7 @@ namespace RevenuePlanner.Controllers
                         mModel_Funnel_Stage.Value = objModel_Funnel_Stage.Value;
                         mModel_Funnel_Stage.ModifiedBy = Sessions.User.UserId;
                         mModel_Funnel_Stage.ModifiedDate = DateTime.Now;
+                        mModel_Funnel_Stage.AllowedTargetStage = boolValue;
                         db.Entry(mModel_Funnel_Stage).State = EntityState.Modified;
                         int resModel_Funnel_Stage = db.SaveChanges();
                     }
@@ -751,56 +773,22 @@ namespace RevenuePlanner.Controllers
                         {
                             if (element1.Attributes["value"].Value.Equals(clientcode) == true)
                             {
-                                //readdata(_class, false, intFunnelSales, intFunnelTeleprospecting, intFunnelMarketing);
-                                foreach (XmlElement element in element1.SelectNodes(@"Marketing/ConversionRates"))
+                                foreach (XmlElement element in element1.SelectNodes(@"stage"))
                                 {
-                                    if (element.HasAttribute("stage"))
-                                    {
-                                        ConversionRate(element.Attributes["stage"].Value, Convert.ToDouble(element.Attributes["value"].Value), intFunnelMarketing);
-                                    }
+                                    readdata(element, intFunnelMarketing);
                                 }
-                                foreach (XmlElement element in element1.SelectNodes(@"Marketing/velocity"))
-                                {
-                                    if (element.HasAttribute("stage"))
-                                    {
-                                        Velocity(element.Attributes["stage"].Value, Convert.ToDouble(element.Attributes["value"].Value), intFunnelMarketing);
-                                    }
-                                }
-                                foreach (XmlElement element in element1.SelectNodes(@"Teleprospecting/ConversionRates"))
-                                {
-                                    if (element.HasAttribute("stage"))
-                                    {
-                                        ConversionRate(element.Attributes["stage"].Value, Convert.ToDouble(element.Attributes["value"].Value), intFunnelTeleprospecting);
-                                    }
-                                }
-                                foreach (XmlElement element in element1.SelectNodes(@"Teleprospecting/velocity"))
-                                {
-                                    if (element.HasAttribute("stage"))
-                                    {
-                                        Velocity(element.Attributes["stage"].Value, Convert.ToDouble(element.Attributes["value"].Value), intFunnelTeleprospecting);
-                                    }
-                                }
-                                foreach (XmlElement element in element1.SelectNodes(@"Sales/ConversionRates"))
-                                {
-                                    if (element.HasAttribute("stage"))
-                                    {
-                                        ConversionRate(element.Attributes["stage"].Value, Convert.ToDouble(element.Attributes["value"].Value), intFunnelSales);
-                                    }
-                                }
-                                foreach (XmlElement element in element1.SelectNodes(@"Sales/velocity"))
-                                {
-                                    if (element.HasAttribute("stage"))
-                                    {
-                                        Velocity(element.Attributes["stage"].Value, Convert.ToDouble(element.Attributes["value"].Value), intFunnelSales);
-                                    }
-                                }
+
                                 clientflag = true;
                             }
                         }
                     }
                     if (clientflag == false)
                     {
-                        readdata(_class, false, intFunnelSales, intFunnelTeleprospecting, intFunnelMarketing);
+                        foreach (XmlElement element in _class.SelectNodes(@"stage"))
+                        {
+                            readdata(element, intFunnelMarketing);
+                        }
+
                     }
                 }
             }
@@ -815,99 +803,33 @@ namespace RevenuePlanner.Controllers
         /// <param name="intFunnelTeleprospecting"></param>
         /// <param name="intFunnelMarketing"></param>
         /// <returns></returns>
-        public void readdata(XmlNode _class, bool clientexists, int intFunnelSales, int intFunnelTeleprospecting, int intFunnelMarketing)
+        public void readdata(XmlElement element, int intFunnelMarketing)
         {
-            foreach (XmlElement element in _class.SelectNodes(@"Marketing/ConversionRates"))
+            string stageCode = string.Empty;
+            double cr = 0;
+            double sv = 0;
+            bool targetStage = false;
+            int StageId = 0;
+            if (element.HasAttribute("code"))
             {
-                if (element.HasAttribute("stage"))
-                {
-                    ConversionRate(element.Attributes["stage"].Value, Convert.ToDouble(element.Attributes["value"].Value), intFunnelMarketing);
-                }
+                stageCode = element.Attributes["code"].Value;
+                StageId = retStageId(stageCode);
             }
-            foreach (XmlElement element in _class.SelectNodes(@"Marketing/velocity"))
+            if (element.HasAttribute("cr"))
             {
-                if (element.HasAttribute("stage"))
-                {
-                    Velocity(element.Attributes["stage"].Value, Convert.ToDouble(element.Attributes["value"].Value), intFunnelMarketing);
-                }
+                double.TryParse(element.Attributes["cr"].Value, out cr);
             }
-            foreach (XmlElement element in _class.SelectNodes(@"Teleprospecting/ConversionRates"))
+            if (element.HasAttribute("sv"))
             {
-                if (element.HasAttribute("stage"))
-                {
-                    ConversionRate(element.Attributes["stage"].Value, Convert.ToDouble(element.Attributes["value"].Value), intFunnelTeleprospecting);
-                }
+                double.TryParse(element.Attributes["sv"].Value, out sv);
             }
-            foreach (XmlElement element in _class.SelectNodes(@"Teleprospecting/velocity"))
+            if (element.HasAttribute("targetstage"))
             {
-                if (element.HasAttribute("stage"))
-                {
-                    Velocity(element.Attributes["stage"].Value, Convert.ToDouble(element.Attributes["value"].Value), intFunnelTeleprospecting);
-                }
+                bool.TryParse(element.Attributes["targetstage"].Value, out targetStage);
             }
-            foreach (XmlElement element in _class.SelectNodes(@"Sales/ConversionRates"))
-            {
-                if (element.HasAttribute("stage"))
-                {
-                    ConversionRate(element.Attributes["stage"].Value, Convert.ToDouble(element.Attributes["value"].Value), intFunnelSales);
-                }
-            }
-            foreach (XmlElement element in _class.SelectNodes(@"Sales/velocity"))
-            {
-                if (element.HasAttribute("stage"))
-                {
-                    Velocity(element.Attributes["stage"].Value, Convert.ToDouble(element.Attributes["value"].Value), intFunnelSales);
-                }
-            }
-        }
 
-        /// <summary>
-        /// To calculate and save Conversion Rate for Benchmark Inputs XML.
-        /// </summary>
-        /// <param name="stage"></param>
-        /// <param name="Value"></param>
-        /// <param name="ModelFunnelId"></param>
-        /// <returns></returns>
-        public void ConversionRate(string stage, double Value, int ModelFunnelId)
-        {
-            string StageType, stagename;
-            int StageId, resModel_Funnel_Stage;
-            stagename = stage.Split('-')[0];
-            StageId = retStageId(stagename);
-            StageType = CR;
-            resModel_Funnel_Stage = ModelfunnelStage_Benchmark(ModelFunnelId, StageId, StageType, Value);
-        }
-
-        /// <summary>
-        /// To calculate and save Stage Velocity for Benchmark Inputs XML.
-        /// </summary>
-        /// <param name="stage"></param>
-        /// <param name="Value"></param>
-        /// <param name="ModelFunnelId"></param>
-        /// <returns></returns>
-        public void Velocity(string stage, double Value, int ModelFunnelId)
-        {
-            //Start Manoj 03Feb2014 - Bug 115:Model Creation - Velocity Labels same as Conversion Labels
-            //string StageType;
-            //int StageId, resModel_Funnel_Stage;
-            //if (stage.ToLower() == Enums.StageVelocity.OutboundSuspect.ToString().ToLower())
-            //{
-            //    stage = Enums.Stage.SUS.ToString();
-            //}
-            //else if (stage.ToLower() == Enums.StageVelocity.InboundSuspect.ToString().ToLower())
-            //{
-            //    stage = Enums.Stage.INQ.ToString();
-            //}
-            //StageId = retStageId(stage);
-            //StageType = SV;
-            //resModel_Funnel_Stage = ModelfunnelStage_Benchmark(ModelFunnelId, StageId, StageType, Value);
-            string StageType, stagename;
-            int StageId, resModel_Funnel_Stage;
-            stagename = stage.Split('-')[0];
-            StageId = retStageId(stagename);
-            StageType = SV;
-            resModel_Funnel_Stage = ModelfunnelStage_Benchmark(ModelFunnelId, StageId, StageType, Value);
-            //End Manoj 03Feb2014 - Bug 115:Model Creation - Velocity Labels same as Conversion Labels
+            ModelfunnelStage_Benchmark(intFunnelMarketing, StageId, "CR", cr, targetStage);
+            ModelfunnelStage_Benchmark(intFunnelMarketing, StageId, "SV", sv, false);
         }
 
         /// <summary>
@@ -915,9 +837,9 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="stagename"></param>
         /// <returns>Returns StageId for given StageName</returns>
-        public int retStageId(string stagename)
+        public int retStageId(string code)
         {
-            int StageId = db.Stages.Where(s => s.Code.ToLower() == stagename.ToLower() && s.IsDeleted == false && s.ClientId == Sessions.User.ClientId).Select(s => s.StageId).FirstOrDefault();
+            int StageId = db.Stages.Where(s => s.Code.ToLower() == code.ToLower() && s.IsDeleted == false && s.ClientId == Sessions.User.ClientId).Select(s => s.StageId).FirstOrDefault();
             return StageId;
         }
 
@@ -929,7 +851,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="StageType"></param>
         /// <param name="Value"></param>
         /// <returns>Returns sucess value</returns>
-        public int ModelfunnelStage_Benchmark(int ModelFunnelId, int StageId, string StageType, double Value)
+        public int ModelfunnelStage_Benchmark(int ModelFunnelId, int StageId, string StageType, double Value, bool stageValue)
         {
             int result = 0;
             Model_Funnel_Stage objModel_Funnel_Stage = new Model_Funnel_Stage();
@@ -942,12 +864,14 @@ namespace RevenuePlanner.Controllers
             Model_Funnel_Stage tsvModel_Funnel_Stage = db.Model_Funnel_Stage.Where(f => f.ModelFunnelId == objModel_Funnel_Stage.ModelFunnelId && f.StageId == objModel_Funnel_Stage.StageId && f.StageType == objModel_Funnel_Stage.StageType).FirstOrDefault();
             if (tsvModel_Funnel_Stage == null)
             {
+                objModel_Funnel_Stage.AllowedTargetStage = stageValue;
                 objModel_Funnel_Stage.CreatedDate = DateTime.Now;
                 objModel_Funnel_Stage.CreatedBy = Sessions.User.UserId;
                 db.Model_Funnel_Stage.Add(objModel_Funnel_Stage);
             }
             else
             {
+                tsvModel_Funnel_Stage.AllowedTargetStage = stageValue;
                 tsvModel_Funnel_Stage.Value = objModel_Funnel_Stage.Value;
                 tsvModel_Funnel_Stage.ModifiedBy = Sessions.User.UserId;
                 tsvModel_Funnel_Stage.ModifiedDate = DateTime.Now;
@@ -1006,7 +930,7 @@ namespace RevenuePlanner.Controllers
                 var modellist = db.Models.Where(m => m.ModelId == model).Select(n => new { n.ModelId, n.BusinessUnitId, n.Title, n.Version, n.Year, n.AddressableContacts, n.Status, n.IsActive, n.IsDeleted }).ToList();
                 var modelfunnelist = db.Model_Funnel.Where(m => m.ModelId == model).OrderBy(d => d.ModelFunnelId).Select(s => s.ModelFunnelId).ToList();
                 var modelfunnelistall = db.Model_Funnel.Where(m => m.ModelId == model).OrderBy(d => d.ModelFunnelId).Select(d => new { d.ModelFunnelId, d.ModelId, d.FunnelId, d.ExpectedLeadCount, d.AverageDealSize }).ToList();
-                var modelfunnelstagelist = db.Model_Funnel_Stage.Where(m => modelfunnelist.Contains(m.ModelFunnelId)).OrderBy(d => d.ModelFunnelStageId).Select(n => new { n.ModelFunnelStageId, n.ModelFunnelId, n.StageId, n.StageType, n.Value }).ToList();
+                var modelfunnelstagelist = db.Model_Funnel_Stage.Where(m => modelfunnelist.Contains(m.ModelFunnelId)).OrderBy(d => d.ModelFunnelStageId).Select(n => new { n.ModelFunnelStageId, n.ModelFunnelId, n.StageId, n.StageType, n.Value, n.AllowedTargetStage }).ToList();
                 JsonConvert.SerializeObject(modellist, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
                 JsonConvert.SerializeObject(modelfunnelistall, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
                 JsonConvert.SerializeObject(modelfunnelstagelist, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
@@ -2491,113 +2415,113 @@ namespace RevenuePlanner.Controllers
 
                     #endregion
 
-                    #region Teleprospecting Funnel
+                    //#region Teleprospecting Funnel
 
-                    //TAL
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == FF_TAL).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double MarketingSourced_Tele_TAL = objModelCalculation.MarketingSourced_Tele_TAL();
-                    double MarketingStageDays_Tele_TAL = objModelCalculation.MarketingStageDays_Tele_TAL(false);
-                    SaveModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, MarketingSourced_Tele_TAL, MarketingStageDays_Tele_TAL, 0, 0, 0, 0);
+                    ////TAL
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == FF_TAL).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double MarketingSourced_Tele_TAL = objModelCalculation.MarketingSourced_Tele_TAL();
+                    //double MarketingStageDays_Tele_TAL = objModelCalculation.MarketingStageDays_Tele_TAL(false);
+                    //SaveModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, MarketingSourced_Tele_TAL, MarketingStageDays_Tele_TAL, 0, 0, 0, 0);
 
-                    //Conversion Gate 1 (TAL)
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == ConversionGate_TAL).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double MarketingSourced_Tele_TAL_ConversionGate = objModelCalculation.MarketingSourced_Tele_TAL_ConversionGate(false);
-                    SaveModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, MarketingSourced_Tele_TAL_ConversionGate, 0, 0, 0, 0, 0);
+                    ////Conversion Gate 1 (TAL)
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == ConversionGate_TAL).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double MarketingSourced_Tele_TAL_ConversionGate = objModelCalculation.MarketingSourced_Tele_TAL_ConversionGate(false);
+                    //SaveModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, MarketingSourced_Tele_TAL_ConversionGate, 0, 0, 0, 0, 0);
 
-                    //TQL
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == FF_TQL).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double MarketingSourced_Tele_TQL = objModelCalculation.MarketingSourced_Tele_TQL();
-                    SaveModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, MarketingSourced_Tele_TQL, 0, 0, 0, 0, 0);
+                    ////TQL
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == FF_TQL).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double MarketingSourced_Tele_TQL = objModelCalculation.MarketingSourced_Tele_TQL();
+                    //SaveModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, MarketingSourced_Tele_TQL, 0, 0, 0, 0, 0);
 
-                    //TGL
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == FF_TGL).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double TeleprospectingSourced_Tele_TGL = objModelCalculation.TeleprospectingSourced_Tele_TGL(false);
-                    SaveModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, 0, 0, TeleprospectingSourced_Tele_TGL, 0, 0, 0);
+                    ////TGL
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == FF_TGL).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double TeleprospectingSourced_Tele_TGL = objModelCalculation.TeleprospectingSourced_Tele_TGL(false);
+                    //SaveModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, 0, 0, TeleprospectingSourced_Tele_TGL, 0, 0, 0);
 
-                    //Total Marketing Qualitfied Leads (MQLs)
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == FF_MQL).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double MarketingSourced_Tele_TotalMarketingQualifiedLeadsMQL = objModelCalculation.MarketingSourced_Tele_TotalMarketingQualifiedLeadsMQL();
-                    double MarketingStageDays_Tele_MQL = objModelCalculation.MarketingStageDays_Tele_MQL();
-                    double TeleprospectingSourced_Tele_TotalMarketingQualifiedLeadsMQL = objModelCalculation.TeleprospectingSourced_Tele_TotalMarketingQualifiedLeadsMQL();
-                    double TeleprospectingStageDays_Tele_TotalMarketingQualifiedLeadsMQL = objModelCalculation.TeleprospectingStageDays_Tele_TotalMarketingQualifiedLeadsMQL();
-                    SaveModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, MarketingSourced_Tele_TotalMarketingQualifiedLeadsMQL, MarketingStageDays_Tele_MQL, TeleprospectingSourced_Tele_TotalMarketingQualifiedLeadsMQL, TeleprospectingStageDays_Tele_TotalMarketingQualifiedLeadsMQL, 0, 0);
+                    ////Total Marketing Qualitfied Leads (MQLs)
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == FF_MQL).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double MarketingSourced_Tele_TotalMarketingQualifiedLeadsMQL = objModelCalculation.MarketingSourced_Tele_TotalMarketingQualifiedLeadsMQL();
+                    //double MarketingStageDays_Tele_MQL = objModelCalculation.MarketingStageDays_Tele_MQL();
+                    //double TeleprospectingSourced_Tele_TotalMarketingQualifiedLeadsMQL = objModelCalculation.TeleprospectingSourced_Tele_TotalMarketingQualifiedLeadsMQL();
+                    //double TeleprospectingStageDays_Tele_TotalMarketingQualifiedLeadsMQL = objModelCalculation.TeleprospectingStageDays_Tele_TotalMarketingQualifiedLeadsMQL();
+                    //SaveModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, MarketingSourced_Tele_TotalMarketingQualifiedLeadsMQL, MarketingStageDays_Tele_MQL, TeleprospectingSourced_Tele_TotalMarketingQualifiedLeadsMQL, TeleprospectingStageDays_Tele_TotalMarketingQualifiedLeadsMQL, 0, 0);
 
-                    //Conversion Gate 2 (TQL)
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == ConversionGate_TQL).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double MarketingSourced_Tele_TQL_ConversionGate = objModelCalculation.MarketingSourced_Tele_TQL_ConversionGate(false);
-                    double TeleprospectingSourced_Tele_TQL_ConversionGate = objModelCalculation.TeleprospectingSourced_Tele_TQL_ConversionGate(false);
-                    SaveModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, MarketingSourced_Tele_TQL_ConversionGate, 0, TeleprospectingSourced_Tele_TQL_ConversionGate, 0, 0, 0);
+                    ////Conversion Gate 2 (TQL)
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == ConversionGate_TQL).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double MarketingSourced_Tele_TQL_ConversionGate = objModelCalculation.MarketingSourced_Tele_TQL_ConversionGate(false);
+                    //double TeleprospectingSourced_Tele_TQL_ConversionGate = objModelCalculation.TeleprospectingSourced_Tele_TQL_ConversionGate(false);
+                    //SaveModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, MarketingSourced_Tele_TQL_ConversionGate, 0, TeleprospectingSourced_Tele_TQL_ConversionGate, 0, 0, 0);
 
-                    #endregion
+                    //#endregion
 
-                    #region Sales Funnel
+                    //#region Sales Funnel
 
-                    //SAL
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == FF_SAL).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double MarketingSourced_Sales_SAL = objModelCalculation.MarketingSourced_Sales_SAL();
-                    double MarketingStageDays_Sales_SAL = objModelCalculation.MarketingStageDays_Sales_SAL();
-                    double TeleprospectingSourced_Sales_SAL = objModelCalculation.TeleprospectingSourced_Sales_SAL();
-                    double TeleprospectingStageDays_Sales_SAL = objModelCalculation.TeleprospectingStageDays_Sales_SAL();
-                    SaveModelCalculations(Sales_ModelFunnelId, FunnelFieldId, MarketingSourced_Sales_SAL, MarketingStageDays_Sales_SAL, TeleprospectingSourced_Sales_SAL, TeleprospectingStageDays_Sales_SAL, 0, 0);
+                    ////SAL
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == FF_SAL).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double MarketingSourced_Sales_SAL = objModelCalculation.MarketingSourced_Sales_SAL();
+                    //double MarketingStageDays_Sales_SAL = objModelCalculation.MarketingStageDays_Sales_SAL();
+                    //double TeleprospectingSourced_Sales_SAL = objModelCalculation.TeleprospectingSourced_Sales_SAL();
+                    //double TeleprospectingStageDays_Sales_SAL = objModelCalculation.TeleprospectingStageDays_Sales_SAL();
+                    //SaveModelCalculations(Sales_ModelFunnelId, FunnelFieldId, MarketingSourced_Sales_SAL, MarketingStageDays_Sales_SAL, TeleprospectingSourced_Sales_SAL, TeleprospectingStageDays_Sales_SAL, 0, 0);
 
-                    //SGL
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == FF_SGL).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double SalesSourced_Sales_SGL = objModelCalculation.SalesSourced_Sales_SGL(false);
-                    double SalesStageDays_Sales_SGL = objModelCalculation.SalesStageDays_Sales_SGL();
-                    SaveModelCalculations(Sales_ModelFunnelId, FunnelFieldId, 0, 0, 0, 0, SalesSourced_Sales_SGL, SalesStageDays_Sales_SGL);
+                    ////SGL
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == FF_SGL).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double SalesSourced_Sales_SGL = objModelCalculation.SalesSourced_Sales_SGL(false);
+                    //double SalesStageDays_Sales_SGL = objModelCalculation.SalesStageDays_Sales_SGL();
+                    //SaveModelCalculations(Sales_ModelFunnelId, FunnelFieldId, 0, 0, 0, 0, SalesSourced_Sales_SGL, SalesStageDays_Sales_SGL);
 
-                    //Conversion Gate 1 (SAL)
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == ConversionGate_SAL).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double MarketingSourced_Sales_SAL_ConversionGate = objModelCalculation.MarketingSourced_Sales_SAL_ConversionGate(false);
-                    double TeleprospectingSourced_Sales_SAL_ConversionGate = objModelCalculation.TeleprospectingSourced_Sales_SAL_ConversionGate(false);
-                    double SalesSourced_Sales_SAL_ConversionGate = objModelCalculation.SalesSourced_Sales_SAL_ConversionGate(false);
-                    SaveModelCalculations(Sales_ModelFunnelId, FunnelFieldId, MarketingSourced_Sales_SAL_ConversionGate, 0, TeleprospectingSourced_Sales_SAL_ConversionGate, 0, SalesSourced_Sales_SAL_ConversionGate, 0);
+                    ////Conversion Gate 1 (SAL)
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == ConversionGate_SAL).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double MarketingSourced_Sales_SAL_ConversionGate = objModelCalculation.MarketingSourced_Sales_SAL_ConversionGate(false);
+                    //double TeleprospectingSourced_Sales_SAL_ConversionGate = objModelCalculation.TeleprospectingSourced_Sales_SAL_ConversionGate(false);
+                    //double SalesSourced_Sales_SAL_ConversionGate = objModelCalculation.SalesSourced_Sales_SAL_ConversionGate(false);
+                    //SaveModelCalculations(Sales_ModelFunnelId, FunnelFieldId, MarketingSourced_Sales_SAL_ConversionGate, 0, TeleprospectingSourced_Sales_SAL_ConversionGate, 0, SalesSourced_Sales_SAL_ConversionGate, 0);
 
-                    //SQL
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == FF_SQL).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double MarketingSourced_Sales_SQL = objModelCalculation.MarketingSourced_Sales_SQL();
-                    double MarketingStageDays_Sales_SQL = objModelCalculation.MarketingStageDays_Sales_SQL();
-                    double TeleprospectingSourced_Sales_SQL = objModelCalculation.TeleprospectingSourced_Sales_SQL();
-                    double TeleprospectingStageDays_Sales_SQL = objModelCalculation.TeleprospectingStageDays_Sales_SQL();
-                    double SalesSourced_Sales_SQL = objModelCalculation.SalesSourced_Sales_SQL();
-                    double SalesStageDays_Sales_SQL = objModelCalculation.SalesStageDays_Sales_SQL();
-                    SaveModelCalculations(Sales_ModelFunnelId, FunnelFieldId, MarketingSourced_Sales_SQL, MarketingStageDays_Sales_SQL, TeleprospectingSourced_Sales_SQL, TeleprospectingStageDays_Sales_SQL, SalesSourced_Sales_SQL, SalesStageDays_Sales_SQL);
+                    ////SQL
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == FF_SQL).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double MarketingSourced_Sales_SQL = objModelCalculation.MarketingSourced_Sales_SQL();
+                    //double MarketingStageDays_Sales_SQL = objModelCalculation.MarketingStageDays_Sales_SQL();
+                    //double TeleprospectingSourced_Sales_SQL = objModelCalculation.TeleprospectingSourced_Sales_SQL();
+                    //double TeleprospectingStageDays_Sales_SQL = objModelCalculation.TeleprospectingStageDays_Sales_SQL();
+                    //double SalesSourced_Sales_SQL = objModelCalculation.SalesSourced_Sales_SQL();
+                    //double SalesStageDays_Sales_SQL = objModelCalculation.SalesStageDays_Sales_SQL();
+                    //SaveModelCalculations(Sales_ModelFunnelId, FunnelFieldId, MarketingSourced_Sales_SQL, MarketingStageDays_Sales_SQL, TeleprospectingSourced_Sales_SQL, TeleprospectingStageDays_Sales_SQL, SalesSourced_Sales_SQL, SalesStageDays_Sales_SQL);
 
-                    //Conversion Gate 2 (SQL)
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == ConversionGate_SQL).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double MarketingSourced_Sales_SQL_ConversionGate = objModelCalculation.MarketingSourced_Sales_SQL_ConversionGate(false);
-                    double TeleprospectingSourced_Sales_SQL_ConversionGate = objModelCalculation.TeleprospectingSourced_Sales_SQL_ConversionGate(false);
-                    double SalesSourced_Sales_SQL_ConversionGate = objModelCalculation.SalesSourced_Sales_SQL_ConversionGate(false);
-                    SaveModelCalculations(Sales_ModelFunnelId, FunnelFieldId, MarketingSourced_Sales_SQL_ConversionGate, 0, TeleprospectingSourced_Sales_SQL_ConversionGate, 0, SalesSourced_Sales_SQL_ConversionGate, 0);
+                    ////Conversion Gate 2 (SQL)
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == ConversionGate_SQL).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double MarketingSourced_Sales_SQL_ConversionGate = objModelCalculation.MarketingSourced_Sales_SQL_ConversionGate(false);
+                    //double TeleprospectingSourced_Sales_SQL_ConversionGate = objModelCalculation.TeleprospectingSourced_Sales_SQL_ConversionGate(false);
+                    //double SalesSourced_Sales_SQL_ConversionGate = objModelCalculation.SalesSourced_Sales_SQL_ConversionGate(false);
+                    //SaveModelCalculations(Sales_ModelFunnelId, FunnelFieldId, MarketingSourced_Sales_SQL_ConversionGate, 0, TeleprospectingSourced_Sales_SQL_ConversionGate, 0, SalesSourced_Sales_SQL_ConversionGate, 0);
 
-                    //Closed Won
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == ClosedWon).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double MarketingSourced_Sales_CW = objModelCalculation.MarketingSourced_Sales_CW();
-                    double TeleprospectingSourced_Sales_CW = objModelCalculation.TeleprospectingSourced_Sales_CW();
-                    double SalesSourced_Sales_CW = objModelCalculation.SalesSourced_Sales_CW();
-                    SaveModelCalculations(Sales_ModelFunnelId, FunnelFieldId, MarketingSourced_Sales_CW, 0, TeleprospectingSourced_Sales_CW, 0, SalesSourced_Sales_CW, 0);
+                    ////Closed Won
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == ClosedWon).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double MarketingSourced_Sales_CW = objModelCalculation.MarketingSourced_Sales_CW();
+                    //double TeleprospectingSourced_Sales_CW = objModelCalculation.TeleprospectingSourced_Sales_CW();
+                    //double SalesSourced_Sales_CW = objModelCalculation.SalesSourced_Sales_CW();
+                    //SaveModelCalculations(Sales_ModelFunnelId, FunnelFieldId, MarketingSourced_Sales_CW, 0, TeleprospectingSourced_Sales_CW, 0, SalesSourced_Sales_CW, 0);
 
-                    #endregion
+                    //#endregion
 
                     //BLENDED FUNNEL CONVERSION RATE AND TIMES
                     FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Marketing && f.Field.Title == BlendedFunnelCR_Times).Select(m => m.FunnelFieldId).FirstOrDefault());
                     double MarketingStageDays_BlendedFull = objModelCalculation.MarketingStageDays_BlendedFull();
-                    double SalesStageDays_BlendedFull = objModelCalculation.SalesStageDays_BlendedFull();
-                    SaveModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, 0, MarketingStageDays_BlendedFull, 0, 0, 0, SalesStageDays_BlendedFull);
+                    //double SalesStageDays_BlendedFull = objModelCalculation.SalesStageDays_BlendedFull();
+                    SaveModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, 0, MarketingStageDays_BlendedFull, 0, 0, 0, 0);
 
                     //Average Deals Size
                     FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Marketing && f.Field.Title == FF_AverageDealsSize).Select(m => m.FunnelFieldId).FirstOrDefault());
                     double MarketingSourced_Average_Deal_Size = objModelCalculation.MarketingSourced_Average_Deal_Size(false);
-                    double TeleprospectingSourced_Average_Deal_Size = objModelCalculation.TeleprospectingSourced_Average_Deal_Size(false);
-                    double SalesSourced_Average_Deal_Size = objModelCalculation.SalesSourced_Average_Deal_Size(false);
-                    SaveModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, MarketingSourced_Average_Deal_Size, 0, TeleprospectingSourced_Average_Deal_Size, 0, SalesSourced_Average_Deal_Size, 0);
+                    //double TeleprospectingSourced_Average_Deal_Size = objModelCalculation.TeleprospectingSourced_Average_Deal_Size(false);
+                    //double SalesSourced_Average_Deal_Size = objModelCalculation.SalesSourced_Average_Deal_Size(false);
+                    SaveModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, MarketingSourced_Average_Deal_Size, 0, 0, 0, 0, 0);
 
                     //Expected Revenue From Model
                     FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Marketing && f.Field.Title == ExpectedRevenue).Select(m => m.FunnelFieldId).FirstOrDefault());
                     double MarketingSourced_Expected_Revenue = objModelCalculation.MarketingSourced_Expected_Revenue();
-                    double TeleprospectingSourced_Expected_Revenue = objModelCalculation.TeleprospectingSourced_Expected_Revenue();
-                    double SalesSourced_Expected_Revenue = objModelCalculation.SalesSourced_Expected_Revenue();
-                    SaveModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, MarketingSourced_Expected_Revenue, 0, TeleprospectingSourced_Expected_Revenue, 0, SalesSourced_Expected_Revenue, 0);
+                    //double TeleprospectingSourced_Expected_Revenue = objModelCalculation.TeleprospectingSourced_Expected_Revenue();
+                    //double SalesSourced_Expected_Revenue = objModelCalculation.SalesSourced_Expected_Revenue();
+                    SaveModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, MarketingSourced_Expected_Revenue, 0, 0, 0, 0, 0);
 
                     #region Blended
 
@@ -2646,69 +2570,69 @@ namespace RevenuePlanner.Controllers
                     UpdateModelCalculations(Marketing_ModelFunnelId, FunnelFieldId, BlendedTotal_Mkt_AQL_ConversionGate, 0);
 
                     //TAL
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == FF_TAL).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_Tele_TAL = objModelCalculation.BlendedTotal_Tele_TAL();
-                    double BlendedTotalDays_Tele_TAL = objModelCalculation.BlendedTotalDays_Tele_TAL();
-                    UpdateModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, BlendedTotal_Tele_TAL, BlendedTotalDays_Tele_TAL);
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == FF_TAL).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double BlendedTotal_Tele_TAL = objModelCalculation.BlendedTotal_Tele_TAL();
+                    //double BlendedTotalDays_Tele_TAL = objModelCalculation.BlendedTotalDays_Tele_TAL();
+                    //UpdateModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, BlendedTotal_Tele_TAL, BlendedTotalDays_Tele_TAL);
 
-                    //Conversion Gate 1 (TAL)
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == ConversionGate_TAL).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_Tele_TAL_ConversionGate = objModelCalculation.BlendedTotal_Tele_TAL_ConversionGate();
-                    UpdateModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, BlendedTotal_Tele_TAL_ConversionGate, 0);
+                    ////Conversion Gate 1 (TAL)
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == ConversionGate_TAL).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double BlendedTotal_Tele_TAL_ConversionGate = objModelCalculation.BlendedTotal_Tele_TAL_ConversionGate();
+                    //UpdateModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, BlendedTotal_Tele_TAL_ConversionGate, 0);
 
-                    //TQL
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == FF_TQL).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_Tele_TQL = objModelCalculation.BlendedTotal_Tele_TQL();
-                    UpdateModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, BlendedTotal_Tele_TQL, 0);
+                    ////TQL
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == FF_TQL).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double BlendedTotal_Tele_TQL = objModelCalculation.BlendedTotal_Tele_TQL();
+                    //UpdateModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, BlendedTotal_Tele_TQL, 0);
 
-                    //TGL
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == FF_TGL).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_Tele_TGL = objModelCalculation.BlendedTotal_Tele_TGL();
-                    UpdateModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, BlendedTotal_Tele_TGL, 0);
+                    ////TGL
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == FF_TGL).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double BlendedTotal_Tele_TGL = objModelCalculation.BlendedTotal_Tele_TGL();
+                    //UpdateModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, BlendedTotal_Tele_TGL, 0);
 
-                    //Total Marketing Qualitfied Leads (MQLs)
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == FF_MQL).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_Tele_TotalMarketingQualifiedLeadsMQL = objModelCalculation.BlendedTotal_Tele_TotalMarketingQualifiedLeadsMQL();
-                    double BlendedTotalDays_Tele_TotalMarketingQualifiedLeadsMQL = objModelCalculation.BlendedTotalDays_Tele_TotalMarketingQualifiedLeadsMQL(BlendedTotal_Tele_TotalMarketingQualifiedLeadsMQL);
-                    UpdateModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, BlendedTotal_Tele_TotalMarketingQualifiedLeadsMQL, BlendedTotalDays_Tele_TotalMarketingQualifiedLeadsMQL);
+                    ////Total Marketing Qualitfied Leads (MQLs)
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == FF_MQL).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double BlendedTotal_Tele_TotalMarketingQualifiedLeadsMQL = objModelCalculation.BlendedTotal_Tele_TotalMarketingQualifiedLeadsMQL();
+                    //double BlendedTotalDays_Tele_TotalMarketingQualifiedLeadsMQL = objModelCalculation.BlendedTotalDays_Tele_TotalMarketingQualifiedLeadsMQL(BlendedTotal_Tele_TotalMarketingQualifiedLeadsMQL);
+                    //UpdateModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, BlendedTotal_Tele_TotalMarketingQualifiedLeadsMQL, BlendedTotalDays_Tele_TotalMarketingQualifiedLeadsMQL);
 
-                    //SAL
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == FF_SAL).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_Sales_SAL = objModelCalculation.BlendedTotal_Sales_SAL();
-                    double BlendedTotalDays_Sales_SAL = objModelCalculation.BlendedTotalDays_Sales_SAL(BlendedTotal_Sales_SAL);
-                    UpdateModelCalculations(Sales_ModelFunnelId, FunnelFieldId, BlendedTotal_Sales_SAL, BlendedTotalDays_Sales_SAL);
+                    ////SAL
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == FF_SAL).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double BlendedTotal_Sales_SAL = objModelCalculation.BlendedTotal_Sales_SAL();
+                    //double BlendedTotalDays_Sales_SAL = objModelCalculation.BlendedTotalDays_Sales_SAL(BlendedTotal_Sales_SAL);
+                    //UpdateModelCalculations(Sales_ModelFunnelId, FunnelFieldId, BlendedTotal_Sales_SAL, BlendedTotalDays_Sales_SAL);
 
-                    //Conversion Gate 2 (TQL)
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == ConversionGate_TQL).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_Tele_TQL_ConversionGate = objModelCalculation.BlendedTotal_Tele_TQL_ConversionGate();
-                    UpdateModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, BlendedTotal_Tele_TQL_ConversionGate, 0);
+                    ////Conversion Gate 2 (TQL)
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Teleprospecting && f.Field.Title == ConversionGate_TQL).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double BlendedTotal_Tele_TQL_ConversionGate = objModelCalculation.BlendedTotal_Tele_TQL_ConversionGate();
+                    //UpdateModelCalculations(Teleprospecting_ModelFunnelId, FunnelFieldId, BlendedTotal_Tele_TQL_ConversionGate, 0);
 
-                    //SGL
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == FF_SGL).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_Sales_SGL = objModelCalculation.BlendedTotal_Sales_SGL();
-                    double BlendedTotalDays_Sales_SGL = objModelCalculation.BlendedTotalDays_Sales_SGL();
-                    UpdateModelCalculations(Sales_ModelFunnelId, FunnelFieldId, BlendedTotal_Sales_SGL, BlendedTotalDays_Sales_SGL);
+                    ////SGL
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == FF_SGL).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double BlendedTotal_Sales_SGL = objModelCalculation.BlendedTotal_Sales_SGL();
+                    //double BlendedTotalDays_Sales_SGL = objModelCalculation.BlendedTotalDays_Sales_SGL();
+                    //UpdateModelCalculations(Sales_ModelFunnelId, FunnelFieldId, BlendedTotal_Sales_SGL, BlendedTotalDays_Sales_SGL);
 
-                    //SQL
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == FF_SQL).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_Sales_SQL = objModelCalculation.BlendedTotal_Sales_SQL();
-                    double BlendedTotalDays_Sales_SQL = objModelCalculation.BlendedTotalDays_Sales_SQL(BlendedTotal_Sales_SQL);
-                    UpdateModelCalculations(Sales_ModelFunnelId, FunnelFieldId, BlendedTotal_Sales_SQL, BlendedTotalDays_Sales_SQL);
+                    ////SQL
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == FF_SQL).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double BlendedTotal_Sales_SQL = objModelCalculation.BlendedTotal_Sales_SQL();
+                    //double BlendedTotalDays_Sales_SQL = objModelCalculation.BlendedTotalDays_Sales_SQL(BlendedTotal_Sales_SQL);
+                    //UpdateModelCalculations(Sales_ModelFunnelId, FunnelFieldId, BlendedTotal_Sales_SQL, BlendedTotalDays_Sales_SQL);
 
-                    //Conversion Gate 1 (SAL)
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == ConversionGate_SAL).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_Sales_SAL_ConversionGate = objModelCalculation.BlendedTotal_Sales_SAL_ConversionGate();
-                    UpdateModelCalculations(Sales_ModelFunnelId, FunnelFieldId, BlendedTotal_Sales_SAL_ConversionGate, 0);
+                    ////Conversion Gate 1 (SAL)
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == ConversionGate_SAL).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double BlendedTotal_Sales_SAL_ConversionGate = objModelCalculation.BlendedTotal_Sales_SAL_ConversionGate();
+                    //UpdateModelCalculations(Sales_ModelFunnelId, FunnelFieldId, BlendedTotal_Sales_SAL_ConversionGate, 0);
 
-                    //Closed Won
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == ClosedWon).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_Sales_CW = objModelCalculation.BlendedTotal_Sales_CW();
-                    UpdateModelCalculations(Sales_ModelFunnelId, FunnelFieldId, BlendedTotal_Sales_CW, 0);
+                    ////Closed Won
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == ClosedWon).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double BlendedTotal_Sales_CW = objModelCalculation.BlendedTotal_Sales_CW();
+                    //UpdateModelCalculations(Sales_ModelFunnelId, FunnelFieldId, BlendedTotal_Sales_CW, 0);
 
-                    //Conversion Gate 2 (SQL)
-                    FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == ConversionGate_SQL).Select(m => m.FunnelFieldId).FirstOrDefault());
-                    double BlendedTotal_Sales_SQL_ConversionGate = objModelCalculation.BlendedTotal_Sales_SQL_ConversionGate();
-                    UpdateModelCalculations(Sales_ModelFunnelId, FunnelFieldId, BlendedTotal_Sales_SQL_ConversionGate, 0);
+                    ////Conversion Gate 2 (SQL)
+                    //FunnelFieldId = Convert.ToInt32(db.Funnel_Field.Where(f => f.Funnel.Title == Sales && f.Field.Title == ConversionGate_SQL).Select(m => m.FunnelFieldId).FirstOrDefault());
+                    //double BlendedTotal_Sales_SQL_ConversionGate = objModelCalculation.BlendedTotal_Sales_SQL_ConversionGate();
+                    //UpdateModelCalculations(Sales_ModelFunnelId, FunnelFieldId, BlendedTotal_Sales_SQL_ConversionGate, 0);
 
                     #endregion
 
@@ -2802,6 +2726,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #endregion
+
 
         #region Tactic Selection
 
@@ -2905,8 +2830,9 @@ namespace RevenuePlanner.Controllers
                 clientid = p.ClientId,
                 modelId = p.ModelId,/*  TFS Bug - 179 : Improper behavior when editing Tactic in model   Changed By : Nirav shah on 6 Feb 2014        Change : add modelId = p.ModelId,    */
                 title = p.Title,
-                Stage = (p.StageId == null) ? "-" : p.Stage.Title,
-                inquiries = (p.ProjectedInquiries == null) ? 0 : p.ProjectedInquiries,
+                Stage = (p.StageId == null) ? "-" : p.Stage.Code,
+                  /*changed by Nirav Shah on 2 APR 2013*/
+                // inquiries = (p.ProjectedInquiries == null) ? 0 : p.ProjectedInquiries,
                 mqls = (p.ProjectedMQLs == null) ? 0 : p.ProjectedMQLs,
                 revenue = (p.ProjectedRevenue == null) ? 0 : p.ProjectedRevenue,
             }).Select(p => p).Distinct().OrderBy(p => p.title);
@@ -2922,7 +2848,9 @@ namespace RevenuePlanner.Controllers
             Tactic_TypeModel tm = new Tactic_TypeModel();
             try
             {
-                ViewBag.Stages = db.Stages.Where(s => s.IsDeleted == false && s.ClientId == Sessions.User.ClientId);
+                /*changed by Nirav Shah on 2 APR 2013*/
+                //ViewBag.Stages = db.Stages.Where(s => s.IsDeleted == false && s.ClientId == Sessions.User.ClientId);
+                ViewBag.Stages = db.Model_Funnel_Stage.Where(s => s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true && s.StageType == Enums.StageType.CR.ToString()).Select(n => new { n.StageId, n.Stage.Code }).ToList();
                 ViewBag.IsCreated = false;
                 TacticType mtp = db.TacticTypes.Where(m => m.TacticTypeId.Equals(id)).FirstOrDefault();
                 tm.TacticTypeId = mtp.TacticTypeId;
@@ -2930,7 +2858,8 @@ namespace RevenuePlanner.Controllers
                 tm.ClientId = mtp.ClientId;
                 tm.Description = mtp.Description;
                 /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
-                tm.ProjectedInquiries = (mtp.ProjectedInquiries != null) ? mtp.ProjectedInquiries : 0;
+                /*changed by Nirav Shah on 2 APR 2013*/
+                // tm.ProjectedInquiries = (mtp.ProjectedInquiries != null) ? mtp.ProjectedInquiries : 0;
                 tm.ProjectedMQLs = (mtp.ProjectedMQLs != null) ? mtp.ProjectedMQLs : 0;
                 tm.ProjectedRevenue = (mtp.ProjectedRevenue != null) ? mtp.ProjectedRevenue : 0;
                 /*end changes*/
@@ -2956,13 +2885,15 @@ namespace RevenuePlanner.Controllers
         /// Added By: Nirav Shah.
         /// Action to show Create Tactic screen.
         /// </summary>
-        public PartialViewResult CreateTacticData()
+        public PartialViewResult CreateTacticData(int ModelId = 0)
         {
-            ViewBag.Stages = db.Stages.Where(s => s.IsDeleted == false && s.ClientId == Sessions.User.ClientId);
+            //ViewBag.Stages = db.Stages.Where(s => s.IsDeleted == false && s.ClientId == Sessions.User.ClientId);
+            /*changed by Nirav Shah on 2 APR 2013*/
+            ViewBag.Stages = db.Model_Funnel_Stage.Where(s => s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true && s.StageType == Enums.StageType.CR.ToString()).Select(n => new { n.StageId, n.Stage.Code }).ToList();
             ViewBag.IsCreated = true;
             Tactic_TypeModel tm = new Tactic_TypeModel();
             /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
-            tm.ProjectedInquiries = 0;
+            //tm.ProjectedInquiries = 0;
             tm.ProjectedMQLs = 0;
             tm.ProjectedRevenue = 0;   /*end changes*/
             return PartialView("CreateTactic", tm);
@@ -2973,7 +2904,7 @@ namespace RevenuePlanner.Controllers
         /// Action to Save Tactic data .
         /// </summary>
         [HttpPost]
-        public ActionResult SaveTactic(string Title, string Description, int? StageId, int ProjectedMQLs, int ProjectedInquiries, int ProjectedRevenue, int TacticTypeId, string modelID)
+        public ActionResult SaveTactic(string Title, string Description, int? StageId, int ProjectedMQLs, /*int ProjectedInquiries, */int ProjectedRevenue, int TacticTypeId, string modelID)
         {
             try
             {
@@ -2984,7 +2915,8 @@ namespace RevenuePlanner.Controllers
                 objtactic.Description = Description;
                 objtactic.ProjectedMQLs = ProjectedMQLs;
                 objtactic.ProjectedRevenue = ProjectedRevenue;
-                objtactic.ProjectedInquiries = ProjectedInquiries;
+                /*changed by Nirav Shah on 2 APR 2013*/
+                // objtactic.ProjectedInquiries = ProjectedInquiries;
                 objtactic.StageId = StageId;
                 int intRandomColorNumber = rnd.Next(colorcodeList.Count);
                 objtactic.ColorCode = Convert.ToString(colorcodeList[intRandomColorNumber]);
@@ -3204,8 +3136,8 @@ namespace RevenuePlanner.Controllers
                             objtactic.Description = obj.Description;
                             objtactic.ProjectedMQLs = obj.ProjectedMQLs;
                             objtactic.ProjectedRevenue = obj.ProjectedRevenue;
-                            objtactic.ProjectedInquiries = obj.ProjectedInquiries;
-                            objtactic.StageId = (obj.StageId == null) ? db.Stages.Where(s => s.IsDeleted == false).OrderBy(s => s.Level).Select(s => s.StageId).FirstOrDefault() : obj.StageId;
+                            //objtactic.ProjectedInquiries = obj.ProjectedInquiries;
+                            objtactic.StageId = (obj.StageId == null) ? db.Model_Funnel_Stage.Where(s => s.StageType == Enums.StageType.CR.ToString() && s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage==true).OrderBy(s => s.Stage.Level).Select(s => s.StageId).FirstOrDefault() : obj.StageId;
                             int intRandomColorNumber = rnd.Next(colorcodeList.Count);
                             objtactic.ColorCode = Convert.ToString(colorcodeList[intRandomColorNumber]);
                             objtactic.CreatedDate = DateTime.Now;

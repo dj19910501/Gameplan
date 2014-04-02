@@ -1,206 +1,85 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Model>
-	<ModelInput>
-		<Marketing>
-			<ConversionRates stage="SUS-INQ" value="0.714"/>
-			<ConversionRates stage="INQ-AQL" value="4"/>
-			<ConversionRates stage="AQL-MQL" value="76"/>
-			<ConversionRates stage="MQL-TQL" value="50"/>
-			<ConversionRates stage="TQL-SAL" value="62"/>
-			<ConversionRates stage="SAL-SQL" value="45"/>
-			<ConversionRates stage="SQL-CW" value="20"/>
-			<!--
-Manoj 03Feb2014 - Bug 115:Model Creation - Velocity Labels same as Conversion Labels
-      <velocity stage="OutboundSuspect" value="30"/>
-      <velocity stage="InboundSuspect" value="26"/>
-      <velocity stage="AQL" value="5"/>
-      <velocity stage="MQL" value="20"/>
-      <velocity stage="TQL" value="15"/>
-      <velocity stage="SAL" value="26"/>
-      <velocity stage="SQL" value="74"/>
-			-->
-			<velocity stage="SUS-INQ" value="30"/>
-			<velocity stage="INQ-AQL" value="26"/>
-			<velocity stage="AQL-MQL" value="5"/>
-			<velocity stage="MQL-TQL" value="20"/>
-			<velocity stage="TQL-SAL" value="15"/>
-			<velocity stage="SAL-SQL" value="26"/>
-			<velocity stage="SQL-CW" value="74"/>
-		</Marketing>
-		<Teleprospecting>
-			<ConversionRates stage="TQL-SAL" value="100"/>
-			<ConversionRates stage="SAL-SQL" value="100"/>
-			<ConversionRates stage="SQL-CW>" value="100"/>
-			<!--
-Manoj 03Feb2014 - Bug 115:Model Creation - Velocity Labels same as Conversion Labels
-      <velocity stage="TQL" value="0"/>
-      <velocity stage="SAL" value="0"/>
-      <velocity stage="SQL" value="0"/>
-			-->
-			<velocity stage="TQL-SAL" value="0"/>
-			<velocity stage="SAL-SQL" value="0"/>
-			<velocity stage="SQL-CW" value="0"/>
-		</Teleprospecting>
-		<Sales>
-			<ConversionRates stage="SAL-SQL" value="100"/>
-			<ConversionRates stage="SQL-CW>" value="100"/>
-			<!--
-Manoj 03Feb2014 - Bug 115:Model Creation - Velocity Labels same as Conversion Labels
-      <velocity stage="SAL" value="0"/>
-      <velocity stage="SQL" value="0"/>
-			-->
-			<velocity stage="SAL-SQL" value="0"/>
-			<velocity stage="SQL-CW" value="0"/>
-		</Sales>
-		<ClientCode value="BLD">
-			<Marketing>
-				<ConversionRates stage="SUS-INQ" value="0.714"/>
-				<ConversionRates stage="INQ-AQL" value="4"/>
-				<ConversionRates stage="AQL-MQL" value="76"/>
-				<ConversionRates stage="MQL-TQL" value="50"/>
-				<ConversionRates stage="TQL-SAL" value="62"/>
-				<ConversionRates stage="SAL-SQL" value="45"/>
-				<ConversionRates stage="SQL-CW" value="20"/>
-				<!--
-Manoj 03Feb2014 - Bug 115:Model Creation - Velocity Labels same as Conversion Labels
-        <velocity stage="OutboundSuspect" value="30"/>
-        <velocity stage="InboundSuspect" value="26"/>
-        <velocity stage="AQL" value="5"/>
-        <velocity stage="MQL" value="20"/>
-        <velocity stage="TQL" value="15"/>
-        <velocity stage="SAL" value="26"/>
-        <velocity stage="SQL" value="74"/>
-				-->
-				<velocity stage="SUS-INQ" value="30"/>
-				<velocity stage="INQ-AQL" value="26"/>
-				<velocity stage="AQL-MQL" value="5"/>
-				<velocity stage="MQL-TQL" value="20"/>
-				<velocity stage="TQL-SAL" value="15"/>
-				<velocity stage="SAL-SQL" value="26"/>
-				<velocity stage="SQL-CW" value="74"/>
-			</Marketing>
-			<Teleprospecting>
-				<ConversionRates stage="TQL-SAL" value="100"/>
-				<ConversionRates stage="SAL-SQL" value="100"/>
-				<ConversionRates stage="SQL-CW" value="100"/>
-				<!--
-Manoj 03Feb2014 - Bug 115:Model Creation - Velocity Labels same as Conversion Labels
-        <velocity stage="TQL" value="0"/>
-        <velocity stage="SAL" value="0"/>
-        <velocity stage="SQL" value="0"/>
-				-->
-				<velocity stage="TQL-SAL" value="0"/>
-				<velocity stage="SAL-SQL" value="0"/>
-				<velocity stage="SQL-CW" value="0"/>
-			</Teleprospecting>
-			<Sales>
-				<ConversionRates stage="SAL-SQL" value="100"/>
-				<ConversionRates stage="SQL-CW>" value="100"/>
-				<!--
-Manoj 03Feb2014 - Bug 115:Model Creation - Velocity Labels same as Conversion Labels
-        <velocity stage="SAL" value="0"/>
-        <velocity stage="SQL" value="0"/>
-				-->
-				<velocity stage="SAL-SQL" value="0"/>
-				<velocity stage="SQL-CW" value="0"/>
-			</Sales>
-		</ClientCode>
-		<ClientCode value="ZBR">
-			<Marketing>
-				<ConversionRates stage="SUS-INQ" value="0.714"/>
-				<ConversionRates stage="INQ-MAL" value="4"/>
-				<ConversionRates stage="MAL-MQL" value="76"/>
-				<ConversionRates stage="MQL-SAL" value="50"/>
-				<ConversionRates stage="SAL-SQL" value="62"/>
-				<ConversionRates stage="SQL-CW" value="62"/>
-				<!--
-Manoj 03Feb2014 - Bug 115:Model Creation - Velocity Labels same as Conversion Labels
-        <velocity stage="OutboundSuspect" value="30"/>
-        <velocity stage="InboundSuspect" value="26"/>
-        <velocity stage="MQL" value="15"/>
-        <velocity stage="SAL" value="26"/>
-        <velocity stage="SQO" value="74"/>
-				-->
-				<velocity stage="SUS-INQ" value="30"/>
-				<velocity stage="INQ-MAL" value="26"/>
-				<velocity stage="MAL-MQL" value="15"/>
-				<velocity stage="MQL-SAL" value="26"/>
-				<velocity stage="SAL-SQL" value="74"/>
-				<velocity stage="SQL-CW" value="74"/>
-			</Marketing>
-			<Teleprospecting>
-				<ConversionRates stage="SAL-SQL" value="100"/>
-				<ConversionRates stage="SQL-CW" value="100"/>
-				<!--
-Manoj 03Feb2014 - Bug 115:Model Creation - Velocity Labels same as Conversion Labels
-        <velocity stage="SAL" value="0"/>
-        <velocity stage="SQO" value="0"/>
-				-->
-				<velocity stage="SAL-SQL" value="0"/>
-				<velocity stage="SQL-CW" value="0"/>
-			</Teleprospecting>
-			<Sales>
-				<ConversionRates stage="SQL-CW" value="100"/>
-				<!--
-Manoj 03Feb2014 - Bug 115:Model Creation - Velocity Labels same as Conversion Labels
-        <velocity stage="SQO" value="0"/>
-				-->
-				<velocity stage="SQL-CW" value="0"/>
-			</Sales>
-		</ClientCode>
-	</ModelInput>
-	<modelAudience>
-		<Quarter1>
-			<Outbound stage="NormalErosionQ1" value="6.0"/>
-			<Outbound stage="UnsubscribeRateQ1" value="2"/>
-			<Outbound stage="NumberOfTouchesQ1" value="3"/>
-			<Outbound stage="CTRDeliveredQ1" value="1.2"/>
-			<Outbound stage="RegistrationRateQ1" value="5.0"/>
-			<Outbound stage="ListAcquisitionsQ1" value="0"/>
-			<Outbound stage="Acquisition_CostperContactQ1" value="0.35"/>
-			<Outbound stage="Acquisition_ErosionQ1" value="6.0"/>
-			<Outbound stage="Acquisition_UnsubscribeRateQ1" value="15"/>
-			<Outbound stage="Acquisition_NumberofTouchesQ1" value="0"/>
-			<Outbound stage="AcquisitionCTRDeliveredQ1" value="0.60"/>
-			<Outbound stage="Acquisition_RegistrationRateQ1" value="40"/>
-			<Inbound stage="Impressions" value="25000"/>
-			<Inbound stage="ClickThroughRate" value="4"/>
-			<Inbound stage="InboundRegistrationRate" value="40"/>
-			<Inbound stage="PPC_ClickThroughs" value="0"/>
-			<Inbound stage="PPC_CostperClickThrough" value="5.0"/>
-			<Inbound stage="PPC_RegistrationRate" value="40"/>
-			<Inbound stage="GC_GuaranteedCPLBudget" value="0"/>
-			<Inbound stage="GC_CostperLead" value="85"/>
-			<Inbound stage="CSC_NonGuaranteedCPLBudget" value="0"/>
-			<Inbound stage="CSC_CostperLead" value="40"/>
-			<Inbound stage="TDM_DigitalMediaBudget" value="0"/>
-			<Inbound stage="TDM_CostperLead" value="40"/>
-			<Inbound stage="TP_PrintMediaBudget" value="0"/>
-			<Inbound stage="TP_CostperLead" value="240"/>
-			<Events stage="NumberofContactsQ1" value="0"/>
-			<Events stage="ContactToInquiryConversionQ1" value="100"/>
-			<Events stage="EventsBudgetQ1" value="0"/>
-		</Quarter1>
-		<Quarter2>
-			<Outbound stage="NumberOfTouchesQ2" value="3"/>
-			<Outbound stage="ListAcquisitionsQ2" value="0"/>
-			<Outbound stage="Acquisition_NumberofTouchesQ2" value="0"/>
-			<Events stage="NumberofContactsQ2" value="0"/>
-			<Events stage="EventsBudgetQ2" value="0"/>
-		</Quarter2>
-		<Quarter3>
-			<Outbound stage="NumberOfTouchesQ3" value="3"/>
-			<Outbound stage="ListAcquisitionsQ3" value="0"/>
-			<Outbound stage="Acquisition_NumberofTouchesQ3" value="0"/>
-			<Events stage="NumberofContactsQ3" value="0"/>
-			<Events stage="EventsBudgetQ3" value="0"/>
-		</Quarter3>
-		<Quarter4>
-			<Outbound stage="NumberOfTouchesQ4" value="3"/>
-			<Outbound stage="ListAcquisitionsQ4" value="0"/>
-			<Outbound stage="Acquisition_NumberofTouchesQ4" value="0"/>
-			<Events stage="NumberofContactsQ4" value="0"/>
-			<Events stage="EventsBudgetQ4" value="0"/>
-		</Quarter4>
-	</modelAudience>
+  <ModelInput>
+    <stage code="SUS" cr="0.714" sv="30" targetstage="true" />
+    <stage code="INQ" cr="4" sv="26" targetstage="true" />
+    <stage code="AQL" cr="76" sv="5" targetstage="true" />
+    <stage code="MQL" cr="50" sv="20" targetstage="true" />
+    <stage code="TQL" cr="62" sv="15" targetstage="true" />
+    <stage code="SAL" cr="45" sv="26" targetstage="true" />
+    <stage code="SQL" cr="20" sv="74" targetstage="true" />
+
+    <ClientCode value="BLD">
+      <stage code="SUS" cr="0.714" sv="30" targetstage="true" />
+      <stage code="INQ" cr="4" sv="26" targetstage="false" />
+      <stage code="AQL" cr="76" sv="5" targetstage="false" />
+      <stage code="MQL" cr="50" sv="20" targetstage="false" />
+      <stage code="TQL" cr="62" sv="15" targetstage="false" />
+      <stage code="SAL" cr="45" sv="26" targetstage="false" />
+      <stage code="SQL" cr="20" sv="74" targetstage="false" />
+    </ClientCode>
+
+    <ClientCode value="ZBR">
+      <stage code="SUS" cr="0.714" sv="30" targetstage="true" />
+      <stage code="INQ" cr="4" sv="26" targetstage="false" />
+      <stage code="MAL" cr="76" sv="15" targetstage="false" />
+      <stage code="MQL" cr="50" sv="26" targetstage="false" />
+      <stage code="SAL" cr="62" sv="74" targetstage="false" />
+      <stage code="SQL" cr="62" sv="74" targetstage="false" />
+    </ClientCode>
+  </ModelInput>
+  <modelAudience>
+    <Quarter1>
+      <Outbound stage="NormalErosionQ1" value="6.0"/>
+      <Outbound stage="UnsubscribeRateQ1" value="2"/>
+      <Outbound stage="NumberOfTouchesQ1" value="3"/>
+      <Outbound stage="CTRDeliveredQ1" value="1.2"/>
+      <Outbound stage="RegistrationRateQ1" value="5.0"/>
+      <Outbound stage="ListAcquisitionsQ1" value="0"/>
+      <Outbound stage="Acquisition_CostperContactQ1" value="0.35"/>
+      <Outbound stage="Acquisition_ErosionQ1" value="6.0"/>
+      <Outbound stage="Acquisition_UnsubscribeRateQ1" value="15"/>
+      <Outbound stage="Acquisition_NumberofTouchesQ1" value="0"/>
+      <Outbound stage="AcquisitionCTRDeliveredQ1" value="0.60"/>
+      <Outbound stage="Acquisition_RegistrationRateQ1" value="40"/>
+      <Inbound stage="Impressions" value="25000"/>
+      <Inbound stage="ClickThroughRate" value="4"/>
+      <Inbound stage="InboundRegistrationRate" value="40"/>
+      <Inbound stage="PPC_ClickThroughs" value="0"/>
+      <Inbound stage="PPC_CostperClickThrough" value="5.0"/>
+      <Inbound stage="PPC_RegistrationRate" value="40"/>
+      <Inbound stage="GC_GuaranteedCPLBudget" value="0"/>
+      <Inbound stage="GC_CostperLead" value="85"/>
+      <Inbound stage="CSC_NonGuaranteedCPLBudget" value="0"/>
+      <Inbound stage="CSC_CostperLead" value="40"/>
+      <Inbound stage="TDM_DigitalMediaBudget" value="0"/>
+      <Inbound stage="TDM_CostperLead" value="40"/>
+      <Inbound stage="TP_PrintMediaBudget" value="0"/>
+      <Inbound stage="TP_CostperLead" value="240"/>
+      <Events stage="NumberofContactsQ1" value="0"/>
+      <Events stage="ContactToInquiryConversionQ1" value="100"/>
+      <Events stage="EventsBudgetQ1" value="0"/>
+    </Quarter1>
+    <Quarter2>
+      <Outbound stage="NumberOfTouchesQ2" value="3"/>
+      <Outbound stage="ListAcquisitionsQ2" value="0"/>
+      <Outbound stage="Acquisition_NumberofTouchesQ2" value="0"/>
+      <Events stage="NumberofContactsQ2" value="0"/>
+      <Events stage="EventsBudgetQ2" value="0"/>
+    </Quarter2>
+    <Quarter3>
+      <Outbound stage="NumberOfTouchesQ3" value="3"/>
+      <Outbound stage="ListAcquisitionsQ3" value="0"/>
+      <Outbound stage="Acquisition_NumberofTouchesQ3" value="0"/>
+      <Events stage="NumberofContactsQ3" value="0"/>
+      <Events stage="EventsBudgetQ3" value="0"/>
+    </Quarter3>
+    <Quarter4>
+      <Outbound stage="NumberOfTouchesQ4" value="3"/>
+      <Outbound stage="ListAcquisitionsQ4" value="0"/>
+      <Outbound stage="Acquisition_NumberofTouchesQ4" value="0"/>
+      <Events stage="NumberofContactsQ4" value="0"/>
+      <Events stage="EventsBudgetQ4" value="0"/>
+    </Quarter4>
+  </modelAudience>
 </Model>

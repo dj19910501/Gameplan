@@ -148,7 +148,7 @@
             <tr>
                 <th class="border-r width390">Tactic Title</th>
                 <th class="border-r width86">Target Stage</th>
-                <th>Projected @Html.LabelForINQ("INQ")</th>
+            @*    <th>Projected @Html.LabelForINQ("INQ")</th>*@
                 <th>Projected @Html.LabelForMQL("MQL")</th>
                 <th class="border-r">Projected Cost</th>
                 <th>Deploy to Model</th>
@@ -390,7 +390,7 @@
                             Changed By : Nirav shah on 6 Feb 2014
                             Change : pass new parameter modelid
                         */
-                        addRowTactic(i, tactic[i].id, tactic[i].clientid, tactic[i].modelId, tactic[i].title, tactic[i].Stage, tactic[i].inquiries, tactic[i].mqls, tactic[i].revenue);
+                        addRowTactic(i, tactic[i].id, tactic[i].clientid, tactic[i].modelId, tactic[i].title, tactic[i].Stage,/* tactic[i].inquiries,*/ tactic[i].mqls, tactic[i].revenue);
                     }
                 } else {
                     $('#table_tactics > tbody').append('<tr><td colspan="8" class="gray">No saved tactics to display.</td></tr>');
@@ -398,7 +398,7 @@
             }
         }
         //add row in tactics table
-        function addRowTactic(_index, _id, _Clientid, _modelId, _title, Stage, _inquiries, _mqls, _revenue) {
+        function addRowTactic(_index, _id, _Clientid, _modelId, _title, Stage,/* _inquiries,*/ _mqls, _revenue) {
             var $tableTactics = $('#table_tactics > tbody');
             var $table_activities = $('#table_activities > tbody');
             var $html = "";
@@ -414,7 +414,7 @@
                 $html += '<tr clientid="' + _Clientid + '" class="rejected" id="' + _id + '" data-index="' + _index + '">' +
                           '<td  class="border-r sm" id="' + _id + '"><span class="title-baseline-model">' + _title + '</span><span class="search-icon"></span></td>' +
                           '<td   class="sm border-r" id="' + _id + '">' + Stage + '</td>' +
-                          '<td   class="sm" id="' + _id + '">' + FormatCommas(_inquiries.toString(), false) + '</td>' +
+                          //'<td   class="sm" id="' + _id + '">' + FormatCommas(_inquiries.toString(), false) + '</td>' +
                           '<td   class="sm" id="' + _id + '">' + FormatCommas(_mqls.toString(), false) + '</td>' +
                           '<td  class="border-r sm" id="' + _id + '">$' + FormatCommas(_revenue.toString(), false) + '</td>' +
                           '<td ><span class="circle-check-icon circle-check-icon-blue"  id = "' + "rej" + _id + '"></span></td>' +
@@ -424,7 +424,7 @@
                 $html += '<tr clientid="0" class="rejected" id="' + _id + '" data-index="' + _index + '">' +
                             '<td id="' + _id + '" class="border-r sm"><span class="title-baseline-model">' + _title + '</span><span class="search-icon"></span></td>' +
                             '<td id="' + _id + '"  class="sm border-r">' + Stage + '</td>' +
-                            '<td  id="' + _id + '" class="sm">' + FormatCommas(_inquiries.toString(), false) + '</td>' +
+                            //'<td  id="' + _id + '" class="sm">' + FormatCommas(_inquiries.toString(), false) + '</td>' +
                             '<td  id="' + _id + '" class="sm">' + FormatCommas(_mqls.toString(), false) + '</td>' +
                             '<td id="' + _id + '" class="border-r sm">$' + FormatCommas(_revenue.toString(), false) + '</td>' +
                   '<td ><span class="circle-check-icon"  id = "' + "rej" + _id + '"></span></td>' +
@@ -447,7 +447,7 @@
             if ($("#latestModelId").val() == lastModelId) {
                 $("#sslidepanel").css("display", "block");
                 var url = '@Url.Content("~/Model/CreateTacticData/")';
-                $('#slidepanel-container').load(url);
+                $('#slidepanel-container').load(url + '?ModelId=' + lastModelId);
                 $("#slidepanel").css("right", "0px");
             }
         });

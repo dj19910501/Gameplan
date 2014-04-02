@@ -1024,424 +1024,424 @@ namespace RevenuePlanner.Helpers
         #endregion
 
         #endregion
+         /*changed by Nirav Shah on 2 APR 2013*/
+        //#region Teleprospecting
 
-        #region Teleprospecting
+        //#region TeleprospectingSourced
 
-        #region TeleprospectingSourced
+        //public double TeleprospectingSourced_Tele_TGL(bool isBaseline) //N15
+        //{
+        //    if (isBaseline)
+        //    {
+        //        Value = db.Model_Funnel.Where(m => m.ModelId == ModelId && m.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.ExpectedLeadCount).FirstOrDefault();
+        //    }
+        //    else
+        //    {
+        //        Ifactor = IFactor();
+        //        ITGL = db.Model_Funnel.Where(m => m.ModelId == ModelId && m.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.ExpectedLeadCount).FirstOrDefault();
+        //        CurrentBaseline = ITGL;
+        //        BIC = 5;
+        //        CurrentGap = BIC;
+        //        if (CurrentGap > 0)
+        //        {
+        //            Improvement = CurrentGap * Ifactor;
+        //        }
+        //        else
+        //        {
+        //            Improvement = 0;
+        //        }
+        //        Value = ITGL * (1 + Improvement);
+        //    }
 
-        public double TeleprospectingSourced_Tele_TGL(bool isBaseline) //N15
-        {
-            if (isBaseline)
-            {
-                Value = db.Model_Funnel.Where(m => m.ModelId == ModelId && m.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.ExpectedLeadCount).FirstOrDefault();
-            }
-            else
-            {
-                Ifactor = IFactor();
-                ITGL = db.Model_Funnel.Where(m => m.ModelId == ModelId && m.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.ExpectedLeadCount).FirstOrDefault();
-                CurrentBaseline = ITGL;
-                BIC = 5;
-                CurrentGap = BIC;
-                if (CurrentGap > 0)
-                {
-                    Improvement = CurrentGap * Ifactor;
-                }
-                else
-                {
-                    Improvement = 0;
-                }
-                Value = ITGL * (1 + Improvement);
-            }
+        //    return Value;
+        //}
+        //public double TeleprospectingSourced_Tele_TotalMarketingQualifiedLeadsMQL() //K16
+        //{
+        //    Value = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == FF_TGL).Select(m => m.ProspectingSourced).FirstOrDefault());
+        //    return Value;
+        //}
+        //public double TeleprospectingSourced_Tele_TQL_ConversionGate(bool isBaseline) //N17
+        //{
+        //    if (isBaseline)
+        //    {
+        //        ConversionGate = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == CR && m.Stage.Code.ToLower() == TQL && m.Model_Funnel.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.Value).FirstOrDefault();
+        //    }
+        //    else
+        //    {
+        //        Ifactor = IFactor();
+        //        TTGLSALC = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == CR && m.Stage.Code.ToLower() == TQL && m.Model_Funnel.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.Value).FirstOrDefault();
+        //        CurrentBaseline = TTGLSALC;
+        //        BIC = 85;
+        //        CurrentGap = BIC - CurrentBaseline;
+        //        if (CurrentGap > 0)
+        //        {
+        //            Improvement = CurrentGap * Ifactor;
+        //        }
+        //        else
+        //        {
+        //            Improvement = 0;
+        //        }
+        //        ConversionGate = TTGLSALC + Improvement;
+        //    }
 
-            return Value;
-        }
-        public double TeleprospectingSourced_Tele_TotalMarketingQualifiedLeadsMQL() //K16
-        {
-            Value = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == FF_TGL).Select(m => m.ProspectingSourced).FirstOrDefault());
-            return Value;
-        }
-        public double TeleprospectingSourced_Tele_TQL_ConversionGate(bool isBaseline) //N17
-        {
-            if (isBaseline)
-            {
-                ConversionGate = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == CR && m.Stage.Code.ToLower() == TQL && m.Model_Funnel.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.Value).FirstOrDefault();
-            }
-            else
-            {
-                Ifactor = IFactor();
-                TTGLSALC = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == CR && m.Stage.Code.ToLower() == TQL && m.Model_Funnel.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.Value).FirstOrDefault();
-                CurrentBaseline = TTGLSALC;
-                BIC = 85;
-                CurrentGap = BIC - CurrentBaseline;
-                if (CurrentGap > 0)
-                {
-                    Improvement = CurrentGap * Ifactor;
-                }
-                else
-                {
-                    Improvement = 0;
-                }
-                ConversionGate = TTGLSALC + Improvement;
-            }
+        //    return ConversionGate;
+        //}
 
-            return ConversionGate;
-        }
+        //public double TeleprospectingSourced_Sales_SAL() //K18
+        //{
+        //    double TQL_ConversionGate = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == ConversionGate_TQL).Select(m => m.ProspectingSourced).FirstOrDefault()) / 100;
+        //    double TGL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == FF_TGL).Select(m => m.ProspectingSourced).FirstOrDefault());
+        //    Value = TQL_ConversionGate * TGL;
+        //    return Value;
+        //}
+        //public double TeleprospectingSourced_Sales_SAL_ConversionGate(bool isBoolean) //N20
+        //{
+        //    if (isBoolean)
+        //    {
+        //        ConversionGate = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == CR && m.Stage.Code.ToLower() == SAL && m.Model_Funnel.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.Value).FirstOrDefault();
+        //    }
+        //    else
+        //    {
+        //        Ifactor = IFactor();
+        //        TSALSQLC = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == CR && m.Stage.Code.ToLower() == SAL && m.Model_Funnel.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.Value).FirstOrDefault();
+        //        CurrentBaseline = TSALSQLC;
+        //        BIC = 85;
+        //        CurrentGap = BIC - CurrentBaseline;
+        //        if (CurrentGap > 0)
+        //        {
+        //            Improvement = CurrentGap * Ifactor;
+        //        }
+        //        else
+        //        {
+        //            Improvement = 0;
+        //        }
+        //        ConversionGate = TSALSQLC + Improvement;
+        //    }
 
-        public double TeleprospectingSourced_Sales_SAL() //K18
-        {
-            double TQL_ConversionGate = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == ConversionGate_TQL).Select(m => m.ProspectingSourced).FirstOrDefault()) / 100;
-            double TGL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == FF_TGL).Select(m => m.ProspectingSourced).FirstOrDefault());
-            Value = TQL_ConversionGate * TGL;
-            return Value;
-        }
-        public double TeleprospectingSourced_Sales_SAL_ConversionGate(bool isBoolean) //N20
-        {
-            if (isBoolean)
-            {
-                ConversionGate = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == CR && m.Stage.Code.ToLower() == SAL && m.Model_Funnel.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.Value).FirstOrDefault();
-            }
-            else
-            {
-                Ifactor = IFactor();
-                TSALSQLC = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == CR && m.Stage.Code.ToLower() == SAL && m.Model_Funnel.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.Value).FirstOrDefault();
-                CurrentBaseline = TSALSQLC;
-                BIC = 85;
-                CurrentGap = BIC - CurrentBaseline;
-                if (CurrentGap > 0)
-                {
-                    Improvement = CurrentGap * Ifactor;
-                }
-                else
-                {
-                    Improvement = 0;
-                }
-                ConversionGate = TSALSQLC + Improvement;
-            }
+        //    return ConversionGate;
+        //}
+        //public double TeleprospectingSourced_Sales_SQL() //K21
+        //{
+        //    double SAL_ConversionGate = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == ConversionGate_SAL).Select(m => m.ProspectingSourced).FirstOrDefault()) / 100;
+        //    double SAL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == FF_SAL).Select(m => m.ProspectingSourced).FirstOrDefault());
+        //    Value = SAL_ConversionGate * SAL;
+        //    return Value;
+        //}
+        //public double TeleprospectingSourced_Sales_SQL_ConversionGate(bool isBaseline) //N22
+        //{
+        //    if (isBaseline)
+        //    {
+        //        ConversionGate = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == CR && m.Stage.Code.ToLower() == SQL && m.Model_Funnel.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.Value).FirstOrDefault();
+        //    }
+        //    else
+        //    {
+        //        Ifactor = IFactor();
+        //        TSQLCWC = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == CR && m.Stage.Code.ToLower() == SQL && m.Model_Funnel.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.Value).FirstOrDefault();
+        //        CurrentBaseline = TSQLCWC;
+        //        BIC = 29.1;
+        //        CurrentGap = BIC - CurrentBaseline;
+        //        if (CurrentGap > 0)
+        //        {
+        //            Improvement = CurrentGap * Ifactor;
+        //        }
+        //        else
+        //        {
+        //            Improvement = 0;
+        //        }
+        //        ConversionGate = TSQLCWC + Improvement;
+        //    }
 
-            return ConversionGate;
-        }
-        public double TeleprospectingSourced_Sales_SQL() //K21
-        {
-            double SAL_ConversionGate = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == ConversionGate_SAL).Select(m => m.ProspectingSourced).FirstOrDefault()) / 100;
-            double SAL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == FF_SAL).Select(m => m.ProspectingSourced).FirstOrDefault());
-            Value = SAL_ConversionGate * SAL;
-            return Value;
-        }
-        public double TeleprospectingSourced_Sales_SQL_ConversionGate(bool isBaseline) //N22
-        {
-            if (isBaseline)
-            {
-                ConversionGate = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == CR && m.Stage.Code.ToLower() == SQL && m.Model_Funnel.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.Value).FirstOrDefault();
-            }
-            else
-            {
-                Ifactor = IFactor();
-                TSQLCWC = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == CR && m.Stage.Code.ToLower() == SQL && m.Model_Funnel.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.Value).FirstOrDefault();
-                CurrentBaseline = TSQLCWC;
-                BIC = 29.1;
-                CurrentGap = BIC - CurrentBaseline;
-                if (CurrentGap > 0)
-                {
-                    Improvement = CurrentGap * Ifactor;
-                }
-                else
-                {
-                    Improvement = 0;
-                }
-                ConversionGate = TSQLCWC + Improvement;
-            }
+        //    return ConversionGate;
+        //}
+        //public double TeleprospectingSourced_Sales_CW() //N23
+        //{
+        //    double SQL_ConversionGate = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == ConversionGate_SQL).Select(m => m.ProspectingSourced).FirstOrDefault()) / 100;
+        //    double SQL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == FF_SQL).Select(m => m.ProspectingSourced).FirstOrDefault());
+        //    Value = SQL_ConversionGate * SQL;
+        //    return Value;
+        //}
 
-            return ConversionGate;
-        }
-        public double TeleprospectingSourced_Sales_CW() //N23
-        {
-            double SQL_ConversionGate = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == ConversionGate_SQL).Select(m => m.ProspectingSourced).FirstOrDefault()) / 100;
-            double SQL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == FF_SQL).Select(m => m.ProspectingSourced).FirstOrDefault());
-            Value = SQL_ConversionGate * SQL;
-            return Value;
-        }
+        //public double TeleprospectingSourced_Average_Deal_Size(bool isBaseline) //N25
+        //{
+        //    if (isBaseline)
+        //    {
+        //        AverageDealSize = db.Model_Funnel.Where(m => m.ModelId == ModelId && m.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.AverageDealSize).FirstOrDefault();
+        //    }
+        //    else
+        //    {
+        //        Ifactor = IFactor();
+        //        TDSZ = db.Model_Funnel.Where(m => m.ModelId == ModelId && m.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.AverageDealSize).FirstOrDefault();
+        //        CurrentBaseline = TDSZ;
+        //        BIC = 10;
+        //        CurrentGap = BIC - CurrentBaseline;
+        //        if (CurrentGap > 0)
+        //        {
+        //            Improvement = CurrentGap * Ifactor;
+        //        }
+        //        else
+        //        {
+        //            Improvement = 0;
+        //        }
+        //        AverageDealSize = TDSZ * (1 + Improvement);
+        //    }
 
-        public double TeleprospectingSourced_Average_Deal_Size(bool isBaseline) //N25
-        {
-            if (isBaseline)
-            {
-                AverageDealSize = db.Model_Funnel.Where(m => m.ModelId == ModelId && m.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.AverageDealSize).FirstOrDefault();
-            }
-            else
-            {
-                Ifactor = IFactor();
-                TDSZ = db.Model_Funnel.Where(m => m.ModelId == ModelId && m.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.AverageDealSize).FirstOrDefault();
-                CurrentBaseline = TDSZ;
-                BIC = 10;
-                CurrentGap = BIC - CurrentBaseline;
-                if (CurrentGap > 0)
-                {
-                    Improvement = CurrentGap * Ifactor;
-                }
-                else
-                {
-                    Improvement = 0;
-                }
-                AverageDealSize = TDSZ * (1 + Improvement);
-            }
+        //    return AverageDealSize;
+        //}
+        //public double TeleprospectingSourced_Expected_Revenue() //K26
+        //{
+        //    double AverageDealsSize = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Marketing && m.Funnel_Field.Field.Title.ToLower() == FF_AverageDealsSize).Select(m => m.ProspectingSourced).FirstOrDefault());
+        //    double CW = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == ClosedWon).Select(m => m.ProspectingSourced).FirstOrDefault());
+        //    Value = AverageDealsSize * CW;
+        //    return Value;
+        //}
 
-            return AverageDealSize;
-        }
-        public double TeleprospectingSourced_Expected_Revenue() //K26
-        {
-            double AverageDealsSize = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Marketing && m.Funnel_Field.Field.Title.ToLower() == FF_AverageDealsSize).Select(m => m.ProspectingSourced).FirstOrDefault());
-            double CW = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == ClosedWon).Select(m => m.ProspectingSourced).FirstOrDefault());
-            Value = AverageDealsSize * CW;
-            return Value;
-        }
+        //#endregion
 
-        #endregion
+        //#region TeleprospectingStageDays
 
-        #region TeleprospectingStageDays
+        //public double TeleprospectingStageDays_Tele_TotalMarketingQualifiedLeadsMQL() //Q16
+        //{
+        //    Ifactor = IFactor();
+        //    TTQLL = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == SV && m.Stage.Code.ToLower() == TQL && m.Model_Funnel.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.Value).FirstOrDefault();
+        //    CurrentBaseline = TTQLL;
+        //    BIC = 2;
+        //    CurrentGap = BIC - CurrentBaseline;
+        //    if (CurrentGap > 0)
+        //    {
+        //        Improvement = CurrentGap * Ifactor;
+        //    }
+        //    else
+        //    {
+        //        Improvement = 0;
+        //    }
+        //    Value = TTQLL - Improvement;
+        //    return Value;
+        //}
 
-        public double TeleprospectingStageDays_Tele_TotalMarketingQualifiedLeadsMQL() //Q16
-        {
-            Ifactor = IFactor();
-            TTQLL = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == SV && m.Stage.Code.ToLower() == TQL && m.Model_Funnel.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.Value).FirstOrDefault();
-            CurrentBaseline = TTQLL;
-            BIC = 2;
-            CurrentGap = BIC - CurrentBaseline;
-            if (CurrentGap > 0)
-            {
-                Improvement = CurrentGap * Ifactor;
-            }
-            else
-            {
-                Improvement = 0;
-            }
-            Value = TTQLL - Improvement;
-            return Value;
-        }
+        //public double TeleprospectingStageDays_Sales_SAL() //Q18
+        //{
+        //    Ifactor = IFactor();
+        //    TTQLL = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == SV && m.Stage.Code.ToLower() == SAL && m.Model_Funnel.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.Value).FirstOrDefault();
+        //    CurrentBaseline = TTQLL;
+        //    BIC = 5;
+        //    CurrentGap = BIC - CurrentBaseline;
+        //    if (CurrentGap > 0)
+        //    {
+        //        Improvement = CurrentGap * Ifactor;
+        //    }
+        //    else
+        //    {
+        //        Improvement = 0;
+        //    }
+        //    Tele_SAL_Stage = TTQLL - Improvement;
+        //    return Tele_SAL_Stage;
+        //}
+        //public double TeleprospectingStageDays_Sales_SQL() //Q21
+        //{
+        //    Ifactor = IFactor();
+        //    TSQLL = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == SV && m.Stage.Code.ToLower() == SQL && m.Model_Funnel.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.Value).FirstOrDefault();
+        //    CurrentBaseline = TSQLL;
+        //    BIC = 65;
+        //    CurrentGap = BIC - CurrentBaseline;
+        //    if (CurrentGap > 0)
+        //    {
+        //        Improvement = CurrentGap * Ifactor;
+        //    }
+        //    else
+        //    {
+        //        Improvement = 0;
+        //    }
+        //    Tele_SQL_Stage = TSQLL - Improvement;
+        //    return Tele_SQL_Stage;
+        //}
+        //#endregion
 
-        public double TeleprospectingStageDays_Sales_SAL() //Q18
-        {
-            Ifactor = IFactor();
-            TTQLL = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == SV && m.Stage.Code.ToLower() == SAL && m.Model_Funnel.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.Value).FirstOrDefault();
-            CurrentBaseline = TTQLL;
-            BIC = 5;
-            CurrentGap = BIC - CurrentBaseline;
-            if (CurrentGap > 0)
-            {
-                Improvement = CurrentGap * Ifactor;
-            }
-            else
-            {
-                Improvement = 0;
-            }
-            Tele_SAL_Stage = TTQLL - Improvement;
-            return Tele_SAL_Stage;
-        }
-        public double TeleprospectingStageDays_Sales_SQL() //Q21
-        {
-            Ifactor = IFactor();
-            TSQLL = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == SV && m.Stage.Code.ToLower() == SQL && m.Model_Funnel.Funnel.Title.ToLower() == Teleprospecting).Select(m => m.Value).FirstOrDefault();
-            CurrentBaseline = TSQLL;
-            BIC = 65;
-            CurrentGap = BIC - CurrentBaseline;
-            if (CurrentGap > 0)
-            {
-                Improvement = CurrentGap * Ifactor;
-            }
-            else
-            {
-                Improvement = 0;
-            }
-            Tele_SQL_Stage = TSQLL - Improvement;
-            return Tele_SQL_Stage;
-        }
-        #endregion
+        //#endregion
 
-        #endregion
+        //#region Sales
 
-        #region Sales
+        //#region SalesSourced
 
-        #region SalesSourced
+        //public double SalesSourced_Sales_SGL(bool isBaseline) //V19
+        //{
+        //    if (isBaseline)
+        //    {
+        //        ConversionGate = db.Model_Funnel.Where(m => m.ModelId == ModelId && m.Funnel.Title.ToLower() == Sales).Select(m => m.ExpectedLeadCount).FirstOrDefault();
+        //    }
+        //    else
+        //    {
+        //        Ifactor = IFactor();
+        //        ISGL = db.Model_Funnel.Where(m => m.ModelId == ModelId && m.Funnel.Title.ToLower() == Sales).Select(m => m.ExpectedLeadCount).FirstOrDefault();
+        //        CurrentBaseline = ISGL;
+        //        BIC = 5;
+        //        CurrentGap = BIC;
+        //        if (CurrentGap > 0)
+        //        {
+        //            Improvement = CurrentGap * Ifactor;
+        //        }
+        //        else
+        //        {
+        //            Improvement = 0;
+        //        }
+        //        ConversionGate = ISGL * (1 + Improvement);
+        //    }
 
-        public double SalesSourced_Sales_SGL(bool isBaseline) //V19
-        {
-            if (isBaseline)
-            {
-                ConversionGate = db.Model_Funnel.Where(m => m.ModelId == ModelId && m.Funnel.Title.ToLower() == Sales).Select(m => m.ExpectedLeadCount).FirstOrDefault();
-            }
-            else
-            {
-                Ifactor = IFactor();
-                ISGL = db.Model_Funnel.Where(m => m.ModelId == ModelId && m.Funnel.Title.ToLower() == Sales).Select(m => m.ExpectedLeadCount).FirstOrDefault();
-                CurrentBaseline = ISGL;
-                BIC = 5;
-                CurrentGap = BIC;
-                if (CurrentGap > 0)
-                {
-                    Improvement = CurrentGap * Ifactor;
-                }
-                else
-                {
-                    Improvement = 0;
-                }
-                ConversionGate = ISGL * (1 + Improvement);
-            }
+        //    return ConversionGate;
+        //}
+        //public double SalesSourced_Sales_SAL_ConversionGate(bool isBaseline) //V20
+        //{
+        //    if (isBaseline)
+        //    {
+        //        ConversionGate = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == CR && m.Stage.Code.ToLower() == SAL && m.Model_Funnel.Funnel.Title.ToLower() == Sales).Select(m => m.Value).FirstOrDefault();
+        //    }
+        //    else
+        //    {
 
-            return ConversionGate;
-        }
-        public double SalesSourced_Sales_SAL_ConversionGate(bool isBaseline) //V20
-        {
-            if (isBaseline)
-            {
-                ConversionGate = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == CR && m.Stage.Code.ToLower() == SAL && m.Model_Funnel.Funnel.Title.ToLower() == Sales).Select(m => m.Value).FirstOrDefault();
-            }
-            else
-            {
+        //        Ifactor = IFactor();
+        //        SSGLSQLC = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == CR && m.Stage.Code.ToLower() == SAL && m.Model_Funnel.Funnel.Title.ToLower() == Sales).Select(m => m.Value).FirstOrDefault();
+        //        CurrentBaseline = SSGLSQLC;
+        //        BIC = 61.7;
+        //        CurrentGap = BIC - CurrentBaseline;
+        //        if (CurrentGap > 0)
+        //        {
+        //            Improvement = CurrentGap * Ifactor;
+        //        }
+        //        else
+        //        {
+        //            Improvement = 0;
+        //        }
+        //        ConversionGate = SSGLSQLC + Improvement;
+        //    }
 
-                Ifactor = IFactor();
-                SSGLSQLC = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == CR && m.Stage.Code.ToLower() == SAL && m.Model_Funnel.Funnel.Title.ToLower() == Sales).Select(m => m.Value).FirstOrDefault();
-                CurrentBaseline = SSGLSQLC;
-                BIC = 61.7;
-                CurrentGap = BIC - CurrentBaseline;
-                if (CurrentGap > 0)
-                {
-                    Improvement = CurrentGap * Ifactor;
-                }
-                else
-                {
-                    Improvement = 0;
-                }
-                ConversionGate = SSGLSQLC + Improvement;
-            }
+        //    return ConversionGate;
+        //}
+        //public double SalesSourced_Sales_SQL() //V21
+        //{
+        //    double SGL_ConversionGate = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == ConversionGate_SAL).Select(m => m.SalesSourced).FirstOrDefault()) / 100;
+        //    double SGL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SGL).Select(m => m.SalesSourced).FirstOrDefault());
+        //    Value = SGL * SGL_ConversionGate;
+        //    return Value;
+        //}
+        //public double SalesSourced_Sales_SQL_ConversionGate(bool isBaseline) //V22
+        //{
+        //    if (isBaseline)
+        //    {
+        //        ConversionGate = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == CR && m.Stage.Code.ToLower() == SQL && m.Model_Funnel.Funnel.Title.ToLower() == Sales).Select(m => m.Value).FirstOrDefault();
+        //    }
+        //    else
+        //    {
+        //        Ifactor = IFactor();
+        //        SSQLCWC = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == CR && m.Stage.Code.ToLower() == SQL && m.Model_Funnel.Funnel.Title.ToLower() == Sales).Select(m => m.Value).FirstOrDefault();
+        //        CurrentBaseline = SSQLCWC;
+        //        BIC = 29.1;
+        //        CurrentGap = BIC - CurrentBaseline;
+        //        if (CurrentGap > 0)
+        //        {
+        //            Improvement = CurrentGap * Ifactor;
+        //        }
+        //        else
+        //        {
+        //            Improvement = 0;
+        //        }
+        //        ConversionGate = SSQLCWC + Improvement;
 
-            return ConversionGate;
-        }
-        public double SalesSourced_Sales_SQL() //V21
-        {
-            double SGL_ConversionGate = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == ConversionGate_SAL).Select(m => m.SalesSourced).FirstOrDefault()) / 100;
-            double SGL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SGL).Select(m => m.SalesSourced).FirstOrDefault());
-            Value = SGL * SGL_ConversionGate;
-            return Value;
-        }
-        public double SalesSourced_Sales_SQL_ConversionGate(bool isBaseline) //V22
-        {
-            if (isBaseline)
-            {
-                ConversionGate = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == CR && m.Stage.Code.ToLower() == SQL && m.Model_Funnel.Funnel.Title.ToLower() == Sales).Select(m => m.Value).FirstOrDefault();
-            }
-            else
-            {
-                Ifactor = IFactor();
-                SSQLCWC = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == CR && m.Stage.Code.ToLower() == SQL && m.Model_Funnel.Funnel.Title.ToLower() == Sales).Select(m => m.Value).FirstOrDefault();
-                CurrentBaseline = SSQLCWC;
-                BIC = 29.1;
-                CurrentGap = BIC - CurrentBaseline;
-                if (CurrentGap > 0)
-                {
-                    Improvement = CurrentGap * Ifactor;
-                }
-                else
-                {
-                    Improvement = 0;
-                }
-                ConversionGate = SSQLCWC + Improvement;
+        //    }
+        //    return ConversionGate;
+        //}
+        //public double SalesSourced_Sales_CW() //V23
+        //{
+        //    double SQL_ConversionGate = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == ConversionGate_SQL).Select(m => m.SalesSourced).FirstOrDefault()) / 100;
+        //    double SQL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SQL).Select(m => m.SalesSourced).FirstOrDefault());
+        //    Value = SQL * SQL_ConversionGate;
+        //    return Value;
+        //}
 
-            }
-            return ConversionGate;
-        }
-        public double SalesSourced_Sales_CW() //V23
-        {
-            double SQL_ConversionGate = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == ConversionGate_SQL).Select(m => m.SalesSourced).FirstOrDefault()) / 100;
-            double SQL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SQL).Select(m => m.SalesSourced).FirstOrDefault());
-            Value = SQL * SQL_ConversionGate;
-            return Value;
-        }
+        //public double SalesSourced_Average_Deal_Size(bool isBaseline) //V25
+        //{
+        //    if (isBaseline)
+        //    {
+        //        AverageDealSize = db.Model_Funnel.Where(m => m.ModelId == ModelId && m.Funnel.Title.ToLower() == Sales).Select(m => m.AverageDealSize).FirstOrDefault();
+        //    }
+        //    else
+        //    {
+        //        Ifactor = IFactor();
+        //        SDSZ = db.Model_Funnel.Where(m => m.ModelId == ModelId && m.Funnel.Title.ToLower() == Sales).Select(m => m.AverageDealSize).FirstOrDefault();
+        //        CurrentBaseline = SDSZ;
+        //        BIC = 10;
+        //        CurrentGap = BIC - CurrentBaseline;
+        //        if (CurrentGap > 0)
+        //        {
+        //            Improvement = CurrentGap * Ifactor;
+        //        }
+        //        else
+        //        {
+        //            Improvement = 0;
+        //        }
+        //        AverageDealSize = SDSZ * (1 + Improvement);
 
-        public double SalesSourced_Average_Deal_Size(bool isBaseline) //V25
-        {
-            if (isBaseline)
-            {
-                AverageDealSize = db.Model_Funnel.Where(m => m.ModelId == ModelId && m.Funnel.Title.ToLower() == Sales).Select(m => m.AverageDealSize).FirstOrDefault();
-            }
-            else
-            {
-                Ifactor = IFactor();
-                SDSZ = db.Model_Funnel.Where(m => m.ModelId == ModelId && m.Funnel.Title.ToLower() == Sales).Select(m => m.AverageDealSize).FirstOrDefault();
-                CurrentBaseline = SDSZ;
-                BIC = 10;
-                CurrentGap = BIC - CurrentBaseline;
-                if (CurrentGap > 0)
-                {
-                    Improvement = CurrentGap * Ifactor;
-                }
-                else
-                {
-                    Improvement = 0;
-                }
-                AverageDealSize = SDSZ * (1 + Improvement);
+        //    }
+        //    return AverageDealSize;
+        //}
+        //public double SalesSourced_Expected_Revenue() //S26
+        //{
+        //    double AverageDealsSize = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_AverageDealsSize).Select(m => m.SalesSourced).FirstOrDefault());
+        //    double CW = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == ClosedWon).Select(m => m.SalesSourced).FirstOrDefault());
+        //    Value = AverageDealsSize * CW;
+        //    return Value;
+        //}
 
-            }
-            return AverageDealSize;
-        }
-        public double SalesSourced_Expected_Revenue() //S26
-        {
-            double AverageDealsSize = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_AverageDealsSize).Select(m => m.SalesSourced).FirstOrDefault());
-            double CW = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == ClosedWon).Select(m => m.SalesSourced).FirstOrDefault());
-            Value = AverageDealsSize * CW;
-            return Value;
-        }
+        //#endregion
 
-        #endregion
+        //#region SalesStageDays
 
-        #region SalesStageDays
+        //public double SalesStageDays_Sales_SGL() //Y19
+        //{
+        //    Ifactor = IFactor();
+        //    SSALL = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == SV && m.Stage.Code.ToLower() == SAL && m.Model_Funnel.Funnel.Title.ToLower() == Sales).Select(m => m.Value).FirstOrDefault();
+        //    CurrentBaseline = SSALL;
+        //    BIC = 5;
+        //    CurrentGap = BIC - CurrentBaseline;
+        //    if (CurrentGap > 0)
+        //    {
+        //        Improvement = CurrentGap * Ifactor;
+        //    }
+        //    else
+        //    {
+        //        Improvement = 0;
+        //    }
+        //    Sales_SAL_Stage = SSALL - Improvement;
+        //    return Sales_SAL_Stage;
+        //}
+        //public double SalesStageDays_Sales_SQL() //Y21
+        //{
+        //    Ifactor = IFactor();
+        //    SSQLL = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == SV && m.Stage.Code.ToLower() == SQL && m.Model_Funnel.Funnel.Title.ToLower() == Sales).Select(m => m.Value).FirstOrDefault();
+        //    CurrentBaseline = SSQLL;
+        //    BIC = 65;
+        //    CurrentGap = BIC - CurrentBaseline;
+        //    if (CurrentGap > 0)
+        //    {
+        //        Improvement = CurrentGap * Ifactor;
+        //    }
+        //    else
+        //    {
+        //        Improvement = 0;
+        //    }
+        //    Sales_SQL_Stage = SSQLL - Improvement;
+        //    return Sales_SQL_Stage;
+        //}
 
-        public double SalesStageDays_Sales_SGL() //Y19
-        {
-            Ifactor = IFactor();
-            SSALL = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == SV && m.Stage.Code.ToLower() == SAL && m.Model_Funnel.Funnel.Title.ToLower() == Sales).Select(m => m.Value).FirstOrDefault();
-            CurrentBaseline = SSALL;
-            BIC = 5;
-            CurrentGap = BIC - CurrentBaseline;
-            if (CurrentGap > 0)
-            {
-                Improvement = CurrentGap * Ifactor;
-            }
-            else
-            {
-                Improvement = 0;
-            }
-            Sales_SAL_Stage = SSALL - Improvement;
-            return Sales_SAL_Stage;
-        }
-        public double SalesStageDays_Sales_SQL() //Y21
-        {
-            Ifactor = IFactor();
-            SSQLL = db.Model_Funnel_Stage.Where(m => m.Model_Funnel.ModelId == ModelId && m.StageType.ToLower() == SV && m.Stage.Code.ToLower() == SQL && m.Model_Funnel.Funnel.Title.ToLower() == Sales).Select(m => m.Value).FirstOrDefault();
-            CurrentBaseline = SSQLL;
-            BIC = 65;
-            CurrentGap = BIC - CurrentBaseline;
-            if (CurrentGap > 0)
-            {
-                Improvement = CurrentGap * Ifactor;
-            }
-            else
-            {
-                Improvement = 0;
-            }
-            Sales_SQL_Stage = SSQLL - Improvement;
-            return Sales_SQL_Stage;
-        }
+        //public double SalesStageDays_BlendedFull() //T24
+        //{
+        //    double SGL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SGL).Select(m => m.SalesDays).FirstOrDefault());
+        //    double SQL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SQL).Select(m => m.SalesDays).FirstOrDefault());
+        //    Value = SQL + SGL;
+        //    return Value;
+        //}
 
-        public double SalesStageDays_BlendedFull() //T24
-        {
-            double SGL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SGL).Select(m => m.SalesDays).FirstOrDefault());
-            double SQL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SQL).Select(m => m.SalesDays).FirstOrDefault());
-            Value = SQL + SGL;
-            return Value;
-        }
+        //#endregion
 
-        #endregion
-
-        #endregion
+        //#endregion
 
         #region Blended
 
@@ -1488,105 +1488,105 @@ namespace RevenuePlanner.Helpers
             return Value;
         }
 
-        public double BlendedTotal_Tele_TAL() //AA12
-        {
-            Value = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == FF_TAL).Select(m => m.MarketingSourced).FirstOrDefault());
-            return Value;
-        }
-        public double BlendedTotal_Tele_TAL_ConversionGate() //AA13
-        {
-            Value = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == ConversionGate_TAL).Select(m => m.MarketingSourced).FirstOrDefault());
-            return Value;
-        }
-        public double BlendedTotal_Tele_TQL() //AA14
-        {
-            Value = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == FF_TQL).Select(m => m.MarketingSourced).FirstOrDefault());
-            return Value;
-        }
-        public double BlendedTotal_Tele_TGL() //AA15
-        {
-            Value = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == FF_TGL).Select(m => m.ProspectingSourced).FirstOrDefault());
-            return Value;
-        }
-        public double BlendedTotal_Tele_TotalMarketingQualifiedLeadsMQL() //AA16
-        {
-            double TQL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == FF_TQL).Select(m => m.MarketingSourced).FirstOrDefault());
-            double TGL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == FF_TGL).Select(m => m.ProspectingSourced).FirstOrDefault());
-            Value = TQL + TGL;
-            return Value;
-        }
-        public double BlendedTotal_Tele_TQL_ConversionGate() //AA17
-        {
-            double TotalMarketingQualifiedLeadsMQL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == FF_MQL).Select(m => m.BlendedTotal).FirstOrDefault());
-            if (TotalMarketingQualifiedLeadsMQL == 0)
-            {
-                return 0;
-            }
-            else
-            {
-                double SAL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SAL).Select(m => m.BlendedTotal).FirstOrDefault());
-                Value = SAL / TotalMarketingQualifiedLeadsMQL * 100;
-                return Value;
-            }
-        }
+        //public double BlendedTotal_Tele_TAL() //AA12
+        //{
+        //    Value = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == FF_TAL).Select(m => m.MarketingSourced).FirstOrDefault());
+        //    return Value;
+        //}
+        //public double BlendedTotal_Tele_TAL_ConversionGate() //AA13
+        //{
+        //    Value = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == ConversionGate_TAL).Select(m => m.MarketingSourced).FirstOrDefault());
+        //    return Value;
+        //}
+        //public double BlendedTotal_Tele_TQL() //AA14
+        //{
+        //    Value = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == FF_TQL).Select(m => m.MarketingSourced).FirstOrDefault());
+        //    return Value;
+        //}
+        //public double BlendedTotal_Tele_TGL() //AA15
+        //{
+        //    Value = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == FF_TGL).Select(m => m.ProspectingSourced).FirstOrDefault());
+        //    return Value;
+        //}
+        //public double BlendedTotal_Tele_TotalMarketingQualifiedLeadsMQL() //AA16
+        //{
+        //    double TQL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == FF_TQL).Select(m => m.MarketingSourced).FirstOrDefault());
+        //    double TGL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == FF_TGL).Select(m => m.ProspectingSourced).FirstOrDefault());
+        //    Value = TQL + TGL;
+        //    return Value;
+        //}
+        //public double BlendedTotal_Tele_TQL_ConversionGate() //AA17
+        //{
+        //    double TotalMarketingQualifiedLeadsMQL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Teleprospecting && m.Funnel_Field.Field.Title.ToLower() == FF_MQL).Select(m => m.BlendedTotal).FirstOrDefault());
+        //    if (TotalMarketingQualifiedLeadsMQL == 0)
+        //    {
+        //        return 0;
+        //    }
+        //    else
+        //    {
+        //        double SAL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SAL).Select(m => m.BlendedTotal).FirstOrDefault());
+        //        Value = SAL / TotalMarketingQualifiedLeadsMQL * 100;
+        //        return Value;
+        //    }
+        //}
 
-        public double BlendedTotal_Sales_SAL() //AA18
-        {
-            double MarketingSourced_Sales_SAL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SAL).Select(m => m.MarketingSourced).FirstOrDefault());
-            double TeleprospectingSourced_Sales_SAL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SAL).Select(m => m.ProspectingSourced).FirstOrDefault());
-            Value = MarketingSourced_Sales_SAL + TeleprospectingSourced_Sales_SAL;
-            return Value;
-        }
-        public double BlendedTotal_Sales_SGL() //AA19
-        {
-            Value = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SGL).Select(m => m.SalesSourced).FirstOrDefault());
-            return Value;
-        }
-        public double BlendedTotal_Sales_SAL_ConversionGate() //AA20
-        {
-            double SGL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SGL).Select(m => m.BlendedTotal).FirstOrDefault());
-            double SAL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SAL).Select(m => m.BlendedTotal).FirstOrDefault());
-            double SQL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SQL).Select(m => m.BlendedTotal).FirstOrDefault());
-            if (SAL + SGL == 0)
-            {
-                return 0;
-            }
-            else
-            {
-                Value = SQL / (SAL + SGL) * 100;
-                return Value;
-            }
-        }
-        public double BlendedTotal_Sales_SQL() //AA21
-        {
-            double Mkt_SQL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SQL).Select(m => m.MarketingSourced).FirstOrDefault());
-            double Tele_SQL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SQL).Select(m => m.ProspectingSourced).FirstOrDefault());
-            double Sales_SQL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SQL).Select(m => m.SalesSourced).FirstOrDefault());
-            Value = Mkt_SQL + Tele_SQL + Sales_SQL;
-            return Value;
-        }
-        public double BlendedTotal_Sales_SQL_ConversionGate() //AA22
-        {
-            double SQL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SQL).Select(m => m.BlendedTotal).FirstOrDefault());
-            if (SQL == 0)
-            {
-                return 0;
-            }
-            else
-            {
-                double CW = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == ClosedWon).Select(m => m.BlendedTotal).FirstOrDefault());
-                Value = (CW / SQL) * 100;
-                return Value;
-            }
-        }
-        public double BlendedTotal_Sales_CW() //AA23
-        {
-            double Mkt_CW = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == ClosedWon).Select(m => m.MarketingSourced).FirstOrDefault());
-            double Tele_CW = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == ClosedWon).Select(m => m.ProspectingSourced).FirstOrDefault());
-            double Sales_CW = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == ClosedWon).Select(m => m.SalesSourced).FirstOrDefault());
-            Value = Mkt_CW + Tele_CW + Sales_CW;
-            return Value;
-        }
+        //public double BlendedTotal_Sales_SAL() //AA18
+        //{
+        //    double MarketingSourced_Sales_SAL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SAL).Select(m => m.MarketingSourced).FirstOrDefault());
+        //    double TeleprospectingSourced_Sales_SAL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SAL).Select(m => m.ProspectingSourced).FirstOrDefault());
+        //    Value = MarketingSourced_Sales_SAL + TeleprospectingSourced_Sales_SAL;
+        //    return Value;
+        //}
+        //public double BlendedTotal_Sales_SGL() //AA19
+        //{
+        //    Value = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SGL).Select(m => m.SalesSourced).FirstOrDefault());
+        //    return Value;
+        //}
+        //public double BlendedTotal_Sales_SAL_ConversionGate() //AA20
+        //{
+        //    double SGL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SGL).Select(m => m.BlendedTotal).FirstOrDefault());
+        //    double SAL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SAL).Select(m => m.BlendedTotal).FirstOrDefault());
+        //    double SQL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SQL).Select(m => m.BlendedTotal).FirstOrDefault());
+        //    if (SAL + SGL == 0)
+        //    {
+        //        return 0;
+        //    }
+        //    else
+        //    {
+        //        Value = SQL / (SAL + SGL) * 100;
+        //        return Value;
+        //    }
+        //}
+        //public double BlendedTotal_Sales_SQL() //AA21
+        //{
+        //    double Mkt_SQL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SQL).Select(m => m.MarketingSourced).FirstOrDefault());
+        //    double Tele_SQL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SQL).Select(m => m.ProspectingSourced).FirstOrDefault());
+        //    double Sales_SQL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SQL).Select(m => m.SalesSourced).FirstOrDefault());
+        //    Value = Mkt_SQL + Tele_SQL + Sales_SQL;
+        //    return Value;
+        //}
+        //public double BlendedTotal_Sales_SQL_ConversionGate() //AA22
+        //{
+        //    double SQL = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == FF_SQL).Select(m => m.BlendedTotal).FirstOrDefault());
+        //    if (SQL == 0)
+        //    {
+        //        return 0;
+        //    }
+        //    else
+        //    {
+        //        double CW = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == ClosedWon).Select(m => m.BlendedTotal).FirstOrDefault());
+        //        Value = (CW / SQL) * 100;
+        //        return Value;
+        //    }
+        //}
+        //public double BlendedTotal_Sales_CW() //AA23
+        //{
+        //    double Mkt_CW = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == ClosedWon).Select(m => m.MarketingSourced).FirstOrDefault());
+        //    double Tele_CW = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == ClosedWon).Select(m => m.ProspectingSourced).FirstOrDefault());
+        //    double Sales_CW = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Sales && m.Funnel_Field.Field.Title.ToLower() == ClosedWon).Select(m => m.SalesSourced).FirstOrDefault());
+        //    Value = Mkt_CW + Tele_CW + Sales_CW;
+        //    return Value;
+        //}
         public double BlendedTotal_BlendedFull() //AA24
         {
             double OutboundGeneratedInquiries = Convert.ToDouble(db.ModelReviews.Where(m => m.Model_Funnel.ModelId == ModelId && m.Funnel_Field.Funnel.Title.ToLower() == Marketing && m.Funnel_Field.Field.Title.ToLower() == FF_OutboundGeneratedInquiries).Select(m => m.BlendedTotal).FirstOrDefault());

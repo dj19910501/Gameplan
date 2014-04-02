@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="MRPModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="MRPModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityContainer Name="MRPModelStoreContainer">
           <EntitySet Name="Audience" EntityType="MRPModel.Store.Audience" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="BestInClass" EntityType="MRPModel.Store.BestInClass" store:Type="Tables" Schema="dbo" />
@@ -532,6 +532,7 @@
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
+          <Property Name="AllowedTargetStage" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="ModelReview">
           <Key>
@@ -1527,8 +1528,7 @@
           <Parameter Name="StageTypeCR" Type="varchar" Mode="In" />
           <Parameter Name="ReturnValue" Type="int" Mode="InOut" />
         </Function>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="MRPModel" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -2142,6 +2142,7 @@
           <Property Name="ModifiedBy" Type="Guid" />
           <NavigationProperty Name="Model_Funnel" Relationship="MRPModel.FK_Model_Funnel_Stage_Model_Funnel" FromRole="Model_Funnel_Stage" ToRole="Model_Funnel" />
           <NavigationProperty Name="Stage" Relationship="MRPModel.FK_Model_Category_Stage_Stage" FromRole="Model_Funnel_Stage" ToRole="Stage" />
+          <Property Type="Boolean" Name="AllowedTargetStage" Nullable="false" />
         </EntityType>
         <EntityType Name="ModelReview">
           <Key>
@@ -3447,6 +3448,7 @@
           <EntitySetMapping Name="Model_Funnel_Stage">
             <EntityTypeMapping TypeName="MRPModel.Model_Funnel_Stage">
               <MappingFragment StoreEntitySet="Model_Funnel_Stage">
+                <ScalarProperty Name="AllowedTargetStage" ColumnName="AllowedTargetStage" />
                 <ScalarProperty Name="ModelFunnelStageId" ColumnName="ModelFunnelStageId" />
                 <ScalarProperty Name="ModelFunnelId" ColumnName="ModelFunnelId" />
                 <ScalarProperty Name="StageId" ColumnName="StageId" />

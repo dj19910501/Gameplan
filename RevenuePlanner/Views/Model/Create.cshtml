@@ -181,14 +181,10 @@
                 </div>
             </div>
             <div class="span10 content-colum-right">
-                <a name="Overview"></a>
                 <h2 class="sub-title-forms source-sans-proregular">@Html.Raw("1. Model Overview")</h2>
                 <div id="divModelOverview"></div>
-                <a name="Inquiries"></a>
                 <h2 class="sub-title-forms source-sans-proregular">@Html.Raw("2. Contacts and Inquiries")</h2>
                 <div id="divcontactInquiry"></div>
-                <a name="Rates"></a>
-                @*      <h2 class="sub-title-forms source-sans-proregular">3. Conversion Rates</h2>*@
                 <ul id="sub_nav_tabs" class="nav nav-tabs">
                     <li class="title-header source-sans-proregular">
                         <h2>3. Conversion Rates</h2>
@@ -207,68 +203,31 @@
 
                         </p>
                     </div>
-
                     <div id="inputs-group">
-                        @{
-        if (Model.lstmodelstage.Count() > 0)
-        {
-            //foreach (var item in Model.lstmodelstage)
-            //{
-            //    if (@item.Funnel != "" && @item.Funnel != null)
-            //    {
-            //        string mstr = Enums.FunnelFlag.M.ToString();
-            //        string tstr = Enums.FunnelFlag.T.ToString();
-            //        string sstr = Enums.FunnelFlag.S.ToString();
-
-            //        string strmflag = Enums.FunnelFlagValue.Single(s => s.Key.Equals(mstr)).Value;
-            //        string strtflag = Enums.FunnelFlagValue.Single(s => s.Key.Equals(tstr)).Value;
-            //        string strsflag = Enums.FunnelFlagValue.Single(s => s.Key.Equals(sstr)).Value;
-
-            //        if (Array.IndexOf(@item.Funnel.Split(','), strmflag) >= 0)
-            //        {
-            //            mflag = true;
-            //        }
-            //        if (Array.IndexOf(@item.Funnel.Split(','), strtflag) >= 0)
-            //        {
-            //            tflag = true;
-            //        }
-            //        if (Array.IndexOf(@item.Funnel.Split(','), strsflag) >= 0)
-            //        {
-            //            sflag = true;
-            //        }
-            //    }
-            //}
-
-            if (Model.lstmodelstage.Exists(m => m.Funnel.Contains(Enums.FunnelFlag.M.ToString())))
-            {
-                mflag = true;
-            }
-            if (Model.lstmodelstage.Exists(m => m.Funnel.Contains(Enums.FunnelFlag.T.ToString())))
-            {
-                tflag = true;
-            }
-            if (Model.lstmodelstage.Exists(m => m.Funnel.Contains(Enums.FunnelFlag.S.ToString())))
-            {
-                sflag = true;
-            }
-        }
-                        }
-                        @{ 
-        if (mflag == true)
-        {  
-                            @Html.Raw("Add your waterfall stage conversion rates for each source. Hover over the info icon for additional explanation about a stage.")
-                            <h4 class="sub-title-forms">@Html.Raw("Marketing Conversion Rates")</h4>
-        }
-                        }
-                        <div class="row">
-                            @{
+                        @Html.Raw("Add your waterfall stage conversion rates for each source. Hover over the info icon for additional explanation about a stage.")
+                        <table id="tblCR_SV">
+                            <thead>
+                                <tr>
+                                    <th title="Stage">Stage
+                                    </th>
+                                    <th title="Conversion (%)">Conversion (%)
+                                    </th>
+                                    <th title="Velocity (Days)">Velocity (Days)
+                                    </th>
+                                    <th title="Allowed as Target Stage">Allowed as
+                                        <br />
+                                        Target Stage
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
         var cnti = 0;
         foreach (var item in Model.lstmodelstage)
         {
             cnti = cnti + 1;
             if (cnti < Model.lstmodelstage.Count())
             {
-
                 if (@item.Funnel != "" && @item.Funnel != null)
                 {
                     string m = Enums.FunnelFlag.M.ToString();
@@ -276,254 +235,42 @@
 
                     if (Array.IndexOf(@item.Funnel.Split(','), strmarketingflag) >= 0)
                     {
-                                <input type="hidden" value="@item.StageId" name="hdnSTAGEMCR" />
-                                <div class="span3">
-                                    <p class="ellipsis">@item.Level . @item.ConversionTitle</p>
-                                    <div class="input-append">
-                                        <input class="span7 input-small doubleTextPerc" type="text" maxlength="5" name="txtMCR" id="txtMCR_CR_@item.StageId" placeholder="0" >
-                                        <span class="add-on">@Html.Raw("%")</span>
-                                    </div>
-                                    <span class="info-icon"></span>
-                                </div>
+                                    <input  type="hidden" maxlength="12"  name="txtStageId" placeholder="0" readonly="true"  value="@item.StageId" hidden="true" >
+                                    <tr>
+                                        <td>
+                                            <input  type="text" maxlength="12"  name="txtStage" placeholder="0" readonly="true" value="@item.ConversionTitle">
+                                        </td>
+                                        <td>
+                                            <input  type="text" maxlength="5" name="txtMCR" id="txtMCR_CR_@item.StageId" placeholder="0" >
+                                        </td>
+                                        <td>
+                                            <input  type="text" maxlength="12" name="txtMSV" id="txtMSV_SV_@item.StageId" placeholder="0" >
+                                        </td>
+                                        <td>
+                                            <input  type="text" maxlength="12" class="targetStageclick" name="txtTargetStage" id="TargetStage_@item.StageId" placeholder="0" readonly="true" >
+                                        </td>
+                                    </tr>
                     }
                 }
             }
         }
-                            }
+                                }
+                            </tbody>
+                        </table>
 
 
-                        </div>
-                        @{ 
-        if (mflag == true)
-        {
-                           
-                            <h4 class="sub-title-forms">@Html.Raw("Marketing Stage Velocity")</h4>
-        }
-                        }
-                        <div class="row">
-                            @{
-        var cnt = 0;
-        var velocitytitle = "";
-        //bool flgm = false;
-        foreach (var item in Model.lstmodelstage)
-        {
-            if (@item.Code == Convert.ToString(Enums.Stage.CW))
-            {
-                cnt = cnt + 1;
-            }
-            if (cnt < Model.lstmodelstage.Count())
-            {
-
-                if (@item.Funnel != "" && @item.Funnel != null)
-                {
-                    string m = Enums.FunnelFlag.M.ToString();
-                    string strmarketingflag = Enums.FunnelFlagValue.Single(s => s.Key.Equals(m)).Value;
-
-                    if (Array.IndexOf(@item.Funnel.Split(','), strmarketingflag) >= 0)
-                    {
-                                <input type="hidden" value="@item.StageId" name="hdnSTAGEMSV" />
-                        //Start Manoj 03Feb2014 - Bug 115:Model Creation - Velocity Labels same as Conversion Labels
-                        //flgm = item.Description.Equals(string.Empty);
-                        //if (flgm == false)
-                        //{
-                        //    velocitytitle = @item.Description;
-
-                        //}
-                        //else
-                        //{
-                        //    velocitytitle = @item.VelocityTitle;
-                        //}
-                        velocitytitle = @item.VelocityTitle;
-                        //End Manoj 03Feb2014 - Bug 115:Model Creation - Velocity Labels same as Conversion Labels
-                                <div class="span3">
-                                    <p class="ellipsis">@item.Level . @velocitytitle</p>
-                                    <input class="span7 input-small doubleText" type="text" maxlength="12" name="txtMSV" id="txtMSV_SV_@item.StageId" placeholder="0" >
-                                </div>  
-                    }
-                }
-            }
-            if (@item.Code != Convert.ToString(Enums.Stage.CW))
-            {
-                cnt = cnt + 1;
-            }
-
-        }
-                            }
-
-                        </div>
-
-                        @{ 
-        if (tflag == true)
-        { 
-                            
-                            <div class="line-separator"></div>
-
-                            <h4 class="sub-title-forms">@Html.Raw("Teleprospecting Conversion Rates")</h4>
-        }
-                        }
-                        <div class="row">
-                            @{   
-        var cntTCR = 0;
-        foreach (var item in Model.lstmodelstage)
-        {
-            cntTCR = cntTCR + 1;
-            if (cntTCR < Model.lstmodelstage.Count())
-            {
-                if (@item.Funnel != "" && @item.Funnel != null)
-                {
-                    string t = Enums.FunnelFlag.T.ToString();
-                    string strteleprospectingflag = Enums.FunnelFlagValue.Single(s => s.Key.Equals(t)).Value;
-
-                    if (Array.IndexOf(@item.Funnel.Split(','), strteleprospectingflag) >= 0)
-                    {   
-                                <input type="hidden" value="@item.StageId" name="hdnSTAGETCR" />
-                                <div class="span3">
-                                    <p class="ellipsis">@item.Level . @item.ConversionTitle</p>
-                                    <div class="input-append">
-                                        <input class="span7 input-small doubleTextPerc" type="text" maxlength="5" name="txtTCR" id="txtTCR_CR_@item.StageId" placeholder="0" >
-                                        <span class="add-on">@Html.Raw("%")</span>
-                                    </div>
-                                    <span class="info-icon"></span>
-                                </div>
-                    }
-                }
-
-
-            }
-        }
-                            }
-                        </div>
-                        @{ 
-        if (tflag == true)
-        {
-                            <h4 class="sub-title-forms">@Html.Raw("Teleprospecting Stage Velocity")</h4>
-        }
-                        }
-                        <div class="row">
-                            @{   
-        var cntTCV = 0;
-        foreach (var item in Model.lstmodelstage)
-        {
-            if (@item.Code == Convert.ToString(Enums.Stage.CW))
-            {
-                cntTCV = cntTCV + 1;
-            }
-            if (cntTCV < Model.lstmodelstage.Count())
-            {
-                if (@item.Funnel != "" && @item.Funnel != null)
-                {
-                    string t = Enums.FunnelFlag.T.ToString();
-                    string strteleprospectingflag = Enums.FunnelFlagValue.Single(s => s.Key.Equals(t)).Value;
-
-                    if (Array.IndexOf(@item.Funnel.Split(','), strteleprospectingflag) >= 0)
-                    { 
-
-                                <input type="hidden" value="@item.StageId" name="hdnSTAGETSV" />
-                                <div class="span3">
-                                    <p class="ellipsis">@item.VelocityTitle</p>
-                                    <input class="span7 input-small doubleText" type="text" maxlength="12" name="txtTSV" id="txtTSV_SV_@item.StageId" placeholder="0" >
-                                </div>
-                    }
-                }
-
-            }
-            if (@item.Code != Convert.ToString(Enums.Stage.CW))
-            {
-                cntTCV = cntTCV + 1;
-            }
-        }
-                            }
-                        </div>
-
-                        @{ 
-        if (sflag == true)
-        {
-                            <div class="line-separator"></div>
-                            <h4 class="sub-title-forms">@Html.Raw("Sales Conversion Rates")</h4>
-        }
-                        }
-                        <div class="row">
-                            @{
-        var cntSCR = 0;
-        foreach (var item in Model.lstmodelstage)
-        {
-            cntSCR = cntSCR + 1;
-            if (cntSCR < Model.lstmodelstage.Count())
-            {
-                if (@item.Funnel != "" && @item.Funnel != null)
-                {
-                    string s = Enums.FunnelFlag.S.ToString();
-                    string strteleprospectingflag = Enums.FunnelFlagValue.Single(f => f.Key.Equals(s)).Value;
-
-                    if (Array.IndexOf(@item.Funnel.Split(','), strteleprospectingflag) >= 0)
-                    { 
-
-                                <input type="hidden" value="@item.StageId"  name="hdnSTAGESCR" />
-                                <div class="span3">
-                                    <p class="ellipsis">@item.Level . @item.ConversionTitle</p>
-                                    <div class="input-append">
-                                        <input class="span7 input-small doubleTextPerc" type="text" maxlength="5" name="txtSCR" id="txtSCR_CR_@item.StageId" placeholder="0" >
-                                        <span class="add-on">@Html.Raw("%")</span>
-                                    </div>
-                                    <span class="info-icon"></span>
-                                </div>
-                    }
-                }
-
-            }
-        }
-                            }
-                        </div>
-                        @{ 
-        if (sflag == true)
-        {
-                            <h4 class="sub-title-forms">@Html.Raw("Sales Stage Velocity")</h4>
-        }
-                        }
-                        <div class="row">
-                            @{   
-        var cntSSV = 0;
-        foreach (var item in Model.lstmodelstage)
-        {
-            if (@item.Code == Convert.ToString(Enums.Stage.CW))
-            {
-                cntSSV = cntSSV + 1;
-            }
-            if (cntSSV < Model.lstmodelstage.Count())
-            {
-                if (@item.Funnel != "" && @item.Funnel != null)
-                {
-                    string s = Enums.FunnelFlag.S.ToString();
-                    string strteleprospectingflag = Enums.FunnelFlagValue.Single(f => f.Key.Equals(s)).Value;
-
-                    if (Array.IndexOf(@item.Funnel.Split(','), strteleprospectingflag) >= 0)
-                    { 
-                                <input type="hidden" value="@item.StageId" name="hdnSTAGESSV" />
-                                <div class="span3">
-                                    <p class="ellipsis">@item.VelocityTitle</p>
-                                    <input class="span7 input-small doubleText" type="text" name="txtSSV" maxlength="12" id="txtSSV_SV_@item.StageId" placeholder="0" >
-                                </div>
-                    }
-                }
-            }
-            if (@item.Code != Convert.ToString(Enums.Stage.CW))
-            {
-                cntSSV = cntSSV + 1;
-            }
-
-        }
-                            }
-
-
-                        </div>
                     </div>
                 </div>
-                @{ 
-        if (Model.lstmodelstage.Count() > 0)
+
+                <div class="container-button">
+                    @{ 
+        if (isViewOnly != "true" && Model.lstmodelstage.Count() > 0)
         {
-                    <div class="line-separator"></div>
+                        <input id="btnsave" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Save Current Version & Continue" />
+                        <input id="button-save" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Create New Version & Continue" />
         }
-                }
+                    }
+                </div>
                 @Html.Hidden("isPublishButton")
                 @Html.Hidden("whichButton")
                 @Html.Hidden("CurrentModelId")
@@ -532,13 +279,7 @@
                 @Html.Hidden("ModelPublishEdit", ModelPublishEdit)
                 @Html.Hidden("ModelPublishCreateNew", ModelPublishCreateNew)
                 @Html.Hidden("EffectiveDate", currentdate)
-                @{ 
-        if (isViewOnly != "true" && Model.lstmodelstage.Count() > 0)
-        {@*changed by Nirav Shah on 18 feb 2014 for TFS Point 252: Editing a published model*@
-                    <input id="btnsave" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Save Current Version & Continue" />
-                    <input id="button-save" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Create New Version & Continue" />
-        }@*end nirav changes*@
-                }
+
             </div>
         </div>
     </div>
@@ -556,6 +297,15 @@
         $("#errorMessage").slideDown(1200);
     }
 
+    $(".targetStageclick").click(function () {
+        var val = $(this).val();
+        if (val.toLowerCase() == "false") {
+            $(this).val("True");
+        }
+        if (val.toLowerCase() == "true") {
+            $(this).val("False");
+        }
+    });
     $("#newModel").click(function () {
         window.location.href = $(this).attr('href');
     });
@@ -802,10 +552,19 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
  function fillfunnelstage(data) {
      var crcnt = 1;
      var cvcnt = 1;
+     //alert(JSON.stringify(data));
+
+     //if (data == 'object' || data ==undefined ) {
+     //    $('#inputs-group input[type=text]').each(function () {
+     //        var val = $(this).attr('name').val('False');
+     //        alert(val);
+     //    });
+     //}
      $.each(data.lstmodelfunnelstagelist, function (index, obj) {
          if (crcnt == 1) {
              if (obj.StageType == "CR") {
                  $("#txtMCR_CR_" + obj.StageId).val(obj.Value);
+                 $("#TargetStage_" + obj.StageId).val(obj.AllowedTargetStage);
              }
              else if (obj.StageType == "SV") {
                  crcnt = 2;
@@ -815,24 +574,6 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
          if (obj.StageType == "SV" && cvcnt == 1) {
              $("#txtMSV_SV_" + obj.StageId).val(obj.Value);
              crcnt = 2;
-         }
-         else {
-             if (obj.StageType == "CR" && crcnt == 2) {
-                 $("#txtTCR_CR_" + obj.StageId).val(obj.Value);
-                 cvcnt = 2;
-             }
-             else if (obj.StageType == "SV" && cvcnt == 2) {
-                 crcnt = 3;
-                 $("#txtTSV_SV_" + obj.StageId).val(obj.Value);
-             }
-             else if (obj.StageType == "CR" && crcnt == 3) {
-                 $("#txtSCR_CR_" + obj.StageId).val(obj.Value);
-                 cvcnt = 3;
-             }
-             else if (obj.StageType == "SV" && crcnt == 3) {
-                 $("#txtSSV_SV_" + obj.StageId).val(obj.Value);
-                 cvcnt = 3;
-             }
          }
      });
  }
@@ -861,14 +602,72 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
  }).on('changeDate', function (ev) {
      $(this).datepicker('hide');
  });;
-     $(".savebtn").click(function () {
+    $(".savebtn").click(function () {
+        if ($('#IsBenchmarked').val() == 'False') {
+            var val = 0;
+            var cntFill = 0;
+            var cntNotFill = 0;
+            var targetStagecnt = 0
+            $('#inputs-group input[type=text]').each(function () {
+                var val;
+                var targetstage = $(this).attr('name');
+                if (targetstage == 'txtTargetStage') {
+                    val = $(this).val();
+                    if (val.toLowerCase() == "true") {
+                        targetStagecnt = targetStagecnt + 1;
+                    }
+                }
+                else {
+                    val = $(this).val();
+                    if (val > 0) {
+                        cntFill = cntFill + 1;
+                    }
+                    else {
+                        cntNotFill = cntNotFill + 1;
+                    }
+                }
+            });
+            if (cntFill < 1 && targetStagecnt < 1) {
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one conversion rate and AllowedTargetStage for the model to be valid.')
+                $("#errorMessage").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+                $('#inputs-group input[type=text]').each(function () {
+                    $(this).addClass("error");
+                });
+                return false;
+            }
+            else if (cntFill < 1 && targetStagecnt > 0) {
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one conversion rate for the model to be valid.')
+                $("#errorMessage").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+                $('#inputs-group input[type=text]').each(function () {
+                    var targetstage = $(this).attr('name');
+                    if (targetstage != 'txtTargetStage') {
+                        $(this).addClass("error");
+                    }
 
-         if ($("#hdnmoelexist").val() == "true") {
-             $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> Model with same Title already exist.')
-             $("#errorMessage").slideDown(400);
-             $("html, body").animate({ scrollTop: 0 }, 1000);
-             return false;
-         }
+                });
+                return false;
+            }
+            else if (cntFill > 0 && targetStagecnt < 1) {
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one AllowedTargetStage true for the model to be valid.')
+                $("#errorMessage").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+                $('#inputs-group input[type=text]').each(function () {
+                    var targetstage = $(this).attr('name');
+                    if (targetstage == 'txtTargetStage') {
+                        $(this).addClass("error");
+                    }
+                });
+                return false;
+            }
+            if ($("#hdnmoelexist").val() == "true") {
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> Model with same Title already exist.')
+                $("#errorMessage").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+                return false;
+            }
+        }
          $("#CurrentModelId").val($("#latestModelId").val());
 
          if ($('#isPublishButton').val() == 'publish') {
@@ -1078,6 +877,66 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
     //// Added By Maninder Singh Wadhva to address TFS Bug#239
     var ismsg = $("#hdnMsg").val();
     $("#publishModel").click(function () {
+        if ($('#IsBenchmarked').val() != 'True') {
+            var val = 0;
+            var cntFill = 0;
+            var cntNotFill = 0;
+            var targetStagecnt = 0
+            $('#inputs-group input[type=text]').each(function () {
+                var val;
+                var targetstage = $(this).attr('name');
+                if (targetstage == 'txtTargetStage') {
+                    val = $(this).val();
+                    if (val.toLowerCase() == "true") {
+                        targetStagecnt = targetStagecnt + 1;
+                    }
+                }
+                else {
+                    val = $(this).val();
+                    if (val > 0) {
+                        cntFill = cntFill + 1;
+                    }
+                    else {
+                        cntNotFill = cntNotFill + 1;
+                    }
+                }
+            });
+
+            if (cntFill < 1 && targetStagecnt < 1) {
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one conversion rate and AllowedTargetStage for the model to be valid.')
+                $("#errorMessage").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+                $('#inputs-group input[type=text]').each(function () {
+                    $(this).addClass("error");
+                });
+                return false;
+            }
+            else if (cntFill < 1 && targetStagecnt > 0) {
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one conversion rate for the model to be valid.')
+                $("#errorMessage").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+                $('#inputs-group input[type=text]').each(function () {
+                    var targetstage = $(this).attr('name');
+                    if (targetstage != 'txtTargetStage') {
+                        $(this).addClass("error");
+                    }
+
+                });
+                return false;
+            }
+            else if (cntFill > 0 && targetStagecnt < 1) {
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one AllowedTargetStage true for the model to be valid.')
+                $("#errorMessage").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+                $('#inputs-group input[type=text]').each(function () {
+                    var targetstage = $(this).attr('name');
+                    if (targetstage == 'txtTargetStage') {
+                        $(this).addClass("error");
+                    }
+                });
+                return false;
+            }
+        }
         $('#isPublishButton').val('publish');
         $('#btnsave').click();
         $('#isPublishButton').val('');
