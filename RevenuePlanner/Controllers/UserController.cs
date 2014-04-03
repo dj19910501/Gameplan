@@ -281,7 +281,7 @@ namespace RevenuePlanner.Controllers
                     if (notification != null)
                     {
                         string replyToEmail = System.Configuration.ConfigurationManager.AppSettings.Get("ReplyToMail");
-                        string emailBody = notification.EmailContent.Replace("[NameToBeReplaced]", Sessions.User.FirstName + " " + Sessions.User.LastName);
+                        string emailBody = notification.EmailContent.Replace("[NameToBeReplaced]", Sessions.User.FirstName);
                         Common.sendMail(Sessions.User.Email, Common.FromMail, emailBody, notification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High), string.Empty, replyToEmail);
                     }
                 }
