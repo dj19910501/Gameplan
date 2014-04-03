@@ -1920,3 +1920,30 @@ a {
 .small-input input {
     width: 52px !important;
 }
+
+/* Added by Kuber on 3 April 2014 for #159 */
+
+.boost-icon-flag {
+    background: url("../images/bullhorn-flag-white.png") no-repeat right;
+    height: 35px;
+    float: left;
+    margin: 0 10px 0 -35px;
+}
+.inputs-aligned-horizontal p, .inputs-aligned-horizontal .container-button, .inputs-aligned-horizontal .delete-container {margin-left:0 !important;}
+.column-right .bestInClassRow input {color: #5693B3 !important;font-size: 13px;font-weight: bold;}
+.column-right { width:29% !important;float:left;}
+.column-left{ width:35% !important;float:left;}
+.column-left label {width:300px;padding-top:20px;}
+.title1 {color: #3F3F3F;font-family: 'source_sans_prosemibold',Arial,"sans-serif";font-size: 18px;padding-right: 25px !important;}
+.table-header2 th {color:#908D88;text-align:right;}
+.table-header2 th:last-child {float:right;}
+.table-header {color:#908D88;}
+.width88px {border: 0 none;width: 88px !important;}
+.tactics {background-position: -68px 0 !important;}
+.padding-content2 {padding:20px 20px 50px;}
+.bestInClassRow td input {float:right;}
+.nav-gray li a .trophy {background:url("../images/trophy-02.png") no-repeat 0 0 !important;}
+.nav-gray li.active a.organization .trophy {background-position:0 0 !important;}
+.nav-gray li:hover a.organization .trophy {background-position:0 -30px !important;}
+
+/* Added by Kuber on 3 April 2014 for #159 */
