@@ -73,10 +73,10 @@
                                 @Html.DisplayFor(model => item.MetricName)
                             </td>
                             <td>
-                                <input id="@item.MetricID_CR" class="backgroundC6EBF3 text-align-right width88px input-table priceValue inputCR" value="@item.ConversionValue" />
+                                <input id="@item.MetricID_CR" class="backgroundC6EBF3 text-align-right width88px input-table priceValue inputCR" maxlength="@RevenuePlanner.Helpers.Common.maxLengthPercentageValue" value="@item.ConversionValue" />
                             </td>
                             <td>
-                                <input id="@item.MetricID_SV" class="backgroundC6EBF3 text-align-right width88px input-table priceValue inputSV" value="@item.VelocityValue"/>
+                                <input id="@item.MetricID_SV" class="backgroundC6EBF3 text-align-right width88px input-table priceValue inputSV" maxlength="@RevenuePlanner.Helpers.Common.maxLengthValue" value="@item.VelocityValue"/>
                             </td>
                         </tr>
                     }
@@ -99,7 +99,7 @@
                                 @Html.DisplayFor(model => item.MetricName)
                             </td>
                             <td>
-                                <input id="@item.MetricID_Size" class="backgroundC6EBF3 text-align-right width88px input-table priceValue inputSize" value="@item.ConversionValue" />
+                                <input id="@item.MetricID_Size" class="backgroundC6EBF3 text-align-right width88px input-table priceValue inputSize" maxlength="@RevenuePlanner.Helpers.Common.maxLengthPercentageValue" value="@item.ConversionValue" />
                             </td>
                         </tr>
                     }
