@@ -15,7 +15,7 @@
     <a class="close">×</a>
     <strong>Error!</strong> <span id="spanMessage"></span>
 </div>
-<form id="frm_tactics" name="frm_tactics" class="slidepanel-form" style="width: 290px !important">
+<form id="frm_tactics" name="frm_tactics" class="slidepanel-form">
     <div class="content">
         @Html.HiddenFor(model => model.ImprovementTacticTypeId, new { id = "ImprovementTacticTypeId" })
         <label>Improvement Tactic Type</label>
@@ -24,11 +24,12 @@
         @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", id = "hdndesc" })
         <table>
             <tr>
-                <td>
+                <td class="mid-input">
                     <label>Cost</label>
                     @Html.TextBoxFor(model => model.Cost, new { require = "true", id = "hdnCost", @class = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                 </td>
-                <td>
+                <td style="width: 15px;"></td>
+                <td class="mid-input">
                     <label>Status</label>
                     @Html.TextBoxFor(model => model.IsDeployed, new { @readonly = true, id = "t_status" })
                 </td>
@@ -40,10 +41,11 @@
                 <thead>
                     <tr>
                         <th></th>
-                        <th title="Conversion">Conversion
+                         <th style="width:24px;"></th>
+                        <th title="Conversion" style="font-weight: normal;">Conversion
                         </th>
-                        <th title="Velocity">Velocity
-                        </th>
+                        <th style="width: 15px;"></th>
+                        <th title="Velocity" style="font-weight: normal;">Velocity</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -53,10 +55,12 @@
                             <td title="@item.MetricName">
                                 @Html.DisplayFor(model => item.MetricName)
                             </td>
-                            <td>
+                            <td style="width:24px;"></td>
+                            <td class="small-input">
                                 @Html.TextBoxFor(model => item.ConversionValue, new { placeholder = "Required", require = "true", maxlength = "1", id = @item.MetricID_CR })
                             </td>
-                            <td>
+                             <td style="width:15px;"></td>
+                            <td class="small-input">
                                 @Html.TextBoxFor(model => item.VelocityValue, new { placeholder = "Required", require = "true", maxlength = "1", id = @item.MetricID_SV })
 
                             </td>
@@ -68,7 +72,7 @@
                 <thead>
                     <tr>
                         <th title=""></th>
-                        <th title="Improvement">Improvement
+                          <th title="Improvement" style="font-weight:normal; width:150px;">Improvement
                         </th>
                     </tr>
                 </thead>
@@ -79,7 +83,7 @@
                             <td title="@item.MetricName">
                                 @Html.DisplayFor(model => item.MetricName)
                             </td>
-                            <td>
+                            <td style="width:150px;">
                                 @Html.TextBoxFor(model => item.ConversionValue, new { placeholder = "Required", require = "true", maxlength = "1", id = @item.MetricID_Size })
                             </td>
                         </tr>
@@ -107,11 +111,11 @@
         });
         var status = $("#frm_tactics #t_status").val();
         if (status != "True") {
-            $("#frm_tactics #t_status").val("Not Deployed");
+            $("#frm_tactics #t_status").val("Not Active");
             $("#frm_tactics #t_status").addClass("icon-check-gray");
         }
         else {
-            $("#frm_tactics #t_status").val("Deployed");
+            $("#frm_tactics #t_status").val("Active");
             $("#frm_tactics #t_status").addClass("icon-check-blue");
         }
         $('.close').click(function () {
@@ -119,11 +123,11 @@
         });
         $("#frm_tactics #t_status").click(function () {
             if ($(this).hasClass("icon-check-blue")) {
-                $(this).val("Not Deployed");
+                $(this).val("Not Active");
                 $(this).addClass("icon-check-gray");
                 $(this).removeClass("icon-check-blue");
             } else {
-                $(this).val("Deployed");
+                $(this).val("Active");
                 $(this).addClass("icon-check-blue");
                 $(this).removeClass("icon-check-gray");
             }

@@ -1913,4 +1913,10 @@ a {
     .icon-info-support a {
         color: #908d88;
     }
-/* Added by Kuber on 3 April 2014 for #391 */
+/* Added by Kapil for input width */
+.mid-input input {
+    width: 94px !important;
+}
+.small-input input {
+    width: 52px !important;
+}
