@@ -14,6 +14,7 @@ using System.Data.Objects;
 using RevenuePlanner.BDSService;
 using System.Web.Routing;
 using System.Reflection;
+using System.Web;
 
 /*
  *  Author: Manoj Limbachiya
@@ -3236,6 +3237,10 @@ namespace RevenuePlanner.Controllers
                     {
                         if (ModelState.IsValid)
                         {
+                            //// Added by Sohel on 2nd April for PL#398 to decode the optionalMessage text
+                            optionalMessage = HttpUtility.UrlDecode(optionalMessage, System.Text.Encoding.Default);
+                            ////
+
                             Plan plan = new Plan();
                             if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                             {
@@ -3274,7 +3279,9 @@ namespace RevenuePlanner.Controllers
                                     Plan_Improvement_Campaign_Program_Tactic_Share improvementTacticShare = new Plan_Improvement_Campaign_Program_Tactic_Share();
                                     improvementTacticShare.ImprovementPlanTacticId = planTacticId;
                                     improvementTacticShare.EmailId = toEmail;
-                                    improvementTacticShare.EmailBody = string.Format("{0} {1}", notification.EmailContent, optionalMessage);
+                                    //// Modified by Sohel on 3rd April for PL#398 to encode the email body while inserting into DB.
+                                    improvementTacticShare.EmailBody = HttpUtility.HtmlEncode(emailBody);
+                                    ////
                                     improvementTacticShare.CreatedDate = DateTime.Now;
                                     improvementTacticShare.CreatedBy = Sessions.User.UserId;
                                     db.Entry(improvementTacticShare).State = EntityState.Added;
@@ -3297,7 +3304,9 @@ namespace RevenuePlanner.Controllers
                                     tacticShare.PlanCampaignId = planTacticId;
                                 }
                                 tacticShare.EmailId = toEmail;
-                                tacticShare.EmailBody = string.Format("{0} {1}", notification.EmailContent, optionalMessage);
+                                //// Modified by Sohel on 3rd April for PL#398 to encode the email body while inserting into DB.
+                                tacticShare.EmailBody = HttpUtility.HtmlEncode(emailBody);
+                                ////
                                 tacticShare.CreatedDate = DateTime.Now;
                                 tacticShare.CreatedBy = Sessions.User.UserId;
                                 db.Entry(tacticShare).State = EntityState.Added;

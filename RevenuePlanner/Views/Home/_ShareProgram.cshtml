@@ -9,12 +9,14 @@
 <div class="container-fluid all-height" id="DivShareTacticPopupMain">
     <div class="row-fluid calc-height">
         <div class="span12">
+            @*Modified by Sohel on 28th March to remove fixed height of pop-up. height-auto class has been added*@ 
+            <div id="DivShareTacticPopup" class="form-inspect-share hide fade in height-auto" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block">
+                @*Modified by Sohel on 3rd April 2014 for PL# 398 to display error message on the top of sharing pop-up, below div has been place inside from outside of main div *@ 
             <div id="errorMessageShareTacticPopup" class="alert alert-error hide error-over-modal">
                 <a class="close">×</a>
                 <strong>Error!</strong><span id="spanMessageErrorShareTacticPopup"></span>
             </div>
-            @*Modified by Sohel on 28th March to remove fixed height of pop-up. height-auto class has been added*@ 
-            <div id="DivShareTacticPopup" class="form-inspect-share hide fade in height-auto" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block">
+                @**@
                 <div class="login-wrapper">
                     <form name="share-tactic">
                         <h2 class="primary-title source-sans-prosemibold">Share Program</h2>
@@ -80,18 +82,29 @@
                 var msgspan = "Please select atleast one email.";
                 $("#errorMessageShareTacticPopup").css("display", "block");
                 $(".input-block-level").addClass("error");
+                //// Added by Sohel on 2nd April for PL#398 to display validation error properly
+                $(".select2-choices").css("background-image", "none");
+                $(".select2-choices").addClass("error-background");
+                ////
                 $("#spanMessageErrorShareTacticPopup").text(msgspan);
             }
+            ////Commented By Sohel on 2nd April 2014 to remove special character validations that was provided in OptionalMessage textbox. 
                 //// Validating Optional message.
-            else if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test($("#TxtOptionalMessage").val())) {
-                var msgspan = "Special character are not allowed, try again.";
-                $("#errorMessageShareTacticPopup").css("display", "block");
-                $("#TxtOptionalMessage").addClass("error");
+            //else if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test($("#TxtOptionalMessage").val())) {
+            //    var msgspan = "Special character are not allowed, try again.";
+            //    $("#errorMessageShareTacticPopup").css("display", "block");
+            //    $("#TxtOptionalMessage").addClass("error");
+            //    $(".input-block-level").removeClass("error");
+            //    $("#spanMessageErrorShareTacticPopup").text(msgspan);
+            //}
+            ////
+            else {
                 $(".input-block-level").removeClass("error");
-                $("#spanMessageErrorShareTacticPopup").text(msgspan);
-            } else {
-                $(".input-block-level").removeClass("error");
-                $("#TxtOptionalMessage").removeClass("error");
+                ////Modified By Sohel on 2nd April 2014 to remove special character validations that was provided in OptionalMessage textbox. 
+                //$("#TxtOptionalMessage").removeClass("error");
+                $(".select2-choices").removeClass("error-background");
+                $("#errorMessageShareTacticPopup").css("display", "none");
+                ////
                 // Send mail and show confirmation popup.
                 ShareTactic($("#select2Email").select2("val").toString(), $("#TxtOptionalMessage").val());
             }
@@ -106,6 +119,9 @@
     });
     //Start Share Tactic
     function ShareTactic(email, optionalMessage) {
+        //// Added by Sohel on 2nd April for PL#398 to encode the text insert in Optional Message Textbox
+        optionalMessage = escape(optionalMessage);
+        ////
         var planProgramId = $('#planProgramId').val();
         $.ajax({
             type: 'POST',

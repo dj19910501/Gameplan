@@ -3842,6 +3842,9 @@ namespace RevenuePlanner.Controllers
 
                             string notificationShareReport = Enums.Custom_Notification.ShareReport.ToString();
                             Notification notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationShareReport));
+                            //// Added by Sohel on 2nd April for PL#398 to decode the optionalMessage text
+                            optionalMessage = HttpUtility.UrlDecode(optionalMessage, System.Text.Encoding.Default);
+                            ////
                             string emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage);
 
                             foreach (string toEmail in toEmailIds.Split(','))
@@ -3849,7 +3852,9 @@ namespace RevenuePlanner.Controllers
                                 Report_Share reportShare = new Report_Share();
                                 reportShare.ReportType = reportType;
                                 reportShare.EmailId = toEmail;
-                                reportShare.EmailBody = emailBody;
+                                //// Modified by Sohel on 3rd April for PL#398 to encode the email body while inserting into DB.
+                                reportShare.EmailBody = HttpUtility.HtmlEncode(emailBody);
+                                ////
                                 reportShare.CreatedDate = DateTime.Now;
                                 reportShare.CreatedBy = Sessions.User.UserId;
                                 db.Entry(reportShare).State = EntityState.Added;

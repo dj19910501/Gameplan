@@ -6462,3 +6462,18 @@ h2.title-header {
     height:auto;
 }
 /**/
+
+/* Added by Sohel on 2nd April for PL#398 to display validation error properly in multi select textbox */
+.error-background {
+    background-color: #f1dbde !important;
+    border: 1px solid #c6605a !important;
+}
+/**/
+
+/* Added by Sohel on 3rd April for PL#398 to display error message on the top of sharing pop-up */
+.form-inspect-share .error-over-modal {
+    position: absolute;
+    top: -50px;
+    width: 77%;
+}
+/**/
