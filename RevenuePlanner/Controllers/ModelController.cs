@@ -224,8 +224,8 @@ namespace RevenuePlanner.Controllers
                     {
                         int NextLevel = Convert.ToInt32(s.Level) + 1;
                         /*changed by Nirav Shah on 2 APR 2013*/
-                        string stage1 = s.Code;
-                        string stage2 = StageList.Where(stg => stg.Level == NextLevel).Select(stg => stg.Code).FirstOrDefault();
+                        string stage1 = s.Title;
+                        string stage2 = StageList.Where(stg => stg.Level == NextLevel).Select(stg => stg.Title).FirstOrDefault();
                         objModelStage.ConversionTitle = stage1 + " → " + stage2;
                         //Start Manoj 03Feb2014 - Bug 115:Model Creation - Velocity Labels same as Conversion Labels
                         objModelStage.VelocityTitle = stage1 + " → " + stage2;
@@ -520,14 +520,16 @@ namespace RevenuePlanner.Controllers
                             if (txtStageId != null && txtMCR != null)
                             {
                                 string[] strtxtMCR = txtMCR.ToArray();
-                                SaveInputs(strhdnSTAGEId, strtxtMCR, strtxtTargetStage, intFunnelMarketing, Enums.StageType.CR.ToString());
+                                flag = SaveInputs(strhdnSTAGEId, strtxtMCR, strtxtTargetStage, intFunnelMarketing, Enums.StageType.CR.ToString());
+
                             }
-                            //Marketing Stage Velocity
+
                             if (txtStageId != null && txtMSV != null)
                             {
                                 string[] strtxtMSV = txtMSV.ToArray();
-                                SaveInputs(strhdnSTAGEId, strtxtMSV, strtxtTargetStage, intFunnelMarketing, Enums.StageType.SV.ToString());
+                                flag = SaveInputs(strhdnSTAGEId, strtxtMSV, strtxtTargetStage, intFunnelMarketing, Enums.StageType.SV.ToString());
                             }
+
                             ////Marketing Conversion Rates
                             //if (hdnSTAGEMCR != null && txtMCR != null)
                             //{
@@ -707,7 +709,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="itemLabels">Funnel Item Labels.</param>
         /// <param name="funnelId">Funnel Id.</param>
         /// <param name="stageType">Stage Type: CR/ SV.</param>
-        private void SaveInputs(string[] itemIds, string[] itemLabels, string[] strtxtTargetStage, int funnelId, string stageType)
+        private bool SaveInputs(string[] itemIds, string[] itemLabels, string[] strtxtTargetStage, int funnelId, string stageType)
         {
             if (itemIds.Length > 0 && itemLabels.Length > 0 && funnelId > 0 && !string.IsNullOrWhiteSpace(stageType))
             {
@@ -715,7 +717,7 @@ namespace RevenuePlanner.Controllers
                 {
                     double doubleValue = 0.0;
                     double.TryParse(Convert.ToString(itemLabels[i]).Replace(",", "").Replace("$", ""), out doubleValue);
-                  
+
                     bool boolValue = false;
                     bool.TryParse(strtxtTargetStage[i], out boolValue);
 
@@ -738,11 +740,33 @@ namespace RevenuePlanner.Controllers
                         mModel_Funnel_Stage.Value = objModel_Funnel_Stage.Value;
                         mModel_Funnel_Stage.ModifiedBy = Sessions.User.UserId;
                         mModel_Funnel_Stage.ModifiedDate = DateTime.Now;
-                        mModel_Funnel_Stage.AllowedTargetStage = boolValue;
+                        if (stageType == Enums.StageType.CR.ToString())
+                        {
+                            mModel_Funnel_Stage.AllowedTargetStage = boolValue;
+                        }
+                        else
+                        {
+                            mModel_Funnel_Stage.AllowedTargetStage = false;
+                        }
                         db.Entry(mModel_Funnel_Stage).State = EntityState.Modified;
                         int resModel_Funnel_Stage = db.SaveChanges();
                     }
                 }
+            }
+            return true;
+        }
+
+        public JsonResult CheckTargetStage(int ModelId, int StageId)
+        {
+            var existintactic = db.TacticTypes.Where(t => t.ModelId == ModelId && t.StageId == StageId).FirstOrDefault();
+            if (existintactic == null)
+            {
+
+                return Json("notexist", JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json("exist", JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -2831,7 +2855,7 @@ namespace RevenuePlanner.Controllers
                 modelId = p.ModelId,/*  TFS Bug - 179 : Improper behavior when editing Tactic in model   Changed By : Nirav shah on 6 Feb 2014        Change : add modelId = p.ModelId,    */
                 title = p.Title,
                 Stage = (p.StageId == null) ? "-" : p.Stage.Code,
-                  /*changed by Nirav Shah on 2 APR 2013*/
+                /*changed by Nirav Shah on 2 APR 2013*/
                 // inquiries = (p.ProjectedInquiries == null) ? 0 : p.ProjectedInquiries,
                 mqls = (p.ProjectedMQLs == null) ? 0 : p.ProjectedMQLs,
                 revenue = (p.ProjectedRevenue == null) ? 0 : p.ProjectedRevenue,
@@ -2850,7 +2874,8 @@ namespace RevenuePlanner.Controllers
             {
                 /*changed by Nirav Shah on 2 APR 2013*/
                 //ViewBag.Stages = db.Stages.Where(s => s.IsDeleted == false && s.ClientId == Sessions.User.ClientId);
-                ViewBag.Stages = db.Model_Funnel_Stage.Where(s => s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true && s.StageType == Enums.StageType.CR.ToString()).Select(n => new { n.StageId, n.Stage.Code }).ToList();
+                string StageType = Enums.StageType.CR.ToString();
+                ViewBag.Stages = db.Model_Funnel_Stage.Where(s => s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true && s.StageType == StageType).Select(n => new { n.StageId, n.Stage.Code }).Distinct().ToList();
                 ViewBag.IsCreated = false;
                 TacticType mtp = db.TacticTypes.Where(m => m.TacticTypeId.Equals(id)).FirstOrDefault();
                 tm.TacticTypeId = mtp.TacticTypeId;
@@ -2889,7 +2914,8 @@ namespace RevenuePlanner.Controllers
         {
             //ViewBag.Stages = db.Stages.Where(s => s.IsDeleted == false && s.ClientId == Sessions.User.ClientId);
             /*changed by Nirav Shah on 2 APR 2013*/
-            ViewBag.Stages = db.Model_Funnel_Stage.Where(s => s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true && s.StageType == Enums.StageType.CR.ToString()).Select(n => new { n.StageId, n.Stage.Code }).ToList();
+            string StageType = Enums.StageType.CR.ToString();
+            ViewBag.Stages = db.Model_Funnel_Stage.Where(s => s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true && s.StageType == StageType).Select(n => new { n.StageId, n.Stage.Code }).Distinct().ToList();
             ViewBag.IsCreated = true;
             Tactic_TypeModel tm = new Tactic_TypeModel();
             /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
@@ -3137,7 +3163,8 @@ namespace RevenuePlanner.Controllers
                             objtactic.ProjectedMQLs = obj.ProjectedMQLs;
                             objtactic.ProjectedRevenue = obj.ProjectedRevenue;
                             //objtactic.ProjectedInquiries = obj.ProjectedInquiries;
-                            objtactic.StageId = (obj.StageId == null) ? db.Model_Funnel_Stage.Where(s => s.StageType == Enums.StageType.CR.ToString() && s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage==true).OrderBy(s => s.Stage.Level).Select(s => s.StageId).FirstOrDefault() : obj.StageId;
+                            string StageType = Enums.StageType.CR.ToString();
+                            objtactic.StageId = (obj.StageId == null) ? db.Model_Funnel_Stage.Where(s => s.StageType == StageType && s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true).OrderBy(s => s.Stage.Level).Distinct().Select(s => s.StageId).FirstOrDefault() : obj.StageId;
                             int intRandomColorNumber = rnd.Next(colorcodeList.Count);
                             objtactic.ColorCode = Convert.ToString(colorcodeList[intRandomColorNumber]);
                             objtactic.CreatedDate = DateTime.Now;

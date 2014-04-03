@@ -181,13 +181,18 @@
                 </div>
             </div>
             <div class="span10 content-colum-right">
+                <a name="Overview"></a>
                 <h2 class="sub-title-forms source-sans-proregular">@Html.Raw("1. Model Overview")</h2>
                 <div id="divModelOverview"></div>
+                <a name="Inquiries"></a>
                 <h2 class="sub-title-forms source-sans-proregular">@Html.Raw("2. Contacts and Inquiries")</h2>
                 <div id="divcontactInquiry"></div>
+                <a name="Rates"></a>
                 <ul id="sub_nav_tabs" class="nav nav-tabs">
                     <li class="title-header source-sans-proregular">
+
                         <h2>3. Conversion Rates</h2>
+
                     </li>
                     <li id="benchmarked-option" class="disabled pull-right">
                         <a>Benchmarked</a>
@@ -205,16 +210,16 @@
                     </div>
                     <div id="inputs-group">
                         @Html.Raw("Add your waterfall stage conversion rates for each source. Hover over the info icon for additional explanation about a stage.")
-                        <table id="tblCR_SV">
+                        <table id="tblCR_SV" class="tblCR_SV source-sans-probold">
                             <thead>
                                 <tr>
-                                    <th title="Stage">Stage
+                                    <th title="Stage" style="width: 40%">Stage
                                     </th>
-                                    <th title="Conversion (%)">Conversion (%)
+                                    <th title="Conversion (%)" style="width: 20%">Conversion (%)
                                     </th>
-                                    <th title="Velocity (Days)">Velocity (Days)
+                                    <th title="Velocity (Days)" style="width: 20%">Velocity (Days)
                                     </th>
-                                    <th title="Allowed as Target Stage">Allowed as
+                                    <th title="Allowed as Target Stage" style="width: 20%">Allowed as
                                         <br />
                                         Target Stage
                                     </th>
@@ -223,6 +228,7 @@
                             <tbody>
                                 @{
         var cnti = 0;
+        var cntj = 2;
         foreach (var item in Model.lstmodelstage)
         {
             cnti = cnti + 1;
@@ -235,21 +241,45 @@
 
                     if (Array.IndexOf(@item.Funnel.Split(','), strmarketingflag) >= 0)
                     {
-                                    <input  type="hidden" maxlength="12"  name="txtStageId" placeholder="0" readonly="true"  value="@item.StageId" hidden="true" >
-                                    <tr>
-                                        <td>
-                                            <input  type="text" maxlength="12"  name="txtStage" placeholder="0" readonly="true" value="@item.ConversionTitle">
+                                    <input  type="hidden"  name="txtStageId"  value="@item.StageId" >
+                                    <input type="hidden" name="txtTargetStage" id="hdnAllowedtargetStage_@item.StageId">
+                        if (cntj == cnti)
+                        {
+                                    <tr style="border-bottom: thin solid; border-top: thin solid; border-color: black;" class="alternate">
+                                        <td style="width: 40%">
+                                            <span class="ellipsis">@item.ConversionTitle</span><span class="info-icon" title="@item.Description"></span>
                                         </td>
-                                        <td>
-                                            <input  type="text" maxlength="5" name="txtMCR" id="txtMCR_CR_@item.StageId" placeholder="0" >
+                                        <td style="width: 20%; border-left: thin solid; border-color: black;">
+                                            <input class="backgroundC6EBF3 input-table source-sans-probold" type="text" maxlength="5" name="txtMCR" id="txtMCR_CR_@item.StageId" placeholder="0" >
                                         </td>
-                                        <td>
-                                            <input  type="text" maxlength="12" name="txtMSV" id="txtMSV_SV_@item.StageId" placeholder="0" >
+                                        <td style="width: 20%; border-left: thin solid; border-color: black;">
+                                            <input class="backgroundC6EBF3 input-table source-sans-probold" type="text" maxlength="12" name="txtMSV" id="txtMSV_SV_@item.StageId" placeholder="0" >
                                         </td>
-                                        <td>
-                                            <input  type="text" maxlength="12" class="targetStageclick" name="txtTargetStage" id="TargetStage_@item.StageId" placeholder="0" readonly="true" >
+                                        <td style="width: 20%; border-left: thin solid; border-color: black;" align="center">
+                                            <a class="targetStageclick"  id="TargetStage_@item.StageId" ></a>
                                         </td>
                                     </tr>
+                            cntj = cntj + 2;
+                        }
+                        else
+                        {
+                                    <tr style="border-bottom: thin solid; border-top: thin solid; border-color: black;">
+                                        <td style="width: 40%">
+                                            <span class="ellipsis">@item.ConversionTitle</span><span class="info-icon" title="@item.Description"></span>
+                                        </td>
+                                        <td style="width: 20%; border-left: thin solid; border-color: black;">
+                                            <input class="backgroundC6EBF3 input-table source-sans-probold" type="text" maxlength="5" name="txtMCR" id="txtMCR_CR_@item.StageId" placeholder="0" >
+                                        </td>
+                                        <td style="width: 20%; border-left: thin solid; border-color: black;">
+                                            <input class="backgroundC6EBF3 input-table source-sans-probold " type="text" maxlength="12" name="txtMSV" id="txtMSV_SV_@item.StageId" placeholder="0" >
+                                        </td>
+                                        <td style="width: 20%; border-left: thin solid; border-color: black;" align="center">
+                                            <a class="targetStageclick"  id="TargetStage_@item.StageId" ></a>
+                                        </td>
+                                    </tr>
+                        }
+
+
                     }
                 }
             }
@@ -257,11 +287,10 @@
                                 }
                             </tbody>
                         </table>
-
-
                     </div>
                 </div>
-
+                <br />
+                <br />
                 <div class="container-button">
                     @{ 
         if (isViewOnly != "true" && Model.lstmodelstage.Count() > 0)
@@ -297,40 +326,86 @@
         $("#errorMessage").slideDown(1200);
     }
 
-    $(".targetStageclick").click(function () {
+    $('#inputs-group input[type=text]').change(function () {
         var val = $(this).val();
-        if (val.toLowerCase() == "false") {
-            $(this).val("True");
-        }
-        if (val.toLowerCase() == "true") {
-            $(this).val("False");
-        }
-    });
-    $("#newModel").click(function () {
-        window.location.href = $(this).attr('href');
-    });
-    $(".leftnav").click(function () {
-        var url = '';
-        var isResults = '';
-        if ($(this).attr('id') == 'aAudience') {
-            url = '@Url.Content("~/Model/Audience")';
-        }
-        else if ($(this).attr('id') == 'aTactics') {
-            url = '@Url.Content("~/Model/Tactics")';
-        }
-        else if ($(this).attr('id') == 'aResults') {
-            url = '@Url.Content("~/Model/Results")';
-            isResults = '1';
-        }
-        if (url != '' && lastModelId != null && lastModelId != 0) {
-            if (isResults == '1') {
-                window.location.href = url + '?mid1=' + lastModelId + '&mid2=' + lastModelId;
-            }
-            else {
-                window.location.href = url + '?id=' + lastModelId;
+        if (val > 0) {
+            if ($(this).hasClass("input-error-red")) {
+                $(this).removeClass("input-error-red");
             }
         }
     });
+    $(document).on('click', '.close', function (e) {
+        $("#errorMessage").slideUp(400);
+        $("#errorMessage").html();
+    });
+
+    $(".targetStageclick").click(function () {
+
+        var val = $(this).text();
+        var astageid = $(this).attr('id');
+        var id = $(this).attr('id').replace('TargetStage_', '');
+        if (val == "False") {
+            $(this).text("True");
+            $("#hdnAllowedtargetStage_" + id).val('true');
+            if ($(this).hasClass("error-red")) {
+                $(this).removeClass("error-red");
+            }
+        }
+        if (val == "True") {
+            $.ajax(
+        {
+            type: "GET",
+            cache: false,
+            url: '@Url.Content("~/Model/CheckTargetStage")',
+            data: { ModelId: $("#latestModelId").val(), StageId: id },
+            dataType: "json",
+            success: function (data) {
+                if (data == 'exist') {
+                    if ($("#" + astageid).hasClass("error-red")) {
+
+                        $("#" + astageid).removeClass("error-red");
+                    }
+                    else {
+                        $("#" + astageid).addClass("error-red");
+                        $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> Can\'t change target stage status because it is currently attached in tactic type.')
+                        $("#errorMessage").slideDown(400);
+                        $("html, body").animate({ scrollTop: 0 }, 1000);
+                    }
+                }
+                else {
+
+                    $(this).text("False");
+                    $("#hdnAllowedtargetStage_" + id).val('false');
+                }
+            }
+        });
+    }
+    });
+$("#newModel").click(function () {
+    window.location.href = $(this).attr('href');
+});
+$(".leftnav").click(function () {
+    var url = '';
+    var isResults = '';
+    if ($(this).attr('id') == 'aAudience') {
+        url = '@Url.Content("~/Model/Audience")';
+    }
+    else if ($(this).attr('id') == 'aTactics') {
+        url = '@Url.Content("~/Model/Tactics")';
+    }
+    else if ($(this).attr('id') == 'aResults') {
+        url = '@Url.Content("~/Model/Results")';
+        isResults = '1';
+    }
+    if (url != '' && lastModelId != null && lastModelId != 0) {
+        if (isResults == '1') {
+            window.location.href = url + '?mid1=' + lastModelId + '&mid2=' + lastModelId;
+        }
+        else {
+            window.location.href = url + '?id=' + lastModelId;
+        }
+    }
+});
 $(document).ready(function () {
     $('#DivBackgroundModel').css("display", "none");
     $('#DivPublishModelPopup').css("display", "none");
@@ -550,30 +625,20 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
  }
 
  function fillfunnelstage(data) {
-     var crcnt = 1;
-     var cvcnt = 1;
-     //alert(JSON.stringify(data));
-
-     //if (data == 'object' || data ==undefined ) {
-     //    $('#inputs-group input[type=text]').each(function () {
-     //        var val = $(this).attr('name').val('False');
-     //        alert(val);
-     //    });
-     //}
      $.each(data.lstmodelfunnelstagelist, function (index, obj) {
-         if (crcnt == 1) {
-             if (obj.StageType == "CR") {
-                 $("#txtMCR_CR_" + obj.StageId).val(obj.Value);
-                 $("#TargetStage_" + obj.StageId).val(obj.AllowedTargetStage);
+         if (obj.StageType == "CR") {
+             $("#txtMCR_CR_" + obj.StageId).val(obj.Value);
+             var val = obj.AllowedTargetStage;
+             if (val != false) {
+                 $("#TargetStage_" + obj.StageId).text('True');
              }
-             else if (obj.StageType == "SV") {
-                 crcnt = 2;
-                 $("#txtMSV_SV_" + obj.StageId).val(obj.Value);
+             else {
+                 $("#TargetStage_" + obj.StageId).text('False');
              }
+             $("#hdnAllowedtargetStage_" + obj.StageId).val(obj.AllowedTargetStage);
          }
-         if (obj.StageType == "SV" && cvcnt == 1) {
+         else if (obj.StageType == "SV") {
              $("#txtMSV_SV_" + obj.StageId).val(obj.Value);
-             crcnt = 2;
          }
      });
  }
@@ -602,72 +667,64 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
  }).on('changeDate', function (ev) {
      $(this).datepicker('hide');
  });;
-    $(".savebtn").click(function () {
-        if ($('#IsBenchmarked').val() == 'False') {
-            var val = 0;
-            var cntFill = 0;
-            var cntNotFill = 0;
-            var targetStagecnt = 0
-            $('#inputs-group input[type=text]').each(function () {
-                var val;
-                var targetstage = $(this).attr('name');
-                if (targetstage == 'txtTargetStage') {
-                    val = $(this).val();
-                    if (val.toLowerCase() == "true") {
-                        targetStagecnt = targetStagecnt + 1;
-                    }
-                }
-                else {
-                    val = $(this).val();
-                    if (val > 0) {
-                        cntFill = cntFill + 1;
-                    }
-                    else {
-                        cntNotFill = cntNotFill + 1;
-                    }
-                }
-            });
-            if (cntFill < 1 && targetStagecnt < 1) {
-                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one conversion rate and AllowedTargetStage for the model to be valid.')
-                $("#errorMessage").slideDown(400);
-                $("html, body").animate({ scrollTop: 0 }, 1000);
-                $('#inputs-group input[type=text]').each(function () {
-                    $(this).addClass("error");
-                });
-                return false;
-            }
-            else if (cntFill < 1 && targetStagecnt > 0) {
-                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one conversion rate for the model to be valid.')
-                $("#errorMessage").slideDown(400);
-                $("html, body").animate({ scrollTop: 0 }, 1000);
-                $('#inputs-group input[type=text]').each(function () {
-                    var targetstage = $(this).attr('name');
-                    if (targetstage != 'txtTargetStage') {
-                        $(this).addClass("error");
-                    }
+     $(".savebtn").click(function () {
+         if ($('#IsBenchmarked').val().toLowerCase() == 'false') {
+             var val = 0;
+             var cntFill = 0;
+             var cntNotFill = 0;
+             var targetStagecnt = 0
+             $('#inputs-group input[type=text]').each(function () {
+                 var val = $(this).val();
+                 if (val > 0) {
+                     cntFill = cntFill + 1;
+                 }
+                 else {
+                     cntNotFill = cntNotFill + 1;
+                 }
+             });
+             $('#inputs-group a').each(function () {
+                 if ($(this).hasClass('targetStageclick')) {
+                     var val = $(this).text();
+                     if (val.toLowerCase() == 'true') {
+                         targetStagecnt = targetStagecnt + 1;
+                     }
+                 }
+             });
+             if (cntFill < 1 && targetStagecnt < 1) {
+                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one conversion rate and AllowedTargetStage for the model to be valid.')
+                 $("#errorMessage").slideDown(400);
+                 $("html, body").animate({ scrollTop: 0 }, 1000);
+                 $('#inputs-group input[type=text]').each(function () {
+                     $(this).addClass("input-error-red");
+                 });
+                 $('#inputs-group a').each(function () {
+                     $(this).addClass("error-red");
+                 });
+                 return false;
+             }
+             else if (cntFill < 1 && targetStagecnt > 0) {
+                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one conversion rate for the model to be valid.')
+                 $("#errorMessage").slideDown(400);
+                 $("html, body").animate({ scrollTop: 0 }, 1000);
+                 $('#inputs-group input[type=text]').each(function () {
+                     var targetstage = $(this).attr('name');
+                     if (targetstage != 'txtTargetStage') {
+                         $(this).addClass("input-error-red");
+                     }
 
-                });
-                return false;
-            }
-            else if (cntFill > 0 && targetStagecnt < 1) {
-                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one AllowedTargetStage true for the model to be valid.')
-                $("#errorMessage").slideDown(400);
-                $("html, body").animate({ scrollTop: 0 }, 1000);
-                $('#inputs-group input[type=text]').each(function () {
-                    var targetstage = $(this).attr('name');
-                    if (targetstage == 'txtTargetStage') {
-                        $(this).addClass("error");
-                    }
-                });
-                return false;
-            }
-            if ($("#hdnmoelexist").val() == "true") {
-                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> Model with same Title already exist.')
-                $("#errorMessage").slideDown(400);
-                $("html, body").animate({ scrollTop: 0 }, 1000);
-                return false;
-            }
-        }
+                 });
+                 return false;
+             }
+             else if (cntFill > 0 && targetStagecnt < 1) {
+                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one AllowedTargetStage true for the model to be valid.')
+                 $("#errorMessage").slideDown(400);
+                 $("html, body").animate({ scrollTop: 0 }, 1000);
+                 $('#inputs-group a').each(function () {
+                     $(this).addClass("error-red");
+                 });
+                 return false;
+             }
+         }
          $("#CurrentModelId").val($("#latestModelId").val());
 
          if ($('#isPublishButton').val() == 'publish') {
@@ -713,20 +770,20 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
          else if ($(this).attr('id') == 'button-save') {
              $("#whichButton").val('version');
          @*Added by Nirav Shah on 18 feb 2014 for TFS Point 252: Editing a published model*@
-         if (modelStatus.toLocaleLowerCase() != 'draft') {
-             if ($("#publishModelDisabled").hasClass("btn-blue-disable")) {
-                 if (confirm($("#ModelPublishCreateNew").val())) {
-                     return true;
-                 }
-                 else {
-                     return false;
+             if (modelStatus.toLocaleLowerCase() != 'draft') {
+                 if ($("#publishModelDisabled").hasClass("btn-blue-disable")) {
+                     if (confirm($("#ModelPublishCreateNew").val())) {
+                         return true;
+                     }
+                     else {
+                         return false;
+                     }
                  }
              }
          }
-     }
-     else {
-         $("#whichButton").val('');
-     }
+         else {
+             $("#whichButton").val('');
+         }
          needAlert = false;
 
          $('.nl-field').each(function () {
@@ -877,37 +934,37 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
     //// Added By Maninder Singh Wadhva to address TFS Bug#239
     var ismsg = $("#hdnMsg").val();
     $("#publishModel").click(function () {
-        if ($('#IsBenchmarked').val() != 'True') {
+        if ($('#IsBenchmarked').val().toLowerCase() == 'false') {
             var val = 0;
             var cntFill = 0;
             var cntNotFill = 0;
             var targetStagecnt = 0
             $('#inputs-group input[type=text]').each(function () {
-                var val;
-                var targetstage = $(this).attr('name');
-                if (targetstage == 'txtTargetStage') {
-                    val = $(this).val();
-                    if (val.toLowerCase() == "true") {
+                var val = $(this).val();
+                if (val > 0) {
+                    cntFill = cntFill + 1;
+                }
+                else {
+                    cntNotFill = cntNotFill + 1;
+                }
+            });
+            $('#inputs-group a').each(function () {
+                if ($(this).hasClass('targetStageclick')) {
+                    var val = $(this).text();
+                    if (val.toLowerCase() == 'true') {
                         targetStagecnt = targetStagecnt + 1;
                     }
                 }
-                else {
-                    val = $(this).val();
-                    if (val > 0) {
-                        cntFill = cntFill + 1;
-                    }
-                    else {
-                        cntNotFill = cntNotFill + 1;
-                    }
-                }
             });
-
             if (cntFill < 1 && targetStagecnt < 1) {
                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one conversion rate and AllowedTargetStage for the model to be valid.')
                 $("#errorMessage").slideDown(400);
                 $("html, body").animate({ scrollTop: 0 }, 1000);
                 $('#inputs-group input[type=text]').each(function () {
-                    $(this).addClass("error");
+                    $(this).addClass("input-error-red");
+                });
+                $('#inputs-group a').each(function () {
+                    $(this).addClass("error-red");
                 });
                 return false;
             }
@@ -918,7 +975,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                 $('#inputs-group input[type=text]').each(function () {
                     var targetstage = $(this).attr('name');
                     if (targetstage != 'txtTargetStage') {
-                        $(this).addClass("error");
+                        $(this).addClass("input-error-red");
                     }
 
                 });
@@ -928,11 +985,8 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one AllowedTargetStage true for the model to be valid.')
                 $("#errorMessage").slideDown(400);
                 $("html, body").animate({ scrollTop: 0 }, 1000);
-                $('#inputs-group input[type=text]').each(function () {
-                    var targetstage = $(this).attr('name');
-                    if (targetstage == 'txtTargetStage') {
-                        $(this).addClass("error");
-                    }
+                $('#inputs-group a').each(function () {
+                    $(this).addClass("error-red");
                 });
                 return false;
             }

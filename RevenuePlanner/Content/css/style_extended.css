@@ -1947,3 +1947,52 @@ a {
 .nav-gray li:hover a.organization .trophy {background-position:0 -30px !important;}
 
 /* Added by Kuber on 3 April 2014 for #159 */
+
+/* Added by KAPIL */
+.tblCR_SV {
+    width: 80%;
+    margin-top:20px;
+}
+.tblCR_SV th, .tblCR_SV td {
+    font-weight: normal;
+    padding-top:5px;
+    padding-bottom:5px;
+}
+.tblCR_SV th {
+    vertical-align: bottom;
+    color:#666;
+}
+.tblCR_SV input, .tblCR_SV textarea, .tblCR_SV .uneditable-
+input {
+    width: 90px;
+    margin:0 15px;
+    border-radius:0;
+    padding-bottom: 2px;
+    padding-top: 2px;
+    color: #0088CC !important;
+}
+.tblCR_SV .ellipsis {
+    width: 85%;
+    display:inline-block;
+    font-size:16px;
+    font-weight:normal;
+}
+.tblCR_SV span.info-icon {
+    float: none;
+    display:inline-block;
+}
+.tblCR_SV .alternate {
+    background:#F1F1F1;
+}
+.tblCR_SV .targetStageclick {
+    text-decoration: underline;
+}
+.tblCR_SV input.input-error-red, .tblCR_SV textarea.input-
+error-red, .tblCR_SV .uneditable-input.input-error-red {
+    background:#F1DBDE !important;
+    border:1px solid #F1DBDE !important;
+    color:#C6605A !important;
+}
+a.error-red {
+    color:#C6605A !important;
+}
