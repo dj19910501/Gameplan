@@ -1900,3 +1900,17 @@ a {
     height: 100%;
 }
 /* */
+
+/* Added by Kuber on 3 April 2014 for #391 */
+.icon-info-support {
+    width: 222px;
+    display: block;
+    font-size: 12px;
+    margin: 0 auto;
+    margin-top: 12px;
+}
+
+    .icon-info-support a {
+        color: #908d88;
+    }
+/* Added by Kuber on 3 April 2014 for #391 */

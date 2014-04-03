@@ -1900,18 +1900,6 @@ input.error {
     background: url("../images/support-login-blue-icon.png") no-repeat 0 0 !important;
 }
 
-.icon-info-support {
-    width: 110px;
-    display: block;
-    font-size: 12px;
-    margin: 0 auto;
-    margin-top: 12px;
-}
-
-    .icon-info-support a {
-        color: #908d88;
-    }
-
 /*---------------------------
   Natural Forms overwriting
 -----------------------------*/
