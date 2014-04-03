@@ -1730,7 +1730,8 @@ namespace RevenuePlanner.Helpers
                     }
 
                     //// Adding to improved MQL 
-                    improvedMQL += affectedMarketingActivities.Select(affectedTactic => affectedTactic.INQs * mqlConversionRate).Sum();
+                    //// Modified By: Maninder Singh Wadhva to Address 408.
+                    improvedMQL += affectedMarketingActivities.Select(affectedTactic => Math.Round(affectedTactic.INQs * mqlConversionRate)).Sum();
                 }
 
 
