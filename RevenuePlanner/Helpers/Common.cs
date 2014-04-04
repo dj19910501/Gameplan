@@ -2005,6 +2005,11 @@ namespace RevenuePlanner.Helpers
                                                            .Select(bic => bic.Value)
                                                            .SingleOrDefault();
 
+                //// Modified by Maninder singh wadhva for Ticket#159
+                if (metricType.Equals(Enums.MetricType.CR.ToString()) && bestInClassValue != 0)
+                {
+                    bestInClassValue = bestInClassValue / 100;
+                }
                 //// Get ImprovementTactic & its Weight for current metric.
                 var improvementActivitiesAndWeight = (from planImprovementTactic in improvementActivitiesForHypotheticalModel
                                                       join improvementTacticTypeMetric in db.ImprovementTacticType_Metric on planImprovementTactic.ImprovementTacticTypeId equals improvementTacticTypeMetric.ImprovementTacticTypeId

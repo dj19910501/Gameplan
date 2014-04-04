@@ -3267,6 +3267,13 @@ namespace RevenuePlanner.Controllers
                 //// Get BestInClas value for MetricId.
                 double bestInClassValue = db.BestInClasses.Where(bic => bic.MetricId == im.MetricId).Select(bic => bic.Value).SingleOrDefault();
 
+                //// Modified by Maninder singh wadhva for Ticket#159
+                if (im.MetricType == Enums.MetricType.CR.ToString() && bestInClassValue != 0)
+                {
+                    bestInClassValue = bestInClassValue / 100;
+                }
+
+
                 //// Get Level of Metric.
                 int? CurrentMetricLevel = db.Metrics.Where(m => m.MetricId == im.MetricId).Select(m => m.Level).SingleOrDefault();
 
