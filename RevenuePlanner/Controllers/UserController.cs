@@ -204,6 +204,13 @@ namespace RevenuePlanner.Controllers
                                 Sessions.RedirectToChangePassword = false;
                                 //Update last login date for user
                                 objBDSServiceClient.UpdateLastLoginDate(Sessions.User.UserId, Sessions.ApplicationId);
+
+                                if (Sessions.User.SecurityQuestionId == null)
+                                {
+                                    Sessions.RedirectToSetSecurityQuestion = true;
+                                    return RedirectToAction("SetSecurityQuestion", "Login");
+                                }
+
                                 return RedirectToAction("Index", "Home");
                             }
                             TempData["SuccessMessage"] = Common.objCached.UserPasswordChanged;
@@ -290,6 +297,98 @@ namespace RevenuePlanner.Controllers
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
             }
+        }
+
+        #endregion
+
+        #region Security Question
+
+        /// <summary>
+        /// Security Question
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult SecurityQuestion()
+        {
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+            var lstSecurityQuestion = objBDSServiceClient.GetSecurityQuestion();
+
+            SecurityQuestionListModel objSecurityQuestionListModel = new SecurityQuestionListModel();
+            objSecurityQuestionListModel.Answer = Sessions.User.Answer;
+            objSecurityQuestionListModel.SecurityQuestionId = Convert.ToInt32(Sessions.User.SecurityQuestionId);
+            objSecurityQuestionListModel.SecurityQuestionList = GetQuestionList(lstSecurityQuestion);
+
+            return View(objSecurityQuestionListModel);
+        }
+
+        /// <summary>
+        /// Post : security question view
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult SecurityQuestion(SecurityQuestionListModel form)
+        {
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+            try
+            {
+                
+                BDSService.User objUser = new BDSService.User();
+                objUser.UserId = Sessions.User.UserId;
+                objUser.SecurityQuestionId = form.SecurityQuestionId;
+                objUser.Answer = form.Answer;
+                int retVal = objBDSServiceClient.UpdateUserSecurityQuestion(objUser);
+
+                if (retVal == -1)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.SecurityQuestionChangesNotApplied;
+                }
+                else if (retVal == 1)
+                {
+
+                    Sessions.User.SecurityQuestionId = form.SecurityQuestionId;
+                    Sessions.User.Answer = form.Answer;
+
+                    TempData["SuccessMessage"] = Common.objCached.SecurityQuestionChangesApplied;
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
+                }
+            }
+
+            var lstSecurityQuestion = objBDSServiceClient.GetSecurityQuestion();
+            form.SecurityQuestionList = GetQuestionList(lstSecurityQuestion);
+
+            return View(form);
+
+        }
+
+        /// <summary>
+        /// Method to get the Select list item
+        /// </summary>
+        /// <param name="QuestionList"></param>
+        /// <returns></returns>
+        public List<SelectListItem> GetQuestionList(List<BDSService.SecurityQuestion> QuestionList)
+        {
+            List<SelectListItem> optionslist = new List<SelectListItem>();
+
+            optionslist = QuestionList.AsEnumerable().Select(x => new SelectListItem
+            {
+                Value = Convert.ToString(x.SecurityQuestionId),
+                Text = x.SecurityQuestion1
+            }).ToList();
+
+            return optionslist;
         }
 
         #endregion

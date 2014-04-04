@@ -51,6 +51,9 @@ namespace BDSService
         int DeleteUser(Guid userId);
 
         [OperationContract]
+        BDSEntities.User GetUserDetails(string userEmail);
+
+        [OperationContract]
         int CreateUser(BDSEntities.User user, Guid applicationId, Guid createdBy);
 
         [OperationContract]
@@ -79,5 +82,20 @@ namespace BDSService
 
         [OperationContract]
         int UpdateLastLoginDate(Guid userId, Guid applicationId);
+
+        [OperationContract]
+        string CreatePasswordResetRequest(BDSEntities.PasswordResetRequest objPasswordResetRequest);
+
+        [OperationContract]
+        BDSEntities.PasswordResetRequest GetPasswordResetRequest(Guid PasswordResetRequestId);
+
+        [OperationContract]
+        int UpdatePasswordResetRequest(BDSEntities.PasswordResetRequest objPasswordResetRequest);
+
+        [OperationContract]
+        List<BDSEntities.SecurityQuestion> GetSecurityQuestion();
+
+        [OperationContract]
+        int UpdateUserSecurityQuestion(BDSEntities.User user);
     }
 }

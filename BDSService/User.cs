@@ -16,6 +16,7 @@ namespace BDSService
     {
         public User()
         {
+            this.PasswordResetRequests = new HashSet<PasswordResetRequest>();
             this.User_Application = new HashSet<User_Application>();
         }
     
@@ -32,8 +33,12 @@ namespace BDSService
         public System.Guid GeographyId { get; set; }
         public bool IsDeleted { get; set; }
         public Nullable<System.DateTime> CreatedDate { get; set; }
+        public Nullable<int> SecurityQuestionId { get; set; }
+        public string Answer { get; set; }
     
         public virtual Client Client { get; set; }
+        public virtual ICollection<PasswordResetRequest> PasswordResetRequests { get; set; }
+        public virtual SecurityQuestion SecurityQuestion { get; set; }
         public virtual ICollection<User_Application> User_Application { get; set; }
     }
 }

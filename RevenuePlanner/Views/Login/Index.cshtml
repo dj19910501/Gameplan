@@ -12,6 +12,7 @@
     @Html.TextBoxFor(u => u.UserEmail, new { maxlength = "200", @class = "input-block-level conv_helveticaltstd-light", placeholder = "Email", required = "required", type = "Email" })
     @Html.PasswordFor(u => u.Password, new { maxlength = "50", @class = "input-block-level conv_helveticaltstd-light", placeholder = "Password", required = "required" })
     <button class="btn btn-large conv-proximanova-light" type="submit" value="Submit">Sign In</button>
+    <a href="@Url.Action("ForgotPassword","Login")" id="ForgotPassword" class="conv-proximanova-light">Forgot Password</a>
     
 }
 

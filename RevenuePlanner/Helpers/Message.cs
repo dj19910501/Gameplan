@@ -914,7 +914,66 @@ namespace RevenuePlanner.Helpers
                 _StageNotExist = value;
             }
         }
+private string _EmailNotExistInDatabse;
+        public string EmailNotExistInDatabse
+        {
+            get { return _EmailNotExistInDatabse; }
+            set { _EmailNotExistInDatabse = value; }
+        }
+
+        private string _SecurityQuestionNotFound;
+        public string SecurityQuestionNotFound
+        {
+            get { return _SecurityQuestionNotFound; }
+            set { _SecurityQuestionNotFound = value; }
+        }
+
+        private string _PasswordResetLinkAlreadyUsed;
+        public string PasswordResetLinkAlreadyUsed
+        {
+            get { return _PasswordResetLinkAlreadyUsed; }
+            set { _PasswordResetLinkAlreadyUsed = value; }
+        }
+
+        private string _PasswordResetLinkExpired;
+
+        public string PasswordResetLinkExpired
+        {
+            get { return _PasswordResetLinkExpired; }
+            set { _PasswordResetLinkExpired = value; }
+        }
+
+        private string _AnswerNotMatched;
+        public string AnswerNotMatched
+        {
+            get { return _AnswerNotMatched; }
+            set { _AnswerNotMatched = value; }
+        }
+
+        private string _PossibleAttemptLimitExceed;
+        public string PossibleAttemptLimitExceed
+        {
+            get { return _PossibleAttemptLimitExceed; }
+            set { _PossibleAttemptLimitExceed = value; }
+        }
+
+        private string _SecurityQuestionChangesNotApplied;
+        public string SecurityQuestionChangesNotApplied
+        {
+            get { return _SecurityQuestionChangesNotApplied; }
+            set { _SecurityQuestionChangesNotApplied = value; }
+        }
+
+        private string _SecurityQuestionChangesApplied;
+        public string SecurityQuestionChangesApplied
+        {
+            get { return _SecurityQuestionChangesApplied; }
+            set { _SecurityQuestionChangesApplied = value; }
+        }
         
+                	   
+
+
         #endregion
 
         #region  Functions
@@ -1190,6 +1249,32 @@ namespace RevenuePlanner.Helpers
                                             break;
                                         case "StageNotExist":
                                             _StageNotExist = strMsgValue;
+                                            break;	 
+                                        /*Forgot Password
+                                        Added by Dharmraj Mangukiya*/
+                                        case "EmailNotExistInDatabse":
+                                            _EmailNotExistInDatabse = strMsgValue;
+                                            break;
+                                        case "SecurityQuestionNotFound":
+                                            _SecurityQuestionNotFound = strMsgValue;
+                                            break;
+                                        case "PasswordResetLinkAlreadyUsed":
+                                            _PasswordResetLinkAlreadyUsed = strMsgValue;
+                                            break;
+                                        case "PasswordResetLinkExpired":
+                                            _PasswordResetLinkExpired = strMsgValue;
+                                            break;
+                                        case "AnswerNotMatched":
+                                            _AnswerNotMatched = strMsgValue;
+                                            break;
+                                        case "PossibleAttemptLimitExceed":
+                                            _PossibleAttemptLimitExceed = strMsgValue;
+                                            break;
+                                        case "SecurityQuestionChangesNotApplied":
+                                            _SecurityQuestionChangesNotApplied = strMsgValue;
+                                            break;
+                                        case "SecurityQuestionChangesApplied":
+                                            _SecurityQuestionChangesApplied = strMsgValue;
                                             break;
                                             
                                     }

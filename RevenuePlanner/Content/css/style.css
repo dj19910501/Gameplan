@@ -1889,6 +1889,16 @@ input.error {
         border: none !important;
         border-top: none !important;
         text-shadow: 0 1px 1px #235d86 !important;
+        float: left;
+    }
+
+    .form-signin #ForgotPassword {
+        color: #FFFFFF;
+        float: left;
+        font-size: 17.5px;
+        margin-left: 30px;
+        margin-top: 22px !important;
+        text-shadow: 0 1px 1px #235D86 !important;
     }
 
 .support-icon {
@@ -1899,6 +1909,135 @@ input.error {
     display: block;
     background: url("../images/support-login-blue-icon.png") no-repeat 0 0 !important;
 }
+
+.icon-info-support {
+    width: 110px;
+    display: block;
+    font-size: 12px;
+    margin: 0 auto;
+    margin-top: 12px;
+}
+
+    .icon-info-support a {
+        color: #908d88;
+    }
+
+/*---------------------------
+          Forgot Password
+-----------------------------*/
+
+.forgot-password-wrapper {
+   margin: 0 auto;
+    position: relative;
+    text-align: center;
+    z-index: 99999;
+}
+
+.form-forgot-password {
+    text-align: center;
+    width: 340px;
+    min-height: 235px;
+    padding: 15px 15px 15px 15px;
+    margin: 118px auto 20px;
+    background-color: #3f3f3f;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-box-shadow: 2px 5px 5px #a4a4a4;
+    -moz-box-shadow: 2px 5px 5px #a4a4a4;
+    box-shadow: 2px 5px 5px #a4a4a4, -3px -16px 4px -13px #262626 inset;
+}
+
+.dark-shadow {
+    box-shadow: 2px 5px 5px #000000, -3px -16px 4px -13px #000000 inset;
+}
+
+    .form-forgot-password input {
+        font-size: 18px !important;
+        width: 310px !important;
+        padding-left: 20px !important;
+        vertical-align: middle !important;
+        float: none !important;
+        margin-left: 0 !important;
+    }
+
+        .form-forgot-password input::-webkit-input-placeholder {
+            color: #393937;
+        }
+
+        .form-forgot-password input:-moz-placeholder { /* Firefox 18- */
+            color: #393937;
+        }
+
+        .form-forgot-password input::-moz-placeholder { /* Firefox 19+ */
+            color: #393937;
+        }
+
+        .form-forgot-password input:-ms-input-placeholder {
+            color: #393937;
+        }
+
+    .form-forgot-password p {
+        color: #FFFFFF;
+        font-size: 17.5px;
+        text-shadow: 0 1px 1px #235D86 !important;
+        font-weight: bold;
+    }
+
+    .form-forgot-password button {
+        width: 120px !important;
+        height: 17px !important;
+        margin-top: 10px !important;
+        color: #fff;
+        background: url("../images/btn-login.jpg") repeat-x #3b9de4 !important;
+        background-color: #3b9de4 !important;
+        border: none !important;
+        border-top: none !important;
+        text-shadow: 0 1px 1px #235d86 !important;
+    }
+
+    .form-forgot-password #result {
+        position: absolute;
+        left: 880px; top: 90px;
+    }
+
+    .form-forgot-password #match {
+        position: absolute;
+        left: 870px; top: 145px;
+    }
+
+    .form-forgot-password .select-box {
+        width:325px;
+    }
+
+    .div-overlay {
+        background: none repeat scroll 0 0 rgba(0, 0, 0, 0.75); height: 100%; position: absolute; width: 100%; top: 0; z-index: 9999;
+        display:none;
+    }
+
+.new-reset {
+    float: none !important;
+    margin: 0px !important;
+    width: auto !important;
+}
+
+.form-forgot-password #isCurrentPasswordOk {
+    display:block;
+    margin-bottom:5px;
+}
+
+.form-forgot-password .signin-button {
+    width: 120px !important;
+    height: 17px !important;
+    margin-top: 80px !important;
+    color: #fff;
+    background: url("../images/btn-login.jpg") repeat-x #3b9de4 !important;
+    background-color: #3b9de4 !important;
+    border: none !important;
+    border-top: none !important;
+    text-shadow: 0 1px 1px #235d86 !important;
+}
+
 
 /*---------------------------
   Natural Forms overwriting
