@@ -31,7 +31,12 @@
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
 }
 <style type="text/css">
-    .tipsy { font-size: 12px !important; position: absolute; padding: 5px; z-index: 100000; }
+    .tipsy {
+        font-size: 12px !important;
+        position: absolute;
+        padding: 5px;
+        z-index: 100000;
+    }
 </style>
 @section Sidebar
 {
@@ -259,7 +264,7 @@
                                             <input class="backgroundC6EBF3 input-table source-sans-probold" type="text" maxlength="12" name="txtMSV" id="txtMSV_SV_@item.StageId" placeholder="0" >
                                         </td>
                                         <td style="width: 20%; border-left: thin solid; border-color: black;" align="center">
-                                            <a class="targetStageclick"  id="TargetStage_@item.StageId" ></a>
+                                            <a class="targetStageclick"  id="TargetStage_@item.StageId" >False</a>
                                         </td>
                                     </tr>
                             cntj = cntj + 2;
@@ -277,7 +282,7 @@
                                             <input class="backgroundC6EBF3 input-table source-sans-probold " type="text" maxlength="12" name="txtMSV" id="txtMSV_SV_@item.StageId" placeholder="0" >
                                         </td>
                                         <td style="width: 20%; border-left: thin solid; border-color: black;" align="center">
-                                            <a class="targetStageclick"  id="TargetStage_@item.StageId" ></a>
+                                            <a class="targetStageclick"  id="TargetStage_@item.StageId" >False</a>
                                         </td>
                                     </tr>
                         }
@@ -355,33 +360,40 @@
             }
         }
         if (val == "True") {
-            $.ajax(
-        {
-            type: "GET",
-            cache: false,
-            url: '@Url.Content("~/Model/CheckTargetStage")',
-            data: { ModelId: $("#latestModelId").val(), StageId: id },
-            dataType: "json",
-            success: function (data) {
-                if (data == 'exist') {
-                    if ($("#" + astageid).hasClass("error-red")) {
+            var modelid = $("#latestModelId").val();
+            if (modelid != undefined && modelid != null && modelid != '') {
+                $.ajax(
+            {
+                type: "GET",
+                cache: false,
+                url: '@Url.Content("~/Model/CheckTargetStage")',
+                data: { ModelId: $("#latestModelId").val(), StageId: id },
+                dataType: "json",
+                success: function (data) {
+                    if (data == 'exist') {
+                        if ($("#" + astageid).hasClass("error-red")) {
 
-                        $("#" + astageid).removeClass("error-red");
+                            $("#" + astageid).removeClass("error-red");
+                        }
+                        else {
+                            $("#" + astageid).addClass("error-red");
+                            $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> Can\'t change Allowed target stage status because it is currently attached in tactic type.')
+                            $("#errorMessage").slideDown(400);
+                            $("html, body").animate({ scrollTop: 0 }, 1000);
+                        }
                     }
                     else {
-                        $("#" + astageid).addClass("error-red");
-                        $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> Can\'t change target stage status because it is currently attached in tactic type.')
-                        $("#errorMessage").slideDown(400);
-                        $("html, body").animate({ scrollTop: 0 }, 1000);
+
+                        $("#" + astageid).text("False");
+                        $("#hdnAllowedtargetStage_" + id).val('false');
                     }
                 }
-                else {
-
-                    $(this).text("False");
-                    $("#hdnAllowedtargetStage_" + id).val('false');
-                }
-            }
-        });
+            });
+        }
+        else {
+            $("#" + astageid).text("False");
+            $("#hdnAllowedtargetStage_" + id).val('false');
+        }
     }
     });
 $("#newModel").click(function () {
@@ -429,7 +441,7 @@ $(document).ready(function () {
     SetTipsyText($(".info-icon-grey"), $(".info-icon-grey").attr('title'));
     function SetTipsyText(obj, objVal) {
         if (obj != null || obj != 'undefined') {
-                obj.tipsy({ gravity: 's' });
+            obj.tipsy({ gravity: 's' });
         }
     }
     //// Added By Maninder Singh 
@@ -706,7 +718,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                  }
              });
              if (cntFill < 1 && targetStagecnt < 1) {
-                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one conversion rate and AllowedTargetStage for the model to be valid.')
+                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must enter at least one conversion(%) or velocity (days) and set AllowedTargetStage true for the model to be valid.')
                  $("#errorMessage").slideDown(400);
                  $("html, body").animate({ scrollTop: 0 }, 1000);
                  $('#inputs-group input[type=text]').each(function () {
@@ -718,7 +730,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                  return false;
              }
              else if (cntFill < 1 && targetStagecnt > 0) {
-                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one conversion rate for the model to be valid.')
+                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must enter at least one conversion(%) or velocity (days) for the model to be valid.')
                  $("#errorMessage").slideDown(400);
                  $("html, body").animate({ scrollTop: 0 }, 1000);
                  $('#inputs-group input[type=text]').each(function () {
@@ -731,7 +743,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                  return false;
              }
              else if (cntFill > 0 && targetStagecnt < 1) {
-                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one AllowedTargetStage true for the model to be valid.')
+                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must set at least one AllowedTargetStage true for the model to be valid.')
                  $("#errorMessage").slideDown(400);
                  $("html, body").animate({ scrollTop: 0 }, 1000);
                  $('#inputs-group a').each(function () {
@@ -972,7 +984,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                 }
             });
             if (cntFill < 1 && targetStagecnt < 1) {
-                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one conversion rate and AllowedTargetStage for the model to be valid.')
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must enter at least one conversion(%) or velocity (days) and set AllowedTargetStage true for the model to be valid.')
                 $("#errorMessage").slideDown(400);
                 $("html, body").animate({ scrollTop: 0 }, 1000);
                 $('#inputs-group input[type=text]').each(function () {
@@ -984,7 +996,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                 return false;
             }
             else if (cntFill < 1 && targetStagecnt > 0) {
-                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one conversion rate for the model to be valid.')
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must enter at least one conversion(%) or velocity (days) for the model to be valid.')
                 $("#errorMessage").slideDown(400);
                 $("html, body").animate({ scrollTop: 0 }, 1000);
                 $('#inputs-group input[type=text]').each(function () {
@@ -997,7 +1009,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                 return false;
             }
             else if (cntFill > 0 && targetStagecnt < 1) {
-                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one AllowedTargetStage true for the model to be valid.')
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must set at least one AllowedTargetStage true for the model to be valid.')
                 $("#errorMessage").slideDown(400);
                 $("html, body").animate({ scrollTop: 0 }, 1000);
                 $('#inputs-group a').each(function () {

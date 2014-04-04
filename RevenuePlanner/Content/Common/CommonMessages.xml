@@ -285,4 +285,8 @@
     <Name>DuplicateImprovementTacticExits</Name>
     <value>Improvement tactic with same title exits.</value>
   </Field>
+  <Field>
+    <Name>StageNotExist</Name>
+    <value>No stage is defined as targeted stage in Model, please define at least one stage as targeted stage in model input screen.</value>
+  </Field>
 </Messages>

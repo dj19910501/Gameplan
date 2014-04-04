@@ -529,7 +529,7 @@ namespace RevenuePlanner.Controllers
                                 string[] strtxtMSV = txtMSV.ToArray();
                                 SaveInputs(strhdnSTAGEId, strtxtMSV, strtxtTargetStage, intFunnelMarketing, Enums.StageType.SV.ToString());
                             }
-                             
+
                             ////Marketing Conversion Rates
                             //if (hdnSTAGEMCR != null && txtMCR != null)
                             //{
@@ -2751,7 +2751,6 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 
-
         #region Tactic Selection
 
         /// <summary>
@@ -2784,6 +2783,13 @@ namespace RevenuePlanner.Controllers
             if (id != 0)
             {
                 ViewBag.Flag = chekckParentPublishModel(id);
+            }
+            string StageType = Enums.StageType.CR.ToString();
+            string ModelTitle= db.Models.Where(m=>m.IsDeleted==false && m.ModelId==Modelid).Select(s=>s.Title).FirstOrDefault();
+            Model_Funnel_Stage objStage = db.Model_Funnel_Stage.Where(s => s.StageType == StageType && s.Model_Funnel.ModelId == Modelid && s.AllowedTargetStage == true).OrderBy(s => s.Stage.Level).Distinct().FirstOrDefault();
+            if (objStage == null)
+            {
+                TempData["ErrorMessage"] = string.Format(Common.objCached.StageNotExist);
             }
             return View(objTacticTypeModel);
         }
@@ -3164,7 +3170,18 @@ namespace RevenuePlanner.Controllers
                             objtactic.ProjectedRevenue = obj.ProjectedRevenue;
                             //objtactic.ProjectedInquiries = obj.ProjectedInquiries;
                             string StageType = Enums.StageType.CR.ToString();
-                            objtactic.StageId = (obj.StageId == null) ? db.Model_Funnel_Stage.Where(s => s.StageType == StageType && s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true).OrderBy(s => s.Stage.Level).Distinct().Select(s => s.StageId).FirstOrDefault() : obj.StageId;
+                            Model_Funnel_Stage objStage = db.Model_Funnel_Stage.Where(s => s.StageType == StageType && s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true).OrderBy(s => s.Stage.Level).Distinct().FirstOrDefault();
+                            if (objStage != null)
+                            {
+                                objtactic.StageId = objStage.StageId;
+                            }
+                            else
+                            {
+                                TempData["ErrorMessage"] = string.Format(Common.objCached.StageNotExist);
+                                errorMessage = string.Format(Common.objCached.StageNotExist);
+                                return Json(new { errorMessage }, JsonRequestBehavior.AllowGet);
+                            }
+                            //objtactic.StageId = (obj.StageId == null) ? db.Model_Funnel_Stage.Where(s => s.StageType == StageType && s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true).OrderBy(s => s.Stage.Level).Distinct().Select(s => s.StageId).FirstOrDefault() : obj.StageId;
                             int intRandomColorNumber = rnd.Next(colorcodeList.Count);
                             objtactic.ColorCode = Convert.ToString(colorcodeList[intRandomColorNumber]);
                             objtactic.CreatedDate = DateTime.Now;

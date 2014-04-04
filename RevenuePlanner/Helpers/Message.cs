@@ -902,7 +902,19 @@ namespace RevenuePlanner.Helpers
                 _DuplicateImprovementTacticExits = value;
             }
         }
-
+        private string _StageNotExist;
+          public string StageNotExist
+        {
+            get
+            {
+                return _StageNotExist;
+            }
+            set
+            {
+                _StageNotExist = value;
+            }
+        }
+        
         #endregion
 
         #region  Functions
@@ -1176,6 +1188,10 @@ namespace RevenuePlanner.Helpers
                                         case "DuplicateImprovementTacticExits":
                                             _DuplicateImprovementTacticExits = strMsgValue;
                                             break;
+                                        case "StageNotExist":
+                                            _StageNotExist = strMsgValue;
+                                            break;
+                                            
                                     }
                                 }
                                 i = i + 1;
