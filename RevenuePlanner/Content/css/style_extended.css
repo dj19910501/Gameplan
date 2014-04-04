@@ -1996,3 +1996,18 @@ error-red, .tblCR_SV .uneditable-input.input-error-red {
 a.error-red {
     color:#C6605A !important;
 }
+
+.nav-gray li a.organization span {
+    background-position: 0 0 !important;
+}
+.nav-gray li.active a.organization .trophy {
+    background-position: 0 -30px !important;
+}
+span.info-icon-grey {
+    background: url("../images/info-icon.png") no-repeat;
+    width: 27px;
+    cursor: pointer;
+    height: 27px;
+    display: block;
+    float: right;
+}

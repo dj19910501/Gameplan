@@ -3668,3 +3668,187 @@ div.dhx_modal_cover
     border-right: none;
     border-top: none;
 }
+/* style added for stripe background in gannt chart */
+
+.stripe-no-border {
+    border: medium none !important;
+}
+
+.stripe .gantt_task_progress {
+    background-image: url(../../images/stripe-chart.png);
+    background-repeat: repeat;
+    background-position: left top;
+    width: 100% !important;
+}
+
+.partialStripe {
+    background-image: url(../../images/stripe-chart.png);
+    background-repeat: repeat;
+    background-position: left top;
+    -moz-box-sizing: border-box;
+    -moz-user-select: none;
+    background-color: #3DB9D3;
+    border: medium none !important;
+}
+
+    .partialStripe .gantt_task_progress {
+        background-color: #3DB9D3;
+        border-radius: 2px;
+        border-left: 1px solid #2898B0;
+        border-right: medium none;
+        border-top: 1px solid #2898B0;
+        border-bottom: 1px solid #2898B0;
+    }
+
+.color27a4e5stripe {
+    background-image: url(../../images/stripe-chart.png);
+    background-repeat: repeat;
+    background-position: left top;
+    border: medium none !important;
+    color: #27A4E5;
+}
+
+    .color27a4e5stripe .gantt_task_progress {
+        background-color: #27A4E5;
+        border-left: 1px solid #2898B0;
+        border-right: medium none;
+        border-top: 1px solid #2898B0;
+        border-bottom: 1px solid #2898B0;
+        color: #27A4E5;
+    }
+
+.colorC6EBF3-with-borderstripe {
+    background-image: url(../../images/stripe-chart.png);
+    background-repeat: repeat;
+    background-position: left top;
+    border-color: #27A4E5 -moz-use-text-color -moz-use-text-color;
+    border-style: solid none none;
+    border-width: 3px medium medium;
+}
+
+    .colorC6EBF3-with-borderstripe .gantt_task_progress {
+        background: none repeat scroll 0 0 #C6EBF3;
+    }
+
+
+.color09af8fstripe {
+    background-image: url(../../images/stripe-chart.png);
+    background-repeat: repeat;
+    background-position: left top;
+    border: medium none !important;
+    color: #09AF8F;
+}
+
+    .color09af8fstripe .gantt_task_progress {
+        background-color: #09AF8F;
+        border-left: medium none;
+        border-right: medium none;
+        border-top: medium none;
+        border-radius: inherit;
+        color: #09AF8F;
+    }
+
+.color0f3a50stripe {
+    background-image: url(../../images/stripe-chart.png);
+    background-repeat: repeat;
+    background-position: left top;
+    border: medium none !important;
+    color: #0F3A50;
+}
+
+    .color0f3a50stripe .gantt_task_progress {
+        background-color: #0F3A50;
+        border-left: medium none;
+        border-right: medium none;
+        border-top: medium none;
+        border-radius: inherit;
+        color: #0F3A50;
+    }
+
+.color144d6bstripe {
+    background-image: url(../../images/stripe-chart.png);
+    background-repeat: repeat;
+    background-position: left top;
+    border: medium none !important;
+    color: #144D6B;
+}
+
+    .color144d6bstripe .gantt_task_progress {
+        background-color: #144D6B;
+        border-left: medium none;
+        border-right: medium none;
+        border-top: medium none;
+        border-radius: inherit;
+        color: #144D6B;
+    }
+
+.color2384b8stripe {
+    background-image: url(../../images/stripe-chart.png);
+    background-repeat: repeat;
+    background-position: left top;
+    border: medium none !important;
+    color: #2384B8;
+}
+
+    .color2384b8stripe .gantt_task_progress {
+        background-color: #2384B8;
+        border-left: medium none;
+        border-right: medium none;
+        border-top: medium none;
+        border-radius: inherit;
+        color: #2384B8;
+    }
+
+.color2aa9ebstripe {
+    background-image: url(../../images/stripe-chart.png);
+    background-repeat: repeat;
+    background-position: left top;
+    border: medium none !important;
+    color: #2AA9EB;
+}
+
+    .color2aa9ebstripe .gantt_task_progress {
+        background-color: #2AA9EB;
+        border-left: medium none;
+        border-right: medium none;
+        border-top: medium none;
+        border-radius: inherit;
+        color: #2AA9EB;
+    }
+
+.color407b22stripe {
+    background-image: url(../../images/stripe-chart.png);
+    background-repeat: repeat;
+    background-position: left top;
+    border: medium none !important;
+    color: #407B22;
+}
+
+    .color407b22stripe .gantt_task_progress {
+        background-color: #407B22;
+        border-left: medium none;
+        border-right: medium none;
+        border-top: medium none;
+        border-radius: inherit;
+        color: #407B22;
+    }
+
+.color5bae30stripe {
+    background-image: url(../../images/stripe-chart.png);
+    background-repeat: repeat;
+    background-position: left top;
+    border: medium none !important;
+    color: #5BAE30;
+}
+
+    .color5bae30stripe .gantt_task_progress {
+        background-color: #5BAE30;
+        border-left: medium none;
+        border-right: medium none;
+        border-top: medium none;
+        border-radius: inherit;
+        color: #5BAE30;
+    }
+
+
+/* End for stripe background in gannt chart */

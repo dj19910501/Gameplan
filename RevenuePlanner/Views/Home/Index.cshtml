@@ -1396,7 +1396,13 @@ function getCSSForTask(task) {
             cssClass += ' improvement border-top';
         }
         else {
+            if (!task.$open) {
+                ///Modified by Dharmraj PL Ticket#394 - Apply required styling on the Improvement activity in calendar
+                cssClass = ' improvement improvementcolor27A4E5 colorC6EBF3-with-border ';
+            }
+            else {
             cssClass += ' no_drag ';
+            }
         }
     } else {
         cssClass = task.color + ' no_drag ';

@@ -5,24 +5,36 @@
 <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")"></script>
 
 @{
-    ViewBag.Title = "Best In Class Metrics";
+    ViewBag.Title = "Improvement Tactics";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Boost;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 @section Sidebar {
-    <div class="padding-content">
+    <div class="padding-content2">
         <h4 class="text-shadow-black source-sans-prolight">Boost Summary</h4>
     </div>
     <ul class="nav nav-list nav-gray">
         <li class="item active">
-            <a class="source-sans-probold inputs" href="#"><span></span>TACTICS</a>
+            <a class="source-sans-probold inputs tactics"  href="#"><span></span>TACTICS</a>
         </li>
         <li class="item">
-            <a class="source-sans-probold organization" id="aBiclink" href="#"><span></span>BEST IN CLASS</a>
+            <a class="source-sans-probold organization" href="#" id="aBiclink"><span class="trophy"></span>BEST IN CLASS</a>
         </li>
     </ul>
 }
+@*@section Sidebar {
+    <div class="padding-content2">
+        <h4 class="text-shadow-black source-sans-prolight">Boost Summary</h4>
+    </div>
+    <ul class="nav nav-list nav-gray">
+        <li class="item active">
+            <a class="source-sans-probold inputs tactics"><span></span>TACTICS</a>
+        </li>
+        <li class="item">
+            <a class="source-sans-probold organization" id="aBiclink"><span class="trophy"></span>BEST IN CLASS</a>
+        </li>
+    </ul>
+}*@
 
 <div id="successMessage" class="alert hide alert-success message-position">
     <a class="close">×</a>
@@ -83,25 +95,25 @@
         $.ajax({
             type: 'get',
             url: '@Url.Content("~/Boost/ImprovementTacticList")',
-        dataType: "json",
-        success: function (r) {
-            improvementTactics = r;
-            fillTacticsTable();
-            myApp.hidePleaseWait();
-        }
-    });
-}
-$("#create_new_tactic").click(function () {
-    var id = 0;
-    $("#slidepanel").css("display", "block");
-    var url = '@Url.Content("~/Boost/DetailImprovementTacticData")';
-        $('#slidepanel-container').load(url + '?id=' + id);
-        $("#slidepanel").css("right", "0px");
-    });
-    $(document).on('click', '#table_boost tbody tr', function (e) {
-        var id = $(this).attr("id");
+            dataType: "json",
+            success: function (r) {
+                improvementTactics = r;
+                fillTacticsTable();
+                myApp.hidePleaseWait();
+            }
+        });
+    }
+    $("#create_new_tactic").click(function () {
+        var id = 0;
         $("#slidepanel").css("display", "block");
         var url = '@Url.Content("~/Boost/DetailImprovementTacticData")';
+    $('#slidepanel-container').load(url + '?id=' + id);
+    $("#slidepanel").css("right", "0px");
+});
+$(document).on('click', '#table_boost tbody tr', function (e) {
+    var id = $(this).attr("id");
+    $("#slidepanel").css("display", "block");
+    var url = '@Url.Content("~/Boost/DetailImprovementTacticData")';
         $('#slidepanel-container').load(url + '?id=' + id);
         $("#slidepanel").css("right", "0px");
     });

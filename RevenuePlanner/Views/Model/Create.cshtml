@@ -30,6 +30,14 @@
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
 }
+<style type="text/css">
+    .tipsy {
+        font-size: 12px !important;
+        position: absolute;
+        padding: 5px;
+        z-index: 100000;
+    }
+</style>
 @section Sidebar
 {
     <div class="padding-content padding-bottom0">
@@ -172,11 +180,11 @@
                 <div class="padding-right70">
                     <p>@Html.Raw("Add your organization's unique behaviors to create assumptions for your baseline model in Gameplan. This model will be used to create recommendations when building your annual marketing plan.")</p>
                     <ul class="nav nav-pills nav-stacked nav-colum-bar">
-                        <li class="subheader active">
+                        <li class="subheader active" id="ModelOverView">
                             <a href="#Overview">@Html.Raw("1. Model Overview")</a>
                         </li>
-                        <li class="subheader"><a href="#Inquiries">@Html.Raw("2. Contacts and Inquiries")</a></li>
-                        <li class="subheader"><a href="#Rates">@Html.Raw("3. Conversion Rates")</a></li>
+                        <li class="subheader" id="ContactsandInquiries"><a href="#Inquiries">@Html.Raw("2. Contacts and Inquiries")</a></li>
+                        <li class="subheader" id="ConversionRates"><a href="#Rates">@Html.Raw("3. Conversion Rates")</a></li>
                     </ul>
                 </div>
             </div>
@@ -247,7 +255,7 @@
                         {
                                     <tr style="border-bottom: thin solid; border-top: thin solid; border-color: black;" class="alternate">
                                         <td style="width: 40%">
-                                            <span class="ellipsis">@item.ConversionTitle</span><span class="info-icon" title="@item.Description"></span>
+                                            <span class="ellipsis">@item.ConversionTitle</span><span class="info-icon-grey" title="@item.Description"></span>
                                         </td>
                                         <td style="width: 20%; border-left: thin solid; border-color: black;">
                                             <input class="backgroundC6EBF3 input-table source-sans-probold" type="text" maxlength="5" name="txtMCR" id="txtMCR_CR_@item.StageId" placeholder="0" >
@@ -256,7 +264,7 @@
                                             <input class="backgroundC6EBF3 input-table source-sans-probold" type="text" maxlength="12" name="txtMSV" id="txtMSV_SV_@item.StageId" placeholder="0" >
                                         </td>
                                         <td style="width: 20%; border-left: thin solid; border-color: black;" align="center">
-                                            <a class="targetStageclick"  id="TargetStage_@item.StageId" ></a>
+                                            <a class="targetStageclick"  id="TargetStage_@item.StageId" >False</a>
                                         </td>
                                     </tr>
                             cntj = cntj + 2;
@@ -265,7 +273,7 @@
                         {
                                     <tr style="border-bottom: thin solid; border-top: thin solid; border-color: black;">
                                         <td style="width: 40%">
-                                            <span class="ellipsis">@item.ConversionTitle</span><span class="info-icon" title="@item.Description"></span>
+                                            <span class="ellipsis">@item.ConversionTitle</span><span class="info-icon-grey" title="@item.Description"></span>
                                         </td>
                                         <td style="width: 20%; border-left: thin solid; border-color: black;">
                                             <input class="backgroundC6EBF3 input-table source-sans-probold" type="text" maxlength="5" name="txtMCR" id="txtMCR_CR_@item.StageId" placeholder="0" >
@@ -274,7 +282,7 @@
                                             <input class="backgroundC6EBF3 input-table source-sans-probold " type="text" maxlength="12" name="txtMSV" id="txtMSV_SV_@item.StageId" placeholder="0" >
                                         </td>
                                         <td style="width: 20%; border-left: thin solid; border-color: black;" align="center">
-                                            <a class="targetStageclick"  id="TargetStage_@item.StageId" ></a>
+                                            <a class="targetStageclick"  id="TargetStage_@item.StageId" >False</a>
                                         </td>
                                     </tr>
                         }
@@ -325,8 +333,43 @@
         $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong>' + $("#TempDataErrorMsg").val());
         $("#errorMessage").slideDown(1200);
     }
-
+    /*changes for PL329 by nirav shah on 4 APR 2014 */
+    $(".tab-content").click(function () {
+        if (!$("#ConversionRates").hasClass("active")) {
+            $("#ConversionRates").addClass("active");
+        }
+        if ($("#ModelOverView").hasClass("active")) {
+            $("#ModelOverView").removeClass("active");
+        }
+        if ($("#ContactsandInquiries").hasClass("active")) {
+            $("#ContactsandInquiries").removeClass("active");
+        }
+    });
+    $("#divcontactInquiry").click(function () {
+        if ($("#ConversionRates").hasClass("active")) {
+            $("#ConversionRates").removeClass("active");
+        }
+        if ($("#ModelOverView").hasClass("active")) {
+            $("#ModelOverView").removeClass("active");
+        }
+        if (!$("#ContactsandInquiries").hasClass("active")) {
+            $("#ContactsandInquiries").addClass("active");
+        }
+    });
+    $("#divModelOverview").click(function () {
+        if ($("#ConversionRates").hasClass("active")) {
+            $("#ConversionRates").removeClass("active");
+        }
+        if (!$("#ModelOverView").hasClass("active")) {
+            $("#ModelOverView").addClass("active");
+        }
+        if ($("#ContactsandInquiries").hasClass("active")) {
+            $("#ContactsandInquiries").removeClass("active");
+        }
+    });
+ 
     $('#inputs-group input[type=text]').change(function () {
+     
         var val = $(this).val();
         if (val > 0) {
             if ($(this).hasClass("input-error-red")) {
@@ -340,7 +383,6 @@
     });
 
     $(".targetStageclick").click(function () {
-
         var val = $(this).text();
         var astageid = $(this).attr('id');
         var id = $(this).attr('id').replace('TargetStage_', '');
@@ -352,33 +394,40 @@
             }
         }
         if (val == "True") {
-            $.ajax(
-        {
-            type: "GET",
-            cache: false,
-            url: '@Url.Content("~/Model/CheckTargetStage")',
-            data: { ModelId: $("#latestModelId").val(), StageId: id },
-            dataType: "json",
-            success: function (data) {
-                if (data == 'exist') {
-                    if ($("#" + astageid).hasClass("error-red")) {
+            var modelid = $("#latestModelId").val();
+            if (modelid != undefined && modelid != null && modelid != '') {
+                $.ajax(
+            {
+                type: "GET",
+                cache: false,
+                url: '@Url.Content("~/Model/CheckTargetStage")',
+                data: { ModelId: $("#latestModelId").val(), StageId: id },
+                dataType: "json",
+                success: function (data) {
+                    if (data == 'exist') {
+                        if ($("#" + astageid).hasClass("error-red")) {
 
-                        $("#" + astageid).removeClass("error-red");
+                            $("#" + astageid).removeClass("error-red");
+                        }
+                        else {
+                            $("#" + astageid).addClass("error-red");
+                            $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> Can\'t change allowed as target stage status because it is currently attached in tactic type.')
+                            $("#errorMessage").slideDown(400);
+                            $("html, body").animate({ scrollTop: 0 }, 1000);
+                        }
                     }
                     else {
-                        $("#" + astageid).addClass("error-red");
-                        $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> Can\'t change target stage status because it is currently attached in tactic type.')
-                        $("#errorMessage").slideDown(400);
-                        $("html, body").animate({ scrollTop: 0 }, 1000);
+
+                        $("#" + astageid).text("False");
+                        $("#hdnAllowedtargetStage_" + id).val('false');
                     }
                 }
-                else {
-
-                    $(this).text("False");
-                    $("#hdnAllowedtargetStage_" + id).val('false');
-                }
-            }
-        });
+            });
+        }
+        else {
+            $("#" + astageid).text("False");
+            $("#hdnAllowedtargetStage_" + id).val('false');
+        }
     }
     });
 $("#newModel").click(function () {
@@ -416,7 +465,19 @@ $(document).ready(function () {
             return false;
         }
     });
-
+    //$(".info - icon").attr('title');
+    //$("div[id^='ActuallblC']").each(function () {
+    //    $(this).text(FormatCurrency($(this).text(), false));
+    //    var txtvalue = $(this).text();
+    //    $(this).attr('title', txtvalue);
+    //    SetTipsyPrice($(this), txtvalue); //$('.truncate').tipsy({ gravity: 's' });
+    //});
+    SetTipsyText($(".info-icon-grey"), $(".info-icon-grey").attr('title'));
+    function SetTipsyText(obj, objVal) {
+        if (obj != null || obj != 'undefined') {
+            obj.tipsy({ gravity: 's' });
+        }
+    }
     //// Added By Maninder Singh 
     //// Date 1/28/2014
     //// Added Set tooltip
@@ -691,7 +752,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                  }
              });
              if (cntFill < 1 && targetStagecnt < 1) {
-                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one conversion rate and AllowedTargetStage for the model to be valid.')
+                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must enter at least one conversion(%) or velocity (days) and set allowed as target stage true for the model to be valid.')
                  $("#errorMessage").slideDown(400);
                  $("html, body").animate({ scrollTop: 0 }, 1000);
                  $('#inputs-group input[type=text]').each(function () {
@@ -703,7 +764,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                  return false;
              }
              else if (cntFill < 1 && targetStagecnt > 0) {
-                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one conversion rate for the model to be valid.')
+                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must enter at least one conversion(%) or velocity (days) for the model to be valid.')
                  $("#errorMessage").slideDown(400);
                  $("html, body").animate({ scrollTop: 0 }, 1000);
                  $('#inputs-group input[type=text]').each(function () {
@@ -716,7 +777,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                  return false;
              }
              else if (cntFill > 0 && targetStagecnt < 1) {
-                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one AllowedTargetStage true for the model to be valid.')
+                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must set at least one allowed as target stage true for the model to be valid.')
                  $("#errorMessage").slideDown(400);
                  $("html, body").animate({ scrollTop: 0 }, 1000);
                  $('#inputs-group a').each(function () {
@@ -957,7 +1018,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                 }
             });
             if (cntFill < 1 && targetStagecnt < 1) {
-                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one conversion rate and AllowedTargetStage for the model to be valid.')
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must enter at least one conversion(%) or velocity (days) and set allowed as target stage true for the model to be valid.')
                 $("#errorMessage").slideDown(400);
                 $("html, body").animate({ scrollTop: 0 }, 1000);
                 $('#inputs-group input[type=text]').each(function () {
@@ -969,7 +1030,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                 return false;
             }
             else if (cntFill < 1 && targetStagecnt > 0) {
-                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one conversion rate for the model to be valid.')
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must enter at least one conversion(%) or velocity (days) for the model to be valid.')
                 $("#errorMessage").slideDown(400);
                 $("html, body").animate({ scrollTop: 0 }, 1000);
                 $('#inputs-group input[type=text]').each(function () {
@@ -982,7 +1043,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                 return false;
             }
             else if (cntFill > 0 && targetStagecnt < 1) {
-                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must select at least one AllowedTargetStage true for the model to be valid.')
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must set at least one allowed as target stage true for the model to be valid.')
                 $("#errorMessage").slideDown(400);
                 $("html, body").animate({ scrollTop: 0 }, 1000);
                 $('#inputs-group a').each(function () {
