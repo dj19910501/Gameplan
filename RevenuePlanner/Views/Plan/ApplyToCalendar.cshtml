@@ -633,11 +633,23 @@
    function getCSSForTask(task) {
        var cssClass = task.color + ' cursorPointer';
 
-       if (typeof task.isImprovement != 'undefined' &&
-           task.isImprovement == true &&
-           typeof task.ImprovementPlanTacticId != 'undefined') {
+       ///Modified by Dharmraj PL Ticket#394 - Apply required styling on the Improvement activity in calendar
+       //if (typeof task.isImprovement != 'undefined' &&
+       //    task.isImprovement == true &&
+       //    typeof task.ImprovementPlanTacticId != 'undefined') {
+       //    cssClass += ' improvement border-top resize';
+       //    }
+
+       if (typeof task.isImprovement != 'undefined' && task.isImprovement == true) {
+           if (typeof task.ImprovementPlanTacticId != 'undefined') {
            cssClass += ' improvement border-top resize';
            }
+           else {
+               if (!task.$open) {
+                   cssClass = ' improvement improvementcolor27A4E5 colorC6EBF3-with-border cursorPointer resize ';
+               }
+           }
+       }
 
        return cssClass;
    }
@@ -902,7 +914,7 @@
     function SetGantt() {
         gantt.config.grid_width = 236;
         gantt.config.readonly = false;
-        gantt.config.show_progress = false;
+        gantt.config.show_progress = true;
         gantt.config.autofit = true;
         gantt.config.drag_links = false;
         gantt.config.drag_progress = false;

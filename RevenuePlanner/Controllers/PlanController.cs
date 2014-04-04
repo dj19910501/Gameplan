@@ -746,13 +746,27 @@ namespace RevenuePlanner.Controllers
                                                                                                   CalendarEndDate,
                                                                                                   c.StartDate,
                                                                                                   c.EndDate),
-                                                        progress = 0,
+                                                        progress = GetCampaignProgress(plan, c),//progress = 0,
                                                         open = true,
                                                         color = Common.COLORC6EBF3_WITH_BORDER,
                                                         PlanCampaignId = c.PlanCampaignId,
                                                         IsHideDragHandleLeft = c.StartDate < CalendarStartDate,
                                                         IsHideDragHandleRight = c.EndDate > CalendarEndDate
                                                     }).Select(c => c).OrderBy(c => c.text);
+
+            var NewtaskDataCampaign = taskDataCampaign.Select(t => new
+            {
+                id = t.id,
+                text = t.text,
+                start_date = t.start_date,
+                duration = t.duration,
+                progress = t.progress,
+                open = t.open,
+                color = t.color + (t.progress == 1 ? " stripe" : (t.progress > 0 ? "stripe" : "")),
+                PlanCampaignId = t.PlanCampaignId,
+                IsHideDragHandleLeft = t.IsHideDragHandleLeft,
+                IsHideDragHandleRight = t.IsHideDragHandleRight
+            });
 
             var taskDataProgram = db.Plan_Campaign_Program.Where(p => p.Plan_Campaign.PlanId.Equals(plan.PlanId) &&
                                                                       p.IsDeleted.Equals(false))
@@ -771,7 +785,7 @@ namespace RevenuePlanner.Controllers
                                                                                                         CalendarEndDate,
                                                                                                         p.StartDate,
                                                                                                         p.EndDate),
-                                                              progress = 0,
+                                                              progress = GetProgramProgress(plan, p), //progress = 0,
                                                               open = true,
                                                               parent = string.Format("C{0}", p.PlanCampaignId),
                                                               color = Common.COLOR27A4E5,
@@ -779,6 +793,21 @@ namespace RevenuePlanner.Controllers
                                                               IsHideDragHandleLeft = p.StartDate < CalendarStartDate,
                                                               IsHideDragHandleRight = p.EndDate > CalendarEndDate
                                                           }).Select(p => p).Distinct().OrderBy(p => p.text);
+
+            var NewtaskDataProgram = taskDataProgram.Select(t => new
+            {
+                id = t.id,
+                text = t.text,
+                start_date = t.start_date,
+                duration = t.duration,
+                progress = t.progress,
+                open = t.open,
+                parent = t.parent,
+                color = t.color + (t.progress == 1 ? " stripe stripe-no-border" : (t.progress > 0 ? "stripe" : "")),
+                PlanProgramId = t.PlanProgramId,
+                IsHideDragHandleLeft = t.IsHideDragHandleLeft,
+                IsHideDragHandleRight = t.IsHideDragHandleRight
+            });
 
             var taskDataTactic = db.Plan_Campaign_Program_Tactic.Where(p => p.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId) &&
                                                                             p.IsDeleted.Equals(false))
@@ -797,7 +826,7 @@ namespace RevenuePlanner.Controllers
                                                                                                               CalendarEndDate,
                                                                                                               t.StartDate,
                                                                                                               t.EndDate),
-                                                                    progress = 0,
+                                                                    progress = GetTacticProgress(plan, t),//progress = 0,
                                                                     open = true,
                                                                     parent = string.Format("C{0}_P{1}", t.Plan_Campaign_Program.PlanCampaignId, t.Plan_Campaign_Program.PlanProgramId),
                                                                     color = Common.COLORC6EBF3_WITH_BORDER,
@@ -806,9 +835,190 @@ namespace RevenuePlanner.Controllers
                                                                     IsHideDragHandleRight = t.EndDate > CalendarEndDate
                                                                 }).OrderBy(t => t.text);
 
-            return taskDataCampaign.Concat<object>(taskDataTactic).Concat<object>(taskDataProgram).ToList<object>();
+            var NewTaskDataTactic = taskDataTactic.Select(t => new
+            {
+                id = t.id,
+                text = t.text,
+                start_date = t.start_date,
+                duration = t.duration,
+                progress = t.progress,
+                open = t.open,
+                parent = t.parent,
+                color = t.color + (t.progress == 1 ? " stripe" : ""),
+                plantacticid = t.plantacticid,
+                IsHideDragHandleLeft = t.IsHideDragHandleLeft,
+                IsHideDragHandleRight = t.IsHideDragHandleRight
+            });
+
+            //return taskDataCampaign.Concat<object>(taskDataTactic).Concat<object>(taskDataProgram).ToList<object>();
+            return NewtaskDataCampaign.Concat<object>(NewTaskDataTactic).Concat<object>(NewtaskDataProgram).ToList<object>();
         }
 
+        /// <summary>
+        /// Function to get tactic progress. Ticket #394 Apply styling on improvement activity in calendar
+        /// Added By: Dharmraj mangukiya.
+        /// Date: 2nd april, 2013
+        /// <param name="plan"></param>
+        /// <param name="planCampaignProgramTactic"></param>
+        /// <returns>return progress B/W 0 and 1</returns>
+        public double GetTacticProgress(Plan plan, Plan_Campaign_Program_Tactic planCampaignProgramTactic)
+        {
+            // List of all improvement tactic.
+            List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(improveTactic => improveTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(plan.PlanId) &&
+                                                                                      improveTactic.IsDeleted.Equals(false) &&
+                                                                                      (improveTactic.EffectiveDate > CalendarEndDate).Equals(false))
+                                                                               .Select(improveTactic => improveTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
+
+            if (improvementTactic.Count > 0)
+            {
+                DateTime minDate = improvementTactic.Select(t => t.EffectiveDate).Min(); // Minimun date of improvement tactic
+
+                DateTime tacticStartDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, planCampaignProgramTactic.StartDate)); // start Date of tactic
+
+                if (tacticStartDate > minDate) // If any tactic affected by at least one improvement tactic.
+                {
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Function to get program progress. Ticket #394 Apply styling on improvement activity in calendar
+        /// Added By: Dharmraj mangukiya.
+        /// Date: 2nd april, 2013
+        /// <param name="plan"></param>
+        /// <param name="planCampaignProgram"></param>
+        /// <returns>return progress B/W 0 and 1</returns>
+        public double GetProgramProgress(Plan plan, Plan_Campaign_Program planCampaignProgram)
+        {
+            // List of all improvement tactic.
+            List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(improveTactic => improveTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(plan.PlanId) &&
+                                                                                      improveTactic.IsDeleted.Equals(false) &&
+                                                                                      (improveTactic.EffectiveDate > CalendarEndDate).Equals(false))
+                                                                               .Select(improveTactic => improveTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
+
+            if (improvementTactic.Count > 0)
+            {
+                DateTime minDate = improvementTactic.Select(t => t.EffectiveDate).Min(); // Minimun date of improvement tactic
+
+                // Start date of program
+                DateTime programStartDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, planCampaignProgram.StartDate));
+
+                // List of all tactics that are affected by improvement tactic
+                var lstAffectedTactic = planCampaignProgram.Plan_Campaign_Program_Tactic.Where(p => p.IsDeleted.Equals(false) && (p.StartDate > minDate).Equals(true))
+                                                                                              .Select(t => new { startDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, t.StartDate)) })
+                                                                                              .ToList();
+
+                if (lstAffectedTactic.Count > 0)
+                {
+                    DateTime tacticMinStartDate = lstAffectedTactic.Select(t => t.startDate).Min(); // minimum start Date of tactics
+                    if (tacticMinStartDate > minDate) // If any tactic affected by at least one improvement tactic.
+                    {
+                        double programDuration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, planCampaignProgram.StartDate, planCampaignProgram.EndDate);
+
+                        // difference b/w program start date and tactic minimum date
+                        double daysDifference = (tacticMinStartDate - programStartDate).TotalDays;
+
+                        if (daysDifference > 0) // If no. of days are more then zero then it will return progress
+                        {
+                            return (daysDifference / programDuration);
+                        }
+                        else
+                        {
+                            return 1;
+                        }
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                else
+                    return 0;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Function to get campaign progress. Ticket #394 Apply styling on improvement activity in calendar
+        /// Added By: Dharmraj mangukiya.
+        /// Date: 2nd april, 2013
+        /// <param name="plan"></param>
+        /// <param name="planCampaign"></param>
+        /// <returns>return progress B/W 0 and 1</returns>
+        public double GetCampaignProgress(Plan plan, Plan_Campaign planCampaign)
+        {
+            // List of all improvement tactic.
+            List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(improveTactic => improveTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(plan.PlanId) &&
+                                                                                      improveTactic.IsDeleted.Equals(false) &&
+                                                                                      (improveTactic.EffectiveDate > CalendarEndDate).Equals(false))
+                                                                               .Select(improveTactic => improveTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
+
+            if (improvementTactic.Count > 0)
+            {
+                DateTime minDate = improvementTactic.Select(t => t.EffectiveDate).Min(); // Minimun date of improvement tactic
+
+                // Start date of Campaign
+                DateTime campaignStartDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, planCampaign.StartDate));
+
+                // List of all tactics
+                var lstTactic = db.Plan_Campaign_Program_Tactic.Where(p => p.Plan_Campaign_Program.PlanCampaignId.Equals(planCampaign.PlanCampaignId) &&
+                                                                            p.IsDeleted.Equals(false))
+                                                                .Select(p => p)
+                                                                .ToList()
+                                                                .Where(p => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
+                                                                                                                        CalendarEndDate,
+                                                                                                                        p.StartDate,
+                                                                                                                        p.EndDate).Equals(false));
+
+                // List of all tactics that are affected by improvement tactic
+                var lstAffectedTactic = lstTactic.Where(p => (p.StartDate > minDate).Equals(true))
+                                                 .Select(t => new { startDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, t.StartDate)) })
+                                                 .ToList();
+
+                if (lstAffectedTactic.Count > 0)
+                {
+                    DateTime tacticMinStartDate = lstAffectedTactic.Select(t => t.startDate).Min(); // minimum start Date of tactics
+                    if (tacticMinStartDate > minDate) // If any tactic affected by at least one improvement tactic.
+                    {
+                        double campaignDuration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, planCampaign.StartDate, planCampaign.EndDate);
+
+                        // difference b/w campaign start date and tactic minimum date
+                        double daysDifference = (tacticMinStartDate - campaignStartDate).TotalDays;
+
+                        if (daysDifference > 0) // If no. of days are more then zero then it will return progress
+                        {
+                            return (daysDifference / campaignDuration);
+                        }
+                        else
+                        {
+                            return 1;
+                        }
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                else
+                    return 0;
+            }
+            else
+            {
+                return 0;
+            }
+        }
 
         /// <summary>
         /// Function to update status of current plan.

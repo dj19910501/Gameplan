@@ -6446,6 +6446,13 @@ h2.title-header {
 .improvementcolor244c0a .gantt_task_drag{background: none repeat scroll 0 0 #244c0a !important;}
 .improvementcolor244c0a .gantt_task_drag:after{border-top-color: #244c0a;}
 
+/*Added by Dharmraj for ticket#394 on 31/3/2014 */
+.improvementcolor27A4E5 {border-style: solid none none;border-width: 6px medium medium !important;}
+.improvementcolor27A4E5.gantt_task_line{border-color: #27A4E5;}
+.improvementcolor27A4E5 .gantt_task_drag{background: none repeat scroll 0 0 #27A4E5 !important;}
+.improvementcolor27A4E5 .gantt_task_drag:after{border-top-color: #27A4E5;}
+/*End by Dharmraj for ticket#394 on 31/3/2014 */
+
 /*Added By Maninder for DHTMLX gantt improvement task PL Ticket#47, 337*/
 .no_drag .gantt_task_drag.task_left
 {
