@@ -430,7 +430,7 @@
                 "maxHeight": (diff - height) + "px"
             });
             inst.settings.effect === "fade" ? el.fadeIn(inst.settings.speed) : el.slideDown(inst.settings.speed);
-            $("#sbToggle_" + inst.uid).addClass(inst.settings.classToggleOpen);
+            $("#sbHolder_" + inst.uid).addClass(inst.settings.classToggleOpen);
             this._state[inst.uid] = TRUE;
             inst.isOpen = TRUE;
             if (onOpen) {
@@ -451,7 +451,7 @@
             }
             var onClose = this._get(inst, 'onClose');
             inst.settings.effect === "fade" ? $("#sbOptions_" + inst.uid).fadeOut(inst.settings.speed) : $("#sbOptions_" + inst.uid).slideUp(inst.settings.speed);
-            $("#sbToggle_" + inst.uid).removeClass(inst.settings.classToggleOpen);
+            $("#sbHolder_" + inst.uid).removeClass(inst.settings.classToggleOpen);
             this._state[inst.uid] = FALSE;
             inst.isOpen = FALSE;
             if (onClose) {
