@@ -1671,7 +1671,7 @@ a {
 #table_boost th, #table_boost td {border-top: none !important; text-align: right;}
 #table_boost tr th:first-child, #table_boost tr td:first-child{text-align: left;}
 #table_boost th.border-r, #table_boost td.border-r {border-right: 1px solid #c7ced1 !important;}
-#table_boost tbody tr{cursor: pointer;}
+/*#table_boost tbody tr{cursor: pointer;}*/
 #table_boost tbody tr td{line-height: 26px;}
 #table_boost tbody{border-top: 1px solid #c7ced1; border-bottom: 1px solid #c7ced1;}
 
