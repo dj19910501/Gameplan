@@ -320,7 +320,7 @@ namespace RevenuePlanner.Controllers
                     }
                 }
                 /*add into improvementType_metric table based on improvementId*/
-                for (int i = 0; i < value.Length / 2; i++)
+                for (int i = 0; i < value.Length; i++)
                 {
                     ImprovementTacticType_Metric objItm = new ImprovementTacticType_Metric();
                     int MetricId = 0;
@@ -332,9 +332,12 @@ namespace RevenuePlanner.Controllers
                     objItm.ImprovementTacticTypeId = improvementId;
                     objItm.CreatedDate = System.DateTime.Now;
                     objItm.CreatedBy = Sessions.User.UserId;
-                    db.ImprovementTacticType_Metric.Attach(objItm);
-                    db.Entry(objItm).State = EntityState.Added;
-                    int result = db.SaveChanges();
+                    MRPEntities dbAdd = new MRPEntities();
+                    dbAdd.ImprovementTacticType_Metric.Attach(objItm);
+                    dbAdd.Entry(objItm).State = EntityState.Added;
+                    int result = dbAdd.SaveChanges();
+                    dbAdd.Dispose();
+                    i = i + 1;
                 }
                 TempData["SuccessMessage"] = successMessage;
             }

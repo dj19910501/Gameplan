@@ -85,6 +85,11 @@ namespace RevenuePlanner.Controllers
                     {
                         filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { action = "ChangePassword", Controller = "User" }));
                     }
+
+                    if (Sessions.RedirectToSetSecurityQuestion)
+                    {
+                        filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { action = "SetSecurityQuestion", Controller = "Login" }));
+                    }
                 }
             }
 

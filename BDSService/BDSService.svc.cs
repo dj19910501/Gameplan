@@ -82,6 +82,12 @@ namespace BDSService
             return obj.CheckEmail(email);
         }
 
+        public BDSEntities.User GetUserDetails(string userEmail)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetUserDetails(userEmail);
+        }
+
         public int DeleteUser(Guid userId)
         {
             BDSUserRepository obj = new BDSUserRepository();
@@ -146,6 +152,36 @@ namespace BDSService
         {
             BDSUserRepository obj = new BDSUserRepository();
             return obj.UpdateLastLoginDate(userId, applicationId);
+        }
+
+        public BDSEntities.PasswordResetRequest GetPasswordResetRequest(Guid PasswordResetRequestId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetPasswordResetRequest(PasswordResetRequestId);
+        }
+
+        public string CreatePasswordResetRequest(BDSEntities.PasswordResetRequest objPasswordResetRequest)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.CreatePasswordResetRequest(objPasswordResetRequest);
+        }
+
+        public int UpdatePasswordResetRequest(BDSEntities.PasswordResetRequest objPasswordResetRequest)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.UpdatePasswordResetRequest(objPasswordResetRequest);
+        }
+
+        public List<BDSEntities.SecurityQuestion> GetSecurityQuestion()
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetSecurityQuestion();
+        }
+
+        public int UpdateUserSecurityQuestion(BDSEntities.User user)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.UpdateUserSecurityQuestion(user);
         }
     }
 }

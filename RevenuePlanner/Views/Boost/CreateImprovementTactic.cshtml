@@ -6,7 +6,7 @@
     string MetricType_Size = Enums.MetricType.Size.ToString();
 }
 <div class="head">
-    <span class="close-form source-sans-proregular">» CLOSE MENU</span>
+  <span class="close-form source-sans-proregular">» CLOSE MENU</span>
     <div class="cf">
         <h2 class="source-sans-prolight">@ViewBag.Title </h2>
     </div>
@@ -15,7 +15,9 @@
     <a class="close">×</a>
     <strong>Error!</strong> <span id="spanMessage"></span>
 </div>
-<form id="frm_tactics" name="frm_tactics" class="slidepanel-form">
+ @using (Html.BeginForm(new { @id = "frmSaveTactic" }))
+ {
+<div id="frm_tactics" name="frm_tactics">
     <div class="content">
         @Html.HiddenFor(model => model.ImprovementTacticTypeId, new { id = "ImprovementTacticTypeId" })
         <label>Improvement Tactic Type</label>
@@ -57,11 +59,11 @@
                             </td>
                             <td style="width:24px;"></td>
                             <td class="small-input">
-                                @Html.TextBoxFor(model => item.ConversionValue, new { placeholder = "Required", require = "true", maxlength = "1", id = @item.MetricID_CR })
+                                @Html.TextBoxFor(model => item.ConversionValue, new { placeholder = "Required", require = "true",@class = "priceValue", maxlength = "1", id = @item.MetricID_CR})
                             </td>
                              <td style="width:15px;"></td>
                             <td class="small-input">
-                                @Html.TextBoxFor(model => item.VelocityValue, new { placeholder = "Required", require = "true", maxlength = "1", id = @item.MetricID_SV })
+                                @Html.TextBoxFor(model => item.VelocityValue, new { placeholder = "Required",@class = "priceValue", require = "true", maxlength = "1", id = @item.MetricID_SV })
 
                             </td>
                         </tr>
@@ -84,7 +86,7 @@
                                 @Html.DisplayFor(model => item.MetricName)
                             </td>
                             <td style="width:150px;">
-                                @Html.TextBoxFor(model => item.ConversionValue, new { placeholder = "Required", require = "true", maxlength = "1", id = @item.MetricID_Size })
+                                @Html.TextBoxFor(model => item.ConversionValue, new {placeholder = "Required",@class = "priceValue", require = "true", maxlength = "1", id = @item.MetricID_Size})
                             </td>
                         </tr>
                     }
@@ -100,11 +102,13 @@
             <button class="close-form btn-link source-sans-proregular" type="button">cancel</button>
         </div>
     </div>
-</form>
-
+</div>
+ }
 <script type="text/javascript">
     $(document).ready(function () {
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+
         $('.close-form', this.$panel).click(function (e) {
             $("#slidepanel").css("display", "none");
             $("#slidepanel-container").empty();
@@ -132,23 +136,17 @@
                 $(this).removeClass("icon-check-gray");
             }
         });
-
+     
         $('form').find('input[type=text], select, textarea').each(function () {
             var iserror = false;
             $(this).change(function () {
                 if ($(this).attr('require') == 'true') {
                     if ($(this).val() == '') {
                         $(this).addClass("error");
+                        iserror = true;
                     }
                     else {
                         $(this).removeClass("error");
-                    }
-                }
-                if ($(this).attr('id') == 'hdnCost') {
-                    var tValue = ReplaceCC($("#hdnCost").val());
-                    if (isNaN(tValue)) {
-                        $(this).addClass("error");
-                        iserror = true;
                     }
                 }
             });
@@ -160,24 +158,10 @@
 
         $("#save_tactic").click(function () {
             var iserror = false;
-            if ($(this).attr('require') == 'true') {
-                if ($(this).val() == '') {
-                    $(this).addClass("error");
-                }
-                else {
-                    $(this).removeClass("error");
-                }
-            }
-            if ($(this).attr('id') == 'hdnCost') {
-                var tValue = ReplaceCC($("#hdnCost").val());
-                if (isNaN(tValue)) {
-                    $(this).addClass("error");
-                    iserror = true;
-                }
-            }
-            if (iserror) {
+            if ($("#hdntitle").val() == '') {
+                $("#hdntitle").addClass("error");
                 ShowError("Make sure all fields are filled and try again.");
-                return false;
+                iserror = true;
             }
             var id = $("#ImprovementTacticTypeId").val();
             var val = 0;
@@ -202,15 +186,20 @@
                 $('#accordion-1 input[type=text]').each(function () {
                     $(this).addClass("error");
                 });
+                iserror = true;
                 return false;
             }
             if (wrongval != 0) {
                 ShowError("A valid entry must be an integer between 0 and 5.");
+                iserror = true;
                 return false;
             }
             var status = false;
             if ($("#t_status").hasClass("icon-check-blue")) {
                 status = true;
+            }
+            if (iserror) {
+                return false;
             }
             var ids = [];
             $('#accordion-1 input[type=text]').each(function () {
@@ -245,6 +234,7 @@
             $("#errorMsg").slideDown(400);
             $("#spanMessage").empty();
             $("#spanMessage").text(value);
+            return false;
         }
     });
 </script>

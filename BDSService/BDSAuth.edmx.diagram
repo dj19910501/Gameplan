@@ -11,17 +11,21 @@
         <EntityTypeShape EntityType="BDSAuthModel.Menu_Application" Width="1.5" PointX="3" PointY="9" IsExpanded="true" />
         <EntityTypeShape EntityType="BDSAuthModel.Role" Width="1.5" PointX="0.75" PointY="2.125" IsExpanded="true" />
         <EntityTypeShape EntityType="BDSAuthModel.Role_Permission" Width="1.5" PointX="5.25" PointY="9.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="BDSAuthModel.User" Width="1.5" PointX="3.75" PointY="14.75" IsExpanded="true" />
         <EntityTypeShape EntityType="BDSAuthModel.User_Application" Width="1.5" PointX="6" PointY="5" IsExpanded="true" />
         <AssociationConnector Association="BDSAuthModel.FK_Application_Role_Application" ManuallyRouted="false" />
         <AssociationConnector Association="BDSAuthModel.FK_Menu_Application_Application" ManuallyRouted="false" />
         <AssociationConnector Association="BDSAuthModel.FK_User_Application_Application" ManuallyRouted="false" />
         <AssociationConnector Association="BDSAuthModel.FK_Application_Role_Role" ManuallyRouted="false" />
-        <AssociationConnector Association="BDSAuthModel.FK_User_Client" ManuallyRouted="false" />
         <AssociationConnector Association="BDSAuthModel.FK_Menu_Application_Menu_Application" ManuallyRouted="false" />
         <AssociationConnector Association="BDSAuthModel.FK_Role_Permission_Menu_Application" ManuallyRouted="false" />
         <AssociationConnector Association="BDSAuthModel.FK_Role_Permission_Role" ManuallyRouted="false" />
-        <AssociationConnector Association="BDSAuthModel.FK_User_Application_User" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="BDSAuthModel.PasswordResetRequest" Width="1.5" PointX="10.18826770511841" PointY="23.470965113244468" />
+        <EntityTypeShape EntityType="BDSAuthModel.SecurityQuestion" Width="1.5" PointX="10.88685645297489" PointY="8.3597693333214931" />
+        <EntityTypeShape EntityType="BDSAuthModel.User" Width="1.5" PointX="4.4121278675329538" PointY="10.729640801776965" />
+        <AssociationConnector Association="BDSAuthModel.FK_User_Client" />
+        <AssociationConnector Association="BDSAuthModel.FK_PasswordResetRequest_User" />
+        <AssociationConnector Association="BDSAuthModel.FK_User_SecurityQuestion" />
+        <AssociationConnector Association="BDSAuthModel.FK_User_Application_User" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -52,5 +52,11 @@ namespace BDSService.BDSEntities
         public bool IsDeleted { get; set; }
         [DataMember]
         public DateTime? LastLoginDate { get; set; }
+        [DataMember]
+        public Nullable<int> SecurityQuestionId { get; set; }
+        [DataMember]
+        public string SecurityQuestion { get; set; }
+        [DataMember]
+        public string Answer { get; set; }
     }
 }

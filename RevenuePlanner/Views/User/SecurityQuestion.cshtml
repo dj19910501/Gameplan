@@ -1,0 +1,138 @@
+﻿@model RevenuePlanner.Models.SecurityQuestionListModel
+
+<script src="@Url.Content("~/Scripts/jquery.validate.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")"></script>
+
+@{
+    ViewBag.Title = "Security Question";
+    ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string isViewOnly = ViewBag.IsViewOnly;
+}
+
+@Html.Hidden("IsViewOnly", isViewOnly)
+@Html.Hidden("SuccMsg", TempData["SuccessMessage"])
+@Html.Hidden("ErrMsg", TempData["ErrorMessage"])
+
+@section Sidebar {
+    <div class="padding-content">
+        <h4 class="text-shadow-black source-sans-prolight">Preferences</h4>
+    </div>
+    <ul class="nav nav-list nav-gray">
+        <li class="item active">
+            <a class="source-sans-probold inputs" href="#"><span></span>MY PROFILE</a>
+        </li>
+        <li class="item">
+            <a class="source-sans-probold organization" href="#"><span></span>ORGANIZATION</a>
+        </li>
+    </ul>
+}
+
+<!--success message-->
+<div id="successMessage" class="alert hide alert-success message-position">
+    <a class="close">×</a>
+    <strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))
+</div>
+<!--success message-->
+<!--error message-->
+<div id="errorMessage" class="alert hide alert-error message-position">
+    <a class="close">×</a>
+    <strong>Error!</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))
+</div>
+<!--error message-->
+
+<ul class="nav nav-tabs">
+    <li class="source-sans-proregular">
+        <h2 class="title-header">Security Question</h2>
+    </li>
+</ul>
+
+<div class="padding-content cf source-sans-proregular" id="content">
+    <div class="row">
+        <div class="span2 width216">
+            <div class="padding-right70">
+                <ul class="nav nav-pills nav-stacked width216">
+                    <li>
+                        <a href="@Url.Action("Edit", "User", new { src = "myaccount" })">Account</a>
+                    </li>
+                    <li><a href="@Url.Action("Index", "User")">Team Members</a></li>
+                    <li><a href="@Url.Action("Notifications", "User")">Notifications</a></li>
+                    <li class="active"><a href="@Url.Action("SecurityQuestion", "User")">Security Question</a></li>
+                    <li><a href="@Url.Action("ChangePassword", "User")">Change Password</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="span10 content-colum-right">
+            @using (Html.BeginForm())
+            {
+                var strValidation = "^(?:|^[^<>~%^;/|]+)$";
+                
+                @Html.ValidationSummary(true)
+
+                <div class="cf inputs-aligned-horizontal">
+                    @Html.LabelFor(model => model.SecurityQuestionList)
+                    <div class="btn-group">
+                    @Html.DropDownListFor(f => f.SecurityQuestionId, new SelectList(Model.SecurityQuestionList, "Value", "Text", Model.SecurityQuestionId), "Select Security Question", new { @class = "select-box", pattern = strValidation, @required = "required" })
+                    
+                    @Html.ValidationMessageFor(model => model.SecurityQuestionList)
+                    </div>
+                </div>
+
+                <div class="cf inputs-aligned-horizontal">
+                    @Html.LabelFor(model => model.Answer)
+
+                    @Html.TextBoxFor(f => f.Answer, new { maxlength = "255", placeholder = "Answer", required = "required" })
+                    
+                    @Html.ValidationMessageFor(model => model.Answer)
+                </div>
+                if (isViewOnly != "true")
+                {
+                <div class="cf inputs-aligned-horizontal">
+                    <div class="container-button">
+                        <input id="btnSubmit" type="submit" style="margin-left:209px;" value="Update" title="Update" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" />
+                    </div>
+                </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+
+        if ($('#SuccMsg').val() == null || $('#SuccMsg').val() == '') {
+            $("#successMessage").slideUp(400);
+        }
+        else {
+            $("#successMessage").slideDown(1200);
+            $("#successMessage").slideUp(3000);
+        }
+        if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
+            $("#errorMessage").slideUp(400);
+        }
+        else {
+            $("#errorMessage").slideDown(400);
+            $("html, body").animate({ scrollTop: 0 }, 1000);
+        }
+
+
+        $('#btnSubmit').click(function () {
+            $('#content :input').each(function () {
+                if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
+                    var input = $(this).val();
+                    if (input == '') {
+                        $(this).addClass("error");
+                    } else {
+                        $(this).removeClass("error");
+                    }
+                }
+            });
+        });
+
+    });
+
+</script>

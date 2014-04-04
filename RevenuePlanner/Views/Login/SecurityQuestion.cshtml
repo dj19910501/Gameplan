@@ -1,0 +1,42 @@
+﻿@model RevenuePlanner.Models.SecurityQuestionModel
+
+@{
+    ViewBag.Title = "Security Question";
+    Layout = "~/Views/Shared/_ForgotPasswordLayout.cshtml";
+}
+
+@using (Html.BeginForm("SecurityQuestion", "Login", FormMethod.Post, new { id = "frmSecurityQuestion", @class = "form-forgot-password", name = "security-question" }))
+{
+    <h2 class="primary-title source-sans-prosemibold">Reset Password</h2>
+    <p class="conv-proximanova-light">
+        Please answer your security question before resetting your password.
+    </p>
+    <p class="conv-proximanova-light">
+        <i>
+            @Html.DisplayFor(varS => varS.SecurityQuestion)
+            @Html.HiddenFor(varS => varS.SecurityQuestion)
+        </i>
+    </p>
+    @Html.TextBoxFor(s => s.Answer, new { maxlength = "255", @class = "input-block-level conv_helveticaltstd-light", placeholder = "Answer", required = "required" })
+    @Html.HiddenFor(s => s.PasswordResetRequestId)
+    @Html.Hidden("hdnAttemptCount", Model.AttemptCount);
+    @Html.HiddenFor(s => s.AttemptCount)
+    @Html.HiddenFor(s => s.UserId)
+    <button class="btn btn-large conv-proximanova-light" type="submit" value="Submit">Submit</button>
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        if ($('#cErrors').html() == '') {
+            $("#errorMessage").slideUp(400);
+        }
+        else {
+            $("#errorMessage").slideDown(400);
+        }
+
+        $('#AttemptCount').val($('#hdnAttemptCount').val());
+
+    });
+
+</script>
