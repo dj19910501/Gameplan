@@ -151,7 +151,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         public ActionResult Index()
         {
-            if (!Sessions.IsSystemAdmin)
+            if (Sessions.IsPlanner)
             {
                 return RedirectToAction("Index", "NoAccess");
             }
