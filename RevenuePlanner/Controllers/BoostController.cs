@@ -13,12 +13,12 @@ namespace RevenuePlanner.Controllers
     {
         #region Variable Delaration
         private MRPEntities db = new MRPEntities();
-    
+
         static Random rnd = new Random();
         #endregion
 
         #region Methods
-     
+
         #region Best In Class
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         public ActionResult BestInClass()
         {
-            if (!Sessions.IsSystemAdmin)
+            if (Sessions.IsPlanner)
             {
                 return RedirectToAction("Index", "NoAccess");
             }
@@ -38,9 +38,9 @@ namespace RevenuePlanner.Controllers
                 string MetricType_SV = Enums.MetricType.SV.ToString();
                 string MetricType_Size = Enums.MetricType.Size.ToString();
 
-                foreach (var itemCR in db.Metrics.Where(n => n.IsDeleted == false && n.MetricType == MetricType_CR).ToList())
+                foreach (var itemCR in db.Metrics.Where(n => n.IsDeleted == false && n.MetricType == MetricType_CR && n.ClientId == Sessions.User.ClientId).OrderBy(o => o.Level).ToList())
                 {
-                    foreach (var itemSV in db.Metrics.Where(n => n.IsDeleted == false && n.MetricType == MetricType_SV).ToList())
+                    foreach (var itemSV in db.Metrics.Where(n => n.IsDeleted == false && n.MetricType == MetricType_SV && n.ClientId == Sessions.User.ClientId).OrderBy(o => o.Level).ToList())
                     {
                         BestInClassModel objBestInClassModel = new BestInClassModel();
                         if (itemCR.Level == itemSV.Level)
@@ -57,7 +57,7 @@ namespace RevenuePlanner.Controllers
                         };
                     }
                 }
-                foreach (var itemSize in db.Metrics.Where(n => n.IsDeleted == false && n.MetricType == MetricType_Size).ToList())
+                foreach (var itemSize in db.Metrics.Where(n => n.IsDeleted == false && n.MetricType == MetricType_Size && n.ClientId == Sessions.User.ClientId).ToList())
                 {
                     BestInClassModel objBestInClassModel = new BestInClassModel();
                     objBestInClassModel.MetricID_Size = itemSize.MetricId;
@@ -90,12 +90,16 @@ namespace RevenuePlanner.Controllers
                     string MetricType_SV = Enums.MetricType.SV.ToString();
                     string MetricType_Size = Enums.MetricType.Size.ToString();
 
-                    // Reset existing BIC values
-                    foreach (var item in db.BestInClasses.ToList())
+                    // Reset existing BIC values for specific Client
+                    foreach (var item in db.Metrics.Where(n => n.IsDeleted == false && n.ClientId == Sessions.User.ClientId).OrderBy(o => o.Level).ToList())
                     {
-                        db.Entry(item).State = EntityState.Modified;
-                        db.BestInClasses.Remove(item);
-                        db.SaveChanges();
+                        var BIC = db.BestInClasses.Where(b => b.MetricId == item.MetricId && b.IsDeleted == false).FirstOrDefault();
+                        if (BIC != null)
+                        {
+                            db.Entry(BIC).State = EntityState.Modified;
+                            db.BestInClasses.Remove(BIC);
+                            db.SaveChanges();
+                        }
                     }
 
                     var bicEntries = (from t in bic
@@ -192,7 +196,7 @@ namespace RevenuePlanner.Controllers
                 ImprovementTacticType ittobj = db.ImprovementTacticTypes.Where(itt => itt.IsDeleted == false && itt.ImprovementTacticTypeId == id).FirstOrDefault();
                 bittobj.Title = ittobj.Title;
                 bittobj.Description = ittobj.Description;
-                bittobj.Cost = ittobj.Cost ;
+                bittobj.Cost = ittobj.Cost;
                 bittobj.IsDeployed = ittobj.IsDeployed;
                 bittobj.ImprovementTacticTypeId = id;
                 ViewBag.Title = "Tactic Detail";
