@@ -289,5 +289,22 @@ namespace RevenuePlanner.Helpers
                 }
             }
         }
+
+        /// <summary>
+        /// Added By: Dharmraj Mangukiya
+        /// Date: 28/3/2014
+        /// To redirect the user to set security question module
+        /// </summary>
+        public static bool RedirectToSetSecurityQuestion
+        {
+            get
+            {
+                return Convert.ToBoolean(HttpContext.Current.Session["RedirectToSetSecurityQuestion"]);
+            }
+            set
+            {
+                HttpContext.Current.Session["RedirectToSetSecurityQuestion"] = value;
+            }
+        }
     }
 }

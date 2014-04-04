@@ -214,6 +214,7 @@
     <Compile Include="Models\Field.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ForgotPasswordModel.cs" />
     <Compile Include="Models\Funnel.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
@@ -834,6 +835,18 @@
     <Content Include="Views\Boost\BestInClass.cshtml" />
     <Content Include="Views\Boost\CreateImprovementTactic.cshtml" />
     <Content Include="Views\Boost\Index.cshtml" />
+    <Content Include="Views\Login\ForgotPassword.cshtml" />
+    <Content Include="Views\Login\ResetPassword.cshtml" />
+    <Content Include="Views\Login\SecurityQuestion.cshtml" />
+    <Content Include="Views\Login\SetSecurityQuestion.cshtml" />
+    <Content Include="Views\User\SecurityQuestion.cshtml" />
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.PasswordResetRequest.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.SecurityQuestion.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Views\Shared\_ForgotPasswordLayout.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

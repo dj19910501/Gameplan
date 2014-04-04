@@ -284,7 +284,8 @@ namespace RevenuePlanner.Helpers
             ImprovementTacticApproved,
             ImprovementTacticDeclined,
             ImprovementTacticSubmitted,
-            ShareImprovementTactic
+            ShareImprovementTactic,
+            ResetPasswordLink // Added by : Dharmraj Mangukiya
         }
         #endregion
 

@@ -191,6 +191,9 @@ namespace BDSService
                 userObj.RoleId = db.User_Application.Where(ua => ua.ApplicationId == applicationId && ua.UserId == user.UserId).Select(u => u.RoleId).FirstOrDefault();
                 userObj.RoleCode = db.Roles.Where(rl => rl.RoleId == userObj.RoleId).Select(r => r.Code).FirstOrDefault();
                 userObj.RoleTitle = db.Roles.Where(rl => rl.RoleId == userObj.RoleId).Select(r => r.Title).FirstOrDefault();
+                userObj.SecurityQuestionId = user.SecurityQuestionId;
+                userObj.SecurityQuestion = db.SecurityQuestions.Where(sq => sq.SecurityQuestionId == user.SecurityQuestionId).Select(s => s.SecurityQuestion1).FirstOrDefault();
+                userObj.Answer = user.Answer;
             }
             return userObj;
         }
@@ -395,6 +398,43 @@ namespace BDSService
                 ErrorSignal.FromCurrentContext().Raise(ex);
             }
             return isValid;
+        }
+
+        #endregion
+
+        #region Get User Details
+
+        /// <summary>
+        /// Function to get details for specific user.
+        /// </summary>
+        /// <param name="userEmail">userEmail</param>
+        /// <returns>Returns details of specific user.</returns>
+        public BDSEntities.User GetUserDetails(string userEmail)
+        {
+            User user = db.Users.FirstOrDefault(varU => varU.Email == userEmail && varU.IsDeleted == false);
+            if (user != null)
+            {
+                BDSEntities.User userObj = new BDSEntities.User();
+
+                userObj.UserId = user.UserId;
+                userObj.BusinessUnitId = user.BusinessUnitId;
+                userObj.GeographyId = user.GeographyId;
+                userObj.ClientId = user.ClientId;
+                userObj.DisplayName = user.DisplayName;
+                userObj.Email = user.Email;
+                userObj.FirstName = user.FirstName;
+                userObj.JobTitle = user.JobTitle;
+                userObj.LastName = user.LastName;
+                userObj.Password = user.Password;
+                userObj.ProfilePhoto = user.ProfilePhoto;
+                userObj.SecurityQuestionId = user.SecurityQuestionId;
+                userObj.Answer = user.Answer;
+
+                return userObj;
+            }
+            else
+                return null;
+
         }
 
         #endregion
@@ -724,6 +764,174 @@ namespace BDSService
             {
                 ErrorSignal.FromCurrentContext().Raise(ex);
             }
+            return retVal;
+        }
+
+        #endregion
+
+        #region Get Password reset request
+        
+        /// <summary>
+        /// Function to get PasswordResetRequest detail.
+        /// </summary>
+        /// <param name="PasswordResetRequestId"></param>
+        /// <returns>PasswordResetRequest details.</returns>
+        public BDSEntities.PasswordResetRequest GetPasswordResetRequest(Guid PasswordResetRequestId)
+        {
+            BDSEntities.PasswordResetRequest objPasswordResetRequest = new BDSEntities.PasswordResetRequest();
+
+            var obj = db.PasswordResetRequests.FirstOrDefault(varP => varP.PasswordResetRequestId == PasswordResetRequestId);
+            if (obj != null)
+            {
+                objPasswordResetRequest.PasswordResetRequestId = obj.PasswordResetRequestId;
+                objPasswordResetRequest.UserId = obj.UserId;
+                objPasswordResetRequest.IsUsed = obj.IsUsed;
+                objPasswordResetRequest.AttemptCount = obj.AttemptCount;
+                objPasswordResetRequest.CreatedDate = obj.CreatedDate;
+
+                return objPasswordResetRequest;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        #endregion
+
+        #region Add Password Reset Request
+
+        /// <summary>
+        /// Function to insert password reset request.
+        /// </summary>
+        /// <param name="objPasswordResetRequest"></param>
+        /// <returns>Return PasswordResetRequestId if the operation is successful, empty string otherwise.</returns>
+        public string CreatePasswordResetRequest(BDSEntities.PasswordResetRequest objPasswordResetRequest)
+        {
+            string retVal = string.Empty;
+
+            try
+            {
+                PasswordResetRequest obj = new PasswordResetRequest();
+                obj.PasswordResetRequestId = objPasswordResetRequest.PasswordResetRequestId;
+                obj.UserId = objPasswordResetRequest.UserId;
+                obj.AttemptCount = objPasswordResetRequest.AttemptCount;
+                obj.CreatedDate = objPasswordResetRequest.CreatedDate;
+
+                db.PasswordResetRequests.Add(obj);
+                db.SaveChanges();
+
+                retVal = obj.PasswordResetRequestId.ToString();
+
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            return retVal;
+        }
+
+        #region Update Password Reset Request
+
+        /// <summary>
+        /// Function to update existing Password Reset Request.
+        /// </summary>
+        /// <param name="objPasswordResetRequest"></param>
+        /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
+        public int UpdatePasswordResetRequest(BDSEntities.PasswordResetRequest objPasswordResetRequest)
+        {
+            int retVal = 0;
+
+            try
+            {
+                var obj = db.PasswordResetRequests.SingleOrDefault(varP => varP.PasswordResetRequestId == objPasswordResetRequest.PasswordResetRequestId);
+                if (obj == null)
+                {
+                    retVal = -1;
+                }
+                else
+                {
+                    obj.AttemptCount = objPasswordResetRequest.AttemptCount;
+                    obj.IsUsed = objPasswordResetRequest.IsUsed;
+                    db.Entry(obj).State = EntityState.Modified;
+                    db.SaveChanges();
+
+                    retVal = 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            return retVal;
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Get Multiple Security Questions
+        
+        /// <summary>
+        /// Function to get list of secutity questions.
+        /// </summary>
+        /// <returns>Security questions detail.</returns>
+        public List<BDSEntities.SecurityQuestion> GetSecurityQuestion()
+        {
+            List<BDSEntities.SecurityQuestion> lstSecurityQuestion = new List<BDSEntities.SecurityQuestion>();
+
+            var lstObj = db.SecurityQuestions.Where(varP => varP.IsDeleted == false);
+            foreach (var obj in lstObj)
+            {
+                BDSEntities.SecurityQuestion tempObj = new BDSEntities.SecurityQuestion();
+
+                tempObj.SecurityQuestionId = obj.SecurityQuestionId;
+                tempObj.SecurityQuestion1 = obj.SecurityQuestion1;
+
+                lstSecurityQuestion.Add(tempObj);
+            }
+
+            return lstSecurityQuestion;
+        }
+
+        #endregion
+
+        #region Update User security Question and answer
+
+        /// <summary>
+        /// Function to update security question and answer existing user.
+        /// </summary>
+        /// <param name="user">user entity</param>
+        /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
+        public int UpdateUserSecurityQuestion(BDSEntities.User user)
+        {
+            int retVal = 0;
+            try
+            {
+                var obj = db.Users.Where(u => u.UserId == user.UserId && u.IsDeleted == false).FirstOrDefault();
+                if (obj == null)
+                {
+                    retVal = -1;
+                }
+                else
+                {
+                    obj.SecurityQuestionId = user.SecurityQuestionId;
+                    obj.Answer = user.Answer;
+
+                    db.Entry(obj).State = EntityState.Modified;
+                    db.SaveChanges();
+
+                    retVal = 1;
+
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
             return retVal;
         }
 

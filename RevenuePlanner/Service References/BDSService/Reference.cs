@@ -23,6 +23,9 @@ namespace RevenuePlanner.BDSService {
         private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string AnswerField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
         private System.Guid BusinessUnitIdField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
@@ -83,6 +86,12 @@ namespace RevenuePlanner.BDSService {
         private string RoleTitleField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string SecurityQuestionField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Nullable<int> SecurityQuestionIdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
         private System.Guid UserIdField;
         
         [global::System.ComponentModel.BrowsableAttribute(false)]
@@ -92,6 +101,19 @@ namespace RevenuePlanner.BDSService {
             }
             set {
                 this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Answer {
+            get {
+                return this.AnswerField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.AnswerField, value) != true)) {
+                    this.AnswerField = value;
+                    this.RaisePropertyChanged("Answer");
+                }
             }
         }
         
@@ -351,6 +373,32 @@ namespace RevenuePlanner.BDSService {
                 if ((object.ReferenceEquals(this.RoleTitleField, value) != true)) {
                     this.RoleTitleField = value;
                     this.RaisePropertyChanged("RoleTitle");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string SecurityQuestion {
+            get {
+                return this.SecurityQuestionField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.SecurityQuestionField, value) != true)) {
+                    this.SecurityQuestionField = value;
+                    this.RaisePropertyChanged("SecurityQuestion");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Nullable<int> SecurityQuestionId {
+            get {
+                return this.SecurityQuestionIdField;
+            }
+            set {
+                if ((this.SecurityQuestionIdField.Equals(value) != true)) {
+                    this.SecurityQuestionIdField = value;
+                    this.RaisePropertyChanged("SecurityQuestionId");
                 }
             }
         }
@@ -1070,6 +1118,176 @@ namespace RevenuePlanner.BDSService {
         }
     }
     
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="PasswordResetRequest", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
+    [System.SerializableAttribute()]
+    public partial class PasswordResetRequest : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int AttemptCountField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.DateTime CreatedDateField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private bool IsUsedField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Guid PasswordResetRequestIdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Guid UserIdField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int AttemptCount {
+            get {
+                return this.AttemptCountField;
+            }
+            set {
+                if ((this.AttemptCountField.Equals(value) != true)) {
+                    this.AttemptCountField = value;
+                    this.RaisePropertyChanged("AttemptCount");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.DateTime CreatedDate {
+            get {
+                return this.CreatedDateField;
+            }
+            set {
+                if ((this.CreatedDateField.Equals(value) != true)) {
+                    this.CreatedDateField = value;
+                    this.RaisePropertyChanged("CreatedDate");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool IsUsed {
+            get {
+                return this.IsUsedField;
+            }
+            set {
+                if ((this.IsUsedField.Equals(value) != true)) {
+                    this.IsUsedField = value;
+                    this.RaisePropertyChanged("IsUsed");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Guid PasswordResetRequestId {
+            get {
+                return this.PasswordResetRequestIdField;
+            }
+            set {
+                if ((this.PasswordResetRequestIdField.Equals(value) != true)) {
+                    this.PasswordResetRequestIdField = value;
+                    this.RaisePropertyChanged("PasswordResetRequestId");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Guid UserId {
+            get {
+                return this.UserIdField;
+            }
+            set {
+                if ((this.UserIdField.Equals(value) != true)) {
+                    this.UserIdField = value;
+                    this.RaisePropertyChanged("UserId");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="SecurityQuestion", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
+    [System.SerializableAttribute()]
+    public partial class SecurityQuestion : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string SecurityQuestion1Field;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int SecurityQuestionIdField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string SecurityQuestion1 {
+            get {
+                return this.SecurityQuestion1Field;
+            }
+            set {
+                if ((object.ReferenceEquals(this.SecurityQuestion1Field, value) != true)) {
+                    this.SecurityQuestion1Field = value;
+                    this.RaisePropertyChanged("SecurityQuestion1");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int SecurityQuestionId {
+            get {
+                return this.SecurityQuestionIdField;
+            }
+            set {
+                if ((this.SecurityQuestionIdField.Equals(value) != true)) {
+                    this.SecurityQuestionIdField = value;
+                    this.RaisePropertyChanged("SecurityQuestionId");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ServiceModel.ServiceContractAttribute(ConfigurationName="BDSService.IBDSService")]
     public interface IBDSService {
@@ -1152,6 +1370,12 @@ namespace RevenuePlanner.BDSService {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/DeleteUser", ReplyAction="http://tempuri.org/IBDSService/DeleteUserResponse")]
         System.Threading.Tasks.Task<int> DeleteUserAsync(System.Guid userId);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetUserDetails", ReplyAction="http://tempuri.org/IBDSService/GetUserDetailsResponse")]
+        RevenuePlanner.BDSService.User GetUserDetails(string userEmail);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetUserDetails", ReplyAction="http://tempuri.org/IBDSService/GetUserDetailsResponse")]
+        System.Threading.Tasks.Task<RevenuePlanner.BDSService.User> GetUserDetailsAsync(string userEmail);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/CreateUser", ReplyAction="http://tempuri.org/IBDSService/CreateUserResponse")]
         int CreateUser(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid createdBy);
         
@@ -1211,6 +1435,36 @@ namespace RevenuePlanner.BDSService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/UpdateLastLoginDate", ReplyAction="http://tempuri.org/IBDSService/UpdateLastLoginDateResponse")]
         System.Threading.Tasks.Task<int> UpdateLastLoginDateAsync(System.Guid userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/CreatePasswordResetRequest", ReplyAction="http://tempuri.org/IBDSService/CreatePasswordResetRequestResponse")]
+        string CreatePasswordResetRequest(RevenuePlanner.BDSService.PasswordResetRequest objPasswordResetRequest);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/CreatePasswordResetRequest", ReplyAction="http://tempuri.org/IBDSService/CreatePasswordResetRequestResponse")]
+        System.Threading.Tasks.Task<string> CreatePasswordResetRequestAsync(RevenuePlanner.BDSService.PasswordResetRequest objPasswordResetRequest);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetPasswordResetRequest", ReplyAction="http://tempuri.org/IBDSService/GetPasswordResetRequestResponse")]
+        RevenuePlanner.BDSService.PasswordResetRequest GetPasswordResetRequest(System.Guid PasswordResetRequestId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetPasswordResetRequest", ReplyAction="http://tempuri.org/IBDSService/GetPasswordResetRequestResponse")]
+        System.Threading.Tasks.Task<RevenuePlanner.BDSService.PasswordResetRequest> GetPasswordResetRequestAsync(System.Guid PasswordResetRequestId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/UpdatePasswordResetRequest", ReplyAction="http://tempuri.org/IBDSService/UpdatePasswordResetRequestResponse")]
+        int UpdatePasswordResetRequest(RevenuePlanner.BDSService.PasswordResetRequest objPasswordResetRequest);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/UpdatePasswordResetRequest", ReplyAction="http://tempuri.org/IBDSService/UpdatePasswordResetRequestResponse")]
+        System.Threading.Tasks.Task<int> UpdatePasswordResetRequestAsync(RevenuePlanner.BDSService.PasswordResetRequest objPasswordResetRequest);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetSecurityQuestion", ReplyAction="http://tempuri.org/IBDSService/GetSecurityQuestionResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.SecurityQuestion> GetSecurityQuestion();
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetSecurityQuestion", ReplyAction="http://tempuri.org/IBDSService/GetSecurityQuestionResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.SecurityQuestion>> GetSecurityQuestionAsync();
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/UpdateUserSecurityQuestion", ReplyAction="http://tempuri.org/IBDSService/UpdateUserSecurityQuestionResponse")]
+        int UpdateUserSecurityQuestion(RevenuePlanner.BDSService.User user);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/UpdateUserSecurityQuestion", ReplyAction="http://tempuri.org/IBDSService/UpdateUserSecurityQuestionResponse")]
+        System.Threading.Tasks.Task<int> UpdateUserSecurityQuestionAsync(RevenuePlanner.BDSService.User user);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -1344,6 +1598,14 @@ namespace RevenuePlanner.BDSService {
             return base.Channel.DeleteUserAsync(userId);
         }
         
+        public RevenuePlanner.BDSService.User GetUserDetails(string userEmail) {
+            return base.Channel.GetUserDetails(userEmail);
+        }
+        
+        public System.Threading.Tasks.Task<RevenuePlanner.BDSService.User> GetUserDetailsAsync(string userEmail) {
+            return base.Channel.GetUserDetailsAsync(userEmail);
+        }
+        
         public int CreateUser(RevenuePlanner.BDSService.User user, System.Guid applicationId, System.Guid createdBy) {
             return base.Channel.CreateUser(user, applicationId, createdBy);
         }
@@ -1422,6 +1684,46 @@ namespace RevenuePlanner.BDSService {
         
         public System.Threading.Tasks.Task<int> UpdateLastLoginDateAsync(System.Guid userId, System.Guid applicationId) {
             return base.Channel.UpdateLastLoginDateAsync(userId, applicationId);
+        }
+        
+        public string CreatePasswordResetRequest(RevenuePlanner.BDSService.PasswordResetRequest objPasswordResetRequest) {
+            return base.Channel.CreatePasswordResetRequest(objPasswordResetRequest);
+        }
+        
+        public System.Threading.Tasks.Task<string> CreatePasswordResetRequestAsync(RevenuePlanner.BDSService.PasswordResetRequest objPasswordResetRequest) {
+            return base.Channel.CreatePasswordResetRequestAsync(objPasswordResetRequest);
+        }
+        
+        public RevenuePlanner.BDSService.PasswordResetRequest GetPasswordResetRequest(System.Guid PasswordResetRequestId) {
+            return base.Channel.GetPasswordResetRequest(PasswordResetRequestId);
+        }
+        
+        public System.Threading.Tasks.Task<RevenuePlanner.BDSService.PasswordResetRequest> GetPasswordResetRequestAsync(System.Guid PasswordResetRequestId) {
+            return base.Channel.GetPasswordResetRequestAsync(PasswordResetRequestId);
+        }
+        
+        public int UpdatePasswordResetRequest(RevenuePlanner.BDSService.PasswordResetRequest objPasswordResetRequest) {
+            return base.Channel.UpdatePasswordResetRequest(objPasswordResetRequest);
+        }
+        
+        public System.Threading.Tasks.Task<int> UpdatePasswordResetRequestAsync(RevenuePlanner.BDSService.PasswordResetRequest objPasswordResetRequest) {
+            return base.Channel.UpdatePasswordResetRequestAsync(objPasswordResetRequest);
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.SecurityQuestion> GetSecurityQuestion() {
+            return base.Channel.GetSecurityQuestion();
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.SecurityQuestion>> GetSecurityQuestionAsync() {
+            return base.Channel.GetSecurityQuestionAsync();
+        }
+        
+        public int UpdateUserSecurityQuestion(RevenuePlanner.BDSService.User user) {
+            return base.Channel.UpdateUserSecurityQuestion(user);
+        }
+        
+        public System.Threading.Tasks.Task<int> UpdateUserSecurityQuestionAsync(RevenuePlanner.BDSService.User user) {
+            return base.Channel.UpdateUserSecurityQuestionAsync(user);
         }
     }
 }

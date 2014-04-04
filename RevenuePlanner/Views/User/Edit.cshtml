@@ -104,6 +104,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                         <li class="active"><a href="@Url.Action("Edit", "User", new { usrid = Model.UserId, src = "myaccount" })">Account</a></li>
                         <li><a href="@Url.Action("Index", "User")">Team Members</a></li>
                         <li><a href="@Url.Action("Notifications", "User")">Notifications</a></li>
+                        <li><a href="@Url.Action("SecurityQuestion", "User")">Security Question</a></li>
                         <li><a href="@Url.Action("ChangePassword", "User")">Change Password</a></li>
                     </ul>
                 </div>

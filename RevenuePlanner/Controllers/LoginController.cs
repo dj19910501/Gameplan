@@ -133,6 +133,12 @@ namespace RevenuePlanner.Controllers
                             return RedirectToAction("ChangePassword", "User");
                         }
 
+                        if (obj.SecurityQuestionId == null)
+                        {
+                            Sessions.RedirectToSetSecurityQuestion = true;
+                            return RedirectToAction("SetSecurityQuestion", "Login");
+                        }
+
                         //Update last login date for user
                         objBDSServiceClient.UpdateLastLoginDate(Sessions.User.UserId, Sessions.ApplicationId);
 
@@ -277,6 +283,78 @@ namespace RevenuePlanner.Controllers
             }
         }
 
+        /// <summary>
+        /// Set security question view
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult SetSecurityQuestion()
+        {
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+            var lstSecurityQuestion = objBDSServiceClient.GetSecurityQuestion();
+
+            SecurityQuestionListModel objSecurityQuestionListModel = new SecurityQuestionListModel();
+            objSecurityQuestionListModel.SecurityQuestionList = GetQuestionList(lstSecurityQuestion);
+
+            return View(objSecurityQuestionListModel);
+        }
+
+        /// <summary>
+        /// Post : Set security question view
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult SetSecurityQuestion(SecurityQuestionListModel form)
+        {
+            try
+            {
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                BDSService.User objUser = new BDSService.User();
+                objUser.UserId = Sessions.User.UserId;
+                objUser.SecurityQuestionId = form.SecurityQuestionId;
+                objUser.Answer = form.Answer;
+                objBDSServiceClient.UpdateUserSecurityQuestion(objUser);
+
+                Sessions.RedirectToSetSecurityQuestion = false;
+
+                return RedirectToAction("Index", "Home");
+
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+
+                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+
+                //To handle unavailability of BDSService
+                if (ex is System.ServiceModel.EndpointNotFoundException)
+                {
+                    ModelState.AddModelError("", Common.objCached.ServiceUnavailableMessage);
+                }
+
+                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+            }
+
+            return View(form);
+        }
+
+        /// <summary>
+        /// Method to get the Select list item
+        /// </summary>
+        /// <param name="QuestionList"></param>
+        /// <returns></returns>
+        public List<SelectListItem> GetQuestionList(List<BDSService.SecurityQuestion> QuestionList)
+        {   
+            List<SelectListItem> optionslist = new List<SelectListItem>();
+
+            optionslist = QuestionList.AsEnumerable().Select(x => new SelectListItem
+            {
+                Value = Convert.ToString(x.SecurityQuestionId),
+                Text = x.SecurityQuestion1
+            }).ToList();
+
+            return optionslist;
+        }
+
         #endregion
 
         #region Logout
@@ -314,6 +392,383 @@ namespace RevenuePlanner.Controllers
         public ActionResult LoadSupportPartial()
         {
             return PartialView("_SupportPartial");
+        }
+
+        #endregion
+
+        #region ForgotPassword
+
+        /// <summary>
+        /// Forgot Password View
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ForgotPassword()
+        {
+            /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+
+            if (!string.IsNullOrEmpty(Convert.ToString(TempData["ErrorMessage"])))
+            {
+                ModelState.AddModelError("", Convert.ToString(TempData["ErrorMessage"]));
+                TempData["ErrorMessage"] = null;
+            }
+
+            /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+
+            ForgotPasswordModel objForgotPasswordModel = new ForgotPasswordModel()
+            {
+                IsSuccess = false
+            };
+
+            return View(objForgotPasswordModel);
+        }
+
+        /// <summary>
+        /// Post : Forgor Password View
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult ForgotPassword(ForgotPasswordModel form)
+        {
+            try
+            {
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+
+                var objUser = objBDSServiceClient.GetUserDetails(form.UserEmail);
+
+                if (objUser == null)
+                {
+                    ModelState.AddModelError("", Common.objCached.EmailNotExistInDatabse);
+                }
+                else
+                {
+                    if (objUser.SecurityQuestionId != null)
+                    {
+                        BDSService.PasswordResetRequest objPasswordResetRequest = new BDSService.PasswordResetRequest();
+                        objPasswordResetRequest.PasswordResetRequestId = Guid.NewGuid();
+                        objPasswordResetRequest.UserId = objUser.UserId;
+                        objPasswordResetRequest.AttemptCount = 0;
+                        objPasswordResetRequest.CreatedDate=DateTime.Now;
+
+                        string PasswordResetRequestId = objBDSServiceClient.CreatePasswordResetRequest(objPasswordResetRequest);
+
+                        if (PasswordResetRequestId == string.Empty)
+                        {
+                            ModelState.AddModelError("", Common.objCached.ServiceUnavailableMessage);
+                        }
+                        else
+                        {
+                            // Send email
+                            string notificationShare = "";
+                            string emailBody = "";
+                            Notification notification = new Notification();
+                            notificationShare = Enums.Custom_Notification.ResetPasswordLink.ToString();
+                            notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationShare));
+
+                            string PasswordResetLink = Url.Action("SecurityQuestion", "Login", new { id = PasswordResetRequestId }, Request.Url.Scheme);
+                            emailBody = notification.EmailContent.Replace("[PasswordResetLinkToBeReplaced]", "<a href='" + PasswordResetLink + "'>" + PasswordResetLink + "</a>")
+                                                                 .Replace("[ExpireDateToBeReplaced]", objPasswordResetRequest.CreatedDate.AddHours(int.Parse(ConfigurationManager.AppSettings["ForgotPasswordLinkExpiration"])).ToString());
+
+                            //string tempUrl = "http://localhost:57856/Login/SecurityQuestion/" + PasswordResetRequestId;
+
+                            Common.sendMail(objUser.Email, Common.FromMail, emailBody, notification.Subject, string.Empty);
+
+
+                            form.IsSuccess = true;
+                        }
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = Common.objCached.SecurityQuestionNotFound;
+                        return RedirectToAction("Index", "Login", new { returnUrl = "" });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+
+                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+
+                //To handle unavailability of BDSService
+                if (ex is System.ServiceModel.EndpointNotFoundException)
+                {
+                    ModelState.AddModelError("", Common.objCached.ServiceUnavailableMessage);
+                }
+
+                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+            }
+
+            return View(form);
+        }
+
+        /// <summary>
+        /// Security Question View
+        /// </summary>
+        /// <param name="PasswordResetRequestId"></param>
+        /// <returns></returns>
+        public ActionResult SecurityQuestion(string id)
+        {
+            try
+            {
+                Guid PasswordResetRequestId = Guid.Parse(id);
+
+                SecurityQuestionModel objSecurityQuestionModel = new SecurityQuestionModel();
+
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                var objPasswordResetRequest = objBDSServiceClient.GetPasswordResetRequest(PasswordResetRequestId);
+
+                if (objPasswordResetRequest == null)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login", new { returnUrl = "" });
+                }
+                else
+                {
+                    int interval = int.Parse(ConfigurationManager.AppSettings["ForgotPasswordLinkExpiration"]); // Link expiration duration in hour.
+
+                    if (objPasswordResetRequest.IsUsed)
+                    {
+                        TempData["ErrorMessage"] = Common.objCached.PasswordResetLinkAlreadyUsed;
+                        return RedirectToAction("Index", "Login", new { returnUrl = "" });
+                    }
+                    else if ((DateTime.Now - objPasswordResetRequest.CreatedDate).Hours >= interval)
+                    {
+                        TempData["ErrorMessage"] = Common.objCached.PasswordResetLinkExpired;
+                        return RedirectToAction("Index", "Login", new { returnUrl = "" });
+                    }
+                    else
+                    {
+                        Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
+                        var objUser = objBDSServiceClient.GetTeamMemberDetails(objPasswordResetRequest.UserId, applicationId);
+
+                        objSecurityQuestionModel.PasswordResetRequestId = objPasswordResetRequest.PasswordResetRequestId;
+                        objSecurityQuestionModel.UserId = objPasswordResetRequest.UserId;
+                        objSecurityQuestionModel.AttemptCount = objPasswordResetRequest.AttemptCount;
+                        objSecurityQuestionModel.SecurityQuestion = objUser.SecurityQuestion;
+
+                    }
+                }
+
+                return View(objSecurityQuestionModel);
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+
+                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+
+                //To handle unavailability of BDSService
+                if (ex is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                }
+
+                return RedirectToAction("Index", "Login", new { returnUrl = "" });
+
+                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+            }
+        }
+
+        /// <summary>
+        /// Post : Security Question View
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult SecurityQuestion(SecurityQuestionModel form)
+        {
+            try
+            {
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                BDSService.PasswordResetRequest objPasswordResetRequest = new BDSService.PasswordResetRequest();
+
+                objPasswordResetRequest.PasswordResetRequestId = form.PasswordResetRequestId;
+
+                int PossibleAttemptCount = int.Parse(ConfigurationManager.AppSettings["PossibleAttemptCount"]);
+                if (form.AttemptCount < PossibleAttemptCount)
+                {
+                    var objUser = objBDSServiceClient.GetTeamMemberDetails(form.UserId, Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]));
+                    if (form.Answer != objUser.Answer)
+                    {
+                        form.AttemptCount = form.AttemptCount + 1;
+                        objPasswordResetRequest.AttemptCount = form.AttemptCount;
+                        objPasswordResetRequest.IsUsed = true;
+                        objBDSServiceClient.UpdatePasswordResetRequest(objPasswordResetRequest);
+                        ModelState.AddModelError("", Common.objCached.AnswerNotMatched);
+                    }
+                    else
+                    {
+                        objPasswordResetRequest.AttemptCount = form.AttemptCount + 1;
+                        objPasswordResetRequest.IsUsed = true;
+                        objBDSServiceClient.UpdatePasswordResetRequest(objPasswordResetRequest);
+                        TempData["UserId"] = form.UserId;
+                        return RedirectToAction("ResetPassword", "Login");
+                    }
+                }
+                else
+                {
+
+                    objPasswordResetRequest.IsUsed = true;
+                    objBDSServiceClient.UpdatePasswordResetRequest(objPasswordResetRequest);
+                    TempData["ErrorMessage"] = Common.objCached.PossibleAttemptLimitExceed;
+                    return RedirectToAction("Index", "Login", new { returnUrl = "" });
+
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+
+                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+
+                //To handle unavailability of BDSService
+                if (ex is System.ServiceModel.EndpointNotFoundException)
+                {
+                    ModelState.AddModelError("", Common.objCached.ServiceUnavailableMessage);
+                }
+
+                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+            }
+
+            return View(form);
+        }
+
+        /// <summary>
+        /// Reset Password View
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public ActionResult ResetPassword()
+        {
+            try
+            {
+                //TempData["UserId"] = "F37A855C-9BF4-4A1F-AB7F-B21AF43EB2BF";
+
+                if (string.IsNullOrEmpty(Convert.ToString(TempData["UserId"])))
+                {
+                    return RedirectToAction("Index", "Login", new { returnUrl = "" });
+                }
+                else
+                {
+                    Guid UserId = Guid.Parse(TempData["UserId"].ToString());
+
+                    TempData["UserId"] = null;
+
+                    ResetPasswordModel objResetPasswordModel = new ResetPasswordModel();
+
+                    objResetPasswordModel.UserId = UserId;
+
+                    return View(objResetPasswordModel);
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+
+                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+
+                //To handle unavailability of BDSService
+                if (ex is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                }
+
+                return RedirectToAction("Index", "Login", new { returnUrl = "" });
+
+                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+            }
+        }
+
+        /// <summary>
+        /// post : Reset Password View
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult ResetPassword(ResetPasswordModel form)
+        {
+            try
+            {
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
+                var objUser = objBDSServiceClient.GetTeamMemberDetails(form.UserId, applicationId);
+
+                /* ------------------------------- single hash current password ------------------------------*/
+                string SingleHash_CurrentPassword = Common.ComputeSingleHash(form.NewPassword.ToString().Trim());
+                /*--------------------------------------------------------------------------------------------*/
+
+                if (objBDSServiceClient.CheckCurrentPassword(form.UserId, SingleHash_CurrentPassword))
+                {
+                    ModelState.AddModelError("", "New and current password cannot be same.");
+                }
+                else
+                {
+                    /* ------------------ Single hash password ----------------------*/
+                    string SingleHash_NewPassword = Common.ComputeSingleHash(form.NewPassword.ToString().Trim());
+                    /* ---------------------------------------------------------------*/
+
+                    objBDSServiceClient.ResetPassword(form.UserId, SingleHash_NewPassword);
+
+                    form.IsSuccess = true;
+                }
+
+
+                return View(form);
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+
+                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+
+                //To handle unavailability of BDSService
+                if (ex is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                }
+
+                return RedirectToAction("Index", "Login", new { returnUrl = "" });
+
+                /* Bug 25:Unavailability of BDSService leads to no error shown to user */
+            }
+        }
+
+        /// <summary>
+        /// Function to verify users current password.
+        /// </summary>
+        /// <param name="currentPassword">current password</param>
+        /// <returns>Returns true if the operation is successful, 0 otherwise.</returns>
+        public ActionResult CheckCurrentPassword(string currentPassword, string userId)
+        {
+            bool isValid = false;
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+            /* ------------------------------- single hash current password ------------------------------*/
+            string SingleHash_CurrentPassword = Common.ComputeSingleHash(currentPassword.ToString().Trim());
+            /*--------------------------------------------------------------------------------------------*/
+            try
+            {
+                isValid = objBDSServiceClient.CheckCurrentPassword(new Guid(userId), SingleHash_CurrentPassword);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
+            }
+            if (isValid)
+            {
+                return Json("0", JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json("1", JsonRequestBehavior.AllowGet);
+            }
         }
 
         #endregion
