@@ -520,16 +520,16 @@ namespace RevenuePlanner.Controllers
                             if (txtStageId != null && txtMCR != null)
                             {
                                 string[] strtxtMCR = txtMCR.ToArray();
-                                flag = SaveInputs(strhdnSTAGEId, strtxtMCR, strtxtTargetStage, intFunnelMarketing, Enums.StageType.CR.ToString());
+                                SaveInputs(strhdnSTAGEId, strtxtMCR, strtxtTargetStage, intFunnelMarketing, Enums.StageType.CR.ToString());
 
                             }
 
                             if (txtStageId != null && txtMSV != null)
                             {
                                 string[] strtxtMSV = txtMSV.ToArray();
-                                flag = SaveInputs(strhdnSTAGEId, strtxtMSV, strtxtTargetStage, intFunnelMarketing, Enums.StageType.SV.ToString());
+                                SaveInputs(strhdnSTAGEId, strtxtMSV, strtxtTargetStage, intFunnelMarketing, Enums.StageType.SV.ToString());
                             }
-
+                             
                             ////Marketing Conversion Rates
                             //if (hdnSTAGEMCR != null && txtMCR != null)
                             //{
