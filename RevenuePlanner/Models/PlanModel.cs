@@ -107,4 +107,20 @@ namespace RevenuePlanner.Models
         public string Budget { get; set; }
         public string Status { get; set; }
     }
+
+    public class Plan_Tactic_MQL
+    {
+        public int PlanTacticId { get; set; }
+        public double MQL { get; set; }
+    }
+
+    /// <summary>
+    /// Class of TacticId & Model Id Relation.
+    /// </summary>
+    public class TacticModelRelation
+    {
+        public int PlanTacticId { get; set; }
+        public int ModelId { get; set; }
+    }
+
 }
