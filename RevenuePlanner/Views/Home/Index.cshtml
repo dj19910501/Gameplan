@@ -90,6 +90,8 @@
                 //var planTitle = $(this).text();
                 //var option = $.grep($('#dropdown-plan-title option'), function (value) { return $(value).text() == planTitle; })
                 CurrentPlanId = $(this).attr('value');
+                //// Modified By Maninder Singh Wadhva to Address PL#203
+                GetCollaborators(CurrentPlanId);
                 RefreshCurrentTab();
                 GetHealderData(CurrentPlanId);
                 GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
@@ -416,12 +418,6 @@
     <div class="tab-pane active all-height" id="panel-656352">
         <div class=" pl20 cf">
             <div class="margin-left9 pull-left" id="divCollaborator">
-                @foreach (var userId in Model.CollaboratorId)
-                {
-                    <img class="avatar-user img-border align_avatar_image" alt="User avatar" src="@Url.Action("LoadUserImage", "User", new { id = userId, width = 30, height = 30 })">
-                }
-                <span class="bold margin_left6">@Model.CollaboratorId.Count() Collaborators</span>
-                <span class="font_size10 updated-text-align">Last updated @Html.DisplayFor(model => model.LastUpdatedDate)</span>
             </div>
             <div>
                 <div class="gantt-padding cf all-height lenght-div ">
@@ -671,6 +667,7 @@
     }
 
     // Function to get collaborators list
+    //// Modified By Maninder Singh Wadhva to Address PL#203
     function GetCollaborators(planId) {
         if (planId != null) {
             $.ajax(
@@ -683,46 +680,33 @@
                success: function (data) {
                    // Set collaborator details
                    $('#divCollaborator').empty(); // Clear collaborators div content
-                   var collaboratorCount = 0;
-
-                   // Get collaborator's image
-                   $.each(data.collaboratorList.split(','), function () {
-                       GetCollaboratorImage(this);
-                       collaboratorCount++;
+                   ////  set collaborator's image
+                   $.each(data.collaboratorsImage.Data, function () {
+                       SetCollaboratorImage(this);
                    })
 
-                   $('#divCollaborator').append('<span class="bold margin_left6">' + collaboratorCount + ' Collaborator(s) </span>');
-                   $('#divCollaborator').append('<span class="font_size10 updated-text-align">Last updated ' + data.lastUpdateDate + '</span>');
+                   $('#divCollaborator').append('<span class="bold margin_left6 position_absolute">' + data.collaboratorsImage.Data.length + ' Collaborator(s) </span>');
+                   $('#divCollaborator').append('<span class="font_size10 margin_left6 updated-text-align">Last updated ' + data.lastUpdateDate + '</span>');
 
                }
            });
        }
    }
 
-   // Function to get collaborator's image
-   function GetCollaboratorImage(colId) {
-       if (colId != null) {
-           $.ajax(
-          {
-              type: "GET",
-              cache: false,
-              url: '@Url.Action("GetCollaboratorImage", "Plan")',
-              data: { collaboratorId: colId },
-              dataType: "json",
-              success: function (data) {
-                  // Get collaborator image
-                  imgs = data;
+    // Function to set collaborator's image
+    //// Modified By Maninder Singh Wadhva to Address PL#203
+    function SetCollaboratorImage(collaborator) {
+        console.log(collaborator);
+       // Get collaborator image
+       var imgs = collaborator.imageBytes;
 
-                  // Set collaborator image
-                  var collaboratorImage = "<img class=\"avatar-user img-border align_avatar_image\""
-                   + "src='" + "data:image/jpg;base64,"
-                   + imgs.base64image + "'/>";
-                  $("#divCollaborator").prepend(collaboratorImage);
-              }
-          });
-      }
-  }
-
+       // Set collaborator image
+       var collaboratorImage = "<img class=\"avatar-user img-border align_avatar_image\""
+        + "src='" + "data:image/jpg;base64,"
+        + imgs + "'/>";
+       $("#divCollaborator").prepend(collaboratorImage);
+   }
+          
   function ShowInspectForPlanCampaignId() {
       var hdnshowInspectForPlanCampaignId = $("#hdnshowInspectForPlanCampaignId")
       if (hdnshowInspectForPlanCampaignId.val() != 0) {
@@ -1015,9 +999,9 @@
 
   var planYear;
   //// Modified By Maninder Singh Wadhva PL Ticket#47
+  //// Modified By Maninder Singh Wadhva to Address PL#203
   //// Function to make ajax request.
   function AjaxRequest() {
-      GetCollaborators(CurrentPlanId);
       $.ajax(
     {
         type: "GET",

@@ -940,6 +940,9 @@ namespace RevenuePlanner.Controllers
                                 Sessions.User = objUser;
                             }
                         }
+
+                        //// Modified By Maninder Singh Wadhva to Address PL#203
+                        System.Web.HttpContext.Current.Cache.Remove(form.UserId + "_photo");
                         return RedirectToAction("Index");
                     }
                     else if (retVal == -2)

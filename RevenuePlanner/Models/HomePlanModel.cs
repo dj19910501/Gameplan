@@ -31,7 +31,8 @@ namespace RevenuePlanner.Models
         public string PlanTitle;
         //End Maninder Singh Wadhva : 12/03/2013 - plan title.
 
-        public List<string> CollaboratorId;
+        //// Modified By Maninder Singh Wadhva to Address PL#203
+        //public List<string> CollaboratorId;
 
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:g}")]
         public DateTime LastUpdatedDate { get; set; }
