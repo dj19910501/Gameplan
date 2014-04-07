@@ -59,6 +59,9 @@
             $('#pbudget').show();
             $('#pMQLs').show();
             $('.changes').show();
+
+            //// Modified By Maninder Singh Wadhva to Address PL#203
+            GetCollaborators(CurrentPlanId);
             RefreshCurrentTab();
             GetHealderData(CurrentPlanId);
             GetNumberOfActivityPerMonByPlanId(CurrentPlanId,"planYear");
