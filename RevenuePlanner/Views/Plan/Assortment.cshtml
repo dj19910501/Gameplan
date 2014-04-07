@@ -175,17 +175,7 @@
     });
     var ismsg = $("#hdnMsg").val();
     var hdnisError = $("#hdnisError").val();
-    if (ismsg != '') {
-        if (hdnisError == 'True') {
-            $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + ismsg);
-            $("#errorMessageDuplicatePlan").slideDown(3000);
-        }
-        else {
-            $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + ismsg);
-            $("#successMessageDuplicatePlan").slideDown(3000);
-            $("#successMessageDuplicatePlan").slideUp(1200);
-        }
-    }
+    
     /*close x event on message*/
     $("#successMessageDuplicatePlan").find(".close").click(function (e) {
         e.stopPropagation();
@@ -542,6 +532,7 @@
                 // call load improvement tactic beacuase it execute after campaign activity process over.
                 LoadImprovementTactic();
                 NumberFormatterTipsyTitle(".tipsyclassTitle", 40);
+                Showmsg();
             }
         });
 
@@ -597,6 +588,20 @@
              $("#slidepanel").css("right", "0px");
              myApp.hidePleaseWait();
         });
+
+        function Showmsg() {
+            if (ismsg != '') {
+                if (hdnisError == 'True') {
+                    $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + ismsg);
+                    $("#errorMessageDuplicatePlan").slideDown(3000);
+                }
+                else {
+                    $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + ismsg);
+                    $("#successMessageDuplicatePlan").slideDown(3000);
+                    $("#successMessageDuplicatePlan").slideUp(1200);
+                }
+            }
+        }
 
         function CallForRedirectToApplyToCalender() {
             //add css class to disable hover on left navigation link when no data found

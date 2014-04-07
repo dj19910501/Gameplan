@@ -31,7 +31,6 @@ namespace RevenuePlanner.Models
         public System.DateTime StartDate { get; set; }
         public System.DateTime EndDate { get; set; }
         public Nullable<long> INQs { get; set; }
-        public Nullable<double> MQLs { get; set; }
         public Nullable<double> Cost { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }

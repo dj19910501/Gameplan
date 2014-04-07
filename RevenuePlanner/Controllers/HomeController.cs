@@ -1414,6 +1414,9 @@ namespace RevenuePlanner.Controllers
         {
             string tacticStatusSubmitted = Enums.TacticStatusValues.Single(s => s.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value;
             string tacticStatusDeclined = Enums.TacticStatusValues.Single(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value;
+            // Added BY Bhavesh
+            // Calculate MQL at runtime #376
+            List<Plan_Tactic_MQL> MQLTacticList = Common.GetMQLTacticList((from t in tactic select t.PlanTacticId).ToList<int>());
             List<ProjectedRevenueClass> tacticList = ReportController.ProjectedRevenueCalculate((from t in tactic select t.PlanTacticId).ToList<int>());
             var taskDataTactic = tactic.Select(t => new
             {
@@ -1431,7 +1434,7 @@ namespace RevenuePlanner.Controllers
                 isSubmitted = t.Status.Equals(tacticStatusSubmitted),
                 isDeclined = t.Status.Equals(tacticStatusDeclined),
                 inqs = t.INQs,
-                mqls = t.MQLs,
+                mqls = MQLTacticList.Where(tm => tm.PlanTacticId == t.PlanTacticId).Select(tm => tm.MQL),
                 cost = t.Cost,
                 cws = t.Status.Equals(tacticStatusSubmitted) || t.Status.Equals(tacticStatusDeclined) ? Math.Round(tacticList.Where(tl => tl.PlanTacticId == t.PlanTacticId).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 2) : 0,
                 plantacticid = t.PlanTacticId
@@ -2138,6 +2141,7 @@ namespace RevenuePlanner.Controllers
             {
                 im.Owner = ownername.ToString();
             }
+            im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.INQs), im.StartDate, im.PlanTacticId);
             ViewBag.TacticDetail = im;
 
             var businessunittitle = (from bun in db.BusinessUnits
@@ -2203,7 +2207,6 @@ namespace RevenuePlanner.Controllers
                                   StartDate = pcpt.StartDate,
                                   EndDate = pcpt.EndDate,
                                   INQs = pcpt.INQs,
-                                  MQLs = pcpt.MQLs,
                                   VerticalTitle = pcpt.Vertical.Title,
                                   AudiencTitle = pcpt.Audience.Title,
                                   INQsActual = pcpt.INQsActual == null ? 0 : pcpt.INQsActual,
@@ -2260,7 +2263,8 @@ namespace RevenuePlanner.Controllers
                     imodel.StartDate = objPlan_Campaign_Program.StartDate;
                     imodel.EndDate = objPlan_Campaign_Program.EndDate;
                     imodel.INQs = objPlan_Campaign_Program.INQs;
-                    imodel.MQLs = objPlan_Campaign_Program.MQLs;
+
+                   
                     imodel.VerticalTitle = objPlan_Campaign_Program.Vertical.Title;
                     imodel.AudiencTitle = objPlan_Campaign_Program.Audience.Title;
                 }
@@ -2313,7 +2317,7 @@ namespace RevenuePlanner.Controllers
                     imodel.StartDate = objPlan_Campaign.StartDate;
                     imodel.EndDate = objPlan_Campaign.EndDate;
                     imodel.INQs = objPlan_Campaign.INQs;
-                    imodel.MQLs = objPlan_Campaign.MQLs;
+                    
                     imodel.VerticalTitle = objPlan_Campaign.Vertical.Title;
                     imodel.AudiencTitle = objPlan_Campaign.Audience.Title;
 
@@ -2395,6 +2399,7 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.UpdatedBy = null;
             }
+            im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.INQs), im.StartDate, im.PlanTacticId);
             ViewBag.TacticDetail = im;
             bool isValidUser = true;
             if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
@@ -3032,6 +3037,10 @@ namespace RevenuePlanner.Controllers
             {
                 im.Owner = ownername.ToString();
             }
+            // Added BY Bhavesh
+            // Calculate MQL at runtime #376
+            List<int> PlanTacticIds = db.Plan_Campaign_Program_Tactic.Where(ppt => ppt.PlanProgramId == id && ppt.IsDeleted == false).Select(t => t.PlanTacticId).ToList();
+            im.MQLs = Common.GetMQLTacticList(PlanTacticIds).Sum(t => t.MQL);
             ViewBag.ProgramDetail = im;
 
             var businessunittitle = (from bun in db.BusinessUnits
@@ -3135,6 +3144,10 @@ namespace RevenuePlanner.Controllers
             {
                 im.Owner = ownername.ToString();
             }
+            // Added BY Bhavesh
+            // Calculate MQL at runtime #376
+            List<int> PlanTacticIds = db.Plan_Campaign_Program_Tactic.Where(ppt => ppt.Plan_Campaign_Program.PlanCampaignId == id && ppt.IsDeleted == false).Select(t => t.PlanTacticId).ToList();
+            im.MQLs = Common.GetMQLTacticList(PlanTacticIds).Sum(t => t.MQL);
             ViewBag.CampaignDetail = im;
 
             var businessunittitle = (from bun in db.BusinessUnits
@@ -3645,6 +3658,9 @@ namespace RevenuePlanner.Controllers
             userListId = (from ta in dtTactic select ta.CreatedBy).ToList<Guid>();
 
             var tactic = db.Plan_Campaign_Program_Tactic.Where(t => tacticIds.Contains(t.PlanTacticId)).Select(t => t).ToList();
+            // Added BY Bhavesh
+            // Calculate MQL at runtime #376
+            List<Plan_Tactic_MQL> MQLTacticList = Common.GetMQLTacticList(tacticIds);
             List<ProjectedRevenueClass> tacticList = ReportController.ProjectedRevenueCalculate(tacticIds);
             List<ProjectedRevenueClass> tacticListCW = ReportController.ProjectedRevenueCalculate(tacticIds, true);
             var listModified = tactic.Where(t => t.ModifiedDate != null).Select(t => t).ToList();
@@ -3660,7 +3676,7 @@ namespace RevenuePlanner.Controllers
                 title = t.Title,
                 inqProjected = t.INQs,
                 inqActual = t.INQsActual == null ? 0 : t.INQsActual,
-                mqlProjected = t.MQLs,
+                mqlProjected = MQLTacticList.Where(tm => tm.PlanTacticId == t.PlanTacticId).Select(tm => tm.MQL),
                 mqlActual = t.MQLsActual == null ? 0 : t.MQLsActual,
                 cwProjected = Math.Round(tacticListCW.Where(tl => tl.PlanTacticId == t.PlanTacticId).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 2),
                 cwActual = t.CWsActual == null ? 0 : t.CWsActual,

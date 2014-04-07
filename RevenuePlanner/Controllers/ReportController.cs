@@ -540,13 +540,13 @@ namespace RevenuePlanner.Controllers
             //// Getting non-deleted and approved/in-progress/completed tactic id of current plan.
             var tactics = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted.Equals(false) &&
                                                                 tacticStatus.Contains(t.Status) &&
-                                                                t.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId)).Select(t => t);
+                                                                t.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId)).Select(t => t.PlanTacticId).ToList();
 
             double projectedMQL = 0;
             if (tactics.Count() > 0)
             {
                 //// Getting projected MQL for plan.
-                projectedMQL = tactics.Sum(tactic => tactic.MQLs);
+                projectedMQL = Common.GetMQLTacticList(tactics).Sum(tm => tm.MQL);
             }
 
             return projectedMQL;
@@ -841,12 +841,13 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public DataTable GetConversionProjectedMQLData(List<int> tlist)
         {
+            List<Plan_Tactic_MQL> MQLTacticList = Common.GetMQLTacticList(tlist);
             List<TacticDataTable> tacticdata = (from tactic in db.Plan_Campaign_Program_Tactic.ToList()
                                                 where tlist.Contains(tactic.PlanTacticId)
                                                 select new TacticDataTable
                                                 {
                                                     TacticId = tactic.PlanTacticId,
-                                                    Value = tactic.MQLs,
+                                                    Value = MQLTacticList.Where(tm => tm.PlanTacticId == tactic.PlanTacticId).Select(tm => tm.MQL).SingleOrDefault(),
                                                     StartMonth = tactic.StartDate.Month,
                                                     EndMonth = tactic.EndDate.Month,
                                                     StartYear = tactic.StartDate.Year,
@@ -1411,14 +1412,13 @@ namespace RevenuePlanner.Controllers
                 PKey = g.Key,
                 PSum = g.Sum(r => r.Field<double>(ColumnValue))
             }).Sum(p => p.PSum);
-
+            Projected_MQL = Common.GetMQLTacticList(TacticIds).Sum(tm => tm.MQL);
             foreach (var tactic in TacticIds)
             {
                 var obj_tactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanTacticId == tactic && pcpt.IsDeleted == false).FirstOrDefault();
 
                 // get projected values
                 Projected_INQ += obj_tactic.INQs;
-                Projected_MQL += obj_tactic.MQLs;
 
                 // get Actual values
                 var lst_tactic_actuals = db.Plan_Campaign_Program_Tactic_Actual.Where(pcpta => pcpta.PlanTacticId == tactic && includeMonth.Contains(pcpta.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + pcpta.Period)).ToList();
@@ -1855,10 +1855,9 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public DataTable GetProjectedMQLData(List<int> planTacticList)
         {
-
-            List<TacticDataTable> tacticdata = (from td in db.Plan_Campaign_Program_Tactic
-                                                where planTacticList.Contains(td.PlanTacticId)
-                                                select new TacticDataTable { TacticId = td.PlanTacticId, Value = td.MQLs, StartMonth = td.StartDate.Month, EndMonth = td.EndDate.Month, StartYear = td.StartDate.Year, EndYear = td.EndDate.Year }).ToList();
+            List<Plan_Tactic_MQL> MQLTacticList = Common.GetMQLTacticList(planTacticList);
+            List<TacticDataTable> tacticdata = ((from td in db.Plan_Campaign_Program_Tactic
+                                                where planTacticList.Contains(td.PlanTacticId) select td).ToList().Select(td => new TacticDataTable { TacticId = td.PlanTacticId, Value = MQLTacticList.Where(tm => tm.PlanTacticId == td.PlanTacticId).Select(tm => tm.MQL).SingleOrDefault(), StartMonth = td.StartDate.Month, EndMonth = td.EndDate.Month, StartYear = td.StartDate.Year, EndYear = td.EndDate.Year })).ToList();
 
             return GetDatatable(tacticdata);
         }
@@ -2100,24 +2099,19 @@ namespace RevenuePlanner.Controllers
             string stageINQ = Enums.Stage.INQ.ToString();
             int levelINQ = db.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageINQ)).Level.Value;
             string stageTypeSV = Enums.StageType.SV.ToString();
-            List<TacticModelRelation> tacticModelList = GetTacticModelRelation(tlist);
+            List<TacticModelRelation> tacticModelList = Common.GetTacticModelRelation(tlist);
             List<TacticDataTable> tacticdata = (from tactic in db.Plan_Campaign_Program_Tactic.ToList()
                                                 join t in tacticModelList on tactic.PlanTacticId equals t.PlanTacticId
-                                                join modelFunnelStage in db.Model_Funnel_Stage on t.ModelId equals modelFunnelStage.Model_Funnel.ModelId
-                                                join stage in db.Stages on modelFunnelStage.StageId equals stage.StageId
-                                                where tlist.Contains(tactic.PlanTacticId) &&
-                                                                modelFunnelStage.StageType.Equals(stageTypeSV) &&
-                                                                stage.ClientId.Equals(Sessions.User.ClientId) &&
-                                                                stage.Level < levelINQ
+                                                where tlist.Contains(tactic.PlanTacticId)
                                                 select new
                                                 {
                                                     PlanTacticId = tactic.PlanTacticId,
                                                     INQs = tactic.INQs,
-                                                    value = modelFunnelStage.Value,
+                                                    value = GetVelocityDays(t.ModelId,levelINQ),
                                                     startDate = tactic.StartDate,
                                                     endDate = tactic.EndDate,
                                                     year = tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year,
-                                                    m = modelFunnelStage.Model_Funnel.ModelId
+                                                    m = t.ModelId
                                                 }).GroupBy(rl => new { id = rl.PlanTacticId, INQ = rl.INQs, sDate = rl.startDate, eDate = rl.endDate, year = rl.year }).ToList().Select(r => new
                                                 {
                                                     id = r.Key.id,
@@ -2129,6 +2123,25 @@ namespace RevenuePlanner.Controllers
                                                 }).Select(r => new TacticDataTable { TacticId = r.id, Value = r.INQ, StartMonth = r.sDate.AddDays(r.value).Month, EndMonth = r.eDate.AddDays(r.value).Month, StartYear = r.sDate.AddDays(r.value).Year, EndYear = r.eDate.AddDays(r.value).Year }).ToList();
 
             return GetDatatable(tacticdata);
+        }
+
+        public double GetVelocityDays(int modelId, int levelINQ)
+        {
+            string stageTypeSV = Enums.StageType.SV.ToString();
+            var velocityList = (from modelFunnelStage in db.Model_Funnel_Stage
+                                join stage in db.Stages on modelFunnelStage.StageId equals stage.StageId
+                                where modelFunnelStage.Model_Funnel.ModelId == modelId && modelFunnelStage.StageType.Equals(stageTypeSV) &&
+                                                                 stage.ClientId.Equals(Sessions.User.ClientId) &&
+                                                                 stage.Level < levelINQ
+                                select modelFunnelStage).ToList();
+            if (velocityList.Count() > 0)
+            {
+                return velocityList.Sum(v => v.Value);
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         /// <summary>
@@ -2145,7 +2158,8 @@ namespace RevenuePlanner.Controllers
             string stageMQL = Enums.Stage.MQL.ToString();
             int levelMQL = db.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageMQL)).Level.Value;
             string stageTypeSV = Enums.StageType.SV.ToString();
-            List<TacticModelRelation> tacticModelList = GetTacticModelRelation(tlist);
+            List<TacticModelRelation> tacticModelList = Common.GetTacticModelRelation(tlist);
+            List<Plan_Tactic_MQL> MQLTacticList = Common.GetMQLTacticList(tlist);
             List<TacticDataTable> tacticdata = (from tactic in db.Plan_Campaign_Program_Tactic.ToList()
                                                 join t in tacticModelList on tactic.PlanTacticId equals t.PlanTacticId
                                                 join modelFunnelStage in db.Model_Funnel_Stage on t.ModelId equals modelFunnelStage.Model_Funnel.ModelId
@@ -2157,7 +2171,7 @@ namespace RevenuePlanner.Controllers
                                                 select new
                                                 {
                                                     PlanTacticId = tactic.PlanTacticId,
-                                                    MQLs = tactic.MQLs,
+                                                    MQLs = MQLTacticList.Where(tm => tm.PlanTacticId == tactic.PlanTacticId).Select(tm => tm.MQL).SingleOrDefault(),
                                                     value = modelFunnelStage.Value,
                                                     startDate = tactic.StartDate,
                                                     endDate = tactic.EndDate,
@@ -2469,7 +2483,7 @@ namespace RevenuePlanner.Controllers
             string inq = Enums.InspectStageValues[Enums.InspectStage.INQ.ToString()].ToString();
             string mql = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
             List<string> monthList = GetUpToCurrentMonth();
-            List<TacticModelRelation> tacticModelList = GetTacticModelRelation(planTacticList);
+            List<TacticModelRelation> tacticModelList = Common.GetTacticModelRelation(planTacticList);
             double revenueTotal = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => planTacticList.Contains(ta.PlanTacticId) && monthList.Contains(ta.Period) && ta.StageTitle == revenue).ToList().Sum(a => a.Actualvalue);
 
             string stageINQ = Enums.Stage.INQ.ToString();
@@ -3634,11 +3648,11 @@ namespace RevenuePlanner.Controllers
         {
             MRPEntities mdb = new MRPEntities();
             List<string> status = Common.GetStatusListAfterApproved();
-            string stageMQL = Enums.Stage.MQL.ToString();
+            string stageINQ = Enums.Stage.INQ.ToString();
             // Get Level for MQL stage to get Value for CW.
-            int levelMQL = mdb.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageMQL)).Level.Value;
+            int levelINQ = mdb.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageINQ)).Level.Value;
             string stageTypeCR = Enums.StageType.CR.ToString();
-            List<TacticModelRelation> tacticModelList = GetTacticModelRelation(tlist);
+            List<TacticModelRelation> tacticModelList = Common.GetTacticModelRelation(tlist);
 
             var revenuelist = (from tactic in mdb.Plan_Campaign_Program_Tactic.ToList()
                                join t in tacticModelList on tactic.PlanTacticId equals t.PlanTacticId
@@ -3646,22 +3660,21 @@ namespace RevenuePlanner.Controllers
                                join stage in mdb.Stages on modelFunnelStage.StageId equals stage.StageId
                                where modelFunnelStage.StageType.Equals(stageTypeCR) &&
                                                stage.ClientId.Equals(Sessions.User.ClientId) &&
-                                               stage.Level >= levelMQL &&
-                                               modelFunnelStage.Value != 0 && modelFunnelStage.Model_Funnel.AverageDealSize != 0
+                                               stage.Level >= levelINQ
                                select new
                                {
                                    PlanTacticId = tactic.PlanTacticId,
                                    ModelFunnelId = modelFunnelStage.ModelFunnelId,
-                                   MQLs = tactic.MQLs,
+                                   INQs = tactic.INQs,
                                    ADS = modelFunnelStage.Model_Funnel.AverageDealSize,
                                    Value = (double)modelFunnelStage.Value
-                               }).ToList().GroupBy(rl => new { PlanTacticId = rl.PlanTacticId, MQL = rl.MQLs, ModelFunnelId = rl.ModelFunnelId, ADS = rl.ADS }).ToList().Select(r => new
+                               }).ToList().GroupBy(rl => new { PlanTacticId = rl.PlanTacticId, INQ = rl.INQs, ModelFunnelId = rl.ModelFunnelId, ADS = rl.ADS }).ToList().Select(r => new
                                {
                                    PlanTacticId = r.Key.PlanTacticId,
-                                   mql = r.Key.MQL,
+                                   inq = r.Key.INQ,
                                    ADS = r.Key.ADS,
                                    value = (r.Aggregate(1.0, (s1, s2) => s1 * (s2.Value / 100)))
-                               }).Select(lr => new { PlanTacticId = lr.PlanTacticId, ProjectedRevenue = isCW ? lr.mql * lr.value : lr.mql * lr.value * lr.ADS }).ToList();
+                               }).Select(lr => new { PlanTacticId = lr.PlanTacticId, ProjectedRevenue = isCW ? lr.inq * lr.value : lr.inq * lr.value * lr.ADS }).ToList();
 
             var projectedrevenuelist = revenuelist.GroupBy(rl => new { id = rl.PlanTacticId }).Select(r => new
             {
@@ -3672,38 +3685,6 @@ namespace RevenuePlanner.Controllers
             List<ProjectedRevenueClass> tacticList = projectedrevenuelist.Select(al => new ProjectedRevenueClass { PlanTacticId = al.id, ProjectedRevenue = al.prevenue }).ToList();
 
             return tacticList;
-        }
-
-        /// <summary>
-        /// Class of TacticId & Model Id Relation.
-        /// </summary>
-        public class TacticModelRelation
-        {
-            public int PlanTacticId { get; set; }
-            public int ModelId { get; set; }
-        }
-
-        public static List<TacticModelRelation> GetTacticModelRelation(List<int> tlist)
-        {
-            MRPEntities modeldb = new MRPEntities();
-            var tacticModel = (from tactic in modeldb.Plan_Campaign_Program_Tactic
-                               join m in modeldb.Models on tactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId equals m.ModelId
-                               where tlist.Contains(tactic.PlanTacticId)
-                               select new
-                               {
-                                   PlanTacticId = tactic.PlanTacticId,
-                                   StartDate = tactic.StartDate,
-                                   ModelId = m.ModelId
-                               }).ToList();
-
-            List<TacticModelRelation> tacticModellist = (from t in tacticModel
-                                                         select new TacticModelRelation
-                                                         {
-                                                             PlanTacticId = t.PlanTacticId,
-                                                             ModelId = GetModelId(t.StartDate, t.ModelId)
-                                                         }).ToList();
-
-            return tacticModellist;
         }
 
         #endregion

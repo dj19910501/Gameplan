@@ -1149,10 +1149,6 @@ namespace RevenuePlanner.Controllers
 
                 //// Setting start and end date.
                 planTactic.StartDate = DateTime.Parse(startDate);
-                int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-                double conversionRate = GetMQLConversionRate(planTactic.StartDate, modelId);
-                planTactic.MQLs = Convert.ToInt32(planTactic.INQs * conversionRate);
-
                 DateTime endDate = DateTime.Parse(startDate);
                 endDate = endDate.AddDays(duration);
                 planTactic.EndDate = endDate;
@@ -1265,7 +1261,7 @@ namespace RevenuePlanner.Controllers
                 description = p.Description,
                 cost = p.Cost.HasValue ? p.Cost : 0,
                 inqs = p.INQs.HasValue ? p.INQs : 0,
-                mqls = p.MQLs.HasValue ? p.MQLs : 0,
+                mqls = Common.GetMQLTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == p.PlanCampaignId && t.IsDeleted == false).Select(t => t.PlanTacticId).ToList()).Sum(tm => tm.MQL),
                 /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
         changed by : Nirav Shah on 13 feb 2014*/
                 isOwner = Sessions.User.UserId == p.CreatedBy ? 0 : 1,
@@ -1276,7 +1272,7 @@ namespace RevenuePlanner.Controllers
                     description = pcpj.Description,
                     cost = pcpj.Cost.HasValue ? pcpj.Cost : 0,
                     inqs = pcpj.INQs.HasValue ? pcpj.INQs : 0,
-                    mqls = pcpj.MQLs.HasValue ? pcpj.MQLs : 0,
+                    mqls = Common.GetMQLTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcpj.PlanProgramId && t.IsDeleted == false).Select(t => t.PlanTacticId).ToList()).Sum(tm => tm.MQL),
                     isOwner = Sessions.User.UserId == pcpj.CreatedBy ? 0 : 1,
                     tactics = (db.Plan_Campaign_Program_Tactic.ToList().Where(pcpt => pcpt.PlanProgramId.Equals(pcpj.PlanProgramId) && pcpt.IsDeleted.Equals(false)).Select(pcpt => pcpt).ToList()).Select(pcptj => new
                     {
@@ -1285,7 +1281,7 @@ namespace RevenuePlanner.Controllers
                         description = pcptj.Description,
                         cost = pcptj.Cost,
                         inqs = pcptj.INQs,
-                        mqls = pcptj.MQLs,
+                        mqls = Common.CalculateMQLTactic(pcptj.INQs,pcptj.StartDate,pcptj.PlanTacticId,pcptj.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId),
                         /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
                          changed by : Nirav Shah on 13 feb 2014*/
                         isOwner = Sessions.User.UserId == pcptj.CreatedBy ? 0 : 1,
@@ -1380,7 +1376,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
             pcm.INQs = pc.INQs;
-            pcm.MQLs = pc.MQLs;
+            pcm.MQLs = Common.GetMQLTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == pc.PlanCampaignId && t.IsDeleted == false).Select(t => t.PlanTacticId).ToList()).Sum(tm => tm.MQL);
             pcm.Cost = pc.Cost;
             if (Sessions.User.UserId == pc.CreatedBy)
             {
@@ -1444,9 +1440,8 @@ namespace RevenuePlanner.Controllers
                                 pcobj.VerticalId = form.VerticalId;
                                 pcobj.AudienceId = form.AudienceId;
                                 pcobj.GeographyId = form.GeographyId;
-                                pcobj.INQs = (form.INQs == null ? 0 : form.INQs);
-                                pcobj.MQLs = (form.MQLs == null ? 0 : form.MQLs);
-                                pcobj.Cost = (form.Cost == null ? 0 : form.Cost);
+                                pcobj.INQs = 0;
+                                pcobj.Cost = 0;
                                 pcobj.StartDate = GetCurrentDateBasedOnPlan();
                                 pcobj.EndDate = GetCurrentDateBasedOnPlan(true);
                                 pcobj.CreatedBy = Sessions.User.UserId;
@@ -1473,7 +1468,6 @@ namespace RevenuePlanner.Controllers
                                             pcpobj.AudienceId = form.AudienceId;
                                             pcpobj.GeographyId = form.GeographyId;
                                             pcpobj.INQs = 0;
-                                            pcpobj.MQLs = 0;
                                             pcpobj.Cost = 0;
                                             pcpobj.StartDate = GetCurrentDateBasedOnPlan();
                                             pcpobj.EndDate = GetCurrentDateBasedOnPlan(true);
@@ -1521,7 +1515,6 @@ namespace RevenuePlanner.Controllers
                                     pcobj.EndDate = form.EndDate;
                                 }
                                 //pcobj.INQs = (form.INQs == null ? 0 : form.INQs);
-                                //pcobj.MQLs = (form.MQLs == null ? 0 : form.MQLs);
                                 //pcobj.Cost = (form.Cost == null ? 0 : form.Cost);
                                 pcobj.ModifiedBy = Sessions.User.UserId;
                                 pcobj.ModifiedDate = DateTime.Now;
@@ -1704,7 +1697,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
             pcpm.INQs = pcp.INQs;
-            pcpm.MQLs = pcp.MQLs;
+            pcpm.MQLs = Common.GetMQLTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcp.PlanProgramId && t.IsDeleted == false).Select(t => t.PlanTacticId).ToList()).Sum(tm => tm.MQL);
             pcpm.Cost = pcp.Cost;
             /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
             if (Sessions.User.UserId == pcp.CreatedBy)
@@ -1766,9 +1759,6 @@ namespace RevenuePlanner.Controllers
                                 int result = db.SaveChanges();
                                 int programid = pcpobj.PlanProgramId;
                                 result = Common.InsertChangeLog(Sessions.PlanId, null, programid, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
-                                long totalinq = 0;
-                                double totalmql = 0;
-                                double totalcost = 0;
                                 if (tactics != string.Empty)
                                 {
                                     string[] tactic = tactics.Split(',');
@@ -1785,13 +1775,7 @@ namespace RevenuePlanner.Controllers
                                         pcptobj.AudienceId = form.AudienceId;
                                         pcptobj.GeographyId = form.GeographyId;
                                         pcptobj.INQs = mt.ProjectedInquiries == null ? 0 : Convert.ToInt32(mt.ProjectedInquiries);
-                                        int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-                                        double conversionRate = GetMQLConversionRate(DateTime.Now, modelId);
-                                        pcptobj.MQLs = Convert.ToInt32(pcptobj.INQs * conversionRate);
                                         pcptobj.Cost = mt.ProjectedRevenue == null ? 0 : Convert.ToDouble(mt.ProjectedRevenue);
-                                        totalinq += pcptobj.INQs;
-                                        totalmql += pcptobj.MQLs;
-                                        totalcost += pcptobj.Cost;
                                         pcptobj.StartDate = GetCurrentDateBasedOnPlan();
                                         pcptobj.EndDate = GetCurrentDateBasedOnPlan(true);
                                         pcptobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
@@ -2036,7 +2020,7 @@ namespace RevenuePlanner.Controllers
                 pcptm.CEndDate = pcpt.Plan_Campaign_Program.Plan_Campaign.EndDate;
             }
             pcptm.INQs = pcpt.INQs;
-            pcptm.MQLs = pcpt.MQLs;
+            pcptm.MQLs = Common.CalculateMQLTactic(pcpt.INQs, pcpt.StartDate, pcpt.PlanTacticId, pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId);
             pcptm.Cost = pcpt.Cost;
             /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
             if (Sessions.User.UserId == pcpt.CreatedBy)
@@ -2095,7 +2079,6 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.AudienceId = form.AudienceId;
                                 pcpobj.GeographyId = form.GeographyId;
                                 pcpobj.INQs = form.INQs;
-                                pcpobj.MQLs = form.MQLs;
                                 pcpobj.Cost = form.Cost;
                                 pcpobj.StartDate = GetCurrentDateBasedOnPlan();
                                 pcpobj.EndDate = GetCurrentDateBasedOnPlan(true);
@@ -2219,11 +2202,6 @@ namespace RevenuePlanner.Controllers
                                 if (pcpobj.INQs != form.INQs)
                                 {
                                     pcpobj.INQs = form.INQs;
-                                    if (!isDirectorLevelUser) isReSubmission = true;
-                                }
-                                if (pcpobj.MQLs != form.MQLs)
-                                {
-                                    pcpobj.MQLs = form.MQLs;
                                     if (!isDirectorLevelUser) isReSubmission = true;
                                 }
                                 /* TFS Bug 207 : Cant override the Cost from the defaults coming out of the model
@@ -2350,9 +2328,8 @@ namespace RevenuePlanner.Controllers
                     pcp = db.Plan_Campaign_Program.Where(p => p.PlanProgramId == id).SingleOrDefault();
                     var totalProgram = (from t in db.Plan_Campaign_Program_Tactic
                                         where t.PlanProgramId == id && t.IsDeleted.Equals(false)
-                                        select new { t.INQs, t.MQLs, t.Cost }).ToList();
+                                        select new { t.INQs, t.Cost }).ToList();
                     pcp.INQs = totalProgram.Sum(tp => tp.INQs);
-                    pcp.MQLs = totalProgram.Sum(tp => tp.MQLs);
                     pcp.Cost = totalProgram.Sum(tp => tp.Cost);
                     db.Entry(pcp).State = EntityState.Modified;
                     id = pcp.PlanCampaignId;
@@ -2362,9 +2339,8 @@ namespace RevenuePlanner.Controllers
                 pc = db.Plan_Campaign.Where(p => p.PlanCampaignId == id).SingleOrDefault();
                 var totalCampaign = (from t in db.Plan_Campaign_Program_Tactic
                                      where t.Plan_Campaign_Program.PlanCampaignId == id && t.IsDeleted.Equals(false)
-                                     select new { t.INQs, t.MQLs, t.Cost }).ToList();
+                                     select new { t.INQs, t.Cost }).ToList();
                 pc.INQs = totalCampaign.Sum(tp => tp.INQs);
-                pc.MQLs = totalCampaign.Sum(tp => tp.MQLs);
                 pc.Cost = totalCampaign.Sum(tp => tp.Cost);
 
                 db.Entry(pc).State = EntityState.Modified;
@@ -3575,8 +3551,7 @@ namespace RevenuePlanner.Controllers
             double planMQL = 0;
             if (tacticIds.Count > 0)
             {
-                planMQL = db.Plan_Campaign_Program_Tactic.Where(tactic => tacticIds.Contains(tactic.PlanTacticId))
-                                                                .Sum(tactic => tactic.MQLs);
+                planMQL = Common.GetMQLTacticList(tacticIds).Sum(tm => tm.MQL);
             }
             double differenceMQL = Convert.ToDouble(improvedMQL) - planMQL;
 

@@ -163,30 +163,5 @@ namespace RevenuePlanner.Models
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SaveModelInboundOutboundEvent", oldModelIdParameter, newModelIdParameter, createdDateParameter, createdByParameter, returnValue);
         }
-    
-        public virtual int Update_MQL(Nullable<int> modelId, string clientId, string iNQ, string mQL, string stageTypeCR, ObjectParameter returnValue)
-        {
-            var modelIdParameter = modelId.HasValue ?
-                new ObjectParameter("ModelId", modelId) :
-                new ObjectParameter("ModelId", typeof(int));
-    
-            var clientIdParameter = clientId != null ?
-                new ObjectParameter("ClientId", clientId) :
-                new ObjectParameter("ClientId", typeof(string));
-    
-            var iNQParameter = iNQ != null ?
-                new ObjectParameter("INQ", iNQ) :
-                new ObjectParameter("INQ", typeof(string));
-    
-            var mQLParameter = mQL != null ?
-                new ObjectParameter("MQL", mQL) :
-                new ObjectParameter("MQL", typeof(string));
-    
-            var stageTypeCRParameter = stageTypeCR != null ?
-                new ObjectParameter("StageTypeCR", stageTypeCR) :
-                new ObjectParameter("StageTypeCR", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Update_MQL", modelIdParameter, clientIdParameter, iNQParameter, mQLParameter, stageTypeCRParameter, returnValue);
-        }
     }
 }

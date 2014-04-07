@@ -637,10 +637,6 @@ namespace RevenuePlanner.Controllers
                         else
                         {
                             string Status = db.Models.Where(m => m.ModelId == Sessions.ModelId).Select(m => m.Status).SingleOrDefault();
-                            if (Status == Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Published.ToString())).Value)
-                            {
-                                UpdateMQL(Sessions.ModelId);
-                            }
                             redirectModelZero = "Tactics";
                             scope.Complete();
                         }
@@ -3545,11 +3541,6 @@ namespace RevenuePlanner.Controllers
                                 }
                             }
 
-                            /* TFS 283: Editing a published model
-                            Added BY Bhavesh Dobariya.
-                            Date: 28th Feb 2014
-                            */
-                            result = UpdateMQL(modelId);
                         }
 
 
@@ -3598,32 +3589,6 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 
-        //Added By Bhavesh Dobariya.
-        #region Update MQL
-
-        public int UpdateMQL(int ModelId)
-        {
-            int returnValue = 0;
-            try
-            {
-                ObjectParameter parameterReturnValue = new ObjectParameter("ReturnValue", typeof(int));
-                db.Update_MQL(ModelId,
-                                Sessions.User.ClientId.ToString(),
-                                Enums.Stage.INQ.ToString(),
-                                Enums.Stage.MQL.ToString(),
-                                Enums.StageType.CR.ToString(),
-                                parameterReturnValue);
-
-                Int32.TryParse(parameterReturnValue.Value.ToString(), out returnValue);
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-            }
-            return returnValue;
-        }
-
-        #endregion
     }
 
 }
