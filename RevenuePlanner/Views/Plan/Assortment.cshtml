@@ -633,7 +633,7 @@
                     $html += '<div class="accordion-header campaign-default">' +
                             '<a id="0" class="accordion-toggle chevron-right" data-toggle="collapse">' +
                                 '<span class="pull-left width55"><span class="pull-left font-black">1.</span><span class="blue-bg-text campaign-name campaign-name-span">Campaign Title</span></span>' +
-                                '<span class="pull-right width50px"><div class="add-icon campaign" data-slidepanel="panel"></div></span>' +
+                                '<span class="pull-right width50px"><div class="add-icon campaign"></div></span>' +
                                 '<span class="pull-right width100px text-right font-black">' + 0 + '</span>' +
                                 '<span class="pull-right width150px text-right font-black tipsyclass">$' + 0 + '</span>' +
                                 '<span class="pull-right width100px text-right font-black tipsyclass">' + 0 + '</span>' +
@@ -683,7 +683,7 @@
                 $html += '<span class="delete-program width5" id="delCampaign"></span>';
             }
             $html += '<span class="pull-left width55"><span class="pull-left font-black">' + num + '.</span><span class="blue-bg-text campaign-name campaign-name-span tipsyclassTitle">' + _title + '</span></span>' +
-                               '<span class="pull-right width50px"><div class="add-icon campaign" data-slidepanel="panel"></div></span>' +
+                               '<span class="pull-right width50px"><div class="add-icon campaign" ></div></span>' +
                                 '<span class="pull-right width100px text-right font-black ">' + FormatCommas(_programCount.toString(), false) + '</span>' +
                                 '<span class="pull-right width150px text-right font-black tipsyclass">$' + FormatCommas(_cost.toString(), false) + '</span>' +
                                 '<span class="pull-right width100px text-right font-black tipsyclass">' + FormatCommas(_mqls.toString(), false) + '</span>' +
@@ -716,7 +716,7 @@
                             $html += '<span class="delete-program width5"></span>';
                         }
                         $html += '<span class="pull-left width55"><span class="gray-bg-text campaign-name campaign-name-span tipsyclassTitle">' + _programs[i].title + '</span></span>' +
-                         '<span class="pull-right width50px"><div class="add-icon program" data-slidepanel="panel"></div></span>' +
+                         '<span class="pull-right width50px"><div class="add-icon program" ></div></span>' +
                          '<span class="pull-right width100px text-right font-black">-</span>' +
                          '<span class="pull-right width150px text-right font-black tipsyclass">$' + FormatCommas(_programs[i].cost.toString(), false) + '</span>' +
                          '<span class="pull-right width100px text-right font-black tipsyclass">' + FormatCommas(_programs[i].mqls.toString(), false) + '</span>' +
@@ -780,7 +780,7 @@
                     $html += '<div class="accordion-header">' +
                                 '<a id="0" class="accordion-toggle" data-id-campaing="' + _id + '" font-black" data-toggle="collapse">' +
                                     '<span class="pull-left width40"><span class="gray-bg-text campaign-name underline">Add Programs</span></span>' +
-                                    '<span class="pull-right width100px"><div class="add-icon program" data-slidepanel="panel"></div></span>' +
+                                    '<span class="pull-right width100px"><div class="add-icon program" ></div></span>' +
                                 '</a>' +
                             '</div>';
                 }
