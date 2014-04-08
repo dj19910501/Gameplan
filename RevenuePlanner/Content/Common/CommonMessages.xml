@@ -292,7 +292,7 @@
 <!--For forgot Password functionality Added by Dharmraj Mangukiya on 26-March-2014-->
 	<Field>
 		<Name>EmailNotExistInDatabse</Name>
-		<value>Email not found. please correct the indicated error and submit again.</value>
+		<value>Email not found. Please correct the indicated error and submit again.</value>
 	</Field>
 	<Field>
 		<Name>SecurityQuestionNotFound</Name>
@@ -308,7 +308,7 @@
 	</Field>
 	<Field>
 		<Name>AnswerNotMatched</Name>
-		<value>Given answer doesn't matched. Please give correct answer.</value>
+		<value>Given answer doesn't match. Please give correct answer.</value>
 	</Field>
 	<Field>
 		<Name>PossibleAttemptLimitExceed</Name>
