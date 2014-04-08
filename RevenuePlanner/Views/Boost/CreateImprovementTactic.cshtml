@@ -21,7 +21,7 @@
     <div class="content">
         @Html.HiddenFor(model => model.ImprovementTacticTypeId, new { id = "ImprovementTacticTypeId" })
         <label>Improvement Tactic Type</label>
-        @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", id = "hdntitle", require = "true", maxlength = "18" })
+        @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", id = "hdntitle", require = "true", maxlength = "100" })
         <label>Description</label>
         @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", id = "hdndesc" })
         <table>
