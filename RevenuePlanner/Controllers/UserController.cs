@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -330,7 +331,7 @@ namespace RevenuePlanner.Controllers
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
             try
             {
-                
+
                 BDSService.User objUser = new BDSService.User();
                 objUser.UserId = Sessions.User.UserId;
                 objUser.SecurityQuestionId = form.SecurityQuestionId;
@@ -842,6 +843,19 @@ namespace RevenuePlanner.Controllers
                         objUserModel.IsPlanner = true;
                     }
                     LoadEditModeComponents(objUserModel.ClientId, src);
+
+                    //Get Default Image
+                    byte[] imageBytes = Common.ReadFile(Server.MapPath("~") + "/content/images/user_image_not_found.png");
+                    if (imageBytes != null)
+                    {
+                        MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length);
+                        ms.Write(imageBytes, 0, imageBytes.Length);
+                        System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
+                        image = Common.ImageResize(image, 30, 30, true, false);
+                        imageBytes = Common.ImageToByteArray(image);
+                        string imageBytesBase64String = Convert.ToBase64String(imageBytes);
+                        ViewBag.DefaultImage = imageBytesBase64String;
+                    }
                 }
             }
             catch (Exception e)
@@ -915,6 +929,10 @@ namespace RevenuePlanner.Controllers
                         file.InputStream.CopyTo(target);
                         byte[] data = target.ToArray();
                         objUser.ProfilePhoto = data;
+                    }
+                    else
+                    {
+                        objUser.ProfilePhoto = null;
                     }
                     objUser.ClientId = form.ClientId;
                     objUser.BusinessUnitId = form.BusinessUnitId;

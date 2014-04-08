@@ -1962,7 +1962,8 @@ a {
     vertical-align: bottom;
     color:#666;
 }
-.tblCR_SV input, .tblCR_SV textarea, .tblCR_SV .uneditable-
+.tblCR_SV input, .tblCR_SV textarea, .tblCR_SV .uneditable-
+
 input {
     width: 90px;
     margin:0 15px;
@@ -1987,7 +1988,8 @@ input {
 .tblCR_SV .targetStageclick {
     text-decoration: underline;
 }
-.tblCR_SV input.input-error-red, .tblCR_SV textarea.input-
+.tblCR_SV input.input-error-red, .tblCR_SV textarea.input-
+
 error-red, .tblCR_SV .uneditable-input.input-error-red {
     background:#F1DBDE !important;
     border:1px solid #F1DBDE !important;
@@ -2011,3 +2013,13 @@ span.info-icon-grey {
     display: block;
     float: right;
 }
+
+/* Added by Kuber on 8 April 2014 for #421 */
+
+.remove-img {
+    background:url(../images/delete-icon.png) -15px center no-repeat;
+    line-height:18px;
+    padding-left:20px;
+}
+
+/* Added by Kuber on 8 April 2014 for #421 */

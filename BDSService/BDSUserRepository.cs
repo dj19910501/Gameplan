@@ -574,8 +574,13 @@ namespace BDSService
                         obj.BusinessUnitId = user.BusinessUnitId;
                         obj.GeographyId = user.GeographyId;
                         if (user.ProfilePhoto != null)
+                        {
                             obj.ProfilePhoto = user.ProfilePhoto;
-
+                        }
+                        else
+                        {
+                            obj.ProfilePhoto = null;
+                        }
                         obj.IsDeleted = user.IsDeleted;
                         db.Entry(obj).State = EntityState.Modified;
                         db.SaveChanges();

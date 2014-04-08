@@ -19,6 +19,7 @@
         ViewBag.Title = "My Account";
     }
 
+
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     Layout = "~/Views/Shared/_Layout.cshtml";
     string isViewOnly = ViewBag.IsViewOnly;
@@ -188,6 +189,10 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                             </div>
                             <small>JPG or PNG format only (size up to 1 MB).</small>
                         </div>
+                        @if (Model.ProfilePhoto != null)
+                        {
+                            <a href="#" prop="@ViewBag.DefaultImage" id="aRemoveImage" class="remove-img">Remove Image</a>
+                        }
                     </div>
                 </div>
                     }
@@ -296,7 +301,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                         {
                 <div class="cf inputs-aligned-horizontal">
                     <div class="container-button">
-                        <input id="btnSubmit" type="submit" value="Save" title="save" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" style="margin-left: 179px;"  />
+                        <input id="btnSubmit" type="submit" value="Save" title="save" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" style="margin-left: 179px;" />
                     </div>
                 </div>
                         }
@@ -361,6 +366,11 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
             $("#content :input").attr("disabled", true);
         }
 
+        $("#aRemoveImage").click(function () {
+            var src = $(this).attr('prop');
+            $('#userImage').attr('src', 'data:image/jpg;base64,' + src);
+        });
+
         $('#btnSubmit').click(function () {
             $('#content :input').each(function () {
                 if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select') {
@@ -416,27 +426,27 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
         function loadBusinessUnit(clientId) {
             if (clientId != "" && clientId != "0" && clientId != "null") {
                 $.getJSON("@Url.Content("~/User/GetBusinessUnit")", { id: clientId },
-        function (businessUnitData) {
-            var select = $("#BusinessUnitId");
-            select.empty();
-            $.each(businessUnitData, function (index, itemData) {
-                select.append($('<option/>', {
-                    value: itemData.Value,
-                    text: itemData.Text
-                }));
-            });
-            if ($("#BusinessUnitId option").eq(0).val() != "") {
-                $("#BusinessUnitId option").eq(0).before($("<option></option>").val("").text("Please select"));
-            }
-            if ($("#BusinessUnitId option").eq(0).val() == undefined) {
-                $("#BusinessUnitId").append($("<option></option>").val("").text("Please select"));
-            }
-            $("#BusinessUnitId").val("");
+function (businessUnitData) {
+    var select = $("#BusinessUnitId");
+    select.empty();
+    $.each(businessUnitData, function (index, itemData) {
+        select.append($('<option/>', {
+            value: itemData.Value,
+            text: itemData.Text
+        }));
+    });
+    if ($("#BusinessUnitId option").eq(0).val() != "") {
+        $("#BusinessUnitId option").eq(0).before($("<option></option>").val("").text("Please select"));
+    }
+    if ($("#BusinessUnitId option").eq(0).val() == undefined) {
+        $("#BusinessUnitId").append($("<option></option>").val("").text("Please select"));
+    }
+    $("#BusinessUnitId").val("");
 
-            //Added by :- Sohel on 27 March 2014 for ticket #334
-            $(".selectBox select").selectbox('detach');
-            $(".selectBox select").selectbox("attach");
-        });
+    //Added by :- Sohel on 27 March 2014 for ticket #334
+    $(".selectBox select").selectbox('detach');
+    $(".selectBox select").selectbox("attach");
+});
         }
     }
         function loadGeography(clientId) {
