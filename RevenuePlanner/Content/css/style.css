@@ -1997,13 +1997,24 @@ input.error {
     }
 
     .form-forgot-password #result {
+        /*position: absolute;
+        top: 120px;*/
+        margin-left: 30px;
         position: absolute;
-        left: 880px; top: 120px;
+        top: 41%;
+        left:340px;
+        white-space: nowrap;
     }
 
     .form-forgot-password #match {
+        /*position: absolute;
+        left: 880px;
+        top: 173px;*/
+         margin-left: 30px;
         position: absolute;
-        left: 880px; top: 173px;
+        top: 62%;
+        left:340px;
+        white-space: nowrap;
     }
 
     .form-forgot-password .select-box {
