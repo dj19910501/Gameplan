@@ -62,10 +62,10 @@
         <li class="title-header source-sans-proregular">
             <h2>Baseline Models</h2>
         </li>
-        <li class="active pull-right">
+        <li class="pull-right"> @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to show by default, the Active Models tab not All Models. *@
             <a id="ModelAll" href="#">All</a>
         </li>
-        <li class="disabled pull-right">
+        <li class="active pull-right"> @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to show by default, the Active Models tab not All Models. *@
             <a id="ModelActive" href="#">Active Models</a>
         </li>
     </ul>
@@ -77,6 +77,7 @@
                     <th class="width75">Business Unit</th>
                     <th class="width86">Version</th>
                     <th>Status</th>
+                    <th>Effective Date</th> @* Added By :- Sohel on 08/04/2014 for PL ticket #424 to Show effective date column next to status column. *@
                 </tr>
             </thead>
             <tbody>
@@ -126,7 +127,7 @@ else
         $('.changes').load(url + '?objectId=0');
 
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
-        GetModels('all');
+        GetModels('active'); ////Modified By :- Sohel on 08/04/2014 for PL ticket #424 to show by default, the Active Models tab not All Models.
         $(document).on('click', '#table_baseline tbody tr', function (e) {
             var id = $(this).attr("id");
             if (id != null) {
@@ -229,15 +230,17 @@ function fillBaselineTable() {
         if (baselinesModels.length) {
             $('#table_baseline tr').not(function () { if ($(this).has('th').length) { return true } }).remove(); //clear table
             for (i in baselinesModels) {
-                addRowBaseline(i, baselinesModels[i].id, baselinesModels[i].title, baselinesModels[i].businessUnit, baselinesModels[i].version, baselinesModels[i].status, baselinesModels[i].isOwner);
-                    @* added by Nirav Shah  on 14 feb 2014  for 256:Model list - add delete option for model *@
+                @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to Show effective date column next to status column, effectiveDate parameter has been added. *@
+                addRowBaseline(i, baselinesModels[i].id, baselinesModels[i].title, baselinesModels[i].businessUnit, baselinesModels[i].version, baselinesModels[i].status, baselinesModels[i].isOwner, baselinesModels[i].effectiveDate);
+                @* added by Nirav Shah  on 14 feb 2014  for 256:Model list - add delete option for model *@
             }
         }
     }
 }
 
     //add row in baselinesModels table
-    function addRowBaseline(_index, _id, _title, _businessUnit, _version, _status, _isOwner) {
+    @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to Show effective date column next to status column, effectiveDate parameter has been added. *@
+    function addRowBaseline(_index, _id, _title, _businessUnit, _version, _status, _isOwner, _effectiveDate) {
         var $baselineTable = $('#table_baseline > tbody');
         var $html = "";
         var status = "Draft";
@@ -256,6 +259,7 @@ function fillBaselineTable() {
         '<td>' + _businessUnit + '</td>' +
         '<td>' + _version + '</td>' +
         '<td>' + _status + '</td>' +
+        '<td>' + _effectiveDate + '</td>' +     @* Added By :- Sohel on 08/04/2014 for PL ticket #424 to Show effective date column next to status column. *@
         '</tr>';
     $baselineTable.append($html);
 }

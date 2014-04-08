@@ -1132,6 +1132,7 @@ namespace RevenuePlanner.Controllers
                 version = p.Version,
                 status = p.Status,
                 isOwner = (Sessions.User.UserId == p.CreatedBy || Sessions.IsSystemAdmin || Sessions.IsClientAdmin || Sessions.IsDirector) ? 0 : 1,/*added by Nirav Shah  on 14 feb 2014  for 256:Model list - add delete option for model and -	Delete option will be available for owner or director or system admin or client Admin */
+                effectiveDate = p.EffectiveDate.HasValue == true ? p.EffectiveDate.Value.Date.ToString("M/d/yy") : "",  /* Added by Sohel on 08/04/2014 for PL #424 to show Effective Date Column*/
             }).OrderBy(p => p.title);
             return Json(lstModel, JsonRequestBehavior.AllowGet);
         }

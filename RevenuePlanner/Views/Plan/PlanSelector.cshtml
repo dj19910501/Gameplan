@@ -18,7 +18,7 @@
                 <button id="NewPlan" class="btn btn-blue text-shadow-blue source-sans-proregular createbtn" type="button">New Plan</button>
             </div>
             <div class="span6">
-                <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button">Add Activity</button>
+                <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button" disabled="disabled">Edit Plan</button> @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to Change Add Activity to “Edit Plan” and make it as disabled. *@
             </div>
         </div>
     </div>
@@ -54,10 +54,11 @@
         <thead>
             <tr>
                 <th class="width390">Plan Title</th>
-                <th class="width75">Last Updated</th>
+                @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to Shift “Last Updated” column next to Status column. *@
                 <th class="width86">@Html.LabelForMQL("MQL")</th>
                 <th class="width150px">Budget</th>
                 <th>Status</th>
+                <th class="width75">Last Updated</th>
             </tr>
         </thead>
         <tbody>
@@ -275,10 +276,11 @@
         var $html = "";
         $html += '<tr id="' + _PlanId + '">' +
                 '<td><span class="delete-temp-program width5"></span><span class="title-baseline-model truncate">' + _Title + '</span><span class="search-icon"></span></td>' +
-                '<td>' + _LastUpdated + '</td>' +
+                @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to Shift “Last Updated” column next to Status column. *@
                 '<td>' + _MQLs + '</td>' +
                 '<td>$' + _Budget + '</td>' +
                 '<td>' + _Status + '</td>' +
+                '<td>' + _LastUpdated + '</td>' +
                 '</tr>';
         $baselineTable.append($html);
         
@@ -313,8 +315,9 @@
         $("#table_baseline").find('.truncate').each(function () {
             var title = $(this).text();
             var mainText = title;
-            if (title.length >= 50) {
-                title = title.substring(0, 50) + "...";
+            @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to solve the issue "The plan name is greater than few characters the UI get distorted". *@
+            if (title.length >= 32) {
+                title = title.substring(0, 32) + "...";
                 $(this).prop('title', mainText);
             }
             $(this).text(title);

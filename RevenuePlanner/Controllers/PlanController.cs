@@ -2556,7 +2556,7 @@ namespace RevenuePlanner.Controllers
                         objPlanSelector.PlanId = item.PlanId;
                         objPlanSelector.PlanTitle = item.Title;
                         objPlanSelector.LastUpdated = LastUpdated.Value.Date.ToString("M/d/yy");
-                        objPlanSelector.MQLS = (item.MQLs).ToString("#,##0"); ;
+                        objPlanSelector.MQLS = (item.MQLs).ToString("#,##0");
                         objPlanSelector.Budget = (item.Budget).ToString("#,##0");
                         objPlanSelector.Status = item.Status;
                         lstPlanSelector.Add(objPlanSelector);
@@ -2585,7 +2585,8 @@ namespace RevenuePlanner.Controllers
                            where bu.ClientId == clientId && bu.IsDeleted == false && m.IsDeleted == false && p.IsDeleted == false
                            select p).OrderBy(q => q.Year).ToList();
 
-            var lstYears = objPlan.OrderBy(p => p.Year).Select(p => p.Year).Distinct().Take(10).ToList();
+            /* Modified by Sohel on 08/04/2014 for PL #424 to Show year's tab starting from left to right i.e. 2010, 2011, 2012..., Ordering has been changed.*/
+            var lstYears = objPlan.OrderByDescending(p => p.Year).Select(p => p.Year).Distinct().Take(10).ToList();  
 
             return Json(lstYears, JsonRequestBehavior.AllowGet);
         }
@@ -2601,7 +2602,7 @@ namespace RevenuePlanner.Controllers
             {
                 id = b.BusinessUnitId,
                 title = b.Title
-            }).Select(b => b).Distinct().OrderBy(b => b.id);
+            }).Select(b => b).Distinct().OrderBy(b => b.title); /* Modified by Sohel on 08/04/2014 for PL #424 to Show The business unit tabs sorted in alphabetic order. */
 
             if (Sessions.IsPlanner)
             {
@@ -2609,7 +2610,7 @@ namespace RevenuePlanner.Controllers
                 {
                     id = b.BusinessUnitId,
                     title = b.Title
-                }).Select(b => b).Distinct().OrderBy(b => b.id);
+                }).Select(b => b).Distinct().OrderBy(b => b.title); /* Modified by Sohel on 08/04/2014 for PL #424 to Show The business unit tabs sorted in alphabetic order. */
             }
 
             return Json(returnDataGuid, JsonRequestBehavior.AllowGet);
