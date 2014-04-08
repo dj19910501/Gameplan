@@ -21,12 +21,12 @@ ALTER TABLE [dbo].[SecurityQuestion] ADD  CONSTRAINT [DF_SecurityQuestion_IsDele
 	INSERT [dbo].[SecurityQuestion] ([SecurityQuestion], [IsDeleted], [CreatedDate]) VALUES (N'What street did you live on in third grade?', 0, CAST(0x0000A2F9010E6BF6 AS DateTime))
 	INSERT [dbo].[SecurityQuestion] ([SecurityQuestion], [IsDeleted], [CreatedDate]) VALUES (N'What school did you attend for sixth grade?', 0, CAST(0x0000A2F9010E6BF6 AS DateTime))
 	INSERT [dbo].[SecurityQuestion] ([SecurityQuestion], [IsDeleted], [CreatedDate]) VALUES (N'What was your childhood phone number including area code? (e.g., 000-000-0000)', 0, CAST(0x0000A2F9010E6BFB AS DateTime))
-	INSERT [dbo].[SecurityQuestion] ([SecurityQuestion], [IsDeleted], [CreatedDate]) VALUES (N'What is your oldest cousin"s first and last name?', 0, CAST(0x0000A2F9010E6BFB AS DateTime))
+	INSERT [dbo].[SecurityQuestion] ([SecurityQuestion], [IsDeleted], [CreatedDate]) VALUES (N'What is your oldest cousin''s first and last name?', 0, CAST(0x0000A2F9010E6BFB AS DateTime))
 	INSERT [dbo].[SecurityQuestion] ([SecurityQuestion], [IsDeleted], [CreatedDate]) VALUES (N'What was the last name of your third grade teacher?', 0, CAST(0x0000A2F9010E6BFB AS DateTime))
 	INSERT [dbo].[SecurityQuestion] ([SecurityQuestion], [IsDeleted], [CreatedDate]) VALUES (N'What is your oldest brother’s birthday month and year? (e.g., January 1900)', 0, CAST(0x0000A2F9010E6BFB AS DateTime))
-	INSERT [dbo].[SecurityQuestion] ([SecurityQuestion], [IsDeleted], [CreatedDate]) VALUES (N'What is your maternal grandmother"s maiden name?', 0, CAST(0x0000A2F9010E6BFB AS DateTime))
+	INSERT [dbo].[SecurityQuestion] ([SecurityQuestion], [IsDeleted], [CreatedDate]) VALUES (N'What is your maternal grandmother''s maiden name?', 0, CAST(0x0000A2F9010E6BFB AS DateTime))
 	INSERT [dbo].[SecurityQuestion] ([SecurityQuestion], [IsDeleted], [CreatedDate]) VALUES ( N'In what city or town was your first job?', 0, CAST(0x0000A2F9010E6BFD AS DateTime))
-	INSERT [dbo].[SecurityQuestion] ([SecurityQuestion], [IsDeleted], [CreatedDate]) VALUES ( N'What is the name of a college you applied to but didn"t attend?', 0, CAST(0x0000A2F9010E6BFE AS DateTime))
+	INSERT [dbo].[SecurityQuestion] ([SecurityQuestion], [IsDeleted], [CreatedDate]) VALUES ( N'What is the name of a college you applied to but didn''t attend?', 0, CAST(0x0000A2F9010E6BFE AS DateTime))
 END
 
 GO
@@ -75,10 +75,3 @@ BEGIN
 	  ALTER TABLE [User] ADD CONSTRAINT FK_User_SecurityQuestion FOREIGN KEY (SecurityQuestionId) REFERENCES SecurityQuestion(SecurityQuestionId)
 END
 
-Go
-IF NOT EXISTS(SELECT TOP 1 * FROM Notification WHERE [NotificationInternalUseOnly] = 'ResetPasswordLink')
-BEGIN
-
-INSERT [dbo].[Notification] ([NotificationInternalUseOnly], [Title], [Description], [NotificationType], [EmailContent], [IsDeleted], [CreatedDate], [CreatedBy], [ModifiedDate], [ModifiedBy], [Subject]) VALUES (N'ResetPasswordLink', N'ResetPasswordLink', N'When user requested to reset password', N'CM', N' This e-mail has been sent in response to your request for help resetting your Gameplan password.To initiate the process for resetting the password for your Gameplan account, follow the link below: <br />[PasswordResetLinkToBeReplaced]<br/>Note that this e-mail will expire on [ExpireDateToBeReplaced]. If it expires before you are able to complete the password reset process, you may request a new password reset.<br/>Thank you,<br/>Gameplan Administrator', 0, CAST(0x0000A2FC00C8772A AS DateTime), N'092f54df-4c71-4f2f-9d21-0ae16155e5c1', NULL, NULL, N'Gameplan : Password reset link')
-
-END

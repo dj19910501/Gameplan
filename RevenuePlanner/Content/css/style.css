@@ -1998,12 +1998,12 @@ input.error {
 
     .form-forgot-password #result {
         position: absolute;
-        left: 880px; top: 90px;
+        left: 880px; top: 120px;
     }
 
     .form-forgot-password #match {
         position: absolute;
-        left: 870px; top: 145px;
+        left: 880px; top: 173px;
     }
 
     .form-forgot-password .select-box {

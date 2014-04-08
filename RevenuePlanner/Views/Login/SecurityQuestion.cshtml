@@ -8,16 +8,16 @@
 @using (Html.BeginForm("SecurityQuestion", "Login", FormMethod.Post, new { id = "frmSecurityQuestion", @class = "form-forgot-password", name = "security-question" }))
 {
     <h2 class="primary-title source-sans-prosemibold">Reset Password</h2>
-    <p class="conv-proximanova-light">
+    <p class="source-sans-prosemibold" style="font-weight:normal;">
         Please answer your security question before resetting your password.
     </p>
-    <p class="conv-proximanova-light">
+    <p class="source-sans-prosemibold" style="font-weight:normal;">
         <i>
             @Html.DisplayFor(varS => varS.SecurityQuestion)
             @Html.HiddenFor(varS => varS.SecurityQuestion)
         </i>
     </p>
-    @Html.TextBoxFor(s => s.Answer, new { maxlength = "255", @class = "input-block-level conv_helveticaltstd-light", placeholder = "Answer", required = "required" })
+    @Html.TextBoxFor(s => s.Answer, new { maxlength = "255", @class = "input-block-level conv_helveticaltstd-light", placeholder = "Answer", required = "required", type = "password" })
     @Html.HiddenFor(s => s.PasswordResetRequestId)
     @Html.Hidden("hdnAttemptCount", Model.AttemptCount);
     @Html.HiddenFor(s => s.AttemptCount)
