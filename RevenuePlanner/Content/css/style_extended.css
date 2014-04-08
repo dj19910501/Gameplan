@@ -2046,3 +2046,36 @@ span.info-icon-grey {
 span.info-icon-grey:hover{
     background: url("../images/info-blue-icon.png") no-repeat;
 }
+
+/* Added by Kapil - Business Unit Dropdown = #388 */
+.dropdown-businessUnit {
+    width: 120px;
+    margin-left:20px;
+    margin-top:15px;
+}
+.dropdown-businessUnit .sbHolder, .dropdown-businessUnit .sbToggleOpen{
+    background:none;
+    border:none;
+    box-shadow:none;
+}
+.dropdown-businessUnit .sbToggle {
+    display: none;
+}
+.dropdown-businessUnit .sbSelector{
+    font-family: 'source_sans_probold',Arial,"sans-serif";
+    font-weight:normal;
+    font-size: 14px;
+    text-indent:0;
+    text-decoration:underline !important;
+    line-height:normal;
+}
+.dropdown-businessUnit .sbOptions a {
+    font-family: 'source_sans_probold',Arial,"sans-serif";
+    font-weight:normal;
+    font-size: 14px;
+    text-indent:0;
+}
+.dropdown-businessUnit .sbFocus {
+    text-shadow: none;
+}
+/* */
