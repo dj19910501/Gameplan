@@ -2042,3 +2042,7 @@ span.info-icon-grey {
 }
 
 /* Added by Kuber on 8 April 2014 for #421 */
+/*Added by Nirav on 8 April for #183*/
+span.info-icon-grey:hover{
+    background: url("../images/info-blue-icon.png") no-repeat;
+}

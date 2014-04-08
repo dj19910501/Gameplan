@@ -445,7 +445,7 @@
 
         $(document).on('click', '#create_new_tactic', function (e) {
             if ($("#latestModelId").val() == lastModelId) {
-                $("#sslidepanel").css("display", "block");
+                $("#slidepanel").css("display", "block");
                 var url = '@Url.Content("~/Model/CreateTacticData/")';
                 $('#slidepanel-container').load(url + '?ModelId=' + lastModelId);
                 $("#slidepanel").css("right", "0px");
