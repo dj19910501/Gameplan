@@ -502,21 +502,28 @@ function GetCurrentQuarter() {
 
 function ValidationForTitle(r) {
     $(r).bind('keypress', function (e) {
-        var specialKeys = new Array();
-        specialKeys.push(8); //Backspace
-        specialKeys.push(9); //Tab
-        specialKeys.push(46); //Delete
-        specialKeys.push(36); //Home
-        specialKeys.push(35); //End
-        specialKeys.push(37); //Left
-        specialKeys.push(38); //Up
-        specialKeys.push(39); //Right
-        specialKeys.push(40); //Down
-        var keyCode = e.keyCode == 0 ? e.charCode : e.keyCode;
-        var ret = ((keyCode >= 48 && keyCode <= 57) || (keyCode >= 65 && keyCode <= 90) || (keyCode >= 97 && keyCode <= 122) || keyCode === 32 || (specialKeys.indexOf(e.keyCode) != -1 && e.charCode != e.keyCode) || e.charCode==39);
-        if (!ret) {
+        //var specialKeys = new Array();
+        //specialKeys.push(8); //Backspace
+        //specialKeys.push(9); //Tab
+        //specialKeys.push(46); //Delete
+        //specialKeys.push(36); //Home
+        //specialKeys.push(35); //End
+        //specialKeys.push(37); //Left
+        //specialKeys.push(38); //Up
+        //specialKeys.push(39); //Right
+        //specialKeys.push(40); //Down
+        /*changed by nirav Shah on 8 April for PL #410*/
+        var ret = ((e.charCode == 40 || e.charCode == 37 || e.charCode == 41 || e.charCode == 62 || e.charCode == 60 || e.charCode == 63 || e.charCode == 125 || e.charCode == 123 || e.charCode == 91 || e.charCode == 93 || e.charCode == 47 || e.charCode == 61 || e.charCode == 43))
+        if (ret) {
             e.preventDefault();
             return false;
         }
+
+        //var keyCode = e.keyCode == 0 ? e.charCode : e.keyCode;
+        //var ret = ((keyCode >= 48 && keyCode <= 59) || (keyCode >= 65 && keyCode <= 90) || (keyCode >= 97 && keyCode <= 122) || keyCode === 32 || keyCode === 34 || e.charCode == 39 || (specialKeys.indexOf(e.keyCode) != -1 && e.charCode != e.keyCode));
+        //if (!ret) {
+        //    e.preventDefault();
+        //    return false;
+        //}
     });
 }
