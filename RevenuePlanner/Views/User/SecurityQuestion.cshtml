@@ -81,7 +81,7 @@
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.Answer)
 
-                    @Html.TextBoxFor(f => f.Answer, new { maxlength = "255", placeholder = "Answer", required = "required" })
+                    @Html.TextBoxFor(f => f.Answer, new { maxlength = "255", placeholder = "Answer", required = "required", type = "password" })
                     
                     @Html.ValidationMessageFor(model => model.Answer)
                 </div>
