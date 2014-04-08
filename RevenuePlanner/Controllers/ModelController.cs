@@ -948,7 +948,7 @@ namespace RevenuePlanner.Controllers
             if (model != 0)
             {
                 var modellist = db.Models.Where(m => m.ModelId == model).Select(n => new { n.ModelId, n.BusinessUnitId, n.Title, n.Version, n.Year, n.AddressableContacts, n.Status, n.IsActive, n.IsDeleted }).ToList();
-                var modelfunnelist = db.Model_Funnel.Where(m => m.ModelId == model).OrderBy(d => d.ModelFunnelId).Select(s => s.ModelFunnelId).ToList();
+                var modelfunnelist = db.Model_Funnel.Where(m => m.ModelId == model && m.Funnel.Title.ToLower()=="marketing").OrderBy(d => d.ModelFunnelId).Select(s => s.ModelFunnelId).ToList();
                 var modelfunnelistall = db.Model_Funnel.Where(m => m.ModelId == model).OrderBy(d => d.ModelFunnelId).Select(d => new { d.ModelFunnelId, d.ModelId, d.FunnelId, d.ExpectedLeadCount, d.AverageDealSize }).ToList();
                 var modelfunnelstagelist = db.Model_Funnel_Stage.Where(m => modelfunnelist.Contains(m.ModelFunnelId)).OrderBy(d => d.ModelFunnelStageId).Select(n => new { n.ModelFunnelStageId, n.ModelFunnelId, n.StageId, n.StageType, n.Value, n.AllowedTargetStage }).ToList();
                 JsonConvert.SerializeObject(modellist, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
