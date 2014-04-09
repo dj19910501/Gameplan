@@ -424,10 +424,14 @@ namespace RevenuePlanner.Controllers
             {
                 //// Getting all business unit for client of director.
                 planModel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId);
+                  //Added by Nirav for Custom Dropdown - 388
+                ViewBag.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId);
                 ViewBag.showBid = true;
             }
             else
             {
+                //Added by Nirav for Custom Dropdown - 388
+                ViewBag.BusinessUnitIds = Sessions.User.BusinessUnitId;
                 ViewBag.showBid = true;
             }
             ViewBag.Msg = ismsg;
