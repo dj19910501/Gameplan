@@ -416,10 +416,19 @@ namespace RevenuePlanner.Controllers
 
             GanttTabs currentGanttTab = (GanttTabs)type;
 
+            // Added by Dharmraj Ticket #364
+            if (currentGanttTab.Equals(GanttTabs.Request))
+            {
+                List<string> status = GetPlanTacticStatusAsPerTab(currentGanttTab);
+                tactic = tactic.Where(t => status.Contains(t.Status))
+                                .Select(planTactic => planTactic)
+                                .ToList<Plan_Campaign_Program_Tactic>();
+            }
+
             //// Modified By Maninder Singh Wadhva PL Ticket#47
             //// Show submitted/apporved/in-progress/complete improvement tactic.
             Enums.ActiveMenu objactivemenu = Common.GetKey<Enums.ActiveMenu>(Enums.ActiveMenuValues, activeMenu.ToLower());
-            if (objactivemenu.Equals(Enums.ActiveMenu.Home))
+            if (objactivemenu.Equals(Enums.ActiveMenu.Home) || currentGanttTab.Equals(GanttTabs.Request))
             {
                 List<string> status = GetStatusAsPerTab(currentGanttTab);
                 improvementTactic = improvementTactic.Where(improveTactic => status.Contains(improveTactic.Status))
@@ -627,12 +636,35 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns list of status as per tab.</returns>
         private List<string> GetStatusAsPerTab(GanttTabs currentTab)
         {
-            List<string> status = Common.GetStatusListAfterApproved();
+            List<string> status = new List<string>();
 
             if (currentTab.Equals(GanttTabs.Request))
             {
                 status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-                status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+                //status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+            }
+            else
+            {
+                status = Common.GetStatusListAfterApproved();
+            }
+
+            return status;
+        }
+
+        /// <summary>
+        /// Added By Dharmraj PL Ticket#364
+        /// Function to get status as per tab.
+        /// </summary>
+        /// <param name="currentTab">Current Tab.</param>
+        /// <returns>Returns list of status as per tab for plan tactic.</returns>
+        private List<string> GetPlanTacticStatusAsPerTab(GanttTabs currentTab)
+        {
+            //List<string> status = Common.GetStatusListAfterApproved();
+            List<string> status = new List<string>();
+
+            if (currentTab.Equals(GanttTabs.Request))
+            {
+                status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
             }
 
             return status;
