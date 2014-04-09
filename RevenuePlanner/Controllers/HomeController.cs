@@ -416,10 +416,19 @@ namespace RevenuePlanner.Controllers
 
             GanttTabs currentGanttTab = (GanttTabs)type;
 
+            // Added by Dharmraj Ticket #364
+            if (currentGanttTab.Equals(GanttTabs.Request))
+            {
+                List<string> status = GetPlanTacticStatusAsPerTab(currentGanttTab);
+                tactic = tactic.Where(t => status.Contains(t.Status))
+                                .Select(planTactic => planTactic)
+                                .ToList<Plan_Campaign_Program_Tactic>();
+            }
+
             //// Modified By Maninder Singh Wadhva PL Ticket#47
             //// Show submitted/apporved/in-progress/complete improvement tactic.
             Enums.ActiveMenu objactivemenu = Common.GetKey<Enums.ActiveMenu>(Enums.ActiveMenuValues, activeMenu.ToLower());
-            if (objactivemenu.Equals(Enums.ActiveMenu.Home))
+            if (objactivemenu.Equals(Enums.ActiveMenu.Home) || currentGanttTab.Equals(GanttTabs.Request))
             {
                 List<string> status = GetStatusAsPerTab(currentGanttTab);
                 improvementTactic = improvementTactic.Where(improveTactic => status.Contains(improveTactic.Status))
@@ -627,12 +636,35 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns list of status as per tab.</returns>
         private List<string> GetStatusAsPerTab(GanttTabs currentTab)
         {
-            List<string> status = Common.GetStatusListAfterApproved();
+            List<string> status = new List<string>();
 
             if (currentTab.Equals(GanttTabs.Request))
             {
                 status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-                status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+                //status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+            }
+            else
+            {
+                status = Common.GetStatusListAfterApproved();
+            }
+
+            return status;
+        }
+
+        /// <summary>
+        /// Added By Dharmraj PL Ticket#364
+        /// Function to get status as per tab.
+        /// </summary>
+        /// <param name="currentTab">Current Tab.</param>
+        /// <returns>Returns list of status as per tab for plan tactic.</returns>
+        private List<string> GetPlanTacticStatusAsPerTab(GanttTabs currentTab)
+        {
+            //List<string> status = Common.GetStatusListAfterApproved();
+            List<string> status = new List<string>();
+
+            if (currentTab.Equals(GanttTabs.Request))
+            {
+                status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
             }
 
             return status;
@@ -1253,7 +1285,8 @@ namespace RevenuePlanner.Controllers
             // Added BY Bhavesh
             // Calculate MQL at runtime #376
             List<Plan_Tactic_MQL> MQLTacticList = Common.GetMQLTacticList((from t in tactic select t.PlanTacticId).ToList<int>());
-            List<ProjectedRevenueClass> tacticList = ReportController.ProjectedRevenueCalculate((from t in tactic select t.PlanTacticId).ToList<int>());
+            // Ticket #345
+            List<ProjectedRevenueClass> tacticList = ReportController.CalculateProjectedRevenueList((from t in tactic select t.PlanTacticId).ToList<int>(), Sessions.PlanId);
             var taskDataTactic = tactic.Select(t => new
             {
                 id = string.Format("C{0}_P{1}_T{2}_Y{3}", t.Plan_Campaign_Program.PlanCampaignId, t.Plan_Campaign_Program.PlanProgramId, t.PlanTacticId, t.TacticTypeId),
@@ -2211,9 +2244,9 @@ namespace RevenuePlanner.Controllers
             InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower());
             List<int> tid = new List<int>();
             tid.Add(id);
-            List<ProjectedRevenueClass> tacticList = ReportController.ProjectedRevenueCalculate(tid);
+            List<ProjectedRevenueClass> tacticList = ReportController.CalculateProjectedRevenueList(tid, Sessions.PlanId);
             im.Revenues = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 2);
-            tacticList = ReportController.ProjectedRevenueCalculate(tid, true);
+            tacticList = Common.ProjectedRevenueCalculate(tid, true);
             im.CWs = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 2);
             string modifiedBy = string.Empty;
             string createdBy = string.Empty;
@@ -3515,8 +3548,8 @@ namespace RevenuePlanner.Controllers
             // Added BY Bhavesh
             // Calculate MQL at runtime #376
             List<Plan_Tactic_MQL> MQLTacticList = Common.GetMQLTacticList(tacticIds);
-            List<ProjectedRevenueClass> tacticList = ReportController.ProjectedRevenueCalculate(tacticIds);
-            List<ProjectedRevenueClass> tacticListCW = ReportController.ProjectedRevenueCalculate(tacticIds, true);
+            List<ProjectedRevenueClass> tacticList = ReportController.CalculateProjectedRevenueList(tacticIds, Sessions.PlanId);
+            List<ProjectedRevenueClass> tacticListCW = Common.ProjectedRevenueCalculate(tacticIds, true);
             var listModified = tactic.Where(t => t.ModifiedDate != null).Select(t => t).ToList();
             foreach (var t in listModified)
             {

@@ -1739,6 +1739,9 @@ function ApproveTactic(e, task) {
                 $('#table_activities tbody tr').remove();
                 FillTacticsTable();
                 gantt.refreshData();
+
+                // Added by Dharmraj to refresh current tab for PL #364
+                RefreshCurrentTab();
             }
             else {
                 alert('Not Approved');
@@ -1787,6 +1790,9 @@ function DeclineTactic(e, task) {
                 activities.data.push(activityTemp);
                 FillTacticsTable();
                 gantt.refreshData();
+
+                // Added by Dharmraj to refresh current tab for PL #364
+                RefreshCurrentTab();
             }
             else {
                 alert('Not Declined');

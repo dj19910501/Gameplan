@@ -7,6 +7,7 @@
             <h5 id="mqlTrendPercentage"></h5>
         </div>
     </div>
+     @*When Require to display RevenueTrend Then uncommnet All code related to Trend.*@
     <div class="white-chart" style="display:none;">
         <p class="source-sans-probold">Trend</p>
         <p class="value source-sans-prolight" id="revenueTrend"></p>
@@ -86,19 +87,19 @@
         function setLabel(data) {
             setLabelToolTip("#revenueProjected", data.ProjectedRevenueValue, 5, true);
             setLabelToolTip("#revenueActual", data.ActualRevenueValue, 5, true);
-            setLabelToolTip("#revenueTrend", data.TrendRevenue, 5, true);
-            setLabelToolTip("#mqlTrend", data.TrendMQL, 5, false);
+           // setLabelToolTip("#revenueTrend", data.TrendRevenue, 5, true);
+           // setLabelToolTip("#mqlTrend", data.TrendMQL, 5, false);
             var revenuePercentage = 0, revenueTrendPercentage = 0, mqlTrendPercentage = 0;
             if (parseFloat(data.ProjectedRevenueValue) > 0) {
                 revenuePercentage = (((parseFloat(data.ActualRevenueValue) - parseFloat(data.ProjectedRevenueValue)) / parseFloat(data.ProjectedRevenueValue)) * 100);
-                revenueTrendPercentage = (((parseFloat(data.TrendRevenue) - parseFloat(data.ProjectedRevenueValue)) / parseFloat(data.ProjectedRevenueValue)) * 100);
+                //revenueTrendPercentage = (((parseFloat(data.TrendRevenue) - parseFloat(data.ProjectedRevenueValue)) / parseFloat(data.ProjectedRevenueValue)) * 100);
             }
             if (parseFloat(data.ProjectedMQLValue) > 0) {
-                mqlTrendPercentage = (((parseFloat(data.TrendMQL) - parseFloat(data.ProjectedMQLValue)) / parseFloat(data.ProjectedMQLValue)) * 100);
+               // mqlTrendPercentage = (((parseFloat(data.TrendMQL) - parseFloat(data.ProjectedMQLValue)) / parseFloat(data.ProjectedMQLValue)) * 100);
             }
             setPercentage("#revenueActualPercentage", revenuePercentage);
-            setPercentage("#revenueTrendPercentage", revenueTrendPercentage);
-            setPercentage("#mqlTrendPercentage", mqlTrendPercentage);
+            //setPercentage("#revenueTrendPercentage", revenueTrendPercentage);
+           // setPercentage("#mqlTrendPercentage", mqlTrendPercentage);
         }
 
         function setPercentage(id, value) {

@@ -123,4 +123,17 @@ namespace RevenuePlanner.Models
         public int ModelId { get; set; }
     }
 
+    public class ModelConvertionRateRelation
+    {
+        public int ModelId { get; set; }
+        public double AverageDealSize { get; set; }
+        public double ConversionRate { get; set; }
+    }
+
+    public class ModelVelocityRelation
+    {
+        public int ModelId { get; set; }
+        public double Velocity { get; set; }
+    }
+
 }
