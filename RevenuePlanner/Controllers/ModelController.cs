@@ -2783,7 +2783,8 @@ namespace RevenuePlanner.Controllers
             }
             string StageType = Enums.StageType.CR.ToString();
             string ModelTitle= db.Models.Where(m=>m.IsDeleted==false && m.ModelId==Modelid).Select(s=>s.Title).FirstOrDefault();
-            Model_Funnel_Stage objStage = db.Model_Funnel_Stage.Where(s => s.StageType == StageType && s.Model_Funnel.ModelId == Modelid && s.AllowedTargetStage == true).OrderBy(s => s.Stage.Level).Distinct().FirstOrDefault();
+            string Marketing = Convert.ToString(Enums.Funnel.Marketing).ToLower();
+            Model_Funnel_Stage objStage = db.Model_Funnel_Stage.Where(s => s.StageType == StageType && s.Model_Funnel.ModelId == Modelid && s.AllowedTargetStage == true && s.Model_Funnel.Funnel.Title == Marketing).OrderBy(s => s.Stage.Level).Distinct().FirstOrDefault();
             if (objStage == null)
             {
                 TempData["ErrorMessage"] = string.Format(Common.objCached.StageNotExist);
@@ -2877,8 +2878,9 @@ namespace RevenuePlanner.Controllers
             {
                 /*changed by Nirav Shah on 2 APR 2013*/
                 //ViewBag.Stages = db.Stages.Where(s => s.IsDeleted == false && s.ClientId == Sessions.User.ClientId);
+                string Marketing = Convert.ToString(Enums.Funnel.Marketing).ToLower();
                 string StageType = Enums.StageType.CR.ToString();
-                ViewBag.Stages = db.Model_Funnel_Stage.Where(s => s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true && s.StageType == StageType).Select(n => new { n.StageId, n.Stage.Code }).Distinct().ToList();
+                ViewBag.Stages = db.Model_Funnel_Stage.Where(s => s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true && s.StageType == StageType && s.Model_Funnel.Funnel.Title == Marketing).Select(n => new { n.StageId, n.Stage.Code }).Distinct().ToList();
                 ViewBag.IsCreated = false;
                 TacticType mtp = db.TacticTypes.Where(m => m.TacticTypeId.Equals(id)).FirstOrDefault();
                 tm.TacticTypeId = mtp.TacticTypeId;
@@ -2918,7 +2920,8 @@ namespace RevenuePlanner.Controllers
             //ViewBag.Stages = db.Stages.Where(s => s.IsDeleted == false && s.ClientId == Sessions.User.ClientId);
             /*changed by Nirav Shah on 2 APR 2013*/
             string StageType = Enums.StageType.CR.ToString();
-            ViewBag.Stages = db.Model_Funnel_Stage.Where(s => s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true && s.StageType == StageType).Select(n => new { n.StageId, n.Stage.Code }).Distinct().ToList();
+            string Marketing = Convert.ToString(Enums.Funnel.Marketing).ToLower();
+            ViewBag.Stages = db.Model_Funnel_Stage.Where(s => s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true && s.StageType == StageType && s.Model_Funnel.Funnel.Title == Marketing).Select(n => new { n.StageId, n.Stage.Code }).Distinct().ToList();
             ViewBag.IsCreated = true;
             Tactic_TypeModel tm = new Tactic_TypeModel();
             /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
