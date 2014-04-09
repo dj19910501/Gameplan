@@ -1285,7 +1285,8 @@ namespace RevenuePlanner.Controllers
             // Added BY Bhavesh
             // Calculate MQL at runtime #376
             List<Plan_Tactic_MQL> MQLTacticList = Common.GetMQLTacticList((from t in tactic select t.PlanTacticId).ToList<int>());
-            List<ProjectedRevenueClass> tacticList = ReportController.ProjectedRevenueCalculate((from t in tactic select t.PlanTacticId).ToList<int>());
+            // Ticket #345
+            List<ProjectedRevenueClass> tacticList = ReportController.CalculateProjectedRevenueList((from t in tactic select t.PlanTacticId).ToList<int>(), Sessions.PlanId);
             var taskDataTactic = tactic.Select(t => new
             {
                 id = string.Format("C{0}_P{1}_T{2}_Y{3}", t.Plan_Campaign_Program.PlanCampaignId, t.Plan_Campaign_Program.PlanProgramId, t.PlanTacticId, t.TacticTypeId),
@@ -2243,9 +2244,9 @@ namespace RevenuePlanner.Controllers
             InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower());
             List<int> tid = new List<int>();
             tid.Add(id);
-            List<ProjectedRevenueClass> tacticList = ReportController.ProjectedRevenueCalculate(tid);
+            List<ProjectedRevenueClass> tacticList = ReportController.CalculateProjectedRevenueList(tid, Sessions.PlanId);
             im.Revenues = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 2);
-            tacticList = ReportController.ProjectedRevenueCalculate(tid, true);
+            tacticList = Common.ProjectedRevenueCalculate(tid, true);
             im.CWs = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 2);
             string modifiedBy = string.Empty;
             string createdBy = string.Empty;
@@ -3547,8 +3548,8 @@ namespace RevenuePlanner.Controllers
             // Added BY Bhavesh
             // Calculate MQL at runtime #376
             List<Plan_Tactic_MQL> MQLTacticList = Common.GetMQLTacticList(tacticIds);
-            List<ProjectedRevenueClass> tacticList = ReportController.ProjectedRevenueCalculate(tacticIds);
-            List<ProjectedRevenueClass> tacticListCW = ReportController.ProjectedRevenueCalculate(tacticIds, true);
+            List<ProjectedRevenueClass> tacticList = ReportController.CalculateProjectedRevenueList(tacticIds, Sessions.PlanId);
+            List<ProjectedRevenueClass> tacticListCW = Common.ProjectedRevenueCalculate(tacticIds, true);
             var listModified = tactic.Where(t => t.ModifiedDate != null).Select(t => t).ToList();
             foreach (var t in listModified)
             {

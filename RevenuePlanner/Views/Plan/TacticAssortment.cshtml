@@ -173,10 +173,10 @@
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/CalculateMQL")',
-                data: $("form").serialize() + '&RedirectType=' + isAssortment,
+                data: $("form").serialize() + '&INQValue=' + inqValue + '&RedirectType=' + isAssortment,
                 success: function (data) {
                     mqlConversion = data.mql;
-                    $("#txtmql").val(FormatCommas(Math.round(mqlConversion * inqValue).toString(), false));
+                    $("#txtmql").val(FormatCommas(mqlConversion.toString(), false));
                 }
             });
     }
