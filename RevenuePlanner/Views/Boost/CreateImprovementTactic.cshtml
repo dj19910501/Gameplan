@@ -99,7 +99,7 @@
             <button id="save_tactic" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
         </div>
         <div class="span6">
-            <button class="close-form btn-link source-sans-proregular" type="button">cancel</button>
+            <button class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
         </div>
     </div>
 </div>
@@ -158,16 +158,39 @@
 
         $("#save_tactic").click(function () {
             var iserror = false;
-            if ($("#hdntitle").val() == '') {
-                $("#hdntitle").addClass("error");
-                ShowError("Make sure all fields are filled and try again.");
-                iserror = true;
-            }
-            var id = $("#ImprovementTacticTypeId").val();
             var val = 0;
             var cntFill = 0;
             var cntNotFill = 0;
             var wrongval = 0
+            if ($("#hdntitle").val() == '') {
+                $("#hdntitle").addClass("error");
+                $('#accordion-1 input[type=text]').each(function () {
+                    var val = $(this).val();
+                    if (val > 0) {
+                        cntFill = cntFill + 1;
+                        if (val > 5) {
+                            wrongval = wrongval + 1;
+                            $(this).addClass("error");
+                        }
+                    }
+                    else {
+                        cntNotFill = cntNotFill + 1;
+                    }
+                });
+                if (cntFill < 1) {
+                    $('#accordion-1 input[type=text]').each(function () {
+                        $(this).addClass("error");
+                    });
+                }
+                ShowError("Make sure all fields are filled and try again.");
+                iserror = true;
+                return false;
+            }
+            var id = $("#ImprovementTacticTypeId").val();
+             val = 0;
+             cntFill = 0;
+             cntNotFill = 0;
+             wrongval = 0
             $('#accordion-1 input[type=text]').each(function () {
                 var val = $(this).val();
                 if (val > 0) {
