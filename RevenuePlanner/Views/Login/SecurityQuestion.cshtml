@@ -17,7 +17,7 @@
             @Html.HiddenFor(varS => varS.SecurityQuestion)
         </i>
     </p>
-    @Html.TextBoxFor(s => s.Answer, new { maxlength = "255", @class = "input-block-level conv_helveticaltstd-light", placeholder = "Answer", required = "required", type = "password" })
+    @Html.TextBoxFor(s => s.Answer, new { maxlength = "255", @class = "input-block-level conv_helveticaltstd-light", placeholder = "Answer", required = "required" })
     @Html.HiddenFor(s => s.PasswordResetRequestId)
     @Html.Hidden("hdnAttemptCount", Model.AttemptCount);
     @Html.HiddenFor(s => s.AttemptCount)
