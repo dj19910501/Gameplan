@@ -386,8 +386,8 @@ namespace RevenuePlanner.Controllers
             string notificationContactSupport = Enums.Custom_Notification.ContactSupport.ToString();
             string emailSubject = Sessions.ApplicationName + "/" + CompanyName;
             Notification notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationContactSupport));
-            string emailBody = notification.EmailContent.Replace("[EmailToBeReplaced]", emailId).Replace("[CompanyNameToBeReplaced]", CompanyName).Replace("[IssueToBeReplaced]", Issue);
-            var success = Common.sendMail(Common.SupportMail, Common.FromMail, emailBody, emailSubject, string.Empty, Common.FromAlias); //email will be sent to Support email Id defined in web.config
+            string emailBody = notification.EmailContent.Replace("[EmailToBeReplaced]", emailId).Replace("[IssueToBeReplaced]", Issue);
+            var success = Common.sendMail(Common.SupportMail, Common.FromSupportMail, emailBody, emailSubject, string.Empty, Common.FromAlias, string.Empty, true); //email will be sent to Support email Id defined in web.config
             if (success == 1)
             {
                 return Json(true, JsonRequestBehavior.AllowGet);

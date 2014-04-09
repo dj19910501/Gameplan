@@ -5,12 +5,15 @@ using RevenuePlanner.Controllers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Configuration;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
@@ -45,6 +48,7 @@ namespace RevenuePlanner.Helpers
         public static readonly string SupportMail = System.Configuration.ConfigurationManager.AppSettings.Get("SupportEmail"); // email address of recipient of support mails
         public static readonly string FromAlias = System.Configuration.ConfigurationManager.AppSettings.Get("FromAlias"); //"192.168.100.225"
         public static readonly string EvoKey = System.Configuration.ConfigurationManager.AppSettings.Get("EvoKey");
+        public static readonly string FromSupportMail = System.Configuration.ConfigurationManager.AppSettings.Get("FromSupportMail"); 
 
         public const string OptionTextRegex = "^[^<>]+";
         public const string MessageForOptionTextRegex = "<> characters are not allowed";
@@ -303,7 +307,10 @@ namespace RevenuePlanner.Helpers
         /// <param name="strMsg"></param>
         /// <param name="Subject"></param>
         /// <param name="Priority"></param>
-        public static int sendMail(string emailid, string fromemailid, string strMsg, string Subject, string Priority, string CustomAlias = "", string ReplyTo = "")
+        /// <param name="CustomAlias"></param>
+        /// <param name="ReplyTo"></param>
+        /// <param name="isSupportMail"></param>
+        public static int sendMail(string emailid, string fromemailid, string strMsg, string Subject, string Priority, string CustomAlias = "", string ReplyTo = "", bool isSupportMail = false)
         {
             int retval = 0;
             MailMessage objEmail = new MailMessage();
@@ -326,8 +333,13 @@ namespace RevenuePlanner.Helpers
                 if (ReplyTo != "")
                     objEmail.ReplyToList.Add(new MailAddress(ReplyTo));
                 objEmail.Priority = MailPriority.Normal;
-                SmtpClient smtp = new SmtpClient(strSMTPServer);
-                smtp.Send(objEmail);
+
+                //Get appropriate SmtpSection for mail sending
+                SmtpSection smtpSection = GetSmtpSection(isSupportMail);
+                SmtpClient smtpClient = new SmtpClient(smtpSection.Network.Host, smtpSection.Network.Port);
+                smtpClient.Credentials = new NetworkCredential(smtpSection.Network.UserName, smtpSection.Network.Password);
+                smtpClient.EnableSsl = smtpSection.Network.EnableSsl;
+                smtpClient.Send(objEmail);
                 retval = 1;
                 return retval;
             }
@@ -344,6 +356,25 @@ namespace RevenuePlanner.Helpers
         }
 
         /// <summary>
+        /// To get appropriate SmtpSection for mail sending
+        /// </summary>
+        /// <param name="isSupportMail"></param>
+        /// <returns>SmtpSection</returns>
+        public static SmtpSection GetSmtpSection(bool isSupportMail)
+        {
+            SmtpSection smtpSection = new SmtpSection();
+            if (isSupportMail)
+            {
+                smtpSection = (SmtpSection)ConfigurationManager.GetSection("mailSettings/smtp_support");
+            }
+            else
+            {
+                smtpSection = (SmtpSection)ConfigurationManager.GetSection("mailSettings/smtp_other");
+            }
+            return smtpSection;
+        }
+
+        /// <summary>
         /// Send email to multiple users
         /// </summary>
         /// <param name="emailid"></param>
@@ -351,7 +382,9 @@ namespace RevenuePlanner.Helpers
         /// <param name="strMsg"></param>
         /// <param name="Subject"></param>
         /// <param name="Priority"></param>
-        public static void SendMailToMultipleUser(string emailidlist, string fromemailid, string strMsg, string Subject, string Priority, string CustomAlias = "")
+        /// <param name="CustomAlias"></param>
+        /// <param name="isSupportMail"></param>
+        public static void SendMailToMultipleUser(string emailidlist, string fromemailid, string strMsg, string Subject, string Priority, string CustomAlias = "", bool isSupportMail = false)
         {
             MailMessage objEmail = new MailMessage();
             try
@@ -371,8 +404,13 @@ namespace RevenuePlanner.Helpers
                 objEmail.Body = strMsg;
                 objEmail.IsBodyHtml = true;
                 objEmail.Priority = MailPriority.Normal;
-                SmtpClient smtp = new SmtpClient(strSMTPServer);
-                smtp.Send(objEmail);
+
+                //Get appropriate SmtpSection for mail sending
+                SmtpSection smtpSection = GetSmtpSection(isSupportMail);
+                SmtpClient smtpClient = new SmtpClient(smtpSection.Network.Host, smtpSection.Network.Port);
+                smtpClient.Credentials = new NetworkCredential(smtpSection.Network.UserName, smtpSection.Network.Password);
+                smtpClient.EnableSsl = smtpSection.Network.EnableSsl;
+                smtpClient.Send(objEmail);
             }
             catch (Exception ex)
             {
@@ -394,7 +432,8 @@ namespace RevenuePlanner.Helpers
         /// <param name="Subject"></param>
         /// <param name="attachment"></param>
         /// <param name="attachmentName"></param>
-        public static void sendMail(string emailid, string fromemailid, string strMsg, string Subject, Stream attachment, string attachmentName, string CustomAlias = "")
+        /// <param name="isSupportMail"></param>
+        public static void sendMail(string emailid, string fromemailid, string strMsg, string Subject, Stream attachment, string attachmentName, string CustomAlias = "", bool isSupportMail = false)
         {
             MailMessage objEmail = new MailMessage();
             try
@@ -417,8 +456,13 @@ namespace RevenuePlanner.Helpers
                 objEmail.Priority = MailPriority.Normal;
                 Attachment att = new Attachment(attachment, attachmentName, "application/pdf");
                 objEmail.Attachments.Add(att);
-                SmtpClient smtp = new SmtpClient(strSMTPServer);
-                smtp.Send(objEmail);
+
+                //Get appropriate SmtpSection for mail sending
+                SmtpSection smtpSection = GetSmtpSection(isSupportMail);
+                SmtpClient smtpClient = new SmtpClient(smtpSection.Network.Host, smtpSection.Network.Port);
+                smtpClient.Credentials = new NetworkCredential(smtpSection.Network.UserName, smtpSection.Network.Password);
+                smtpClient.EnableSsl = smtpSection.Network.EnableSsl;
+                smtpClient.Send(objEmail);
             }
             catch (Exception ex)
             {
