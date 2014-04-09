@@ -133,6 +133,20 @@
             });
         });
 
+        $("#Answer").keyup(function () {
+            var v = $(this).val();
+            if ($(this).attr("type") != 'text') {
+                $(this).attr("type", "text");
+                $(this).val(v);
+                this.setSelectionRange(this.value.length, this.value.length);
+                this.scrollLeft = this.scrollWidth;
+            }
+        });
+
+        //$("#Answer").focusin(function () {
+        //    $(this).select();
+        //});
+
     });
 
 </script>

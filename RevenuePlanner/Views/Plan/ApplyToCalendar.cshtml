@@ -303,7 +303,7 @@
 <div class="tab-content all-height cf">
     <div class="tab-pane active all-height" id="panel-656352">
         <div class=" pl20 cf">
-            <div class="margin-left9 pull-left" id="divCollaborator">
+            <div class="margin-left9 pull-left" id="divCollaborator" style="position:relative;"> <!-- position:relative = added by kapil -->
             </div>
             <div>
                 <div class="gantt-padding cf all-height lenght-div ">
@@ -846,8 +846,9 @@
        }
    }
 
-   //scroll right sidebar form
-   $(function () {
+    //scroll right sidebar form
+    // commented by kapil to remove extra space from bottom
+   /*$(function () {
        $('.scrolled_div_form').slimScroll({
            height: 'auto',
            alwaysVisible: true,
@@ -856,7 +857,7 @@
            allowPageScroll: false,
            disableFadeOut: false
        });
-   });
+   });*/
 
    function ShowCampaign(id) {
        $("#slidepanel").css("display", "block");

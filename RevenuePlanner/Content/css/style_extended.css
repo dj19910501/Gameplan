@@ -1429,7 +1429,7 @@ a {
     Css provided by Kapil and added by Nirav Shah on 13 feb 2014
     */
 .close-icon .gray-title-steps {
-    padding-left: 25px;
+    /*padding-left: 25px;*/ /* commented by kapil - to set the alignment of section title */
 }
 /* edited by kapil - 240213 - arrow position changed */
 .close-icon .accordion-campaign a.accordion-toggle {
@@ -2079,3 +2079,8 @@ span.info-icon-grey:hover{
     text-shadow: none;
 }
 /* */
+
+.nl-field ul {
+    max-height: 400px;
+    overflow:auto;
+}

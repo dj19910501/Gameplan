@@ -2282,7 +2282,7 @@ namespace RevenuePlanner.Controllers
         /// Modified By: Maninder Singh Wadhva 1-March-2014 to address TFS Bug#322 : Changes made to INQ, MQL and Projected Revenue Calculation.
         /// </summary>
         /// <returns>JsonResult MQl Rate.</returns>
-        public JsonResult CalculateMQL(Plan_Campaign_Program_TacticModel form, bool RedirectType)
+        public JsonResult CalculateMQL(Plan_Campaign_Program_TacticModel form, int INQValue, bool RedirectType)
         {
             DateTime StartDate = new DateTime();
             if (form.PlanTacticId != 0)
@@ -2301,39 +2301,7 @@ namespace RevenuePlanner.Controllers
                 StartDate = DateTime.Now;
             }
             int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-            return Json(new { mql = GetMQLConversionRate(StartDate, modelId) });
-        }
-
-        private double GetMQLConversionRate(DateTime StartDate, int ModelId)
-        {
-            string stageINQ = Enums.Stage.INQ.ToString();
-            int levelINQ = db.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageINQ)).Level.Value;
-            string stageTypeCR = Enums.StageType.CR.ToString();
-            string stageMQL = Enums.Stage.MQL.ToString();
-            int levelMQL = db.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageMQL)).Level.Value;
-            ModelId = ReportController.GetModelId(StartDate, ModelId);
-            var mqllist = (from modelFunnelStage in db.Model_Funnel_Stage
-                           join stage in db.Stages on modelFunnelStage.StageId equals stage.StageId
-                           where modelFunnelStage.Model_Funnel.ModelId == ModelId &&
-                                           modelFunnelStage.StageType.Equals(stageTypeCR) &&
-                                           stage.ClientId.Equals(Sessions.User.ClientId) &&
-                                           stage.Level >= levelINQ && stage.Level < levelMQL
-                           select new
-                           {
-                               ModelId = modelFunnelStage.Model_Funnel.ModelId,
-                               value = modelFunnelStage.Value,
-                           }).GroupBy(rl => new { id = rl.ModelId }).ToList().Select(r => new
-                           {
-                               value = (r.Aggregate(1.0, (s1, s2) => s1 * (s2.value / 100)))
-                           }).Select(r => new { value = r.value }).SingleOrDefault();
-
-
-            if (mqllist != null)
-            {
-                return mqllist.value;
-            }
-
-            return 0;
+            return Json(new { mql = Common.CalculateMQLTactic(INQValue,StartDate,form.PlanTacticId,modelId)});
         }
 
         #endregion
@@ -3123,7 +3091,7 @@ namespace RevenuePlanner.Controllers
             int ModelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
 
             //// Get Model id based on effective Date.
-            ModelId = ReportController.GetModelId(EffectiveDate, ModelId);
+            ModelId = Common.GetModelId(EffectiveDate, ModelId);
 
             //// Get Effective Date of Model.
             DateTime? ModelEffectiveDate = db.Models.Where(m => m.ModelId == ModelId).Select(m => m.EffectiveDate).SingleOrDefault();
@@ -3469,7 +3437,7 @@ namespace RevenuePlanner.Controllers
 
             //// Calculating CW difference.
             double? improvedCW = Common.CalculateImprovedProjectedRevenueOrCW(Sessions.PlanId, false, 0);
-            double planCW = ReportController.ProjectedRevenueCalculate(tacticIds, true).Sum(cw => cw.ProjectedRevenue);
+            double planCW = Common.ProjectedRevenueCalculate(tacticIds, true).Sum(cw => cw.ProjectedRevenue);
             double differenceCW = Convert.ToDouble(improvedCW) - planCW;
 
 
@@ -3481,7 +3449,7 @@ namespace RevenuePlanner.Controllers
             //// Getting model based on plan id.
             int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
             //// Get Model id based on effective date From.
-            modelId = RevenuePlanner.Controllers.ReportController.GetModelId(improvementActivities.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), modelId);
+            modelId = Common.GetModelId(improvementActivities.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), modelId);
             //// Getting model.
             Model effectiveModel = db.Models.Single(model => model.ModelId.Equals(modelId));
             string funnelMarketing = Enums.Funnel.Marketing.ToString();
@@ -3507,7 +3475,7 @@ namespace RevenuePlanner.Controllers
                 improvedAverageDealSizeForProjectedRevenue = Convert.ToDouble(improvedDealSize);
             }
             double? improvedProjectedRevenue = Common.CalculateImprovedProjectedRevenueOrCW(Sessions.PlanId, true, improvedAverageDealSizeForProjectedRevenue);
-            double projectedRevenue = ReportController.ProjectedRevenueCalculate(tacticIds).Sum(cw => cw.ProjectedRevenue);
+            double projectedRevenue = ReportController.CalculateProjectedRevenueList(tacticIds, Sessions.PlanId).Sum(cw => cw.ProjectedRevenue);
             double differenceProjectedRevenue = Convert.ToDouble(improvedProjectedRevenue) - projectedRevenue;
 
             double improvedCost = improvementActivities.Sum(improvementActivity => improvementActivity.Cost);
