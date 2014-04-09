@@ -84,7 +84,7 @@ body.gradient {
 }
 
 #content_wraper {
-    overflow: auto;
+    /*overflow: auto;*/ /* edited by KAPIL - #415 */
     background: #fff;
     min-height: 100%;
     height: auto !important;
