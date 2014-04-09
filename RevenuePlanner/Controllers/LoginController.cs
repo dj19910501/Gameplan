@@ -318,6 +318,9 @@ namespace RevenuePlanner.Controllers
                 objUser.Answer = form.Answer;
                 objBDSServiceClient.UpdateUserSecurityQuestion(objUser);
 
+                Sessions.User.Answer = form.Answer;
+                Sessions.User.SecurityQuestionId = form.SecurityQuestionId;
+
                 Sessions.RedirectToSetSecurityQuestion = false;
 
                 return RedirectToAction("Index", "Home");
