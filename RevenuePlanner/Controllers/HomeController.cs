@@ -87,6 +87,7 @@ namespace RevenuePlanner.Controllers
                 var clientBusinessUnit = db.BusinessUnits.Where(b => b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
                 businessUnitIds = clientBusinessUnit.ToList();
                 planmodel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId); //commented due to not used any where
+                ViewBag.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId);//Added by Nirav for Custom Dropdown - 388
                 ViewBag.showBid = true;
             }
             else if (Sessions.IsDirector || Sessions.IsClientAdmin)
@@ -94,11 +95,13 @@ namespace RevenuePlanner.Controllers
                 var clientBusinessUnit = db.BusinessUnits.Where(b => b.ClientId.Equals(Sessions.User.ClientId) && b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
                 businessUnitIds = clientBusinessUnit.ToList();
                 planmodel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId); //commented due to not used any where
+                ViewBag.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId);//Added by Nirav for Custom Dropdown - 388
                 ViewBag.showBid = true;
             }
             else
             {
                 businessUnitIds.Add(Sessions.User.BusinessUnitId);
+                ViewBag.BusinessUnitIds = Sessions.User.BusinessUnitId;//Added by Nirav for Custom Dropdown - 388
                 ViewBag.showBid = false;
             }
 

@@ -48,7 +48,10 @@
         // Edited to add PlanYear option.
         var Currenttime = "planYear";
         $(document).ready(function () {
-            $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=false&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val());//activeMenu parameter added
+            //Added by Nirav for Custom Dropdown - 388
+            var id = $('#ddlBusinessUnit').val();
+            $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + id + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val());//activeMenu parameter added
+            //  $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=false&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val());//activeMenu parameter added
             switch ($('#ActiveMenu').val().toLowerCase()) {
                 case 'home':
                     $("#DivButtonsHome").show();
@@ -62,7 +65,7 @@
             $("#modalMainContainer").hide();
             //onClickPlanTitle();
             onClickActivity();
-            onClickBusinessUnit();
+            //  onClickBusinessUnit();//Added by Nirav for Custom Dropdown - 388
         });
         function populateNF(items, id) {
             var $dropdown = $("#" + id);
@@ -127,8 +130,8 @@
                 }
             });
         }
-
-        function addBusinessUnitItems(items, id) {
+        //Added by Nirav for Custom Dropdown - 388
+        @*function addBusinessUnitItems(items, id) {
             var $dropDown = $('#dropdown-business-unit ul');
             var $html = "";
             $('#dropdown-business-unit > ul > li').remove();//first clear menu
@@ -157,7 +160,7 @@
                 var pid = $('#PlanId').val();
                 $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + id + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val()); //activeMenu parameter added
             });
-        }
+        }*@
 
     </script>
 
@@ -344,7 +347,8 @@
 <div class="light-blue-chart cf">
     @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
 </div>
-@{
+  @* changed by Nirav for Custom Dropdown - 388*@
+@*@{
     if (showBid == true)
     {
     <div id="dropdown-business-unit" class="btn-group">
@@ -358,6 +362,22 @@
             </li>
         </ul>
     </div>
+    }
+}*@
+
+@{
+    if (showBid == true)
+    {
+    <span class="selectBox dropdown-businessUnit" id="dropdown-business-unit">
+        @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId != Guid.Empty)
+        {
+            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text", @RevenuePlanner.Helpers.Sessions.BusinessUnitId))
+        }
+        else
+        {
+            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text"))
+        }
+    </span>
     }
 }
 <script>
@@ -476,7 +496,14 @@
 <div id="divBackground" class="modal-backdrop fade in" style="display: none"></div>
 
 <script type="text/javascript">
-    
+    // Added by Nirav for Custom Dropdown - 388
+    $(".selectBox select").selectbox();
+    $('#ddlBusinessUnit').change(function () {
+        var id = $('#ddlBusinessUnit').val();
+        var pid = $('#PlanId').val();
+        $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + id + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val())
+    });
+    /*end Nirav*/
     /// Script Start
     /// Added By: Maninder Singh Wadhva.
     var GanttTabs = {

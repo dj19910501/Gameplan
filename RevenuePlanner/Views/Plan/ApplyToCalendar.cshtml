@@ -104,7 +104,7 @@
             }
         });
     }
-    function addBusinessUnitItems(items, id) {
+@*    function addBusinessUnitItems(items, id) {
         var $dropDown = $('#dropdown-business-unit ul');
         var $html = "";
         $('#dropdown-business-unit > ul > li').remove();//first clear menu
@@ -134,13 +134,14 @@
             $('#DivloadPlan').load('@Url.Action("PlanList", "Plan")' + '?Bid=' + id);
 
         });
-    }
+    }*@
     $(document).ready(function () {
         //onClickPlanTitle();
-        $('#DivloadPlan').load('@Url.Action("PlanList", "Plan")' + '?Bid=false');
+          @* changed by Nirav for Custom Dropdown - 388*@
+        var id = $('#ddlBusinessUnit').val();
+        $('#DivloadPlan').load('@Url.Action("PlanList", "Plan")' + '?Bid='+id);
         onClickActivity();
-        onClickBusinessUnit();
-
+        //onClickBusinessUnit();
     });
 
     function GetHealderData(intplanid) {
@@ -278,7 +279,8 @@
 <div class="light-blue-chart cf">
     @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
 </div>
-@{
+  @* changed by Nirav for Custom Dropdown - 388*@
+@*@{
     if (showBid == true)
     {
     <div id="dropdown-business-unit" class="btn-group">
@@ -292,6 +294,21 @@
             </li>
         </ul>
     </div>
+    }
+}*@
+@{
+    if (showBid == true)
+    {
+    <span class="selectBox dropdown-businessUnit" id="dropdown-business-unit">
+        @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId != Guid.Empty)
+        {
+            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text", @RevenuePlanner.Helpers.Sessions.BusinessUnitId))
+        }
+        else
+        {
+            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text"))
+        }
+    </span>
     }
 }
 <script>
@@ -334,7 +351,14 @@
 @Html.Hidden("hdnMsg", (string)ViewBag.Msg, new { id = "hdnMsg" })
 @Html.Hidden("hdnisError", (bool)ViewBag.isError, new { id = "hdnisError" })
 <script type="text/javascript">
-
+    // Added by Nirav for Custom Dropdown - 388
+    $(".selectBox select").selectbox();
+    $('#ddlBusinessUnit').change(function () {
+        var id = $('#ddlBusinessUnit').val();
+        var pid = $('#PlanId').val();
+        $('#DivloadPlan').load('@Url.Action("PlanList", "Plan")' + '?Bid=' + id);
+    });
+    /*end Nirav*/
     //// Global variable to hold quarter or year.
     var isQuater = Currenttime;// false;
 
