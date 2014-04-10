@@ -1290,7 +1290,7 @@ namespace RevenuePlanner.Controllers
             // Calculate MQL at runtime #376
             List<Plan_Tactic_MQL> MQLTacticList = Common.GetMQLTacticList((from t in tactic select t.PlanTacticId).ToList<int>());
             // Ticket #345
-            List<ProjectedRevenueClass> tacticList = ReportController.CalculateProjectedRevenueList((from t in tactic select t.PlanTacticId).ToList<int>(), Sessions.PlanId);
+            List<ProjectedRevenueClass> tacticList = Common.ProjectedRevenueCalculate((from t in tactic select t.PlanTacticId).ToList<int>());
             var taskDataTactic = tactic.Select(t => new
             {
                 id = string.Format("C{0}_P{1}_T{2}_Y{3}", t.Plan_Campaign_Program.PlanCampaignId, t.Plan_Campaign_Program.PlanProgramId, t.PlanTacticId, t.TacticTypeId),
@@ -1309,7 +1309,7 @@ namespace RevenuePlanner.Controllers
                 inqs = t.INQs,
                 mqls = MQLTacticList.Where(tm => tm.PlanTacticId == t.PlanTacticId).Select(tm => tm.MQL),
                 cost = t.Cost,
-                cws = t.Status.Equals(tacticStatusSubmitted) || t.Status.Equals(tacticStatusDeclined) ? Math.Round(tacticList.Where(tl => tl.PlanTacticId == t.PlanTacticId).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 2) : 0,
+                cws = t.Status.Equals(tacticStatusSubmitted) || t.Status.Equals(tacticStatusDeclined) ? Math.Round(tacticList.Where(tl => tl.PlanTacticId == t.PlanTacticId).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 1) : 0,
                 plantacticid = t.PlanTacticId
             }).OrderBy(t => t.text);
 
@@ -2248,10 +2248,10 @@ namespace RevenuePlanner.Controllers
             InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower());
             List<int> tid = new List<int>();
             tid.Add(id);
-            List<ProjectedRevenueClass> tacticList = ReportController.CalculateProjectedRevenueList(tid, Sessions.PlanId);
-            im.Revenues = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 2);
+            List<ProjectedRevenueClass> tacticList = Common.ProjectedRevenueCalculate(tid);
+            im.Revenues = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 1);
             tacticList = Common.ProjectedRevenueCalculate(tid, true);
-            im.CWs = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 2);
+            im.CWs = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 1);
             string modifiedBy = string.Empty;
             string createdBy = string.Empty;
             DateTime? modifiedDate = null;
@@ -3552,7 +3552,7 @@ namespace RevenuePlanner.Controllers
             // Added BY Bhavesh
             // Calculate MQL at runtime #376
             List<Plan_Tactic_MQL> MQLTacticList = Common.GetMQLTacticList(tacticIds);
-            List<ProjectedRevenueClass> tacticList = ReportController.CalculateProjectedRevenueList(tacticIds, Sessions.PlanId);
+            List<ProjectedRevenueClass> tacticList = Common.ProjectedRevenueCalculate(tacticIds);
             List<ProjectedRevenueClass> tacticListCW = Common.ProjectedRevenueCalculate(tacticIds, true);
             var listModified = tactic.Where(t => t.ModifiedDate != null).Select(t => t).ToList();
             foreach (var t in listModified)
@@ -3569,9 +3569,9 @@ namespace RevenuePlanner.Controllers
                 inqActual = t.INQsActual == null ? 0 : t.INQsActual,
                 mqlProjected = MQLTacticList.Where(tm => tm.PlanTacticId == t.PlanTacticId).Select(tm => tm.MQL),
                 mqlActual = t.MQLsActual == null ? 0 : t.MQLsActual,
-                cwProjected = Math.Round(tacticListCW.Where(tl => tl.PlanTacticId == t.PlanTacticId).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 2),
+                cwProjected = Math.Round(tacticListCW.Where(tl => tl.PlanTacticId == t.PlanTacticId).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 1),
                 cwActual = t.CWsActual == null ? 0 : t.CWsActual,
-                revenueProjected = Math.Round(tacticList.Where(tl => tl.PlanTacticId == t.PlanTacticId).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 2),
+                revenueProjected = Math.Round(tacticList.Where(tl => tl.PlanTacticId == t.PlanTacticId).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 1),
                 revenueActual = t.RevenuesActual == null ? 0 : t.RevenuesActual,
                 costProjected = t.Cost,
                 costActual = t.CostActual == null ? 0 : t.CostActual,

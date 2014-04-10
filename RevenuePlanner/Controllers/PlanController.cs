@@ -3480,17 +3480,17 @@ namespace RevenuePlanner.Controllers
                 improvedAverageDealSizeForProjectedRevenue = Convert.ToDouble(improvedDealSize);
             }
             double? improvedProjectedRevenue = Common.CalculateImprovedProjectedRevenueOrCW(Sessions.PlanId, true, improvedAverageDealSizeForProjectedRevenue);
-            double projectedRevenue = ReportController.CalculateProjectedRevenueList(tacticIds, Sessions.PlanId).Sum(cw => cw.ProjectedRevenue);
+            double projectedRevenue = Common.ProjectedRevenueCalculate(tacticIds).Sum(cw => cw.ProjectedRevenue);
             double differenceProjectedRevenue = Convert.ToDouble(improvedProjectedRevenue) - projectedRevenue;
 
             double improvedCost = improvementActivities.Sum(improvementActivity => improvementActivity.Cost);
             return Json(new
             {
                 MQL = Math.Round(differenceMQL),
-                CW = Math.Round(differenceCW),
+                CW = Math.Round(differenceCW,1),
                 ADS = Math.Round(differenceDealSize),
                 Velocity = Math.Round(differenceSV),
-                Revenue = Math.Round(differenceProjectedRevenue),
+                Revenue = Math.Round(differenceProjectedRevenue,1),
                 Cost = Math.Round(improvedCost)
             }, JsonRequestBehavior.AllowGet);
         }

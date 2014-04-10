@@ -909,10 +909,10 @@
                         $html += ' ' + mqltext +' yielding <strong>';
                         var cwValue = parseFloat(data.CW);
                         if (cwValue < 0) {
-                            $html += FormatCommas(Math.abs(cwValue).toString(), false) + '</strong> less';
+                            $html += FormatCommas(Math.abs(cwValue).toString(), true) + '</strong> less';
                         }
                         else {
-                            $html += FormatCommas(cwValue.toString(), false) + '</strong> more';
+                            $html += FormatCommas(cwValue.toString(), true) + '</strong> more';
                         }
                         if (cwValue <= 1) {
                             $html += ' CW,<br><strong>';
@@ -942,10 +942,10 @@
                         
                         var revenueValue = parseFloat(data.Revenue);
                         if (revenueValue < 0) {
-                            $html += '-' + FormatCurrency(Math.abs(revenueValue).toString(), false);
+                            $html += '-' + FormatCurrency(Math.abs(revenueValue).toString(), true);
                         }
                         else {
-                            $html += '' + FormatCurrency(revenueValue.toString(), false);
+                            $html += '' + FormatCurrency(revenueValue.toString(), true);
                         }
 
                         $html += '<br> on ';

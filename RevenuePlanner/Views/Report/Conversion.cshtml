@@ -96,8 +96,8 @@
         </li>
     }
 </ul>
-<ul class="nav nav-tabs nav-bars-table" id="ChildULConversionSummary">
-</ul>
+@*<ul class="nav nav-tabs nav-bars-table" id="ChildULConversionSummary">
+</ul>*@
 
 <div id="DivHtmlContent" class="padding-content cf source-sans-proregular">
     <table id="table_reports" class="table">
@@ -320,7 +320,7 @@
 
         //---------------- Code related to Conversion summary child tab --------------------//
         var parentSummaryTab = $('#ParentULConversionSummary li.active').children().text();
-        LoadConversionSummaryChildData(); // this will load default data for conversion summary
+        LoadConversionSummaryData(); // this will load default data for conversion summary
 
         $("#ParentULConversionSummary li").click(function () {
             var selectParent = $(this).children().text();
@@ -330,7 +330,8 @@
                 $(this).removeClass("disabled");
                 $(this).addClass("active");
                 parentSummaryTab = selectParent;
-                LoadConversionSummaryChildData();
+                //LoadConversionSummaryChildData();
+                LoadConversionSummaryData();
             }
         });
 
@@ -343,16 +344,16 @@
             });
         }
 
-        function RemoveTabClassChildULConversionSummary() {
-            $('#ChildULConversionSummary').children().each(function () {
-                if ($(this).hasClass('active')) {
-                    $(this).removeClass("active");
-                    $(this).addClass("disabled");
-                }
-            });
-        }
+        //function RemoveTabClassChildULConversionSummary() {
+        //    $('#ChildULConversionSummary').children().each(function () {
+        //        if ($(this).hasClass('active')) {
+        //            $(this).removeClass("active");
+        //            $(this).addClass("disabled");
+        //        }
+        //    });
+        //}
 
-        function LoadConversionSummaryChildData() {
+       @* function LoadConversionSummaryChildData() {
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Report/GetChildTabForConversionSummary/")',
@@ -374,28 +375,27 @@
                     }
                 }
             });
-        }
+        }*@
 
-        function LoadConversionSummaryChildClick() {
-            $("#ChildULConversionSummary li").click(function () {
-                RemoveTabClassChildULConversionSummary();
-                $(this).removeClass("disabled");
-                $(this).addClass("active");
-                var selectParent = $(this).children().text();
-                var selectId = $(this).attr("id");
-                LoadConversionSummaryData(selectId);
-            });
-            var Childid = $("#ChildULConversionSummary").find('li:first').attr("id");
-            LoadConversionSummaryData(Childid);
-        }
+        //function LoadConversionSummaryChildClick() {
+        //    $("#ChildULConversionSummary li").click(function () {
+        //        RemoveTabClassChildULConversionSummary();
+        //        $(this).removeClass("disabled");
+        //        $(this).addClass("active");
+        //        var selectParent = $(this).children().text();
+        //        var selectId = $(this).attr("id");
+        //        LoadConversionSummaryData(selectId);
+        //    });
+        //    var Childid = $("#ChildULConversionSummary").find('li:first').attr("id");
+        //    LoadConversionSummaryData(Childid);
+        //}
 
-        function LoadConversionSummaryData(Id) {
+        function LoadConversionSummaryData() {
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Report/GetConversionSummary/")',
                 data: {
                     ParentConversionSummaryTab: parentSummaryTab,
-                    Id: Id,
                     selectOption: selectOption
                 },
                 dataType: "json",
@@ -524,9 +524,45 @@
             $('#table_reports > tbody > tr').empty();
             if (typeof reportTableInfo != 'undefined') {
                 if (reportTableInfo.data.length) {
+                    var totalRow = reportTableInfo.data.length;
+                    var sumINQ = 0, sumMQl = 0, sumCW = 0, sumProjectedCW = 0, sumProjectedRevenue = 0, sumActualRevenue = 0, sumActualADS = 0, sumProjectedADS = 0;
                     for (i in reportTableInfo.data) {
-                        addRowReport(reportTableInfo.data[i].title, reportTableInfo.data[i].newInq, reportTableInfo.data[i].inqMql, reportTableInfo.data[i].mql, reportTableInfo.data[i].cw, reportTableInfo.data[i].ads, reportTableInfo.data[i].revenue, reportTableInfo.data[i].type);
+                        sumINQ += parseFloat(reportTableInfo.data[i].INQ);
+                        sumMQl += parseFloat(reportTableInfo.data[i].MQL);
+                        sumCW += parseFloat(reportTableInfo.data[i].ActualCW);
+                        sumProjectedCW += parseFloat(reportTableInfo.data[i].ProjectedCW);
+                        sumActualRevenue += parseFloat(reportTableInfo.data[i].ActualRevenue);
+                        sumActualADS += parseFloat(reportTableInfo.data[i].ActualADS);
+                        sumProjectedRevenue += parseFloat(reportTableInfo.data[i].ProjectedRevenue);
+                        sumProjectedADS += parseFloat(reportTableInfo.data[i].ProjectedADS);
+                        addRowReport(reportTableInfo.data[i].Title, reportTableInfo.data[i].INQ, reportTableInfo.data[i].MQL, reportTableInfo.data[i].ActualCW, reportTableInfo.data[i].ActualRevenue, reportTableInfo.data[i].ActualADS, reportTableInfo.data[i].ProjectedRevenue, reportTableInfo.data[i].ProjectedADS);
                     }
+                    var $tableReports = $('#table_reports > tbody');
+                        $tableReports.append('<tr><td class="report-gray-row"></td>' +
+                                           '<td class="border-r report-gray-row">Blended Average</td>' +
+                                           '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(sumINQ / totalRow) + '</td>' +
+                                           '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(sumMQl / totalRow) + '</td>' +
+                                           '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(sumCW / totalRow) + '</td>' +
+                                           '<td class="border-r report-gray-row"><div class="div-line">' + FormatNumber(sumActualADS / totalRow, false) + '</div><div>' + FormatNumber(sumProjectedADS / totalRow, false) + '</div></td>' +
+                                           '<td class="border-r light-blue-row" ><div class="div-line small-bold-text">' + FormatNumber(sumActualRevenue / totalRow, false) + '</div><div class="small-bold-text">' + FormatNumber(sumProjectedRevenue / totalRow, false) + '</div></td>' +
+                                           '</tr>');
+
+                        var actualADSTotal = 0, projectedADSTotal = 0;
+                        if (sumCW > 0) {
+                            actualADSTotal = sumActualRevenue / sumCW;
+                        }
+                        if (sumProjectedCW > 0) {
+                            projectedADSTotal = sumProjectedRevenue / sumProjectedCW;
+                        }
+                        $tableReports.append('<tr><td class="report-gray-row"></td>' +
+                                           '<td class="border-r report-gray-row">Total</td>' +
+                                           '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(sumINQ) + '</td>' +
+                                           '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(sumMQl) + '</td>' +
+                                           '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(sumCW) + '</td>' +
+                                           '<td class="border-r report-gray-row"><div class="div-line">' + FormatNumber(actualADSTotal, false) + '</div><div>' + FormatNumber(projectedADSTotal, false) + '</div></td>' +
+                                           '<td class="border-r light-blue-row" ><div class="div-line small-bold-text">' + FormatNumber(sumActualRevenue, false) + '</div><div class="small-bold-text">' + FormatNumber(sumProjectedRevenue, false) + '</div></td>' +
+                                           '</tr>');
+
                 } else {
                     $('#table_reports > tbody').append('<tr><td colspan="8" class="gray">No saved reports to display.</td></tr>');
                 }
@@ -534,36 +570,24 @@
         }
 
         //add row in reports table - for Conversion Summary report, this function will be called from FillReportTable
-        function addRowReport(_title, _newInq, _inqMql, _mql, _cw, _ads, _revenue, _type) {
+        function addRowReport(_title, _Inq, _mql, _actualcw, _actualRevenue, _actualADS, _projectedRevenue, _projectedADS) {
             var $tableReports = $('#table_reports > tbody');
 
             if ($tableReports.find("tr td.gray").html() == "No saved reports to display.") {
                 $tableReports.find("tr").remove();
             }
-            if (_type == 1) {
                 $tableReports.append('<tr><td></td>' +
                                     '<td class="border-r">' + _title + '</td>' +
-                                    '<td class="border-r large-bold-text">' + FormatWithRoundValue(_newInq) + '</td>' +
+                                    '<td class="border-r large-bold-text">' + FormatWithRoundValue(_Inq) + '</td>' +
                                     // Comment line as per Pl Ticket 356.
                                     //'<td class="border-r"><div class="div-line">' + FormatWithRoundValue(_inqMql[0].val) + '</div><div>' + FormatWithRoundValue(_inqMql[1].val) + '</div></td>' +
                                     '<td class="border-r large-bold-text">' + FormatWithRoundValue(_mql) + '</td>' +
-                                    '<td class="border-r large-bold-text">' + FormatWithRoundValue(_cw) + '</td>' +
-                                    '<td class="border-r"><div class="div-line">' + FormatNumber(_ads[0].val, false) + '</div><div>' + FormatNumber(_ads[1].val, false) + '</div></td>' +
-                                    '<td class="border-r light-blue-row"><div class="div-line small-bold-text">' + FormatNumber(_revenue[0].val, false) + '</div><div class="small-bold-text">' + FormatNumber(_revenue[1].val, false) + '</div></td>' +
+                                    '<td class="border-r large-bold-text">' + FormatWithRoundValue(_actualcw) + '</td>' +
+                                    '<td class="border-r"><div class="div-line">' + FormatNumber(_actualADS, false) + '</div><div>' + FormatNumber(_projectedADS, false) + '</div></td>' +
+                                    '<td class="border-r light-blue-row"><div class="div-line small-bold-text">' + FormatNumber(_actualRevenue, false) + '</div><div class="small-bold-text">' + FormatNumber(_projectedRevenue, false) + '</div></td>' +
                                     '</tr>');
-            }
-            if (_type == 2) {
-                $tableReports.append('<tr><td class="report-gray-row"></td>' +
-                                   '<td class="border-r report-gray-row">' + _title + '</td>' +
-                                   '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(_newInq) + '</td>' +
-                                   // Comment line as per Pl Ticket 356.
-                                   //'<td class="border-r report-gray-row"><div class="div-line">' + FormatWithRoundValue(_inqMql[0].val) + '</div><div>' + FormatWithRoundValue(_inqMql[1].val) + '</div></td>' +
-                                   '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(_mql) + '</td>' +
-                                   '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(_cw) + '</td>' +
-                                   '<td class="border-r report-gray-row"><div class="div-line">' + FormatNumber(_ads[0].val, false) + '</div><div>' + FormatNumber(_ads[1].val, false) + '</div></td>' +
-                                   '<td class="border-r light-blue-row" ><div class="div-line small-bold-text">' + FormatNumber(_revenue[0].val, false) + '</div><div class="small-bold-text">' + FormatNumber(_revenue[1].val, false) + '</div></td>' +
-                                   '</tr>');
-            }
+
+               
         }
 
         //fill reports table with data from json - For MQL Conversion Plan data
