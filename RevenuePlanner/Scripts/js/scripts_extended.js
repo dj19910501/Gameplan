@@ -273,6 +273,10 @@ function FormatNumber(value, isPercentage) {
 //// Added By Maninder Singh 
 //// Date 1/28/2014
 //// Function to append abberiviation i.e. K - for thousand, M- for million ,B - for billion and T - for trillion.
+
+//// Changed By Nirav Shah
+//// Date 4/10/2014
+//// PL 343 : Revenue Report - Limit all numbers to 3 digits
 function GetAbberiviatedValue(value) {
     var absValue = Math.abs(value);
     absValue = absValue.toFixed();
@@ -282,23 +286,80 @@ function GetAbberiviatedValue(value) {
         value = numberWithCommas(absValue);
     }
     else if (absValue < 1000000) {
-        value = (Math.round(parseFloat(absValue / 1000) * 100) / 100);
-        value = Number(value).toFixed(2);
+        if (absValue >= 1000 && absValue < 10000) {
+            value = (Math.round(parseFloat(absValue / 1000)));
+            value = Number(value).toFixed(2);
+        }
+        else if (absValue >= 10000 && absValue < 100000) {
+            value = (Math.round(parseFloat(absValue / 1000)));
+            value = Number(value).toFixed(1);
+        }
+        else if (absValue >= 100000 && absValue < 1000000) {
+            value = (Math.round(parseFloat(absValue / 1000)));
+            value = Number(value).toFixed(0);
+        }
+        // value = (Math.round(parseFloat(absValue / 1000) * 100) / 100);
         value = value.toString() + 'k';
     }
     else if (absValue < 1000000000) {
-        value = (Math.round(parseFloat(absValue / 1000000) * 100) / 100);
-        value = Number(value).toFixed(2);
+        if (absValue >= 1000000 && absValue < 10000000) {
+            value = (Math.round(parseFloat(absValue / 1000000)));
+            value = Number(value).toFixed(2);
+        }
+        else if (absValue >= 10000000 && absValue < 100000000) {
+            value = (Math.round(parseFloat(absValue / 1000000)));
+            value = Number(value).toFixed(1);
+        }
+        else if (absValue >= 100000000 && absValue < 1000000000) {
+            value = (Math.round(parseFloat(absValue / 1000000)));
+            if (value == 1000) {
+                value = 100;
+            }
+            value = Number(value).toFixed(0);
+        }
+        //  value = (Math.round(parseFloat(absValue / 1000000) * 100) / 100);
         value = value.toString() + 'M';
     }
     else if (absValue < 1000000000000) {
-        value = (Math.round(parseFloat(absValue / 1000000000) * 100) / 100);
-        value = Number(value).toFixed(2);
+        if (absValue >= 1000000000 && absValue < 10000000000) {
+            value = (Math.round(parseFloat(absValue / 1000000000)));
+            value = Number(value).toFixed(2);
+        }
+        else if (absValue >= 10000000000 && absValue < 100000000000) {
+            value = (Math.round(parseFloat(absValue / 1000000000)));
+            value = Number(value).toFixed(1);
+        }
+        else if (absValue >= 100000000000 && absValue < 1000000000000) {
+            value = (Math.round(parseFloat(absValue / 1000000000)));
+            if (value == 1000) {
+                value = 100;
+            }
+            value = Number(value).toFixed(0);
+        }
+
+        if (value == 1000) {
+            alert(absValue);
+        }
+        //value = (Math.round(parseFloat(absValue / 1000000000) * 100) / 100);
         value = value.toString() + 'B';
     }
     else {
-            value = (Math.round(parseFloat(absValue / 1000000000000) * 100) / 100);
-        value = Number(value).toFixed(2);
+        if (absValue >= 1000000000000 && absValue < 10000000000000) {
+            value = (Math.round(parseFloat(absValue / 1000000000000)));
+            value = Number(value).toFixed(2);
+        }
+        else if (absValue >= 10000000000000 && absValue < 100000000000000) {
+            value = (Math.round(parseFloat(absValue / 1000000000000)));
+            value = Number(value).toFixed(1);
+        }
+        else if (absValue >= 100000000000000 && absValue < 1000000000000000) {
+            value = (Math.round(parseFloat(absValue / 1000000000000)));
+            if (value == 1000) {
+                value = 100;
+            }
+            value = Number(value).toFixed(0);
+        }
+        //value = (Math.round(parseFloat(absValue / 1000000000000) * 100) / 100);
         value = value.toString() + 'T';
     }
 
