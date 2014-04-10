@@ -2055,11 +2055,11 @@ namespace RevenuePlanner.Helpers
                     //// Adding to improved value 
                     if (isProjectedRevenue)
                     {
-                        improvedValue += affectedMarketingActivities.Select(affectedTactic => Math.Round(affectedTactic.INQs * cwConversionRate) * averageDealSize).Sum();
+                        improvedValue += affectedMarketingActivities.Select(affectedTactic => affectedTactic.INQs * cwConversionRate * averageDealSize).Sum();
                     }
                     else
                     {
-                        improvedValue += affectedMarketingActivities.Select(affectedTactic => Math.Round(affectedTactic.INQs * cwConversionRate)).Sum();
+                        improvedValue += affectedMarketingActivities.Select(affectedTactic => affectedTactic.INQs * cwConversionRate).Sum();
                     }
                 }
             }
@@ -2071,7 +2071,7 @@ namespace RevenuePlanner.Helpers
 
                 if (isProjectedRevenue)
                 {
-                    unaffectedMarketingActivities = ReportController.CalculateProjectedRevenueList(unaffectedMarketingActivitiesIds, Sessions.PlanId);
+                    unaffectedMarketingActivities = ProjectedRevenueCalculate(unaffectedMarketingActivitiesIds);
                 }
                 else
                 {
@@ -2714,7 +2714,7 @@ namespace RevenuePlanner.Helpers
                                                       select new ProjectedRevenueClass
                                                       {
                                                           PlanTacticId = t.PlanTacticId,
-                                                          ProjectedRevenue = isCW ? Math.Round(tactic.INQs * ml.ConversionRate) : Math.Round(tactic.INQs * ml.ConversionRate) * ml.AverageDealSize
+                                                          ProjectedRevenue = isCW ? tactic.INQs * ml.ConversionRate : tactic.INQs * ml.ConversionRate * ml.AverageDealSize
                                                       }).ToList();
             
             return tacticList;
