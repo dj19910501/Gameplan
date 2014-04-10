@@ -1191,7 +1191,7 @@ namespace RevenuePlanner.Helpers
                 {
                     if (System.Web.HttpContext.Current.Cache[userId + "_photo"] != null)
                     {
-                        var userData = new { imageBytes = System.Web.HttpContext.Current.Cache[userId + "_photo"] };
+                        var userData = new { imageBytes = System.Web.HttpContext.Current.Cache[userId + "_photo"], name = System.Web.HttpContext.Current.Cache[userId + "_name"] };
                         data.Add(userData);
                     }
                     else
@@ -1231,7 +1231,8 @@ namespace RevenuePlanner.Helpers
 
                 string imageBytesBase64String = Convert.ToBase64String(imageBytes);
                 System.Web.HttpContext.Current.Cache[user.UserId + "_photo"] = imageBytesBase64String;
-                var userData = new { imageBytes = imageBytesBase64String };
+                System.Web.HttpContext.Current.Cache[user.UserId + "_name"] = user.FirstName + " " + user.LastName;
+                var userData = new { imageBytes = imageBytesBase64String, name = user.FirstName + " " + user.LastName };
                 data.Add(userData);
             }
 
@@ -1240,6 +1241,7 @@ namespace RevenuePlanner.Helpers
             jsonResult.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
             return jsonResult;
         }
+       
         #endregion
 
         #region Change log related functions

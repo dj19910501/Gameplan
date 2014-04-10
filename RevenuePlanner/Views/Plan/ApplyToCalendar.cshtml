@@ -561,9 +561,10 @@
         console.log(collaborator);
         // Get collaborator image
         var imgs = collaborator.imageBytes;
+        var username = collaborator.name;
 
         // Set collaborator image
-        var collaboratorImage = "<img class=\"avatar-user img-border align_avatar_image\""
+        var collaboratorImage = "<img title='" + username + "' class=\"avatar-user img-border align_avatar_image\""
          + "src='" + "data:image/jpg;base64,"
          + imgs + "'/>";
         $("#divCollaborator").prepend(collaboratorImage);

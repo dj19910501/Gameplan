@@ -424,7 +424,7 @@ namespace RevenuePlanner.Controllers
             {
                 //// Getting all business unit for client of director.
                 planModel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId);
-                  //Added by Nirav for Custom Dropdown - 388
+                //Added by Nirav for Custom Dropdown - 388
                 ViewBag.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId);
                 ViewBag.showBid = true;
             }
@@ -534,6 +534,7 @@ namespace RevenuePlanner.Controllers
             return Json(new
             {
                 collaboratorsImage = collaboratorsImage,
+                name = collaboratorsImage,
                 lastUpdateDate = String.Format("{0:g}", Common.GetLastUpdatedDate(currentPlanId))
             }, JsonRequestBehavior.AllowGet);
         }
@@ -1194,7 +1195,7 @@ namespace RevenuePlanner.Controllers
                         description = pcptj.Description,
                         cost = pcptj.Cost,
                         inqs = pcptj.INQs,
-                        mqls = Common.CalculateMQLTactic(pcptj.INQs,pcptj.StartDate,pcptj.PlanTacticId,pcptj.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId),
+                        mqls = Common.CalculateMQLTactic(pcptj.INQs, pcptj.StartDate, pcptj.PlanTacticId, pcptj.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId),
                         /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
                          changed by : Nirav Shah on 13 feb 2014*/
                         isOwner = Sessions.User.UserId == pcptj.CreatedBy ? 0 : 1,
@@ -2305,7 +2306,7 @@ namespace RevenuePlanner.Controllers
                 StartDate = DateTime.Now;
             }
             int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-            return Json(new { mql = Common.CalculateMQLTactic(INQValue,StartDate,form.PlanTacticId,modelId)});
+            return Json(new { mql = Common.CalculateMQLTactic(INQValue, StartDate, form.PlanTacticId, modelId) });
         }
 
         #endregion
@@ -2558,7 +2559,7 @@ namespace RevenuePlanner.Controllers
                            select p).OrderBy(q => q.Year).ToList();
 
             /* Modified by Sohel on 08/04/2014 for PL #424 to Show year's tab starting from left to right i.e. 2010, 2011, 2012..., Ordering has been changed.*/
-            var lstYears = objPlan.OrderByDescending(p => p.Year).Select(p => p.Year).Distinct().Take(10).ToList();  
+            var lstYears = objPlan.OrderByDescending(p => p.Year).Select(p => p.Year).Distinct().Take(10).ToList();
 
             return Json(lstYears, JsonRequestBehavior.AllowGet);
         }
@@ -2937,7 +2938,7 @@ namespace RevenuePlanner.Controllers
                                     if (!isDirectorLevelUser) isReSubmission = true;
                                 }
                                 pcpobj.Description = form.Description;
-                               
+
                                 if (pcpobj.EffectiveDate != form.EffectiveDate)
                                 {
                                     pcpobj.EffectiveDate = form.EffectiveDate;
