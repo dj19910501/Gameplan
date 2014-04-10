@@ -3240,7 +3240,8 @@ span.accept-icon:hover, span.accept-icon.active {
       Sidebar-form
 -----------------------------*/
 .sidebar-form {
-    background-color: #3f403f;
+    background-color: #fff; /* Edited by KAPIL 100414 - Boost Sidebar design change - #357 */
+    box-shadow: -3px 0 11px 0 #999999; /* Added by KAPIL 100414 - Boost Sidebar design change - #357 */
     width: 275px !important;
     height: 100%;
     position: fixed;
@@ -3250,12 +3251,12 @@ span.accept-icon:hover, span.accept-icon.active {
 }
 
     .sidebar-form .head {
-        background: #333333;
+        background: #f2f2f2; /* Edited by KAPIL 100414 - Boost Sidebar design change - #357 */
         padding: 10px 20px;
     }
 
         .sidebar-form .head .close-form {
-            color: #908d88;
+            color: #ccc; /* Edited by KAPIL 100414 - Boost Sidebar design change - #357 */
             cursor: pointer;
         }
 
@@ -3265,7 +3266,7 @@ span.accept-icon:hover, span.accept-icon.active {
 
         .sidebar-form .head h2 {
             font-size: 30px;
-            color: #b3b3b3;
+            color: #6b6c6e;
             font-weight: normal;
             margin: 0;
             float: left;
@@ -3273,12 +3274,16 @@ span.accept-icon:hover, span.accept-icon.active {
 
         .sidebar-form .head h3 {
             font-size: 28px;
-            color: #b3b3b3;
+            color: #b3b3b3; /* Edited by KAPIL 100414 - Boost Sidebar design change - #357 */
             font-weight: normal;
             margin: 0;
             float: left;
         }
-
+        /* Added by KAPIL 100414 - Boost Sidebar design change - #357 */
+        .btn-group.open .dropdown-toggle {
+            box-shadow:none;
+        }
+        /* */
         .sidebar-form .head span.duplicate {
             background: url("../images/duplicate-icon-sidebar.png") no-repeat;
             width: 25px;
@@ -3315,18 +3320,18 @@ span.accept-icon:hover, span.accept-icon.active {
     /* Gear dropdown styles */
     .sidebar-form .content, .sidebar-form .content.dark {
         padding: 20px;
-        color: #b3b3b3 !important;
+        /*color: #b3b3b3 !important;*/ /* Removed by KAPIL 100414 - Boost Sidebar design change - #357 */
     }
 
         .sidebar-form .content.dark {
-            background: #333333;
+            background: #f2f2f2; /* Edited by KAPIL 100414 - Boost Sidebar design change - #357 */
         }
 
         .sidebar-form .content input[type=text], .sidebar-form .content textarea {
-            background-color: #222222;
+            /*background-color: #222222;*/ /* Removed by KAPIL 100414 - Boost Sidebar design change - #357 */
             width: calc(100% - 14px);
-            border-color: #4d4d4d;
-            color: #666;
+            border-color: #C6C6C6; /* Edited by KAPIL 100414 - Boost Sidebar design change - #357 */
+            color: #6D6D6D; /* Edited by KAPIL 100414 - Boost Sidebar design change - #357 */
         }
 
         .sidebar-form .content input::-moz-placeholder, .sidebar-form .content input:active::-moz-placeholder, .sidebar-form .content input:focus::-moz-placeholder {
@@ -3346,10 +3351,13 @@ span.accept-icon:hover, span.accept-icon.active {
             width: 5px !important;
         }
 
+         /* Edited by KAPIL 100414 - Boost Sidebar design change - #357 */
         .sidebar-form .content .add-on {
-            background: #222222;
-            border-color: #4d4d4d;
+            background: transparent;
+            /*border-color: #4d4d4d;*/
+            padding:0;
         }
+        /* */
 
     .sidebar-form form {
         margin-bottom: 0px;
@@ -3361,7 +3369,7 @@ span.accept-icon:hover, span.accept-icon.active {
     }
 
         .sidebar-form .wraper-btns .btn-link {
-            color: #908d88;
+            color: #908D88;
             text-align: center;
             line-height: 35px;
         }
@@ -3387,27 +3395,31 @@ span.accept-icon:hover, span.accept-icon.active {
     border-top: 4px solid #908D88;
 }
 
-.sidebar-form .dropdown-menu {
+/* Removed by KAPIL 100414 - Boost Sidebar design change - #357 */
+/*.sidebar-form .dropdown-menu {
     background-color: #A3A3A3!important;
-}
+}*/
 
     .sidebar-form .dropdown-menu > li > a {
-        color: #000000;
+        color: #555; /* Edited by KAPIL 100414 - Boost Sidebar design change - #357 */
     }
 
+     /* Edited by KAPIL 100414 - Boost Sidebar design change - #357 */
         .sidebar-form .dropdown-menu > li > a:hover, .sidebar-form .dropdown-menu > li > a:focus,
         .sidebar-form .dropdown-submenu:hover > a, .sidebar-form .dropdown-submenu:focus > a {
-            background: #444444 !important;
-            color: #908d88;
+            background: #DFF0F8 !important;
+            color: #808080;
         }
 
+/* Edited by KAPIL 100414 - Boost Sidebar design change - #357 */
 .sidebar-form textarea:focus, .sidebar-form input[type="text"]:focus, .sidebar-form input[type="password"]:focus, .sidebar-form input[type="datetime"]:focus,
-.sidebar-form input[type="datetime-local"]:focus, input[type="date"]:focus, .sidebar-form input[type="month"]:focus, .sidebar-form input[type="time"]:focus,
+.sidebar-form input[type="datetime-local"]:focus, .sidebar-form input[type="date"]:focus, .sidebar-form input[type="month"]:focus, .sidebar-form input[type="time"]:focus,
 .sidebar-form input[type="week"]:focus, .sidebar-form input[type="number"]:focus, .sidebar-form input[type="email"]:focus, .sidebar-form input[type="url"]:focus,
 .sidebar-form input[type="search"]:focus, .sidebar-form input[type="tel"]:focus, .sidebar-form input[type="color"]:focus, .sidebar-form .uneditable-input:focus {
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.045) inset, 0 0 8px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.045) inset, 0 0 5px rgba(0, 0, 0, 0.2);
     outline: 0 none;
 }
+/* */
 
 input.icon-check-gray {
     background-image: url("../images/circle-check-icon-gray.png");
@@ -3419,6 +3431,7 @@ input.icon-check-blue {
     background-image: url("../images/circle-check-icon-small-blue.png");
     background-repeat: no-repeat;
     background-position: right;
+    background-color: #DCEDF7; /* Added by KAPIL 100414 - Boost Sidebar design change - #357 */
 }
 
 .content.dark p {

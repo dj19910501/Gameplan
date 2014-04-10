@@ -64,18 +64,18 @@
                 <div class="cf margin-top10 margin-left-4">
                     <div class="pull-left width50">
                         <label class="padding-left4">Start date</label>
-                        <div class="dp datepicker input-append date without-margin calendar-width" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.dateFormat">
-                            @Html.TextBoxFor(model => model.StartDate, new { @class = "span2 black-border-right font-size13 padding-bottom14", id = "t_startdate" })
-                            <span class="add-on height30">
+                        <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.dateFormat">
+                            @Html.TextBoxFor(model => model.StartDate, new { @class = "span2 black-border-right font-size13", id = "t_startdate" })
+                            <span class="add-on">
                                 <img src="~/Content/images/gray-calendar-icon.png"></span>
                         </div>
                     </div>
 
                     <div class="pull-right width50">
                         <label class="padding-left4">End date</label>
-                        <div class="dp datepicker input-append date without-margin calendar-width" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.dateFormat">
-                            @Html.TextBoxFor(model => model.EndDate, new { @class = "span2 black-border-right font-size13 padding-bottom14", id = "t_enddate" })
-                            <span class="add-on height30">
+                        <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.dateFormat">
+                            @Html.TextBoxFor(model => model.EndDate, new { @class = "span2 black-border-right font-size13", id = "t_enddate" })
+                            <span class="add-on">
                                 <img src="~/Content/images/gray-calendar-icon.png"></span>
                         </div>
                     </div>
