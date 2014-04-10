@@ -420,25 +420,23 @@ namespace RevenuePlanner.Controllers
 
             GanttTabs currentGanttTab = (GanttTabs)type;
 
+            Enums.ActiveMenu objactivemenu = Common.GetKey<Enums.ActiveMenu>(Enums.ActiveMenuValues, activeMenu.ToLower());
+
             // Added by Dharmraj Ticket #364
-            if (currentGanttTab.Equals(GanttTabs.Request))
-            {
-                List<string> status = GetPlanTacticStatusAsPerTab(currentGanttTab);
+            List<string> status = GetStatusAsPerTab(currentGanttTab, objactivemenu);
                 tactic = tactic.Where(t => status.Contains(t.Status))
                                 .Select(planTactic => planTactic)
                                 .ToList<Plan_Campaign_Program_Tactic>();
-            }
 
             //// Modified By Maninder Singh Wadhva PL Ticket#47
             //// Show submitted/apporved/in-progress/complete improvement tactic.
-            Enums.ActiveMenu objactivemenu = Common.GetKey<Enums.ActiveMenu>(Enums.ActiveMenuValues, activeMenu.ToLower());
-            if (objactivemenu.Equals(Enums.ActiveMenu.Home) || currentGanttTab.Equals(GanttTabs.Request))
-            {
-                List<string> status = GetStatusAsPerTab(currentGanttTab);
-                improvementTactic = improvementTactic.Where(improveTactic => status.Contains(improveTactic.Status))
+            //if (objactivemenu.Equals(Enums.ActiveMenu.Home))
+            //{
+            List<string> improvementTacticStatus = GetStatusAsPerTab(currentGanttTab, objactivemenu);
+            improvementTactic = improvementTactic.Where(improveTactic => improvementTacticStatus.Contains(improveTactic.Status))
                                                        .Select(improveTactic => improveTactic)
                                                        .ToList<Plan_Improvement_Campaign_Program_Tactic>();
-            }
+            //}
 
 
             var improvementTacticForAccordion = GetImprovementTacticForAccordion(improvementTactic);
@@ -634,41 +632,27 @@ namespace RevenuePlanner.Controllers
 
         /// <summary>
         /// Added By Maninder Singh Wadhva PL Ticket#47
+        /// Modified By Dharmraj PL Ticket#364 & Ticket#365 & Ticket#366
         /// Function to get status as per tab.
         /// </summary>
         /// <param name="currentTab">Current Tab.</param>
         /// <returns>Returns list of status as per tab.</returns>
-        private List<string> GetStatusAsPerTab(GanttTabs currentTab)
+        private List<string> GetStatusAsPerTab(GanttTabs currentTab, Enums.ActiveMenu objactivemenu)
         {
             List<string> status = new List<string>();
 
             if (currentTab.Equals(GanttTabs.Request))
             {
                 status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-                //status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
             }
             else
             {
                 status = Common.GetStatusListAfterApproved();
-            }
-
-            return status;
-        }
-
-        /// <summary>
-        /// Added By Dharmraj PL Ticket#364
-        /// Function to get status as per tab.
-        /// </summary>
-        /// <param name="currentTab">Current Tab.</param>
-        /// <returns>Returns list of status as per tab for plan tactic.</returns>
-        private List<string> GetPlanTacticStatusAsPerTab(GanttTabs currentTab)
-        {
-            //List<string> status = Common.GetStatusListAfterApproved();
-            List<string> status = new List<string>();
-
-            if (currentTab.Equals(GanttTabs.Request))
+                if (objactivemenu.Equals(Enums.ActiveMenu.Plan))
             {
                 status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+                    status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+                }
             }
 
             return status;
@@ -733,6 +717,9 @@ namespace RevenuePlanner.Controllers
         private List<object> GetTaskDetailBusinessUnit(BusinessUnit businessUnit, List<Plan_Campaign_Program_Tactic> planTactic, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic)
         {
             //// Business Unit.
+
+            if (planTactic.Count > 0)
+            {
             var queryBusinessUnitTacticType = new
             {
                 id = string.Format("B{0}", businessUnit.BusinessUnitId),
@@ -814,7 +801,7 @@ namespace RevenuePlanner.Controllers
                                                           CalendarEndDate,
                                                           bt.Plan_Campaign_Program.StartDate,
                                                           bt.Plan_Campaign_Program.EndDate),
-                progress = GetProgramProgress(bt.Plan_Campaign_Program, improvementTactic),//progress = 0,
+                    progress = GetProgramProgress(planTactic, bt.Plan_Campaign_Program, improvementTactic),//progress = 0,
                 open = false,
                 parent = string.Format("B{0}_C{1}", businessUnit.BusinessUnitId, bt.Plan_Campaign_Program.PlanCampaignId),
                 color = "",
@@ -841,7 +828,7 @@ namespace RevenuePlanner.Controllers
                 text = bt.Plan_Campaign_Program.Plan_Campaign.Title,
                 start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, bt.Plan_Campaign_Program.Plan_Campaign.StartDate),
                 duration = (bt.Plan_Campaign_Program.Plan_Campaign.EndDate - bt.Plan_Campaign_Program.Plan_Campaign.StartDate).TotalDays,
-                progress = GetCampaignProgress(bt.Plan_Campaign_Program.Plan_Campaign, improvementTactic),//progress = 0,
+                    progress = GetCampaignProgress(planTactic, bt.Plan_Campaign_Program.Plan_Campaign, improvementTactic),//progress = 0,
                 open = false,
                 parent = string.Format("B{0}", businessUnit.BusinessUnitId),
                 color = Common.COLORC6EBF3_WITH_BORDER,
@@ -863,6 +850,10 @@ namespace RevenuePlanner.Controllers
 
             //return taskDataCampaign.Concat<object>(taskDataProgram).Concat<object>(taskDataTactic).Concat(new[] { queryBusinessUnitTacticType }).ToList<object>();
             return newTaskDataCampaign.Concat<object>(newTaskDataProgram).Concat<object>(newTaskDataTactic).Concat(new[] { newQueryBusinessUnitTacticType }).ToList<object>();
+        }
+            else
+                return null;
+
         }
 
         /// <summary>
@@ -916,7 +907,7 @@ namespace RevenuePlanner.Controllers
                                                           CalendarEndDate,
                                                           t.Plan_Campaign_Program.Plan_Campaign.StartDate,
                                                           t.Plan_Campaign_Program.Plan_Campaign.EndDate),
-                progress = GetCampaignProgress(t.Plan_Campaign_Program.Plan_Campaign, improvementTactic),//progress = 0,
+                progress = GetCampaignProgress(tactic, t.Plan_Campaign_Program.Plan_Campaign, improvementTactic),//progress = 0,
                 open = false,
                 parent = string.Format("A{0}", t.AudienceId),
                 color = Common.COLORC6EBF3_WITH_BORDER,
@@ -945,7 +936,7 @@ namespace RevenuePlanner.Controllers
                                                           CalendarEndDate,
                                                           t.Plan_Campaign_Program.StartDate,
                                                           t.Plan_Campaign_Program.EndDate),
-                progress = GetProgramProgress(t.Plan_Campaign_Program, improvementTactic),//progress = 0,
+                progress = GetProgramProgress(tactic, t.Plan_Campaign_Program, improvementTactic),//progress = 0,
                 open = false,
                 parent = string.Format("A{0}_C{1}", t.AudienceId, t.Plan_Campaign_Program.PlanCampaignId),
                 color = "",
@@ -1083,7 +1074,7 @@ namespace RevenuePlanner.Controllers
                                                           CalendarEndDate,
                                                           t.Plan_Campaign_Program.StartDate,
                                                           t.Plan_Campaign_Program.EndDate),
-                progress = GetProgramProgress(t.Plan_Campaign_Program, improvementTactic),//progress = 0,
+                progress = GetProgramProgress(tactic, t.Plan_Campaign_Program, improvementTactic),//progress = 0,
                 open = false,
                 parent = string.Format("S{0}_C{1}", t.TacticType.StageId, t.Plan_Campaign_Program.PlanCampaignId),
                 color = "",
@@ -1113,7 +1104,7 @@ namespace RevenuePlanner.Controllers
                                                           CalendarEndDate,
                                                           t.Plan_Campaign_Program.Plan_Campaign.StartDate,
                                                           t.Plan_Campaign_Program.Plan_Campaign.EndDate),
-                progress = GetCampaignProgress(t.Plan_Campaign_Program.Plan_Campaign, improvementTactic),//progress = 0,
+                progress = GetCampaignProgress(tactic, t.Plan_Campaign_Program.Plan_Campaign, improvementTactic),//progress = 0,
                 open = false,
                 parent = string.Format("S{0}", t.TacticType.StageId),
                 color = Common.COLORC6EBF3_WITH_BORDER,
@@ -1189,7 +1180,7 @@ namespace RevenuePlanner.Controllers
                                                           CalendarEndDate,
                                                           t.Plan_Campaign_Program.Plan_Campaign.StartDate,
                                                           t.Plan_Campaign_Program.Plan_Campaign.EndDate),
-                progress = GetCampaignProgress(t.Plan_Campaign_Program.Plan_Campaign, improvementTactic),//progress = 0,
+                progress = GetCampaignProgress(tactic, t.Plan_Campaign_Program.Plan_Campaign, improvementTactic),//progress = 0,
                 open = false,
                 parent = string.Format("V{0}", t.VerticalId),
                 color = Common.COLORC6EBF3_WITH_BORDER,
@@ -1218,7 +1209,7 @@ namespace RevenuePlanner.Controllers
                                                           CalendarEndDate,
                                                           t.Plan_Campaign_Program.StartDate,
                                                           t.Plan_Campaign_Program.EndDate),
-                progress = GetProgramProgress(t.Plan_Campaign_Program, improvementTactic),//progress = 0,
+               progress = GetProgramProgress(tactic, t.Plan_Campaign_Program, improvementTactic),//progress = 0,
                open = false,
                parent = string.Format("V{0}_C{1}", t.VerticalId, t.Plan_Campaign_Program.PlanCampaignId),
                color = "",
@@ -1341,7 +1332,7 @@ namespace RevenuePlanner.Controllers
                                                           CalendarEndDate,
                                                           p.Plan_Campaign_Program.StartDate,
                                                           p.Plan_Campaign_Program.EndDate),
-                progress = GetProgramProgress(p.Plan_Campaign_Program, improvementTactic),//progress = 0,
+                progress = GetProgramProgress(tactic, p.Plan_Campaign_Program, improvementTactic),//progress = 0,
                 open = false,
                 parent = string.Format("C{0}", p.Plan_Campaign_Program.PlanCampaignId),
                 color = "",
@@ -1370,7 +1361,7 @@ namespace RevenuePlanner.Controllers
                                                           CalendarEndDate,
                                                           c.Plan_Campaign_Program.Plan_Campaign.StartDate,
                                                           c.Plan_Campaign_Program.Plan_Campaign.EndDate),
-                progress = GetCampaignProgress(c.Plan_Campaign_Program.Plan_Campaign, improvementTactic),//progress = 0,
+                progress = GetCampaignProgress(tactic, c.Plan_Campaign_Program.Plan_Campaign, improvementTactic),//progress = 0,
                 open = false,
                 color = Common.COLORC6EBF3_WITH_BORDER,
                 plancampaignid = c.Plan_Campaign_Program.PlanCampaignId
@@ -1429,7 +1420,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="planCampaignProgram"></param>
         /// <param name="improvementTactic"></param>
         /// <returns>return progress B/W 0 and 1</returns>
-        public double GetProgramProgress(Plan_Campaign_Program planCampaignProgram, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic)
+        public double GetProgramProgress(List<Plan_Campaign_Program_Tactic> tactic,Plan_Campaign_Program planCampaignProgram, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic)
         {
             if (improvementTactic.Count > 0)
             {
@@ -1439,7 +1430,7 @@ namespace RevenuePlanner.Controllers
                 DateTime programStartDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, planCampaignProgram.StartDate));
 
                 // List of all tactics that are affected by improvement tactic
-                var lstAffectedTactic = planCampaignProgram.Plan_Campaign_Program_Tactic.Where(p => p.IsDeleted.Equals(false) && (p.StartDate > minDate).Equals(true))
+                var lstAffectedTactic = tactic.Where(p => p.IsDeleted.Equals(false) && p.PlanProgramId == planCampaignProgram.PlanProgramId && (p.StartDate > minDate).Equals(true))
                                                                                               .Select(t => new { startDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, t.StartDate)) })
                                                                                               .ToList();
 
@@ -1485,7 +1476,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="planCampaign"></param>
         /// <param name="improvementTactic"></param>
         /// <returns>return progress B/W 0 and 1</returns>
-        public double GetCampaignProgress(Plan_Campaign planCampaign, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic)
+        public double GetCampaignProgress(List<Plan_Campaign_Program_Tactic> tactic,Plan_Campaign planCampaign, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic)
         {
             if (improvementTactic.Count > 0)
             {
@@ -1495,14 +1486,11 @@ namespace RevenuePlanner.Controllers
                 DateTime campaignStartDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, planCampaign.StartDate));
 
                 // List of all tactics
-                var lstTactic = db.Plan_Campaign_Program_Tactic.Where(p => p.Plan_Campaign_Program.PlanCampaignId.Equals(planCampaign.PlanCampaignId) &&
-                                                                            p.IsDeleted.Equals(false))
-                                                                .Select(p => p)
-                                                                .ToList()
-                                                                .Where(p => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
+                var lstTactic = tactic.Where(p => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
                                                                                                                         CalendarEndDate,
                                                                                                                         p.StartDate,
                                                                                                                         p.EndDate).Equals(false));
+
                 // List of all tactics that are affected by improvement tactic
                 var lstAffectedTactic = lstTactic.Where(p => (p.StartDate > minDate).Equals(true))
                                                  .Select(t => new { startDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, t.StartDate)) })

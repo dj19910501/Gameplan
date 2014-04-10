@@ -997,26 +997,26 @@
   function AddAccordionToggleAndInnerRequest(data) {
       AddAccordionToggleAndInnerTactic(data);
 
-      onlyTactic = $.grep(data.taskData, function (value) {
-          return ((typeof value.isSubmitted != 'undefined') && (typeof value.isDeclined != 'undefined'))
-      });
+      //onlyTactic = $.grep(data.taskData, function (value) {
+      //    return ((typeof value.isSubmitted != 'undefined') && (typeof value.isDeclined != 'undefined'))
+      //});
 
-      submittedTactic = $.grep(onlyTactic, function (value) {
-          return (value.isSubmitted == true);
-      });
+      //submittedTactic = $.grep(onlyTactic, function (value) {
+      //    return (value.isSubmitted == true);
+      //});
 
-      declinedTactic = $.grep(onlyTactic, function (value) {
-          return (value.isDeclined == true);
-      });
+      //declinedTactic = $.grep(onlyTactic, function (value) {
+      //    return (value.isDeclined == true);
+      //});
 
-      var submittedDeclinedTactic = submittedTactic.concat(declinedTactic);
-      activities = { data: submittedDeclinedTactic };
+      //var submittedDeclinedTactic = submittedTactic.concat(declinedTactic);
+      //activities = { data: submittedDeclinedTactic };
 
-      FillTacticsTable();
+      //FillTacticsTable();
 
-      if ($('#IsViewOnly').val() != '') {
-          $("#table_activities th:nth-child(6), #table_activities td:nth-child(6)").remove();
-      }
+      //if ($('#IsViewOnly').val() != '') {
+      //    $("#table_activities th:nth-child(6), #table_activities td:nth-child(6)").remove();
+      //}
   }
 
   //// Function to sort alphabetically.
@@ -1050,6 +1050,7 @@
             $('#RequestCount').html(data.requestCount);
             planYear = parseInt(data.planYear);
 
+            var isDataExistForTacticTable = false;
             //// Modified By Maninder Singh Wadhva PL Ticket#47
             if (typeof data.improvementTacticTypeForAccordion != 'undefined' &&
                 typeof data.improvementTacticForAccordion != 'undefined' &&
@@ -1057,6 +1058,7 @@
                 data.improvementTacticTypeForAccordion.length > 0) {
                 $('#improvements').show()
                 AddAccordionToggleAndInnerImprovementTactic(data.improvementTacticTypeForAccordion, data.improvementTacticForAccordion);
+                isDataExistForTacticTable = true;
             }
             else {
                 $('#improvements').hide();
@@ -1066,6 +1068,7 @@
             //// filtering non improvement task data.
             var filteredNonImprovementData = $.grep(data.taskData, function (value) { return (typeof value.isImprovement == 'undefined') });
             if (filteredNonImprovementData.length > 0) {
+                isDataExistForTacticTable = true;
                 $('#marketing-activities').show()
 
                 switch (type) {
@@ -1096,9 +1099,6 @@
             }
             else {
                 $('#marketing-activities').hide()
-
-                //// Modified By Maninder Singh Wadhva PL Ticket#47
-                $('#table_activities > tbody >tr').remove();
             }
 
             renderGantt(data.taskData);
@@ -1107,6 +1107,7 @@
             if (GanttTabs.Request == type) {
                 $(".shadow-scroll-gantt").show();
                 $("#table_activities").show();
+                FillTacticTableForRequest(data);
             } else {
                 $("#table_activities").hide();
                 $(".shadow-scroll-gantt").hide();
@@ -1117,6 +1118,36 @@
     });
 }
 
+    function FillTacticTableForRequest(data) {
+        onlyTactic = $.grep(data.taskData, function (value) {
+            return ((typeof value.isSubmitted != 'undefined') && (typeof value.isDeclined != 'undefined'))
+        });
+
+        submittedTactic = $.grep(onlyTactic, function (value) {
+            return (value.isSubmitted == true);
+        });
+
+        declinedTactic = $.grep(onlyTactic, function (value) {
+            return (value.isDeclined == true);
+        });
+
+        var submittedDeclinedTactic = submittedTactic.concat(declinedTactic);
+        activities = { data: submittedDeclinedTactic };
+
+        if (activities.data.length > 0) {
+            FillTacticsTable();
+        }
+        else {
+            ////// Modified By Maninder Singh Wadhva PL Ticket#47
+            $('#table_activities > tbody >tr').remove();
+            var varCount = $('#table_activities thead th').length;
+            $('#table_activities > tbody').html('<tr class="no-tactic-found"><td colspan="' + varCount + '">No submitted tactic found.</td></tr>');
+        }
+
+        if ($('#IsViewOnly').val() != '') {
+            $("#table_activities th:nth-child(6), #table_activities td:nth-child(6)").remove();
+        }
+    }
 function AttachEventToGroupHeading() {
     var divAccordionGroups = $("div[id^='DivAccordionGroup']").find("div.accordion-heading a");
     $.each(divAccordionGroups, function (index, accGroup) {
@@ -1374,8 +1405,11 @@ function renderGantt(taskData) {
 
     //// Hide/Show Tabulated data shown below gantt of request tab.
     if (GanttTabs.Request == type) {
+
+        // Below function commented by dharmraj coz with below function gantt_chart shows lines.
         //// Calculating height for grid
-        modSampleHeight();
+        //modSampleHeight();
+
         var gantt_div1 = document.getElementById("gantt_here");
         ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
         var totalRecords = tasks.data.length;

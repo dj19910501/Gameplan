@@ -345,6 +345,9 @@
                               $("#spanMessageError").empty();
                               $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
                           }
+
+                          // Added by Dharmraj to refresh current tab for PL #364,#365,#366
+                          RefreshCurrentTab();
                       }
                   },
                   error: function () {
@@ -356,9 +359,6 @@
                       return false;
                   }
               });
-
-              // Added by Dharmraj to refresh current tab for PL #364
-              RefreshCurrentTab();
 
           });
 

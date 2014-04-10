@@ -2354,9 +2354,10 @@ Natural Forms approved option
     size: 10;
 }
 
+/* Commented by dharmraj to remove red stripe from tactic in calendar
 .to-approve .gantt_task_content {
     background: url('../images/to-approve-bar.jpg') no-repeat left;
-}
+}*/
 /*#gantt_here, .gantt_container{-webkit-box-shadow: inset 0px -21px 12px -18px rgba(0,0,0,1);
 -moz-box-shadow: inset 0px -21px 12px -18px rgba(0,0,0,1);
 box-shadow: inset 0px -21px 12px -18px rgba(0,0,0,1);}*/
@@ -3215,6 +3216,14 @@ span.circle-check-icon-blue {
             visibility: visible;
         }
 
+        #table_activities tbody .no-tactic-found {
+            cursor:auto;
+        }
+
+        #table_activities tbody .no-tactic-found td{
+            font-weight:normal;
+            font-size:15px;
+        }
 span.reject-icon, span.accept-icon {
     background: url("../images/icons-accept-reject.png") no-repeat -27px -27px;
     display: block;
