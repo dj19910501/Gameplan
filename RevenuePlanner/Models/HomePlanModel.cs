@@ -41,6 +41,7 @@ namespace RevenuePlanner.Models
     public class HomePlan
     {
         public bool IsDirector { get; set; }
+        public bool IsClientAdmin { get; set; }
         public List<SelectListItem> plans { get; set; }
     }
     public class HomePlanModelHeader

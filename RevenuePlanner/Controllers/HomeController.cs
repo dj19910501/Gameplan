@@ -161,7 +161,7 @@ namespace RevenuePlanner.Controllers
 
                     //List<SelectListItem> planList = Common.GetPlan().Select(p => new SelectListItem() { Text = p.Title, Value = p.PlanId.ToString() }).OrderBy(p => p.Text).Take(5).ToList();
 
-                    List<SelectListItem> UpcomingActivityList = Common.GetUpcomingActivity().Select(p => new SelectListItem() { Text = p.Text, Value = p.Value.ToString() }).ToList();
+                    List<SelectListItem> UpcomingActivityList = Common.GetUpcomingActivity().Select(p => new SelectListItem() { Text = p.Text, Value = p.Value.ToString(), Selected = p.Selected }).ToList();
                     planmodel.objplanhomemodelheader.UpcomingActivity = UpcomingActivityList;
 
                     // planList.Single(p => p.Value.Equals(currentPlan.PlanId.ToString())).Selected = true;
@@ -207,6 +207,7 @@ namespace RevenuePlanner.Controllers
             Enums.ActiveMenu objactivemenu = Common.GetKey<Enums.ActiveMenu>(Enums.ActiveMenuValues, activeMenu.ToLower());
             HomePlan objHomePlan = new HomePlan();
             objHomePlan.IsDirector = Sessions.IsDirector;
+            objHomePlan.IsClientAdmin = Sessions.IsClientAdmin;
             List<SelectListItem> planList;
             if (Bid == "false")
             {

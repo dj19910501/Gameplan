@@ -16,7 +16,7 @@
             <script>
                 var nlform = new NLForm(document.getElementById('nl-form2'));
             </script>
-            
+
         </form>
     </li>
     <li>
@@ -34,7 +34,7 @@
     <li class=" pull-right">
         <a id="AAudience" href="#">Audience</a>
     </li>
-    @if (Model.IsDirector)
+    @if (Model.IsDirector || Model.IsClientAdmin)
     {
         <li class=" pull-right">
             <a id="ABusinessUnit" href="#">Business Unit</a>
@@ -49,8 +49,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         onClickPlanTitle();
-        if(plan.length >0)
-        {
+        if (plan.length > 0) {
             $('#DivloadPlan').show();
             $('.tab-content').show();
             $('#ptacticcount').show();
@@ -64,11 +63,10 @@
             GetCollaborators(CurrentPlanId);
             RefreshCurrentTab();
             GetHealderData(CurrentPlanId);
-            GetNumberOfActivityPerMonByPlanId(CurrentPlanId,"planYear");
+            GetNumberOfActivityPerMonByPlanId(CurrentPlanId, "planYear");
             $('#Notabcontent').hide();
         }
-        else 
-        {
+        else {
             $('#DivloadPlan').hide();
             $('.tab-content').hide();
             $('#ptacticcount').hide();
