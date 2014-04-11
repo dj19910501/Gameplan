@@ -398,6 +398,7 @@
     <Content Include="Content\images\arrow-down-header-white.png" />
     <Content Include="Content\images\arrow-down-header.png" />
     <Content Include="Content\images\arrow-down-results.png" />
+    <Content Include="Content\images\arrow-down-white.png" />
     <Content Include="Content\images\arrow-icon.png" />
     <Content Include="Content\images\arrow-right-accordion.png" />
     <Content Include="Content\images\arrow-right-icon-active.png" />
@@ -447,6 +448,7 @@
     <Content Include="Content\images\gradient-body.jpg" />
     <Content Include="Content\images\gradient-header.jpg" />
     <Content Include="Content\images\graph-chart-small.jpg" />
+    <Content Include="Content\images\gray-calendar-icon-big.png" />
     <Content Include="Content\images\gray-calendar-icon.png" />
     <Content Include="Content\images\gray-row.png" />
     <Content Include="Content\images\green-arrow-up.png" />
