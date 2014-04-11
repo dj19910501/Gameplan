@@ -3675,6 +3675,7 @@ div.dhx_modal_cover
 }
 
 .stripe .gantt_task_progress {
+    background-color:inherit;
     background-image: url(../../images/stripe-chart.png);
     background-repeat: repeat;
     background-position: left top;
@@ -3706,6 +3707,7 @@ div.dhx_modal_cover
     background-position: left top;
     border: medium none !important;
     color: #27A4E5;
+    background-color:#27A4E5;
 }
 
     .color27a4e5stripe .gantt_task_progress {
@@ -3724,6 +3726,7 @@ div.dhx_modal_cover
     border-color: #27A4E5 -moz-use-text-color -moz-use-text-color;
     border-style: solid none none;
     border-width: 3px medium medium;
+    background-color:#C6EBF3;
 }
 
     .colorC6EBF3-with-borderstripe .gantt_task_progress {
@@ -3737,6 +3740,7 @@ div.dhx_modal_cover
     background-position: left top;
     border: medium none !important;
     color: #09AF8F;
+    background-color:#09AF8F;
 }
 
     .color09af8fstripe .gantt_task_progress {
@@ -3754,6 +3758,7 @@ div.dhx_modal_cover
     background-position: left top;
     border: medium none !important;
     color: #0F3A50;
+    background-color:#0F3A50;
 }
 
     .color0f3a50stripe .gantt_task_progress {
@@ -3771,6 +3776,7 @@ div.dhx_modal_cover
     background-position: left top;
     border: medium none !important;
     color: #144D6B;
+    background-color:#144D6B;
 }
 
     .color144d6bstripe .gantt_task_progress {
@@ -3788,6 +3794,7 @@ div.dhx_modal_cover
     background-position: left top;
     border: medium none !important;
     color: #2384B8;
+    background-color:#2384B8;
 }
 
     .color2384b8stripe .gantt_task_progress {
@@ -3805,6 +3812,7 @@ div.dhx_modal_cover
     background-position: left top;
     border: medium none !important;
     color: #2AA9EB;
+    background-color:#2AA9EB;
 }
 
     .color2aa9ebstripe .gantt_task_progress {
@@ -3822,6 +3830,7 @@ div.dhx_modal_cover
     background-position: left top;
     border: medium none !important;
     color: #407B22;
+    background-color:#407B22;
 }
 
     .color407b22stripe .gantt_task_progress {
@@ -3839,6 +3848,7 @@ div.dhx_modal_cover
     background-position: left top;
     border: medium none !important;
     color: #5BAE30;
+    background-color:#5BAE30;
 }
 
     .color5bae30stripe .gantt_task_progress {
