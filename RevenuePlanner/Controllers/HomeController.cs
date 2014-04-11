@@ -649,9 +649,10 @@ namespace RevenuePlanner.Controllers
             {
                 status = Common.GetStatusListAfterApproved();
                 if (objactivemenu.Equals(Enums.ActiveMenu.Plan))
-            {
-                status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+                {
+                    status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
                     status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+                    status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
                 }
             }
 
