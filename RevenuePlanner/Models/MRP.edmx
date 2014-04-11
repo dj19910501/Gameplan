@@ -600,9 +600,9 @@
           <Property Name="PlanId" Type="int" Nullable="false" />
           <Property Name="Title" Type="nvarchar" Nullable="false" MaxLength="255" />
           <Property Name="Description" Type="nvarchar" />
-          <Property Name="VerticalId" Type="int" Nullable="false" />
-          <Property Name="AudienceId" Type="int" Nullable="false" />
-          <Property Name="GeographyId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="VerticalId" Type="int" />
+          <Property Name="AudienceId" Type="int" />
+          <Property Name="GeographyId" Type="uniqueidentifier" />
           <Property Name="StartDate" Type="datetime" Nullable="false" />
           <Property Name="EndDate" Type="datetime" Nullable="false" />
           <Property Name="INQs" Type="bigint" />
@@ -622,9 +622,9 @@
           <Property Name="PlanCampaignId" Type="int" Nullable="false" />
           <Property Name="Title" Type="nvarchar" Nullable="false" MaxLength="255" />
           <Property Name="Description" Type="nvarchar" />
-          <Property Name="VerticalId" Type="int" Nullable="false" />
-          <Property Name="AudienceId" Type="int" Nullable="false" />
-          <Property Name="GeographyId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="VerticalId" Type="int" />
+          <Property Name="AudienceId" Type="int" />
+          <Property Name="GeographyId" Type="uniqueidentifier" />
           <Property Name="StartDate" Type="datetime" Nullable="false" />
           <Property Name="EndDate" Type="datetime" Nullable="false" />
           <Property Name="INQs" Type="bigint" />
@@ -1127,7 +1127,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Plan_Campaign_Audience">
-          <End Role="Audience" Type="MRPModel.Store.Audience" Multiplicity="1" />
+          <End Role="Audience" Type="MRPModel.Store.Audience" Multiplicity="0..1" />
           <End Role="Plan_Campaign" Type="MRPModel.Store.Plan_Campaign" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Audience">
@@ -1139,7 +1139,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Plan_Campaign_Geography">
-          <End Role="Geography" Type="MRPModel.Store.Geography" Multiplicity="1" />
+          <End Role="Geography" Type="MRPModel.Store.Geography" Multiplicity="0..1" />
           <End Role="Plan_Campaign" Type="MRPModel.Store.Plan_Campaign" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Geography">
@@ -1163,7 +1163,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Plan_Campaign_Program_Audience">
-          <End Role="Audience" Type="MRPModel.Store.Audience" Multiplicity="1" />
+          <End Role="Audience" Type="MRPModel.Store.Audience" Multiplicity="0..1" />
           <End Role="Plan_Campaign_Program" Type="MRPModel.Store.Plan_Campaign_Program" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Audience">
@@ -1175,7 +1175,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Plan_Campaign_Program_Geography">
-          <End Role="Geography" Type="MRPModel.Store.Geography" Multiplicity="1" />
+          <End Role="Geography" Type="MRPModel.Store.Geography" Multiplicity="0..1" />
           <End Role="Plan_Campaign_Program" Type="MRPModel.Store.Plan_Campaign_Program" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Geography">
@@ -1307,7 +1307,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Plan_Campaign_Program_Vertical">
-          <End Role="Vertical" Type="MRPModel.Store.Vertical" Multiplicity="1" />
+          <End Role="Vertical" Type="MRPModel.Store.Vertical" Multiplicity="0..1" />
           <End Role="Plan_Campaign_Program" Type="MRPModel.Store.Plan_Campaign_Program" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Vertical">
@@ -1319,7 +1319,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Plan_Campaign_Vertical">
-          <End Role="Vertical" Type="MRPModel.Store.Vertical" Multiplicity="1" />
+          <End Role="Vertical" Type="MRPModel.Store.Vertical" Multiplicity="0..1" />
           <End Role="Plan_Campaign" Type="MRPModel.Store.Plan_Campaign" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Vertical">
@@ -1800,7 +1800,7 @@
             <End Role="Stage" EntitySet="Stages" />
             <End Role="TacticType" EntitySet="TacticTypes" />
           </AssociationSet>
-        </EntityContainer>
+          </EntityContainer>
         <EntityType Name="Audience">
           <Key>
             <PropertyRef Name="AudienceId" />
@@ -2198,9 +2198,9 @@
           <Property Type="Int32" Name="PlanId" Nullable="false" />
           <Property Type="String" Name="Title" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="Description" MaxLength="4000" FixedLength="false" Unicode="true" />
-          <Property Type="Int32" Name="VerticalId" Nullable="false" />
-          <Property Type="Int32" Name="AudienceId" Nullable="false" />
-          <Property Type="Guid" Name="GeographyId" Nullable="false" />
+          <Property Type="Int32" Name="VerticalId" />
+          <Property Type="Int32" Name="AudienceId" />
+          <Property Type="Guid" Name="GeographyId" />
           <Property Type="DateTime" Name="StartDate" Nullable="false" Precision="3" />
           <Property Type="DateTime" Name="EndDate" Nullable="false" Precision="3" />
           <Property Type="Int64" Name="INQs" />
@@ -2227,9 +2227,9 @@
           <Property Type="Int32" Name="PlanCampaignId" Nullable="false" />
           <Property Type="String" Name="Title" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="Description" MaxLength="4000" FixedLength="false" Unicode="true" />
-          <Property Type="Int32" Name="VerticalId" Nullable="false" />
-          <Property Type="Int32" Name="AudienceId" Nullable="false" />
-          <Property Type="Guid" Name="GeographyId" Nullable="false" />
+          <Property Type="Int32" Name="VerticalId" />
+          <Property Type="Int32" Name="AudienceId" />
+          <Property Type="Guid" Name="GeographyId" />
           <Property Type="DateTime" Name="StartDate" Nullable="false" Precision="3" />
           <Property Type="DateTime" Name="EndDate" Nullable="false" Precision="3" />
           <Property Type="Int64" Name="INQs" />
@@ -2514,7 +2514,7 @@
           <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Vertical" FromRole="Vertical" ToRole="Plan_Campaign_Program_Tactic" />
         </EntityType>
         <Association Name="FK_Plan_Campaign_Audience">
-          <End Type="MRPModel.Audience" Role="Audience" Multiplicity="1" />
+          <End Type="MRPModel.Audience" Role="Audience" Multiplicity="0..1" />
           <End Type="MRPModel.Plan_Campaign" Role="Plan_Campaign" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Audience">
@@ -2526,7 +2526,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Plan_Campaign_Program_Audience">
-          <End Type="MRPModel.Audience" Role="Audience" Multiplicity="1" />
+          <End Type="MRPModel.Audience" Role="Audience" Multiplicity="0..1" />
           <End Type="MRPModel.Plan_Campaign_Program" Role="Plan_Campaign_Program" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Audience">
@@ -2646,7 +2646,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Plan_Campaign_Geography">
-          <End Type="MRPModel.Geography" Role="Geography" Multiplicity="1" />
+          <End Type="MRPModel.Geography" Role="Geography" Multiplicity="0..1" />
           <End Type="MRPModel.Plan_Campaign" Role="Plan_Campaign" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Geography">
@@ -2658,7 +2658,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Plan_Campaign_Program_Geography">
-          <End Type="MRPModel.Geography" Role="Geography" Multiplicity="1" />
+          <End Type="MRPModel.Geography" Role="Geography" Multiplicity="0..1" />
           <End Type="MRPModel.Plan_Campaign_Program" Role="Plan_Campaign_Program" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Geography">
@@ -2946,7 +2946,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Plan_Campaign_Vertical">
-          <End Type="MRPModel.Vertical" Role="Vertical" Multiplicity="1" />
+          <End Type="MRPModel.Vertical" Role="Vertical" Multiplicity="0..1" />
           <End Type="MRPModel.Plan_Campaign" Role="Plan_Campaign" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Vertical">
@@ -2994,7 +2994,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Plan_Campaign_Program_Vertical">
-          <End Type="MRPModel.Vertical" Role="Vertical" Multiplicity="1" />
+          <End Type="MRPModel.Vertical" Role="Vertical" Multiplicity="0..1" />
           <End Type="MRPModel.Plan_Campaign_Program" Role="Plan_Campaign_Program" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Vertical">
@@ -3788,7 +3788,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-        </EntityContainerMapping>
+          </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>

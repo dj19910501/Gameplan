@@ -25,9 +25,9 @@ namespace RevenuePlanner.Models
         public int PlanId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public int VerticalId { get; set; }
-        public int AudienceId { get; set; }
-        public System.Guid GeographyId { get; set; }
+        public Nullable<int> VerticalId { get; set; }
+        public Nullable<int> AudienceId { get; set; }
+        public Nullable<System.Guid> GeographyId { get; set; }
         public System.DateTime StartDate { get; set; }
         public System.DateTime EndDate { get; set; }
         public Nullable<long> INQs { get; set; }

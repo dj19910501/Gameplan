@@ -1215,9 +1215,10 @@ namespace RevenuePlanner.Controllers
         {
             // Dropdown for Verticals
             /* clientID add by Nirav shah on 15 jan 2014 for get verical and audience by client wise*/
-            ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
-            ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
-            ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
+            /* changed by Nirav on 11 APR for PL 322*/
+            //ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
+            //ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
+            //ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
             ViewBag.IsCreated = true;
             ViewBag.RedirectType = false;
             ViewBag.IsOwner = false;
@@ -1238,9 +1239,10 @@ namespace RevenuePlanner.Controllers
             //ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false);
 
             /* clientID add by Nirav shah on 15 jan 2014 for get verical and audience by client wise*/
-            ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
-            ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
-            ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
+            /* changed by Nirav on 11 APR for PL 322*/
+            //ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
+            //ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
+            //ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
             ViewBag.IsCreated = false;
             if (RedirectType == "Assortment")
             {
@@ -1260,9 +1262,10 @@ namespace RevenuePlanner.Controllers
             pcm.PlanCampaignId = pc.PlanCampaignId;
             pcm.Title = pc.Title;
             pcm.Description = pc.Description;
-            pcm.VerticalId = pc.VerticalId;
-            pcm.AudienceId = pc.AudienceId;
-            pcm.GeographyId = pc.GeographyId;
+            /* changed by Nirav on 11 APR for PL 322*/
+            //pcm.VerticalId = pc.VerticalId;
+            //pcm.AudienceId = pc.AudienceId;
+            //pcm.GeographyId = pc.GeographyId;
             pcm.StartDate = pc.StartDate;
             pcm.EndDate = pc.EndDate;
             if (RedirectType != "Assortment")
@@ -1351,9 +1354,10 @@ namespace RevenuePlanner.Controllers
                                 pcobj.PlanId = Sessions.PlanId;
                                 pcobj.Title = form.Title;
                                 pcobj.Description = form.Description;
-                                pcobj.VerticalId = form.VerticalId;
-                                pcobj.AudienceId = form.AudienceId;
-                                pcobj.GeographyId = form.GeographyId;
+                                /* changed by Nirav on 11 APR for PL 322*/
+                                //pcobj.VerticalId = form.VerticalId;
+                                //pcobj.AudienceId = form.AudienceId;
+                                //pcobj.GeographyId = form.GeographyId;
                                 pcobj.INQs = 0;
                                 pcobj.Cost = 0;
                                 pcobj.StartDate = GetCurrentDateBasedOnPlan();
@@ -1378,9 +1382,10 @@ namespace RevenuePlanner.Controllers
                                             //Change Plan Id
                                             pcpobj.PlanCampaignId = campaignid;
                                             pcpobj.Title = prg;
-                                            pcpobj.VerticalId = form.VerticalId;
-                                            pcpobj.AudienceId = form.AudienceId;
-                                            pcpobj.GeographyId = form.GeographyId;
+                                            /* changed by Nirav on 11 APR for PL 322*/
+                                            //pcpobj.VerticalId = form.VerticalId;
+                                            //pcpobj.AudienceId = form.AudienceId;
+                                            //pcpobj.GeographyId = form.GeographyId;
                                             pcpobj.INQs = 0;
                                             pcpobj.Cost = 0;
                                             pcpobj.StartDate = GetCurrentDateBasedOnPlan();
@@ -1420,9 +1425,10 @@ namespace RevenuePlanner.Controllers
                                 //Change Plan Id
                                 pcobj.Title = form.Title;
                                 pcobj.Description = form.Description;
-                                pcobj.VerticalId = form.VerticalId;
-                                pcobj.AudienceId = form.AudienceId;
-                                pcobj.GeographyId = form.GeographyId;
+                                /* changed by Nirav on 11 APR for PL 322*/
+                                //pcobj.VerticalId = form.VerticalId;
+                                //pcobj.AudienceId = form.AudienceId;
+                                //pcobj.GeographyId = form.GeographyId;
                                 if (RedirectType)
                                 {
                                     pcobj.StartDate = form.StartDate;
@@ -1539,16 +1545,18 @@ namespace RevenuePlanner.Controllers
             //ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false);
             //ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false);
             /* clientID add by Nirav shah on 15 jan 2014 for get verical and audience by client wise*/
-            ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
-            ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
-            ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
+            /* changed by Nirav on 11 APR for PL 322*/
+            //ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
+            //ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
+            //ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
             ViewBag.IsCreated = true;
             Plan_Campaign_ProgramModel pcpm = new Plan_Campaign_ProgramModel();
             pcpm.PlanCampaignId = id;
-            Plan_Campaign pc = db.Plan_Campaign.Where(pco => pco.PlanCampaignId == id).SingleOrDefault();
-            pcpm.GeographyId = pc.GeographyId;
-            pcpm.VerticalId = pc.VerticalId;
-            pcpm.AudienceId = pc.AudienceId;
+            //Plan_Campaign pc = db.Plan_Campaign.Where(pco => pco.PlanCampaignId == id).SingleOrDefault();
+            /* changed by Nirav on 11 APR for PL 322*/
+            //pcpm.GeographyId = pc.GeographyId;
+            //pcpm.VerticalId = pc.VerticalId;
+            //pcpm.AudienceId = pc.AudienceId;
             ViewBag.IsOwner = false;      /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
             ViewBag.RedirectType = false;
             return PartialView("ProgramAssortment", pcpm);
@@ -1567,9 +1575,10 @@ namespace RevenuePlanner.Controllers
             //ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false);
             //ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false);
             /* clientID add by Nirav shah on 15 jan 2014 for get verical and audience by client wise*/
-            ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
-            ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
-            ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
+            /* changed by Nirav on 11 APR for PL 322*/
+            //ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
+            //ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
+            //ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
             ViewBag.IsCreated = false;
             if (RedirectType == "Assortment")
             {
@@ -1590,9 +1599,10 @@ namespace RevenuePlanner.Controllers
             pcpm.PlanCampaignId = pcp.PlanCampaignId;
             pcpm.Title = pcp.Title;
             pcpm.Description = pcp.Description;
-            pcpm.VerticalId = pcp.VerticalId;
-            pcpm.AudienceId = pcp.AudienceId;
-            pcpm.GeographyId = pcp.GeographyId;
+            /* changed by Nirav on 11 APR for PL 322*/
+            //pcpm.VerticalId = pcp.VerticalId;
+            //pcpm.AudienceId = pcp.AudienceId;
+            //pcpm.GeographyId = pcp.GeographyId;
             pcpm.StartDate = pcp.StartDate;
             pcpm.EndDate = pcp.EndDate;
             if (RedirectType != "Assortment")
@@ -1661,9 +1671,10 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.PlanCampaignId = form.PlanCampaignId;
                                 pcpobj.Title = form.Title;
                                 pcpobj.Description = form.Description;
-                                pcpobj.VerticalId = form.VerticalId;
-                                pcpobj.AudienceId = form.AudienceId;
-                                pcpobj.GeographyId = form.GeographyId;
+                                /* changed by Nirav on 11 APR for PL 322*/
+                                //pcpobj.VerticalId = form.VerticalId;
+                                //pcpobj.AudienceId = form.AudienceId;
+                                //pcpobj.GeographyId = form.GeographyId;
                                 pcpobj.StartDate = GetCurrentDateBasedOnPlan();
                                 pcpobj.EndDate = GetCurrentDateBasedOnPlan(true);
                                 pcpobj.CreatedBy = Sessions.User.UserId;
@@ -1685,9 +1696,14 @@ namespace RevenuePlanner.Controllers
                                         pcptobj.TacticTypeId = tacid;
                                         TacticType mt = db.TacticTypes.Where(m => m.TacticTypeId == tacid).FirstOrDefault();
                                         pcptobj.Title = mt.Title;
-                                        pcptobj.VerticalId = form.VerticalId;
-                                        pcptobj.AudienceId = form.AudienceId;
-                                        pcptobj.GeographyId = form.GeographyId;
+                                        /* changed by Nirav on 11 APR for PL 322*/
+                                        pcptobj.VerticalId = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId).Select(s=>s.VerticalId).FirstOrDefault();
+                                        pcptobj.AudienceId = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId).Select(s => s.AudienceId).FirstOrDefault();
+                                        pcptobj.GeographyId = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId).Select(s => s.GeographyId).FirstOrDefault();
+
+                                        //pcptobj.VerticalId = form.VerticalId;
+                                        //pcptobj.AudienceId = form.AudienceId;
+                                        //pcptobj.GeographyId = form.GeographyId;
                                         pcptobj.INQs = mt.ProjectedInquiries == null ? 0 : Convert.ToInt32(mt.ProjectedInquiries);
                                         pcptobj.Cost = mt.ProjectedRevenue == null ? 0 : Convert.ToDouble(mt.ProjectedRevenue);
                                         pcptobj.StartDate = GetCurrentDateBasedOnPlan();
@@ -1734,9 +1750,10 @@ namespace RevenuePlanner.Controllers
                                 //Change Plan Id
                                 pcpobj.Title = form.Title;
                                 pcpobj.Description = form.Description;
-                                pcpobj.VerticalId = form.VerticalId;
-                                pcpobj.AudienceId = form.AudienceId;
-                                pcpobj.GeographyId = form.GeographyId;
+                                /* changed by Nirav on 11 APR for PL 322*/
+                                //pcpobj.VerticalId = form.VerticalId;
+                                //pcpobj.AudienceId = form.AudienceId;
+                                //pcpobj.GeographyId = form.GeographyId;
                                 if (RedirectType)
                                 {
                                     pcpobj.StartDate = form.StartDate;
@@ -1869,10 +1886,10 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsCreated = true;
             Plan_Campaign_Program_TacticModel pcptm = new Plan_Campaign_Program_TacticModel();
             pcptm.PlanProgramId = id;
-            Plan_Campaign_Program pcp = db.Plan_Campaign_Program.Where(pcpo => pcpo.PlanProgramId == id).SingleOrDefault();
-            pcptm.GeographyId = pcp.GeographyId;
-            pcptm.VerticalId = pcp.VerticalId;
-            pcptm.AudienceId = pcp.AudienceId;
+            //Plan_Campaign_Program pcp = db.Plan_Campaign_Program.Where(pcpo => pcpo.PlanProgramId == id).SingleOrDefault();
+            //pcptm.GeographyId = pcp.GeographyId;
+            //pcptm.VerticalId = pcp.VerticalId;
+            //pcptm.AudienceId = pcp.AudienceId;
             ViewBag.IsOwner = false;/*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
             ViewBag.RedirectType = false;
             return PartialView("TacticAssortment", pcptm);

@@ -2419,12 +2419,12 @@ namespace RevenuePlanner.Controllers
 
                     if (form.VerticalId != 0)
                     {
-                        tactic.VerticalId = form.VerticalId;
+                        tactic.VerticalId = form.tacticVerticalId;      /* changed by Nirav on 11 APR for PL 322*/
                     }
 
                     if (form.AudienceId != 0)
                     {
-                        tactic.AudienceId = form.AudienceId;
+                        tactic.AudienceId = form.tacticAudienceId;      /* changed by Nirav on 11 APR for PL 322*/
                     }
 
                     tactic.StartDate = Convert.ToDateTime(form.StartDate);

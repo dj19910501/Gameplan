@@ -76,13 +76,15 @@ namespace RevenuePlanner.Models
 
         public int TacticTypeId { get; set; }
 
-        public int VerticalId { get; set; }
+        public int? VerticalId { get; set; }
+        public int tacticVerticalId { get; set; }
 
         public string ColorCode { get; set; }
 
         public string Description { get; set; }
 
-        public int AudienceId { get; set; }
+        public int? AudienceId { get; set; }
+        public int tacticAudienceId { get; set; }
 
         public int PlanCampaignId { get; set; }
 

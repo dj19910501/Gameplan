@@ -55,14 +55,14 @@
                 @Html.TextBox("txtCampaign", (string)ViewBag.Campaign, new { @readonly = "true" });
             }
 
-            <label>Vertical</label>
+           @* <label>Vertical</label>
             <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
 
             <label>Audience</label>
             <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
 
             <label>Geography</label>
-            <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
+            <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>*@
 
             @Html.Hidden("hdnRedirect", (bool)ViewBag.RedirectType, new { id = "hdnRedirectType" })
             @if ((bool)ViewBag.RedirectType)
