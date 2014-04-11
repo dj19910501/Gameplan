@@ -300,7 +300,7 @@ This software is allowed to use under GPL or you need to obtain Commercial or En
 .gantt_grid_data.gantt_row: hover, .gantt_task_row:hover,
 .gantt_grid_data.gantt_row.odd: hover
 {
-    background - color: #fff3a1;
+    /*background - color: #fff3a1;*/
 }
 
     .gantt_grid_data.gantt_row: hover.gantt_add,
@@ -1788,7 +1788,7 @@ lete_btn
 
 .gantt_grid_data .gantt_task_row:hover .gantt_row:hover, .gantt_grid_data .gantt_row.odd:hover
 {
-    background-color: #fff3a1;
+    /*background-color: #fff3a1;*/
 }
 
     .gantt_grid_data .gantt_row:hover .gantt_add, .gantt_grid_data .gantt_row.odd:hover .gantt_add
