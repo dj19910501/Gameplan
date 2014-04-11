@@ -216,7 +216,15 @@
             GetConversionRate(inqValue);
         });
 
+        $("#save_campaign_tactic").mousedown(function () {
+            saveTactic();
+        });
         $("#save_campaign_tactic").click(function () {
+            saveTactic();
+        });
+      
+        function saveTactic() 
+        {
             var iserror = false;
             $('form').find('input[type=text], select, textarea').each(function () {
                 if ($(this).attr('require') == 'true') {
@@ -273,11 +281,9 @@
 
             }
 
-
             $("#txtinq").val(ReplaceCC($("#txtinq").val()));
             $("#txtmql").val(ReplaceCC($("#txtmql").val()));
             $("#txtCost").val(ReplaceCC($("#txtCost").val()));
-
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/SaveTactic")',
@@ -294,7 +300,7 @@
 
                 }
             });
-        });
+        }
 
         $('#ddlTacticType').change(function () {
             var tacticTypeId = $(this).val();
