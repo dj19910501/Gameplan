@@ -1818,13 +1818,14 @@
             if (typeof reportTableInfo2 != 'undefined') {
                 if (reportTableInfo2.data != 'undefined' && reportTableInfo2.data.length != 0) {
                     $('#table_reports2 > tbody').empty();
-
-                    addRowReport2("Projected Revenue", reportTableInfo2.data.projectedRevenue, 1);
-                    addRowReport2("Actual Revenue", reportTableInfo2.data.actualRevenue, 2);
-                    addRowReport2("Difference", reportTableInfo2.data.difference, 3);
-                    addRowReport2("% Contribution", reportTableInfo2.data.contribution, 4);
-                    addRowReport2("Revenue Trend", reportTableInfo2.data.revenueTrend, 5);
-                    addRowReport2("Total Revenue", reportTableInfo2.data.totalRevenue, 6);
+                    var qvalue = "@Common.GetCurrentQuarter()"
+                    var curr_month = "@Common.GetCurrentMonth()"
+                    addRowReport2("Projected Revenue", reportTableInfo2.data.projectedRevenue, 1, qvalue, curr_month);
+                    addRowReport2("Actual Revenue", reportTableInfo2.data.actualRevenue, 2, qvalue, curr_month);
+                    addRowReport2("Difference", reportTableInfo2.data.difference, 3, qvalue, curr_month);
+                    addRowReport2("% Contribution", reportTableInfo2.data.contribution, 4, qvalue, curr_month);
+                    addRowReport2("Revenue Trend", reportTableInfo2.data.revenueTrend, 5, qvalue, curr_month);
+                    addRowReport2("Total Revenue", reportTableInfo2.data.totalRevenue, 6, qvalue, curr_month);
                 } else {
                     $('#table_reports2 > tbody').empty();
                     $('#table_reports2 > tbody').append('<tr><td colspan="8" class="gray">No saved reports to display.</td></tr>');
@@ -1833,7 +1834,7 @@
         }
 
         //add row in reports table
-        function addRowReport2(_title, _goal, _type) {
+        function addRowReport2(_title, _goal, _type, qvalue, curr_month) {
 
             var $tableReports2 = $('#table_reports2 > tbody');
 
@@ -1842,9 +1843,6 @@
             }
             var htmlplan = '';
             if (_type == 1 || _type == 2 || _type == 5) {
-                var qvalue = GetCurrentQuarter();
-                var d=new Date();
-                var curr_month = d.getMonth() + 1;
                 var isDisplay = false;
                 if (selectOption == "@RevenuePlanner.Helpers.Enums.UpcomingActivities.previousyear.ToString()")
                 {

@@ -2720,9 +2720,22 @@ namespace RevenuePlanner.Helpers
             return tacticList;
         }
 
+        /// <summary>
+        /// Get Current Quarter based on system datetime.
+        /// </summary>
+        /// <returns></returns>
         public static int GetCurrentQuarter()
         {
             return ((DateTime.Now.Month - 1) / 3) + 1;
+        }
+
+        /// <summary>
+        /// Get Current Month Based on system date & time.
+        /// </summary>
+        /// <returns></returns>
+        public static int GetCurrentMonth()
+        {
+            return DateTime.Now.Month;
         }
 
         #endregion
