@@ -165,8 +165,8 @@ BEGIN
 				   ,[INQs]
 				   ,[Cost]
 				   ,[IsDeleted]
-				   ,[CreatedDate]
-				   ,[CreatedBy]
+				   ,@CreatedDate
+					,@CreatedBy
 				   ,NULL
 					,NULL
 					FROM Plan_Campaign
@@ -226,8 +226,8 @@ BEGIN
 				   ,[INQs]
 				   ,[Cost]
 				   ,[IsDeleted]
-				   ,[CreatedDate]
-				   ,[CreatedBy]
+				   ,@CreatedDate
+					,@CreatedBy
 				   ,NULL
 					,NULL
 					FROM Plan_Campaign_Program
@@ -312,8 +312,8 @@ BEGIN
 					   ,NULL
 					   ,@TacticStatus
 					   ,[IsDeleted]
-					   ,[CreatedDate]
-					   ,[CreatedBy]
+					  ,@CreatedDate
+						,@CreatedBy
 					   ,NULL
 						,NULL
 						FROM [Plan_Campaign_Program_Tactic]
