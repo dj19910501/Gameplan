@@ -2100,3 +2100,24 @@ label {
     padding-top: 5px;
 }
 /* */
+
+/* Added by KAPIL 100414 - Boost Sidebar design change - #372 */
+.arrow-down-white {
+    display:inline-block;
+    width:10px;
+    height:8px;
+    vertical-align:middle;
+    margin-left:4px;
+    background:url(../images/arrow-down-white.png) left top no-repeat;
+}
+.upcoming-activities a, .upcoming-activities a:hover {
+    color:#fff;
+    font-size:30px;
+    font-family: 'source_sans_prolight', Arial, "sans-serif";
+    line-height:36px;
+    text-decoration:underline;
+}
+.upcoming-activities .nl-field-open a {
+    color:#585858;
+}
+/* */

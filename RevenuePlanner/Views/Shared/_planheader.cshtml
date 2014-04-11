@@ -29,13 +29,14 @@
     <h3 class="source-sans-prolight timeframe ">@Html.Raw("Upcoming activities ")
         <br />
     </h3>
-    <form id="nl-formAct" class="nl-form-plan-title without-margin">
+    <form id="nl-formAct" class="nl-form-plan-title without-margin upcoming-activities">
         <select id="drpthisyear" data-default="0%" class="">
             <script>
                 var time = @Html.Raw(Json.Encode(Model.UpcomingActivity))
                 populateNFActivity(time, "drpthisyear");
             </script>
         </select>
+        <span class="arrow-down-white"></span>
         <div class="nl-overlay"></div>
         <script>
             nlform = new NLForm(document.getElementById('nl-formAct'));
