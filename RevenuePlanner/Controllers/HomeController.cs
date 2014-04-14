@@ -97,6 +97,7 @@ namespace RevenuePlanner.Controllers
                 planmodel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId); //commented due to not used any where
                 ViewBag.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId);//Added by Nirav for Custom Dropdown - 388
                 ViewBag.showBid = true;
+            
             }
             else
             {
@@ -108,6 +109,11 @@ namespace RevenuePlanner.Controllers
             //// Getting active model of above business unit. 
             string modelPublishedStatus = Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Published.ToString())).Value;
             var models = db.Models.Where(m => businessUnitIds.Contains(m.BusinessUnitId) && m.IsDeleted == false).Select(m => m);
+            /*added by Nirav for plan consistency on 14 apr 2014*/
+            if (Sessions.BusinessUnitId != Guid.Empty)
+            {
+                models = db.Models.Where(m => m.BusinessUnitId == Sessions.BusinessUnitId && m.IsDeleted == false).Select(m => m);
+            }
 
             //// Getting modelIds
             var modelIds = models.Select(m => m.ModelId).ToList();
@@ -154,7 +160,8 @@ namespace RevenuePlanner.Controllers
                             currentPlan = activePlan.Where(p => p.PlanId.Equals(Sessions.PlanId)).Select(p => p).FirstOrDefault();
                         }
                     }
-
+                    /*added by Nirav for plan consistency on 14 apr 2014*/
+                    Sessions.BusinessUnitId = currentPlan.Model.BusinessUnitId;
                     planmodel.PlanTitle = currentPlan.Title;
                     planmodel.PlanId = currentPlan.PlanId;
                     planmodel.objplanhomemodelheader = Common.GetPlanHeaderValue(currentPlan.PlanId);
@@ -233,6 +240,8 @@ namespace RevenuePlanner.Controllers
             else
             {
                 Guid bId = new Guid(Bid);
+                /*added by Nirav for plan consistency on 14 apr 2014*/
+                Sessions.BusinessUnitId = bId;
                 var plan = Common.GetPlan().Where(s => s.Model.BusinessUnitId == bId);
                 //if condition added to dispaly only published plan on home page
                 if (objactivemenu.Equals(Enums.ActiveMenu.Home))
@@ -258,8 +267,10 @@ namespace RevenuePlanner.Controllers
                         planList.FirstOrDefault().Selected = true;
                     }
                 }
+         
             }
             objHomePlan.plans = planList;
+         
             return PartialView("_PlanDropdown", objHomePlan);
         }
         #endregion

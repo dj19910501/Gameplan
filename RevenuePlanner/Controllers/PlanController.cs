@@ -42,7 +42,7 @@ namespace RevenuePlanner.Controllers
             try
             {
                 ViewBag.ActiveMenu = Enums.ActiveMenu.Plan;
-
+                Sessions.PlanId = id;/*added by Nirav for plan consistency on 14 apr 2014*/
 
                 var List = GetModelName();
                 if (List == null || List.Count == 0)
@@ -62,7 +62,7 @@ namespace RevenuePlanner.Controllers
                 //added by kunal to fill the plan data in edit mode - 01/17/2014
                 if (id != 0)
                 {
-                    var objplan = db.Plans.Where(m => m.PlanId == Sessions.PlanId && m.IsDeleted == false).FirstOrDefault();
+                    var objplan = db.Plans.Where(m => m.PlanId == id && m.IsDeleted == false).FirstOrDefault();/*changed by Nirav for plan consistency on 14 apr 2014*/
                     objPlanModel.PlanId = objplan.PlanId;
                     objPlanModel.ModelId = objplan.ModelId;
                     objPlanModel.Title = objplan.Title;
@@ -380,7 +380,7 @@ namespace RevenuePlanner.Controllers
             }
 
             var plan = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId));
-
+            Sessions.BusinessUnitId= plan.Model.BusinessUnitId;
             HomePlanModel planModel = new HomePlanModel();
             planModel.objplanhomemodelheader = Common.GetPlanHeaderValue(Sessions.PlanId);
             planModel.PlanId = plan.PlanId;
@@ -453,11 +453,32 @@ namespace RevenuePlanner.Controllers
                     {
                         planList.Single(p => p.Value.Equals(Sessions.PlanId.ToString())).Selected = true;
                     }
+                    /*changed by Nirav for plan consistency on 14 apr 2014*/
+                          Sessions.BusinessUnitId = Common.GetPlan().Where(m => m.PlanId == Sessions.PlanId).Select(m => m.Model.BusinessUnitId).FirstOrDefault();
+                          if (!Common.IsPlanPublished(Sessions.PlanId))
+                          {
+                              string planPublishedStatus = Enums.PlanStatus.Published.ToString();
+                              var activeplan = db.Plans.Where(p => p.PlanId == Sessions.PlanId && p.IsDeleted == false && p.Status == planPublishedStatus).ToList();
+                              if (activeplan.Count > 0)
+                              {
+                                  Sessions.PublishedPlanId = Sessions.PlanId;
+                              }
+                              else
+                              {
+                                  Sessions.PublishedPlanId = 0;
+                              }
+                          }
                 }
             }
             else
             {
+                /*changed by Nirav for plan consistency on 14 apr 2014*/
                 Guid bId = new Guid(Bid);
+                if (Sessions.BusinessUnitId == bId)
+                {
+                    bId = Common.GetPlan().Where(m => m.PlanId == Sessions.PlanId).Select(m => m.Model.BusinessUnitId).FirstOrDefault();
+                }
+                Sessions.BusinessUnitId = bId;
                 planList = Common.GetPlan().Where(s => s.Model.BusinessUnitId == bId).Select(p => new SelectListItem() { Text = p.Title, Value = p.PlanId.ToString() }).OrderBy(p => p.Text).ToList();
                 if (planList.Count > 0)
                 {
@@ -469,10 +490,27 @@ namespace RevenuePlanner.Controllers
                     else
                     {
                         planList.FirstOrDefault().Selected = true;
+                        int planID = 0;
+                        int.TryParse(planList.Select(s=>s.Value).FirstOrDefault(),out planID);
+                        Sessions.PlanId = planID;
+                        if (!Common.IsPlanPublished(Sessions.PlanId))
+                        {
+                            string planPublishedStatus = Enums.PlanStatus.Published.ToString();
+                            var activeplan = db.Plans.Where(p => p.PlanId == Sessions.PlanId && p.IsDeleted == false && p.Status == planPublishedStatus).ToList();
+                            if (activeplan.Count > 0)
+                            {
+                                Sessions.PublishedPlanId = planID;
+                            }
+                            else
+                            {
+                                Sessions.PublishedPlanId = 0;
+                            }
+                        }
                     }
                 }
             }
             objHomePlan.plans = planList;
+           
             return PartialView("_ApplytoCalendarPlanList", objHomePlan);
         }
 

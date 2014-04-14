@@ -10,15 +10,19 @@
     bool showBid = ViewBag.showBid;
     //// Modified By Maninder Singh Wadhva PL Ticket#47
     bool isImprovement = Convert.ToBoolean(ViewBag.IsImprovement);
+    int CurrentPlanId = Sessions.PlanId;/*changed by Nirav for plan consistency on 14 apr 2014*/
+
 }
 
 @Html.Hidden("IsViewOnly", isViewOnly)
 @Html.Hidden("hdnshowInspectForPlanTacticId", showInspectForPlanTacticId)
 @Html.Hidden("hdnshowInspectForPlanCampaignId", showInspectForPlanCampaignId)
 @Html.Hidden("hdnshowInspectForPlanProgramId", showInspectForPlanProgramId)
-
+@Html.Hidden("showBid", showBid)
 <!--Modified By Maninder Singh Wadhva PL Ticket#47-->
 @Html.Hidden("hdnIsImprovement", isImprovement)
+@Html.Hidden("CurrentPlanId",CurrentPlanId)
+
 
 <script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
 <link href="@Url.Content("~/Content/css/dhtmlxchart_1.css")" rel="stylesheet" type="text/css" />
@@ -47,11 +51,17 @@
         var CurrentBid = 0;
         // Edited to add PlanYear option.
         var Currenttime = "planYear";
-        $(document).ready(function () {	 
+        $(document).ready(function () {
             var isRender;       //// Added by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
             //Added by Nirav for Custom Dropdown - 388
-            var id = $('#ddlBusinessUnit').val();
-            $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + id + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val());//activeMenu parameter added
+            var showBid = $('#showBid').val();
+            if (showBid == true) {
+                var id = $('#ddlBusinessUnit').val();
+                $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + id + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val());//activeMenu parameter added
+            }
+            else {
+                $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=false&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val());//activeMenu parameter added
+            }
             //  $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=false&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val());//activeMenu parameter added
             switch ($('#ActiveMenu').val().toLowerCase()) {
                 case 'home':
@@ -76,6 +86,7 @@
                     if (plan.Selected) {
                         $html += '<option value="' + plan.Value + '" selected>' + plan.Text + '</option>';
                         CurrentPlanId = plan.Value;
+                        $("#CurrentPlanId").val(CurrentPlanId);
                     } else {
                         $html += '<option value="' + plan.Value + '">' + plan.Text + '</option>';
                     }
@@ -83,6 +94,7 @@
             } else {
                 $html += '<option value=' + 0 + ' selected>' + "Plan Title" + '</option>';
                 CurrentPlanId = 0;
+                $("#CurrentPlanId").val(CurrentPlanId);
             }
             $dropdown.append($html);
         }
@@ -94,6 +106,7 @@
                 //var planTitle = $(this).text();
                 //var option = $.grep($('#dropdown-plan-title option'), function (value) { return $(value).text() == planTitle; })
                 CurrentPlanId = $(this).attr('value');
+                $("#CurrentPlanId").val(CurrentPlanId);
                 //// Modified By Maninder Singh Wadhva to Address PL#203
                 GetCollaborators(CurrentPlanId);
                 RefreshCurrentTab();
@@ -181,11 +194,20 @@
             if (Model.PlanId != null)
             {
                 int pid = Model.PlanId;
+                if (CurrentPlanId != 0)
+                {
+                    CurrentPlanId = 0;
+                }
                 //int.TryParse(Convert.ToString(RevenuePlanner.Helpers.Sessions.PlanId), out pid);
-                        <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Create", "Plan", new { id = pid })'">Edit Plan</button>
+                    //    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Create", "Plan", new { id = pid })'">Edit Plan</button>
+                                   <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlan()">Edit Plan</button>/*changed by Nirav for plan consistency on 14 apr 2014*/
             }
             else
             {
+                if (CurrentPlanId != 0)
+                {
+                    CurrentPlanId = 0;
+                }
                         <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button">Edit Plan</button>
             }
                     }
@@ -348,7 +370,7 @@
 <div class="light-blue-chart cf">
     @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
 </div>
-  @* changed by Nirav for Custom Dropdown - 388*@
+@* changed by Nirav for Custom Dropdown - 388*@
 @*@{
     if (showBid == true)
     {
@@ -372,7 +394,7 @@
     <span class="selectBox dropdown-businessUnit" id="dropdown-business-unit">
         @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId != Guid.Empty)
         {
-            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text", @RevenuePlanner.Helpers.Sessions.BusinessUnitId))
+            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text", Sessions.BusinessUnitId))
         }
         else
         {
@@ -435,10 +457,11 @@
     }
 </ul>*@
 
-<div class="tab-content all-height cf" style="padding-right:18px;">
+<div class="tab-content all-height cf" style="padding-right: 18px;">
     <div class="tab-pane active all-height" id="panel-656352">
         <div class=" pl20 cf">
-            <div class="margin-left9 pull-left" id="divCollaborator" style="position:relative;"> <!-- position:relative = added by kapil -->
+            <div class="margin-left9 pull-left" id="divCollaborator" style="position: relative;">
+                <!-- position:relative = added by kapil -->
             </div>
             <div>
                 <div class="gantt-padding cf all-height lenght-div ">
@@ -498,11 +521,19 @@
 
 <script type="text/javascript">
     // Added by Nirav for Custom Dropdown - 388
+    /*added by Nirav for plan consistency on 14 apr 2014*/
+    function EditPlan() {
+        var pid = $("#CurrentPlanId").val();
+        var url = '@Url.Content("~/Plan/Create?id=")' + pid;
+        window.location.href = url;
+    }
     $(".selectBox select").selectbox();
     $('#ddlBusinessUnit').change(function () {
-        var id = $('#ddlBusinessUnit').val();
-        var pid = $('#PlanId').val();
-        $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + id + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val())
+        var Bid = $('#ddlBusinessUnit').val();
+        CurrentPlanId = $('#PlanId').val();
+        $("#CurrentPlanId").val(CurrentPlanId);
+        /*changed by Nirav for plan consistency on 14 apr 2014*/
+        $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + Bid + '&currentPlanId=' + CurrentPlanId + '&activeMenu=' + $('#ActiveMenu').val())
     });
     /*end Nirav*/
     /// Script Start
@@ -722,122 +753,122 @@
        }
    }
 
-    // Function to set collaborator's image
-    //// Modified By Maninder Singh Wadhva to Address PL#203
-    function SetCollaboratorImage(collaborator) {
-        console.log(collaborator);
+   // Function to set collaborator's image
+   //// Modified By Maninder Singh Wadhva to Address PL#203
+   function SetCollaboratorImage(collaborator) {
+       console.log(collaborator);
        // Get collaborator image
        var imgs = collaborator.imageBytes;
        var username = collaborator.name;
 
-        // Set collaborator image
+       // Set collaborator image
        var collaboratorImage = "<img title='" + username + "' class=\"avatar-user img-border align_avatar_image\""
         + "src='" + "data:image/jpg;base64,"
         + imgs + "'/>";
        $("#divCollaborator").prepend(collaboratorImage);
    }
-          
-  function ShowInspectForPlanCampaignId() {
-      var hdnshowInspectForPlanCampaignId = $("#hdnshowInspectForPlanCampaignId")
-      if (hdnshowInspectForPlanCampaignId.val() != 0) {
 
-          ShowModel(null, true);
-          hdnshowInspectForPlanCampaignId.val(0);
-      }
-  }
-  function ShowInspectForPlanProgramId() {
-      var hdnshowInspectForPlanProgramId = $("#hdnshowInspectForPlanProgramId")
-      if (hdnshowInspectForPlanProgramId.val() != 0) {
+   function ShowInspectForPlanCampaignId() {
+       var hdnshowInspectForPlanCampaignId = $("#hdnshowInspectForPlanCampaignId")
+       if (hdnshowInspectForPlanCampaignId.val() != 0) {
 
-          ShowModel(null, true);
-          hdnshowInspectForPlanProgramId.val(0);
-      }
-  }
-  strflg = "";
-  //// Get tactic on click of tactic tab.
-  //$('#ATactics').click(GetTactics)
+           ShowModel(null, true);
+           hdnshowInspectForPlanCampaignId.val(0);
+       }
+   }
+   function ShowInspectForPlanProgramId() {
+       var hdnshowInspectForPlanProgramId = $("#hdnshowInspectForPlanProgramId")
+       if (hdnshowInspectForPlanProgramId.val() != 0) {
 
-  ////// Get tactic on click of vertical tab.
-  //$('#AVertical').click(GetVertical)
+           ShowModel(null, true);
+           hdnshowInspectForPlanProgramId.val(0);
+       }
+   }
+   strflg = "";
+   //// Get tactic on click of tactic tab.
+   //$('#ATactics').click(GetTactics)
 
-  ////// Get tactic on click of audience tab.
-  //$('#AAudience').click(GetAudience)
+   ////// Get tactic on click of vertical tab.
+   //$('#AVertical').click(GetVertical)
 
-  ////// Get tactic on click of business unit tab.
-  //$('#ABusinessUnit').click(GetBusinessUnit)
+   ////// Get tactic on click of audience tab.
+   //$('#AAudience').click(GetAudience)
 
-  ////// Get tactic on click of stage tab.
-  //$('#AStage').click(GetStage)
+   ////// Get tactic on click of business unit tab.
+   //$('#ABusinessUnit').click(GetBusinessUnit)
 
-  ////// Get tactic on click of request tab.
-  //$('#ARequest').click(GetRequest)
+   ////// Get tactic on click of stage tab.
+   //$('#AStage').click(GetStage)
 
-  function AttachEventToFilter() {
-      $("#accordion-filterGeography").find("a").click(ApplyOrRemoveFilter);
-      $("#accordion-filterIndividuals").find("a").click(ApplyOrRemoveFilter);
-  }
+   ////// Get tactic on click of request tab.
+   //$('#ARequest').click(GetRequest)
 
-  function ApplyOrRemoveFilter() {
-      ($(this).toggleClass("x-icon"));
-      filters.geographyIds = $.map($("#accordion-filterGeography").find("a.x-icon"), function (a) { return $(a).attr("filterId") });
-      filters.IndividualsIds = $.map($("#accordion-filterIndividuals").find("a.x-icon"), function (a) { return $(a).attr("filterId") });
-      RefreshCurrentTab();
+   function AttachEventToFilter() {
+       $("#accordion-filterGeography").find("a").click(ApplyOrRemoveFilter);
+       $("#accordion-filterIndividuals").find("a").click(ApplyOrRemoveFilter);
+   }
 
-  }
+   function ApplyOrRemoveFilter() {
+       ($(this).toggleClass("x-icon"));
+       filters.geographyIds = $.map($("#accordion-filterGeography").find("a.x-icon"), function (a) { return $(a).attr("filterId") });
+       filters.IndividualsIds = $.map($("#accordion-filterIndividuals").find("a.x-icon"), function (a) { return $(a).attr("filterId") });
+       RefreshCurrentTab();
 
-  //// Function to get tactic.
-  function GetTactics() {
-      $('.pull-right').removeClass('active');
-      $('#ATactics').closest('li').addClass('active');
-      type = GanttTabs.Tactic;
-      AjaxRequest();
-  }
+   }
 
-  //// Function to get audience.
-  function GetAudience() {
-      $('.pull-right').removeClass('active');
-      $('#AAudience').closest('li').addClass('active');
-      type = GanttTabs.Audience;
-      AjaxRequest();
-  }
+   //// Function to get tactic.
+   function GetTactics() {
+       $('.pull-right').removeClass('active');
+       $('#ATactics').closest('li').addClass('active');
+       type = GanttTabs.Tactic;
+       AjaxRequest();
+   }
 
-  //// Function to get vertical.
-  function GetVertical() {
-      $('.pull-right').removeClass('active');
-      $('#AVertical').closest('li').addClass('active');
-      type = GanttTabs.Vertical;
-      AjaxRequest();
-  }
+   //// Function to get audience.
+   function GetAudience() {
+       $('.pull-right').removeClass('active');
+       $('#AAudience').closest('li').addClass('active');
+       type = GanttTabs.Audience;
+       AjaxRequest();
+   }
 
-  //// Function to get business unit.
-  function GetBusinessUnit() {
-      $('.pull-right').removeClass('active');
-      $('#ABusinessUnit').closest('li').addClass('active');
-      type = GanttTabs.BusinessUnit;
-      AjaxRequest();
-  }
+   //// Function to get vertical.
+   function GetVertical() {
+       $('.pull-right').removeClass('active');
+       $('#AVertical').closest('li').addClass('active');
+       type = GanttTabs.Vertical;
+       AjaxRequest();
+   }
 
-  //// Function to get stage.
-  function GetStage() {
-      $('.pull-right').removeClass('active');
-      $('#AStage').closest('li').addClass('active');
-      type = GanttTabs.Stage;
-      AjaxRequest();
-  }
+   //// Function to get business unit.
+   function GetBusinessUnit() {
+       $('.pull-right').removeClass('active');
+       $('#ABusinessUnit').closest('li').addClass('active');
+       type = GanttTabs.BusinessUnit;
+       AjaxRequest();
+   }
 
-  //// Function to get request.
-  function GetRequest() {
-      $('.pull-right').removeClass('active');
-      $('#ARequest').closest('li').addClass('active');
-      type = GanttTabs.Request;
-      AjaxRequest();
-  }
+   //// Function to get stage.
+   function GetStage() {
+       $('.pull-right').removeClass('active');
+       $('#AStage').closest('li').addClass('active');
+       type = GanttTabs.Stage;
+       AjaxRequest();
+   }
 
-  //// Modified By Maninder Singh Wadhva PL Ticket#47
-  //// Function to add html for improvement activities.
-  function AddImprovementActivities(colorCode, parentTitle, parentId, filteredData) {
-      var accordionDiv = $('#DivAccordionImprovementActivities');
-      accordionDiv.append("<div class='accordion-heading'>\
+   //// Function to get request.
+   function GetRequest() {
+       $('.pull-right').removeClass('active');
+       $('#ARequest').closest('li').addClass('active');
+       type = GanttTabs.Request;
+       AjaxRequest();
+   }
+
+   //// Modified By Maninder Singh Wadhva PL Ticket#47
+   //// Function to add html for improvement activities.
+   function AddImprovementActivities(colorCode, parentTitle, parentId, filteredData) {
+       var accordionDiv = $('#DivAccordionImprovementActivities');
+       accordionDiv.append("<div class='accordion-heading'>\
                                     <a href='#accordion-element-improvement-" + parentId + "' data-toggle='collapse' class='accordion-toggle item-" + colorCode + " collapsed chevron-right'>\
                                         <div class='cf'>" + parentTitle + "<span class='pull-right'><span id='spnimprovement_" + parentId + "'>0</span>/" + filteredData.length + "</span></div>\
                                     </a>\
@@ -845,19 +876,19 @@
                                 <div class='accordion-body collapse' id='accordion-element-improvement-" + parentId + "'>\
                                 </div>");
 
-      $.each(filteredData, function (index2, objfilteredData) {
-          $("#accordion-element-improvement-" + parentId).append("<a taskid='" + objfilteredData.TaskId + "' href='#' class='accordion-inner item-" + colorCode + "'>" + objfilteredData.Title + "</a>")
-          $("a[taskid='" + objfilteredData.TaskId + "']").click(function (event) {
-              GanttOpenBranch($(this).attr('taskid'));
-          });
-      })
-  }
+       $.each(filteredData, function (index2, objfilteredData) {
+           $("#accordion-element-improvement-" + parentId).append("<a taskid='" + objfilteredData.TaskId + "' href='#' class='accordion-inner item-" + colorCode + "'>" + objfilteredData.Title + "</a>")
+           $("a[taskid='" + objfilteredData.TaskId + "']").click(function (event) {
+               GanttOpenBranch($(this).attr('taskid'));
+           });
+       })
+   }
 
-  //// Modified By Maninder Singh Wadhva PL Ticket#47
-  //// Function to add marketing activities.
-  function AddMarketingActivities(colorCode, parentTitle, parentId, filteredData) {
-      var accordionDiv = $('#DivAccordionMarketingActivities');
-      accordionDiv.append("<div class='accordion-heading'>\
+   //// Modified By Maninder Singh Wadhva PL Ticket#47
+   //// Function to add marketing activities.
+   function AddMarketingActivities(colorCode, parentTitle, parentId, filteredData) {
+       var accordionDiv = $('#DivAccordionMarketingActivities');
+       accordionDiv.append("<div class='accordion-heading'>\
                                     <a href='#accordion-element-" + parentId + "' data-toggle='collapse' class='accordion-toggle item-" + colorCode + " collapsed chevron-right'>\
                                         <div class='cf'>" + parentTitle + "<span class='pull-right'><span id='spn_" + parentId + "'>0</span>/" + filteredData.length + "</span></div>\
                                     </a>\
@@ -865,190 +896,190 @@
                                 <div class='accordion-body collapse' id='accordion-element-" + parentId + "'>\
                                 </div>");
 
-      $.each(filteredData, function (index2, objfilteredData) {
-          $("#accordion-element-" + parentId).append("<a taskid='" + objfilteredData.TaskId + "' href='#' class='accordion-inner item-" + colorCode + "'>" + objfilteredData.Title + "</a>")
-          $("a[taskid='" + objfilteredData.TaskId + "']").click(function (event) {
-              GanttOpenBranch($(this).attr('taskid'));
-              //alert($(this).attr('taskid'));
-          });
-      })
-  }
+       $.each(filteredData, function (index2, objfilteredData) {
+           $("#accordion-element-" + parentId).append("<a taskid='" + objfilteredData.TaskId + "' href='#' class='accordion-inner item-" + colorCode + "'>" + objfilteredData.Title + "</a>")
+           $("a[taskid='" + objfilteredData.TaskId + "']").click(function (event) {
+               GanttOpenBranch($(this).attr('taskid'));
+               //alert($(this).attr('taskid'));
+           });
+       })
+   }
 
-  //// Modified By Maninder Singh Wadhva PL Ticket#47
-  //// Function to add improvement activities.
-  function AddAccordionToggleAndInnerImprovementTactic(improvementTacticTypeForAccordion, improvementTacticForAccordion) {
-      var accordionDiv = $('#DivAccordionImprovementActivities');
-      accordionDiv.empty();
-      $.each(improvementTacticTypeForAccordion, function (index1, tactic) {
-          var colorCode = tactic.ColorCode;
-          var improvementTacticTypeId = tactic.ImprovementTacticTypeId;
+   //// Modified By Maninder Singh Wadhva PL Ticket#47
+   //// Function to add improvement activities.
+   function AddAccordionToggleAndInnerImprovementTactic(improvementTacticTypeForAccordion, improvementTacticForAccordion) {
+       var accordionDiv = $('#DivAccordionImprovementActivities');
+       accordionDiv.empty();
+       $.each(improvementTacticTypeForAccordion, function (index1, tactic) {
+           var colorCode = tactic.ColorCode;
+           var improvementTacticTypeId = tactic.ImprovementTacticTypeId;
 
-          //// Filter plan improvement tactic based on improvement tactic type id.
-          var filteredTactic = $.grep(improvementTacticForAccordion, function (value) { return value.ImprovementTacticTypeId == improvementTacticTypeId; })
-          AddImprovementActivities(colorCode, tactic.Title, improvementTacticTypeId, filteredTactic);
-      })
-  }
+           //// Filter plan improvement tactic based on improvement tactic type id.
+           var filteredTactic = $.grep(improvementTacticForAccordion, function (value) { return value.ImprovementTacticTypeId == improvementTacticTypeId; })
+           AddImprovementActivities(colorCode, tactic.Title, improvementTacticTypeId, filteredTactic);
+       })
+   }
 
-  //// Modified By Maninder Singh Wadhva PL Ticket#47
-  //// Function to create tactic view control.
-  function AddAccordionToggleAndInnerTactic(data) {
-      var accordionDiv = $('#DivAccordionMarketingActivities');
-      accordionDiv.empty();
-      $.each(data.tacticType, function (index1, objTactic) {
-          var colorCode = objTactic.ColorCode;
-          var tacticTypeId = objTactic.TacticTypeId;
+   //// Modified By Maninder Singh Wadhva PL Ticket#47
+   //// Function to create tactic view control.
+   function AddAccordionToggleAndInnerTactic(data) {
+       var accordionDiv = $('#DivAccordionMarketingActivities');
+       accordionDiv.empty();
+       $.each(data.tacticType, function (index1, objTactic) {
+           var colorCode = objTactic.ColorCode;
+           var tacticTypeId = objTactic.TacticTypeId;
 
-          //// Filter plan campaign program tactic based on tactic type id.
-          var filteredTactic = $.grep(data.planCampaignProgramTactic, function (value) { return value.TacticTypeId == tacticTypeId; })
-          AddMarketingActivities(colorCode, objTactic.Title, tacticTypeId, filteredTactic);
-      })
-  }
+           //// Filter plan campaign program tactic based on tactic type id.
+           var filteredTactic = $.grep(data.planCampaignProgramTactic, function (value) { return value.TacticTypeId == tacticTypeId; })
+           AddMarketingActivities(colorCode, objTactic.Title, tacticTypeId, filteredTactic);
+       })
+   }
 
-  function GanttOpenBranch(taskId) {
+   function GanttOpenBranch(taskId) {
 
-      var flag = false;
-      $(".gantt_grid_data").find('div[class^="gantt_row"]').each(function (index1) {
+       var flag = false;
+       $(".gantt_grid_data").find('div[class^="gantt_row"]').each(function (index1) {
 
-          var itaskid = $(this).attr('task_id');
-          if (taskId == itaskid) {
-              flag = true;
-          }
+           var itaskid = $(this).attr('task_id');
+           if (taskId == itaskid) {
+               flag = true;
+           }
 
-      });
+       });
 
-      if (flag == false) {
+       if (flag == false) {
 
-          var arr = taskId.split('_');
-          //// Added by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
-          var CampaignID = ''
-          if (arr.length >= 3) {
-              CampaignID = arr[0] + '_';
-          }
-          ////
-          
-          $.each(arr, function (index, item) {
-              var tId = '';
-              for (var counter = 0; counter <= index; counter++) {
-                  if (tId == '') {
-                      tId = arr[counter]
-                  }
-                  else {
-                      tId += '_' + arr[counter]
-                  }
-              }
-              
-              //// Modified by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
-              isRender = true;
-              gantt.open(tId);
-              CountTacticForRenderChart(tId, CampaignID);
-              isRender = false;
-              ////
-          });
-      }
+           var arr = taskId.split('_');
+           //// Added by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
+           var CampaignID = ''
+           if (arr.length >= 3) {
+               CampaignID = arr[0] + '_';
+           }
+           ////
+
+           $.each(arr, function (index, item) {
+               var tId = '';
+               for (var counter = 0; counter <= index; counter++) {
+                   if (tId == '') {
+                       tId = arr[counter]
+                   }
+                   else {
+                       tId += '_' + arr[counter]
+                   }
+               }
+
+               //// Modified by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
+               isRender = true;
+               gantt.open(tId);
+               CountTacticForRenderChart(tId, CampaignID);
+               isRender = false;
+               ////
+           });
+       }
 
 
-  }
+   }
 
-  //// Modified By Maninder Singh Wadhva PL Ticket#47
-  //// Function to create audience view control.
-  function AddAccordionToggleAndInnerAudience(data) {
-      var accordionDiv = $('#DivAccordionMarketingActivities');
-      accordionDiv.empty();
-      $.each(data.audience, function (index1, objAudience) {
-          var colorCode = objAudience.ColorCode;
-          var audienceId = objAudience.AudienceId;
+   //// Modified By Maninder Singh Wadhva PL Ticket#47
+   //// Function to create audience view control.
+   function AddAccordionToggleAndInnerAudience(data) {
+       var accordionDiv = $('#DivAccordionMarketingActivities');
+       accordionDiv.empty();
+       $.each(data.audience, function (index1, objAudience) {
+           var colorCode = objAudience.ColorCode;
+           var audienceId = objAudience.AudienceId;
 
-          var filteredAudience = $.grep(data.audienceTactic, function (value) { return value.AudienceId == audienceId; }).sort(SortAlphabetically);
-          AddMarketingActivities(colorCode, objAudience.Title, audienceId, filteredAudience);
-      })
-  }
+           var filteredAudience = $.grep(data.audienceTactic, function (value) { return value.AudienceId == audienceId; }).sort(SortAlphabetically);
+           AddMarketingActivities(colorCode, objAudience.Title, audienceId, filteredAudience);
+       })
+   }
 
-  //// Modified By Maninder Singh Wadhva PL Ticket#47
-  //// Function to create vertical view control.
-  function AddAccordionToggleAndInnerVertical(data) {
-      var accordionDiv = $('#DivAccordionMarketingActivities');
-      accordionDiv.empty();
+   //// Modified By Maninder Singh Wadhva PL Ticket#47
+   //// Function to create vertical view control.
+   function AddAccordionToggleAndInnerVertical(data) {
+       var accordionDiv = $('#DivAccordionMarketingActivities');
+       accordionDiv.empty();
 
-      $.each(data.vertical, function (index1, objVertical) {
-          var colorCode = objVertical.ColorCode;
-          var verticalId = objVertical.VerticalId;
-          var filteredVertical = $.grep(data.verticalTactic, function (value) { return value.VerticalId == verticalId; }).sort(SortAlphabetically);
-          AddMarketingActivities(colorCode, objVertical.Title, verticalId, filteredVertical);
-      });
-  }
+       $.each(data.vertical, function (index1, objVertical) {
+           var colorCode = objVertical.ColorCode;
+           var verticalId = objVertical.VerticalId;
+           var filteredVertical = $.grep(data.verticalTactic, function (value) { return value.VerticalId == verticalId; }).sort(SortAlphabetically);
+           AddMarketingActivities(colorCode, objVertical.Title, verticalId, filteredVertical);
+       });
+   }
 
-  //// Modified By Maninder Singh Wadhva PL Ticket#47
-  //// Function to create stage view control.
-  function AddAccordionToggleAndInnerStage(data) {
-      var accordionDiv = $('#DivAccordionMarketingActivities');
-      accordionDiv.empty();
-      $.each(data.stage, function (index1, objStage) {
-          var colorCode = objStage.ColorCode;
-          var stageId = objStage.StageId;
+   //// Modified By Maninder Singh Wadhva PL Ticket#47
+   //// Function to create stage view control.
+   function AddAccordionToggleAndInnerStage(data) {
+       var accordionDiv = $('#DivAccordionMarketingActivities');
+       accordionDiv.empty();
+       $.each(data.stage, function (index1, objStage) {
+           var colorCode = objStage.ColorCode;
+           var stageId = objStage.StageId;
 
-          var filteredStage = $.grep(data.stageTactic, function (value) { return value.StageId == stageId; }).sort(SortAlphabetically);
-          AddMarketingActivities(colorCode, objStage.Title, stageId, filteredStage);
-      });
-  }
+           var filteredStage = $.grep(data.stageTactic, function (value) { return value.StageId == stageId; }).sort(SortAlphabetically);
+           AddMarketingActivities(colorCode, objStage.Title, stageId, filteredStage);
+       });
+   }
 
-  //// Modified By Maninder Singh Wadhva PL Ticket#47
-  //// Function to create business unit view control.
-  function AddAccordionToggleAndInnerBusinessUnit(data) {
-      var accordionDiv = $('#DivAccordionMarketingActivities');
-      accordionDiv.empty();
-      $.each(data.businessUnit, function (index1, objBusinessUnit) {
-          var colorCode = objBusinessUnit.ColorCode;
-          var businessUnitId = objBusinessUnit.BusinessUnitId;
+   //// Modified By Maninder Singh Wadhva PL Ticket#47
+   //// Function to create business unit view control.
+   function AddAccordionToggleAndInnerBusinessUnit(data) {
+       var accordionDiv = $('#DivAccordionMarketingActivities');
+       accordionDiv.empty();
+       $.each(data.businessUnit, function (index1, objBusinessUnit) {
+           var colorCode = objBusinessUnit.ColorCode;
+           var businessUnitId = objBusinessUnit.BusinessUnitId;
 
-          var filteredBusinessUnit = $.grep(data.businessUnitTactic, function (value) { return value.BusinessUnitId == businessUnitId; }).sort(SortAlphabetically);
-          AddMarketingActivities(colorCode, objBusinessUnit.Title, businessUnitId, filteredBusinessUnit);
-      });
-  }
+           var filteredBusinessUnit = $.grep(data.businessUnitTactic, function (value) { return value.BusinessUnitId == businessUnitId; }).sort(SortAlphabetically);
+           AddMarketingActivities(colorCode, objBusinessUnit.Title, businessUnitId, filteredBusinessUnit);
+       });
+   }
 
-  //// Function to create request view control.
-  var activities = { data: '' };
-  function AddAccordionToggleAndInnerRequest(data) {
-      AddAccordionToggleAndInnerTactic(data);
+   //// Function to create request view control.
+   var activities = { data: '' };
+   function AddAccordionToggleAndInnerRequest(data) {
+       AddAccordionToggleAndInnerTactic(data);
 
-      //onlyTactic = $.grep(data.taskData, function (value) {
-      //    return ((typeof value.isSubmitted != 'undefined') && (typeof value.isDeclined != 'undefined'))
-      //});
+       //onlyTactic = $.grep(data.taskData, function (value) {
+       //    return ((typeof value.isSubmitted != 'undefined') && (typeof value.isDeclined != 'undefined'))
+       //});
 
-      //submittedTactic = $.grep(onlyTactic, function (value) {
-      //    return (value.isSubmitted == true);
-      //});
+       //submittedTactic = $.grep(onlyTactic, function (value) {
+       //    return (value.isSubmitted == true);
+       //});
 
-      //declinedTactic = $.grep(onlyTactic, function (value) {
-      //    return (value.isDeclined == true);
-      //});
+       //declinedTactic = $.grep(onlyTactic, function (value) {
+       //    return (value.isDeclined == true);
+       //});
 
-      //var submittedDeclinedTactic = submittedTactic.concat(declinedTactic);
-      //activities = { data: submittedDeclinedTactic };
+       //var submittedDeclinedTactic = submittedTactic.concat(declinedTactic);
+       //activities = { data: submittedDeclinedTactic };
 
-      //FillTacticsTable();
+       //FillTacticsTable();
 
-      //if ($('#IsViewOnly').val() != '') {
-      //    $("#table_activities th:nth-child(6), #table_activities td:nth-child(6)").remove();
-      //}
-  }
+       //if ($('#IsViewOnly').val() != '') {
+       //    $("#table_activities th:nth-child(6), #table_activities td:nth-child(6)").remove();
+       //}
+   }
 
-  //// Function to sort alphabetically.
-  function SortAlphabetically(obj1, obj2) {
-      var obj1Property = obj1.Title.toLowerCase();
-      var obj2Property = obj2.Title.toLowerCase();
-      return ((obj1Property < obj2Property) ? -1 : ((obj1Property > obj2Property) ? 1 : 0));
-  }
+   //// Function to sort alphabetically.
+   function SortAlphabetically(obj1, obj2) {
+       var obj1Property = obj1.Title.toLowerCase();
+       var obj2Property = obj2.Title.toLowerCase();
+       return ((obj1Property < obj2Property) ? -1 : ((obj1Property > obj2Property) ? 1 : 0));
+   }
 
-  var planYear;
-  //// Modified By Maninder Singh Wadhva PL Ticket#47
-  //// Modified By Maninder Singh Wadhva to Address PL#203
-  //// Function to make ajax request.
-  function AjaxRequest() {
-      $.ajax(
-    {
-        type: "GET",
-        cache: false,
-        url: '@Url.Action("GetViewControlDetail", "Home")',
+   var planYear;
+   //// Modified By Maninder Singh Wadhva PL Ticket#47
+   //// Modified By Maninder Singh Wadhva to Address PL#203
+   //// Function to make ajax request.
+   function AjaxRequest() {
+       $.ajax(
+     {
+         type: "GET",
+         cache: false,
+         url: '@Url.Action("GetViewControlDetail", "Home")',
         data: {
             Type: type,
             PlanId: CurrentPlanId,
@@ -1125,42 +1156,42 @@
                 $("#table_activities").hide();
                 $(".shadow-scroll-gantt").hide();
             }
-            
+
             //gantt.render();     ////Added by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
         }
     });
 }
 
-    function FillTacticTableForRequest(data) {
-        onlyTactic = $.grep(data.taskData, function (value) {
-            return ((typeof value.isSubmitted != 'undefined') && (typeof value.isDeclined != 'undefined'))
-        });
+function FillTacticTableForRequest(data) {
+    onlyTactic = $.grep(data.taskData, function (value) {
+        return ((typeof value.isSubmitted != 'undefined') && (typeof value.isDeclined != 'undefined'))
+    });
 
-        submittedTactic = $.grep(onlyTactic, function (value) {
-            return (value.isSubmitted == true);
-        });
+    submittedTactic = $.grep(onlyTactic, function (value) {
+        return (value.isSubmitted == true);
+    });
 
-        declinedTactic = $.grep(onlyTactic, function (value) {
-            return (value.isDeclined == true);
-        });
+    declinedTactic = $.grep(onlyTactic, function (value) {
+        return (value.isDeclined == true);
+    });
 
-        var submittedDeclinedTactic = submittedTactic.concat(declinedTactic);
-        activities = { data: submittedDeclinedTactic };
+    var submittedDeclinedTactic = submittedTactic.concat(declinedTactic);
+    activities = { data: submittedDeclinedTactic };
 
-        if (activities.data.length > 0) {
-            FillTacticsTable();
-        }
-        else {
-            ////// Modified By Maninder Singh Wadhva PL Ticket#47
-            $('#table_activities > tbody >tr').remove();
-            var varCount = $('#table_activities thead th').length;
-            $('#table_activities > tbody').html('<tr class="no-tactic-found"><td colspan="' + varCount + '">No submitted tactic found.</td></tr>');
-        }
-
-        if ($('#IsViewOnly').val() != '') {
-            $("#table_activities th:nth-child(6), #table_activities td:nth-child(6)").remove();
-        }
+    if (activities.data.length > 0) {
+        FillTacticsTable();
     }
+    else {
+        ////// Modified By Maninder Singh Wadhva PL Ticket#47
+        $('#table_activities > tbody >tr').remove();
+        var varCount = $('#table_activities thead th').length;
+        $('#table_activities > tbody').html('<tr class="no-tactic-found"><td colspan="' + varCount + '">No submitted tactic found.</td></tr>');
+    }
+
+    if ($('#IsViewOnly').val() != '') {
+        $("#table_activities th:nth-child(6), #table_activities td:nth-child(6)").remove();
+    }
+}
 function AttachEventToGroupHeading() {
     var divAccordionGroups = $("div[id^='DivAccordionGroup']").find("div.accordion-heading a");
     $.each(divAccordionGroups, function (index, accGroup) {
@@ -1399,7 +1430,7 @@ function renderGantt(taskData) {
         var json_length = tasks.data.length;
         var gantt_div = document.getElementById("gantt_here");
         ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-        if (json_length.toString() == "0" ||  parseInt(json_length.toString()) <= 9) {
+        if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
             gantt_div.style.height = ((json_length * 35) + 94) + "px";
         }
         else {
@@ -1522,7 +1553,7 @@ function getCSSForTask(task) {
                 cssClass = ' improvement improvementcolor27A4E5 colorC6EBF3-with-border ';
             }
             else {
-            cssClass += ' no_drag ';
+                cssClass += ' no_drag ';
             }
         }
     } else {
@@ -1753,7 +1784,7 @@ function ShowModel(taskId, isShowInspect) {
         $("#successMessage").css("display", "none");
         $("#errorMessage").css("display", "none");
         loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup");
-        }
+    }
 }
 
 $("#modal-container-186470").on("show", function (e) { $("#modalMainContainer").show(); });
@@ -2071,7 +2102,7 @@ gantt.attachEvent("onTaskOpened", function (id) {
 
 //// Added by :- Sohel Pathan on 11/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
 function OnTaskExapnd(id) {
-    
+
     if (id.substring(0, 1) == "C" || id.substring(0, 1) == "B" || id.substring(0, 1) == "A" || id.substring(0, 1) == "S" || id.substring(0, 1) == "V") {
         var intid = 0;
         if (id.indexOf("P") >= 0) {
@@ -2124,7 +2155,7 @@ function OnTaskExapnd(id) {
                     }
                 });
             }
-            //// Four levels Exapnding tabs
+                //// Four levels Exapnding tabs
             else if (id.substring(0, 1) == "B" || id.substring(0, 1) == "A" || id.substring(0, 1) == "S" || id.substring(0, 1) == "V") {
                 $("#DivAccordionMarketingActivities").find('span[id^="spn_"]').each(function (index0) {
                     var tid = this.id.substring(this.id.indexOf('_') + 1);
@@ -2160,8 +2191,8 @@ function OnTaskExapnd(id) {
             }
         }
     }
-    //// Two levels Expanding tabs
-    ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
+        //// Two levels Expanding tabs
+        ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
     else if (id.substring(0, 1) == "M") {
         $("#DivAccordionImprovementActivities").find('span[id^="spnimprovement_"]').each(function (index1) {
             var tid = this.id.substring(this.id.indexOf('_') + 1);
@@ -2190,7 +2221,7 @@ function updateCountOnExpand(spanId, cnt) {
     var TotalCount = parseInt((TotalCountText.substring(TotalCountText.indexOf('/') + 1)));
     var currentCount = parseInt(spanId.text());
     var sum = (currentCount + cnt);
-    if (sum <= TotalCount ) {
+    if (sum <= TotalCount) {
         spanId.text(sum);
     }
 };
@@ -2204,7 +2235,7 @@ gantt.attachEvent("onTaskClosed", function (id) {
 
 //// Added by :- Sohel Pathan on 11/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
 function OnTaskCollapse(id) {
-    
+
     if (id.substring(0, 1) == "C" || id.substring(0, 1) == "B" || id.substring(0, 1) == "A" || id.substring(0, 1) == "S" || id.substring(0, 1) == "V") {
         var intid = 0;
         if (id.indexOf("P") >= 0) {
@@ -2250,7 +2281,7 @@ function OnTaskCollapse(id) {
                     updateTacticCountOnCollapse($("#" + this.id), cnt);
                 });
             }
-            //// Four levels Collapsing tabs
+                //// Four levels Collapsing tabs
             else if (id.substring(0, 1) == "B" || id.substring(0, 1) == "A" || id.substring(0, 1) == "S" || id.substring(0, 1) == "V") {
                 $("#DivAccordionMarketingActivities").find('span[id^="spn_"]').each(function (index0) {
                     var tid = this.id.substring(this.id.indexOf('_') + 1);
@@ -2283,8 +2314,8 @@ function OnTaskCollapse(id) {
             }
         }
     }
-    //// Two levels Expanding tabs
-    ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
+        //// Two levels Expanding tabs
+        ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
     else if (id.substring(0, 1) == "M") {
         $("#DivAccordionImprovementActivities").find('span[id^="spnimprovement_"]').each(function (index1) {
             var tid = this.id.substring(this.id.indexOf('_') + 1);
