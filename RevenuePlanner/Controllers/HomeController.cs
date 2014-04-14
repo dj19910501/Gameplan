@@ -109,10 +109,13 @@ namespace RevenuePlanner.Controllers
             //// Getting active model of above business unit. 
             string modelPublishedStatus = Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Published.ToString())).Value;
             var models = db.Models.Where(m => businessUnitIds.Contains(m.BusinessUnitId) && m.IsDeleted == false).Select(m => m);
-            /*added by Nirav for plan consistency on 14 apr 2014*/
-            if (Sessions.BusinessUnitId != Guid.Empty)
+            if (currentPlanId == 0)
             {
-                models = db.Models.Where(m => m.BusinessUnitId == Sessions.BusinessUnitId && m.IsDeleted == false).Select(m => m);
+                /*added by Nirav for plan consistency on 14 apr 2014*/
+                if (Sessions.BusinessUnitId != Guid.Empty)
+                {
+                    models = db.Models.Where(m => m.BusinessUnitId == Sessions.BusinessUnitId && m.IsDeleted == false).Select(m => m);
+                }
             }
 
             //// Getting modelIds
