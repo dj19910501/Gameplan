@@ -130,10 +130,15 @@
 
                         $('#individualFilterdiv').find("a").removeClass('chevron-down');
                         $('#individualFilterdiv').find("a").removeClass('chevron-right');
+                        $('#individualFilterdiv').find("a").removeClass('collapsed');
                         $('#individualFilterdiv').find("a").removeAttr("href");
 
                         if (data.individualsList.length > 0) {
+                            $("#accordion-filterIndividuals").removeClass("in");
+                            $("#accordion-filterIndividuals").css("height", "0px")
+                            $('#individualFilterdiv').find("a").addClass('collapsed');
                             $('#individualFilterdiv').find("a").addClass('chevron-right');
+
                             $('#individualFilterdiv').find("a").attr("href", "#accordion-filterIndividuals");
                             $.each(data.individualsList, function (index, obj) {
                                 $('#accordion-filterIndividuals').append('<a href="#" class="accordion-inner" filterId=' + obj.UserId + '>' + obj.FirstName + ', ' + obj.LastName + '<span class="pull-right"></span></a>');
