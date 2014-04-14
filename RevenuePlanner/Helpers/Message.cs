@@ -903,7 +903,7 @@ namespace RevenuePlanner.Helpers
             }
         }
         private string _StageNotExist;
-          public string StageNotExist
+        public string StageNotExist
         {
             get
             {
@@ -914,7 +914,7 @@ namespace RevenuePlanner.Helpers
                 _StageNotExist = value;
             }
         }
-private string _EmailNotExistInDatabse;
+        private string _EmailNotExistInDatabse;
         public string EmailNotExistInDatabse
         {
             get { return _EmailNotExistInDatabse; }
@@ -970,8 +970,21 @@ private string _EmailNotExistInDatabse;
             get { return _SecurityQuestionChangesApplied; }
             set { _SecurityQuestionChangesApplied = value; }
         }
-        
-                	   
+
+        /*Added by Kuber Joshi on 11 Apr 2014 for TFS Point 220 : Ability to switch models for a plan*/
+        private string _CannotSwitchModelForPlan;
+        public string CannotSwitchModelForPlan
+        {
+            get
+            {
+                return _CannotSwitchModelForPlan;
+            }
+            set
+            {
+                _CannotSwitchModelForPlan = value;
+            }
+        }
+
 
 
         #endregion
@@ -1249,7 +1262,7 @@ private string _EmailNotExistInDatabse;
                                             break;
                                         case "StageNotExist":
                                             _StageNotExist = strMsgValue;
-                                            break;	 
+                                            break;
                                         /*Forgot Password
                                         Added by Dharmraj Mangukiya*/
                                         case "EmailNotExistInDatabse":
@@ -1276,7 +1289,10 @@ private string _EmailNotExistInDatabse;
                                         case "SecurityQuestionChangesApplied":
                                             _SecurityQuestionChangesApplied = strMsgValue;
                                             break;
-                                            
+                                        /*Added by Kuber Joshi on 11 Apr 2014 for TFS Point 220 : Ability to switch models for a plan*/
+                                        case "CannotSwitchModelForPlan":
+                                            _CannotSwitchModelForPlan = strMsgValue;
+                                            break;
                                     }
                                 }
                                 i = i + 1;

@@ -42,6 +42,7 @@ namespace RevenuePlanner.Controllers
             try
             {
                 ViewBag.ActiveMenu = Enums.ActiveMenu.Plan;
+                objPlanModel.IsDirector = Sessions.IsDirector;
                 Sessions.PlanId = id;/*added by Nirav for plan consistency on 14 apr 2014*/
 
                 var List = GetModelName();
@@ -113,6 +114,90 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
+        //Commented Code - 14Apr2014
+        ///// <summary>
+        ///// POST: Save Plan
+        ///// </summary>
+        ///// <param name="form"></param>
+        ///// <returns></returns>
+        //[HttpPost]
+        //public JsonResult SavePlan(PlanModel objPlanModel)
+        //{
+
+        //    try
+        //    {
+        //        if (ModelState.IsValid)
+        //        {
+        //            Plan plan = new Plan();
+
+        //            if (objPlanModel.PlanId != 0)
+        //            {
+        //                plan = db.Plans.Where(m => m.PlanId == objPlanModel.PlanId).ToList().FirstOrDefault();
+        //            }
+        //            else
+        //            {
+        //                string planDraftStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Draft.ToString())).Value;
+        //                plan.Status = planDraftStatus;
+        //                plan.CreatedDate = System.DateTime.Now;
+        //                plan.CreatedBy = Sessions.User.UserId;
+        //                plan.IsActive = true;
+        //                plan.IsDeleted = false;
+        //                double version = 0;
+        //                var plantable = db.Plans.Where(m => m.ModelId == objPlanModel.ModelId && m.IsActive == true && m.IsDeleted == false).FirstOrDefault();
+        //                if (plantable != null)
+        //                {
+        //                    version = Convert.ToDouble(plantable.Version) + 0.1;
+        //                }
+        //                else
+        //                {
+        //                    version = 1;
+        //                }
+        //                plan.Version = version.ToString();
+        //            }
+
+        //            plan.Title = objPlanModel.Title.Trim();
+        //            plan.MQLs = Convert.ToInt64(objPlanModel.MQls.Trim().Replace(",", "").Replace("$", ""));
+        //            plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));
+        //            plan.ModelId = objPlanModel.ModelId;
+        //            plan.Year = objPlanModel.Year;
+        //            if (objPlanModel.PlanId == 0)
+        //            {
+        //                db.Plans.Add(plan);
+        //            }
+        //            else
+        //            {
+        //                plan.ModifiedBy = Sessions.User.UserId;
+        //                plan.ModifiedDate = System.DateTime.Now;
+        //                db.Entry(plan).State = EntityState.Modified;
+        //            }
+
+        //            int result = db.SaveChanges();
+        //            if (objPlanModel.PlanId == 0)
+        //            {
+        //                Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+        //            }
+        //            else
+        //            {
+        //                Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+        //            }
+        //            if (result > 0)
+        //            {
+        //                Sessions.PlanId = plan.PlanId;
+
+        //                //Create default Plan Improvement Campaign, Program
+        //                int returnValue = CreatePlanImprovementCampaignAndProgram();
+        //            }
+
+        //            return Json(new { id = Sessions.PlanId, redirect = Url.Action("Assortment", new { ismsg = "Plan Saved Successfully." }) });
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        ErrorSignal.FromCurrentContext().Raise(e);
+        //    }
+        //    return Json(new { id = 0 });
+        //}
+
         /// <summary>
         /// POST: Save Plan
         /// </summary>
@@ -121,18 +206,13 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public JsonResult SavePlan(PlanModel objPlanModel)
         {
-
             try
             {
                 if (ModelState.IsValid)
                 {
                     Plan plan = new Plan();
 
-                    if (objPlanModel.PlanId != 0)
-                    {
-                        plan = db.Plans.Where(m => m.PlanId == objPlanModel.PlanId).ToList().FirstOrDefault();
-                    }
-                    else
+                    if (objPlanModel.PlanId == 0)  //Add Mode
                     {
                         string planDraftStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Draft.ToString())).Value;
                         plan.Status = planDraftStatus;
@@ -151,19 +231,35 @@ namespace RevenuePlanner.Controllers
                             version = 1;
                         }
                         plan.Version = version.ToString();
-                    }
-
-                    plan.Title = objPlanModel.Title.Trim();
-                    plan.MQLs = Convert.ToInt64(objPlanModel.MQls.Trim().Replace(",", "").Replace("$", ""));
-                    plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));
-                    plan.ModelId = objPlanModel.ModelId;
-                    plan.Year = objPlanModel.Year;
-                    if (objPlanModel.PlanId == 0)
-                    {
+                        plan.Title = objPlanModel.Title.Trim();
+                        plan.MQLs = Convert.ToInt64(objPlanModel.MQls.Trim().Replace(",", "").Replace("$", ""));
+                        plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));
+                        plan.ModelId = objPlanModel.ModelId;
+                        plan.Year = objPlanModel.Year;
                         db.Plans.Add(plan);
                     }
-                    else
+                    else //Edit Mode
                     {
+                        plan = db.Plans.Where(m => m.PlanId == objPlanModel.PlanId).ToList().FirstOrDefault();
+                        //Check whether the user wants to switch the Model for this Plan
+                        if (plan.ModelId != objPlanModel.ModelId)
+                        {
+                            //Check whether the Model switching is valid or not - check whether Model to switch to has all of the tactics present that are present in the plan
+                            if (CheckModelTacticType(objPlanModel.PlanId, objPlanModel.ModelId))
+                            {
+                                return Json(new { id = -1 });
+                            }
+                            else
+                            {
+                                //Update the TacticTypeIds based on new Modeld
+                                UpdateTacticType(objPlanModel.PlanId, objPlanModel.ModelId);
+                            }
+                        }
+                        plan.Title = objPlanModel.Title.Trim();
+                        plan.MQLs = Convert.ToInt64(objPlanModel.MQls.Trim().Replace(",", "").Replace("$", ""));
+                        plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));
+                        plan.ModelId = objPlanModel.ModelId;
+                        plan.Year = objPlanModel.Year;
                         plan.ModifiedBy = Sessions.User.UserId;
                         plan.ModifiedDate = System.DateTime.Now;
                         db.Entry(plan).State = EntityState.Modified;
@@ -181,7 +277,6 @@ namespace RevenuePlanner.Controllers
                     if (result > 0)
                     {
                         Sessions.PlanId = plan.PlanId;
-
                         //Create default Plan Improvement Campaign, Program
                         int returnValue = CreatePlanImprovementCampaignAndProgram();
                     }
@@ -195,6 +290,88 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { id = 0 });
         }
+
+        #endregion
+
+        #region Switch Model for Plan
+
+        /*Added by Kuber Joshi on 11 Apr 2014 for TFS Point 220 : Ability to switch models for a plan*/
+
+        /// <summary>
+        /// Check whether the Model switching for the Plan is valid or not
+        /// </summary>
+        /// <param name="planId"></param>
+        /// <param name="modelId"></param>
+        /// <returns></returns>
+        private bool CheckModelTacticType(int planId, int modelId)
+        {
+            //Check if any Tactic exists for this Plan
+            var objPlan_Campaign_Program_Tactic = (from pc in db.Plan_Campaign
+                                                   join pcp in db.Plan_Campaign_Program on pc.PlanCampaignId equals pcp.PlanCampaignId
+                                                   join pcpt in db.Plan_Campaign_Program_Tactic on pcp.PlanProgramId equals pcpt.PlanProgramId
+                                                   where pc.PlanId == planId && pcpt.IsDeleted == false
+                                                   select pcpt).FirstOrDefault();
+            if (objPlan_Campaign_Program_Tactic != null)
+            {
+                List<string> lstTacticType = db.TacticTypes.Where(t => t.ModelId == modelId).Select(o => o.Title).ToList();
+                return (from pc in db.Plan_Campaign
+                        join pcp in db.Plan_Campaign_Program on pc.PlanCampaignId equals pcp.PlanCampaignId
+                        join pcpt in db.Plan_Campaign_Program_Tactic on pcp.PlanProgramId equals pcpt.PlanProgramId
+                        where pc.PlanId == planId && pcpt.IsDeleted == false && !lstTacticType.Contains(pcpt.TacticType.Title)
+                        select pcpt).Any();
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Update the TacticTypeIds based on new Modeld
+        /// </summary>
+        /// <param name="planId"></param>
+        /// <param name="modelId"></param>
+        /// <returns></returns>
+        private void UpdateTacticType(int planId, int modelId)
+        {
+            //Check if any Tactic exists for this Plan
+            var objPlan_Campaign_Program_Tactic = (from pc in db.Plan_Campaign
+                                                   join pcp in db.Plan_Campaign_Program on pc.PlanCampaignId equals pcp.PlanCampaignId
+                                                   join pcpt in db.Plan_Campaign_Program_Tactic on pcp.PlanProgramId equals pcpt.PlanProgramId
+                                                   where pc.PlanId == planId && pcpt.IsDeleted == false
+                                                   select pcpt).FirstOrDefault();
+            if (objPlan_Campaign_Program_Tactic != null)
+            {
+                Guid businessUnitId = db.Models.Where(m => m.IsDeleted == false && m.ModelId == modelId).Select(o => o.BusinessUnitId).FirstOrDefault();
+
+                List<string> lstTacticType = db.TacticTypes.Where(t => t.ModelId == modelId).Select(o => o.Title).ToList();
+                List<Plan_Campaign_Program_Tactic> lstTactic = (from pc in db.Plan_Campaign
+                                                                join pcp in db.Plan_Campaign_Program on pc.PlanCampaignId equals pcp.PlanCampaignId
+                                                                join pcpt in db.Plan_Campaign_Program_Tactic on pcp.PlanProgramId equals pcpt.PlanProgramId
+                                                                where pc.PlanId == planId && pcpt.IsDeleted == false && lstTacticType.Contains(pcpt.TacticType.Title)
+                                                                select pcpt).ToList();
+                foreach (var tactic in lstTactic)
+                {
+                    if (tactic != null)
+                    {
+                        int newTacticTypeId = db.TacticTypes.Where(t => t.ModelId == modelId && t.Title == tactic.TacticType.Title).Select(i => i.TacticTypeId).FirstOrDefault();
+                        if (newTacticTypeId > 0)
+                        {
+                            tactic.ModifiedBy = Sessions.User.UserId;
+                            tactic.ModifiedDate = DateTime.Now;
+                            tactic.TacticTypeId = newTacticTypeId; //Update TacticTypeId column in Plan_Campaign_Program_Tactic Table based on the new model selected
+                            if (businessUnitId != null)
+                            {
+                                tactic.BusinessUnitId = businessUnitId; //Update BussinessUnitID column in Plan_Campaign_Program_Tactic Table based on the new model selected
+                            }
+                            db.Entry(tactic).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                    }
+                }
+            }
+        }
+
         #endregion
 
         #region GetModelName

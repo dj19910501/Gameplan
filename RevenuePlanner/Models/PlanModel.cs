@@ -32,6 +32,8 @@ namespace RevenuePlanner.Models
 
         //Added By Kunal
         public string Version { get; set; }
+
+        public bool IsDirector { get; set; }
     }
 
     public class Plan_CampaignModel

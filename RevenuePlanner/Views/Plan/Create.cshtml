@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
 }
+
 @Html.Hidden("hdnPlanId", strPlanid, new { id = "hdnPlanId" })
 
 @section Sidebar
@@ -90,7 +91,7 @@
         <li id="change-log" class="nav-header">
             <span>Change Log</span>
             @if (strPlanid != "0")
-        {
+            {
             <div class="changes"></div>
             }
         </li>
@@ -108,7 +109,7 @@
     <!--Error message-->
     <div id="errorMessage" class="alert alert-error hide message-position-small">
         <a class="close" id="aclose">×</a>
-        <strong>Error!</strong><span id="spanMessageError">Make sure all fields are filled and try again.</span>
+        <strong>Error! </strong><span id="spanMessageError">Make sure all fields are filled and try again.</span>
     </div>
     <!--Error message-->
             
@@ -122,23 +123,23 @@
                     <div id="nl-form" class="nl-form nomargin pull-left form-plan-mini padding-assortment">
                         <div class="bold font_size16">1. Plan definition</div>
                         I'm using the 
-														 @*@Html.DropDownList("ddlModel", (SelectList)TempData["selectList"])*@
+					    @*@Html.DropDownList("ddlModel", (SelectList)TempData["selectList"])*@
                         @{
-    if (strPlanid == "" || strPlanid == "0")
+    if (strPlanid == "" || strPlanid == "0" || Model.IsDirector)
     {
-                            @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], "select", new { datadefault = "SelectModel" })
+                                @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], "select", new { datadefault = "SelectModel" })
                                
     }
     else
     {   
                                
-                            <span id="spandef">@Model.ModelTitle</span>
+                                <span id="spandef">@Model.ModelTitle</span>
     }
                         }
                         model to create a new plan called						
 														@Html.TextBoxFor(model => model.Title, new { placeholder = @Model.Title, datasubline = "For example: <em>2014 North American Events</em>", datadefault = "Title", maxlength = "50", @class = "myValue" })
                         in
-                         @Html.DropDownListFor(m => m.Year, (SelectList)TempData["selectYearList"], new { placeholder = @Model.Year, @class = "myValue"})
+                         @Html.DropDownListFor(m => m.Year, (SelectList)TempData["selectYearList"], new { placeholder = @Model.Year, @class = "myValue" })
 
                         that generates 
 														@Html.TextBoxFor(model => model.MQls, new { placeholder = @Model.MQls, datasubline = "For example: <em>200</em>", datadefault = "MQL", datamask = "ddd-dddd", id = "txtMQL", formatType = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @class = "myValue" })
@@ -253,7 +254,13 @@
                       data: $("form[name=SavePlanForm]").serialize(),
                       success: function (data) {
                           if (data != 'undefined') {
-                              if (data.id != 0) {
+                              if (data.id == -1) {
+                                  $("#errorMessage").css("display", "block");
+                                  $("#spanMessageError").empty();
+                                  $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.CannotSwitchModelForPlan");
+                                  return false;
+                              }
+                              else if (data.id != 0) {
                                   window.location.href = data.redirect;
                                   return;
                               }
@@ -261,9 +268,9 @@
                                   $("#errorMessage").css("display", "block");
                                   $("#spanMessageError").empty();
                                   $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
-                                  return false;
-                              }
+                              return false;
                           }
+                  }
                       },
                       error: function () {
                           GoToLogin();
@@ -272,7 +279,7 @@
                           return false;
                       }
                   });
-              }
+      }
               return isError;
           });
 
@@ -302,15 +309,15 @@
     });
     $(document).on("click", "#LeftNavCampaigns", function (e) {
         displayconfirm('@Url.Action("Assortment", "Plan")');
-      });
+    });
     function displayconfirm(strURL) {
-          if (isDataChanged()) {
-              $('#errorMessage').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a style='font-weight:bold;color:gray;' href='" + strURL + "'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
-              $("#errorMessage").slideDown(3000);
-          }
-          else {
-              window.location.href = strURL;
-          }
-      }
-      //Manoj End 28Jan2014 : Bug-12 (User can lose data via navigation in application)
+        if (isDataChanged()) {
+            $('#errorMessage').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a style='font-weight:bold;color:gray;' href='" + strURL + "'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+            $("#errorMessage").slideDown(3000);
+        }
+        else {
+            window.location.href = strURL;
+        }
+    }
+    //Manoj End 28Jan2014 : Bug-12 (User can lose data via navigation in application)
 </script>
