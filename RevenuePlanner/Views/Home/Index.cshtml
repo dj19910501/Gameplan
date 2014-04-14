@@ -112,8 +112,43 @@
                 RefreshCurrentTab();
                 GetHealderData(CurrentPlanId);
                 GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
+                GetIndividualsForFilter(parseInt(CurrentPlanId));   //// Added By :- Sohel Pathan on 14/04/2014 for PL ticket #428 to fill filteredIndividuals list according to plan selected.
             });
         }
+
+        //// Added By :- Sohel Pathan on 14/04/2014 for PL ticket #428 to fill filteredIndividuals list according to plan selected.
+        function GetIndividualsForFilter(CurrentPlanId) {
+            $.ajax({
+                type: "GET",
+                cache: false,
+                url: '@Url.Action("GetIndividualsForFilter", "Home")',
+                data: { PlanId: CurrentPlanId},
+                dataType: "json",
+                success: function (data) {
+                    if (data != null || typeof data != 'undefined') {
+                        $('#accordion-filterIndividuals').empty();
+
+                        $('#individualFilterdiv').find("a").removeClass('chevron-down');
+                        $('#individualFilterdiv').find("a").removeClass('chevron-right');
+                        $('#individualFilterdiv').find("a").removeAttr("href");
+
+                        if (data.individualsList.length > 0) {
+                            $('#individualFilterdiv').find("a").addClass('chevron-right');
+                            $('#individualFilterdiv').find("a").attr("href", "#accordion-filterIndividuals");
+                            $.each(data.individualsList, function (index, obj) {
+                                $('#accordion-filterIndividuals').append('<a href="#" class="accordion-inner" filterId=' + obj.UserId + '>' + obj.FirstName + ', ' + obj.LastName + '<span class="pull-right"></span></a>');
+                            });
+                            $("#accordion-filterIndividuals").find("a").click(ApplyOrRemoveFilter);
+                        }
+                        else {
+                            $('#individualFilterdiv').find("a").attr("href", "#");
+                        }
+                    }
+                }
+            });
+        };
+        ////
+
         function populateNFActivity(items, id) {
             var $dropdown = $("#" + id);
             var $html = '';
@@ -327,7 +362,7 @@
             <div class="accordion-group">
                 @if (Model.objIndividuals.Count > 0)
                 {
-                    <div class="accordion-heading">
+                    <div class="accordion-heading" id="individualFilterdiv">
                         <a class="accordion-toggle collapsed chevron-right" data-toggle="collapse" data-parent="#accordion-Filter" href="#accordion-filterIndividuals">Individuals</a>
                     </div>
                     <div id="accordion-filterIndividuals" class="accordion-body collapse">
@@ -339,7 +374,7 @@
                 }
                 else
                 {
-                    <div class="accordion-heading"><a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-Filter" href="#">Individuals</a></div>
+                    <div class="accordion-heading" id="individualFilterdiv"><a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-Filter" href="#">Individuals</a></div>
                 }
 
             </div>

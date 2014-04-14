@@ -49,8 +49,6 @@ namespace RevenuePlanner.Models
         public DbSet<ModelReview> ModelReviews { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Plan> Plans { get; set; }
-        public DbSet<Plan_Campaign> Plan_Campaign { get; set; }
-        public DbSet<Plan_Campaign_Program> Plan_Campaign_Program { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Actual> Plan_Campaign_Program_Tactic_Actual { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Comment> Plan_Campaign_Program_Tactic_Comment { get; set; }
@@ -67,6 +65,8 @@ namespace RevenuePlanner.Models
         public DbSet<User_Filter> User_Filter { get; set; }
         public DbSet<User_Notification> User_Notification { get; set; }
         public DbSet<Vertical> Verticals { get; set; }
+        public DbSet<Plan_Campaign> Plan_Campaign { get; set; }
+        public DbSet<Plan_Campaign_Program> Plan_Campaign_Program { get; set; }
     
         public virtual int Plan_Campaign_Program_Tactic_ActualDelete(Nullable<int> planTacticId, ObjectParameter returnValue)
         {

@@ -178,7 +178,9 @@ namespace RevenuePlanner.Controllers
                     planmodel.objGeography = db.Geographies.Where(g => g.IsDeleted.Equals(false) && g.ClientId.Equals(Sessions.User.ClientId)).Select(g => g).OrderBy(g => g.Title).ToList();
 
                     BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
-                    var individuals = bdsUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, Sessions.IsSystemAdmin);
+                    //// Start Modified by :- Sohel Pathan on 14/04/2014 for PL ticket #428 Filter by individual.
+                    var individuals = GetIndividualsByPlanId(currentPlan.PlanId);
+                    //// End Modified by :- Sohel Pathan on 14/04/2014 for PL ticket #428 Filter by individual.
                     planmodel.objIndividuals = individuals.OrderBy(i => string.Format("{0} {1}", i.FirstName, i.LastName)).ToList();
                     //End Maninder Singh Wadhva : 11/25/2013 - Getting list of geographies and individuals.
 
@@ -417,7 +419,10 @@ namespace RevenuePlanner.Controllers
                                                             //// Geography Filter
                                                                        (filterGeography.Count.Equals(0) || filterGeography.Contains(pcpt.GeographyId.ToString())) &&
                                                             //// Individual & Show my Tactic Filter 
-                                                                       (filterIndividual.Count.Equals(0) || filterIndividual.Contains(pcpt.CreatedBy.ToString()) || filterIndividual.Contains(pcpt.ModifiedBy.ToString()) || tacticId.Contains(pcpt.PlanTacticId)))
+                                                            //// Start Modified by :- Sohel Pathan on 14/04/2014 for PL ticket #428 Filter by individual.
+                                                                       //(filterIndividual.Count.Equals(0) || filterIndividual.Contains(pcpt.CreatedBy.ToString()) || filterIndividual.Contains(pcpt.ModifiedBy.ToString()) || tacticId.Contains(pcpt.PlanTacticId)))
+                                                                       (filterIndividual.Count.Equals(0) || filterIndividual.Contains(pcpt.CreatedBy.ToString()) || tacticId.Contains(pcpt.PlanTacticId)))
+                                                            //// End Modified by :- Sohel Pathan on 14/04/2014 for PL ticket #428 Filter by individual.
                                                         .Select(pcpt => pcpt);
 
             //// Modified By Maninder Singh Wadhva PL Ticket#47
@@ -2154,14 +2159,20 @@ namespace RevenuePlanner.Controllers
 
                     var objPlan_Campaign = db.Plan_Campaign.Where(pcp => pcp.PlanCampaignId == id && pcp.IsDeleted == false).FirstOrDefault();
 
+                    // Number of program with status is not 'Submitted' 
                     int cntSumbitProgramStatus = db.Plan_Campaign_Program.Where(pcpt => pcpt.PlanCampaignId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statussubmit)).Count();
-                    int cntSumbitTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statussubmit)).Count();
+                    // Number of tactic with status is not 'Submitted'
+                    int cntSumbitTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.Plan_Campaign_Program.PlanCampaignId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statussubmit)).Count();
 
+                    // Number of program with status is not 'Approved', 'in-progress', 'complete'
                     int cntApproveProgramStatus = db.Plan_Campaign_Program.Where(pcpt => pcpt.PlanCampaignId == id && pcpt.IsDeleted == false && (!pcpt.Status.Equals(statusapproved) && !pcpt.Status.Equals(statusinprogress) && !pcpt.Status.Equals(statuscomplete))).Count();
-                    int cntApproveTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == id && pcpt.IsDeleted == false && (!pcpt.Status.Equals(statusapproved) && !pcpt.Status.Equals(statusinprogress) && !pcpt.Status.Equals(statuscomplete))).Count();
+                    // Number of tactic with status is not 'Approved', 'in-progress', 'complete'
+                    int cntApproveTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.Plan_Campaign_Program.PlanCampaignId == id && pcpt.IsDeleted == false && (!pcpt.Status.Equals(statusapproved) && !pcpt.Status.Equals(statusinprogress) && !pcpt.Status.Equals(statuscomplete))).Count();
 
+                    // Number of program with status is not 'Declained'
                     int cntDeclineProgramStatus = db.Plan_Campaign_Program.Where(pcpt => pcpt.PlanCampaignId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statusdecline)).Count();
-                    int cntDeclineTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statusdecline)).Count();
+                    // Number of tactic with status is not 'Declained'
+                    int cntDeclineTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.Plan_Campaign_Program.PlanCampaignId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statusdecline)).Count();
 
 
                     if (cntSumbitProgramStatus == 0 && cntSumbitTacticStatus == 0)
@@ -3954,6 +3965,40 @@ namespace RevenuePlanner.Controllers
 
             return Json(new { data = tacticobj }, JsonRequestBehavior.AllowGet);
         }
+        #endregion
+
+        #region Get Individuals by planID Method
+        /// <summary>
+        /// Added By :- Sohel Pathan
+        /// Date :- 14/04/2014
+        /// Reason :- To get list of users who have created tactic by planId
+        /// </summary>
+        /// <param name="PlanId"></param>
+        /// <returns></returns>
+        public JsonResult GetIndividualsForFilter(int PlanId)
+        {
+            var individuals = GetIndividualsByPlanId(PlanId);
+            individuals = individuals.Select(a => new User { UserId = a.UserId, FirstName = a.FirstName, LastName = a.LastName }).ToList();
+            return Json(new { individualsList = individuals.OrderBy(i => string.Format("{0} {1}", i.FirstName, i.LastName)).ToList() }, JsonRequestBehavior.AllowGet);
+        }
+
+        private List<User> GetIndividualsByPlanId(int PlanId)
+        {
+            BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
+            var TacticUserList = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId == PlanId).Select(a => a.CreatedBy).Distinct().ToList();
+            var ImprovementTacticUserList = db.Plan_Improvement_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) && pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId == PlanId).Select(a => a.CreatedBy).Distinct().ToList();
+            TacticUserList.AddRange(ImprovementTacticUserList);
+            TacticUserList = TacticUserList.Distinct().ToList();
+            string strContatedIndividualList = string.Empty;
+            foreach (var item in TacticUserList)
+            {
+                strContatedIndividualList += item.ToString() + ',';
+            }
+            var individuals = bdsUserRepository.GetMultipleTeamMemberDetails(strContatedIndividualList.TrimEnd(','), Sessions.ApplicationId);
+
+            return individuals;
+        }
+
         #endregion
     }
 }

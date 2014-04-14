@@ -612,7 +612,7 @@
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
-          <Property Name="Status" Type="nvarchar" MaxLength="50" />
+          <Property Name="Status" Type="nvarchar" Nullable="false" MaxLength="50" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program">
           <Key>
@@ -634,7 +634,7 @@
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
-          <Property Name="Status" Type="nvarchar" MaxLength="50" />
+          <Property Name="Status" Type="nvarchar" Nullable="false" MaxLength="50" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic">
           <Key>
@@ -1574,8 +1574,6 @@
           <EntitySet Name="ModelReviews" EntityType="MRPModel.ModelReview" />
           <EntitySet Name="Notifications" EntityType="MRPModel.Notification" />
           <EntitySet Name="Plans" EntityType="MRPModel.Plan" />
-          <EntitySet Name="Plan_Campaign" EntityType="MRPModel.Plan_Campaign" />
-          <EntitySet Name="Plan_Campaign_Program" EntityType="MRPModel.Plan_Campaign_Program" />
           <EntitySet Name="Plan_Campaign_Program_Tactic" EntityType="MRPModel.Plan_Campaign_Program_Tactic" />
           <EntitySet Name="Plan_Campaign_Program_Tactic_Actual" EntityType="MRPModel.Plan_Campaign_Program_Tactic_Actual" />
           <EntitySet Name="Plan_Campaign_Program_Tactic_Comment" EntityType="MRPModel.Plan_Campaign_Program_Tactic_Comment" />
@@ -1592,14 +1590,6 @@
           <EntitySet Name="User_Filter" EntityType="MRPModel.User_Filter" />
           <EntitySet Name="User_Notification" EntityType="MRPModel.User_Notification" />
           <EntitySet Name="Verticals" EntityType="MRPModel.Vertical" />
-          <AssociationSet Name="FK_Plan_Campaign_Audience" Association="MRPModel.FK_Plan_Campaign_Audience">
-            <End Role="Audience" EntitySet="Audiences" />
-            <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Plan_Campaign_Program_Audience" Association="MRPModel.FK_Plan_Campaign_Program_Audience">
-            <End Role="Audience" EntitySet="Audiences" />
-            <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
-          </AssociationSet>
           <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_Audience" Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Audience">
             <End Role="Audience" EntitySet="Audiences" />
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
@@ -1635,14 +1625,6 @@
           <AssociationSet Name="FK_ModelReview_Funnel_Field" Association="MRPModel.FK_ModelReview_Funnel_Field">
             <End Role="Funnel_Field" EntitySet="Funnel_Field" />
             <End Role="ModelReview" EntitySet="ModelReviews" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Plan_Campaign_Geography" Association="MRPModel.FK_Plan_Campaign_Geography">
-            <End Role="Geography" EntitySet="Geographies" />
-            <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Plan_Campaign_Program_Geography" Association="MRPModel.FK_Plan_Campaign_Program_Geography">
-            <End Role="Geography" EntitySet="Geographies" />
-            <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
           </AssociationSet>
           <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_Geography" Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Geography">
             <End Role="Geography" EntitySet="Geographies" />
@@ -1712,10 +1694,6 @@
             <End Role="Notification" EntitySet="Notifications" />
             <End Role="User_Notification" EntitySet="User_Notification" />
           </AssociationSet>
-          <AssociationSet Name="FK_Plan_Campaign_Plan" Association="MRPModel.FK_Plan_Campaign_Plan">
-            <End Role="Plan" EntitySet="Plans" />
-            <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
-          </AssociationSet>
           <AssociationSet Name="FK_Plan_Collaborator_Plan" Association="MRPModel.FK_Plan_Collaborator_Plan">
             <End Role="Plan" EntitySet="Plans" />
             <End Role="Plan_Team" EntitySet="Plan_Team" />
@@ -1723,38 +1701,6 @@
           <AssociationSet Name="FK_Plan_Improvement_Campaign_Plan" Association="MRPModel.FK_Plan_Improvement_Campaign_Plan">
             <End Role="Plan" EntitySet="Plans" />
             <End Role="Plan_Improvement_Campaign" EntitySet="Plan_Improvement_Campaign" />
-          </AssociationSet>
-          <AssociationSet Name="FK__Plan_Camp__PlanC__43A1090D" Association="MRPModel.FK__Plan_Camp__PlanC__43A1090D">
-            <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
-            <End Role="Plan_Campaign_Program_Tactic_Comment" EntitySet="Plan_Campaign_Program_Tactic_Comment" />
-          </AssociationSet>
-          <AssociationSet Name="FK__Tactic_Sh__PlanC__4589517F" Association="MRPModel.FK__Tactic_Sh__PlanC__4589517F">
-            <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
-            <End Role="Tactic_Share" EntitySet="Tactic_Share" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Plan_Campaign_Program_Plan_Campaign" Association="MRPModel.FK_Plan_Campaign_Program_Plan_Campaign">
-            <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
-            <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Plan_Campaign_Vertical" Association="MRPModel.FK_Plan_Campaign_Vertical">
-            <End Role="Vertical" EntitySet="Verticals" />
-            <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
-          </AssociationSet>
-          <AssociationSet Name="FK__Plan_Camp__PlanP__42ACE4D4" Association="MRPModel.FK__Plan_Camp__PlanP__42ACE4D4">
-            <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
-            <End Role="Plan_Campaign_Program_Tactic_Comment" EntitySet="Plan_Campaign_Program_Tactic_Comment" />
-          </AssociationSet>
-          <AssociationSet Name="FK__Tactic_Sh__PlanP__44952D46" Association="MRPModel.FK__Tactic_Sh__PlanP__44952D46">
-            <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
-            <End Role="Tactic_Share" EntitySet="Tactic_Share" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program" Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program">
-            <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
-            <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Plan_Campaign_Program_Vertical" Association="MRPModel.FK_Plan_Campaign_Program_Vertical">
-            <End Role="Vertical" EntitySet="Verticals" />
-            <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
           </AssociationSet>
           <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_Actual_Plan_Campaign_Program_Tactic" Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Actual_Plan_Campaign_Program_Tactic">
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
@@ -1800,6 +1746,60 @@
             <End Role="Stage" EntitySet="Stages" />
             <End Role="TacticType" EntitySet="TacticTypes" />
           </AssociationSet>
+          <EntitySet Name="Plan_Campaign" EntityType="MRPModel.Plan_Campaign" />
+          <EntitySet Name="Plan_Campaign_Program" EntityType="MRPModel.Plan_Campaign_Program" />
+          <AssociationSet Name="FK_Plan_Campaign_Audience" Association="MRPModel.FK_Plan_Campaign_Audience">
+            <End Role="Audience" EntitySet="Audiences" />
+            <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Program_Audience" Association="MRPModel.FK_Plan_Campaign_Program_Audience">
+            <End Role="Audience" EntitySet="Audiences" />
+            <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Geography" Association="MRPModel.FK_Plan_Campaign_Geography">
+            <End Role="Geography" EntitySet="Geographies" />
+            <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Program_Geography" Association="MRPModel.FK_Plan_Campaign_Program_Geography">
+            <End Role="Geography" EntitySet="Geographies" />
+            <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Plan" Association="MRPModel.FK_Plan_Campaign_Plan">
+            <End Role="Plan" EntitySet="Plans" />
+            <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Plan_Camp__PlanC__43A1090D" Association="MRPModel.FK__Plan_Camp__PlanC__43A1090D">
+            <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
+            <End Role="Plan_Campaign_Program_Tactic_Comment" EntitySet="Plan_Campaign_Program_Tactic_Comment" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Tactic_Sh__PlanC__4589517F" Association="MRPModel.FK__Tactic_Sh__PlanC__4589517F">
+            <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
+            <End Role="Tactic_Share" EntitySet="Tactic_Share" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Program_Plan_Campaign" Association="MRPModel.FK_Plan_Campaign_Program_Plan_Campaign">
+            <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
+            <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Vertical" Association="MRPModel.FK_Plan_Campaign_Vertical">
+            <End Role="Vertical" EntitySet="Verticals" />
+            <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Plan_Camp__PlanP__42ACE4D4" Association="MRPModel.FK__Plan_Camp__PlanP__42ACE4D4">
+            <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
+            <End Role="Plan_Campaign_Program_Tactic_Comment" EntitySet="Plan_Campaign_Program_Tactic_Comment" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Tactic_Sh__PlanP__44952D46" Association="MRPModel.FK__Tactic_Sh__PlanP__44952D46">
+            <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
+            <End Role="Tactic_Share" EntitySet="Tactic_Share" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program" Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program">
+            <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
+            <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Program_Vertical" Association="MRPModel.FK_Plan_Campaign_Program_Vertical">
+            <End Role="Vertical" EntitySet="Verticals" />
+            <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Audience">
           <Key>
@@ -1815,9 +1815,9 @@
           <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
           <Property Type="Guid" Name="ModifiedBy" />
           <Property Type="Guid" Name="ClientId" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Audience" FromRole="Audience" ToRole="Plan_Campaign_Program_Tactic" />
           <NavigationProperty Name="Plan_Campaign" Relationship="MRPModel.FK_Plan_Campaign_Audience" FromRole="Audience" ToRole="Plan_Campaign" />
           <NavigationProperty Name="Plan_Campaign_Program" Relationship="MRPModel.FK_Plan_Campaign_Program_Audience" FromRole="Audience" ToRole="Plan_Campaign_Program" />
-          <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Audience" FromRole="Audience" ToRole="Plan_Campaign_Program_Tactic" />
         </EntityType>
         <EntityType Name="BestInClass">
           <Key>
@@ -1924,9 +1924,9 @@
           <Property Type="Guid" Name="CreatedBy" Nullable="false" />
           <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
           <Property Type="Guid" Name="ModifiedBy" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Geography" FromRole="Geography" ToRole="Plan_Campaign_Program_Tactic" />
           <NavigationProperty Name="Plan_Campaign" Relationship="MRPModel.FK_Plan_Campaign_Geography" FromRole="Geography" ToRole="Plan_Campaign" />
           <NavigationProperty Name="Plan_Campaign_Program" Relationship="MRPModel.FK_Plan_Campaign_Program_Geography" FromRole="Geography" ToRole="Plan_Campaign_Program" />
-          <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Geography" FromRole="Geography" ToRole="Plan_Campaign_Program_Tactic" />
         </EntityType>
         <EntityType Name="ImprovementTacticType">
           <Key>
@@ -2186,67 +2186,9 @@
           <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
           <Property Type="Guid" Name="ModifiedBy" />
           <NavigationProperty Name="Model" Relationship="MRPModel.FK_Plan_Plan" FromRole="Plan" ToRole="Model" />
-          <NavigationProperty Name="Plan_Campaign" Relationship="MRPModel.FK_Plan_Campaign_Plan" FromRole="Plan" ToRole="Plan_Campaign" />
           <NavigationProperty Name="Plan_Team" Relationship="MRPModel.FK_Plan_Collaborator_Plan" FromRole="Plan" ToRole="Plan_Team" />
           <NavigationProperty Name="Plan_Improvement_Campaign" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Plan" FromRole="Plan" ToRole="Plan_Improvement_Campaign" />
-        </EntityType>
-        <EntityType Name="Plan_Campaign">
-          <Key>
-            <PropertyRef Name="PlanCampaignId" />
-          </Key>
-          <Property Type="Int32" Name="PlanCampaignId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="PlanId" Nullable="false" />
-          <Property Type="String" Name="Title" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Type="String" Name="Description" MaxLength="4000" FixedLength="false" Unicode="true" />
-          <Property Type="Int32" Name="VerticalId" />
-          <Property Type="Int32" Name="AudienceId" />
-          <Property Type="Guid" Name="GeographyId" />
-          <Property Type="DateTime" Name="StartDate" Nullable="false" Precision="3" />
-          <Property Type="DateTime" Name="EndDate" Nullable="false" Precision="3" />
-          <Property Type="Int64" Name="INQs" />
-          <Property Type="Double" Name="Cost" />
-          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
-          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
-          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
-          <Property Type="Guid" Name="ModifiedBy" />
-          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
-          <Property Type="String" Name="Status" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Audience" Relationship="MRPModel.FK_Plan_Campaign_Audience" FromRole="Plan_Campaign" ToRole="Audience" />
-          <NavigationProperty Name="Geography" Relationship="MRPModel.FK_Plan_Campaign_Geography" FromRole="Plan_Campaign" ToRole="Geography" />
-          <NavigationProperty Name="Plan" Relationship="MRPModel.FK_Plan_Campaign_Plan" FromRole="Plan_Campaign" ToRole="Plan" />
-          <NavigationProperty Name="Plan_Campaign_Program_Tactic_Comment" Relationship="MRPModel.FK__Plan_Camp__PlanC__43A1090D" FromRole="Plan_Campaign" ToRole="Plan_Campaign_Program_Tactic_Comment" />
-          <NavigationProperty Name="Tactic_Share" Relationship="MRPModel.FK__Tactic_Sh__PlanC__4589517F" FromRole="Plan_Campaign" ToRole="Tactic_Share" />
-          <NavigationProperty Name="Plan_Campaign_Program" Relationship="MRPModel.FK_Plan_Campaign_Program_Plan_Campaign" FromRole="Plan_Campaign" ToRole="Plan_Campaign_Program" />
-          <NavigationProperty Name="Vertical" Relationship="MRPModel.FK_Plan_Campaign_Vertical" FromRole="Plan_Campaign" ToRole="Vertical" />
-        </EntityType>
-        <EntityType Name="Plan_Campaign_Program">
-          <Key>
-            <PropertyRef Name="PlanProgramId" />
-          </Key>
-          <Property Type="Int32" Name="PlanProgramId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="PlanCampaignId" Nullable="false" />
-          <Property Type="String" Name="Title" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Type="String" Name="Description" MaxLength="4000" FixedLength="false" Unicode="true" />
-          <Property Type="Int32" Name="VerticalId" />
-          <Property Type="Int32" Name="AudienceId" />
-          <Property Type="Guid" Name="GeographyId" />
-          <Property Type="DateTime" Name="StartDate" Nullable="false" Precision="3" />
-          <Property Type="DateTime" Name="EndDate" Nullable="false" Precision="3" />
-          <Property Type="Int64" Name="INQs" />
-          <Property Type="Double" Name="Cost" />
-          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
-          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
-          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
-          <Property Type="Guid" Name="ModifiedBy" />
-          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
-          <Property Type="String" Name="Status" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Audience" Relationship="MRPModel.FK_Plan_Campaign_Program_Audience" FromRole="Plan_Campaign_Program" ToRole="Audience" />
-          <NavigationProperty Name="Geography" Relationship="MRPModel.FK_Plan_Campaign_Program_Geography" FromRole="Plan_Campaign_Program" ToRole="Geography" />
-          <NavigationProperty Name="Plan_Campaign" Relationship="MRPModel.FK_Plan_Campaign_Program_Plan_Campaign" FromRole="Plan_Campaign_Program" ToRole="Plan_Campaign" />
-          <NavigationProperty Name="Plan_Campaign_Program_Tactic_Comment" Relationship="MRPModel.FK__Plan_Camp__PlanP__42ACE4D4" FromRole="Plan_Campaign_Program" ToRole="Plan_Campaign_Program_Tactic_Comment" />
-          <NavigationProperty Name="Tactic_Share" Relationship="MRPModel.FK__Tactic_Sh__PlanP__44952D46" FromRole="Plan_Campaign_Program" ToRole="Tactic_Share" />
-          <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program" FromRole="Plan_Campaign_Program" ToRole="Plan_Campaign_Program_Tactic" />
-          <NavigationProperty Name="Vertical" Relationship="MRPModel.FK_Plan_Campaign_Program_Vertical" FromRole="Plan_Campaign_Program" ToRole="Vertical" />
+          <NavigationProperty Name="Plan_Campaign" Relationship="MRPModel.FK_Plan_Campaign_Plan" FromRole="Plan" ToRole="Plan_Campaign" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic">
           <Key>
@@ -2283,7 +2225,6 @@
           <NavigationProperty Name="Audience" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Audience" FromRole="Plan_Campaign_Program_Tactic" ToRole="Audience" />
           <NavigationProperty Name="BusinessUnit" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_BusinessUnit" FromRole="Plan_Campaign_Program_Tactic" ToRole="BusinessUnit" />
           <NavigationProperty Name="Geography" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Geography" FromRole="Plan_Campaign_Program_Tactic" ToRole="Geography" />
-          <NavigationProperty Name="Plan_Campaign_Program" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program" FromRole="Plan_Campaign_Program_Tactic" ToRole="Plan_Campaign_Program" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic_Actual" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Actual_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic" ToRole="Plan_Campaign_Program_Tactic_Actual" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic_Comment" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Comment_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic" ToRole="Plan_Campaign_Program_Tactic_Comment" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic1" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic" ToRole="Plan_Campaign_Program_Tactic1" />
@@ -2291,6 +2232,7 @@
           <NavigationProperty Name="TacticType" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" FromRole="Plan_Campaign_Program_Tactic" ToRole="TacticType" />
           <NavigationProperty Name="Vertical" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Vertical" FromRole="Plan_Campaign_Program_Tactic" ToRole="Vertical" />
           <NavigationProperty Name="Tactic_Share" Relationship="MRPModel.FK_Tactic_Share_Plan_Campaign_Program_Tactic1" FromRole="Plan_Campaign_Program_Tactic" ToRole="Tactic_Share" />
+          <NavigationProperty Name="Plan_Campaign_Program" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program" FromRole="Plan_Campaign_Program_Tactic" ToRole="Plan_Campaign_Program" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_Actual">
           <Key>
@@ -2317,9 +2259,9 @@
           <Property Type="Guid" Name="CreatedBy" Nullable="false" />
           <Property Type="Int32" Name="PlanProgramId" />
           <Property Type="Int32" Name="PlanCampaignId" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Comment_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic_Comment" ToRole="Plan_Campaign_Program_Tactic" />
           <NavigationProperty Name="Plan_Campaign" Relationship="MRPModel.FK__Plan_Camp__PlanC__43A1090D" FromRole="Plan_Campaign_Program_Tactic_Comment" ToRole="Plan_Campaign" />
           <NavigationProperty Name="Plan_Campaign_Program" Relationship="MRPModel.FK__Plan_Camp__PlanP__42ACE4D4" FromRole="Plan_Campaign_Program_Tactic_Comment" ToRole="Plan_Campaign_Program" />
-          <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Comment_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic_Comment" ToRole="Plan_Campaign_Program_Tactic" />
         </EntityType>
         <EntityType Name="Plan_Improvement_Campaign">
           <Key>
@@ -2446,9 +2388,9 @@
           <Property Type="Guid" Name="CreatedBy" Nullable="false" />
           <Property Type="Int32" Name="PlanProgramId" />
           <Property Type="Int32" Name="PlanCampaignId" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Tactic_Share_Plan_Campaign_Program_Tactic1" FromRole="Tactic_Share" ToRole="Plan_Campaign_Program_Tactic" />
           <NavigationProperty Name="Plan_Campaign" Relationship="MRPModel.FK__Tactic_Sh__PlanC__4589517F" FromRole="Tactic_Share" ToRole="Plan_Campaign" />
           <NavigationProperty Name="Plan_Campaign_Program" Relationship="MRPModel.FK__Tactic_Sh__PlanP__44952D46" FromRole="Tactic_Share" ToRole="Plan_Campaign_Program" />
-          <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Tactic_Share_Plan_Campaign_Program_Tactic1" FromRole="Tactic_Share" ToRole="Plan_Campaign_Program_Tactic" />
         </EntityType>
         <EntityType Name="TacticType">
           <Key>
@@ -2509,34 +2451,10 @@
           <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
           <Property Type="Guid" Name="ModifiedBy" />
           <Property Type="Guid" Name="ClientId" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Vertical" FromRole="Vertical" ToRole="Plan_Campaign_Program_Tactic" />
           <NavigationProperty Name="Plan_Campaign" Relationship="MRPModel.FK_Plan_Campaign_Vertical" FromRole="Vertical" ToRole="Plan_Campaign" />
           <NavigationProperty Name="Plan_Campaign_Program" Relationship="MRPModel.FK_Plan_Campaign_Program_Vertical" FromRole="Vertical" ToRole="Plan_Campaign_Program" />
-          <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Vertical" FromRole="Vertical" ToRole="Plan_Campaign_Program_Tactic" />
         </EntityType>
-        <Association Name="FK_Plan_Campaign_Audience">
-          <End Type="MRPModel.Audience" Role="Audience" Multiplicity="0..1" />
-          <End Type="MRPModel.Plan_Campaign" Role="Plan_Campaign" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Audience">
-              <PropertyRef Name="AudienceId" />
-            </Principal>
-            <Dependent Role="Plan_Campaign">
-              <PropertyRef Name="AudienceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Plan_Campaign_Program_Audience">
-          <End Type="MRPModel.Audience" Role="Audience" Multiplicity="0..1" />
-          <End Type="MRPModel.Plan_Campaign_Program" Role="Plan_Campaign_Program" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Audience">
-              <PropertyRef Name="AudienceId" />
-            </Principal>
-            <Dependent Role="Plan_Campaign_Program">
-              <PropertyRef Name="AudienceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Plan_Campaign_Program_Tactic_Audience">
           <End Type="MRPModel.Audience" Role="Audience" Multiplicity="1" />
           <End Type="MRPModel.Plan_Campaign_Program_Tactic" Role="Plan_Campaign_Program_Tactic" Multiplicity="*" />
@@ -2642,30 +2560,6 @@
             </Principal>
             <Dependent Role="ModelReview">
               <PropertyRef Name="FunnelFieldId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Plan_Campaign_Geography">
-          <End Type="MRPModel.Geography" Role="Geography" Multiplicity="0..1" />
-          <End Type="MRPModel.Plan_Campaign" Role="Plan_Campaign" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Geography">
-              <PropertyRef Name="GeographyId" />
-            </Principal>
-            <Dependent Role="Plan_Campaign">
-              <PropertyRef Name="GeographyId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Plan_Campaign_Program_Geography">
-          <End Type="MRPModel.Geography" Role="Geography" Multiplicity="0..1" />
-          <End Type="MRPModel.Plan_Campaign_Program" Role="Plan_Campaign_Program" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Geography">
-              <PropertyRef Name="GeographyId" />
-            </Principal>
-            <Dependent Role="Plan_Campaign_Program">
-              <PropertyRef Name="GeographyId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2873,18 +2767,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Plan_Campaign_Plan">
-          <End Type="MRPModel.Plan" Role="Plan" Multiplicity="1" />
-          <End Type="MRPModel.Plan_Campaign" Role="Plan_Campaign" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Plan">
-              <PropertyRef Name="PlanId" />
-            </Principal>
-            <Dependent Role="Plan_Campaign">
-              <PropertyRef Name="PlanId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Plan_Collaborator_Plan">
           <End Type="MRPModel.Plan" Role="Plan" Multiplicity="1" />
           <End Type="MRPModel.Plan_Team" Role="Plan_Team" Multiplicity="*" />
@@ -2906,102 +2788,6 @@
             </Principal>
             <Dependent Role="Plan_Improvement_Campaign">
               <PropertyRef Name="ImprovePlanId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__Plan_Camp__PlanC__43A1090D">
-          <End Type="MRPModel.Plan_Campaign" Role="Plan_Campaign" Multiplicity="0..1" />
-          <End Type="MRPModel.Plan_Campaign_Program_Tactic_Comment" Role="Plan_Campaign_Program_Tactic_Comment" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Plan_Campaign">
-              <PropertyRef Name="PlanCampaignId" />
-            </Principal>
-            <Dependent Role="Plan_Campaign_Program_Tactic_Comment">
-              <PropertyRef Name="PlanCampaignId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__Tactic_Sh__PlanC__4589517F">
-          <End Type="MRPModel.Plan_Campaign" Role="Plan_Campaign" Multiplicity="0..1" />
-          <End Type="MRPModel.Tactic_Share" Role="Tactic_Share" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Plan_Campaign">
-              <PropertyRef Name="PlanCampaignId" />
-            </Principal>
-            <Dependent Role="Tactic_Share">
-              <PropertyRef Name="PlanCampaignId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Plan_Campaign_Program_Plan_Campaign">
-          <End Type="MRPModel.Plan_Campaign" Role="Plan_Campaign" Multiplicity="1" />
-          <End Type="MRPModel.Plan_Campaign_Program" Role="Plan_Campaign_Program" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Plan_Campaign">
-              <PropertyRef Name="PlanCampaignId" />
-            </Principal>
-            <Dependent Role="Plan_Campaign_Program">
-              <PropertyRef Name="PlanCampaignId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Plan_Campaign_Vertical">
-          <End Type="MRPModel.Vertical" Role="Vertical" Multiplicity="0..1" />
-          <End Type="MRPModel.Plan_Campaign" Role="Plan_Campaign" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Vertical">
-              <PropertyRef Name="VerticalId" />
-            </Principal>
-            <Dependent Role="Plan_Campaign">
-              <PropertyRef Name="VerticalId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__Plan_Camp__PlanP__42ACE4D4">
-          <End Type="MRPModel.Plan_Campaign_Program" Role="Plan_Campaign_Program" Multiplicity="0..1" />
-          <End Type="MRPModel.Plan_Campaign_Program_Tactic_Comment" Role="Plan_Campaign_Program_Tactic_Comment" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Plan_Campaign_Program">
-              <PropertyRef Name="PlanProgramId" />
-            </Principal>
-            <Dependent Role="Plan_Campaign_Program_Tactic_Comment">
-              <PropertyRef Name="PlanProgramId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__Tactic_Sh__PlanP__44952D46">
-          <End Type="MRPModel.Plan_Campaign_Program" Role="Plan_Campaign_Program" Multiplicity="0..1" />
-          <End Type="MRPModel.Tactic_Share" Role="Tactic_Share" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Plan_Campaign_Program">
-              <PropertyRef Name="PlanProgramId" />
-            </Principal>
-            <Dependent Role="Tactic_Share">
-              <PropertyRef Name="PlanProgramId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program">
-          <End Type="MRPModel.Plan_Campaign_Program" Role="Plan_Campaign_Program" Multiplicity="1" />
-          <End Type="MRPModel.Plan_Campaign_Program_Tactic" Role="Plan_Campaign_Program_Tactic" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Plan_Campaign_Program">
-              <PropertyRef Name="PlanProgramId" />
-            </Principal>
-            <Dependent Role="Plan_Campaign_Program_Tactic">
-              <PropertyRef Name="PlanProgramId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Plan_Campaign_Program_Vertical">
-          <End Type="MRPModel.Vertical" Role="Vertical" Multiplicity="0..1" />
-          <End Type="MRPModel.Plan_Campaign_Program" Role="Plan_Campaign_Program" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Vertical">
-              <PropertyRef Name="VerticalId" />
-            </Principal>
-            <Dependent Role="Plan_Campaign_Program">
-              <PropertyRef Name="VerticalId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3134,6 +2920,220 @@
             </Principal>
             <Dependent Role="TacticType">
               <PropertyRef Name="StageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Plan_Campaign">
+          <Key>
+            <PropertyRef Name="PlanCampaignId" />
+          </Key>
+          <Property Type="Int32" Name="PlanCampaignId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="PlanId" Nullable="false" />
+          <Property Type="String" Name="Title" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Description" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="VerticalId" />
+          <Property Type="Int32" Name="AudienceId" />
+          <Property Type="Guid" Name="GeographyId" />
+          <Property Type="DateTime" Name="StartDate" Nullable="false" Precision="3" />
+          <Property Type="DateTime" Name="EndDate" Nullable="false" Precision="3" />
+          <Property Type="Int64" Name="INQs" />
+          <Property Type="Double" Name="Cost" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
+          <Property Type="Guid" Name="ModifiedBy" />
+          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
+          <Property Type="String" Name="Status" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Audience" Relationship="MRPModel.FK_Plan_Campaign_Audience" FromRole="Plan_Campaign" ToRole="Audience" />
+          <NavigationProperty Name="Geography" Relationship="MRPModel.FK_Plan_Campaign_Geography" FromRole="Plan_Campaign" ToRole="Geography" />
+          <NavigationProperty Name="Plan" Relationship="MRPModel.FK_Plan_Campaign_Plan" FromRole="Plan_Campaign" ToRole="Plan" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic_Comment" Relationship="MRPModel.FK__Plan_Camp__PlanC__43A1090D" FromRole="Plan_Campaign" ToRole="Plan_Campaign_Program_Tactic_Comment" />
+          <NavigationProperty Name="Tactic_Share" Relationship="MRPModel.FK__Tactic_Sh__PlanC__4589517F" FromRole="Plan_Campaign" ToRole="Tactic_Share" />
+          <NavigationProperty Name="Plan_Campaign_Program" Relationship="MRPModel.FK_Plan_Campaign_Program_Plan_Campaign" FromRole="Plan_Campaign" ToRole="Plan_Campaign_Program" />
+          <NavigationProperty Name="Vertical" Relationship="MRPModel.FK_Plan_Campaign_Vertical" FromRole="Plan_Campaign" ToRole="Vertical" />
+        </EntityType>
+        <EntityType Name="Plan_Campaign_Program">
+          <Key>
+            <PropertyRef Name="PlanProgramId" />
+          </Key>
+          <Property Type="Int32" Name="PlanProgramId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="PlanCampaignId" Nullable="false" />
+          <Property Type="String" Name="Title" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Description" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="VerticalId" />
+          <Property Type="Int32" Name="AudienceId" />
+          <Property Type="Guid" Name="GeographyId" />
+          <Property Type="DateTime" Name="StartDate" Nullable="false" Precision="3" />
+          <Property Type="DateTime" Name="EndDate" Nullable="false" Precision="3" />
+          <Property Type="Int64" Name="INQs" />
+          <Property Type="Double" Name="Cost" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
+          <Property Type="Guid" Name="ModifiedBy" />
+          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
+          <Property Type="String" Name="Status" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Audience" Relationship="MRPModel.FK_Plan_Campaign_Program_Audience" FromRole="Plan_Campaign_Program" ToRole="Audience" />
+          <NavigationProperty Name="Geography" Relationship="MRPModel.FK_Plan_Campaign_Program_Geography" FromRole="Plan_Campaign_Program" ToRole="Geography" />
+          <NavigationProperty Name="Plan_Campaign" Relationship="MRPModel.FK_Plan_Campaign_Program_Plan_Campaign" FromRole="Plan_Campaign_Program" ToRole="Plan_Campaign" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic_Comment" Relationship="MRPModel.FK__Plan_Camp__PlanP__42ACE4D4" FromRole="Plan_Campaign_Program" ToRole="Plan_Campaign_Program_Tactic_Comment" />
+          <NavigationProperty Name="Tactic_Share" Relationship="MRPModel.FK__Tactic_Sh__PlanP__44952D46" FromRole="Plan_Campaign_Program" ToRole="Tactic_Share" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program" FromRole="Plan_Campaign_Program" ToRole="Plan_Campaign_Program_Tactic" />
+          <NavigationProperty Name="Vertical" Relationship="MRPModel.FK_Plan_Campaign_Program_Vertical" FromRole="Plan_Campaign_Program" ToRole="Vertical" />
+        </EntityType>
+        <Association Name="FK_Plan_Campaign_Audience">
+          <End Type="MRPModel.Audience" Role="Audience" Multiplicity="0..1" />
+          <End Type="MRPModel.Plan_Campaign" Role="Plan_Campaign" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Audience">
+              <PropertyRef Name="AudienceId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign">
+              <PropertyRef Name="AudienceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Campaign_Program_Audience">
+          <End Type="MRPModel.Audience" Role="Audience" Multiplicity="0..1" />
+          <End Type="MRPModel.Plan_Campaign_Program" Role="Plan_Campaign_Program" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Audience">
+              <PropertyRef Name="AudienceId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Program">
+              <PropertyRef Name="AudienceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Campaign_Geography">
+          <End Type="MRPModel.Geography" Role="Geography" Multiplicity="0..1" />
+          <End Type="MRPModel.Plan_Campaign" Role="Plan_Campaign" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Geography">
+              <PropertyRef Name="GeographyId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign">
+              <PropertyRef Name="GeographyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Campaign_Program_Geography">
+          <End Type="MRPModel.Geography" Role="Geography" Multiplicity="0..1" />
+          <End Type="MRPModel.Plan_Campaign_Program" Role="Plan_Campaign_Program" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Geography">
+              <PropertyRef Name="GeographyId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Program">
+              <PropertyRef Name="GeographyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Campaign_Plan">
+          <End Type="MRPModel.Plan" Role="Plan" Multiplicity="1" />
+          <End Type="MRPModel.Plan_Campaign" Role="Plan_Campaign" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan">
+              <PropertyRef Name="PlanId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign">
+              <PropertyRef Name="PlanId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Plan_Camp__PlanC__43A1090D">
+          <End Type="MRPModel.Plan_Campaign" Role="Plan_Campaign" Multiplicity="0..1" />
+          <End Type="MRPModel.Plan_Campaign_Program_Tactic_Comment" Role="Plan_Campaign_Program_Tactic_Comment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign">
+              <PropertyRef Name="PlanCampaignId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Program_Tactic_Comment">
+              <PropertyRef Name="PlanCampaignId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Tactic_Sh__PlanC__4589517F">
+          <End Type="MRPModel.Plan_Campaign" Role="Plan_Campaign" Multiplicity="0..1" />
+          <End Type="MRPModel.Tactic_Share" Role="Tactic_Share" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign">
+              <PropertyRef Name="PlanCampaignId" />
+            </Principal>
+            <Dependent Role="Tactic_Share">
+              <PropertyRef Name="PlanCampaignId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Campaign_Program_Plan_Campaign">
+          <End Type="MRPModel.Plan_Campaign" Role="Plan_Campaign" Multiplicity="1" />
+          <End Type="MRPModel.Plan_Campaign_Program" Role="Plan_Campaign_Program" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign">
+              <PropertyRef Name="PlanCampaignId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Program">
+              <PropertyRef Name="PlanCampaignId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Campaign_Vertical">
+          <End Type="MRPModel.Vertical" Role="Vertical" Multiplicity="0..1" />
+          <End Type="MRPModel.Plan_Campaign" Role="Plan_Campaign" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vertical">
+              <PropertyRef Name="VerticalId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign">
+              <PropertyRef Name="VerticalId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Plan_Camp__PlanP__42ACE4D4">
+          <End Type="MRPModel.Plan_Campaign_Program" Role="Plan_Campaign_Program" Multiplicity="0..1" />
+          <End Type="MRPModel.Plan_Campaign_Program_Tactic_Comment" Role="Plan_Campaign_Program_Tactic_Comment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program">
+              <PropertyRef Name="PlanProgramId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Program_Tactic_Comment">
+              <PropertyRef Name="PlanProgramId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Tactic_Sh__PlanP__44952D46">
+          <End Type="MRPModel.Plan_Campaign_Program" Role="Plan_Campaign_Program" Multiplicity="0..1" />
+          <End Type="MRPModel.Tactic_Share" Role="Tactic_Share" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program">
+              <PropertyRef Name="PlanProgramId" />
+            </Principal>
+            <Dependent Role="Tactic_Share">
+              <PropertyRef Name="PlanProgramId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program">
+          <End Type="MRPModel.Plan_Campaign_Program" Role="Plan_Campaign_Program" Multiplicity="1" />
+          <End Type="MRPModel.Plan_Campaign_Program_Tactic" Role="Plan_Campaign_Program_Tactic" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program">
+              <PropertyRef Name="PlanProgramId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Program_Tactic">
+              <PropertyRef Name="PlanProgramId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Campaign_Program_Vertical">
+          <End Type="MRPModel.Vertical" Role="Vertical" Multiplicity="0..1" />
+          <End Type="MRPModel.Plan_Campaign_Program" Role="Plan_Campaign_Program" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vertical">
+              <PropertyRef Name="VerticalId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Program">
+              <PropertyRef Name="VerticalId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3504,52 +3504,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Plan_Campaign">
-            <EntityTypeMapping TypeName="MRPModel.Plan_Campaign">
-              <MappingFragment StoreEntitySet="Plan_Campaign">
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="Cost" ColumnName="Cost" />
-                <ScalarProperty Name="INQs" ColumnName="INQs" />
-                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
-                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
-                <ScalarProperty Name="GeographyId" ColumnName="GeographyId" />
-                <ScalarProperty Name="AudienceId" ColumnName="AudienceId" />
-                <ScalarProperty Name="VerticalId" ColumnName="VerticalId" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="PlanId" ColumnName="PlanId" />
-                <ScalarProperty Name="PlanCampaignId" ColumnName="PlanCampaignId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Plan_Campaign_Program">
-            <EntityTypeMapping TypeName="MRPModel.Plan_Campaign_Program">
-              <MappingFragment StoreEntitySet="Plan_Campaign_Program">
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="Cost" ColumnName="Cost" />
-                <ScalarProperty Name="INQs" ColumnName="INQs" />
-                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
-                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
-                <ScalarProperty Name="GeographyId" ColumnName="GeographyId" />
-                <ScalarProperty Name="AudienceId" ColumnName="AudienceId" />
-                <ScalarProperty Name="VerticalId" ColumnName="VerticalId" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="PlanCampaignId" ColumnName="PlanCampaignId" />
-                <ScalarProperty Name="PlanProgramId" ColumnName="PlanProgramId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Plan_Campaign_Program_Tactic">
             <EntityTypeMapping TypeName="MRPModel.Plan_Campaign_Program_Tactic">
               <MappingFragment StoreEntitySet="Plan_Campaign_Program_Tactic">
@@ -3785,6 +3739,52 @@
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="VerticalId" ColumnName="VerticalId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Plan_Campaign">
+            <EntityTypeMapping TypeName="MRPModel.Plan_Campaign">
+              <MappingFragment StoreEntitySet="Plan_Campaign">
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Cost" ColumnName="Cost" />
+                <ScalarProperty Name="INQs" ColumnName="INQs" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="GeographyId" ColumnName="GeographyId" />
+                <ScalarProperty Name="AudienceId" ColumnName="AudienceId" />
+                <ScalarProperty Name="VerticalId" ColumnName="VerticalId" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="PlanId" ColumnName="PlanId" />
+                <ScalarProperty Name="PlanCampaignId" ColumnName="PlanCampaignId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Plan_Campaign_Program">
+            <EntityTypeMapping TypeName="MRPModel.Plan_Campaign_Program">
+              <MappingFragment StoreEntitySet="Plan_Campaign_Program">
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Cost" ColumnName="Cost" />
+                <ScalarProperty Name="INQs" ColumnName="INQs" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="GeographyId" ColumnName="GeographyId" />
+                <ScalarProperty Name="AudienceId" ColumnName="AudienceId" />
+                <ScalarProperty Name="VerticalId" ColumnName="VerticalId" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="PlanCampaignId" ColumnName="PlanCampaignId" />
+                <ScalarProperty Name="PlanProgramId" ColumnName="PlanProgramId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
