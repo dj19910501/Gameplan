@@ -272,16 +272,26 @@ namespace RevenuePlanner.Controllers
                     #endregion
                 }
             }
+            /*added by Nirav Shah for PL 339: Revenue Summary - red % value should be compared to year to date on  15 APR 2014 */
+            string thisYear = Enums.UpcomingActivities.thisyear.ToString();
+            List<string> includeYearList = GetYearList(thisYear);
+            List<string> includeMonth = GetUpToCurrentMonthWithYear(thisYear);
+            List<int> tacticIds = GetTacticForReport(includeYearList);
+
+            overAllMQLActual = (db.Plan_Campaign_Program_Tactic_Actual.ToList().Where(pcpt => tacticIds.Contains(pcpt.PlanTacticId) && pcpt.StageTitle.Equals(Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString()))).Select(pcpt => pcpt).ToList().Where(mr => includeMonth.Contains(mr.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + mr.Period)).Sum(t => t.Actualvalue);
+            overAllMQLProjected = GetProjectedMQLData(tacticIds).AsEnumerable().AsQueryable().Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth))).Sum(mr => mr.Field<double>(ColumnValue));
+            overAllRevenueActual = (db.Plan_Campaign_Program_Tactic_Actual.ToList().Where(pcpt => tacticIds.Contains(pcpt.PlanTacticId) && pcpt.StageTitle.Equals(Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString()))).Select(pcpt => pcpt).ToList().Where(mr => includeMonth.Contains(mr.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + mr.Period)).Sum(t => t.Actualvalue);
+            overAllRevenueProjected = GetProjectedRevenueData(tacticIds).AsEnumerable().AsQueryable().Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth))).Sum(mr => mr.Field<double>(ColumnValue));
 
             overAllRevenueProjected = Math.Round(overAllRevenueProjected);
             overAllRevenueActual = Math.Round(overAllRevenueActual);
 
-            //// MQL
+            // MQL
             objSummaryReportModel.MQLs = overAllMQLActual;
             double overAllMQLPercentage = GetPercentageDifference(overAllMQLActual, overAllMQLProjected);
             objSummaryReportModel.MQLsPercentage = overAllMQLPercentage.ToString("#0.##", CultureInfo.InvariantCulture);
 
-            //// Actual Revenue
+            // Actual Revenue
             objSummaryReportModel.Revenue = Convert.ToString(overAllRevenueActual);
             objSummaryReportModel.RevenuePercentage = GetPercentageDifference(overAllRevenueActual, overAllRevenueProjected).ToString("#0.##", CultureInfo.InvariantCulture);
 
@@ -1226,7 +1236,7 @@ namespace RevenuePlanner.Controllers
             var DataListFinal = DataTitleList.Select(p => new
             {
                 Title = p.Title,
-                INQ = GetActualValueForConversionSummary(p.planTacticList,includeMonth,stageTitleINQ),
+                INQ = GetActualValueForConversionSummary(p.planTacticList, includeMonth, stageTitleINQ),
                 MQL = GetActualValueForConversionSummary(p.planTacticList, includeMonth, stageTitleMQL),
                 ActualCW = GetActualValueForConversionSummary(p.planTacticList, includeMonth, stageTitleCW),
                 ActualRevenue = GetActualValueForConversionSummary(p.planTacticList, includeMonth, stageTitleRevenue),
@@ -1569,7 +1579,8 @@ namespace RevenuePlanner.Controllers
         {
             List<Plan_Tactic_MQL> MQLTacticList = Common.GetMQLTacticList(planTacticList);
             List<TacticDataTable> tacticdata = ((from td in db.Plan_Campaign_Program_Tactic
-                                                where planTacticList.Contains(td.PlanTacticId) select td).ToList().Select(td => new TacticDataTable { TacticId = td.PlanTacticId, Value = MQLTacticList.Where(tm => tm.PlanTacticId == td.PlanTacticId).Select(tm => tm.MQL).SingleOrDefault(), StartMonth = td.StartDate.Month, EndMonth = td.EndDate.Month, StartYear = td.StartDate.Year, EndYear = td.EndDate.Year })).ToList();
+                                                 where planTacticList.Contains(td.PlanTacticId)
+                                                 select td).ToList().Select(td => new TacticDataTable { TacticId = td.PlanTacticId, Value = MQLTacticList.Where(tm => tm.PlanTacticId == td.PlanTacticId).Select(tm => tm.MQL).SingleOrDefault(), StartMonth = td.StartDate.Month, EndMonth = td.EndDate.Month, StartYear = td.StartDate.Year, EndYear = td.EndDate.Year })).ToList();
 
             return GetDatatable(tacticdata);
         }
@@ -1819,7 +1830,7 @@ namespace RevenuePlanner.Controllers
                                                 where tlist.Contains(tactic.PlanTacticId)
                                                 select new TacticDataTable
                                                 {
-                                                    TacticId =tactic.PlanTacticId, 
+                                                    TacticId = tactic.PlanTacticId,
                                                     Value = tactic.INQs,
                                                     StartMonth = tactic.StartDate.AddDays(ml.Velocity).Month,
                                                     EndMonth = tactic.EndDate.AddDays(ml.Velocity).Month,
@@ -1853,10 +1864,10 @@ namespace RevenuePlanner.Controllers
                                                 select new TacticDataTable
                                                 {
                                                     TacticId = tactic.PlanTacticId,
-                                                    Value = MQLTacticList.Where(tm => tm.PlanTacticId == tactic.PlanTacticId).Select(tm => tm.MQL).SingleOrDefault(), 
-                                                    StartMonth = tactic.StartDate.AddDays(ml.Velocity).Month, 
-                                                    EndMonth = tactic.EndDate.AddDays(ml.Velocity).Month, 
-                                                    StartYear = tactic.StartDate.AddDays(ml.Velocity).Year, 
+                                                    Value = MQLTacticList.Where(tm => tm.PlanTacticId == tactic.PlanTacticId).Select(tm => tm.MQL).SingleOrDefault(),
+                                                    StartMonth = tactic.StartDate.AddDays(ml.Velocity).Month,
+                                                    EndMonth = tactic.EndDate.AddDays(ml.Velocity).Month,
+                                                    StartYear = tactic.StartDate.AddDays(ml.Velocity).Year,
                                                     EndYear = tactic.EndDate.AddDays(ml.Velocity).Year
                                                 }).ToList();
 
@@ -2047,7 +2058,7 @@ namespace RevenuePlanner.Controllers
                                                 select new TacticDataTable { TacticId = td.PlanTacticId, Value = td.CostActual.HasValue ? (double)td.CostActual : 0, StartMonth = td.StartDate.Month, EndMonth = td.EndDate.Month, StartYear = td.StartDate.Year, EndYear = td.EndDate.Year }).ToList();
 
             string revenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
-            
+
             List<string> monthWithYearList = GetUpToCurrentMonthWithYear(selectOption, true);
 
             double costTotal = GetDatatable(tacticdata).AsEnumerable().AsQueryable().Where(c => monthWithYearList.Contains(c.Field<string>(ColumnMonth))).Sum(r => r.Field<double>(ColumnValue));
@@ -2477,7 +2488,7 @@ namespace RevenuePlanner.Controllers
             string selectedYear = DateTime.Now.Year.ToString();
             if (selectOption == Enums.UpcomingActivities.previousyear.ToString())
             {
-                 selectedYear = DateTime.Now.AddYears(-1).Year.ToString();
+                selectedYear = DateTime.Now.AddYears(-1).Year.ToString();
             }
 
             DataTable dtProjectedRevenue = GetDataTableMonthValue();
