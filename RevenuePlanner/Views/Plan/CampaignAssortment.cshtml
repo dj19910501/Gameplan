@@ -123,7 +123,8 @@
             }
         </div>
         <!--end content dark-->
-
+        if((bool)ViewBag.IsOwner)
+                {
         <div class="wraper-btns cf">
             <div class="span6">
                 <button id="save_campaign" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
@@ -132,6 +133,7 @@
                 <button class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
             </div>
         </div>
+             }
         <!--End buttons-->
 @* TFS Point 253,206 : Model/Plan - sidebars - integrate gear icon with feature to delete/duplicate tactic
     Added by Nirav Shah on 17 feb 2014
@@ -177,6 +179,50 @@
             $("#slidepanel").css("display", "none");
             $("#slidepanel-container").empty();
         });
+
+        $("#spanDuplicate").click(function () {
+            var hdnPlanCampaignId = $("#hdnPlanCampaignId").val();
+            var isAssortment = $("#hdnRedirectType").val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/DuplicateCopyClone")',
+                data:
+                    {
+                        id: hdnPlanCampaignId,
+                        RedirectType: isAssortment,
+                        CopyClone: 'Campaign'
+                    },
+                success: function (data) {
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                        return;
+                    }
+                    if (data.errormsg) {
+                        ShowError(data.errormsg);
+                        return;
+                    }
+
+                }
+            });
+        });
+
+        var isOwner = "@ViewBag.IsOwner";
+        if (isOwner == 'False') {
+            $('form').find(".sbSelector").each(function () {
+                $(this).unbind("click");
+                $(this).removeAttr("href");
+                $(this).prev().unbind("click");
+                $(this).prev().removeAttr("href");
+            });
+            $('form').find("input[type=text], textarea").each(function () {
+                $(this).prop('readonly', true);
+            });
+            $('form').find(".add-on").each(function () {
+                $(this).unbind("click");
+            });
+            return false;
+        }
+
 
         $(".c-add-program").click(function () {
             $("#c_programs").append('<input class="delete-icon" type="text" require="true" placeholder="Program Title" maxlength="255" /><span class="delete-temp-program"></span>');
@@ -320,31 +366,7 @@
         });
 
 
-        $("#spanDuplicate").click(function () {
-            var hdnPlanCampaignId = $("#hdnPlanCampaignId").val();
-            var isAssortment = $("#hdnRedirectType").val();
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Plan/DuplicateCopyClone")',
-                data:
-                    {
-                        id: hdnPlanCampaignId,
-                        RedirectType: isAssortment,
-                        CopyClone: 'Campaign'
-                    },
-                success: function (data) {
-                    if (data.redirect) {
-                        window.location.href = data.redirect;
-                        return;
-                    }
-                    if (data.errormsg) {
-                        ShowError(data.errormsg);
-                        return;
-                    }
 
-                }
-            });
-        });
                 @* TFS Point 253,206 : Model/Plan - sidebars - integrate gear icon with feature to delete/duplicate tactic
     Added by Nirav Shah on 17 feb 2014
  *@

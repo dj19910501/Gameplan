@@ -70,6 +70,8 @@
 							<div class="accordion sidebar-accordion" id="Improvementaccordion">
 							</div>
              </div>
+        if((bool)ViewBag.IsOwner)
+                {
         <div class="wraper-btns cf">
             <div class="span6">
                 <button id="save_campaign_tactic" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
@@ -78,6 +80,7 @@
                 <button class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
             </div>
         </div>
+            }
         <!--End buttons-->
     }
 
@@ -107,6 +110,44 @@
             $("#slidepanel").css("display", "none");
             $("#slidepanel-container").empty();
         });
+
+        var ValueCost = 0;
+        LoadImprovementTacticStages(false);
+        function LoadImprovementTacticStages(isCostUpdate) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/LoadImprovementStages")',
+                data: $("form").serialize(),
+                success: function (data) {
+                    ImprovementStages = data.data;
+                    ValueCost = data.cost;
+                    if (isCostUpdate) {
+                        $("#txtCost").val(FormatCurrency((ValueCost).toString(), false));
+                    }
+                    LoadImprovementData();
+                }
+            });
+
+        }
+
+        var isOwner = "@ViewBag.IsOwner";
+        if (isOwner == 'False') {
+            $('form').find(".sbSelector").each(function () {
+                $(this).unbind("click");
+                $(this).removeAttr("href");
+                $(this).prev().unbind("click");
+                $(this).prev().removeAttr("href");
+            });
+            $('form').find("input[type=text], textarea").each(function () {
+                $(this).prop('readonly', true);
+                $(this).unbind("focusout");
+            });
+            $('form').find(".add-on").each(function () {
+                $(this).unbind("click");
+            });
+            return false;
+        }
+
         $('form').find('input[type=text], textarea').each(function () {
             ValidationForTitle(this);
         });
@@ -193,7 +234,7 @@
                 }
             });
         });
-        var ValueCost = 0;
+        
         $('#ddlTacticType').change(function () {
             var tacticTypeId = $(this).val();
             var pcost = 0;
@@ -202,24 +243,7 @@
             }
         });
 		
-        LoadImprovementTacticStages(false);
-        function LoadImprovementTacticStages(isCostUpdate) {
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Plan/LoadImprovementStages")',
-                data: $("form").serialize(),
-                success: function (data) {
-                    ImprovementStages = data.data;
-                    ValueCost = data.cost;
-                    if (isCostUpdate)
-                    {
-                        $("#txtCost").val(FormatCurrency((ValueCost).toString(), false));
-                    }
-                    LoadImprovementData();
-                }
-            });
             
-        }
 
 
         $("#deleteTactic").click(function () {

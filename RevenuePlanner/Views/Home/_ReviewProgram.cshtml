@@ -105,8 +105,6 @@
             var countNotApprovedTactic = 0;
             var countNotSubmittedTactic = 0;
             var countNotDeclineTactic = 0;
-            var countforApproveInprogressCompleteTactic = 0;
-            var countalltactic = 0;
 
             statuscreate = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString();
             statussubmit = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString();
@@ -115,24 +113,16 @@
             statuscomplete = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString();
             statusdecline = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString();
 
-
-            countNotCreatedTactic = db.Plan_Campaign_Program_Tactic.Where(p => p.PlanProgramId == programReview.PlanProgramId && p.IsDeleted == false && !p.Status.Equals(statuscreate)).Count();
-            countNotApprovedTactic = db.Plan_Campaign_Program_Tactic.Where(p => p.PlanProgramId == programReview.PlanProgramId && p.IsDeleted == false && (!p.Status.Equals(statusapproved) && !p.Status.Equals(statusinprogress) && !p.Status.Equals(statuscomplete))).Count();
-            countNotSubmittedTactic = db.Plan_Campaign_Program_Tactic.Where(p => p.PlanProgramId == programReview.PlanProgramId && p.IsDeleted == false && !p.Status.Equals(statussubmit)).Count();
-            countNotDeclineTactic = db.Plan_Campaign_Program_Tactic.Where(p => p.PlanProgramId == programReview.PlanProgramId && p.IsDeleted == false && !p.Status.Equals(statusdecline)).Count();
-            
-            if (countNotApprovedTactic > 0)
-            {
-                countforApproveInprogressCompleteTactic = db.Plan_Campaign_Program_Tactic.Where(p => p.PlanProgramId == programReview.PlanProgramId && p.IsDeleted == false && (p.Status.Equals(statuscomplete) || p.Status.Equals(statusinprogress) || p.Status.Equals(statuscomplete))).Count();
-                countalltactic = db.Plan_Campaign_Program_Tactic.Where(p => p.PlanProgramId == programReview.PlanProgramId && p.IsDeleted == false).Count();
-                
-            }
+            var tacticList = db.Plan_Campaign_Program_Tactic.Where(p => p.PlanProgramId == programReview.PlanProgramId && p.IsDeleted == false).ToList();
+            countNotCreatedTactic = tacticList.Where(p => !p.Status.Equals(statuscreate)).Count();
+            countNotApprovedTactic = tacticList.Where(p => !p.Status.Equals(statusapproved) && !p.Status.Equals(statusinprogress) && !p.Status.Equals(statuscomplete)).Count();
+            countNotSubmittedTactic = tacticList.Where(p => !p.Status.Equals(statussubmit)).Count();
+            countNotDeclineTactic = tacticList.Where(p => !p.Status.Equals(statusdecline)).Count();
            
             if (programReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString()))
             {
-                if (!(bool)ViewBag.IsValidUser)
+                    if ((bool)ViewBag.IsValidOwner)
                 {
-                    
                     if (countNotSubmittedTactic == 0)
                     {
                         aryStatus.Add(Submit);
@@ -141,47 +131,24 @@
                     {
                         aryStatus.Add(Submit);
                     }
-
+                    }
+                    else
+                    {
+                        isVisibleStatus = false;
                 }
             }
             else if (programReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()))
             {
-                if ((bool)ViewBag.IsValidUser)
+                if ((bool)ViewBag.isValidDirectorUser)
                 {
-                    if (countNotApprovedTactic == 0)
+                    if (countNotApprovedTactic != 0)
                     {
                         aryStatus.Add(Approve);
                         aryStatus.Add(Reject);
                     }
-                    else if (countforApproveInprogressCompleteTactic != 0 && countalltactic != 0)
+                    else
                     {
-                        if (countforApproveInprogressCompleteTactic == countalltactic)
-                        {
-                            aryStatus.Add(Approve);
-                            aryStatus.Add(Reject);
-                        }
-                        //else if (countNotSubmittedTactic == 0)
-                        //{
-                            else if (countNotApprovedTactic > 0)
-                            {
-                                if (countalltactic == countNotApprovedTactic)
-                                {
-                                    aryStatus.Add(Approve);
-                                    aryStatus.Add(Reject);
-                                }
-                            }
-                        //}
-                    }
-                    else if(countNotSubmittedTactic == 0)
-                    {
-                        if (countNotApprovedTactic > 0)
-                        {
-                            if (countalltactic == countNotApprovedTactic) 
-                            {
-                                aryStatus.Add(Approve);
-                                aryStatus.Add(Reject);
-                            } 
-                        }
+                        isVisibleStatus = false;
                     }
                 }
                 else
@@ -191,7 +158,7 @@
             }
             else if (programReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()))
             {
-                if ((bool)ViewBag.IsValidUser)
+                if ((bool)ViewBag.isValidDirectorUser)
                 {
                     aryStatus.Add(Reject);
                 }
@@ -202,25 +169,41 @@
             }
             else if (programReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()))
             {
-                if ((bool)ViewBag.IsValidUser)
+                if ((bool)ViewBag.isValidDirectorUser)
+                {
+                    if ((bool)ViewBag.IsValidOwner)
+                    {
+                        if (countNotDeclineTactic == 0)
+                        {
+                            aryStatus.Add(Submit);
+                        }  
+                    }
+                    else
                 {
                     if (countNotDeclineTactic == 0)
                     {
                         aryStatus.Add(Approve);
                     }
-                   
+                    }
                 }
                 else
+                {
+                    if ((bool)ViewBag.IsValidOwner)
                 {
                      if (countNotDeclineTactic == 0)
                      {
                         aryStatus.Add(Submit);
                      }
                 }
+            else
+            {
+                        isVisibleStatus = false;
+                    }
+                }
             }
             else
             {
-                if ((bool)ViewBag.IsValidUser)
+                if ((bool)ViewBag.isValidDirectorUser)
                 {
                     aryStatus.Add(Reject);
                 }

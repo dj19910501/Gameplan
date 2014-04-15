@@ -115,8 +115,7 @@
                     }
                     else
                     {
-                        aryStatus.Add(Submit);
-                        //isVisibleStatus = false;
+                        isVisibleStatus = false;
                     }
                  }
             }
@@ -147,7 +146,14 @@
             {
                 if ((bool)ViewBag.IsValidDirectorUser)
                 {
+                    if ((bool)ViewBag.IsValidOwner)
+                    {
+                        aryStatus.Add(Submit);
+                    }
+                    else
+                    {
                     aryStatus.Add(Approve);
+                }
                 }
                 else
                 {
@@ -157,8 +163,7 @@
                     }
                     else
                     {
-                        aryStatus.Add(Submit);
-                        //isVisibleStatus = false;
+                        isVisibleStatus = false;
                     }
                 }
             }

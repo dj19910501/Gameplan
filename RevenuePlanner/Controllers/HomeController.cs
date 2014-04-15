@@ -2952,12 +2952,19 @@ namespace RevenuePlanner.Controllers
                                      where bun.BusinessUnitId == im.BusinessUnitId
                                      select bun.Title).FirstOrDefault();
             ViewBag.BudinessUnitTitle = businessunittitle.ToString();
-            bool isValidUser = false;
+            
+            bool isValidDirectorUser = false;
+            bool isValidOwner = false;
             if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
             {
-                if (im.OwnerId != Sessions.User.UserId) isValidUser = true;
+                isValidDirectorUser = true;
             }
-            ViewBag.IsValidUser = isValidUser;
+            if (im.OwnerId == Sessions.User.UserId)
+            {
+                isValidOwner = true;
+            }
+            ViewBag.IsValidDirectorUser = isValidDirectorUser;
+            ViewBag.IsValidOwner = isValidOwner;
             return PartialView("_ReviewProgram");
         }
 
@@ -3059,12 +3066,19 @@ namespace RevenuePlanner.Controllers
                                      where bun.BusinessUnitId == im.BusinessUnitId
                                      select bun.Title).FirstOrDefault();
             ViewBag.BudinessUnitTitle = businessunittitle.ToString();
-            bool isValidUser = false;
+            
+            bool isValidDirectorUser = false;
+            bool isValidOwner = false;
             if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
             {
-                if (im.OwnerId != Sessions.User.UserId) isValidUser = true;
+                isValidDirectorUser = true;
             }
-            ViewBag.IsValidUser = isValidUser;
+            if (im.OwnerId == Sessions.User.UserId)
+            {
+                isValidOwner = true;
+            }
+            ViewBag.IsValidDirectorUser = isValidDirectorUser;
+            ViewBag.IsValidOwner = isValidOwner;
             return PartialView("_ReviewCampaign");
         }
 

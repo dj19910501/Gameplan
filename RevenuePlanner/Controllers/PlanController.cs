@@ -1436,7 +1436,7 @@ namespace RevenuePlanner.Controllers
             //ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
             ViewBag.IsCreated = true;
             ViewBag.RedirectType = false;
-            ViewBag.IsOwner = false;
+            ViewBag.IsOwner = true;
             return PartialView("CampaignAssortment");
         }
 
@@ -1772,7 +1772,7 @@ namespace RevenuePlanner.Controllers
             //pcpm.GeographyId = pc.GeographyId;
             //pcpm.VerticalId = pc.VerticalId;
             //pcpm.AudienceId = pc.AudienceId;
-            ViewBag.IsOwner = false;      /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
+            ViewBag.IsOwner = true;      /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
             ViewBag.RedirectType = false;
             return PartialView("ProgramAssortment", pcpm);
         }
@@ -2105,7 +2105,7 @@ namespace RevenuePlanner.Controllers
             //pcptm.GeographyId = pcp.GeographyId;
             //pcptm.VerticalId = pcp.VerticalId;
             //pcptm.AudienceId = pcp.AudienceId;
-            ViewBag.IsOwner = false;/*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
+            ViewBag.IsOwner = true;/*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
             ViewBag.RedirectType = false;
             return PartialView("TacticAssortment", pcptm);
         }
@@ -2269,12 +2269,14 @@ namespace RevenuePlanner.Controllers
                             {
                                 bool isReSubmission = false;
                                 bool isDirectorLevelUser = false;
+                                bool isOwner = false;
                                 string status = string.Empty;
 
                                 Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(form.PlanTacticId)).SingleOrDefault();
+                                if (pcpobj.CreatedBy == Sessions.User.UserId) isOwner = true;
                                 if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
                                 {
-                                    if (pcpobj.CreatedBy != Sessions.User.UserId) isDirectorLevelUser = true;
+                                    if (!isOwner) isDirectorLevelUser = true;
                                 }
                                 pcpobj.Title = form.Title;
                                 status = pcpobj.Status;
@@ -2311,8 +2313,10 @@ namespace RevenuePlanner.Controllers
                                             pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
                                             if (pcpobj.EndDate != form.EndDate)
                                             {
-                                                pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
-                                                Common.mailSendForTactic(pcpobj.PlanTacticId, pcpobj.Status, pcpobj.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
+                                                if (!isDirectorLevelUser) isReSubmission = true;
+                                                //Comment because it already called beloe in isresubmission.PL Ticket 359.
+                                               // pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
+                                               // Common.mailSendForTactic(pcpobj.PlanTacticId, pcpobj.Status, pcpobj.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
                                             }
                                         }
                                         else if (todaydate > form.EndDate)
@@ -2368,7 +2372,7 @@ namespace RevenuePlanner.Controllers
                                 {
                                     result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
                                 }
-                                if (isReSubmission && Common.CheckAfterApprovedStatus(status))
+                                if (isReSubmission && Common.CheckAfterApprovedStatus(status) && isOwner)
                                 {
                                     pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
                                     Common.mailSendForTactic(pcpobj.PlanTacticId, pcpobj.Status, pcpobj.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
@@ -3021,7 +3025,7 @@ namespace RevenuePlanner.Controllers
             pitm.ImprovementPlanProgramId = id;
             // Set today date as default for effective date.
             pitm.EffectiveDate = DateTime.Now;
-            ViewBag.IsOwner = false;
+            ViewBag.IsOwner = true;
             ViewBag.RedirectType = false;
             ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
             return PartialView("ImprovementTactic", pitm);

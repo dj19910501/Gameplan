@@ -122,7 +122,8 @@
             }
         </div>
         <!--end content dark-->
-
+if ((bool)ViewBag.IsOwner)
+{
         <div class="wraper-btns cf">
             <div class="span6">
                 <button id="save_campaign_tactic" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
@@ -131,6 +132,7 @@
                 <button class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
             </div>
         </div>
+}
         <!--End buttons-->
     }
 
@@ -166,6 +168,54 @@
             }
             $("#slidepanel").css("display", "none");
             $("#slidepanel-container").empty();
+        });
+
+        $("#spanDuplicate").click(function () {
+            var hdnPlanTacticId = $("#hdnPlanTacticId").val();
+            var isAssortment = $("#hdnRedirectType").val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/DuplicateCopyClone")',
+                data:
+                    {
+                        id: hdnPlanTacticId,
+                        RedirectType: isAssortment,
+                        CopyClone: 'Tactic'
+                    },
+                success: function (data) {
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                        return;
+                    }
+                    if (data.errormsg) {
+                        ShowError(data.errormsg);
+                        return;
+                    }
+
+                }
+            });
+        });
+
+        var isOwner = "@ViewBag.IsOwner";
+        if (isOwner == 'False') {
+            $('form').find(".sbSelector").each(function () {
+                $(this).unbind("click");
+                $(this).removeAttr("href");
+                $(this).prev().unbind("click");
+                $(this).prev().removeAttr("href");
+            });
+            $('form').find("input[type=text], textarea").each(function () {
+                $(this).prop('readonly', true);
+                $(this).unbind("focusout");
+            });
+            $('form').find(".add-on").each(function () {
+                $(this).unbind("click");
+            });
+            return false;
+        }
+        $("#txtinq").focusout(function () {
+            var inqValue = ReplaceCC($("#txtinq").val());
+            GetConversionRate(inqValue);
         });
 
         var mqlConversion = 0;
@@ -211,10 +261,7 @@
             });
         });
 
-        $("#txtinq").focusout(function () {
-            var inqValue = ReplaceCC($("#txtinq").val());
-            GetConversionRate(inqValue);
-        });
+        
 
         $("#save_campaign_tactic").mousedown(function () {
             saveTactic();
@@ -337,31 +384,7 @@
 
         });
 
-        $("#spanDuplicate").click(function () {
-            var hdnPlanTacticId = $("#hdnPlanTacticId").val();
-            var isAssortment = $("#hdnRedirectType").val();
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Plan/DuplicateCopyClone")',
-                data:
-                    {
-                        id: hdnPlanTacticId,
-                        RedirectType: isAssortment,
-                        CopyClone: 'Tactic'
-                    },
-                success: function (data) {
-                    if (data.redirect) {
-                        window.location.href = data.redirect;
-                        return;
-                    }
-                    if (data.errormsg) {
-                        ShowError(data.errormsg);
-                        return;
-                    }
 
-                }
-            });
-        });
 @* TFS Point 253,206 : Model/Plan - sidebars - integrate gear icon with feature to delete/duplicate tactic
     Added by Nirav Shah on 17 feb 2014
  *@
@@ -419,21 +442,6 @@
         })
 
 
-        //$('#t_startdate-p').click(function () {
-        //    $('#dp_end-p').datepicker('hide');
-        //})
-
-        //$('#t_enddate-p').click(function () {
-        //    $('#dp_start-p').datepicker('hide');
-        //})
-
-        //$('#t_startdate-t').click(function () {
-        //    $('#dp_end-t').datepicker('hide');
-        //})
-
-        //$('#t_enddate-t').click(function () {
-        //    $('#dp_start-t').datepicker('hide');
-        //})
 
         //hide the other datepicker in add-on onclick
         $('#dp_start .add-on').click(function () {
@@ -446,26 +454,6 @@
             $('#dp_end').datepicker('show');
 
         })
-        //$('#add-on-start-p').click(function () {
-        //    $('#dp_start-p').datepicker('show');
-        //    $('#dp_end-p').datepicker('hide');
-
-        //})
-        //$('#add-on-end-p').click(function () {
-        //    $('#dp_end-p').datepicker('show');
-        //    $('#dp_start-p').datepicker('hide');
-
-        //})
-        //$('#add-on-start-t').click(function () {
-        //    $('#dp_start-t').datepicker('show');
-        //    $('#dp_end-t').datepicker('hide');
-
-        //})
-        //$('#add-on-end-t').click(function () {
-        //    $('#dp_end-t').datepicker('show');
-        //    $('#dp_start-t').datepicker('hide');
-
-        //})
 
     });
 </script>
