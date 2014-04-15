@@ -50,15 +50,15 @@ function isDate(txtDate) {
 }
 
 function validateDateCompare(sdate, edate, msg) {
-        sdate = sdate.split(" ")[0];
-        edate = edate.split(" ")[0];
-        date1 = new Date(sdate.split("/")[2], sdate.split("/")[0], sdate.split("/")[1]);
-        date2 = new Date(edate.split("/")[2], edate.split("/")[0], edate.split("/")[1]);
-        if (date1 > date2) {
-            alert(msg);
-            return false;
-        }
-        return true;
+    sdate = sdate.split(" ")[0];
+    edate = edate.split(" ")[0];
+    date1 = new Date(sdate.split("/")[2], sdate.split("/")[0], sdate.split("/")[1]);
+    date2 = new Date(edate.split("/")[2], edate.split("/")[0], edate.split("/")[1]);
+    if (date1 > date2) {
+        alert(msg);
+        return false;
+    }
+    return true;
 }
 
 function FormatCurrency(amount, showDecimals) {
@@ -158,8 +158,7 @@ function getblurvalue(sender) {
     $(".nl-field-go").click();
 }
 
-function SetFormatForLabel(lableId, maxSize)
-{
+function SetFormatForLabel(lableId, maxSize) {
     var txtvalue = $(lableId).text();
     var lengthvalue = txtvalue.length;
     if (lengthvalue >= maxSize) {
@@ -265,7 +264,7 @@ function FormatNumber(value, isPercentage) {
         return value + '%'
     }
     else {
-       
+
         return '$' + (value != 0 ? GetAbberiviatedValue(value) : 0);
     }
 }
@@ -288,79 +287,123 @@ function GetAbberiviatedValue(value) {
     else if (absValue < 1000000) {
         if (absValue >= 1000 && absValue < 10000) {
             value = (Math.round(parseFloat(absValue / 1000)));
-            value = Number(value).toFixed(2);
+            if (value == 10) {
+                value = Number(value).toFixed(0);
+            }
+            else {
+                value = Number(value).toFixed(2);
+            }
         }
         else if (absValue >= 10000 && absValue < 100000) {
             value = (Math.round(parseFloat(absValue / 1000)));
-            value = Number(value).toFixed(1);
+            if (value == 100) {
+                value = Number(value).toFixed(0);
+            }
+            else {
+                value = Number(value).toFixed(1);
+            }
         }
         else if (absValue >= 100000 && absValue < 1000000) {
             value = (Math.round(parseFloat(absValue / 1000)));
             value = Number(value).toFixed(0);
         }
-        // value = (Math.round(parseFloat(absValue / 1000) * 100) / 100);
-        value = value.toString() + 'k';
+        if (value == 1000) {
+            value = 1 + 'M';
+        }
+        else {
+            value = value.toString() + 'k';
+        }
     }
     else if (absValue < 1000000000) {
         if (absValue >= 1000000 && absValue < 10000000) {
             value = (Math.round(parseFloat(absValue / 1000000)));
-            value = Number(value).toFixed(2);
+            if (value == 10) {
+                value = Number(value).toFixed(0);
+            }
+            else {
+                value = Number(value).toFixed(2);
+            }
         }
         else if (absValue >= 10000000 && absValue < 100000000) {
             value = (Math.round(parseFloat(absValue / 1000000)));
-            value = Number(value).toFixed(1);
+            if (value == 100) {
+                value = Number(value).toFixed(0);
+            }
+            else {
+                value = Number(value).toFixed(1);
+            }
         }
         else if (absValue >= 100000000 && absValue < 1000000000) {
             value = (Math.round(parseFloat(absValue / 1000000)));
-            if (value == 1000) {
-                value = 100;
-            }
             value = Number(value).toFixed(0);
         }
-        //  value = (Math.round(parseFloat(absValue / 1000000) * 100) / 100);
-        value = value.toString() + 'M';
+        if (value == 1000) {
+            value = 1 + 'B';
+        }
+        else {
+            value = value.toString() + 'M';
+        }
     }
     else if (absValue < 1000000000000) {
         if (absValue >= 1000000000 && absValue < 10000000000) {
             value = (Math.round(parseFloat(absValue / 1000000000)));
-            value = Number(value).toFixed(2);
+            if (value == 10) {
+                value = Number(value).toFixed(0);
+            }
+            else {
+                value = Number(value).toFixed(2);
+            }
         }
         else if (absValue >= 10000000000 && absValue < 100000000000) {
             value = (Math.round(parseFloat(absValue / 1000000000)));
-            value = Number(value).toFixed(1);
+            if (value == 100) {
+                value = Number(value).toFixed(0);
+            }
+            else {
+                value = Number(value).toFixed(1);
+            }
         }
         else if (absValue >= 100000000000 && absValue < 1000000000000) {
             value = (Math.round(parseFloat(absValue / 1000000000)));
-            if (value == 1000) {
-                value = 100;
-            }
             value = Number(value).toFixed(0);
         }
-
         if (value == 1000) {
-            alert(absValue);
+            value = 1 + 'T';
         }
-        //value = (Math.round(parseFloat(absValue / 1000000000) * 100) / 100);
-        value = value.toString() + 'B';
+        else {
+            value = value.toString() + 'B';
+        }
     }
     else {
         if (absValue >= 1000000000000 && absValue < 10000000000000) {
             value = (Math.round(parseFloat(absValue / 1000000000000)));
-            value = Number(value).toFixed(2);
+            if (value == 10) {
+                value = Number(value).toFixed(0);
+            }
+            else {
+                value = Number(value).toFixed(2);
+            }
         }
         else if (absValue >= 10000000000000 && absValue < 100000000000000) {
             value = (Math.round(parseFloat(absValue / 1000000000000)));
-            value = Number(value).toFixed(1);
+            if (value == 100) {
+                value = Number(value).toFixed(0);
+            }
+            else {
+                value = Number(value).toFixed(1);
+            }
         }
         else if (absValue >= 100000000000000 && absValue < 1000000000000000) {
             value = (Math.round(parseFloat(absValue / 1000000000000)));
-            if (value == 1000) {
-                value = 100;
-            }
             value = Number(value).toFixed(0);
         }
-        //value = (Math.round(parseFloat(absValue / 1000000000000) * 100) / 100);
-        value = value.toString() + 'T';
+        if (value == 1000) {
+            value = 1 + 'Q';
+        }
+        else {
+            //value = (Math.round(parseFloat(absValue / 1000000000000) * 100) / 100);
+            value = value.toString() + 'T';
+        }
     }
 
     return (isNegative ? '-' + value : value);
@@ -477,13 +520,13 @@ function NumberFormatterTipsy(lableId, maxSize) {
 function NumberFormatterTipsyTitle(lableId, maxSize) {
     $(lableId).each(function () {
         var txtvalue = $(this).text();
-            var lengthvalue = txtvalue.length;
-            if (lengthvalue > maxSize) {
-                $(this).text(txtvalue.substring(0, maxSize) + "...");
-            }
-            $(this).attr('title', txtvalue);
-          //  $(this).addClass('north');
-          //  $('.north').tipsy({ gravity: 's' });
+        var lengthvalue = txtvalue.length;
+        if (lengthvalue > maxSize) {
+            $(this).text(txtvalue.substring(0, maxSize) + "...");
+        }
+        $(this).attr('title', txtvalue);
+        //  $(this).addClass('north');
+        //  $('.north').tipsy({ gravity: 's' });
     });
 }
 
@@ -538,12 +581,11 @@ function GetAxisConfiguration(dataset) {
 }
 
 function FormatForBoostStagesValue(value, number) {
-    if (number == 1)
-    {
+    if (number == 1) {
         value = FormatNumber((Math.round(value * 100) / 100), true);
     }
     else if (number == 2) {
-        value = (Math.round(value * 100)/100) + " Days";
+        value = (Math.round(value * 100) / 100) + " Days";
     }
     else if (number == 3) {
         value = (Math.round(value * 100) / 100);
