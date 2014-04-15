@@ -6656,3 +6656,16 @@ h2.title-header {
     width: 77%;
 }
 /**/
+
+/*Added by dharmraj for 'Show all my tactics'*/
+.ShowOnlyMyTactic {
+    margin-bottom: 15px !important;
+}
+
+    .ShowOnlyMyTactic a {
+        color: #808080;
+        font-size: 13px;
+        text-decoration: none;
+        border-top: 1px solid #D1D1D1;
+    }
+/*End Added by dharmraj for 'Show all my tactics'*/
