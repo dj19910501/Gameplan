@@ -5687,7 +5687,7 @@ span.left-arrow {
     position: fixed;
     top: 20%;
     left: 40%;
-    z-index: 1050;
+    z-index: 1550;
     text-align: center;
     width: 354px;
     height: 375px;
@@ -5803,7 +5803,7 @@ span.left-arrow {
     position: fixed;
     top: 20%;
     left: 40%;
-    z-index: 1050;
+    z-index: 1550;
     text-align: center;
     width: 354px;
     height: 228px;
