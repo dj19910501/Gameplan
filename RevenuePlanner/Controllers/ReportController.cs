@@ -159,14 +159,11 @@ namespace RevenuePlanner.Controllers
         {
             SummaryReportModel objSummaryReportModel = new SummaryReportModel();
             ViewBag.IsPlanExistToShowReport = false;
-
-
             //// Getting current year's all published plan for all business unit of clientid of director.
             var plans = Common.GetPlan();
             string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
             string currentYear = DateTime.Now.Year.ToString();
             plans = plans.Where(p => p.Status.Equals(planPublishedStatus) && p.Year.Equals(currentYear)).Select(p => p).ToList();
-
             //Filter to filter out the plan based on the Selected businessunit and PlanId
             if (!string.IsNullOrEmpty(PlanId) && PlanId != "0")
             {
@@ -181,7 +178,6 @@ namespace RevenuePlanner.Controllers
                 //Sessions.PlanId = 0;/* added by Nirav shah for TFS Point : 218*/
                 Sessions.PublishedPlanId = 0;
             }
-
             if (!string.IsNullOrEmpty(BusinessUnitId) && BusinessUnitId != "0" && BusinessUnitId != Convert.ToString(Guid.Empty))
             {
                 Guid BusinessUnitGuid = new Guid(BusinessUnitId);
@@ -192,10 +188,6 @@ namespace RevenuePlanner.Controllers
             {
                 Sessions.BusinessUnitId = Guid.Empty;
             }
-
-            //double mqlPercentage = 0;
-            //int mqlActual = 0;
-
             double overAllMQLProjected = 0;
             double overAllMQLActual = 0;
             double overAllRevenueActual = 0;
@@ -204,7 +196,6 @@ namespace RevenuePlanner.Controllers
             double overAllInqProjected = 0;
             double overAllCWActual = 0;
             double overAllCWProjected = 0;
-
             if (plans != null && plans.Count() != 0)
             {
                 ViewBag.IsPlanExistToShowReport = true;
@@ -222,8 +213,6 @@ namespace RevenuePlanner.Controllers
                 //{
                 //    Sessions.PlanId = Convert.ToInt32(PlanId);
                 //}
-
-
                 foreach (var plan in plans)
                 {
                     Plan activePlan = plan;
@@ -277,11 +266,34 @@ namespace RevenuePlanner.Controllers
             List<string> includeYearList = GetYearList(thisYear);
             List<string> includeMonth = GetUpToCurrentMonthWithYear(thisYear);
             List<int> tacticIds = GetTacticForReport(includeYearList);
+            overAllMQLActual = 0;
+            overAllRevenueActual = 0;
+            overAllMQLProjected = 0;
+            overAllRevenueProjected = 0;
 
-            overAllMQLActual = (db.Plan_Campaign_Program_Tactic_Actual.ToList().Where(pcpt => tacticIds.Contains(pcpt.PlanTacticId) && pcpt.StageTitle.Equals(Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString()))).Select(pcpt => pcpt).ToList().Where(mr => includeMonth.Contains(mr.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + mr.Period)).Sum(t => t.Actualvalue);
-            overAllMQLProjected = GetProjectedMQLData(tacticIds).AsEnumerable().AsQueryable().Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth))).Sum(mr => mr.Field<double>(ColumnValue));
-            overAllRevenueActual = (db.Plan_Campaign_Program_Tactic_Actual.ToList().Where(pcpt => tacticIds.Contains(pcpt.PlanTacticId) && pcpt.StageTitle.Equals(Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString()))).Select(pcpt => pcpt).ToList().Where(mr => includeMonth.Contains(mr.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + mr.Period)).Sum(t => t.Actualvalue);
-            overAllRevenueProjected = GetProjectedRevenueData(tacticIds).AsEnumerable().AsQueryable().Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth))).Sum(mr => mr.Field<double>(ColumnValue));
+            var MQLActuallist = (db.Plan_Campaign_Program_Tactic_Actual.ToList().Where(pcpt => tacticIds.Contains(pcpt.PlanTacticId) && pcpt.StageTitle.Equals(Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString()))).Select(pcpt => pcpt).ToList().Where(mr => includeMonth.Contains(mr.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + mr.Period)).ToList();
+            if (MQLActuallist.Count > 0)
+            {
+                overAllMQLActual = MQLActuallist.Sum(t => t.Actualvalue);
+            }
+
+            var MQLProjectedlist = GetProjectedMQLData(tacticIds).AsEnumerable().AsQueryable().Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth))).ToList();
+            if (MQLProjectedlist.Count > 0)
+            {
+                overAllMQLProjected = MQLProjectedlist.Sum(mr => mr.Field<double>(ColumnValue));
+            }
+
+            var RevenueActualllist = (db.Plan_Campaign_Program_Tactic_Actual.ToList().Where(pcpt => tacticIds.Contains(pcpt.PlanTacticId) && pcpt.StageTitle.Equals(Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString()))).Select(pcpt => pcpt).ToList().Where(mr => includeMonth.Contains(mr.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + mr.Period)).ToList();
+            if (RevenueActualllist.Count > 0)
+            {
+                overAllRevenueActual = RevenueActualllist.Sum(t => t.Actualvalue);
+            }
+
+            var RevenueProjectedlist = GetProjectedRevenueData(tacticIds).AsEnumerable().AsQueryable().Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth))).ToList();
+            if (RevenueProjectedlist.Count > 0)
+            {
+                overAllRevenueProjected = RevenueProjectedlist.Sum(mr => mr.Field<double>(ColumnValue));
+            }
 
             overAllRevenueProjected = Math.Round(overAllRevenueProjected);
             overAllRevenueActual = Math.Round(overAllRevenueActual);
@@ -307,7 +319,19 @@ namespace RevenuePlanner.Controllers
             objSummaryReportModel.ProjectedRevenue = FormatNumber(overAllRevenueProjected);
 
             #region INQ
-            double inqPercentageDifference = GetPercentageDifference(overAllInqActual, overAllInqProjected);
+            var INQActualList = (db.Plan_Campaign_Program_Tactic_Actual.ToList().Where(pcpt => tacticIds.Contains(pcpt.PlanTacticId) && pcpt.StageTitle.Equals(Enums.InspectStageValues[Enums.InspectStage.INQ.ToString()].ToString()))).Select(pcpt => pcpt).ToList().Where(mr => includeMonth.Contains(mr.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + mr.Period)).ToList();
+            if (INQActualList.Count > 0)
+            {
+                overAllInqActual = INQActualList.Sum(t => t.Actualvalue);
+            }
+
+            var InqProjectedList = GetConversionProjectedINQData(tacticIds).AsEnumerable().AsQueryable().Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth))).ToList();
+            if (InqProjectedList.Count > 0)
+            {
+                overAllInqProjected = InqProjectedList.Sum(mr => mr.Field<double>(ColumnValue));
+            }
+
+            double inqPercentageDifference = WaterfallGetPercentageDifference(overAllMQLActual, overAllMQLProjected, overAllInqActual, overAllInqProjected);
             if (inqPercentageDifference < 0)
             {
                 objSummaryReportModel.ISQsStatus = string.Format("{0}% {1}", Math.Abs(inqPercentageDifference).ToString("#0.##", CultureInfo.InvariantCulture), belowPlan);
@@ -319,6 +343,19 @@ namespace RevenuePlanner.Controllers
             #endregion
 
             #region MQL
+            var CWActualList = (db.Plan_Campaign_Program_Tactic_Actual.ToList().Where(pcpt => tacticIds.Contains(pcpt.PlanTacticId) && pcpt.StageTitle.Equals(Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString()))).Select(pcpt => pcpt).ToList().Where(mr => includeMonth.Contains(mr.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + mr.Period)).ToList();
+            if (CWActualList.Count > 0)
+            {
+                overAllCWActual = CWActualList.Sum(t => t.Actualvalue);
+            }
+
+            var CwProjectedList = GetProjectedRevenueData(tacticIds, true).AsEnumerable().AsQueryable().Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth))).ToList();
+            if (CwProjectedList.Count > 0)
+            {
+                overAllCWProjected = CwProjectedList.Sum(mr => mr.Field<double>(ColumnValue));
+            }
+
+            overAllMQLPercentage = WaterfallGetPercentageDifference(overAllCWActual, overAllCWProjected, overAllMQLActual, overAllMQLProjected);
             if (overAllMQLPercentage < 0)
             {
                 objSummaryReportModel.MQLsStatus = string.Format("{0}% {1}", Math.Abs(overAllMQLPercentage).ToString("#0.##", CultureInfo.InvariantCulture), belowPlan);
@@ -330,7 +367,8 @@ namespace RevenuePlanner.Controllers
             #endregion
 
             #region CW
-            double cwPercentageDifference = GetPercentageDifference(overAllCWActual, overAllCWProjected);
+            double cwPercentageDifference = WaterfallGetPercentageDifference(overAllCWActual, overAllCWProjected, overAllMQLActual, overAllMQLProjected);
+            //GetPercentageDifference(overAllCWActual, overAllCWProjected);
             if (cwPercentageDifference < 0)
             {
                 objSummaryReportModel.OverallConversionPlanStatus = belowPlan;
@@ -405,6 +443,8 @@ namespace RevenuePlanner.Controllers
             // return Partial view
             return PartialView("_Summary", objSummaryReportModel);
         }
+
+
 
         /// <summary>
         /// This method returns the list of Plan for given BusinessUnit Id (This will return only Published plan for Current year)
@@ -535,6 +575,26 @@ namespace RevenuePlanner.Controllers
             }
 
             return projectedRevenue;
+        }
+
+        /// <summary>
+        /// Function to get projected revenue.
+        /// Added By: Nirav Shah for PL 342:Revenue Summary - Waterfall Summary - How are conversions calculatedon 16 apr 2014.
+        /// </summary>
+        /// <param name="mql">Overall MQL.</param>
+        /// <param name="mqlProjected">Overall MQ projectedL.</param>
+        /// <param name="inq">Overall INQ.</param>
+        /// <param name="inqProjected">Overall INQ projected.</param>
+        /// <returns>Returns projected revenue for current plan.</returns>
+        private double WaterfallGetPercentageDifference(double mql, double mqlProjected, double inq, double inqProjected)
+        {
+            double percentage = 0;
+            if (inqProjected != 0 && inq != 0 && mql != 0 && mqlProjected != 0)
+            {
+                percentage = ((mql / inq) / (mqlProjected / inqProjected)) * 100;
+            }
+            percentage = (percentage - 100);
+            return percentage;
         }
 
         /// <summary>
@@ -2619,9 +2679,9 @@ namespace RevenuePlanner.Controllers
         /// <param name="filter">Filter to get data for plan/trend or actual.</param>
         /// <returns>Return json data for source performance report.</returns>
         public JsonResult GetSourcePerformance(string selectOption = "thisyear")
-            {
-                return GetSourcePerformanceActual(selectOption);
-            }
+        {
+            return GetSourcePerformanceActual(selectOption);
+        }
 
         /// <summary>
         /// Added By: Maninder Singh Wadhva.
