@@ -2700,7 +2700,7 @@ namespace RevenuePlanner.Controllers
                                                 {
                                                     Title = b.Title,
                                                     ColorCode = string.Format("#{0}", b.ColorCode),
-                                                    Value = GetActualVSPlannedRevenue(db.Plan_Campaign_Program_Tactic.Where(t => t.BusinessUnitId.Equals(b.BusinessUnitId)).Select(t => t.PlanTacticId).ToList(), includeMonthUpCurrent)
+                                                    Value = GetActualVSPlannedRevenue(db.Plan_Campaign_Program_Tactic.Where(t => t.BusinessUnitId.Equals(b.BusinessUnitId) && tacticIds.Contains(t.PlanTacticId)).Select(t => t.PlanTacticId).ToList(), includeMonthUpCurrent)
                                                     //Commentt by bhavesh PL Ticket #349 Value = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => tacticIds.Contains(ta.PlanTacticId) && ta.StageTitle.Equals(revenue)).Any(ta => ta.Plan_Campaign_Program_Tactic.BusinessUnitId.Equals(b.BusinessUnitId)) ? db.Plan_Campaign_Program_Tactic_Actual.Where(ta => tacticIds.Contains(ta.PlanTacticId) && ta.Plan_Campaign_Program_Tactic.BusinessUnitId == b.BusinessUnitId && ta.StageTitle.Equals(revenue)).Select(pcpt => pcpt).ToList().Where(mr => includeMonth.Contains(mr.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + mr.Period)).Sum(ta => ta.Actualvalue) : 0
                                                 });
             var vertical = db.Verticals.ToList().Where(v => v.ClientId.Equals(Sessions.User.ClientId))
@@ -2708,7 +2708,7 @@ namespace RevenuePlanner.Controllers
                                                 {
                                                     Title = v.Title,
                                                     ColorCode = string.Format("#{0}", v.ColorCode),
-                                                    Value = GetActualVSPlannedRevenue(db.Plan_Campaign_Program_Tactic.Where(t => t.VerticalId.Equals(v.VerticalId)).Select(t => t.PlanTacticId).ToList(), includeMonthUpCurrent)
+                                                    Value = GetActualVSPlannedRevenue(db.Plan_Campaign_Program_Tactic.Where(t => t.VerticalId.Equals(v.VerticalId) && tacticIds.Contains(t.PlanTacticId)).Select(t => t.PlanTacticId).ToList(), includeMonthUpCurrent)
                                                     //Commentt by bhavesh PL Ticket #349 Value = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => tacticIds.Contains(ta.PlanTacticId) && ta.StageTitle.Equals(revenue)).Any(ta => ta.Plan_Campaign_Program_Tactic.VerticalId.Equals(v.VerticalId)) ? db.Plan_Campaign_Program_Tactic_Actual.Where(ta => tacticIds.Contains(ta.PlanTacticId) && ta.Plan_Campaign_Program_Tactic.VerticalId == v.VerticalId && ta.StageTitle.Equals(revenue)).Select(pcpt => pcpt).ToList().Where(mr => includeMonth.Contains(mr.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + mr.Period)).Sum(ta => ta.Actualvalue) : 0
                                                 });
 
@@ -2717,7 +2717,7 @@ namespace RevenuePlanner.Controllers
                                                 {
                                                     Title = g.Title,
                                                     ColorCode = "#1627a0",
-                                                    Value = GetActualVSPlannedRevenue(db.Plan_Campaign_Program_Tactic.Where(t => t.GeographyId.Equals(g.GeographyId)).Select(t => t.PlanTacticId).ToList(), includeMonthUpCurrent)
+                                                    Value = GetActualVSPlannedRevenue(db.Plan_Campaign_Program_Tactic.Where(t => t.GeographyId.Equals(g.GeographyId) && tacticIds.Contains(t.PlanTacticId)).Select(t => t.PlanTacticId).ToList(), includeMonthUpCurrent)
                                                     //Commentt by bhavesh PL Ticket #349 Value = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => tacticIds.Contains(ta.PlanTacticId) && ta.StageTitle.Equals(revenue)).Any(ta => ta.Plan_Campaign_Program_Tactic.GeographyId.Equals(g.GeographyId)) ? db.Plan_Campaign_Program_Tactic_Actual.Where(ta => tacticIds.Contains(ta.PlanTacticId) && ta.Plan_Campaign_Program_Tactic.GeographyId == g.GeographyId && ta.StageTitle.Equals(revenue)).Select(pcpt => pcpt).ToList().Where(mr => includeMonth.Contains(mr.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + mr.Period)).Sum(ta => ta.Actualvalue) : 0
                                                 });
             return Json(new
