@@ -3619,7 +3619,15 @@ namespace RevenuePlanner.Controllers
                     IsUpdate = status
                 }).Select(pcp => pcp).Distinct()
             }).Select(t => t).Distinct().OrderBy(t => t.id);
-            return Json(tacticObj, JsonRequestBehavior.AllowGet);
+
+
+
+            var opens = tacticObj.Where(x => x.actualData.ToList().Count == 0).OrderBy(t => t.title);
+            var all = tacticObj.Where(x => x.actualData.ToList().Count != 0);
+
+            var result = opens.Concat(all);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         #endregion
