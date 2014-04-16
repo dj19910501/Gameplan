@@ -32,9 +32,12 @@
                         <li>
                             <a href="#">Create New</a>
                         </li>
-                        @*  <li>
+                        @if(Sessions.PlanId!=0)
+                        {
+                          <li>
                             <a href="#">Duplicate</a>
-                        </li>*@
+                          </li>
+                        }
                     </ul>
                 </div>
             </div>
@@ -86,17 +89,17 @@
         </li>
 
     </ul>
-     
+
     <ul class="nav nav-list nav-gray-plan">
         <li id="change-log" class="nav-header">
             <span>Change Log</span>
             @if (strPlanid != "0")
             {
-            <div class="changes"></div>
+                <div class="changes"></div>
             }
         </li>
     </ul>
-    
+
 
 
 
@@ -125,16 +128,16 @@
                         I'm using the 
 					    @*@Html.DropDownList("ddlModel", (SelectList)TempData["selectList"])*@
                         @{
-    if (strPlanid == "" || strPlanid == "0" || Model.IsDirector)
-    {
-                                @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], "select", new { datadefault = "SelectModel" })
+                            if (strPlanid == "" || strPlanid == "0" || Model.IsDirector)
+                            {
+                                                    @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], "select", new { datadefault = "SelectModel", @class = "myValue" })
                                
-    }
-    else
-    {   
+                            }
+                            else
+                            {   
                                
-                                <span id="spandef">@Model.ModelTitle</span>
-    }
+                                                    <span id="spandef">@Model.ModelTitle</span>
+                            }
                         }
                         model to create a new plan called						
 														@Html.TextBoxFor(model => model.Title, new { placeholder = @Model.Title, datasubline = "For example: <em>2014 North American Events</em>", datadefault = "Title", maxlength = "50", @class = "myValue" })
@@ -268,9 +271,9 @@
                                   $("#errorMessage").css("display", "block");
                                   $("#spanMessageError").empty();
                                   $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
-                              return false;
-                          }
-                  }
+                                  return false;
+                              }
+                      }
                       },
                       error: function () {
                           GoToLogin();
@@ -279,7 +282,7 @@
                           return false;
                       }
                   });
-      }
+          }
               return isError;
           });
 
