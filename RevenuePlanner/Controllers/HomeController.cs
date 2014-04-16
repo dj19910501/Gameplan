@@ -400,15 +400,17 @@ namespace RevenuePlanner.Controllers
                 filterIndividual.Add(Sessions.User.UserId.ToString());
             }
 
-            var objPlan_Campaign_Program_Tactic_Comment = db.Plan_Campaign_Program_Tactic_Comment.Where(pc => pc.PlanTacticId != null).ToList()
-                                                        .Where(pcptc => pcptc.Plan_Campaign_Program_Tactic.IsDeleted.Equals(false) &&
-                                                            programId.Contains(pcptc.Plan_Campaign_Program_Tactic.PlanProgramId) &&
-                                                            //// Individual & Show my Tactic Filter 
-                                                           (filterIndividual.Count.Equals(0) || filterIndividual.Contains(pcptc.CreatedBy.ToString()))).ToList();
-
-            //// Applying filters to tactic comment (IsDelete, Individuals and Show My Tactic)
-            List<int?> tacticId = objPlan_Campaign_Program_Tactic_Comment
-                                                        .Select(pcptc => pcptc.PlanTacticId).ToList();
+            //// Start Commented By :- Sohel Pathan on 16/04/2014 for PL #248 to Filter By Individual 
+            //var objPlan_Campaign_Program_Tactic_Comment = db.Plan_Campaign_Program_Tactic_Comment.Where(pc => pc.PlanTacticId != null).ToList()
+            //                                            .Where(pcptc => pcptc.Plan_Campaign_Program_Tactic.IsDeleted.Equals(false) &&
+            //                                                programId.Contains(pcptc.Plan_Campaign_Program_Tactic.PlanProgramId) &&
+            //                                                //// Individual & Show my Tactic Filter 
+            //                                               (filterIndividual.Count.Equals(0) || filterIndividual.Contains(pcptc.CreatedBy.ToString()))).ToList();
+            
+            ////// Applying filters to tactic comment (IsDelete, Individuals and Show My Tactic)
+            //List<int?> tacticId = objPlan_Campaign_Program_Tactic_Comment
+            //                                            .Select(pcptc => pcptc.PlanTacticId).ToList();
+            //// End Commented By :- Sohel Pathan on 16/04/2014 for PL #248 to Filter By Individual 
 
             //// Applying filters to tactic (IsDelete, Geography, Individuals and Show My Tactic)
             var tactic = db.Plan_Campaign_Program_Tactic.ToList()
@@ -423,8 +425,7 @@ namespace RevenuePlanner.Controllers
                                                                        (filterGeography.Count.Equals(0) || filterGeography.Contains(pcpt.GeographyId.ToString())) &&
                                                             //// Individual & Show my Tactic Filter 
                                                             //// Start Modified by :- Sohel Pathan on 14/04/2014 for PL ticket #428 Filter by individual.
-                                                                       //(filterIndividual.Count.Equals(0) || filterIndividual.Contains(pcpt.CreatedBy.ToString()) || filterIndividual.Contains(pcpt.ModifiedBy.ToString()) || tacticId.Contains(pcpt.PlanTacticId)))
-                                                                       (filterIndividual.Count.Equals(0) || filterIndividual.Contains(pcpt.CreatedBy.ToString()) || tacticId.Contains(pcpt.PlanTacticId)))
+                                                                       (filterIndividual.Count.Equals(0) || filterIndividual.Contains(pcpt.CreatedBy.ToString())))
                                                             //// End Modified by :- Sohel Pathan on 14/04/2014 for PL ticket #428 Filter by individual.
                                                         .Select(pcpt => pcpt);
 
@@ -3153,7 +3154,7 @@ namespace RevenuePlanner.Controllers
             //// Applying filters to tactic comment (IsDelete, Individuals and Show My Tactic)
             List<int?> tacticId = objPlan_Campaign_Program_Tactic_Comment
                                                         .Select(pcptc => pcptc.PlanTacticId).ToList();
-
+            
             //// Applying filters to tactic (IsDelete, Geography, Individuals and Show My Tactic)
             var objPlan_Campaign_Program_Tactic = db.Plan_Campaign_Program_Tactic.ToList()
                                                         .Where(pcpt => pcpt.IsDeleted.Equals(false) &&
