@@ -552,10 +552,10 @@
                         url = '@Url.Content("~/Model/Tactics")';
                     window.location.href = url + '?id=' + ModelId;
                 }
-                else if (data.successMessage != undefined) {
-                    var hdnShowModelResultsTab = $("#hdnShowModelResultsTab").val();
-                    if (hdnShowModelResultsTab == null || hdnShowModelResultsTab == '' || hdnShowModelResultsTab.toLowerCase() == 'true') {
-                        url = '@Url.Content("~/Model/Results")';
+                    else if (data.successMessage != undefined) {
+                        var hdnShowModelResultsTab = $("#hdnShowModelResultsTab").val();
+                        if (hdnShowModelResultsTab == null || hdnShowModelResultsTab == '' || hdnShowModelResultsTab.toLowerCase() == 'true') {
+                            url = '@Url.Content("~/Model/Results")';
                             window.location.href = url + '?mid1=' + ModelId + '&mid2=' + ModelId;
                             return;
                         }
@@ -564,6 +564,10 @@
                             window.location.href = url;
                         }
 
+                    }
+                    else {
+                        url = '@Url.Content("~/Model/ModelZero")';
+                        window.location.href = url;
                     }
             }
             });
