@@ -557,7 +557,7 @@ namespace RevenuePlanner.Controllers
             }
 
             var plan = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId));
-            Sessions.BusinessUnitId= plan.Model.BusinessUnitId;
+            Sessions.BusinessUnitId = plan.Model.BusinessUnitId;
             HomePlanModel planModel = new HomePlanModel();
             planModel.objplanhomemodelheader = Common.GetPlanHeaderValue(Sessions.PlanId);
             planModel.PlanId = plan.PlanId;
@@ -608,7 +608,14 @@ namespace RevenuePlanner.Controllers
             else
             {
                 //Added by Nirav for Custom Dropdown - 388
-                ViewBag.BusinessUnitIds = Sessions.User.BusinessUnitId;
+                var list = db.BusinessUnits.Where(s => s.BusinessUnitId == Sessions.User.BusinessUnitId && s.IsDeleted == false).ToList().Select(u => new SelectListItem
+                {
+                    Text = u.Title,
+                    Value = u.BusinessUnitId.ToString()
+                });
+                List<SelectListItem> items = new List<SelectListItem>(list);
+                planModel.BusinessUnitIds = items;
+                ViewBag.BusinessUnitIds = items;
                 ViewBag.showBid = true;
             }
             ViewBag.Msg = ismsg;
@@ -631,20 +638,20 @@ namespace RevenuePlanner.Controllers
                         planList.Single(p => p.Value.Equals(Sessions.PlanId.ToString())).Selected = true;
                     }
                     /*changed by Nirav for plan consistency on 14 apr 2014*/
-                          Sessions.BusinessUnitId = Common.GetPlan().Where(m => m.PlanId == Sessions.PlanId).Select(m => m.Model.BusinessUnitId).FirstOrDefault();
-                          if (!Common.IsPlanPublished(Sessions.PlanId))
-                          {
-                              string planPublishedStatus = Enums.PlanStatus.Published.ToString();
-                              var activeplan = db.Plans.Where(p => p.PlanId == Sessions.PlanId && p.IsDeleted == false && p.Status == planPublishedStatus).ToList();
-                              if (activeplan.Count > 0)
-                              {
-                                  Sessions.PublishedPlanId = Sessions.PlanId;
-                              }
-                              else
-                              {
-                                  Sessions.PublishedPlanId = 0;
-                              }
-                          }
+                    Sessions.BusinessUnitId = Common.GetPlan().Where(m => m.PlanId == Sessions.PlanId).Select(m => m.Model.BusinessUnitId).FirstOrDefault();
+                    if (!Common.IsPlanPublished(Sessions.PlanId))
+                    {
+                        string planPublishedStatus = Enums.PlanStatus.Published.ToString();
+                        var activeplan = db.Plans.Where(p => p.PlanId == Sessions.PlanId && p.IsDeleted == false && p.Status == planPublishedStatus).ToList();
+                        if (activeplan.Count > 0)
+                        {
+                            Sessions.PublishedPlanId = Sessions.PlanId;
+                        }
+                        else
+                        {
+                            Sessions.PublishedPlanId = 0;
+                        }
+                    }
                 }
             }
             else
@@ -668,7 +675,7 @@ namespace RevenuePlanner.Controllers
                     {
                         planList.FirstOrDefault().Selected = true;
                         int planID = 0;
-                        int.TryParse(planList.Select(s=>s.Value).FirstOrDefault(),out planID);
+                        int.TryParse(planList.Select(s => s.Value).FirstOrDefault(), out planID);
                         Sessions.PlanId = planID;
                         if (!Common.IsPlanPublished(Sessions.PlanId))
                         {
@@ -687,7 +694,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
             objHomePlan.plans = planList;
-           
+
             return PartialView("_ApplytoCalendarPlanList", objHomePlan);
         }
 
@@ -1912,7 +1919,7 @@ namespace RevenuePlanner.Controllers
                                         TacticType mt = db.TacticTypes.Where(m => m.TacticTypeId == tacid).FirstOrDefault();
                                         pcptobj.Title = mt.Title;
                                         /* changed by Nirav on 11 APR for PL 322*/
-                                        pcptobj.VerticalId = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId).Select(s=>s.VerticalId).FirstOrDefault();
+                                        pcptobj.VerticalId = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId).Select(s => s.VerticalId).FirstOrDefault();
                                         pcptobj.AudienceId = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId).Select(s => s.AudienceId).FirstOrDefault();
                                         pcptobj.GeographyId = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId).Select(s => s.GeographyId).FirstOrDefault();
 
@@ -2315,8 +2322,8 @@ namespace RevenuePlanner.Controllers
                                             {
                                                 if (!isDirectorLevelUser) isReSubmission = true;
                                                 //Comment because it already called beloe in isresubmission.PL Ticket 359.
-                                               // pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
-                                               // Common.mailSendForTactic(pcpobj.PlanTacticId, pcpobj.Status, pcpobj.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
+                                                // pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
+                                                // Common.mailSendForTactic(pcpobj.PlanTacticId, pcpobj.Status, pcpobj.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
                                             }
                                         }
                                         else if (todaydate > form.EndDate)
@@ -3723,10 +3730,10 @@ namespace RevenuePlanner.Controllers
             return Json(new
             {
                 MQL = Math.Round(differenceMQL),
-                CW = Math.Round(differenceCW,1),
+                CW = Math.Round(differenceCW, 1),
                 ADS = Math.Round(differenceDealSize),
                 Velocity = Math.Round(differenceSV),
-                Revenue = Math.Round(differenceProjectedRevenue,1),
+                Revenue = Math.Round(differenceProjectedRevenue, 1),
                 Cost = Math.Round(improvedCost)
             }, JsonRequestBehavior.AllowGet);
         }
