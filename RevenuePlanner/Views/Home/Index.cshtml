@@ -109,6 +109,7 @@
                 $("#CurrentPlanId").val(CurrentPlanId);
                 //// Modified By Maninder Singh Wadhva to Address PL#203
                 GetCollaborators(CurrentPlanId);
+                filters.IndividualsIds = [];    //// Added By :- Sohel Pathan on 16/04/2014 for PL ticket #428 to fill filteredIndividuals list according to plan selected.
                 RefreshCurrentTab();
                 GetHealderData(CurrentPlanId);
                 GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
