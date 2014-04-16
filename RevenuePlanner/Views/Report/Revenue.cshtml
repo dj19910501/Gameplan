@@ -218,14 +218,14 @@
             <h4 class="title-header">Source Performance</h4>
         </li>
         <li class="active pull-right">
-            <a>@RevenuePlanner.Helpers.Common.SourcePerformanceActual</a>
+            <a>Actual vs Planned</a>
         </li>
-        <li class="disabled pull-right">
+       @* <li class="disabled pull-right">
             <a>@RevenuePlanner.Helpers.Common.SourcePerformanceTrend</a>
         </li>
         <li class="disabled pull-right">
             <a>@RevenuePlanner.Helpers.Common.SourcePerformancePlan</a>
-        </li>
+        </li>*@
     </ul>
     <div class="report-gray-container">
         <div class="report-chart-group">
@@ -1927,28 +1927,8 @@
 
         }
 
-        var filter = "@RevenuePlanner.Helpers.Common.SourcePerformanceActual";
         FillChartSourcePerformance();
 
-        $("#ParentULSourcePerformance li").click(function () {
-            var selectParent = $(this).children().text();
-            if (selectParent != "Source Performance") {
-                RemoveTabClassParentULSourcePerformance();
-                $(this).removeClass("disabled");
-                $(this).addClass("active");
-                filter = selectParent;
-                FillChartSourcePerformance();
-            }
-        });
-
-        function RemoveTabClassParentULSourcePerformance() {
-            $('#ParentULSourcePerformance').children().each(function () {
-                if ($(this).hasClass('active')) {
-                    $(this).removeClass("active");
-                    $(this).addClass("disabled");
-                }
-            });
-        }
         var dataset1, dataset2, dataset3;
         function FillChartSourcePerformance() {
             $.ajax(
@@ -1957,7 +1937,6 @@
                       cache: false,
                       url: '@Url.Action("GetSourcePerformance", "Report")',
                       data: {
-                          filter: filter,
                           selectOption: selectOption
                       },
                       dataType: "json",
@@ -1998,7 +1977,7 @@
                 view: "barH",
                 container: "chartDiv4",
                 value: "#Value#",
-                tooltip: "$#Value#",
+                tooltip: "#Value#%",
                 radius: 0,
                 border: false,
                 color: "#ColorCode#",
@@ -2029,7 +2008,7 @@
                 view: "barH",
                 container: "chartDiv5",
                 value: "#Value#",
-                tooltip: "$#Value#",
+                tooltip: "#Value#%",
                 radius: 0,
                 border: false,
                 color: "#ColorCode#",
@@ -2060,7 +2039,7 @@
                 view: "barH",
                 container: "chartDiv6",
                 value: "#Value#",
-                tooltip: "$#Value#",
+                tooltip: "#Value#%",
                 radius: 0,
                 border: false,
                 color: "#ColorCode#",
