@@ -182,7 +182,7 @@ namespace RevenuePlanner.Controllers
 
                     BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
                     //// Start Modified by :- Sohel Pathan on 14/04/2014 for PL ticket #428 Filter by individual.
-                    var individuals = GetIndividualsByPlanId(currentPlan.PlanId);
+                    var individuals = GetIndividualsByPlanId(currentPlan.PlanId, GanttTabs.Tactic, activeMenu.ToString()); //// Modified by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
                     //// End Modified by :- Sohel Pathan on 14/04/2014 for PL ticket #428 Filter by individual.
                     planmodel.objIndividuals = individuals.OrderBy(i => string.Format("{0} {1}", i.FirstName, i.LastName)).ToList();
                     //End Maninder Singh Wadhva : 11/25/2013 - Getting list of geographies and individuals.
@@ -4023,22 +4023,28 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Added By :- Sohel Pathan
         /// Date :- 14/04/2014
-        /// Reason :- To get list of users who have created tactic by planId
+        /// Reason :- To get list of users who have created tactic by planId (PL ticket # 428)
         /// </summary>
         /// <param name="PlanId"></param>
         /// <returns></returns>
-        public JsonResult GetIndividualsForFilter(int PlanId)
+        public JsonResult GetIndividualsForFilter(int PlanId, int type, string activeMenu)
         {
-            var individuals = GetIndividualsByPlanId(PlanId);
+            var individuals = GetIndividualsByPlanId(PlanId, (GanttTabs)type, activeMenu); //// Modified by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
             individuals = individuals.Select(a => new User { UserId = a.UserId, FirstName = a.FirstName, LastName = a.LastName }).ToList();
             return Json(new { individualsList = individuals.OrderBy(i => string.Format("{0} {1}", i.FirstName, i.LastName)).ToList() }, JsonRequestBehavior.AllowGet);
         }
 
-        private List<User> GetIndividualsByPlanId(int PlanId)
+        private List<User> GetIndividualsByPlanId(int PlanId, GanttTabs type, string activeMenu)
         {
             BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
-            var TacticUserList = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId == PlanId).Select(a => a.CreatedBy).Distinct().ToList();
-            var ImprovementTacticUserList = db.Plan_Improvement_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) && pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId == PlanId).Select(a => a.CreatedBy).Distinct().ToList();
+            //// Added by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
+            Enums.ActiveMenu objactivemenu = Common.GetKey<Enums.ActiveMenu>(Enums.ActiveMenuValues, activeMenu.ToLower());
+            List<string> status = GetStatusAsPerTab(type, objactivemenu);
+            ////
+            //// Modified by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
+            var TacticUserList = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId == PlanId && status.Contains(pcpt.Status)).Select(a => a.CreatedBy).Distinct().ToList();
+            var ImprovementTacticUserList = db.Plan_Improvement_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) && pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId == PlanId && status.Contains(pcpt.Status)).Select(a => a.CreatedBy).Distinct().ToList();
+            ////
             TacticUserList.AddRange(ImprovementTacticUserList);
             TacticUserList = TacticUserList.Distinct().ToList();
             string strContatedIndividualList = string.Empty;

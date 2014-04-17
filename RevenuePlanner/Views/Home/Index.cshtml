@@ -53,6 +53,7 @@
         var Currenttime = "planYear";
         $(document).ready(function () {
             var isRender;       //// Added by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
+            var individualClick = false;    //// Added By :- Sohel Pathan on 17/04/2014 for PL ticket #428 to fill filteredIndividuals list according to plan selected.
             //Added by Nirav for Custom Dropdown - 388
             var showBid = $('#showBid').val();
             if (showBid == true) {
@@ -113,7 +114,7 @@
                 RefreshCurrentTab();
                 GetHealderData(CurrentPlanId);
                 GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
-                GetIndividualsForFilter(parseInt(CurrentPlanId));   //// Added By :- Sohel Pathan on 14/04/2014 for PL ticket #428 to fill filteredIndividuals list according to plan selected.
+                //GetIndividualsForFilter(parseInt(CurrentPlanId));   //// Added By :- Sohel Pathan on 14/04/2014 for PL ticket #428 to fill filteredIndividuals list according to plan selected.
             });
         }
 
@@ -123,10 +124,21 @@
                 type: "GET",
                 cache: false,
                 url: '@Url.Action("GetIndividualsForFilter", "Home")',
-                data: { PlanId: CurrentPlanId },
+                data: {
+                    PlanId: CurrentPlanId,
+                    Type: type,                             //// Added by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
+                    activeMenu: $('#ActiveMenu').val()      //// Added by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
+                },
                 dataType: "json",
                 success: function (data) {
                     if (data != null || typeof data != 'undefined') {
+                        //// Added by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
+                        var a = $('#accordion-filterIndividuals');
+                        if (a.length == 0) {
+                            $('#individualFilter').append('<div id="accordion-filterIndividuals" class="accordion-body collapse"></div>');
+                        }
+                        ////
+
                         $('#accordion-filterIndividuals').empty();
 
                         $('#individualFilterdiv').find("a").removeClass('chevron-down');
@@ -370,7 +382,8 @@
                     </div>
                 }
             </div>
-            <div class="accordion-group">
+            @*Modified by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis *@
+            <div class="accordion-group" id="individualFilter">
                 @if (Model.objIndividuals.Count > 0)
                 {
                     <div class="accordion-heading" id="individualFilterdiv">
@@ -855,11 +868,11 @@
    }
 
    function ApplyOrRemoveFilter() {
+       individualClick = true;      //// Added By :- Sohel Pathan on 17/04/2014 for PL ticket #428 to fill filteredIndividuals list according to plan selected.
        ($(this).toggleClass("x-icon"));
        filters.geographyIds = $.map($("#accordion-filterGeography").find("a.x-icon"), function (a) { return $(a).attr("filterId") });
        filters.IndividualsIds = $.map($("#accordion-filterIndividuals").find("a.x-icon"), function (a) { return $(a).attr("filterId") });
        RefreshCurrentTab();
-
    }
 
    //// Function to get tactic.
@@ -1137,6 +1150,9 @@
          },
          dataType: "json",
          success: function (data) {
+             if (typeof individualClick == 'undefined') {
+                 individualClick = false;
+             }
              $('#RequestCount').html(data.requestCount);
              planYear = parseInt(data.planYear);
 
@@ -1204,6 +1220,14 @@
              }
 
              //gantt.render();     ////Added by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
+             //// Added By :- Sohel Pathan on 16/04/2014 for PL ticket #428 to fill filteredIndividuals list according to plan selected.
+             if (individualClick != true) {
+                 GetIndividualsForFilter(parseInt(CurrentPlanId));
+             }
+             else {
+                 individualClick = false;
+             }
+             ////
          }
      });
  }
