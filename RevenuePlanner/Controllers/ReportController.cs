@@ -593,7 +593,6 @@ namespace RevenuePlanner.Controllers
             {
                 percentage = ((mql / inq) / (mqlProjected / inqProjected)) * 100;
             }
-            percentage = (percentage - 100);
             return percentage;
         }
 
