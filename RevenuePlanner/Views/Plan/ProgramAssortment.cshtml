@@ -145,6 +145,7 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
+        $('#slidepanel-container').slimScroll({ scrollTo: '0px' });
         var isredirect = "@ViewBag.RedirectType";
         var hdnYear = @ViewBag.Year
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });

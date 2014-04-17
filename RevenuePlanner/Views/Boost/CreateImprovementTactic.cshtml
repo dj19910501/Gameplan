@@ -5,7 +5,7 @@
     string MetricType_SV = Enums.MetricType.SV.ToString();
     string MetricType_Size = Enums.MetricType.Size.ToString();
 }
-<div class="head">
+<div class="head" id="improvementTacticCloseMenu">
   <span class="close-form source-sans-proregular">» CLOSE MENU</span>
     <div class="cf">
         <h2 class="source-sans-prolight">@ViewBag.Title </h2>
@@ -106,6 +106,8 @@
  }
 <script type="text/javascript">
     $(document).ready(function () {
+        //$('#hdntitle').focus();
+        $('#slidepanel-container').slimScroll({ scrollTo: '0px' });
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
