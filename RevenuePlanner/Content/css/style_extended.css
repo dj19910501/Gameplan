@@ -2074,7 +2074,7 @@ span.info-icon-grey:hover{
 
 .nl-field ul {
     max-height: 400px;
-    overflow:auto;
+    /*overflow:auto;*/
 }
 
 /* Added by KAPIL - Global Change */
