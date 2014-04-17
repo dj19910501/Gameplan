@@ -442,21 +442,47 @@ namespace RevenuePlanner.Controllers
 
             Enums.ActiveMenu objactivemenu = Common.GetKey<Enums.ActiveMenu>(Enums.ActiveMenuValues, activeMenu.ToLower());
 
-            // Added by Dharmraj Ticket #364
-            List<string> status = GetStatusAsPerTab(currentGanttTab, objactivemenu);
+            // Added by Dharmraj Ticket #364,#365,#366
+            if (objactivemenu.Equals(Enums.ActiveMenu.Plan))
+            {
+                List<string> status = GetStatusAsPerTab(currentGanttTab, objactivemenu);
+                List<string> statusCD = new List<string>();
+                statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+                statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+
+                tactic = tactic.Where(t => status.Contains(t.Status) || ((t.CreatedBy == Sessions.User.UserId && !currentGanttTab.Equals(GanttTabs.Request)) ? statusCD.Contains(t.Status) : false))
+                                .Select(planTactic => planTactic)
+                                .ToList<Plan_Campaign_Program_Tactic>();
+
+
+                //// Modified By Maninder Singh Wadhva PL Ticket#47
+                //// Show submitted/apporved/in-progress/complete improvement tactic.
+                //if (objactivemenu.Equals(Enums.ActiveMenu.Home))
+                //{
+                List<string> improvementTacticStatus = GetStatusAsPerTab(currentGanttTab, objactivemenu);
+                improvementTactic = improvementTactic.Where(improveTactic => improvementTacticStatus.Contains(improveTactic.Status) || ((improveTactic.CreatedBy == Sessions.User.UserId && !currentGanttTab.Equals(GanttTabs.Request)) ? statusCD.Contains(improveTactic.Status) : false))
+                                                           .Select(improveTactic => improveTactic)
+                                                           .ToList<Plan_Improvement_Campaign_Program_Tactic>();
+                //}
+            }
+            else
+            {
+                List<string> status = GetStatusAsPerTab(currentGanttTab, objactivemenu);
                 tactic = tactic.Where(t => status.Contains(t.Status))
                                 .Select(planTactic => planTactic)
                                 .ToList<Plan_Campaign_Program_Tactic>();
 
-            //// Modified By Maninder Singh Wadhva PL Ticket#47
-            //// Show submitted/apporved/in-progress/complete improvement tactic.
-            //if (objactivemenu.Equals(Enums.ActiveMenu.Home))
-            //{
-            List<string> improvementTacticStatus = GetStatusAsPerTab(currentGanttTab, objactivemenu);
-            improvementTactic = improvementTactic.Where(improveTactic => improvementTacticStatus.Contains(improveTactic.Status))
-                                                       .Select(improveTactic => improveTactic)
-                                                       .ToList<Plan_Improvement_Campaign_Program_Tactic>();
-            //}
+
+                //// Modified By Maninder Singh Wadhva PL Ticket#47
+                //// Show submitted/apporved/in-progress/complete improvement tactic.
+                //if (objactivemenu.Equals(Enums.ActiveMenu.Home))
+                //{
+                List<string> improvementTacticStatus = GetStatusAsPerTab(currentGanttTab, objactivemenu);
+                improvementTactic = improvementTactic.Where(improveTactic => improvementTacticStatus.Contains(improveTactic.Status))
+                                                           .Select(improveTactic => improveTactic)
+                                                           .ToList<Plan_Improvement_Campaign_Program_Tactic>();
+                //}
+            }
 
 
             var improvementTacticForAccordion = GetImprovementTacticForAccordion(improvementTactic);
@@ -671,8 +697,8 @@ namespace RevenuePlanner.Controllers
                 if (objactivemenu.Equals(Enums.ActiveMenu.Plan))
                 {
                     status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-                    status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
-                    status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+                    //status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+                    //status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
                 }
             }
 
