@@ -122,7 +122,7 @@
                     <div id="c_tactics">
                         <!--selects elements created dynamically-->
                     </div>
-                    <span class="c-add-tactic link-blue">Add New tactics</span>
+                    <span class="c-add-tactic link-blue " style="margin-top:3px;">Add New tactics</span>
                 </div>			
             }
             @if ((bool)ViewBag.RedirectType)
@@ -242,7 +242,7 @@
                 }
             }
             
-            $("#c_tactics").append('<div><span class="verticalIdSelectBox"><select id="TacticTypeId" class="ddlStyle" require="true" name="TacticTypeId" data-val-required="The TacticTypeId field is required." data-val-number="The field TacticTypeId must be a number." data-val="true">' +
+            $("#c_tactics").append('<div  style="margin-bottom: 5px;"><span class="verticalIdSelectBox"><select id="TacticTypeId" class="ddlStyle" require="true" name="TacticTypeId" data-val-required="The TacticTypeId field is required." data-val-number="The field TacticTypeId must be a number." data-val="true">' +
                '<option value="">Please Select</option>' + tacticString +
                '</select></span>' +
           '<span class="delete-tactic"></span></div>');
