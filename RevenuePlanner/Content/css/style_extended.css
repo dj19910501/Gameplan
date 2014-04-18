@@ -981,7 +981,7 @@ a {
     font-size: 14px;
     font-weight: normal; /*height: 34px; */
     position: relative;
-    min-height: 26px;
+    min-height: 25px;
     width: 100%;
     z-index: 1999;
     display: inline-block;
