@@ -92,6 +92,7 @@
     
     $(document).ready(function () {
         //$.ajaxSetup({ cache: false });
+        $('#slidepanel-container').slimScroll({ scrollTo: '0px' });
         var isredirect = "@ViewBag.RedirectType";
         var isAssortment = $("#hdnRedirectType").val();
         var hdnYear = @ViewBag.Year

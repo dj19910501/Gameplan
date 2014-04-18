@@ -49,9 +49,9 @@
             @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true", maxlength = "255" })
 
             <label>Tactic Type</label>
-            <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true", Id = "ddlTacticType" })</span>
+            <span class="verticalIdSelectBox" style="  margin-left: -2px;">@Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true", Id = "ddlTacticType" })</span>
 
-            <label>Description</label>
+            <label style="margin-top:6px;">Description</label>
             @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", rows = "3", maxlength = "4000" })
 
             @if ((bool)ViewBag.RedirectType)
@@ -62,14 +62,14 @@
                 @Html.TextBox("txtProgram", (string)ViewBag.Program, new { @readonly = "true" });
             }
 
-            <label>Vertical</label>
-            <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
+            <label >Vertical</label>
+            <span class="verticalIdSelectBox" style="  margin-left: -2px;">@Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
 
-            <label>Audience</label>
-            <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
+            <label style="margin-top:6px;">Audience</label>
+            <span class="verticalIdSelectBox" style="  margin-left: -2px;">@Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
 
-            <label>Geography</label>
-            <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
+            <label style="margin-top:6px;">Geography</label>
+            <span class="verticalIdSelectBox" style="  margin-left: -2px;">@Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
             @Html.Hidden("hdnRedirect", (bool)ViewBag.RedirectType, new { id = "hdnRedirectType" })
             @if ((bool)ViewBag.RedirectType)
             {
@@ -141,6 +141,7 @@ if ((bool)ViewBag.IsOwner)
 
     $(document).ready(function () {
         //$.ajaxSetup({ cache: false });
+        $('#slidepanel-container').slimScroll({ scrollTo: '0px' });
         var isredirect = "@ViewBag.RedirectType";
         var isAssortment = $("#hdnRedirectType").val();
         var hdnYear = @ViewBag.Year

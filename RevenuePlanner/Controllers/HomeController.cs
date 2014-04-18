@@ -182,7 +182,7 @@ namespace RevenuePlanner.Controllers
 
                     BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
                     //// Start Modified by :- Sohel Pathan on 14/04/2014 for PL ticket #428 Filter by individual.
-                    var individuals = GetIndividualsByPlanId(currentPlan.PlanId);
+                    var individuals = GetIndividualsByPlanId(currentPlan.PlanId, GanttTabs.Tactic, activeMenu.ToString()); //// Modified by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
                     //// End Modified by :- Sohel Pathan on 14/04/2014 for PL ticket #428 Filter by individual.
                     planmodel.objIndividuals = individuals.OrderBy(i => string.Format("{0} {1}", i.FirstName, i.LastName)).ToList();
                     //End Maninder Singh Wadhva : 11/25/2013 - Getting list of geographies and individuals.
@@ -442,21 +442,47 @@ namespace RevenuePlanner.Controllers
 
             Enums.ActiveMenu objactivemenu = Common.GetKey<Enums.ActiveMenu>(Enums.ActiveMenuValues, activeMenu.ToLower());
 
-            // Added by Dharmraj Ticket #364
-            List<string> status = GetStatusAsPerTab(currentGanttTab, objactivemenu);
+            // Added by Dharmraj Ticket #364,#365,#366
+            if (objactivemenu.Equals(Enums.ActiveMenu.Plan))
+            {
+                List<string> status = GetStatusAsPerTab(currentGanttTab, objactivemenu);
+                List<string> statusCD = new List<string>();
+                statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+                statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+
+                tactic = tactic.Where(t => status.Contains(t.Status) || ((t.CreatedBy == Sessions.User.UserId && !currentGanttTab.Equals(GanttTabs.Request)) ? statusCD.Contains(t.Status) : false))
+                                .Select(planTactic => planTactic)
+                                .ToList<Plan_Campaign_Program_Tactic>();
+
+
+                //// Modified By Maninder Singh Wadhva PL Ticket#47
+                //// Show submitted/apporved/in-progress/complete improvement tactic.
+                //if (objactivemenu.Equals(Enums.ActiveMenu.Home))
+                //{
+                List<string> improvementTacticStatus = GetStatusAsPerTab(currentGanttTab, objactivemenu);
+                improvementTactic = improvementTactic.Where(improveTactic => improvementTacticStatus.Contains(improveTactic.Status) || ((improveTactic.CreatedBy == Sessions.User.UserId && !currentGanttTab.Equals(GanttTabs.Request)) ? statusCD.Contains(improveTactic.Status) : false))
+                                                           .Select(improveTactic => improveTactic)
+                                                           .ToList<Plan_Improvement_Campaign_Program_Tactic>();
+                //}
+            }
+            else
+            {
+                List<string> status = GetStatusAsPerTab(currentGanttTab, objactivemenu);
                 tactic = tactic.Where(t => status.Contains(t.Status))
                                 .Select(planTactic => planTactic)
                                 .ToList<Plan_Campaign_Program_Tactic>();
 
-            //// Modified By Maninder Singh Wadhva PL Ticket#47
-            //// Show submitted/apporved/in-progress/complete improvement tactic.
-            //if (objactivemenu.Equals(Enums.ActiveMenu.Home))
-            //{
-            List<string> improvementTacticStatus = GetStatusAsPerTab(currentGanttTab, objactivemenu);
-            improvementTactic = improvementTactic.Where(improveTactic => improvementTacticStatus.Contains(improveTactic.Status))
-                                                       .Select(improveTactic => improveTactic)
-                                                       .ToList<Plan_Improvement_Campaign_Program_Tactic>();
-            //}
+
+                //// Modified By Maninder Singh Wadhva PL Ticket#47
+                //// Show submitted/apporved/in-progress/complete improvement tactic.
+                //if (objactivemenu.Equals(Enums.ActiveMenu.Home))
+                //{
+                List<string> improvementTacticStatus = GetStatusAsPerTab(currentGanttTab, objactivemenu);
+                improvementTactic = improvementTactic.Where(improveTactic => improvementTacticStatus.Contains(improveTactic.Status))
+                                                           .Select(improveTactic => improveTactic)
+                                                           .ToList<Plan_Improvement_Campaign_Program_Tactic>();
+                //}
+            }
 
 
             var improvementTacticForAccordion = GetImprovementTacticForAccordion(improvementTactic);
@@ -671,8 +697,8 @@ namespace RevenuePlanner.Controllers
                 if (objactivemenu.Equals(Enums.ActiveMenu.Plan))
                 {
                     status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-                    status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
-                    status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+                    //status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+                    //status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
                 }
             }
 
@@ -3619,7 +3645,15 @@ namespace RevenuePlanner.Controllers
                     IsUpdate = status
                 }).Select(pcp => pcp).Distinct()
             }).Select(t => t).Distinct().OrderBy(t => t.id);
-            return Json(tacticObj, JsonRequestBehavior.AllowGet);
+
+
+
+            var opens = tacticObj.Where(x => x.actualData.ToList().Count == 0).OrderBy(t => t.title);
+            var all = tacticObj.Where(x => x.actualData.ToList().Count != 0);
+
+            var result = opens.Concat(all);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         #endregion
@@ -3989,22 +4023,28 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Added By :- Sohel Pathan
         /// Date :- 14/04/2014
-        /// Reason :- To get list of users who have created tactic by planId
+        /// Reason :- To get list of users who have created tactic by planId (PL ticket # 428)
         /// </summary>
         /// <param name="PlanId"></param>
         /// <returns></returns>
-        public JsonResult GetIndividualsForFilter(int PlanId)
+        public JsonResult GetIndividualsForFilter(int PlanId, int type, string activeMenu)
         {
-            var individuals = GetIndividualsByPlanId(PlanId);
+            var individuals = GetIndividualsByPlanId(PlanId, (GanttTabs)type, activeMenu); //// Modified by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
             individuals = individuals.Select(a => new User { UserId = a.UserId, FirstName = a.FirstName, LastName = a.LastName }).ToList();
             return Json(new { individualsList = individuals.OrderBy(i => string.Format("{0} {1}", i.FirstName, i.LastName)).ToList() }, JsonRequestBehavior.AllowGet);
         }
 
-        private List<User> GetIndividualsByPlanId(int PlanId)
+        private List<User> GetIndividualsByPlanId(int PlanId, GanttTabs type, string activeMenu)
         {
             BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
-            var TacticUserList = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId == PlanId).Select(a => a.CreatedBy).Distinct().ToList();
-            var ImprovementTacticUserList = db.Plan_Improvement_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) && pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId == PlanId).Select(a => a.CreatedBy).Distinct().ToList();
+            //// Added by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
+            Enums.ActiveMenu objactivemenu = Common.GetKey<Enums.ActiveMenu>(Enums.ActiveMenuValues, activeMenu.ToLower());
+            List<string> status = GetStatusAsPerTab(type, objactivemenu);
+            ////
+            //// Modified by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
+            var TacticUserList = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId == PlanId && status.Contains(pcpt.Status)).Select(a => a.CreatedBy).Distinct().ToList();
+            var ImprovementTacticUserList = db.Plan_Improvement_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) && pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId == PlanId && status.Contains(pcpt.Status)).Select(a => a.CreatedBy).Distinct().ToList();
+            ////
             TacticUserList.AddRange(ImprovementTacticUserList);
             TacticUserList = TacticUserList.Distinct().ToList();
             string strContatedIndividualList = string.Empty;

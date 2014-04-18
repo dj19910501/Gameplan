@@ -1,5 +1,10 @@
 ﻿@model RevenuePlanner.Models.Plan_Campaign_ProgramModel
 @using RevenuePlanner.Helpers
+<style type="text/css">
+    .verticalIdSelectBox .sbHolder {
+        width: 90%;
+    }
+</style>
 <div class="head">
     <span class="close-form source-sans-proregular">» CLOSE MENU</span>
     <div class="cf">
@@ -145,6 +150,7 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
+        $('#slidepanel-container').slimScroll({ scrollTo: '0px' });
         var isredirect = "@ViewBag.RedirectType";
         var hdnYear = @ViewBag.Year
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
@@ -235,11 +241,12 @@
                     tacticString = tacticString + '<option value="' + tactictype[i].TacticTypeId + '">' + tactictype[i].Title + '</option>';
                 }
             }
-            $("#c_tactics").append('<div><select id="TacticTypeId" class="ddlStyle" require="true" name="TacticTypeId" data-val-required="The TacticTypeId field is required." data-val-number="The field TacticTypeId must be a number." data-val="true">' +
+            
+            $("#c_tactics").append('<div><span class="verticalIdSelectBox"><select id="TacticTypeId" class="ddlStyle" require="true" name="TacticTypeId" data-val-required="The TacticTypeId field is required." data-val-number="The field TacticTypeId must be a number." data-val="true">' +
                '<option value="">Please Select</option>' + tacticString +
-               '</select>' +
+               '</select></span>' +
           '<span class="delete-tactic"></span></div>');
-
+            $(".verticalIdSelectBox select").selectbox();
         });
 
         $('#c_tactics').on('click', '.delete-tactic', function () {

@@ -1,45 +1,82 @@
 /*
-This software is allowed to use under GPL or you need to obtain Commercial or Enterise License 
+This software is allowed to use under GPL or you need to obtain Commercial or Enterprise License 
  to use it in non-GPL project. Please contact sales@dhtmlx.com for details
 */
 function dtmlXMLLoaderObject(t, e, n, i) {
     return this.xmlDoc = "", this.async = "undefined" != typeof n ? n : !0, this.onloadAction = t || null, this.mainObject = e || null, this.waitCall = null, this.rSeed = i || !1, this
 }
+
 function callerFunction(t, e) {
-    return this.handler = function (n) { return n || (n = window.event), t(n, e), !0 }, this.handler
+    return this.handler = function (n) {
+        return n || (n = window.event), t(n, e), !0
+    }, this.handler
 }
+
 function getAbsoluteLeft(t) {
     return getOffset(t).left
 }
+
 function getAbsoluteTop(t) {
     return getOffset(t).top
 }
+
 function getOffsetSum(t) {
-    for (var e = 0, n = 0; t;) e += parseInt(t.offsetTop), n += parseInt(t.offsetLeft), t = t.offsetParent; return { top: e, left: n }
+    for (var e = 0, n = 0; t;) e += parseInt(t.offsetTop), n += parseInt(t.offsetLeft), t = t.offsetParent;
+    return {
+        top: e,
+        left: n
+    }
 }
+
 function getOffsetRect(t) {
-    var e = t.getBoundingClientRect(), n = document.body, i = document.documentElement, a = window.pageYOffset || i.scrollTop || n.scrollTop, s = window.pageXOffset || i.scrollLeft || n.scrollLeft, r = i.clientTop || n.clientTop || 0, o = i.clientLeft || n.clientLeft || 0, d = e.top + a - r, l = e.left + s - o; return { top: Math.round(d), left: Math.round(l) }
+    var e = t.getBoundingClientRect(),
+        n = document.body,
+        i = document.documentElement,
+        a = window.pageYOffset || i.scrollTop || n.scrollTop,
+        s = window.pageXOffset || i.scrollLeft || n.scrollLeft,
+        r = i.clientTop || n.clientTop || 0,
+        o = i.clientLeft || n.clientLeft || 0,
+        d = e.top + a - r,
+        l = e.left + s - o;
+    return {
+        top: Math.round(d),
+        left: Math.round(l)
+    }
 }
 
 function getOffset(t) {
     return t.getBoundingClientRect ? getOffsetRect(t) : getOffsetSum(t)
 }
+
 function convertStringToBoolean(t) {
-    switch ("string" == typeof t && (t = t.toLowerCase()), t) { case "1": case "true": case "yes": case "y": case 1: case !0: return !0; default: return !1 }
+    switch ("string" == typeof t && (t = t.toLowerCase()), t) {
+        case "1":
+        case "true":
+        case "yes":
+        case "y":
+        case 1:
+        case !0:
+            return !0;
+        default:
+            return !1
+    }
 }
+
 function getUrlSymbol(t) {
     return -1 != t.indexOf("?") ? "&" : "?"
 }
+
 function dhtmlDragAndDropObject() {
     return window.dhtmlDragAndDrop ? window.dhtmlDragAndDrop : (this.lastLanding = 0, this.dragNode = 0, this.dragStartNode = 0, this.dragStartObject = 0, this.tempDOMU = null, this.tempDOMM = null, this.waitDrag = 0, window.dhtmlDragAndDrop = this, this)
 }
 
 function _dhtmlxError() {
-    return this.catches || (this.catches = new Array), this
+    return this.catches || (this.catches = []), this
 }
 
 function dhtmlXHeir(t, e) {
-    for (var n in e) "function" == typeof e[n] && (t[n] = e[n]); return t
+    for (var n in e) "function" == typeof e[n] && (t[n] = e[n]);
+    return t
 }
 
 function dhtmlxEvent(t, e, n) {
@@ -49,73 +86,732 @@ function dhtmlxEvent(t, e, n) {
 function dhtmlxDetachEvent(t, e, n) {
     t.removeEventListener ? t.removeEventListener(e, n, !1) : t.detachEvent && t.detachEvent("on" + e, n)
 }
+
 function dhtmlxDnD(t, e) {
-    e && (this._settings = e), dhtmlxEventable(this), dhtmlxEvent(t, "mousedown", dhtmlx.bind(function (e) { this.dragStart(t, e) }, this))
+    e && (this._settings = e), dhtmlxEventable(this), dhtmlxEvent(t, "mousedown", dhtmlx.bind(function (e) {
+        this.dragStart(t, e)
+    }, this))
 }
+
 function dataProcessor(t) {
-    return this.serverProcessor = t, this.action_param = "!nativeeditor_status", this.object = null, this.updatedRows = [], this.autoUpdate = !0, this.updateMode = "cell", this._tMode = "GET", this.post_delim = "_", this._waitMode = 0, this._in_progress = {}, this._invalid = {}, this.mandatoryFields = [], this.messages = [], this.styles = { updated: "font-weight:bold;", inserted: "font-weight:bold;", deleted: "text-decoration : line-through;", invalid: "background-color:FFE0E0;", invalid_cell: "border-bottom:2px solid red;", error: "color:red;", clear: "font-weight:normal;text-decoration:none;" }, this.enableUTFencoding(!0), dhtmlxEventable(this), this
-} dhtmlx = function (t) { for (var e in t) dhtmlx[e] = t[e]; return dhtmlx }, dhtmlx.extend_api = function (t, e, n) { var i = window[t]; i && (window[t] = function (t) { if (t && "object" == typeof t && !t.tagName) { var n = i.apply(this, e._init ? e._init(t) : arguments); for (var a in dhtmlx) e[a] && this[e[a]](dhtmlx[a]); for (var a in t) e[a] ? this[e[a]](t[a]) : 0 == a.indexOf("on") && this.attachEvent(a, t[a]) } else var n = i.apply(this, arguments); return e._patch && e._patch(this), n || this }, window[t].prototype = i.prototype, n && dhtmlXHeir(window[t].prototype, n)) }, dhtmlxAjax = { get: function (t, e) { var n = new dtmlXMLLoaderObject(!0); return n.async = arguments.length < 3, n.waitCall = e, n.loadXML(t), n }, post: function (t, e, n) { var i = new dtmlXMLLoaderObject(!0); return i.async = arguments.length < 4, i.waitCall = n, i.loadXML(t, !0, e), i }, getSync: function (t) { return this.get(t, null, !0) }, postSync: function (t, e) { return this.post(t, e, null, !0) } }, dtmlXMLLoaderObject.count = 0, dtmlXMLLoaderObject.prototype.waitLoadFunction = function (t) { var e = !0; return this.check = function () { if (t && null != t.onloadAction && (!t.xmlDoc.readyState || 4 == t.xmlDoc.readyState)) { if (!e) return; e = !1, dtmlXMLLoaderObject.count++, "function" == typeof t.onloadAction && t.onloadAction(t.mainObject, null, null, null, t), t.waitCall && (t.waitCall.call(this, t), t.waitCall = null) } }, this.check }, dtmlXMLLoaderObject.prototype.getXMLTopNode = function (t, e) { if (this.xmlDoc.responseXML) { var n = this.xmlDoc.responseXML.getElementsByTagName(t); if (0 == n.length && -1 != t.indexOf(":")) var n = this.xmlDoc.responseXML.getElementsByTagName(t.split(":")[1]); var i = n[0] } else var i = this.xmlDoc.documentElement; if (i) return this._retry = !1, i; if (!this._retry && _isIE) { this._retry = !0; var e = this.xmlDoc; return this.loadXMLString(this.xmlDoc.responseText.replace(/^[\s]+/, ""), !0), this.getXMLTopNode(t, e) } return dhtmlxError.throwError("LoadXML", "Incorrect XML", [e || this.xmlDoc, this.mainObject]), document.createElement("DIV") }, dtmlXMLLoaderObject.prototype.loadXMLString = function (t, e) { if (_isIE) this.xmlDoc = new ActiveXObject("Microsoft.XMLDOM"), this.xmlDoc.async = this.async, this.xmlDoc.onreadystatechange = function () { }, this.xmlDoc.loadXML(t); else { var n = new DOMParser; this.xmlDoc = n.parseFromString(t, "text/xml") } e || (this.onloadAction && this.onloadAction(this.mainObject, null, null, null, this), this.waitCall && (this.waitCall(), this.waitCall = null)) }, dtmlXMLLoaderObject.prototype.loadXML = function (t, e, n, i) { this.rSeed && (t += (-1 != t.indexOf("?") ? "&" : "?") + "a_dhx_rSeed=" + (new Date).valueOf()), this.filePath = t, this.xmlDoc = !_isIE && window.XMLHttpRequest ? new XMLHttpRequest : new ActiveXObject("Microsoft.XMLHTTP"), this.async && (this.xmlDoc.onreadystatechange = new this.waitLoadFunction(this)), this.xmlDoc.open(e ? "POST" : "GET", t, this.async), i ? (this.xmlDoc.setRequestHeader("User-Agent", "dhtmlxRPC v0.1 (" + navigator.userAgent + ")"), this.xmlDoc.setRequestHeader("Content-type", "text/xml")) : e && this.xmlDoc.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), this.xmlDoc.setRequestHeader("X-Requested-With", "XMLHttpRequest"), this.xmlDoc.send(null || n), this.async || new this.waitLoadFunction(this)() }, dtmlXMLLoaderObject.prototype.destructor = function () { return this._filterXPath = null, this._getAllNamedChilds = null, this._retry = null, this.async = null, this.rSeed = null, this.filePath = null, this.onloadAction = null, this.mainObject = null, this.xmlDoc = null, this.doXPath = null, this.doXPathOpera = null, this.doXSLTransToObject = null, this.doXSLTransToString = null, this.loadXML = null, this.loadXMLString = null, this.doSerialization = null, this.xmlNodeToJSON = null, this.getXMLTopNode = null, this.setXSLParamValue = null, null }, dtmlXMLLoaderObject.prototype.xmlNodeToJSON = function (t) { for (var e = {}, n = 0; n < t.attributes.length; n++) e[t.attributes[n].name] = t.attributes[n].value; e._tagvalue = t.firstChild ? t.firstChild.nodeValue : ""; for (var n = 0; n < t.childNodes.length; n++) { var i = t.childNodes[n].tagName; i && (e[i] || (e[i] = []), e[i].push(this.xmlNodeToJSON(t.childNodes[n]))) } return e }, dhtmlDragAndDropObject.prototype.removeDraggableItem = function (t) { t.onmousedown = null, t.dragStarter = null, t.dragLanding = null }, dhtmlDragAndDropObject.prototype.addDraggableItem = function (t, e) { t.onmousedown = this.preCreateDragCopy, t.dragStarter = e, this.addDragLanding(t, e) }, dhtmlDragAndDropObject.prototype.addDragLanding = function (t, e) { t.dragLanding = e }, dhtmlDragAndDropObject.prototype.preCreateDragCopy = function (t) { return !t && !window.event || 2 != (t || event).button ? window.dhtmlDragAndDrop.waitDrag ? (window.dhtmlDragAndDrop.waitDrag = 0, document.body.onmouseup = window.dhtmlDragAndDrop.tempDOMU, document.body.onmousemove = window.dhtmlDragAndDrop.tempDOMM, !1) : (window.dhtmlDragAndDrop.dragNode && window.dhtmlDragAndDrop.stopDrag(t), window.dhtmlDragAndDrop.waitDrag = 1, window.dhtmlDragAndDrop.tempDOMU = document.body.onmouseup, window.dhtmlDragAndDrop.tempDOMM = document.body.onmousemove, window.dhtmlDragAndDrop.dragStartNode = this, window.dhtmlDragAndDrop.dragStartObject = this.dragStarter, document.body.onmouseup = window.dhtmlDragAndDrop.preCreateDragCopy, document.body.onmousemove = window.dhtmlDragAndDrop.callDrag, window.dhtmlDragAndDrop.downtime = (new Date).valueOf(), t && t.preventDefault ? (t.preventDefault(), !1) : !1) : void 0 }, dhtmlDragAndDropObject.prototype.callDrag = function (t) { if (t || (t = window.event), dragger = window.dhtmlDragAndDrop, !((new Date).valueOf() - dragger.downtime < 100)) { if (!dragger.dragNode) { if (!dragger.waitDrag) return dragger.stopDrag(t, !0); if (dragger.dragNode = dragger.dragStartObject._createDragNode(dragger.dragStartNode, t), !dragger.dragNode) return dragger.stopDrag(); dragger.dragNode.onselectstart = function () { return !1 }, dragger.gldragNode = dragger.dragNode, document.body.appendChild(dragger.dragNode), document.body.onmouseup = dragger.stopDrag, dragger.waitDrag = 0, dragger.dragNode.pWindow = window, dragger.initFrameRoute() } if (dragger.dragNode.parentNode != window.document.body && dragger.gldragNode) { var e = dragger.gldragNode; dragger.gldragNode.old && (e = dragger.gldragNode.old), e.parentNode.removeChild(e); var n = dragger.dragNode.pWindow; if (e.pWindow && e.pWindow.dhtmlDragAndDrop.lastLanding && e.pWindow.dhtmlDragAndDrop.lastLanding.dragLanding._dragOut(e.pWindow.dhtmlDragAndDrop.lastLanding), _isIE) { var i = document.createElement("Div"); i.innerHTML = dragger.dragNode.outerHTML, dragger.dragNode = i.childNodes[0] } else dragger.dragNode = dragger.dragNode.cloneNode(!0); dragger.dragNode.pWindow = window, dragger.gldragNode.old = dragger.dragNode, document.body.appendChild(dragger.dragNode), n.dhtmlDragAndDrop.dragNode = dragger.dragNode } if (dragger.dragNode.style.left = t.clientX + 15 + (dragger.fx ? -1 * dragger.fx : 0) + (document.body.scrollLeft || document.documentElement.scrollLeft) + "px", dragger.dragNode.style.top = t.clientY + 3 + (dragger.fy ? -1 * dragger.fy : 0) + (document.body.scrollTop || document.documentElement.scrollTop) + "px", t.srcElement) a = t.srcElement; else var a = t.target; dragger.checkLanding(a, t) } }, dhtmlDragAndDropObject.prototype.calculateFramePosition = function (t) {
-    if (window.name) {
-        for (var e = parent.frames[window.name].frameElement.offsetParent, n = 0, i = 0; e;)
-            n += e.offsetLeft, i += e.offsetTop, e = e.offsetParent;
-        if (parent.dhtmlDragAndDrop) {
-            var a = parent.dhtmlDragAndDrop.calculateFramePosition(1); n += 1 * a.split("_")[0], i += 1 * a.split("_")[1]
+    return this.serverProcessor = t, this.action_param = "!nativeeditor_status", this.object = null, this.updatedRows = [], this.autoUpdate = !0, this.updateMode = "cell", this._tMode = "GET", this.post_delim = "_", this._waitMode = 0, this._in_progress = {}, this._invalid = {}, this.mandatoryFields = [], this.messages = [], this.styles = {
+        updated: "font-weight:bold;",
+        inserted: "font-weight:bold;",
+        deleted: "text-decoration : line-through;",
+        invalid: "background-color:FFE0E0;",
+        invalid_cell: "border-bottom:2px solid red;",
+        error: "color:red;",
+        clear: "font-weight:normal;text-decoration:none;"
+    }, this.enableUTFencoding(!0), dhtmlxEventable(this), this
+}
+window.dhtmlx || (dhtmlx = function (t) {
+    for (var e in t) dhtmlx[e] = t[e];
+    return dhtmlx
+}), dhtmlx.extend_api = function (t, e, n) {
+    var i = window[t];
+    i && (window[t] = function (t) {
+        var n;
+        if (t && "object" == typeof t && !t.tagName) {
+            n = i.apply(this, e._init ? e._init(t) : arguments);
+            for (var a in dhtmlx) e[a] && this[e[a]](dhtmlx[a]);
+            for (var a in t) e[a] ? this[e[a]](t[a]) : 0 === a.indexOf("on") && this.attachEvent(a, t[a])
+        } else n = i.apply(this, arguments);
+        return e._patch && e._patch(this), n || this
+    }, window[t].prototype = i.prototype, n && dhtmlXHeir(window[t].prototype, n))
+}, dhtmlxAjax = {
+    get: function (t, e) {
+        var n = new dtmlXMLLoaderObject(!0);
+        return n.async = arguments.length < 3, n.waitCall = e, n.loadXML(t), n
+    },
+    post: function (t, e, n) {
+        var i = new dtmlXMLLoaderObject(!0);
+        return i.async = arguments.length < 4, i.waitCall = n, i.loadXML(t, !0, e), i
+    },
+    getSync: function (t) {
+        return this.get(t, null, !0)
+    },
+    postSync: function (t, e) {
+        return this.post(t, e, null, !0)
+    }
+}, dtmlXMLLoaderObject.count = 0, dtmlXMLLoaderObject.prototype.waitLoadFunction = function (t) {
+    var e = !0;
+    return this.check = function () {
+        if (t && t.onloadAction && (!t.xmlDoc.readyState || 4 == t.xmlDoc.readyState)) {
+            if (!e) return;
+            e = !1, dtmlXMLLoaderObject.count++, "function" == typeof t.onloadAction && t.onloadAction(t.mainObject, null, null, null, t), t.waitCall && (t.waitCall.call(this, t), t.waitCall = null)
         }
-        if (t) return n + "_" + i; this.fx = n, this.fy = i
+    }, this.check
+}, dtmlXMLLoaderObject.prototype.getXMLTopNode = function (t, e) {
+    var n;
+    if (this.xmlDoc.responseXML) {
+        var i = this.xmlDoc.responseXML.getElementsByTagName(t);
+        if (0 === i.length && -1 != t.indexOf(":")) var i = this.xmlDoc.responseXML.getElementsByTagName(t.split(":")[1]);
+        n = i[0]
+    } else n = this.xmlDoc.documentElement; if (n) return this._retry = !1, n;
+    if (!this._retry && _isIE) {
+        this._retry = !0;
+        var e = this.xmlDoc;
+        return this.loadXMLString(this.xmlDoc.responseText.replace(/^[\s]+/, ""), !0), this.getXMLTopNode(t, e)
+    }
+    return dhtmlxError.throwError("LoadXML", "Incorrect XML", [e || this.xmlDoc, this.mainObject]), document.createElement("DIV")
+}, dtmlXMLLoaderObject.prototype.loadXMLString = function (t, e) {
+    if (_isIE) this.xmlDoc = new ActiveXObject("Microsoft.XMLDOM"), this.xmlDoc.async = this.async, this.xmlDoc.onreadystatechange = function () { }, this.xmlDoc.loadXML(t);
+    else {
+        var n = new DOMParser;
+        this.xmlDoc = n.parseFromString(t, "text/xml")
+    }
+    e || (this.onloadAction && this.onloadAction(this.mainObject, null, null, null, this), this.waitCall && (this.waitCall(), this.waitCall = null))
+}, dtmlXMLLoaderObject.prototype.loadXML = function (t, e, n, i) {
+    this.rSeed && (t += (-1 != t.indexOf("?") ? "&" : "?") + "a_dhx_rSeed=" + (new Date).valueOf()), this.filePath = t, this.xmlDoc = !_isIE && window.XMLHttpRequest ? new XMLHttpRequest : new ActiveXObject("Microsoft.XMLHTTP"), this.async && (this.xmlDoc.onreadystatechange = new this.waitLoadFunction(this)), this.xmlDoc.open(e ? "POST" : "GET", t, this.async), i ? (this.xmlDoc.setRequestHeader("User-Agent", "dhtmlxRPC v0.1 (" + navigator.userAgent + ")"), this.xmlDoc.setRequestHeader("Content-type", "text/xml")) : e && this.xmlDoc.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), this.xmlDoc.setRequestHeader("X-Requested-With", "XMLHttpRequest"), this.xmlDoc.send(null || n), this.async || new this.waitLoadFunction(this)()
+}, dtmlXMLLoaderObject.prototype.destructor = function () {
+    return this._filterXPath = null, this._getAllNamedChilds = null, this._retry = null, this.async = null, this.rSeed = null, this.filePath = null, this.onloadAction = null, this.mainObject = null, this.xmlDoc = null, this.doXPath = null, this.doXPathOpera = null, this.doXSLTransToObject = null, this.doXSLTransToString = null, this.loadXML = null, this.loadXMLString = null, this.doSerialization = null, this.xmlNodeToJSON = null, this.getXMLTopNode = null, this.setXSLParamValue = null, null
+}, dtmlXMLLoaderObject.prototype.xmlNodeToJSON = function (t) {
+    for (var e = {}, n = 0; n < t.attributes.length; n++) e[t.attributes[n].name] = t.attributes[n].value;
+    e._tagvalue = t.firstChild ? t.firstChild.nodeValue : "";
+    for (var n = 0; n < t.childNodes.length; n++) {
+        var i = t.childNodes[n].tagName;
+        i && (e[i] || (e[i] = []), e[i].push(this.xmlNodeToJSON(t.childNodes[n])))
+    }
+    return e
+}, dhtmlDragAndDropObject.prototype.removeDraggableItem = function (t) {
+    t.onmousedown = null, t.dragStarter = null, t.dragLanding = null
+}, dhtmlDragAndDropObject.prototype.addDraggableItem = function (t, e) {
+    t.onmousedown = this.preCreateDragCopy, t.dragStarter = e, this.addDragLanding(t, e)
+}, dhtmlDragAndDropObject.prototype.addDragLanding = function (t, e) {
+    t.dragLanding = e
+}, dhtmlDragAndDropObject.prototype.preCreateDragCopy = function (t) {
+    return !t && !window.event || 2 != (t || event).button ? window.dhtmlDragAndDrop.waitDrag ? (window.dhtmlDragAndDrop.waitDrag = 0, document.body.onmouseup = window.dhtmlDragAndDrop.tempDOMU, document.body.onmousemove = window.dhtmlDragAndDrop.tempDOMM, !1) : (window.dhtmlDragAndDrop.dragNode && window.dhtmlDragAndDrop.stopDrag(t), window.dhtmlDragAndDrop.waitDrag = 1, window.dhtmlDragAndDrop.tempDOMU = document.body.onmouseup, window.dhtmlDragAndDrop.tempDOMM = document.body.onmousemove, window.dhtmlDragAndDrop.dragStartNode = this, window.dhtmlDragAndDrop.dragStartObject = this.dragStarter, document.body.onmouseup = window.dhtmlDragAndDrop.preCreateDragCopy, document.body.onmousemove = window.dhtmlDragAndDrop.callDrag, window.dhtmlDragAndDrop.downtime = (new Date).valueOf(), t && t.preventDefault ? (t.preventDefault(), !1) : !1) : void 0
+}, dhtmlDragAndDropObject.prototype.callDrag = function (t) {
+    t || (t = window.event);
+    var e = window.dhtmlDragAndDrop;
+    if (!((new Date).valueOf() - e.downtime < 100)) {
+        if (!e.dragNode) {
+            if (!e.waitDrag) return e.stopDrag(t, !0);
+            if (e.dragNode = e.dragStartObject._createDragNode(e.dragStartNode, t), !e.dragNode) return e.stopDrag();
+            e.dragNode.onselectstart = function () {
+                return !1
+            }, e.gldragNode = e.dragNode, document.body.appendChild(e.dragNode), document.body.onmouseup = e.stopDrag, e.waitDrag = 0, e.dragNode.pWindow = window, e.initFrameRoute()
+        }
+        if (e.dragNode.parentNode != window.document.body && e.gldragNode) {
+            var n = e.gldragNode;
+            e.gldragNode.old && (n = e.gldragNode.old), n.parentNode.removeChild(n);
+            var i = e.dragNode.pWindow;
+            if (n.pWindow && n.pWindow.dhtmlDragAndDrop.lastLanding && n.pWindow.dhtmlDragAndDrop.lastLanding.dragLanding._dragOut(n.pWindow.dhtmlDragAndDrop.lastLanding), _isIE) {
+                var a = document.createElement("Div");
+                a.innerHTML = e.dragNode.outerHTML, e.dragNode = a.childNodes[0]
+            } else e.dragNode = e.dragNode.cloneNode(!0);
+            e.dragNode.pWindow = window, e.gldragNode.old = e.dragNode, document.body.appendChild(e.dragNode), i.dhtmlDragAndDrop.dragNode = e.dragNode
+        }
+        e.dragNode.style.left = t.clientX + 15 + (e.fx ? -1 * e.fx : 0) + (document.body.scrollLeft || document.documentElement.scrollLeft) + "px", e.dragNode.style.top = t.clientY + 3 + (e.fy ? -1 * e.fy : 0) + (document.body.scrollTop || document.documentElement.scrollTop) + "px";
+        var s;
+        s = t.srcElement ? t.srcElement : t.target, e.checkLanding(s, t)
+    }
+}, dhtmlDragAndDropObject.prototype.calculateFramePosition = function (t) {
+    if (window.name) {
+        for (var e = parent.frames[window.name].frameElement.offsetParent, n = 0, i = 0; e;) n += e.offsetLeft, i += e.offsetTop, e = e.offsetParent;
+        if (parent.dhtmlDragAndDrop) {
+            var a = parent.dhtmlDragAndDrop.calculateFramePosition(1);
+            n += 1 * a.split("_")[0], i += 1 * a.split("_")[1]
+        }
+        if (t) return n + "_" + i;
+        this.fx = n, this.fy = i
     }
     return "0_0"
-}
-, dhtmlDragAndDropObject.prototype.checkLanding = function (t, e) {
+}, dhtmlDragAndDropObject.prototype.checkLanding = function (t, e) {
     t && t.dragLanding ? (this.lastLanding && this.lastLanding.dragLanding._dragOut(this.lastLanding), this.lastLanding = t, this.lastLanding = this.lastLanding.dragLanding._dragIn(this.lastLanding, this.dragStartNode, e.clientX, e.clientY, e), this.lastLanding_scr = _isIE ? e.srcElement : e.target) : t && "BODY" != t.tagName ? this.checkLanding(t.parentNode, e) : (this.lastLanding && this.lastLanding.dragLanding._dragOut(this.lastLanding, e.clientX, e.clientY, e), this.lastLanding = 0, this._onNotFound && this._onNotFound())
-}, dhtmlDragAndDropObject.prototype.stopDrag = function (t, e) { if (dragger = window.dhtmlDragAndDrop, !e) { dragger.stopFrameRoute(); var n = dragger.lastLanding; dragger.lastLanding = null, n && n.dragLanding._drag(dragger.dragStartNode, dragger.dragStartObject, n, _isIE ? event.srcElement : t.target) } dragger.lastLanding = null, dragger.dragNode && dragger.dragNode.parentNode == document.body && dragger.dragNode.parentNode.removeChild(dragger.dragNode), dragger.dragNode = 0, dragger.gldragNode = 0, dragger.fx = 0, dragger.fy = 0, dragger.dragStartNode = 0, dragger.dragStartObject = 0, document.body.onmouseup = dragger.tempDOMU, document.body.onmousemove = dragger.tempDOMM, dragger.tempDOMU = null, dragger.tempDOMM = null, dragger.waitDrag = 0 }, dhtmlDragAndDropObject.prototype.stopFrameRoute = function (t) { t && window.dhtmlDragAndDrop.stopDrag(1, 1); for (var e = 0; e < window.frames.length; e++) try { window.frames[e] != t && window.frames[e].dhtmlDragAndDrop && window.frames[e].dhtmlDragAndDrop.stopFrameRoute(window) } catch (n) { } try { parent.dhtmlDragAndDrop && parent != window && parent != t && parent.dhtmlDragAndDrop.stopFrameRoute(window) } catch (n) { } }, dhtmlDragAndDropObject.prototype.initFrameRoute = function (t, e) { t && (window.dhtmlDragAndDrop.preCreateDragCopy(), window.dhtmlDragAndDrop.dragStartNode = t.dhtmlDragAndDrop.dragStartNode, window.dhtmlDragAndDrop.dragStartObject = t.dhtmlDragAndDrop.dragStartObject, window.dhtmlDragAndDrop.dragNode = t.dhtmlDragAndDrop.dragNode, window.dhtmlDragAndDrop.gldragNode = t.dhtmlDragAndDrop.dragNode, window.document.body.onmouseup = window.dhtmlDragAndDrop.stopDrag, window.waitDrag = 0, !_isIE && e && (!_isFF || 1.8 > _FFrv) && window.dhtmlDragAndDrop.calculateFramePosition()); try { parent.dhtmlDragAndDrop && parent != window && parent != t && parent.dhtmlDragAndDrop.initFrameRoute(window) } catch (n) { } for (var i = 0; i < window.frames.length; i++) try { window.frames[i] != t && window.frames[i].dhtmlDragAndDrop && window.frames[i].dhtmlDragAndDrop.initFrameRoute(window, !t || e ? 1 : 0) } catch (n) { } }, _isFF = !1, _isIE = !1, _isOpera = !1, _isKHTML = !1, _isMacOS = !1, _isChrome = !1, _FFrv = !1, _KHTMLrv = !1, _OperaRv = !1, -1 != navigator.userAgent.indexOf("Macintosh") && (_isMacOS = !0), navigator.userAgent.toLowerCase().indexOf("chrome") > -1 && (_isChrome = !0), -1 != navigator.userAgent.indexOf("Safari") || -1 != navigator.userAgent.indexOf("Konqueror") ? (_KHTMLrv = parseFloat(navigator.userAgent.substr(navigator.userAgent.indexOf("Safari") + 7, 5)), _KHTMLrv > 525 ? (_isFF = !0, _FFrv = 1.9) : _isKHTML = !0) : -1 != navigator.userAgent.indexOf("Opera") ? (_isOpera = !0, _OperaRv = parseFloat(navigator.userAgent.substr(navigator.userAgent.indexOf("Opera") + 6, 3))) : -1 != navigator.appName.indexOf("Microsoft") ? (_isIE = !0, -1 == navigator.appVersion.indexOf("MSIE 8.0") && -1 == navigator.appVersion.indexOf("MSIE 9.0") && -1 == navigator.appVersion.indexOf("MSIE 10.0") || "BackCompat" == document.compatMode || (_isIE = 8)) : (_isFF = !0, _FFrv = parseFloat(navigator.userAgent.split("rv:")[1])), dtmlXMLLoaderObject.prototype.doXPath = function (t, e, n, i) { if (_isKHTML || !_isIE && !window.XPathResult) return this.doXPathOpera(t, e); if (_isIE) return e || (e = this.xmlDoc.nodeName ? this.xmlDoc : this.xmlDoc.responseXML), e || dhtmlxError.throwError("LoadXML", "Incorrect XML", [e || this.xmlDoc, this.mainObject]), null != n && e.setProperty("SelectionNamespaces", "xmlns:xsl='" + n + "'"), "single" == i ? e.selectSingleNode(t) : e.selectNodes(t) || new Array(0); var a = e; e || (e = this.xmlDoc.nodeName ? this.xmlDoc : this.xmlDoc.responseXML), e || dhtmlxError.throwError("LoadXML", "Incorrect XML", [e || this.xmlDoc, this.mainObject]), -1 != e.nodeName.indexOf("document") ? a = e : (a = e, e = e.ownerDocument); var s = XPathResult.ANY_TYPE; "single" == i && (s = XPathResult.FIRST_ORDERED_NODE_TYPE); var r = new Array, o = e.evaluate(t, a, function () { return n }, s, null); if (s == XPathResult.FIRST_ORDERED_NODE_TYPE) return o.singleNodeValue; for (var d = o.iterateNext() ; d;) r[r.length] = d, d = o.iterateNext(); return r }, _dhtmlxError.prototype.catchError = function (t, e) { this.catches[t] = e }, _dhtmlxError.prototype.throwError = function (t, e, n) { return this.catches[t] ? this.catches[t](t, e, n) : this.catches.ALL ? this.catches.ALL(t, e, n) : (alert("Error type: " + arguments[0] + "\nDescription: " + arguments[1]), null) }, window.dhtmlxError = new _dhtmlxError, dtmlXMLLoaderObject.prototype.doXPathOpera = function (t, e) { var n = t.replace(/[\/]+/gi, "/").split("/"), i = null, a = 1; if (!n.length) return []; if ("." == n[0]) i = [e]; else { if ("" != n[0]) return []; i = (this.xmlDoc.responseXML || this.xmlDoc).getElementsByTagName(n[a].replace(/\[[^\]]*\]/g, "")), a++ } for (a; a < n.length; a++) i = this._getAllNamedChilds(i, n[a]); return -1 != n[a - 1].indexOf("[") && (i = this._filterXPath(i, n[a - 1])), i }, dtmlXMLLoaderObject.prototype._filterXPath = function (t, e) { for (var n = new Array, e = e.replace(/[^\[]*\[\@/g, "").replace(/[\[\]\@]*/g, ""), i = 0; i < t.length; i++) t[i].getAttribute(e) && (n[n.length] = t[i]); return n }, dtmlXMLLoaderObject.prototype._getAllNamedChilds = function (t, e) { var n = new Array; _isKHTML && (e = e.toUpperCase()); for (var i = 0; i < t.length; i++) for (var a = 0; a < t[i].childNodes.length; a++) _isKHTML ? t[i].childNodes[a].tagName && t[i].childNodes[a].tagName.toUpperCase() == e && (n[n.length] = t[i].childNodes[a]) : t[i].childNodes[a].tagName == e && (n[n.length] = t[i].childNodes[a]); return n }, dtmlXMLLoaderObject.prototype.xslDoc = null, dtmlXMLLoaderObject.prototype.setXSLParamValue = function (t, e, n) { n || (n = this.xslDoc), n.responseXML && (n = n.responseXML); var i = this.doXPath("/xsl:stylesheet/xsl:variable[@name='" + t + "']", n, "http://www.w3.org/1999/XSL/Transform", "single"); null != i && (i.firstChild.nodeValue = e) }, dtmlXMLLoaderObject.prototype.doXSLTransToObject = function (t, e) { if (t || (t = this.xslDoc), t.responseXML && (t = t.responseXML), e || (e = this.xmlDoc), e.responseXML && (e = e.responseXML), _isIE) { var n = new ActiveXObject("Msxml2.DOMDocument.3.0"); try { e.transformNodeToObject(t, n) } catch (i) { n = e.transformNode(t) } } else { this.XSLProcessor || (this.XSLProcessor = new XSLTProcessor, this.XSLProcessor.importStylesheet(t)); var n = this.XSLProcessor.transformToDocument(e) } return n }, dtmlXMLLoaderObject.prototype.doXSLTransToString = function (t, e) { var n = this.doXSLTransToObject(t, e); return "string" == typeof n ? n : this.doSerialization(n) }, dtmlXMLLoaderObject.prototype.doSerialization = function (t) { if (t || (t = this.xmlDoc), t.responseXML && (t = t.responseXML), _isIE) return t.xml; var e = new XMLSerializer; return e.serializeToString(t) }, dhtmlxEventable = function (obj) { obj.attachEvent = function (t, e, n) { return t = "ev_" + t.toLowerCase(), this[t] || (this[t] = new this.eventCatcher(n || this)), t + ":" + this[t].addEvent(e) }, obj.callEvent = function (t, e) { return t = "ev_" + t.toLowerCase(), this[t] ? this[t].apply(this, e) : !0 }, obj.checkEvent = function (t) { return !!this["ev_" + t.toLowerCase()] }, obj.eventCatcher = function (obj) { var dhx_catch = [], z = function () { for (var t = !0, e = 0; e < dhx_catch.length; e++) if (null != dhx_catch[e]) { var n = dhx_catch[e].apply(obj, arguments); t = t && n } return t }; return z.addEvent = function (ev) { return "function" != typeof ev && (ev = eval(ev)), ev ? dhx_catch.push(ev) - 1 : !1 }, z.removeEvent = function (t) { dhx_catch[t] = null }, z }, obj.detachEvent = function (t) { if (0 != t) { var e = t.split(":"); this[e[0]].removeEvent(e[1]) } }, obj.detachAllEvents = function () { for (var t in this) 0 == t.indexOf("ev_") && (this.detachEvent(t), this[t] = null) }, obj = null }, window.dhtmlx || (window.dhtmlx = {}), function () { function t(t, e) { var i = t.callback; n(!1), t.box.parentNode.removeChild(t.box), c = t.box = null, i && i(e) } function e(e) { if (c) { e = e || event; var n = e.which || event.keyCode; return dhtmlx.message.keyboard && ((13 == n || 32 == n) && t(c, !0), 27 == n && t(c, !1)), e.preventDefault && e.preventDefault(), !(e.cancelBubble = !0) } } function n(t) { n.cover || (n.cover = document.createElement("DIV"), n.cover.onkeydown = e, n.cover.className = "dhx_modal_cover", document.body.appendChild(n.cover)), document.body.scrollHeight, n.cover.style.display = t ? "inline-block" : "none" } function i(t, e) { var n = "dhtmlx_" + t.toLowerCase().replace(/ /g, "_") + "_button"; return "<div class='dhtmlx_popup_button " + n + "' result='" + e + "' ><div>" + t + "</div></div>" } function a(t) { g.area || (g.area = document.createElement("DIV"), g.area.className = "dhtmlx_message_area", g.area.style[g.position] = "5px", document.body.appendChild(g.area)), g.hide(t.id); var e = document.createElement("DIV"); return e.innerHTML = "<div>" + t.text + "</div>", e.className = "dhtmlx-info dhtmlx-" + t.type, e.onclick = function () { g.hide(t.id), t = null }, "bottom" == g.position && g.area.firstChild ? g.area.insertBefore(e, g.area.firstChild) : g.area.appendChild(e), t.expire > 0 && (g.timers[t.id] = window.setTimeout(function () { g.hide(t.id) }, t.expire)), g.pull[t.id] = e, e = null, t.id } function s(e, n, a) { var s = document.createElement("DIV"); s.className = " dhtmlx_modal_box dhtmlx-" + e.type, s.setAttribute("dhxbox", 1); var r = ""; if (e.width && (s.style.width = e.width), e.height && (s.style.height = e.height), e.title && (r += '<div class="dhtmlx_popup_title">' + e.title + "</div>"), r += '<div class="dhtmlx_popup_text"><span>' + (e.content ? "" : e.text) + '</span></div><div  class="dhtmlx_popup_controls">', n && (r += i(e.ok || "OK", !0)), a && (r += i(e.cancel || "Cancel", !1)), e.buttons) for (var o = 0; o < e.buttons.length; o++) r += i(e.buttons[o], o); if (r += "</div>", s.innerHTML = r, e.content) { var d = e.content; "string" == typeof d && (d = document.getElementById(d)), "none" == d.style.display && (d.style.display = ""), s.childNodes[e.title ? 1 : 0].appendChild(d) } return s.onclick = function (n) { n = n || event; var i = n.target || n.srcElement; if (i.className || (i = i.parentNode), "dhtmlx_popup_button" == i.className.split(" ")[0]) { var a = i.getAttribute("result"); a = "true" == a || ("false" == a ? !1 : a), t(e, a) } }, e.box = s, (n || a) && (c = e), s } function r(t, i, a) { var r = t.tagName ? t : s(t, i, a); t.hidden || n(!0), document.body.appendChild(r); var o = Math.abs(Math.floor(((window.innerWidth || document.documentElement.offsetWidth) - r.offsetWidth) / 2)), d = Math.abs(Math.floor(((window.innerHeight || document.documentElement.offsetHeight) - r.offsetHeight) / 2)); return r.style.top = "top" == t.position ? "-3px" : d + "px", r.style.left = o + "px", r.onkeydown = e, r.focus(), t.hidden && dhtmlx.modalbox.hide(r), r } function o(t) { return r(t, !0, !1) } function d(t) { return r(t, !0, !0) } function l(t) { return r(t) } function h(t, e, n) { return "object" != typeof t && ("function" == typeof e && (n = e, e = ""), t = { text: t, type: e, callback: n }), t } function _(t, e, n, i) { return "object" != typeof t && (t = { text: t, type: e, expire: n, id: i }), t.id = t.id || g.uid(), t.expire = t.expire || g.expire, t } var c = null; document.attachEvent ? document.attachEvent("onkeydown", e) : document.addEventListener("keydown", e, !0), dhtmlx.alert = function () { var t = h.apply(this, arguments); return t.type = t.type || "confirm", o(t) }, dhtmlx.confirm = function () { var t = h.apply(this, arguments); return t.type = t.type || "alert", d(t) }, dhtmlx.modalbox = function () { var t = h.apply(this, arguments); return t.type = t.type || "alert", l(t) }, dhtmlx.modalbox.hide = function (t) { for (; t && t.getAttribute && !t.getAttribute("dhxbox") ;) t = t.parentNode; t && (t.parentNode.removeChild(t), n(!1)) }; var g = dhtmlx.message = function (t) { t = _.apply(this, arguments), t.type = t.type || "info"; var e = t.type.split("-")[0]; switch (e) { case "alert": return o(t); case "confirm": return d(t); case "modalbox": return l(t); default: return a(t) } }; g.seed = (new Date).valueOf(), g.uid = function () { return g.seed++ }, g.expire = 4e3, g.keyboard = !0, g.position = "top", g.pull = {}, g.timers = {}, g.hideAll = function () { for (var t in g.pull) g.hide(t) }, g.hide = function (t) { var e = g.pull[t]; e && e.parentNode && (window.setTimeout(function () { e.parentNode.removeChild(e), e = null }, 2e3), e.className += " hidden", g.timers[t] && window.clearTimeout(g.timers[t]), delete g.pull[t]) } }(), gantt = { version: "2.0.0" }, dhtmlxEventable = function (obj) { obj._silent_mode = !1, obj._silentStart = function () { this._silent_mode = !0 }, obj._silentEnd = function () { this._silent_mode = !1 }, obj.attachEvent = function (t, e, n) { return t = "ev_" + t.toLowerCase(), this[t] || (this[t] = new this._eventCatcher(n || this)), t + ":" + this[t].addEvent(e) }, obj.callEvent = function (t, e) { return this._silent_mode ? !0 : (t = "ev_" + t.toLowerCase(), this[t] ? this[t].apply(this, e) : !0) }, obj.checkEvent = function (t) { return !!this["ev_" + t.toLowerCase()] }, obj._eventCatcher = function (obj) { var dhx_catch = [], z = function () { for (var t = !0, e = 0; e < dhx_catch.length; e++) if (null != dhx_catch[e]) { var n = dhx_catch[e].apply(obj, arguments); t = t && n } return t }; return z.addEvent = function (ev) { return "function" != typeof ev && (ev = eval(ev)), ev ? dhx_catch.push(ev) - 1 : !1 }, z.removeEvent = function (t) { dhx_catch[t] = null }, z }, obj.detachEvent = function (t) { if (0 != t) { var e = t.split(":"); this[e[0]].removeEvent(e[1]) } }, obj.detachAllEvents = function () { for (var t in this) 0 == t.indexOf("ev_") && delete this[t] }, obj = null }, dhtmlx.copy = function (t) { var e, n, i; if (t && "object" == typeof t) { for (i = {}, n = [Array, Date, Number, String, Boolean], e = 0; e < n.length; e++) t instanceof n[e] && (i = e ? new n[e](t) : new n[e]); for (e in t) Object.prototype.hasOwnProperty.apply(t, [e]) && (i[e] = dhtmlx.copy(t[e])) } return i || t }, dhtmlx.mixin = function (t, e, n) { for (var i in e) (!t[i] || n) && (t[i] = e[i]); return t }, dhtmlx.defined = function (t) { return "undefined" != typeof t }, dhtmlx.uid = function () { return this._seed || (this._seed = (new Date).valueOf()), this._seed++, this._seed }, dhtmlx.bind = function (t, e) { return function () { return t.apply(e, arguments) } }, gantt._get_position = function (t) { if (t.getBoundingClientRect) { var e = t.getBoundingClientRect(), n = document.body, i = document.documentElement, a = window.pageYOffset || i.scrollTop || n.scrollTop, s = window.pageXOffset || i.scrollLeft || n.scrollLeft, r = i.clientTop || n.clientTop || 0, o = i.clientLeft || n.clientLeft || 0, d = e.top + a - r, l = e.left + s - o; return { y: Math.round(d), x: Math.round(l), width: t.offsetHeight, height: t.offsetWidth } } for (var d = 0, l = 0; t;) d += parseInt(t.offsetTop, 10), l += parseInt(t.offsetLeft, 10), t = t.offsetParent; return { y: d, x: l, width: t.offsetHeight, height: t.offsetWidth } }, gantt._detectScrollSize = function () { var t = document.createElement("div"); t.style.cssText = "visibility:hidden;position:absolute;left:-1000px;width:100px;padding:0px;margin:0px;height:110px;min-height:100px;overflow-y:scroll;", document.body.appendChild(t); var e = t.offsetWidth - t.clientWidth; return document.body.removeChild(t), e }, dhtmlxEventable(gantt), gantt._click = {}, gantt._dbl_click = {}, gantt._context_menu = {}, gantt._on_click = function (t) { t = t || window.event; var e = t.target || t.srcElement, n = gantt.locate(t), i = gantt._find_ev_handler(t, e, gantt._click, n); if (i) if (null !== n) { var a = !gantt.checkEvent("onTaskClick") || gantt.callEvent("onTaskClick", [n, t]); a && gantt.config.select_task && gantt.selectTask(n) } else gantt.callEvent("onEmptyClick", [t]) }, gantt._on_contextmenu = function (t) { t = t || window.event; var e = t.target || t.srcElement, n = gantt.locate(e), i = gantt.locate(e, gantt.config.link_attribute), a = !gantt.checkEvent("onContextMenu") || gantt.callEvent("onContextMenu", [n, i, t]); return a || t.preventDefault(), a }, gantt._find_ev_handler = function (t, e, n, i) { for (var a = !0; e && e.parentNode;) { var s = e.className; if (s) { s = s.split(" "); for (var r = 0; r < s.length; r++) s[r] && n[s[r]] && (a = n[s[r]].call(gantt, t, i, e), a = !("undefined" != typeof a && a !== !0)) } e = e.parentNode } return a }, gantt._on_dblclick = function (t) { t = t || window.event; var e = t.target || t.srcElement, n = gantt.locate(t), i = gantt._find_ev_handler(t, e, gantt._dbl_click, n); if (i && null !== n) { var a = !gantt.checkEvent("onTaskDblClick") || gantt.callEvent("onTaskDblClick", [n, t]); a && gantt.config.details_on_dblclick && gantt.showLightbox(n) } }, gantt._on_mousemove = function (t) { if (gantt.checkEvent("onMouseMove")) { var e = gantt.locate(t); gantt._last_move_event = t, gantt.callEvent("onMouseMove", [e, t]) } }, dhtmlxDnD.prototype = { dragStart: function (t, e) { this.config = { obj: t, marker: null, started: !1, pos: this.getPosition(e), sensitivity: 4 }, this._settings && dhtmlx.mixin(this.config, this._settings, !0); var n = dhtmlx.bind(function (e) { return this.dragMove(t, e) }, this); dhtmlx.bind(function (e) { return this.dragScroll(t, e) }, this); var i = dhtmlx.bind(function (t) { return dhtmlx.defined(this.config.updates_per_second) && !gantt._checkTimeout(this, this.config.updates_per_second) ? !0 : n(t) }, this), a = dhtmlx.bind(function () { return dhtmlxDetachEvent(document.body, "mousemove", i), dhtmlxDetachEvent(document.body, "mouseup", a), this.dragEnd(t) }, this); dhtmlxEvent(document.body, "mousemove", i), dhtmlxEvent(document.body, "mouseup", a), document.body.className += " gantt_noselect" }, dragMove: function (t, e) { if (!this.config.marker && !this.config.started) { var n = this.getPosition(e), i = n.x - this.config.pos.x, a = n.y - this.config.pos.y, s = Math.sqrt(Math.pow(Math.abs(i), 2) + Math.pow(Math.abs(a), 2)); if (s > this.config.sensitivity) { if (this.config.started = !0, this.config.ignore = !1, this.callEvent("onBeforeDragStart", [t, e]) === !1) return this.config.ignore = !0, !0; var r = this.config.marker = document.createElement("div"); r.className = "gantt_drag_marker", r.innerHTML = "Dragging object", document.body.appendChild(r), this.callEvent("onAfterDragStart", [t, e]) } else this.config.ignore = !0 } this.config.ignore || (e.pos = this.getPosition(e), this.config.marker.style.left = e.pos.x + "px", this.config.marker.style.top = e.pos.y + "px", this.callEvent("onDragMove", [t, e])) }, dragEnd: function () { this.config.marker && (this.config.marker.parentNode.removeChild(this.config.marker), this.config.marker = null, this.callEvent("onDragEnd", [])), document.body.className = document.body.className.replace(" gantt_noselect", "") }, getPosition: function (t) { var e = 0, n = 0; return t = t || window.event, t.pageX || t.pageY ? (e = t.pageX, n = t.pageY) : (t.clientX || t.clientY) && (e = t.clientX + document.body.scrollLeft + document.documentElement.scrollLeft, n = t.clientY + document.body.scrollTop + document.documentElement.scrollTop), { x: e, y: n } } }, gantt._init_grid = function () {
-    this._click.gantt_close = dhtmlx.bind(function (t, e) { this.close(e) }, this), this._click.gantt_open = dhtmlx.bind(function (t, e) { this.open(e) }, this), this._click.gantt_row = dhtmlx.bind(
-        function (t, e, n) {
-            if (null !== e) {
-                var i = this.getTaskNode(e);
-                var a = Math.max(i.offsetLeft - this.config.task_scroll_offset, 0);
-                this._scroll_task_area(a), this.callEvent("onTaskRowClick", [e, n])
+}, dhtmlDragAndDropObject.prototype.stopDrag = function (t, e) {
+    var n = window.dhtmlDragAndDrop;
+    if (!e) {
+        n.stopFrameRoute();
+        var i = n.lastLanding;
+        n.lastLanding = null, i && i.dragLanding._drag(n.dragStartNode, n.dragStartObject, i, _isIE ? event.srcElement : t.target)
+    }
+    n.lastLanding = null, n.dragNode && n.dragNode.parentNode == document.body && n.dragNode.parentNode.removeChild(n.dragNode), n.dragNode = 0, n.gldragNode = 0, n.fx = 0, n.fy = 0, n.dragStartNode = 0, n.dragStartObject = 0, document.body.onmouseup = n.tempDOMU, document.body.onmousemove = n.tempDOMM, n.tempDOMU = null, n.tempDOMM = null, n.waitDrag = 0
+}, dhtmlDragAndDropObject.prototype.stopFrameRoute = function (t) {
+    t && window.dhtmlDragAndDrop.stopDrag(1, 1);
+    for (var e = 0; e < window.frames.length; e++) try {
+        window.frames[e] != t && window.frames[e].dhtmlDragAndDrop && window.frames[e].dhtmlDragAndDrop.stopFrameRoute(window)
+    } catch (n) { }
+    try {
+        parent.dhtmlDragAndDrop && parent != window && parent != t && parent.dhtmlDragAndDrop.stopFrameRoute(window)
+    } catch (n) { }
+}, dhtmlDragAndDropObject.prototype.initFrameRoute = function (t, e) {
+    t && (window.dhtmlDragAndDrop.preCreateDragCopy(), window.dhtmlDragAndDrop.dragStartNode = t.dhtmlDragAndDrop.dragStartNode, window.dhtmlDragAndDrop.dragStartObject = t.dhtmlDragAndDrop.dragStartObject, window.dhtmlDragAndDrop.dragNode = t.dhtmlDragAndDrop.dragNode, window.dhtmlDragAndDrop.gldragNode = t.dhtmlDragAndDrop.dragNode, window.document.body.onmouseup = window.dhtmlDragAndDrop.stopDrag, window.waitDrag = 0, !_isIE && e && (!_isFF || 1.8 > _FFrv) && window.dhtmlDragAndDrop.calculateFramePosition());
+    try {
+        parent.dhtmlDragAndDrop && parent != window && parent != t && parent.dhtmlDragAndDrop.initFrameRoute(window)
+    } catch (n) { }
+    for (var i = 0; i < window.frames.length; i++) try {
+        window.frames[i] != t && window.frames[i].dhtmlDragAndDrop && window.frames[i].dhtmlDragAndDrop.initFrameRoute(window, !t || e ? 1 : 0)
+    } catch (n) { }
+}, _isFF = !1, _isIE = !1, _isOpera = !1, _isKHTML = !1, _isMacOS = !1, _isChrome = !1, _FFrv = !1, _KHTMLrv = !1, _OperaRv = !1, -1 != navigator.userAgent.indexOf("Macintosh") && (_isMacOS = !0), navigator.userAgent.toLowerCase().indexOf("chrome") > -1 && (_isChrome = !0), -1 != navigator.userAgent.indexOf("Safari") || -1 != navigator.userAgent.indexOf("Konqueror") ? (_KHTMLrv = parseFloat(navigator.userAgent.substr(navigator.userAgent.indexOf("Safari") + 7, 5)), _KHTMLrv > 525 ? (_isFF = !0, _FFrv = 1.9) : _isKHTML = !0) : -1 != navigator.userAgent.indexOf("Opera") ? (_isOpera = !0, _OperaRv = parseFloat(navigator.userAgent.substr(navigator.userAgent.indexOf("Opera") + 6, 3))) : -1 != navigator.appName.indexOf("Microsoft") ? (_isIE = !0, -1 == navigator.appVersion.indexOf("MSIE 8.0") && -1 == navigator.appVersion.indexOf("MSIE 9.0") && -1 == navigator.appVersion.indexOf("MSIE 10.0") || "BackCompat" == document.compatMode || (_isIE = 8)) : "Netscape" == navigator.appName && -1 != navigator.userAgent.indexOf("Trident") ? _isIE = 8 : (_isFF = !0, _FFrv = parseFloat(navigator.userAgent.split("rv:")[1])), dtmlXMLLoaderObject.prototype.doXPath = function (t, e, n, i) {
+    if (_isKHTML || !_isIE && !window.XPathResult) return this.doXPathOpera(t, e);
+    if (_isIE) return e || (e = this.xmlDoc.nodeName ? this.xmlDoc : this.xmlDoc.responseXML), e || dhtmlxError.throwError("LoadXML", "Incorrect XML", [e || this.xmlDoc, this.mainObject]), n && e.setProperty("SelectionNamespaces", "xmlns:xsl='" + n + "'"), "single" == i ? e.selectSingleNode(t) : e.selectNodes(t) || new Array(0);
+    var a = e;
+    e || (e = this.xmlDoc.nodeName ? this.xmlDoc : this.xmlDoc.responseXML), e || dhtmlxError.throwError("LoadXML", "Incorrect XML", [e || this.xmlDoc, this.mainObject]), -1 != e.nodeName.indexOf("document") ? a = e : (a = e, e = e.ownerDocument);
+    var s = XPathResult.ANY_TYPE;
+    "single" == i && (s = XPathResult.FIRST_ORDERED_NODE_TYPE);
+    var r = [],
+        o = e.evaluate(t, a, function () {
+            return n
+        }, s, null);
+    if (s == XPathResult.FIRST_ORDERED_NODE_TYPE) return o.singleNodeValue;
+    for (var d = o.iterateNext() ; d;) r[r.length] = d, d = o.iterateNext();
+    return r
+}, _dhtmlxError.prototype.catchError = function (t, e) {
+    this.catches[t] = e
+}, _dhtmlxError.prototype.throwError = function (t, e, n) {
+    return this.catches[t] ? this.catches[t](t, e, n) : this.catches.ALL ? this.catches.ALL(t, e, n) : (window.alert("Error type: " + arguments[0] + "\nDescription: " + arguments[1]), null)
+}, window.dhtmlxError = new _dhtmlxError, dtmlXMLLoaderObject.prototype.doXPathOpera = function (t, e) {
+    var n = t.replace(/[\/]+/gi, "/").split("/"),
+        i = null,
+        a = 1;
+    if (!n.length) return [];
+    if ("." == n[0]) i = [e];
+    else {
+        if ("" !== n[0]) return [];
+        i = (this.xmlDoc.responseXML || this.xmlDoc).getElementsByTagName(n[a].replace(/\[[^\]]*\]/g, "")), a++
+    }
+    for (a; a < n.length; a++) i = this._getAllNamedChilds(i, n[a]);
+    return -1 != n[a - 1].indexOf("[") && (i = this._filterXPath(i, n[a - 1])), i
+}, dtmlXMLLoaderObject.prototype._filterXPath = function (t, e) {
+    for (var n = [], e = e.replace(/[^\[]*\[\@/g, "").replace(/[\[\]\@]*/g, ""), i = 0; i < t.length; i++) t[i].getAttribute(e) && (n[n.length] = t[i]);
+    return n
+}, dtmlXMLLoaderObject.prototype._getAllNamedChilds = function (t, e) {
+    var n = [];
+    _isKHTML && (e = e.toUpperCase());
+    for (var i = 0; i < t.length; i++)
+        for (var a = 0; a < t[i].childNodes.length; a++) _isKHTML ? t[i].childNodes[a].tagName && t[i].childNodes[a].tagName.toUpperCase() == e && (n[n.length] = t[i].childNodes[a]) : t[i].childNodes[a].tagName == e && (n[n.length] = t[i].childNodes[a]);
+    return n
+}, dtmlXMLLoaderObject.prototype.xslDoc = null, dtmlXMLLoaderObject.prototype.setXSLParamValue = function (t, e, n) {
+    n || (n = this.xslDoc), n.responseXML && (n = n.responseXML);
+    var i = this.doXPath("/xsl:stylesheet/xsl:variable[@name='" + t + "']", n, "http://www.w3.org/1999/XSL/Transform", "single");
+    i && (i.firstChild.nodeValue = e)
+}, dtmlXMLLoaderObject.prototype.doXSLTransToObject = function (t, e) {
+    t || (t = this.xslDoc), t.responseXML && (t = t.responseXML), e || (e = this.xmlDoc), e.responseXML && (e = e.responseXML);
+    var n;
+    if (_isIE) {
+        n = new ActiveXObject("Msxml2.DOMDocument.3.0");
+        try {
+            e.transformNodeToObject(t, n)
+        } catch (i) {
+            n = e.transformNode(t)
+        }
+    } else this.XSLProcessor || (this.XSLProcessor = new XSLTProcessor, this.XSLProcessor.importStylesheet(t)), n = this.XSLProcessor.transformToDocument(e);
+    return n
+}, dtmlXMLLoaderObject.prototype.doXSLTransToString = function (t, e) {
+    var n = this.doXSLTransToObject(t, e);
+    return "string" == typeof n ? n : this.doSerialization(n)
+}, dtmlXMLLoaderObject.prototype.doSerialization = function (t) {
+    if (t || (t = this.xmlDoc), t.responseXML && (t = t.responseXML), _isIE) return t.xml;
+    var e = new XMLSerializer;
+    return e.serializeToString(t)
+}, dhtmlxEventable = function (obj) {
+    obj.attachEvent = function (t, e, n) {
+        return t = "ev_" + t.toLowerCase(), this[t] || (this[t] = new this.eventCatcher(n || this)), t + ":" + this[t].addEvent(e)
+    }, obj.callEvent = function (t, e) {
+        return t = "ev_" + t.toLowerCase(), this[t] ? this[t].apply(this, e) : !0
+    }, obj.checkEvent = function (t) {
+        return !!this["ev_" + t.toLowerCase()]
+    }, obj.eventCatcher = function (obj) {
+        var dhx_catch = [],
+            z = function () {
+                for (var t = !0, e = 0; e < dhx_catch.length; e++)
+                    if (dhx_catch[e]) {
+                        var n = dhx_catch[e].apply(obj, arguments);
+                        t = t && n
+                    }
+                return t
+            };
+        return z.addEvent = function (ev) {
+            return "function" != typeof ev && (ev = eval(ev)), ev ? dhx_catch.push(ev) - 1 : !1
+        }, z.removeEvent = function (t) {
+            dhx_catch[t] = null
+        }, z
+    }, obj.detachEvent = function (t) {
+        if (t) {
+            var e = t.split(":");
+            this[e[0]].removeEvent(e[1])
+        }
+    }, obj.detachAllEvents = function () {
+        for (var t in this) 0 === t.indexOf("ev_") && (this.detachEvent(t), this[t] = null)
+    }, obj = null
+}, window.dhtmlx || (window.dhtmlx = {}),
+function () {
+    function t(t, e) {
+        var i = t.callback;
+        n(!1), t.box.parentNode.removeChild(t.box), c = t.box = null, i && i(e)
+    }
+
+    function e(e) {
+        if (c) {
+            e = e || event;
+            var n = e.which || event.keyCode;
+            return dhtmlx.message.keyboard && ((13 == n || 32 == n) && t(c, !0), 27 == n && t(c, !1)), e.preventDefault && e.preventDefault(), !(e.cancelBubble = !0)
+        }
+    }
+
+    function n(t) {
+        n.cover || (n.cover = document.createElement("DIV"), n.cover.onkeydown = e, n.cover.className = "dhx_modal_cover", document.body.appendChild(n.cover)), document.body.scrollHeight, n.cover.style.display = t ? "inline-block" : "none"
+    }
+
+    function i(t, e) {
+        var n = "dhtmlx_" + t.toLowerCase().replace(/ /g, "_") + "_button";
+        return "<div class='dhtmlx_popup_button " + n + "' result='" + e + "' ><div>" + t + "</div></div>"
+    }
+
+    function a(t) {
+        g.area || (g.area = document.createElement("DIV"), g.area.className = "dhtmlx_message_area", g.area.style[g.position] = "5px", document.body.appendChild(g.area)), g.hide(t.id);
+        var e = document.createElement("DIV");
+        return e.innerHTML = "<div>" + t.text + "</div>", e.className = "dhtmlx-info dhtmlx-" + t.type, e.onclick = function () {
+            g.hide(t.id), t = null
+        }, "bottom" == g.position && g.area.firstChild ? g.area.insertBefore(e, g.area.firstChild) : g.area.appendChild(e), t.expire > 0 && (g.timers[t.id] = window.setTimeout(function () {
+            g.hide(t.id)
+        }, t.expire)), g.pull[t.id] = e, e = null, t.id
+    }
+
+    function s(e, n, a) {
+        var s = document.createElement("DIV");
+        s.className = " dhtmlx_modal_box dhtmlx-" + e.type, s.setAttribute("dhxbox", 1);
+        var r = "";
+        if (e.width && (s.style.width = e.width), e.height && (s.style.height = e.height), e.title && (r += '<div class="dhtmlx_popup_title">' + e.title + "</div>"), r += '<div class="dhtmlx_popup_text"><span>' + (e.content ? "" : e.text) + '</span></div><div  class="dhtmlx_popup_controls">', n && (r += i(e.ok || "OK", !0)), a && (r += i(e.cancel || "Cancel", !1)), e.buttons)
+            for (var o = 0; o < e.buttons.length; o++) r += i(e.buttons[o], o);
+        if (r += "</div>", s.innerHTML = r, e.content) {
+            var d = e.content;
+            "string" == typeof d && (d = document.getElementById(d)), "none" == d.style.display && (d.style.display = ""), s.childNodes[e.title ? 1 : 0].appendChild(d)
+        }
+        return s.onclick = function (n) {
+            n = n || event;
+            var i = n.target || n.srcElement;
+            if (i.className || (i = i.parentNode), "dhtmlx_popup_button" == i.className.split(" ")[0]) {
+                var a = i.getAttribute("result");
+                a = "true" == a || ("false" == a ? !1 : a), t(e, a)
             }
-        }, this), this._click.gantt_grid_head_cell = dhtmlx.bind(function (t, e, n) { var i = n.getAttribute("column_id"); if (this.callEvent("onGridHeaderClick", [i, t])) if ("add" == i) this._click.gantt_add(t, 0); else if (this.config.sort) { var a = this._sort && this._sort.direction && this._sort.name == i ? this._sort.direction : "desc"; a = "desc" == a ? "asc" : "desc", this._sort = { name: i, direction: a }, this._render_grid_header(), this.sort(i, "desc" == a) } }, this), !this.config.sort && this.config.order_branch && this._init_dnd(), this._click.gantt_add = dhtmlx.bind(function (t, e) { var n = e ? this.getTask(e) : !1, i = ""; if (n) i = n.start_date; else { var a = this._order[0]; i = a ? this.getTask(a).start_date : this.getState().min_date } n && (n.$open = !0); var s = { text: gantt.locale.labels.new_task, start_date: this.templates.xml_format(i), duration: 1, progress: 0, parent: e }; this.callEvent("onTaskCreated", [s]), this.addTask(s), this.showTask(s.id), this.config.details_on_create && this.showLightbox(s.id) }, this)
-}, gantt._render_grid = function () { this._calc_grid_width(), this._render_grid_header() }, gantt._calc_grid_width = function () { if (this.config.autofit) { for (var t = this.config.columns, e = 0, n = [], i = [], a = 0; a < t.length; a++) { var s = parseInt(t[a].width, 10); window.isNaN(s) && (s = 50, n.push(a)), i[a] = s, e += s } var r = this.config.grid_width - e; if (r / (n.length > 0 ? n.length : i.length > 0 ? i.length : 1), n.length > 0) for (var o = r / (n.length ? n.length : 1), a = 0; a < n.length; a++) { var d = n[a]; i[d] += o } else for (var o = r / (i.length ? i.length : 1), a = 0; a < i.length; a++) i[a] += o; for (var a = 0; a < i.length; a++) t[a].width = i[a] } }, gantt._render_grid_header = function () { for (var t = this.config.columns, e = [], n = 0, i = this.locale.labels, a = this.config.scale_height - 2, s = 0; s < t.length; s++) { var r = s == t.length - 1, o = t[s]; r && this.config.grid_width > n + o.width && (o.width = this.config.grid_width - n), n += o.width; var d = this._sort && o.name == this._sort.name ? "<div class='gantt_sort gantt_" + this._sort.direction + "'></div>" : "", l = "gantt_grid_head_cell" + (" gantt_grid_head_" + o.name) + (r ? " gantt_last_cell" : "") + this.templates.grid_header_class(o.name, o), h = "width:" + (o.width - (r ? 1 : 0)) + "px;", _ = o.label || i["column_" + o.name]; _ = _ || ""; var c = "<div class='" + l + "' style='" + h + "' column_id='" + o.name + "'>" + _ + d + "</div>"; e.push(c) } this.$grid_scale.style.height = this.config.scale_height - 1 + "px", this.$grid_scale.style.lineHeight = a + "px", this.$grid_scale.style.width = n - 1 + "px", this.$grid_scale.innerHTML = e.join("") }, gantt._render_grid_item = function (t) { for (var e = this.config.columns, n = [], i = 0; i < e.length; i++) { var a, s, r = i == e.length - 1, o = e[i]; "add" == o.name && i == e.length - 1 ? s = "<div class='gantt_add'></div>" : (s = o.template ? o.template(t) : t[o.name], s instanceof Date && (s = this.templates.date_grid(s)), s = "<div class='gantt_tree_content'>" + s + "</div>"); var d = "gantt_cell" + (r ? " gantt_last_cell" : ""), l = ""; if (o.tree) { for (var h = 0; h < t.$level; h++) l += this.templates.grid_indent(t); var _ = this._branches[t.id] && this._branches[t.id].length > 0; _ ? (l += this.templates.grid_open(t), l += this.templates.grid_folder(t)) : (l += this.templates.grid_blank(t), l += this.templates.grid_file(t)) } var c = "width:" + (o.width - (r ? 1 : 0)) + "px;"; dhtmlx.defined(o.align) && (c += "text-align:" + o.align + ";"), a = "<div class='" + d + "' style='" + c + "'>" + l + s + "</div>", n.push(a) } var d = 0 === t.$index % 2 ? "" : " odd"; if (d += t.$transparent ? " gantt_transparent" : "", this.templates.grid_row_class) { var g = this.templates.grid_row_class.call(this, t.start_date, t.end_date, t); g && (d += " " + g) } this.getState().selected_task == t.id && (d += " gantt_selected"); var u = document.createElement("div"); return u.className = "gantt_row" + d, u.style.height = this.config.row_height + "px", u.style.lineHeight = gantt.config.row_height + "px", u.setAttribute(this.config.task_attribute, t.id), u.innerHTML = n.join(""), u }, gantt.open = function (t) { gantt._set_item_state(t, !0), this.callEvent("onTaskOpened", [t]) }, gantt.close = function (t) { gantt._set_item_state(t, !1), this.callEvent("onTaskClosed", [t]) }, gantt._set_item_state = function (t, e) { t && this._pull[t] && (this._pull[t].$open = e, this.refreshData()) }, gantt.getTaskIndex = function (t) { for (var e = this._branches[this.getTask(t).parent], n = 0; n < e.length; n++) if (e[n] == t) return n; return -1 }, gantt.getGlobalTaskIndex = function (t) { for (var e = this._order, n = 0; n < e.length; n++) if (e[n] == t) return n; return -1 }, gantt.moveTask = function (t, e, n) {
-    var i = arguments[3]; if (i) { if (i === t) return; n = this.getTask(i).parent, e = this.getTaskIndex(i) } n = n || 0; var a = this.getTask(t); this._branches[a.parent]; var s = this._branches[n]; if (-1 == e && (e = s.length + 1), a.parent == n) { var r = this.getTaskIndex(t); if (r == e) return; e > r && e-- } this._branch_update(a.parent, t), s = this._branches[n]; var o = s[e]; o ? s = s.slice(0, e).concat([t]).concat(s.slice(e)) : s.push(t), a.parent = n, this._branches[n] = s, this.refreshData()
+        }, e.box = s, (n || a) && (c = e), s
+    }
+
+    function r(t, i, a) {
+        var r = t.tagName ? t : s(t, i, a);
+        t.hidden || n(!0), document.body.appendChild(r);
+        var o = Math.abs(Math.floor(((window.innerWidth || document.documentElement.offsetWidth) - r.offsetWidth) / 2)),
+            d = Math.abs(Math.floor(((window.innerHeight || document.documentElement.offsetHeight) - r.offsetHeight) / 2));
+        return r.style.top = "top" == t.position ? "-3px" : d + "px", r.style.left = o + "px", r.onkeydown = e, r.focus(), t.hidden && dhtmlx.modalbox.hide(r), r
+    }
+
+    function o(t) {
+        return r(t, !0, !1)
+    }
+
+    function d(t) {
+        return r(t, !0, !0)
+    }
+
+    function l(t) {
+        return r(t)
+    }
+
+    function _(t, e, n) {
+        return "object" != typeof t && ("function" == typeof e && (n = e, e = ""), t = {
+            text: t,
+            type: e,
+            callback: n
+        }), t
+    }
+
+    function h(t, e, n, i) {
+        return "object" != typeof t && (t = {
+            text: t,
+            type: e,
+            expire: n,
+            id: i
+        }), t.id = t.id || g.uid(), t.expire = t.expire || g.expire, t
+    }
+    var c = null;
+    document.attachEvent ? document.attachEvent("onkeydown", e) : document.addEventListener("keydown", e, !0), dhtmlx.alert = function () {
+        var t = _.apply(this, arguments);
+        return t.type = t.type || "confirm", o(t)
+    }, dhtmlx.confirm = function () {
+        var t = _.apply(this, arguments);
+        return t.type = t.type || "alert", d(t)
+    }, dhtmlx.modalbox = function () {
+        var t = _.apply(this, arguments);
+        return t.type = t.type || "alert", l(t)
+    }, dhtmlx.modalbox.hide = function (t) {
+        for (; t && t.getAttribute && !t.getAttribute("dhxbox") ;) t = t.parentNode;
+        t && (t.parentNode.removeChild(t), n(!1))
+    };
+    var g = dhtmlx.message = function (t) {
+        t = h.apply(this, arguments), t.type = t.type || "info";
+        var e = t.type.split("-")[0];
+        switch (e) {
+            case "alert":
+                return o(t);
+            case "confirm":
+                return d(t);
+            case "modalbox":
+                return l(t);
+            default:
+                return a(t)
+        }
+    };
+    g.seed = (new Date).valueOf(), g.uid = function () {
+        return g.seed++
+    }, g.expire = 4e3, g.keyboard = !0, g.position = "top", g.pull = {}, g.timers = {}, g.hideAll = function () {
+        for (var t in g.pull) g.hide(t)
+    }, g.hide = function (t) {
+        var e = g.pull[t];
+        e && e.parentNode && (window.setTimeout(function () {
+            e.parentNode.removeChild(e), e = null
+        }, 2e3), e.className += " hidden", g.timers[t] && window.clearTimeout(g.timers[t]), delete g.pull[t])
+    }
+}(), gantt = {
+    version: "2.1.1"
+}, dhtmlxEventable = function (obj) {
+    obj._silent_mode = !1, obj._silentStart = function () {
+        this._silent_mode = !0
+    }, obj._silentEnd = function () {
+        this._silent_mode = !1
+    }, obj.attachEvent = function (t, e, n) {
+        return t = "ev_" + t.toLowerCase(), this[t] || (this[t] = new this._eventCatcher(n || this)), t + ":" + this[t].addEvent(e)
+    }, obj.callEvent = function (t, e) {
+        return this._silent_mode ? !0 : (t = "ev_" + t.toLowerCase(), this[t] ? this[t].apply(this, e) : !0)
+    }, obj.checkEvent = function (t) {
+        return !!this["ev_" + t.toLowerCase()]
+    }, obj._eventCatcher = function (obj) {
+        var dhx_catch = [],
+            z = function () {
+                for (var t = !0, e = 0; e < dhx_catch.length; e++)
+                    if (dhx_catch[e]) {
+                        var n = dhx_catch[e].apply(obj, arguments);
+                        t = t && n
+                    }
+                return t
+            };
+        return z.addEvent = function (ev) {
+            return "function" != typeof ev && (ev = eval(ev)), ev ? dhx_catch.push(ev) - 1 : !1
+        }, z.removeEvent = function (t) {
+            dhx_catch[t] = null
+        }, z
+    }, obj.detachEvent = function (t) {
+        if (t) {
+            var e = t.split(":");
+            this[e[0]].removeEvent(e[1])
+        }
+    }, obj.detachAllEvents = function () {
+        for (var t in this) 0 === t.indexOf("ev_") && delete this[t]
+    }, obj = null
+}, dhtmlx.copy = function (t) {
+    var e, n, i;
+    if (t && "object" == typeof t) {
+        for (i = {}, n = [Array, Date, Number, String, Boolean], e = 0; e < n.length; e++) t instanceof n[e] && (i = e ? new n[e](t) : new n[e]);
+        for (e in t) Object.prototype.hasOwnProperty.apply(t, [e]) && (i[e] = dhtmlx.copy(t[e]))
+    }
+    return i || t
+}, dhtmlx.mixin = function (t, e, n) {
+    for (var i in e) (!t[i] || n) && (t[i] = e[i]);
+    return t
+}, dhtmlx.defined = function (t) {
+    return "undefined" != typeof t
+}, dhtmlx.uid = function () {
+    return this._seed || (this._seed = (new Date).valueOf()), this._seed++, this._seed
+}, dhtmlx.bind = function (t, e) {
+    return function () {
+        return t.apply(e, arguments)
+    }
+}, gantt._get_position = function (t) {
+    var e = 0,
+        n = 0;
+    if (t.getBoundingClientRect) {
+        var i = t.getBoundingClientRect(),
+            a = document.body,
+            s = document.documentElement,
+            r = window.pageYOffset || s.scrollTop || a.scrollTop,
+            o = window.pageXOffset || s.scrollLeft || a.scrollLeft,
+            d = s.clientTop || a.clientTop || 0,
+            l = s.clientLeft || a.clientLeft || 0;
+        return e = i.top + r - d, n = i.left + o - l, {
+            y: Math.round(e),
+            x: Math.round(n),
+            width: t.offsetWidth,
+            height: t.offsetHeight
+        }
+    }
+    for (; t;) e += parseInt(t.offsetTop, 10), n += parseInt(t.offsetLeft, 10), t = t.offsetParent;
+    return {
+        y: e,
+        x: n,
+        width: t.offsetWidth,
+        height: t.offsetHeight
+    }
+}, gantt._detectScrollSize = function () {
+    var t = document.createElement("div");
+    t.style.cssText = "visibility:hidden;position:absolute;left:-1000px;width:100px;padding:0px;margin:0px;height:110px;min-height:100px;overflow-y:scroll;", document.body.appendChild(t);
+    var e = t.offsetWidth - t.clientWidth;
+    return document.body.removeChild(t), e
+}, dhtmlxEventable(gantt), gantt._click = {}, gantt._dbl_click = {}, gantt._context_menu = {}, gantt._on_click = function (t) {
+    t = t || window.event;
+    var e = t.target || t.srcElement,
+        n = gantt.locate(t);
+    if (null !== n) {
+        var i = !gantt.checkEvent("onTaskClick") || gantt.callEvent("onTaskClick", [n, t]);
+        i && gantt.config.select_task && gantt.selectTask(n)
+    } else gantt.callEvent("onEmptyClick", [t]);
+    gantt._find_ev_handler(t, e, gantt._click, n)
+}, gantt._on_contextmenu = function (t) {
+    t = t || window.event;
+    var e = t.target || t.srcElement,
+        n = gantt.locate(e),
+        i = gantt.locate(e, gantt.config.link_attribute),
+        a = !gantt.checkEvent("onContextMenu") || gantt.callEvent("onContextMenu", [n, i, t]);
+    return a || t.preventDefault(), a
+}, gantt._find_ev_handler = function (t, e, n, i) {
+    for (var a = !0; e && e.parentNode;) {
+        var s = e.className;
+        if (s) {
+            s = s.split(" ");
+            for (var r = 0; r < s.length; r++) s[r] && n[s[r]] && (a = n[s[r]].call(gantt, t, i, e), a = !("undefined" != typeof a && a !== !0))
+        }
+        e = e.parentNode
+    }
+    return a
+}, gantt._on_dblclick = function (t) {
+    t = t || window.event;
+    var e = t.target || t.srcElement,
+        n = gantt.locate(t),
+        i = gantt._find_ev_handler(t, e, gantt._dbl_click, n);
+    if (i && null !== n) {
+        var a = !gantt.checkEvent("onTaskDblClick") || gantt.callEvent("onTaskDblClick", [n, t]);
+        a && gantt.config.details_on_dblclick && gantt.showLightbox(n)
+    }
+}, gantt._on_mousemove = function (t) {
+    if (gantt.checkEvent("onMouseMove")) {
+        var e = gantt.locate(t);
+        gantt._last_move_event = t, gantt.callEvent("onMouseMove", [e, t])
+    }
+}, dhtmlxDnD.prototype = {
+    dragStart: function (t, e) {
+        this.config = {
+            obj: t,
+            marker: null,
+            started: !1,
+            pos: this.getPosition(e),
+            sensitivity: 4
+        }, this._settings && dhtmlx.mixin(this.config, this._settings, !0);
+        var n = dhtmlx.bind(function (e) {
+            return this.dragMove(t, e)
+        }, this);
+        dhtmlx.bind(function (e) {
+            return this.dragScroll(t, e)
+        }, this);
+        var i = dhtmlx.bind(function (t) {
+            return dhtmlx.defined(this.config.updates_per_second) && !gantt._checkTimeout(this, this.config.updates_per_second) ? !0 : n(t)
+        }, this),
+            a = dhtmlx.bind(function () {
+                return dhtmlxDetachEvent(document.body, "mousemove", i), dhtmlxDetachEvent(document.body, "mouseup", a), this.dragEnd(t)
+            }, this);
+        dhtmlxEvent(document.body, "mousemove", i), dhtmlxEvent(document.body, "mouseup", a), document.body.className += " gantt_noselect"
+    },
+    dragMove: function (t, e) {
+        if (!this.config.marker && !this.config.started) {
+            var n = this.getPosition(e),
+                i = n.x - this.config.pos.x,
+                a = n.y - this.config.pos.y,
+                s = Math.sqrt(Math.pow(Math.abs(i), 2) + Math.pow(Math.abs(a), 2));
+            if (s > this.config.sensitivity) {
+                if (this.config.started = !0, this.config.ignore = !1, this.callEvent("onBeforeDragStart", [t, e]) === !1) return this.config.ignore = !0, !0;
+                var r = this.config.marker = document.createElement("div");
+                r.className = "gantt_drag_marker", r.innerHTML = "Dragging object", document.body.appendChild(r), this.callEvent("onAfterDragStart", [t, e])
+            } else this.config.ignore = !0
+        }
+        this.config.ignore || (e.pos = this.getPosition(e), this.config.marker.style.left = e.pos.x + "px", this.config.marker.style.top = e.pos.y + "px", this.callEvent("onDragMove", [t, e]))
+    },
+    dragEnd: function () {
+        this.config.marker && (this.config.marker.parentNode.removeChild(this.config.marker), this.config.marker = null, this.callEvent("onDragEnd", [])), document.body.className = document.body.className.replace(" gantt_noselect", "")
+    },
+    getPosition: function (t) {
+        var e = 0,
+            n = 0;
+        return t = t || window.event, t.pageX || t.pageY ? (e = t.pageX, n = t.pageY) : (t.clientX || t.clientY) && (e = t.clientX + document.body.scrollLeft + document.documentElement.scrollLeft, n = t.clientY + document.body.scrollTop + document.documentElement.scrollTop), {
+            x: e,
+            y: n
+        }
+    }
+}, gantt._init_grid = function () {
+    this._click.gantt_close = dhtmlx.bind(function (t, e) {
+        this.close(e)
+    }, this), this._click.gantt_open = dhtmlx.bind(function (t, e) {
+        this.open(e)
+    }, this), this._click.gantt_row = dhtmlx.bind(function (t, e, n) {
+        if (null !== e) {
+            var i = this.getTaskNode(e),
+                a = Math.max(i.offsetLeft - this.config.task_scroll_offset, 0);
+            this.scrollTo(a), this.callEvent("onTaskRowClick", [e, n])
+        }
+    }, this), this._click.gantt_grid_head_cell = dhtmlx.bind(function (t, e, n) {
+        var i = n.getAttribute("column_id");
+        if (this.callEvent("onGridHeaderClick", [i, t]))
+            if ("add" == i) this._click.gantt_add(t, this.config.root_id);
+            else if (this.config.sort) {
+                var a = this._sort && this._sort.direction && this._sort.name == i ? this._sort.direction : "desc";
+                a = "desc" == a ? "asc" : "desc", this._sort = {
+                    name: i,
+                    direction: a
+                }, this._render_grid_header(), this.sort(i, "desc" == a)
+            }
+    }, this), !this.config.sort && this.config.order_branch && this._init_dnd(), this._click.gantt_add = dhtmlx.bind(function (t, e) {
+        if (!this.config.readonly) {
+            var n = e ? this.getTask(e) : !1,
+                i = "";
+            if (n) i = n.start_date;
+            else {
+                var a = this._order[0];
+                i = a ? this.getTask(a).start_date : this.getState().min_date
+            }
+            n && (n.$open = !0);
+            var s = {
+                text: gantt.locale.labels.new_task,
+                start_date: this.templates.xml_format(i),
+                duration: 1,
+                progress: 0,
+                parent: e
+            };
+            s.id = dhtmlx.uid(), this.callEvent("onTaskCreated", [s]), this.config.details_on_create ? (s.$new = !0, this._pull[s.id] = this._init_task(s), this._add_branch(s), s.$level = this._item_level(s), this.selectTask(s.id), this.refreshData(), this.showLightbox(s.id)) : (this.addTask(s), this.showTask(s.id), this.selectTask(s.id))
+        }
+    }, this)
+}, gantt._render_grid = function () {
+    this._is_grid_visible() && (this._calc_grid_width(), this._render_grid_header())
+}, gantt._calc_grid_width = function () {
+    if (this.config.autofit) {
+        for (var t = this.config.columns, e = 0, n = [], i = [], a = 0; a < t.length; a++) {
+            var s = parseInt(t[a].width, 10);
+            window.isNaN(s) && (s = 50, n.push(a)), i[a] = s, e += s
+        }
+        var r = this._get_grid_width() - e;
+        if (r / (n.length > 0 ? n.length : i.length > 0 ? i.length : 1), n.length > 0)
+            for (var o = r / (n.length ? n.length : 1), a = 0; a < n.length; a++) {
+                var d = n[a];
+                i[d] += o
+            } else
+            for (var o = r / (i.length ? i.length : 1), a = 0; a < i.length; a++) i[a] += o;
+        for (var a = 0; a < i.length; a++) t[a].width = i[a]
+    }
+}, gantt._render_grid_header = function () {
+    for (var t = this.config.columns, e = [], n = 0, i = this.locale.labels, a = this.config.scale_height - 2, s = 0; s < t.length; s++) {
+        var r = s == t.length - 1,
+            o = t[s];
+        r && this._get_grid_width() > n + o.width && (o.width = this._get_grid_width() - n), n += o.width;
+        var d = this._sort && o.name == this._sort.name ? "<div class='gantt_sort gantt_" + this._sort.direction + "'></div>" : "",
+            l = ["gantt_grid_head_cell", "gantt_grid_head_" + o.name, r ? "gantt_last_cell" : "", this.templates.grid_header_class(o.name, o)].join(" "),
+            _ = "width:" + (o.width - (r ? 1 : 0)) + "px;",
+            h = o.label || i["column_" + o.name];
+        h = h || "";
+        var c = "<div class='" + l + "' style='" + _ + "' column_id='" + o.name + "'>" + h + d + "</div>";
+        e.push(c)
+    }
+    this.$grid_scale.style.height = this.config.scale_height - 1 + "px", this.$grid_scale.style.lineHeight = a + "px", this.$grid_scale.style.width = n - 1 + "px", this.$grid_scale.innerHTML = e.join("")
+}, gantt._render_grid_item = function (t) {
+    if (!gantt._is_grid_visible()) return null;
+    for (var e = this.config.columns, n = [], i = 0; i < e.length; i++) {
+        var a, s, r = i == e.length - 1,
+            o = e[i];
+        "add" == o.name && i == e.length - 1 ? s = "<div class='gantt_add'></div>" : (s = o.template ? o.template(t) : t[o.name], s instanceof Date && (s = this.templates.date_grid(s)), s = "<div class='gantt_tree_content'>" + s + "</div>");
+        var d = "gantt_cell" + (r ? " gantt_last_cell" : ""),
+            l = "";
+        if (o.tree) {
+            for (var _ = 0; _ < t.$level; _++) l += this.templates.grid_indent(t);
+            var h = this._branches[t.id] && this._branches[t.id].length > 0;
+            h ? (l += this.templates.grid_open(t), l += this.templates.grid_folder(t)) : (l += this.templates.grid_blank(t), l += this.templates.grid_file(t))
+        }
+        var c = "width:" + (o.width - (r ? 1 : 0)) + "px;";
+        dhtmlx.defined(o.align) && (c += "text-align:" + o.align + ";"), a = "<div class='" + d + "' style='" + c + "'>" + l + s + "</div>", n.push(a)
+    }
+    var d = 0 === t.$index % 2 ? "" : " odd";
+    if (d += t.$transparent ? " gantt_transparent" : "", this.templates.grid_row_class) {
+        var g = this.templates.grid_row_class.call(this, t.start_date, t.end_date, t);
+        g && (d += " " + g)
+    }
+    this.getState().selected_task == t.id && (d += " gantt_selected");
+    var u = document.createElement("div");
+    return u.className = "gantt_row" + d, u.style.height = this.config.row_height + "px", u.style.lineHeight = gantt.config.row_height + "px", u.setAttribute(this.config.task_attribute, t.id), u.innerHTML = n.join(""), u
+}, gantt.open = function (t) {
+    gantt._set_item_state(t, !0), this.callEvent("onTaskOpened", [t])
+}, gantt.close = function (t) {
+    gantt._set_item_state(t, !1), this.callEvent("onTaskClosed", [t])
+}, gantt._set_item_state = function (t, e) {
+    t && this._pull[t] && (this._pull[t].$open = e, this.refreshData())
+}, gantt._is_grid_visible = function () {
+    return this.config.grid_width && this.config.show_grid
+}, gantt._get_grid_width = function () {
+    return this._is_grid_visible() ? this._is_chart_visible() ? this.config.grid_width : this._x : 0
+}, gantt.getTaskIndex = function (t) {
+    for (var e = this._branches[this.getTask(t).parent], n = 0; n < e.length; n++)
+        if (e[n] == t) return n;
+    return -1
+}, gantt.getGlobalTaskIndex = function (t) {
+    for (var e = this._order, n = 0; n < e.length; n++)
+        if (e[n] == t) return n;
+    return -1
+}, gantt.moveTask = function (t, e, n) {
+    var i = arguments[3];
+    if (i) {
+        if (i === t) return;
+        n = this.getTask(i).parent, e = this.getTaskIndex(i)
+    }
+    n = n || this.config.root_id;
+    var a = this.getTask(t);
+    this._branches[a.parent];
+    var s = this._branches[n];
+    if (-1 == e && (e = s.length + 1), a.parent == n) {
+        var r = this.getTaskIndex(t);
+        if (r == e) return;
+        e > r && e--
+    }
+    this._replace_branch_child(a.parent, t), s = this._branches[n];
+    var o = s[e];
+    o ? s = s.slice(0, e).concat([t]).concat(s.slice(e)) : s.push(t), a.parent = n, this._branches[n] = s, this.refreshData()
 }, gantt._init_dnd = function () {
     var t = new dhtmlxDnD(this.$grid_data, {
         updates_per_second: 60
     });
     dhtmlx.defined(this.config.dnd_sensitivity) && (t.config.sensitivity = this.config.dnd_sensitivity), t.attachEvent("onBeforeDragStart", dhtmlx.bind(function (t, e) {
         var n = this._locateHTML(e);
-        return n ? (this.hideQuickInfo && this._hideQuickInfo(), void 0) : !1
+        if (!n) return !1;
+        this.hideQuickInfo && this._hideQuickInfo();
+        var i = this.locate(e);
+        return this.callEvent("onRowDragStart", [i, e.target || e.srcElement, e]) ? void 0 : !1
     }, this)), t.attachEvent("onAfterDragStart", dhtmlx.bind(function (e, n) {
         var i = this._locateHTML(n);
         t.config.marker.innerHTML = i.outerHTML, t.config.id = this.locate(n);
         var a = this.getTask(t.config.id);
         a.$open = !1, a.$transparent = !0, this.refreshData()
-    }, this)), t.attachEvent("onDragMove", dhtmlx.bind(function (e, n) {
+    }, this)), t.lastTaskOfLevel = function (t) {
+        for (var e = gantt._order, n = gantt._pull, i = null, a = 0, s = e.length; s > a; a++) n[e[a]].$level == t && (i = n[e[a]]);
+        return i ? i.id : null
+    }, t.attachEvent("onDragMove", dhtmlx.bind(function (e, n) {
         var i = t.config,
             a = this._get_position(this.$grid_data),
             s = a.x + 10,
             r = n.pos.y - 10;
         r < a.y && (r = a.y), r > a.y + this.$grid_data.offsetHeight - this.config.row_height && (r = a.y + this.$grid_data.offsetHeight - this.config.row_height), i.marker.style.left = s + "px", i.marker.style.top = r + "px";
         var o = document.elementFromPoint(a.x - document.body.scrollLeft + 1, r - document.body.scrollTop),
-            d = this.locate(o);
-        if (this.isTaskExists(d)) {
-            var l = gantt._get_position(o),
-                h = this.getTask(d),
-                _ = this.getTask(t.config.id);
-            if (l.y + o.offsetHeight / 2 < r) {
+            d = this.locate(o),
+            l = this.getTask(t.config.id);
+        if (this.isTaskExists(d) || (d = t.lastTaskOfLevel(l.$level), d == t.config.id && (d = null)), this.isTaskExists(d)) {
+            var _ = gantt._get_position(o),
+                h = this.getTask(d);
+            if (_.y + o.offsetHeight / 2 < r) {
                 var c = this.getGlobalTaskIndex(h.id),
-                    g = this._pull[this._order[c + 1 + (h.id == _.id ? 1 : 0)]];
+                    g = this._pull[this._order[c + 1 + (h.id == l.id ? 1 : 0)]];
                 if (g) {
-                    if (g.id == _.id) return;
+                    if (g.id == l.id) return;
                     h = g
-                } else if (g = this._pull[this._order[c + 1]], g.$level == _.$level) return this.moveTask(_.id, -1, g.parent), i.target = "next:" + g.id, void 0
+                } else if (g = this._pull[this._order[c]], g.$level == l.$level) return this.moveTask(l.id, -1, g.parent), i.target = "next:" + g.id, void 0
             }
-            if (h.$level == _.$level && _.id != h.id) this.moveTask(_.id, 0, 0, h.id), i.target = h.id;
+            if (h.$level == l.$level && l.id != h.id) this.moveTask(l.id, 0, 0, h.id), i.target = h.id;
             else {
-                if (_.id == h.id) return;
+                if (l.id == h.id) return;
                 var c = this.getGlobalTaskIndex(h.id),
                     u = this._pull[this._order[c - 1]];
-                u && u.$level == _.$level && _.id != u.id && (this.moveTask(_.id, -1, u.parent), i.target = "next:" + u.id)
+                u && u.$level == l.$level && l.id != u.id && (this.moveTask(l.id, -1, u.parent), i.target = "next:" + u.id)
             }
         }
         return !0
@@ -132,7 +828,7 @@ function dataProcessor(t) {
         var a = e.width;
         void 0 === i && (i = a.length - 1), void 0 === n && (n = 0);
         var s = i - n + 1;
-        if (!(n > a.length - 1 || 0 >= s || i > a.length - 1) && t) {
+        if (!(n > a.length - 1 || 0 >= s || i > a.length - 1)) {
             var r = this.getSum(a, n, i),
                 o = t - r;
             this.adjustSize(o, a, n, i), this.adjustSize(-o, a, i + 1), e.full_width = this.getSum(a)
@@ -146,9 +842,9 @@ function dataProcessor(t) {
         n || (n = 0), void 0 === i && (i = e.length - 1);
         for (var a = i - n + 1, s = this.getSum(e, n, i), r = 0, o = n; i >= o; o++) {
             var d = Math.floor(t * (s ? e[o] / s : 1 / a));
-            e[o] += d, r += d
+            s -= e[o], t -= d, a--, e[o] += d, r += d
         }
-        e[e.length - 1] += t - r
+        e[e.length - 1] += t
     },
     sortScales: function (t) {
         function e(t, e) {
@@ -169,37 +865,59 @@ function dataProcessor(t) {
         }
     },
     prepareConfigs: function (t, e, n, i) {
-        for (var a = this.prepareScaleConfig(t[t.length - 1], e, n).full_width, s = this.splitSize(i, t.length), r = [], o = 0; o < t.length; o++) {
-            var d = this.prepareScaleConfig(t[o], e, a, s[o]);
-            this.formatScales(d), r.push(d)
+        for (var a = this.splitSize(i, t.length), s = n, r = [], o = t.length - 1; o >= 0; o--) {
+            var d = o == t.length - 1,
+                l = this.initScaleConfig(t[o]);
+            d && this.processIgnores(l), this.initColSizes(l, e, s, a[o]), this.limitVisibleRange(l), d && (s = l.full_width), r.unshift(l)
         }
         for (var o = 0; o < r.length - 1; o++) this.alineScaleColumns(r[r.length - 1], r[o]);
         return r
     },
-    prepareScaleConfig: function (t, e, n, i) {
-        var a = dhtmlx.mixin({
+    _ignore_time_config: function (t) {
+        return this.config.skip_off_time ? !this.isWorkTime(t) : !1
+    },
+    processIgnores: function (t) {
+        var e = t.count;
+        if (t.ignore_x = {}, gantt.ignore_time || gantt.config.skip_off_time) {
+            var n = gantt.ignore_time || function () {
+                return !1
+            };
+            e = 0;
+            for (var i = 0; i < t.trace_x.length; i++) n.call(gantt, t.trace_x[i]) || this._ignore_time_config.call(gantt, t.trace_x[i]) ? (t.ignore_x[t.trace_x[i].valueOf()] = !0, t.ignored_colls = !0) : e++
+        }
+        t.display_count = e
+    },
+    initColSizes: function (t, e, n, i) {
+        var a = n;
+        t.height = i;
+        var s = void 0 === t.display_count ? t.count : t.display_count;
+        s || (s = 1), t.col_width = Math.floor(a / s), e && t.col_width < e && (t.col_width = e, a = t.col_width * s), t.width = [];
+        for (var r = t.ignore_x || {}, o = 0; o < t.trace_x.length; o++) t.width[o] = r[t.trace_x[o].valueOf()] || t.display_count == t.count ? 0 : 1;
+        this.adjustSize(a - this.getSum(t.width), t.width), t.full_width = this.getSum(t.width)
+    },
+    initScaleConfig: function (t) {
+        var e = dhtmlx.mixin({
             count: 0,
             col_width: 0,
             full_width: 0,
-            height: i,
+            height: 0,
             width: [],
             trace_x: []
         }, t);
-        this.eachColumn(t.unit, t.step, function (t) {
-            a.count++, a.trace_x.push(new Date(t))
-        });
-        var s = n;
-        return a.col_width = Math.floor(s / a.count), e && a.col_width < e && (a.col_width = e, s = a.col_width * a.count), a.width = this.splitSize(s, a.count), a.full_width = this.getSum(a.width), a
+        return this.eachColumn(t.unit, t.step, function (t) {
+            e.count++, e.trace_x.push(new Date(t))
+        }), e
+    },
+    iterateScales: function (t, e, n, i, a) {
+        for (var s = e.trace_x, r = t.trace_x, o = n || 0, d = i || r.length - 1, l = 0, _ = 1; _ < s.length; _++)
+            for (var h = o; d >= h; h++) +r[h] != +s[_] || (a && a.apply(this, [l, _, o, h]), o = h, l = _)
     },
     alineScaleColumns: function (t, e, n, i) {
-        for (var a = e.trace_x, s = t.trace_x, r = n || 0, o = i || s.length - 1, d = 0, l = 1; l < a.length; l++)
-            for (var h = r; o >= h; h++)
-                if (+s[h] != +a[l]);
-                else {
-                    var _ = this.getSum(t.width, r, h - 1),
-                        c = this.getSum(e.width, d, l - 1);
-                    c != _ && this.setSumWidth(_, e, d, l - 1), r = h, d = l
-                }
+        this.iterateScales(t, e, n, i, function (n, i, a, s) {
+            var r = this.getSum(t.width, a, s - 1),
+                o = this.getSum(e.width, n, i - 1);
+            o != r && this.setSumWidth(r, e, n, i - 1)
+        })
     },
     eachColumn: function (t, e, n) {
         var i = new Date(gantt._min_date),
@@ -207,7 +925,7 @@ function dataProcessor(t) {
         gantt.date[t + "_start"] && (i = gantt.date[t + "_start"](i));
         for (var s = new Date(i) ; +a > +s;) n.call(this, new Date(s)), s = gantt.date.add(s, e, t)
     },
-    formatScales: function (t) {
+    limitVisibleRange: function (t) {
         var e = t.trace_x,
             n = 0,
             i = t.width.length - 1,
@@ -224,11 +942,11 @@ function dataProcessor(t) {
             a += t.width[r] - s, t.width[r] = s
         }
         if (a) {
-            for (var l = this.getSum(t.width), h = 0, _ = 0; _ < t.width.length; _++) {
-                var c = Math.floor(a * (t.width[_] / l));
-                t.width[_] += c, h += c
+            for (var l = this.getSum(t.width), _ = 0, h = 0; h < t.width.length; h++) {
+                var c = Math.floor(a * (t.width[h] / l));
+                t.width[h] += c, _ += c
             }
-            this.adjustSize(a - h, t.width)
+            this.adjustSize(a - _, t.width)
         }
     }
 }, gantt._tasks_dnd = {
@@ -267,28 +985,35 @@ function dataProcessor(t) {
             id: null,
             mode: null,
             pos: null,
-            start: null,
+            start_x: null,
+            start_y: null,
             obj: null,
             left: null
         }
     },
-    _drag_timeout: function () {
-        return this._cancel_drag ? !1 : (setTimeout(dhtmlx.bind(function () {
-            this._cancel_drag = !1
-        }, this), 25), this._cancel_drag = !0)
-    },
     _resize: function (t, e, n) {
-        var i = gantt.config;
-        n.left ? t.start_date = new Date(n.start.valueOf() + e) : t.end_date = new Date(n.start.valueOf() + e), t.end_date - t.start_date < i.min_duration && (n.left ? t.start_date = new Date(t.end_date.valueOf() - i.min_duration) : t.end_date = new Date(t.start_date.valueOf() + i.min_duration)), gantt._update_task_duration(t)
+        var i = gantt.config,
+            a = this._drag_task_coords(t, n);
+        n.left ? (t.start_date = gantt._date_from_pos(a.start + e), t.start_date || (t.start_date = new Date(gantt.getState().min_date))) : (t.end_date = gantt._date_from_pos(a.end + e), t.end_date || (t.end_date = new Date(gantt.getState().max_date))), t.end_date - t.start_date < i.min_duration && (n.left ? t.start_date = gantt.calculateEndDate(t.end_date, -1) : t.end_date = gantt.calculateEndDate(t.start_date, 1)), gantt._init_task_timing(t)
     },
     _resize_progress: function (t, e, n) {
-        var i = n.obj_s_x = n.obj_s_x || gantt.posFromDate(t.start_date),
-            a = n.obj_e_x = n.obj_e_x || gantt.posFromDate(t.end_date),
-            s = Math.max(0, n.pos.x - i);
-        t.progress = Math.min(1, s / (a - i))
+        var i = this._drag_task_coords(t, n),
+            a = Math.max(0, n.pos.x - i.start);
+        t.progress = Math.min(1, a / (i.end - i.start))
     },
     _move: function (t, e, n) {
-        t.start_date = new Date(n.obj.start_date.valueOf() + e), t.end_date = new Date(n.obj.end_date.valueOf() + e)
+        var i = this._drag_task_coords(t, n),
+            a = gantt._date_from_pos(i.start + e),
+            s = gantt._date_from_pos(i.end + e);
+        a ? s ? (t.start_date = a, t.end_date = s) : (t.end_date = new Date(gantt.getState().max_date), t.start_date = gantt._date_from_pos(gantt.posFromDate(t.end_date) - (i.end - i.start))) : (t.start_date = new Date(gantt.getState().min_date), t.end_date = gantt._date_from_pos(gantt.posFromDate(t.start_date) + (i.end - i.start)))
+    },
+    _drag_task_coords: function (t, e) {
+        var n = e.obj_s_x = e.obj_s_x || gantt.posFromDate(t.start_date),
+            i = e.obj_e_x = e.obj_e_x || gantt.posFromDate(t.end_date);
+        return {
+            start: n,
+            end: i
+        }
     },
     on_mouse_move: function (t) {
         this.drag.start_drag && this._start_dnd(t);
@@ -306,7 +1031,7 @@ function dataProcessor(t) {
             e.pos = n;
             var i = gantt._date_from_pos(n.x);
             if (!i || isNaN(i.getTime())) return;
-            var a = i - e.start,
+            var a = n.x - e.start_x,
                 s = gantt.getTask(e.id);
             if (this._handlers[e.mode]) {
                 var r = dhtmlx.mixin({}, s),
@@ -328,22 +1053,50 @@ function dataProcessor(t) {
                     if (gantt._is_flex_task(s) && i.mode != gantt.config.drag_mode.progress) return this.clear_drag_state(), void 0;
                     i.id = a;
                     var r = gantt._get_mouse_pos(t);
-                    i.start = gantt._date_from_pos(r.x), i.obj = s, this.drag.start_drag = i
+                    i.start_x = r.x, i.start_y = r.y, i.obj = s, this.drag.start_drag = i
                 } else this.clear_drag_state();
             else if (gantt.checkEvent("onMouseDown") && gantt.callEvent("onMouseDown", [n.split(" ")[0]]) && e.parentNode) return this.on_mouse_down(t, e.parentNode)
         }
+    },
+    _fix_dnd_scale_time: function (t, e) {
+        var n = gantt._tasks.unit,
+            i = gantt._tasks.step;
+        gantt.config.round_dnd_dates || (n = "minute", i = gantt.config.time_step), e.mode == gantt.config.drag_mode.resize ? e.left ? t.start_date = gantt._get_closest_date({
+            date: t.start_date,
+            unit: n,
+            step: i
+        }) : t.end_date = gantt._get_closest_date({
+            date: t.end_date,
+            unit: n,
+            step: i
+        }) : e.mode == gantt.config.drag_mode.move && (t.start_date = gantt._get_closest_date({
+            date: t.start_date,
+            unit: n,
+            step: i
+        }), t.end_date = gantt.calculateEndDate(t.start_date, t.duration, gantt.config.duration_unit))
+    },
+    _fix_working_times: function (t, e) {
+        gantt.config.work_time && gantt.config.correct_work_time && (e.mode == gantt.config.drag_mode.resize ? e.left ? t.start_date = gantt.getClosestWorkTime({
+            date: t.start_date,
+            dir: "future"
+        }) : t.end_date = gantt.getClosestWorkTime({
+            date: t.end_date,
+            dir: "past"
+        }) : e.mode == gantt.config.drag_mode.move && (gantt.isWorkTime(t.start_date) ? gantt.isWorkTime(new Date(+t.end_date - 1)) || (t.end_date = gantt.getClosestWorkTime({
+            date: t.end_date,
+            dir: "past"
+        }), t.start_date = gantt.calculateEndDate(t.end_date, -1 * t.duration)) : (t.start_date = gantt.getClosestWorkTime({
+            date: t.start_date,
+            dir: "future"
+        }), t.end_date = gantt.calculateEndDate(t.start_date, t.duration))))
     },
     on_mouse_up: function (t) {
         var e = this.drag;
         if (e.mode && e.id) {
             var n = gantt.getTask(e.id);
-            if (this._fireEvent("before_finish", e.mode, [e.id, e.mode, dhtmlx.copy(e.obj), t])) {
+            if (gantt.config.work_time && gantt.config.correct_work_time && this._fix_working_times(n, e), this._fix_dnd_scale_time(n, e), gantt._init_task_timing(n), this._fireEvent("before_finish", e.mode, [e.id, e.mode, dhtmlx.copy(e.obj), t])) {
                 var i = e.id;
-                if (this.clear_drag_state(), gantt.config.round_dnd_dates) {
-                    var a = gantt._tasks;
-                    gantt._round_task_dates(n, a.step, a.unit)
-                } else gantt._round_task_dates(n, gantt.config.time_step, "minute");
-                gantt._update_task_duration(n), gantt.updateTask(n.id), this._fireEvent("after_finish", e.mode, [i, e.mode, t])
+                gantt._init_task_timing(n), gantt.updateTask(n.id), this._fireEvent("after_finish", e.mode, [i, e.mode, t]), this.clear_drag_state()
             } else e.obj._dhx_changed = !1, dhtmlx.mixin(n, e.obj, !0), gantt.updateTask(n.id)
         }
         this.clear_drag_state()
@@ -362,7 +1115,7 @@ function dataProcessor(t) {
                 a.mode = e.move;
                 break;
             case "gantt_task_drag":
-                a.mode = e.resize, n[1] && -1 !== n[1].indexOf("left", n[1].length - "left".length) && (a.left = !0);
+                a.mode = e.resize, a.left = n[1] && -1 !== n[1].indexOf("left", n[1].length - "left".length) ? !0 : !1;
                 break;
             case "gantt_task_progress_drag":
                 a.mode = e.progress;
@@ -392,33 +1145,31 @@ function dataProcessor(t) {
     var e = this.getLink(t);
     gantt._linkRenderer.render_item(e, this.$task_links)
 }, gantt._get_link_type = function (t, e) {
-    var n;
-    return t && e ? n = gantt.config.links.start_to_start : !t && e ? n = gantt.config.links.finish_to_start : t || e ? t && !e && (n = null) : n = gantt.config.links.finish_to_finish, n
+    var n = null;
+    return t && e ? n = gantt.config.links.start_to_start : !t && e ? n = gantt.config.links.finish_to_start : t || e ? t && !e && (n = gantt.config.links.start_to_finish) : n = gantt.config.links.finish_to_finish, n
 }, gantt.isLinkAllowed = function (t, e, n, i) {
-    if ("object" == typeof t) var a = t;
-    else var a = {
+    var a = null;
+    if (a = "object" == typeof t ? t : {
         source: t,
         target: e,
         type: this._get_link_type(n, i)
-    }; if (!a) return !1;
+    }, !a) return !1;
     if (!(a.source && a.target && a.type)) return !1;
     if (a.source == a.target) return !1;
     var s = !0;
     return this.checkEvent("onLinkValidation") && (s = this.callEvent("onLinkValidation", [a])), s
 }, gantt._render_link_element = function (t) {
-    if (gantt.isTaskVisible(t.source) && gantt.isTaskVisible(t.target)) {
-        var e = this._path_builder.get_points(t),
-            n = gantt._drawer,
-            i = n.get_lines(e),
-            a = document.createElement("div"),
-            s = "gantt_task_link",
-            r = this.templates.link_class ? this.templates.link_class(t) : "";
-        r && (s += " " + r), a.className = s, a.setAttribute(gantt.config.link_attribute, t.id);
-        for (var o = 0; o < i.length; o++) o == i.length - 1 && (i[o].size -= gantt.config.link_arrow_size), a.appendChild(n.render_line(i[o], i[o + 1]));
-        var d = i[i.length - 1].direction,
-            l = gantt._render_link_arrow(e[e.length - 1], d);
-        return a.appendChild(l), a
-    }
+    var e = this._path_builder.get_points(t),
+        n = gantt._drawer,
+        i = n.get_lines(e),
+        a = document.createElement("div"),
+        s = "gantt_task_link",
+        r = this.templates.link_class ? this.templates.link_class(t) : "";
+    r && (s += " " + r), a.className = s, a.setAttribute(gantt.config.link_attribute, t.id);
+    for (var o = 0; o < i.length; o++) o == i.length - 1 && (i[o].size -= gantt.config.link_arrow_size), a.appendChild(n.render_line(i[o], i[o + 1]));
+    var d = i[i.length - 1].direction,
+        l = gantt._render_link_arrow(e[e.length - 1], d);
+    return a.appendChild(l), a
 }, gantt._render_link_arrow = function (t, e) {
     var n = document.createElement("div"),
         i = gantt._drawer,
@@ -611,36 +1362,50 @@ function dataProcessor(t) {
                 a -= 2 * r;
                 var d = i > 0 ? 1 : -1;
                 this.point_to(s.down, d * (n.row_height / 2)), this.point_to(s.right, a), this.point_to(s.down, d * (Math.abs(i) - n.row_height / 2)), this.point_to(s.right, r)
-            } else t.type == gantt.config.links.finish_to_finish && (this.point_to(s.right, r), o ? (this.point_to(s.right, a), this.point_to(s.down, i)) : (this.point_to(s.down, i), this.point_to(s.right, a)), this.point_to(s.left, r));
+            } else if (t.type == gantt.config.links.finish_to_finish) this.point_to(s.right, r), o ? (this.point_to(s.right, a), this.point_to(s.down, i)) : (this.point_to(s.down, i), this.point_to(s.right, a)), this.point_to(s.left, r);
+            else if (t.type == gantt.config.links.start_to_finish)
+                if (o = e.e_x > e.x - 2 * r, this.point_to(s.left, r), o) {
+                    a += 2 * r;
+                    var d = i > 0 ? 1 : -1;
+                    this.point_to(s.down, d * (n.row_height / 2)), this.point_to(s.right, a), this.point_to(s.down, d * (Math.abs(i) - n.row_height / 2)), this.point_to(s.left, r)
+                } else a += r, this.point_to(s.down, i), this.point_to(s.right, a);
         return this.path
     },
     get_endpoint: function (t) {
-        var e, n, i = gantt.config.links,
-            a = gantt._get_visible_order(t.source),
-            s = gantt._get_visible_order(t.target);
-        return t.type == i.start_to_start ? (e = gantt._pull[t.source].start_date, n = gantt._pull[t.target].start_date) : t.type == i.finish_to_finish ? (e = gantt._pull[t.source].end_date, n = gantt._pull[t.target].end_date) : t.type == i.finish_to_start ? (e = gantt._pull[t.source].end_date, n = gantt._pull[t.target].start_date) : dhtmlx.assert(!1, "Invalid link type"), {
-            x: gantt.posFromDate(e),
-            e_x: gantt.posFromDate(n),
-            y: gantt._y_from_ind(a),
-            e_y: gantt._y_from_ind(s)
+        var e = gantt.config.links,
+            n = !1,
+            i = !1;
+        t.type == e.start_to_start ? n = i = !0 : t.type == e.finish_to_finish ? n = i = !1 : t.type == e.finish_to_start ? (n = !1, i = !0) : t.type == e.start_to_finish ? (n = !0, i = !1) : dhtmlx.assert(!1, "Invalid link type");
+        var a = gantt._get_task_visible_pos(gantt._pull[t.source], n),
+            s = gantt._get_task_visible_pos(gantt._pull[t.target], i);
+        return {
+            x: a.x,
+            e_x: s.x,
+            y: a.y,
+            e_y: s.y
         }
     }
 }, gantt._init_links_dnd = function () {
-    function t(t) {
-        var e = n(),
-            i = ["gantt_link_tooltip"];
-        e.from && e.to && (gantt.isLinkAllowed(e.from, e.to, e.from_start, e.to_start) ? i.push("gantt_allowed_link") : i.push("gantt_invalid_link"));
+    function t(t, e, n) {
+        var i = gantt._get_task_pos(t, !!e);
+        return i.y += gantt._get_task_height() / 2, n = n || 0, i.x += (e ? -1 : 1) * n, i
+    }
+
+    function e(t) {
+        var e = i(),
+            n = ["gantt_link_tooltip"];
+        e.from && e.to && (gantt.isLinkAllowed(e.from, e.to, e.from_start, e.to_start) ? n.push("gantt_allowed_link") : n.push("gantt_invalid_link"));
         var a = gantt.templates.drag_link_class(e.from, e.from_start, e.to, e.to_start);
-        a && i.push(a);
+        a && n.push(a);
         var s = "<div class='" + a + "'>" + gantt.templates.drag_link(e.from, e.from_start, e.to, e.to_start) + "</div>";
         t.innerHTML = s
     }
 
-    function e(t, e) {
+    function n(t, e) {
         t.style.left = e.x + 5 + "px", t.style.top = e.y + 5 + "px"
     }
 
-    function n() {
+    function i() {
         return {
             from: gantt._link_source_task,
             to: gantt._link_target_task,
@@ -649,105 +1414,102 @@ function dataProcessor(t) {
         }
     }
 
-    function i() {
-        gantt._link_source_task = gantt._link_source_task_start = gantt._link_target_task = gantt._link_target_task_start = null
+    function a() {
+        gantt._link_source_task = gantt._link_source_task_start = gantt._link_target_task = null, gantt._link_target_task_start = !0
     }
 
-    function a(t, e, i, a) {
-        var d = o(),
-            l = n(),
-            h = ["gantt_link_direction"];
-        gantt.templates.link_direction_class && h.push(gantt.templates.link_direction_class(l.from, l.from_start, l.to, l.to_start));
-        var _ = Math.sqrt(Math.pow(i - t, 2) + Math.pow(a - e, 2));
-        if (_ = Math.max(0, _ - 3)) {
-            d.className = h.join(" ");
-            var c = (a - e) / (i - t),
+    function s(t, e, n, a) {
+        var s = d(),
+            l = i(),
+            _ = ["gantt_link_direction"];
+        gantt.templates.link_direction_class && _.push(gantt.templates.link_direction_class(l.from, l.from_start, l.to, l.to_start));
+        var h = Math.sqrt(Math.pow(n - t, 2) + Math.pow(a - e, 2));
+        if (h = Math.max(0, h - 3)) {
+            s.className = _.join(" ");
+            var c = (a - e) / (n - t),
                 g = Math.atan(c);
-            2 == r(t, i, e, a) ? g += Math.PI : 3 == r(t, i, e, a) && (g -= Math.PI);
+            2 == o(t, n, e, a) ? g += Math.PI : 3 == o(t, n, e, a) && (g -= Math.PI);
             var u = Math.sin(g),
                 f = Math.cos(g),
                 p = Math.round(e),
                 m = Math.round(t),
-                v = ["-webkit-transform: rotate(" + g + "rad)", "-moz-transform: rotate(" + g + "rad)", "-ms-transform: rotate(" + g + "rad)", "-o-transform: rotate(" + g + "rad)", "transform: rotate(" + g + "rad)", "width:" + Math.round(_) + "px"];
+                v = ["-webkit-transform: rotate(" + g + "rad)", "-moz-transform: rotate(" + g + "rad)", "-ms-transform: rotate(" + g + "rad)", "-o-transform: rotate(" + g + "rad)", "transform: rotate(" + g + "rad)", "width:" + Math.round(h) + "px"];
             if (-1 != window.navigator.userAgent.indexOf("MSIE 8.0")) {
-                v.push('-ms-filter: "' + s(u, f) + '"');
-                var x = Math.abs(Math.round(t - i)),
-                    k = Math.abs(Math.round(a - e));
-                switch (r(t, i, e, a)) {
+                v.push('-ms-filter: "' + r(u, f) + '"');
+                var k = Math.abs(Math.round(t - n)),
+                    x = Math.abs(Math.round(a - e));
+                switch (o(t, n, e, a)) {
                     case 1:
-                        p -= k;
+                        p -= x;
                         break;
                     case 2:
-                        m -= x, p -= k;
+                        m -= k, p -= x;
                         break;
                     case 3:
-                        m -= x
+                        m -= k
                 }
             }
-            v.push("top:" + p + "px"), v.push("left:" + m + "px"), d.style.cssText = v.join(";")
+            v.push("top:" + p + "px"), v.push("left:" + m + "px"), s.style.cssText = v.join(";")
         }
     }
 
-    function s(t, e) {
+    function r(t, e) {
         return "progid:DXImageTransform.Microsoft.Matrix(M11 = " + e + "," + "M12 = -" + t + "," + "M21 = " + t + "," + "M22 = " + e + "," + "SizingMethod = 'auto expand'" + ")"
     }
 
-    function r(t, e, n, i) {
+    function o(t, e, n, i) {
         return e >= t ? n >= i ? 1 : 4 : n >= i ? 2 : 3
     }
 
-    function o() {
-        return l._direction || (l._direction = document.createElement("div"), gantt.$task_links.appendChild(l._direction)), l._direction
+    function d() {
+        return _._direction || (_._direction = document.createElement("div"), gantt.$task_links.appendChild(_._direction)), _._direction
     }
 
-    function d() {
-        l._direction && (l._direction.parentNode.removeChild(l._direction), l._direction = null)
+    function l() {
+        _._direction && (_._direction.parentNode && _._direction.parentNode.removeChild(_._direction), _._direction = null)
     }
-    var l = new dhtmlxDnD(this.$task_bars, {
+    var _ = new dhtmlxDnD(this.$task_bars, {
         sensitivity: 0,
         updates_per_second: 60
     }),
         h = "task_left",
-        _ = "gantt_link_point",
-        c = "gantt_link_control";
-    l.attachEvent("onBeforeDragStart", dhtmlx.bind(function (t, e) {
-        var n = e.target || e.srcElement;
-        if (i(), gantt.getState().drag_id) return !1;
-        if (gantt._locate_css(n, _)) {
-            gantt._locate_css(n, h) && (gantt._link_source_task_start = !0);
-            var a = gantt._link_source_task = this.locate(e),
-                s = gantt.getTask(a);
-            return this._dir_start = {
-                y: gantt._y_from_ind(gantt._get_visible_order(a)) + gantt.config.row_height / 2,
-                x: gantt.posFromDate(gantt._link_source_task_start ? s.start_date : s.end_date)
-            }, !0
+        c = "task_right",
+        g = "gantt_link_point",
+        u = "gantt_link_control";
+    _.attachEvent("onBeforeDragStart", dhtmlx.bind(function (e, n) {
+        if (gantt.config.readonly) return !1;
+        var i = n.target || n.srcElement;
+        if (a(), gantt.getState().drag_id) return !1;
+        if (gantt._locate_css(i, g)) {
+            gantt._locate_css(i, h) && (gantt._link_source_task_start = !0);
+            var s = gantt._link_source_task = this.locate(n),
+                r = gantt.getTask(s),
+                o = 0;
+            return r.type == gantt.config.types.milestone && (o = (gantt._get_visible_milestone_width() - gantt._get_milestone_width()) / 2), this._dir_start = t(r, !!gantt._link_source_task_start, o), !0
         }
         return !1
-    }, this)), l.attachEvent("onAfterDragStart", dhtmlx.bind(function () {
-        t(l.config.marker)
-    }, this)), l.attachEvent("onDragMove", dhtmlx.bind(function (n, i) {
-        var s = l.config,
-            r = l.getPosition(i);
-        e(s.marker, r);
-        var o = gantt._is_link_drop_area(i),
-            d = gantt._link_target_task,
-            _ = gantt._link_landing,
-            c = gantt._link_target_task_start,
-            g = gantt.locate(i);
-        if (o) var u = !1,
-        u = !!gantt._locate_css(i, h), o = !!g;
-        if (gantt._link_target_task = g, gantt._link_landing = o, gantt._link_target_task_start = u, o) {
-            var f = gantt.getTask(g),
-                p = Math.floor((i.srcElement || i.target).offsetWidth / 2);
-            this._dir_end = {
-                y: gantt._y_from_ind(gantt._get_visible_order(g)) + gantt.config.row_height / 2,
-                x: gantt.posFromDate(u ? f.start_date : f.end_date) + (u ? -1 : 1) * p
-            }
-        } else this._dir_end = gantt._get_mouse_pos(i);
-        var m = !(_ == o && d == g && c == u);
-        return m && (d && gantt.refreshTask(d, !1), g && gantt.refreshTask(g, !1)), m && t(s.marker), a(this._dir_start.x, this._dir_start.y, this._dir_end.x, this._dir_end.y), !0
-    }, this)), l.attachEvent("onDragEnd", dhtmlx.bind(function () {
-        var t = n();
+    }, this)), _.attachEvent("onAfterDragStart", dhtmlx.bind(function () {
+        e(_.config.marker)
+    }, this)), _.attachEvent("onDragMove", dhtmlx.bind(function (i, a) {
+        var r = _.config,
+            o = _.getPosition(a);
+        n(r.marker, o);
+        var d = gantt._is_link_drop_area(a),
+            l = gantt._link_target_task,
+            h = gantt._link_landing,
+            g = gantt._link_target_task_start,
+            f = gantt.locate(a),
+            p = !0;
+        if (d && (p = !gantt._locate_css(a, c), d = !!f), gantt._link_target_task = f, gantt._link_landing = d, gantt._link_target_task_start = p, d) {
+            var m = gantt.getTask(f),
+                v = gantt._locate_css(a, u),
+                k = 0;
+            v && (k = Math.floor(v.offsetWidth / 2)), this._dir_end = t(m, !!gantt._link_target_task_start, k)
+        } else this._dir_end = gantt._get_mouse_pos(a);
+        var x = !(h == d && l == f && g == p);
+        return x && (l && gantt.refreshTask(l, !1), f && gantt.refreshTask(f, !1)), x && e(r.marker), s(this._dir_start.x, this._dir_start.y, this._dir_end.x, this._dir_end.y), !0
+    }, this)), _.attachEvent("onDragEnd", dhtmlx.bind(function () {
+        var t = i();
         if (t.from && t.to && t.from != t.to) {
             var e = gantt._get_link_type(t.from_start, t.to_start);
             e && gantt.addLink({
@@ -756,9 +1518,9 @@ function dataProcessor(t) {
                 type: e
             })
         }
-        i(), t.from && gantt.refreshTask(t.from, !1), t.to && gantt.refreshTask(t.to, !1), d()
+        a(), t.from && gantt.refreshTask(t.from, !1), t.to && gantt.refreshTask(t.to, !1), l()
     }, this)), gantt._is_link_drop_area = function (t) {
-        return !!gantt._locate_css(t, c)
+        return !!gantt._locate_css(t, u)
     }
 }, gantt._get_link_state = function () {
     return {
@@ -789,19 +1551,41 @@ function dataProcessor(t) {
             i = this.getTask(e),
             a = null;
         return n.parentNode && n.parentNode.className && (a = n.parentNode.className.indexOf("_left") > -1 ? i.$target[0] : i.$source[0]), a && this._delete_link_handler(a, t), !1
-    }, this), this._tasks_dnd.init(), this._init_links_dnd(), this._taskRenderer = gantt._task_renderer("line", this._render_task_element, this.$task_bars), this._linkRenderer = gantt._task_renderer("links", this._render_link_element, this.$task_links), this._gridRenderer = gantt._task_renderer("grid_items", this._render_grid_item, this.$grid_data), this._bgRenderer = gantt._task_renderer("bg_lines", this._render_bg_line, this.$task_bg), this.attachEvent("onTaskIdChange", function (e, n) {
+    }, this), this._tasks_dnd.init(), this._init_links_dnd();
+    var e = this._create_filter("_filter_task", "_is_grid_visible"),
+        n = this._create_filter("_filter_task", "_is_chart_visible"),
+        i = this._create_filter("_filter_link", "_is_chart_visible");
+    this._taskRenderer = gantt._task_renderer("line", this._render_task_element, this.$task_bars, n), this._linkRenderer = gantt._task_renderer("links", this._render_link_element, this.$task_links, i), this._gridRenderer = gantt._task_renderer("grid_items", this._render_grid_item, this.$grid_data, e), this._bgRenderer = gantt._task_renderer("bg_lines", this._render_bg_line, this.$task_bg, n), this.attachEvent("onTaskIdChange", function (e, n) {
         var i = this._get_task_renderers();
         t(i, e, n, this.getTask(n))
     }), this.attachEvent("onLinkIdChange", function (e, n) {
         var i = this._get_link_renderers();
         t(i, e, n, this.getLink(n))
     })
+}, gantt._create_filter = function (t) {
+    return t instanceof Array || (t = Array.prototype.slice.call(arguments, 0)),
+    function (e) {
+        for (var n = !0, i = 0, a = t.length; a > i; i++) {
+            var s = t[i];
+            gantt[s] && (n = n && gantt[s].apply(gantt, [e.id, e]) !== !1)
+        }
+        return n
+    }
+}, gantt._is_chart_visible = function () {
+    return !!this.config.show_chart
+}, gantt._filter_task = function (t, e) {
+    var n = null,
+        i = null;
+    return this.config.start_date && this.config.end_date && (n = this.config.start_date.valueOf(), i = this.config.end_date.valueOf(), +e.start_date > i || +e.end_date < +n) ? !1 : !0
+}, gantt._filter_link = function (t, e) {
+    return this.config.show_links ? gantt.isTaskVisible(e.source) && gantt.isTaskVisible(e.target) ? this.callEvent("onBeforeLinkDisplay", [t, e]) : !1 : !1
 }, gantt._get_task_renderers = function () {
     return [this._taskRenderer, this._gridRenderer, this._bgRenderer]
 }, gantt._get_link_renderers = function () {
     return [this._linkRenderer]
 }, gantt._delete_link_handler = function (t, e) {
     if (t && this.callEvent("onLinkDblClick", [t, e])) {
+        if (this.config.readonly) return;
         var n = "",
             i = gantt.locale.labels.link + " " + this.templates.link_description(this.getLink(t)) + " " + gantt.locale.labels.confirm_link_deleting;
         window.setTimeout(function () {
@@ -831,26 +1615,26 @@ function dataProcessor(t) {
     e = this._get_link_renderers();
     for (var n = 0; n < e.length; n++) e[n].render_items(i)
 }, gantt._update_layout_sizes = function () {
-    var t = this._tasks,
-        e = this.config.task_height;
-    "full" == e && (e = this.config.row_height - 5), e = Math.min(e, this.config.row_height), t.bar_height = e, this.$task_data.style.height = this.$task.offsetHeight - this.config.scale_height + "px", this.$task_bg.style.width = t.full_width + "px";
-    for (var n = this.config.columns, i = 0, a = 0; a < n.length; a++) i += n[a].width;
-    this.$grid_data.style.width = i - 1 + "px"
+    var t = this._tasks;
+    if (t.bar_height = this._get_task_height(), this.$task_data.style.height = Math.max(this.$task.offsetHeight - this.config.scale_height, 0) + "px", this.$task_bg.style.width = t.full_width + "px", this._is_grid_visible()) {
+        for (var e = this.config.columns, n = 0, i = 0; i < e.length; i++) n += e[i].width;
+        this.$grid_data.style.width = Math.max(n - 1, 0) + "px"
+    }
 }, gantt._init_tasks_range = function () {
     var t = this.config.scale_unit;
     if (this.config.start_date && this.config.end_date) return this._min_date = this.date[t + "_start"](new Date(this.config.start_date)), this._max_date = this.date[t + "_start"](new Date(this.config.end_date)), void 0;
     var e = this._get_tasks_data(),
         n = this._init_task({
-            id: 0
+            id: this.config.root_id
         });
     e.push(n);
     var i = -1 / 0,
         a = 1 / 0;
     this.eachTask(function (t) {
         t.end_date && +t.end_date > +i && (i = new Date(t.end_date))
-    }, "0"), this.eachTask(function (t) {
+    }, this.config.root_id), this.eachTask(function (t) {
         t.start_date && +t.start_date < +a && (a = new Date(t.start_date))
-    }, "0"), this._min_date = a, this._max_date = i, i && i != -1 / 0 || (this._min_date = new Date, this._max_date = new Date(this._min_date)), this._min_date = this.date[t + "_start"](this._min_date), +this._min_date == +a && (this._min_date = this.date.add(this.date[t + "_start"](this._min_date), -1, t)), this._max_date = this.date[t + "_start"](this._max_date), this._max_date = this.date.add(this._max_date, 1, t)
+    }, this.config.root_id), this._min_date = a, this._max_date = i, i && i != -1 / 0 || (this._min_date = new Date, this._max_date = new Date(this._min_date)), this._min_date = this.date[t + "_start"](this._min_date), +this._min_date == +a && (this._min_date = this.date.add(this.date[t + "_start"](this._min_date), -1, t)), this._max_date = this.date[t + "_start"](this._max_date), this._max_date = this.date.add(this._max_date, 1, t)
 }, gantt._prepare_scale_html = function (t) {
     var e = [],
         n = null,
@@ -861,40 +1645,55 @@ function dataProcessor(t) {
         n = new Date(t.trace_x[s]);
         var r = i.call(this, n),
             o = t.width[s],
-            d = "width:" + o + "px;",
-            l = "gantt_scale_cell" + (s == t.count - 1 ? " gantt_last_cell" : ""),
-            h = a.call(this, n);
-        h && (l += " " + h);
-        var _ = "<div class='" + l + "' style='" + d + "'>" + r + "</div>";
-        e.push(_)
+            d = "",
+            l = "",
+            _ = "";
+        if (o) {
+            d = "width:" + o + "px;", _ = "gantt_scale_cell" + (s == t.count - 1 ? " gantt_last_cell" : ""), l = a.call(this, n), l && (_ += " " + l);
+            var h = "<div class='" + _ + "' style='" + d + "'>" + r + "</div>";
+            e.push(h)
+        }
     }
     return e.join("")
 }, gantt._render_tasks_scales = function () {
     this._init_tasks_range(), this._scroll_resize(), this._set_sizes();
-    var t = this._scale_helpers,
-        e = [t.primaryScale()].concat(this.config.subscales);
-    t.sortScales(e);
-    for (var n = t.prepareConfigs(e, this.config.min_column_width, this.$task.offsetWidth, this.config.scale_height - 1), i = this._tasks = n[n.length - 1], a = [], s = this.templates.scale_row_class, r = 0; r < n.length; r++) {
-        var o = "gantt_scale_line",
-            d = s(n[r]);
-        d && (o += " " + d), a.push('<div class="' + o + '" style="height:' + n[r].height + "px;line-height:" + n[r].height + 'px">' + this._prepare_scale_html(n[r]) + "</div>")
+    var t = "",
+        e = 0,
+        n = 0,
+        i = 0;
+    if (this._is_chart_visible()) {
+        var a = this._scale_helpers,
+            s = [a.primaryScale()].concat(this.config.subscales);
+        i = this.config.scale_height - 1, a.sortScales(s);
+        for (var r = this._get_resize_options(), o = r.x ? 0 : this.$task.offsetWidth, d = a.prepareConfigs(s, this.config.min_column_width, o, i), l = this._tasks = d[d.length - 1], _ = [], h = this.templates.scale_row_class, c = 0; c < d.length; c++) {
+            var g = "gantt_scale_line",
+                u = h(d[c]);
+            u && (g += " " + u), _.push('<div class="' + g + '" style="height:' + d[c].height + "px;line-height:" + d[c].height + 'px">' + this._prepare_scale_html(d[c]) + "</div>")
+        }
+        t = _.join(""), e = l.full_width + this.$scroll_ver.offsetWidth + "px", n = l.full_width + "px", i += "px"
     }
-    this.$task_scale.style.height = this.config.scale_height - 1 + "px", this.$task_data.style.width = this.$task_scale.style.width = i.full_width + this.$scroll_ver.offsetWidth + "px", this.$task_links.style.width = this.$task_bars.style.width = i.full_width + "px", e = a.join(""), this.$task_scale.innerHTML = e
+    this.$task.style.display = this._is_chart_visible() ? "" : "none", this.$task_scale.style.height = i, this.$task_data.style.width = this.$task_scale.style.width = e, this.$task_links.style.width = this.$task_bars.style.width = n, this.$task_scale.innerHTML = t
 }, gantt._render_bg_line = function (t) {
-    for (var e = gantt._tasks, n = e.count, i = [], a = 0; n > a; a++) {
-        var s = e.width[a],
-            r = "width:" + s + "px;",
-            o = "gantt_task_cell" + (a == n - 1 ? " gantt_last_cell" : "");
-        h = this.templates.task_cell_class(t, e.trace_x[a]), h && (o += " " + h);
-        var d = "<div class='" + o + "' style='" + r + "'></div>";
-        i.push(d)
-    }
+    var e = gantt._tasks,
+        n = e.count,
+        i = [];
+    if (gantt.config.show_task_cells)
+        for (var a = 0; n > a; a++) {
+            var s = e.width[a],
+                r = "",
+                o = "";
+            if (s > 0) {
+                r = "width:" + s + "px;", o = "gantt_task_cell" + (a == n - 1 ? " gantt_last_cell" : ""), _ = this.templates.task_cell_class(t, e.trace_x[a]), _ && (o += " " + _);
+                var d = "<div class='" + o + "' style='" + r + "'></div>";
+                i.push(d)
+            }
+        }
     var l = 0 !== t.$index % 2,
-        h = gantt.templates.task_row_class(t.start_date, t.end_date, t),
-        _ = "gantt_task_row" + (l ? " odd" : "") + (h ? " " + h : "");
-    this.getState().selected_task == t.id && (_ += " gantt_selected");
+        _ = gantt.templates.task_row_class(t.start_date, t.end_date, t),
+        h = "gantt_task_row" + (l ? " odd" : "") + (_ ? " " + _ : "");
+    this.getState().selected_task == t.id && (h += " gantt_selected");
     var c = document.createElement("div");
-    return c.className = _, c.style.height = gantt.config.row_height + "px", c.setAttribute(this.config.task_attribute, t.id), c.innerHTML = i.join(""), c
+    return c.className = h, c.style.height = gantt.config.row_height + "px", c.setAttribute(this.config.task_attribute, t.id), c.innerHTML = i.join(""), c
 }, gantt._adjust_scales = function () {
     if (this.config.fit_tasks) {
         var t = +this._min_date,
@@ -917,41 +1716,51 @@ function dataProcessor(t) {
 }, gantt._combine_item_class = function (t, e, n) {
     var i = [t];
     e && i.push(e);
-    var a = gantt.getState();
-    this._is_flex_task(this.getTask(n)) && i.push("gantt_dependent_task"), this.config.select_task && n == a.selected_task && i.push("gantt_selected"), n == a.drag_id && i.push("gantt_drag_" + a.drag_mode);
-    var s = gantt._get_link_state();
-    if (s.link_source_id == n && i.push("gantt_link_source"), s.link_target_id == n && i.push("gantt_link_target"), s.link_landing_area && s.link_target_id && s.link_source_id && s.link_target_id != s.link_source_id) {
-        var r = s.link_source_id,
-            o = s.link_source_start,
-            d = s.link_target_start,
-            l = gantt.isLinkAllowed(r, n, o, d),
+    var a = gantt.getState(),
+        s = this.getTask(n);
+    this._get_safe_type(s.type) == this.config.types.milestone && i.push("gantt_milestone"), this._get_safe_type(s.type) == this.config.types.project && i.push("gantt_project"), this._is_flex_task(s) && i.push("gantt_dependent_task"), this.config.select_task && n == a.selected_task && i.push("gantt_selected"), n == a.drag_id && i.push("gantt_drag_" + a.drag_mode);
+    var r = gantt._get_link_state();
+    if (r.link_source_id == n && i.push("gantt_link_source"), r.link_target_id == n && i.push("gantt_link_target"), r.link_landing_area && r.link_target_id && r.link_source_id && r.link_target_id != r.link_source_id) {
+        var o = r.link_source_id,
+            d = r.link_source_start,
+            l = r.link_target_start,
+            _ = gantt.isLinkAllowed(o, n, d, l),
             h = "";
-        h = l ? d ? "link_start_allow" : "link_finish_allow" : d ? "link_start_deny" : "link_finish_deny", i.push(h)
+        h = _ ? l ? "link_start_allow" : "link_finish_allow" : l ? "link_start_deny" : "link_finish_deny", i.push(h)
     }
     return i.join(" ")
 }, gantt._render_pair = function (t, e, n, i) {
     var a = gantt.getState(); +n.end_date <= +a.max_date && t.appendChild(i(e + " task_right")), +n.start_date >= +a.min_date && t.appendChild(i(e + " task_left"))
+}, gantt._get_task_height = function () {
+    var t = this.config.task_height;
+    return "full" == t && (t = this.config.row_height - 5), t = Math.min(t, this.config.row_height), Math.max(t, 0)
+}, gantt._get_milestone_width = function () {
+    return this._get_task_height()
+}, gantt._get_visible_milestone_width = function () {
+    var t = gantt._get_task_height();
+    return Math.sqrt(2 * t * t)
+}, gantt._get_task_width = function (t) {
+    return Math.round(this._get_task_pos(t, !1).x - this._get_task_pos(t, !0).x)
 }, gantt._render_task_element = function (t) {
-    if (!(+t.start_date < +this._max_date && +t.end_date > +this._min_date)) return !1;
-    var e = this._get_task_coord(t),
-        n = this.posFromDate(t.end_date),
-        i = this.config,
-        a = this._tasks.bar_height;
-    a = Math.min(a, this.config.row_height);
-    var s = Math.floor((this.config.row_height - a) / 2),
-        r = document.createElement("div"),
-        o = Math.round(n - e.x);
-    r.setAttribute(this.config.task_attribute, t.id), r.appendChild(gantt._render_task_content(t, o)), r.className = this._combine_item_class("gantt_task_line", this.templates.task_class(t.start_date, t.end_date, t), t.id), r.style.cssText = ["left:" + e.x + "px", "top:" + (s + e.y) + "px", "height:" + a + "px", "line-height:" + a + "px", "width:" + o + "px"].join(";");
+    var e = this._get_task_pos(t),
+        n = this.config,
+        i = this._get_task_height(),
+        a = Math.floor((this.config.row_height - i) / 2);
+    t.type == n.types.milestone && n.link_line_width > 1 && (a += 1);
+    var s = document.createElement("div"),
+        r = gantt._get_task_width(t),
+        o = this._get_safe_type(t.type);
+    s.setAttribute(this.config.task_attribute, t.id), s.appendChild(gantt._render_task_content(t, r)), s.className = this._combine_item_class("gantt_task_line", this.templates.task_class(t.start_date, t.end_date, t), t.id), s.style.cssText = ["left:" + e.x + "px", "top:" + (a + e.y) + "px", "height:" + i + "px", "line-height:" + i + "px", "width:" + r + "px"].join(";");
     var d = this._render_leftside_content(t);
-    return d && r.appendChild(d), d = this._render_rightside_content(t), d && r.appendChild(d), i.show_progress && this._render_task_progress(t, r, o), i.drag_resize && !this._is_flex_task(t) && gantt._render_pair(r, "gantt_task_drag", t, function (t) {
+    return d && s.appendChild(d), d = this._render_rightside_content(t), d && s.appendChild(d), n.show_progress && o != this.config.types.milestone && this._render_task_progress(t, s, r), this.config.readonly || (n.drag_resize && !this._is_flex_task(t) && o != this.config.types.milestone && gantt._render_pair(s, "gantt_task_drag", t, function (t) {
         var e = document.createElement("div");
         return e.className = t, e
-    }), i.drag_links && gantt._render_pair(r, "gantt_link_control", t, function (t) {
+    }), n.drag_links && gantt._render_pair(s, "gantt_link_control", t, function (t) {
         var e = document.createElement("div");
-        e.className = t, e.style.cssText = ["height:" + a + "px", "line-height:" + a + "px"].join(";");
+        e.className = t, e.style.cssText = ["height:" + i + "px", "line-height:" + i + "px"].join(";");
         var n = document.createElement("div");
         return n.className = "gantt_link_point", e.appendChild(n), e
-    }), r
+    })), s
 }, gantt._render_side_content = function (t, e, n) {
     if (!e) return null;
     var i = e(t.start_date, t.end_date, t);
@@ -979,15 +1788,15 @@ function dataProcessor(t) {
             for (var r = gantt.getLink(a[s]), o = 0; o < n[i].length; o++)
                 if (r.type == n[i][o]) return "gantt_link_crossing";
     return ""
-}, gantt._render_task_content = function (t, e) {
-    var n = document.createElement("div");
-    return n.innerHTML = this.templates.task_text(t.start_date, t.end_date, t), n.className = "gantt_task_content", n.style.width = e + "px", n
+}, gantt._render_task_content = function (t) {
+    var e = document.createElement("div");
+    return this._get_safe_type(t.type) != this.config.types.milestone && (e.innerHTML = this.templates.task_text(t.start_date, t.end_date, t)), e.className = "gantt_task_content", e
 }, gantt._render_task_progress = function (t, e, n) {
     var i = 1 * t.progress || 0;
     n = Math.max(n - 2, 0);
     var a = document.createElement("div"),
         s = Math.round(n * i);
-    if (a.style.width = s + "px", a.className = "gantt_task_progress", a.innerHTML = this.templates.progress_text(t.start_date, t.end_date, t), e.appendChild(a), this.config.drag_progress) {
+    if (s = Math.min(n, s), a.style.width = s + "px", a.className = "gantt_task_progress", a.innerHTML = this.templates.progress_text(t.start_date, t.end_date, t), e.appendChild(a), this.config.drag_progress && !gantt.config.readonly) {
         var r = document.createElement("div");
         r.style.left = s + "px", r.className = "gantt_task_progress_drag", a.appendChild(r), e.appendChild(r)
     }
@@ -1005,7 +1814,7 @@ function dataProcessor(t) {
 }, gantt._date_from_pos = function (t) {
     var e = this._tasks;
     if (0 > t || t > e.full_width) return null;
-    for (var n = 0, i = 0; i + e.width[n] < t;) n++, i += e.width[n];
+    for (var n = 0, i = 0; i + e.width[n] < t;) i += e.width[n], n++;
     var a = (t - i) / e.width[n],
         s = gantt._get_coll_duration(e, e.trace_x[n]),
         r = new Date(e.trace_x[n].valueOf() + Math.round(a * s));
@@ -1017,25 +1826,35 @@ function dataProcessor(t) {
     return i && (a += n < gantt._tasks.width.length ? gantt._tasks.width[n] * (i % 1) : 1), a
 }, gantt._day_index_by_date = function (t) {
     var e = new Date(t),
-        n = gantt._tasks.trace_x;
+        n = gantt._tasks.trace_x,
+        i = gantt._tasks.ignore_x;
     if (+e <= this._min_date) return 0;
     if (+e >= this._max_date) return n.length;
-    for (var i = 0; i < n.length - 1 && !(+e < n[i + 1]) ; i++);
-    return i + (t - n[i]) / gantt._get_coll_duration(gantt._tasks, n[i])
+    for (var a = 0; a < n.length - 1 && (!(+e < n[a + 1]) || i[+n[a + 1]]) ; a++);
+    return a + (t - n[a]) / gantt._get_coll_duration(gantt._tasks, n[a])
 }, gantt._get_coll_duration = function (t, e) {
     return gantt.date.add(e, t.step, t.unit) - e
-}, gantt._get_y_pos = function (t) {
-    var e = this._get_visible_order(t);
-    return dhtmlx.assert(-1 != e, "Task index not found"), e * this.config.row_height
-}, gantt._get_task_coord = function (t) {
-    return {
-        x: gantt.posFromDate(t.start_date),
-        y: gantt._get_y_pos(t.id)
+}, gantt._get_x_pos = function (t, e) {
+    e = e !== !1, gantt.posFromDate(e ? t.start_date : t.end_date)
+}, gantt._get_task_coord = function (t, e, n) {
+    e = e !== !1, n = n || 0;
+    var i = t.type == this.config.types.milestone,
+        a = this.posFromDate(e || i ? t.start_date : t.end_date),
+        s = this._y_from_ind(this._get_visible_order(t.id));
+    return i && (e ? a -= n : a += n), {
+        x: a,
+        y: s
     }
+}, gantt._get_task_pos = function (t, e) {
+    e = e !== !1;
+    var n = gantt._get_milestone_width() / 2;
+    return this._get_task_coord(t, e, n)
+}, gantt._get_task_visible_pos = function (t, e) {
+    e = e !== !1;
+    var n = gantt._get_visible_milestone_width() / 2;
+    return this._get_task_coord(t, e, n)
 }, gantt._correct_shift = function (t, e) {
     return t -= 6e4 * (new Date(gantt._min_date).getTimezoneOffset() - new Date(t).getTimezoneOffset()) * (e ? -1 : 1)
-}, gantt._scroll_task_area = function (t, e) {
-    1 * t === t && (this.$task.scrollLeft = t), 1 * e === e && (this.$task_data.scrollTop = e)
 }, gantt._get_mouse_pos = function (t) {
     if (t.pageX || t.pageY) var e = {
         x: t.pageX,
@@ -1047,13 +1866,13 @@ function dataProcessor(t) {
             y: t.clientY + n.scrollTop - n.clientTop
         }, i = gantt._get_position(gantt.$task_data);
     return e.x = e.x - i.x + gantt.$task_data.scrollLeft, e.y = e.y - i.y + gantt.$task_data.scrollTop, e
-}, gantt._task_renderer = function (t, e, n) {
+}, gantt._task_renderer = function (t, e, n, i) {
     return this._task_area_pulls || (this._task_area_pulls = {}), this._task_area_renderers || (this._task_area_renderers = {}), this._task_area_renderers[t] ? this._task_area_renderers[t] : (e || dhtmlx.assert(!1, "Invalid renderer call"), this._task_area_renderers[t] = {
-        render_item: function (i, a) {
-            var s = gantt._task_area_pulls[t];
-            a = a || n;
-            var r = e.call(gantt, i);
-            r && (s[i.id] ? this.replace_item(i.id, r) : (s[i.id] = r, a.appendChild(r)))
+        render_item: function (a, s) {
+            var r = gantt._task_area_pulls[t];
+            if (s = s || n, i && !i(a)) return this.remove_item(a.id), void 0;
+            var o = e.call(gantt, a);
+            o && (r[a.id] ? this.replace_item(a.id, o) : (r[a.id] = o, s.appendChild(o)))
         },
         render_items: function (e, i) {
             this.rendered = gantt._task_area_pulls[t] = {}, i = i || n, i.innerHTML = "";
@@ -1074,11 +1893,8 @@ function dataProcessor(t) {
         rendered: this._task_area_pulls[t],
         node: n
     }, this._task_area_renderers[t])
-}, gantt.showTask = function (t) {
-    var e = this.getTaskNode(t),
-        n = Math.max(e.offsetLeft - this.config.task_scroll_offset, 0),
-        i = e.offsetTop - (this.$task_data.offsetHeight - this.config.row_height) / 2;
-    this._scroll_task_area(n, i)
+}, gantt._clear_renderers = function () {
+    this._task_area_pulls = {}, this._task_area_renderers = {}
 }, gantt._pull = {}, gantt._branches = {}, gantt._order = [], gantt._lpull = {}, gantt.load = function (t, e, n) {
     dhtmlx.assert(arguments.length, "Invalid load arguments"), this.callEvent("onLoadStart", []);
     var i = "json",
@@ -1101,19 +1917,20 @@ function dataProcessor(t) {
     this._process_loading(i), this.callEvent("onLoadEnd", [])
 }, gantt._process_loading = function (t) {
     t.collections && this._load_collections(t.collections);
-    for (var e = {}, n = t.data, i = 0; i < n.length; i++) {
-        var a = n[i];
-        this._init_task(a), this.callEvent("onTaskLoading", [e[i]]) && (e[a.id] = a, this._branches[a.parent] || (this._branches[a.parent] = []), this._branches[a.parent].push(a.id))
+    for (var e = t.data, n = 0; n < e.length; n++) {
+        var i = e[n];
+        this._init_task(i), this.callEvent("onTaskLoading", [i]) && (this._pull[i.id] = i, this._add_branch(i))
     }
-    dhtmlx.mixin(this._pull, e, !0), this._sync_order();
-    for (var i in this._pull) this._pull[i].$level = this._item_level(this._pull[i]);
+    this._sync_order();
+    for (var n in this._pull) this._pull[n].$level = this._item_level(this._pull[n]);
     this._init_links(t.links || (t.collections ? t.collections.links : []))
 }, gantt._init_links = function (t) {
     if (t)
-        for (var e = 0; e < t.length; e++) {
-            var n = this._init_link(t[e]);
-            this._lpull[n.id] = n
-        }
+        for (var e = 0; e < t.length; e++)
+            if (t[e]) {
+                var n = this._init_link(t[e]);
+                this._lpull[n.id] = n
+            }
     this._sync_links()
 }, gantt._load_collections = function (t) {
     var e = !1;
@@ -1139,15 +1956,15 @@ function dataProcessor(t) {
     e && this.callEvent("onOptionsLoad", [])
 }, gantt._sync_order = function () {
     this._order = [], this._sync_order_item({
-        parent: 0,
+        parent: this.config.root_id,
         $open: !0,
         $ignore: !0,
-        id: 0
+        id: this.config.root_id
     }), this._scroll_resize(), this._set_sizes()
 }, gantt.attachEvent("onBeforeTaskDisplay", function (t, e) {
     return !e.$ignore
 }), gantt._sync_order_item = function (t) {
-    if (t.id && this.callEvent("onBeforeTaskDisplay", [t.id, t]) && this._order.push(t.id), t.$open) {
+    if (t.id && this._filter_task(t.id, t) && this.callEvent("onBeforeTaskDisplay", [t.id, t]) && this._order.push(t.id), t.$open) {
         var e = this._branches[t.id];
         if (e)
             for (var n = 0; n < e.length; n++) this._sync_order_item(this._pull[e[n]])
@@ -1158,7 +1975,7 @@ function dataProcessor(t) {
         if (e[n] == t) return n;
     return -1
 }, gantt.eachTask = function (t, e, n) {
-    e = e || 0, n = n || this;
+    e = e || this.config.root_id, n = n || this;
     var i = this._branches[e];
     if (i)
         for (var a = 0; a < i.length; a++) {
@@ -1184,7 +2001,7 @@ function dataProcessor(t) {
             e = [];
         gantt.eachTask(function (e) {
             t.push(this._copyObject(e))
-        }, 0, this);
+        }, gantt.config.root_id, this);
         for (var n in gantt._lpull) e.push(this._copyLink(gantt._lpull[n]));
         return {
             data: t,
@@ -1206,27 +2023,27 @@ function dataProcessor(t) {
     _getCollections: function (t) {
         for (var e = {}, n = t.doXPath("//coll_options"), i = 0; i < n.length; i++)
             for (var a = n[i].getAttribute("for"), s = e[a] = [], r = t.doXPath(".//item", n[i]), o = 0; o < r.length; o++) {
-                for (var d = r[o], l = d.attributes, h = {
+                for (var d = r[o], l = d.attributes, _ = {
                     key: r[o].getAttribute("value"),
                     label: r[o].getAttribute("label")
-                }, _ = 0; _ < l.length; _++) {
-                    var c = l[_];
-                    "value" != c.nodeName && "label" != c.nodeName && (h[c.nodeName] = c.nodeValue)
+                }, h = 0; h < l.length; h++) {
+                    var c = l[h];
+                    "value" != c.nodeName && "label" != c.nodeName && (_[c.nodeName] = c.nodeValue)
                 }
-                s.push(h)
+                s.push(_)
             }
         return e
     },
     _getXML: function (t, e, n) {
-        if (n = n || "data", e.getXMLTopNode || (e = new dtmlXMLLoaderObject(function () { }), e.loadXMLString(t)), xml = e.getXMLTopNode(n), xml.tagName != n) throw "Invalid XML data";
-        var i = xml.getAttribute("dhx_security");
-        return i && (dhtmlx.security_key = i), e
+        n = n || "data", e.getXMLTopNode || (e = new dtmlXMLLoaderObject(function () { }), e.loadXMLString(t));
+        var i = e.getXMLTopNode(n);
+        if (i.tagName != n) throw "Invalid XML data";
+        var a = i.getAttribute("dhx_security");
+        return a && (dhtmlx.security_key = a), e
     },
     parse: function (t, e) {
         e = this._getXML(t, e);
-        var n = {}, i = n.data = [];
-        xml = e.doXPath("//task");
-        for (var a = 0; a < xml.length; a++) i[a] = this._xmlNodeToJSON(xml[a]);
+        for (var n = {}, i = n.data = [], a = e.doXPath("//task"), s = 0; s < a.length; s++) i[s] = this._xmlNodeToJSON(a[s]);
         return n.collections = this._getCollections(e), n
     },
     _copyLink: function (t) {
@@ -1242,44 +2059,118 @@ function dataProcessor(t) {
             e = [];
         gantt.eachTask(function (e) {
             t.push(this._copyObject(e))
-        }, 0, this);
+        }, gantt.config.root_id, this);
         for (var n in gantt._lpull) e.push(this._copyLink(gantt._lpull[n]));
         return "<data>" + t.join("") + "<coll_options for='links'>" + e.join("") + "</coll_options></data>"
     }
 }, gantt.oldxml = {
     parse: function (t, e) {
         e = gantt.xml._getXML(t, e, "projects");
-        var n = {
+        for (var n = {
             collections: {
-                links: []
-            }
-        }, i = n.data = [];
-        xml = e.doXPath("//task");
-        for (var a = 0; a < xml.length; a++) {
-            i[a] = gantt.xml._xmlNodeToJSON(xml[a]);
-            var s = xml[a].parentNode;
-            i[a].parent = "project" == s.tagName ? "project-" + s.getAttribute("id") : s.parentNode.getAttribute("id")
+            links: []
         }
-        xml = e.doXPath("//project");
-        for (var a = 0; a < xml.length; a++) {
-            var r = gantt.xml._xmlNodeToJSON(xml[a], !0);
-            r.id = "project-" + r.id, i.push(r)
+        }, i = n.data = [], a = e.doXPath("//task"), s = 0; s < a.length; s++) {
+            i[s] = gantt.xml._xmlNodeToJSON(a[s]);
+            var r = a[s].parentNode;
+            i[s].parent = "project" == r.tagName ? "project-" + r.getAttribute("id") : r.parentNode.getAttribute("id")
         }
-        for (var a = 0; a < i.length; a++) {
-            var r = i[a];
-            r.start_date = r.startdate || r.est, r.end_date = r.enddate, r.text = r.name, r.duration = r.duration / 8, r.open = 1, r.duration || r.end_date || (r.duration = 1), r.predecessortasks && n.collections.links.push({
-                target: r.id,
-                source: r.predecessortasks,
+        a = e.doXPath("//project");
+        for (var s = 0; s < a.length; s++) {
+            var o = gantt.xml._xmlNodeToJSON(a[s], !0);
+            o.id = "project-" + o.id, i.push(o)
+        }
+        for (var s = 0; s < i.length; s++) {
+            var o = i[s];
+            o.start_date = o.startdate || o.est, o.end_date = o.enddate, o.text = o.name, o.duration = o.duration / 8, o.open = 1, o.duration || o.end_date || (o.duration = 1), o.predecessortasks && n.collections.links.push({
+                target: o.id,
+                source: o.predecessortasks,
                 type: gantt.config.links.finish_to_start
             })
         }
         return n
     },
     serialize: function () {
-        webix.message("Serialization to 'old XML' is not implemented")
+        dhtmlx.message("Serialization to 'old XML' is not implemented")
     }
 }, gantt.serverList = function (t, e) {
-    return this.serverList[t] = e ? e.slice(0) : this.serverList[t] || []
+    return e ? this.serverList[t] = e.slice(0) : this.serverList[t] || (this.serverList[t] = []), this.serverList[t]
+}, gantt._working_time_helper = {
+    units: ["year", "month", "week", "day", "hour", "minute"],
+    hours: [8, 17],
+    dates: {
+        0: !1,
+        6: !1
+    },
+    _get_unit_order: function (t) {
+        for (var e = 0, n = this.units.length; n > e; e++)
+            if (this.units[e] == t) return e;
+        dhtmlx.assert(!1, "Incorrect duration unit")
+    },
+    _timestamp: function (t) {
+        var e = null;
+        return t.day || 0 === t.day ? e = t.day : t.date && (e = gantt.date.date_part(new Date(t.date)).valueOf()), e
+    },
+    set_time: function (t) {
+        var e = void 0 !== t.hours ? t.hours : !0,
+            n = this._timestamp(t);
+        null !== n ? this.dates[n] = e : this.hours = e
+    },
+    unset_time: function (t) {
+        if (t) {
+            var e = this._timestamp(t);
+            null !== e && delete this.dates[e]
+        } else this.hours = []
+    },
+    is_working_unit: function (t, e, n) {
+        return gantt.config.work_time ? (void 0 === n && (n = this._get_unit_order(e)), void 0 === n ? !1 : n && !this.is_working_unit(t, this.units[n - 1], n - 1) ? !1 : this["is_work_" + e] ? this["is_work_" + e](t) : !0) : !0
+    },
+    is_work_day: function (t) {
+        var e = this.get_working_hours(t);
+        return e instanceof Array ? e.length > 0 : !1
+    },
+    is_work_hour: function (t) {
+        for (var e = this.get_working_hours(t), n = t.getHours(), i = 0; i < e.length; i += 2) {
+            if (void 0 === e[i + 1]) return e[i] == n;
+            if (n >= e[i] && n < e[i + 1]) return !0
+        }
+        return !1
+    },
+    get_working_hours: function (t) {
+        var e = this._timestamp({
+            date: t
+        }),
+            n = !0;
+        return void 0 !== this.dates[e] ? n = this.dates[e] : void 0 !== this.dates[t.getDay()] && (n = this.dates[t.getDay()]), n === !0 ? this.hours : n ? n : []
+    },
+    get_work_units_between: function (t, e, n, i) {
+        if (!n) return !1;
+        for (var a = new Date(t), s = new Date(e), i = i || 1, r = 0; a.valueOf() < s.valueOf() ;) this.is_working_unit(a, n) && r++, a = gantt.date.add(a, i, n);
+        return r
+    },
+    add_worktime: function (t, e, n, i) {
+        if (!n) return !1;
+        for (var a = new Date(t), s = 0, i = i || 1, e = 1 * e; e > s;) {
+            var r = gantt.date.add(a, i, n);
+            this.is_working_unit(i > 0 ? a : r, n) && s++, a = r
+        }
+        return a
+    },
+    get_closest_worktime: function (t) {
+        if (this.is_working_unit(t.date, t.unit)) return t.date;
+        var e = t.unit,
+            n = gantt.date[e + "_start"](t.date),
+            i = new Date(n),
+            a = new Date(n),
+            s = !0,
+            r = 3e3,
+            o = 0,
+            d = "any" == t.dir || !t.dir,
+            l = 1;
+        for ("past" == t.dir && (l = -1) ; !this.is_working_unit(n, e) ;)
+            if (d && (n = s ? i : a, l = -1 * l), n = gantt.date.add(n, l, e), d && (s ? i = n : a = n), s = !s, o++, o > r) return dhtmlx.assert(!1, "Invalid working time check"), !1;
+        return (n == a || "past" == t.dir) && (n = gantt.date.add(n, 1, e)), n
+    }
 }, gantt.getTask = function (t) {
     return dhtmlx.assert(this._pull[t]), this._pull[t]
 }, gantt.getTaskByTime = function (t, e) {
@@ -1302,9 +2193,32 @@ function dataProcessor(t) {
         if (this._order[e] == t) return !0;
     return !1
 }, gantt.updateTask = function (t, e) {
-    return dhtmlx.defined(e) || (e = this.getTask(t)), this.callEvent("onBeforeTaskUpdate", [t, e]) === !1 ? !1 : (this._pull[e.id] = e, this._update_parents(e.id), this.refreshTask(e.id), this.callEvent("onAfterTaskUpdate", [t, e]), this._sync_order(), this._adjust_scales(), void 0)
+    return dhtmlx.defined(e) || (e = this.getTask(t)), this.callEvent("onBeforeTaskUpdate", [t, e]) === !1 ? !1 : (this._pull[e.id] = e, this._is_parent_sync(e) || this._resync_parent(e), this._update_parents(e.id), this.refreshTask(e.id), this.callEvent("onAfterTaskUpdate", [t, e]), this._sync_order(), this._adjust_scales(), void 0)
+}, gantt._add_branch = function (t) {
+    this._branches[t.parent] || (this._branches[t.parent] = []);
+    for (var e = this._branches[t.parent], n = !1, i = 0, a = e.length; a > i; i++)
+        if (e[i] == t.id) {
+            n = !0;
+            break
+        }
+    n || e.push(t.id), this._sync_parent(t), this._sync_order()
+}, gantt._move_branch = function (t, e, n) {
+    t.parent = n, this._sync_parent(t), this._replace_branch_child(e, t.id), n ? this._add_branch(t) : delete this._branches[t.id], t.$level = this._item_level(t), this._sync_order()
+}, gantt._resync_parent = function (t) {
+    this._move_branch(t, t.$rendered_parent, t.parent)
+}, gantt._sync_parent = function (t) {
+    t.$rendered_parent = t.parent
+}, gantt._is_parent_sync = function (t) {
+    return t.$rendered_parent == t.parent
+}, gantt._replace_branch_child = function (t, e, n) {
+    var i = this._branches[t];
+    if (i) {
+        for (var a = [], s = 0; s < i.length; s++) i[s] != e ? a.push(i[s]) : n && a.push(n);
+        this._branches[t] = a
+    }
+    this._sync_order()
 }, gantt.addTask = function (t, e) {
-    return dhtmlx.defined(e) || (e = t.parent || 0), dhtmlx.defined(this._pull[e]) || (e = 0), t.parent = e, t = this._init_task(t), this.callEvent("onBeforeTaskAdd", [t.id, t]) === !1 ? !1 : (this._pull[t.id] = t, this._branches[t.parent] || (this._branches[t.parent] = []), this._branches[t.parent].push(t.id), this.refreshData(), this.callEvent("onAfterTaskAdd", [t.id, t]), this._adjust_scales(), t.id)
+    return dhtmlx.defined(e) || (e = t.parent || 0), dhtmlx.defined(this._pull[e]) || (e = 0), t.parent = e, t = this._init_task(t), this.callEvent("onBeforeTaskAdd", [t.id, t]) === !1 ? !1 : (this._pull[t.id] = t, this._add_branch(t), this.refreshData(), this.callEvent("onAfterTaskAdd", [t.id, t]), this._adjust_scales(), t.id)
 }, gantt.deleteTask = function (t) {
     return this._deleteTask(t)
 }, gantt._deleteTask = function (t, e) {
@@ -1312,32 +2226,53 @@ function dataProcessor(t) {
     if (!e && this.callEvent("onBeforeTaskDelete", [t, n]) === !1) return !1;
     !e && this._dp && this._dp.setUpdateMode("off");
     var i = this._branches[n.id] || [];
-    this._selected_task == t && (this._selected_task = null);
+    this._update_flags(t, null);
     for (var a = 0; a < i.length; a++) this._silentStart(), this._deleteTask(i[a], !0), this._dp && (this._dp._ganttMode = "tasks", this._dp.setUpdated(i[a], !0, "deleted")), this._silentEnd();
     for (!e && this._dp && this._dp.setUpdateMode("cell") ; n.$source.length > 0;) this.deleteLink(n.$source[0]);
     for (; n.$target.length > 0;) this.deleteLink(n.$target[0]);
-    return delete this._pull[t], delete this._branches[t], this._branch_update(n.parent, t), e || (this.callEvent("onAfterTaskDelete", [t, n]), this.refreshData()), !0
+    return delete this._pull[t], this._move_branch(n, n.parent, null), e || (this.callEvent("onAfterTaskDelete", [t, n]), this.refreshData()), !0
 }, gantt.clearAll = function () {
-    this._pull = {}, this._branches = {}, this._order = [], this._order_full = [], this._lpull = {}, this.refreshData(), this.callEvent("onClear", [])
+    this._pull = {}, this._branches = {}, this._order = [], this._order_full = [], this._lpull = {}, this._update_flags(), this.refreshData(), this.callEvent("onClear", [])
+}, gantt._update_flags = function (t, e) {
+    void 0 === t ? (this._lightbox_id = this._selected_task = null, this._tasks_dnd.drag && (this._tasks_dnd.drag.id = null)) : (this._lightbox_id == t && (this._lightbox_id = e), this._selected_task == t && (this._selected_task = e), this._tasks_dnd.drag && this._tasks_dnd.drag.id == t && (this._tasks_dnd.drag.id = e))
 }, gantt.changeTaskId = function (t, e) {
     var n = this._pull[e] = this._pull[t];
     this._pull[e].id = e, delete this._pull[t];
     for (var i in this._pull) this._pull[i].parent == t && (this._pull[i].parent = e);
-    this._lightbox_id == t && (this._lightbox_id = e), this._branch_update(n.parent, t, e), this._sync_order(), this.callEvent("onTaskIdChange", [t, e])
-}, gantt._branch_update = function (t, e, n) {
-    var i = this._branches[t];
-    if (i) {
-        for (var a = [], s = 0; s < i.length; s++) i[s] != e ? a.push(i[s]) : n && a.push(n);
-        this._branches[t] = a
-    }
+    this._update_flags(t, e), this._replace_branch_child(n.parent, t, e), this.callEvent("onTaskIdChange", [t, e])
 }, gantt._get_duration_unit = function () {
     return 1e3 * gantt._get_line(this.config.duration_unit) || this.config.duration_unit
+}, gantt._get_safe_type = function (t) {
+    for (var e in this.config.types)
+        if (this.config.types[e] == t) return t;
+    return gantt.config.types.task
+}, gantt._get_type_name = function (t) {
+    for (var e in this.config.types)
+        if (this.config.types[e] == t) return e;
+    return "task"
+}, gantt.getWorkHours = function (t) {
+    return this._working_time_helper.get_working_hours(t)
+}, gantt.setWorkTime = function (t) {
+    this._working_time_helper.set_time(t)
+}, gantt.isWorkTime = function (t, e) {
+    var n = this._working_time_helper;
+    return n.is_working_unit(t, e || this.config.duration_unit)
+}, gantt.getClosestWorkTime = function (t) {
+    var e = this._working_time_helper;
+    return t instanceof Date && (t = {
+        date: t
+    }), t.dir = t.dir || "any", t.unit = t.unit || this.config.duration_unit, e.get_closest_worktime(t)
+}, gantt.calculateDuration = function (t, e) {
+    var n = this._working_time_helper;
+    return n.get_work_units_between(t, e, this.config.duration_unit, this.config.duration_step)
+}, gantt.calculateEndDate = function (t, e) {
+    var n = this._working_time_helper,
+        i = e >= 0 ? 1 : -1;
+    return n.add_worktime(t, Math.abs(e), this.config.duration_unit, i * this.config.duration_step)
 }, gantt._init_task = function (t) {
-    dhtmlx.defined(t.id) || (t.id = dhtmlx.uid()), t.start_date && (t.start_date = gantt.date.parseDate(t.start_date, "xml_date")), t.end_date && (t.end_date = gantt.date.parseDate(t.end_date, "xml_date"));
-    var e = this._get_duration_unit();
-    return t.start_date && (t.end_date ? this._update_task_duration(t) : t.duration && (t.end_date = new Date(t.start_date.valueOf() + t.duration * e))), gantt._init_task_timing(t), t.$source = [], t.$target = [], t.parent = t.parent || 0, t.$open = dhtmlx.defined(t.open) ? t.open : !1, t.$level = this._item_level(t), t
+    return dhtmlx.defined(t.id) || (t.id = dhtmlx.uid()), t.start_date && (t.start_date = gantt.date.parseDate(t.start_date, "xml_date")), t.end_date && (t.end_date = gantt.date.parseDate(t.end_date, "xml_date")), t.start_date && !t.end_date && t.duration && (t.end_date = this.calculateEndDate(t.start_date, t.duration)), gantt.config.work_time && gantt.config.correct_work_time && (t.start_date && (t.start_date = gantt.getClosestWorkTime(t.start_date)), t.end_date && (t.end_date = gantt.getClosestWorkTime(t.end_date))), gantt._init_task_timing(t), t.$source = [], t.$target = [], t.parent = t.parent || this.config.root_id, t.$open = dhtmlx.defined(t.open) ? t.open : !1, t.$level = this._item_level(t), t
 }, gantt._init_task_timing = function (t) {
-    t.$no_end = !(t.end_date || t.duration), t.$no_start = !t.start_date
+    void 0 === t.$rendered_type ? t.$rendered_type = t.type : t.$rendered_type != t.type && (delete t.$no_end, delete t.$no_start, t.$rendered_type = t.type), void 0 !== t.$no_end && void 0 !== t.$no_start || t.type == this.config.types.milestone || (t.type == this.config.types.project ? t.$no_end = t.$no_start = !0 : (t.$no_end = !(t.end_date || t.duration), t.$no_start = !t.start_date)), t.type == this.config.types.milestone && (t.end_date = t.start_date), t.start_date && t.end_date && (t.duration = this.calculateDuration(t.start_date, t.end_date)), t.duration = t.duration || 0
 }, gantt._is_flex_task = function (t) {
     return !(!t.$no_end && !t.$no_start)
 }, gantt._update_parents = function (t, e) {
@@ -1346,30 +2281,36 @@ function dataProcessor(t) {
         if (n.$no_end) {
             var i = 0;
             this.eachTask(function (t) {
-                +t.end_date > +i && (i = new Date(t.end_date))
+                t.end_date && +t.end_date > +i && (i = new Date(t.end_date))
             }, n.id), i && (n.end_date = i)
         }
         if (n.$no_start) {
             var a = 1 / 0;
             this.eachTask(function (t) {
-                +t.start_date < +a && (a = new Date(t.start_date))
+                t.start_date && +t.start_date < +a && (a = new Date(t.start_date))
             }, n.id), 1 / 0 != a && (n.start_date = a)
-        } (n.$no_end || n.$no_start) && (this._update_task_duration(n), e || this.refreshTask(n.id, !0)), n.parent && this.isTaskExists(n.parent) && this._update_parents(n.parent, e)
+        } (n.$no_end || n.$no_start) && (this._init_task_timing(n), e || this.refreshTask(n.id, !0)), n.parent && this.isTaskExists(n.parent) && this._update_parents(n.parent, e)
     }
-}, gantt._round_date = function (t, e, n) {
-    var i = gantt.date[n + "_start"](new Date(t)),
-        a = gantt.date.add(i, e, n);
-    return Math.abs(t - i) < Math.abs(a - t) ? i : a
-}, gantt._round_task_dates = function (t, e, n) {
-    t.start_date = this._round_date(+t.start_date, e, n), t.end_date = this._round_date(+t.end_date, e, n), t.end_date <= t.start_date && (e = e || gantt._tasks.step, n = n || gantt._tasks.unit, t.end_date = gantt.date.add(t.start_date, e, n))
-}, gantt._update_task_duration = function (t) {
-    t.start_date && t.end_date && (t.duration = Math.round((t.end_date - t.start_date) / (this.config.duration_step * this._get_duration_unit())))
-}, gantt._item_level = function (t) {
+}, gantt.isChildOf = function (t, e) {
+    if (!this.isTaskExists(t)) return !1;
+    if (e === this.config.root_id) return this.isTaskExists(t);
+    for (var n = this.getTask(t) ; n && this.isTaskExists(n.parent) ;)
+        if (n = this.getTask(n.parent), n && n.id == e) return !0;
+    return !1
+}, gantt._get_closest_date = function (t) {
+    for (var e = t.date, n = t.step, i = t.unit, a = gantt.date[i + "_start"](new Date(this._min_date)) ; +e > +a;) a = gantt.date.add(a, n, i);
+    var s = gantt.date.add(a, -1 * n, i);
+    return t.dir && "future" == t.dir ? a : t.dir && "past" == t.dir ? s : Math.abs(e - s) < Math.abs(a - e) ? s : a
+}, gantt.attachEvent("onBeforeTaskUpdate", function (t, e) {
+    return gantt._init_task_timing(e), !0
+}), gantt.attachEvent("onBeforeTaskAdd", function (t, e) {
+    return gantt._init_task_timing(e), !0
+}), gantt._item_level = function (t) {
     for (var e = 0; t.parent && dhtmlx.defined(this._pull[t.parent]) ;) t = this._pull[t.parent], e++;
     return e
 }, gantt.sort = function (t, e, n) {
     var i = !arguments[3];
-    dhtmlx.defined(n) || (n = 0), dhtmlx.defined(t) || (t = "order");
+    dhtmlx.defined(n) || (n = this.config.root_id), dhtmlx.defined(t) || (t = "order");
     var a = "string" == typeof t ? function (n, i) {
         var a = n[t] > i[t];
         return e && (a = !a), a ? 1 : -1
@@ -1490,9 +2431,10 @@ function dataProcessor(t) {
     var a = gantt.config.columns;
     a[1] && "undefined" == typeof a[1].width && (a[1].width = i._second_column_width), a[2] && "undefined" == typeof a[2].width && (a[2].width = i._third_column_width), i._lightbox_template && (gantt._lightbox_template = i._lightbox_template), gantt._init_skin = function () { }
 }, gantt.skins = {}, gantt._lightbox_methods = {}, gantt._lightbox_template = "<div class='dhx_cal_ltitle'><span class='dhx_mark'>&nbsp;</span><span class='dhx_time'></span><span class='dhx_title'></span></div><div class='dhx_cal_larea'></div>", gantt.showLightbox = function (t) {
-    if (t && this.callEvent("onBeforeLightbox", [t])) {
-        var e = this.getLightbox();
-        this._center_lightbox(e), this.showCover(), this._fill_lightbox(t, e), this.callEvent("onLightbox", [t])
+    if (t && !this.config.readonly && this.callEvent("onBeforeLightbox", [t])) {
+        var e = this.getTask(t),
+            n = this.getLightbox(this._get_safe_type(e.type));
+        this._center_lightbox(n), this.showCover(), this._fill_lightbox(t, n), this.callEvent("onLightbox", [t])
     }
 }, gantt._get_timepicker_step = function () {
     if (this.config.round_dnd_dates) {
@@ -1502,38 +2444,43 @@ function dataProcessor(t) {
     }
     return this.config.time_step
 }, gantt.getLabel = function (t, e) {
-    for (var n = this.config.lightbox.sections, i = 0; i < n.length; i++)
+    for (var n = this._get_typed_lightbox_config(), i = 0; i < n.length; i++)
         if (n[i].map_to == t)
             for (var a = n[i].options, s = 0; s < a.length; s++)
                 if (a[s].key == e) return a[s].label;
     return ""
 }, gantt.updateCollection = function (t, e) {
-    var n = scheduler.serverList(t);
+    var e = e.slice(0),
+        n = gantt.serverList(t);
     return n ? (n.splice(0, n.length), n.push.apply(n, e || []), gantt.resetLightbox(), void 0) : !1
-}, gantt.getLightbox = function () {
-    if (!this._lightbox) {
-        var t = document.createElement("DIV");
-        t.className = "dhx_cal_light";
-        var e = this._is_lightbox_timepicker();
-        (gantt.config.wide_form || e) && (t.className += " dhx_cal_light_wide"), e && (gantt.config.wide_form = !0, t.className += " dhx_cal_light_full"), t.style.visibility = "hidden";
-        var n = this._lightbox_template,
-            i = this.config.buttons_left;
-        for (var a in i) n += "<div class='dhx_btn_set dhx_left_btn_set " + i[a] + "_set'><div dhx_button='1' class='" + i[a] + "'></div><div>" + this.locale.labels[i[a]] + "</div></div>";
-        i = this.config.buttons_right;
-        for (var a in i) n += "<div class='dhx_btn_set dhx_right_btn_set " + i[a] + "_set' style='float:right;'><div dhx_button='1' class='" + i[a] + "'></div><div>" + this.locale.labels[i[a]] + "</div></div>";
-        n += "</div>", t.innerHTML = n, gantt.config.drag_lightbox && (t.firstChild.onmousedown = gantt._ready_to_dnd, t.firstChild.onselectstart = function () {
+}, gantt.getLightboxType = function () {
+    return this._get_safe_type(this._lightbox_type)
+}, gantt.getLightbox = function (t) {
+    if (void 0 === t && (t = this.getLightboxType()), !this._lightbox || this.getLightboxType() != this._get_safe_type(t)) {
+        this._lightbox_type = this._get_safe_type(t);
+        var e = document.createElement("DIV");
+        e.className = "dhx_cal_light";
+        var n = this._is_lightbox_timepicker();
+        (gantt.config.wide_form || n) && (e.className += " dhx_cal_light_wide"), n && (gantt.config.wide_form = !0, e.className += " dhx_cal_light_full"), e.style.visibility = "hidden";
+        var i = this._lightbox_template,
+
+            a = this.config.buttons_left;
+        for (var s in a) i += "<div class='dhx_btn_set dhx_left_btn_set " + a[s] + "_set'><div dhx_button='1' class='" + a[s] + "'></div><div>" + this.locale.labels[a[s]] + "</div></div>";
+        a = this.config.buttons_right;
+        for (var s in a) i += "<div class='dhx_btn_set dhx_right_btn_set " + a[s] + "_set' style='float:right;'><div dhx_button='1' class='" + a[s] + "'></div><div>" + this.locale.labels[a[s]] + "</div></div>";
+        i += "</div>", e.innerHTML = i, gantt.config.drag_lightbox && (e.firstChild.onmousedown = gantt._ready_to_dnd, e.firstChild.onselectstart = function () {
             return !1
-        }, t.firstChild.style.cursor = "pointer", gantt._init_dnd_events()), document.body.insertBefore(t, document.body.firstChild), this._lightbox = t;
-        var s = this.config.lightbox.sections;
-        n = this._render_sections(s);
-        for (var r = t.getElementsByTagName("div"), a = 0; a < r.length; a++) {
-            var o = r[a];
-            if ("dhx_cal_larea" == o.className) {
-                o.innerHTML = n;
+        }, e.firstChild.style.cursor = "pointer", gantt._init_dnd_events()), document.body.insertBefore(e, document.body.firstChild), this._lightbox = e;
+        var r = this._get_typed_lightbox_config(t);
+        i = this._render_sections(r);
+        for (var o = e.getElementsByTagName("div"), s = 0; s < o.length; s++) {
+            var d = o[s];
+            if ("dhx_cal_larea" == d.className) {
+                d.innerHTML = i;
                 break
             }
         }
-        this.resizeLightbox(), this._init_lightbox_events(this), t.style.display = "none", t.style.visibility = "visible"
+        this.resizeLightbox(), this._init_lightbox_events(this), e.style.display = "none", e.style.visibility = "visible"
     }
     return this._lightbox
 }, gantt._render_sections = function (t) {
@@ -1541,8 +2488,9 @@ function dataProcessor(t) {
         var i = this.form_blocks[t[n].type];
         if (i) {
             t[n].id = "area_" + dhtmlx.uid();
-            var a = "";
-            t[n].button && (a = "<div class='dhx_custom_button' index='" + n + "'><div class='dhx_custom_button_" + t[n].button + "'></div><div>" + this.locale.labels["button_" + t[n].button] + "</div></div>"), this.config.wide_form && (e += "<div class='dhx_wrap_section'>"), e += "<div id='" + t[n].id + "' class='dhx_cal_lsection'>" + a + this.locale.labels["section_" + t[n].name] + "</div>" + i.render.call(this, t[n]), e += "</div>"
+            var a = t[n].hidden ? " style='display:none'" : "",
+                s = "";
+            t[n].button && (s = "<div class='dhx_custom_button' index='" + n + "'><div class='dhx_custom_button_" + t[n].button + "'></div><div>" + this.locale.labels["button_" + t[n].button] + "</div></div>"), this.config.wide_form && (e += "<div class='dhx_wrap_section' " + a + ">"), e += "<div id='" + t[n].id + "' class='dhx_cal_lsection'>" + s + this.locale.labels["section_" + t[n].name] + "</div>" + i.render.call(this, t[n]), e += "</div>"
         }
     }
     return e
@@ -1561,29 +2509,25 @@ function dataProcessor(t) {
         t.style.top = e ? Math.round(e + Math.max((i - t.offsetHeight) / 2, 0)) + "px" : Math.round(Math.max((i - t.offsetHeight) / 2, 0) + 9) + "px", t.style.left = document.documentElement.scrollWidth > document.body.offsetWidth ? Math.round(n + (document.body.offsetWidth - t.offsetWidth) / 2) + "px" : Math.round((document.body.offsetWidth - t.offsetWidth) / 2) + "px"
     }
 }, gantt.showCover = function () {
-    this._cover = document.createElement("DIV"), this._cover.className = "dhx_cal_cover";
-    var t = void 0 !== document.height ? document.height : document.body.offsetHeight,
-        e = document.documentElement ? document.documentElement.scrollHeight : 0;
-    this._cover.style.height = Math.max(t, e) + "px", document.body.appendChild(this._cover)
+    if (!this._cover) {
+        this._cover = document.createElement("DIV"), this._cover.className = "dhx_cal_cover";
+        var t = void 0 !== document.height ? document.height : document.body.offsetHeight,
+            e = document.documentElement ? document.documentElement.scrollHeight : 0;
+        this._cover.style.height = Math.max(t, e) + "px", document.body.appendChild(this._cover)
+    }
 }, gantt._init_lightbox_events = function () {
     gantt.lightbox_events = {}, gantt.lightbox_events.dhx_save_btn = function () {
         gantt._save_lightbox()
     }, gantt.lightbox_events.dhx_delete_btn = function () {
         gantt.callEvent("onLightboxDelete", [gantt._lightbox_id]) && gantt.$click.buttons["delete"](gantt._lightbox_id)
     }, gantt.lightbox_events.dhx_cancel_btn = function () {
-        /*var t = gantt.getLightboxValues();
-        if(t.text=="New task")// a new task with default name, when the user cancel the task craeation
-        {
-            gantt.deleteTask(gantt._lightbox_id), gantt.hideLightbox()
-        }
-        else
-        {*/
-        gantt._cancel_lightbox()	//whrn the user cancel the edit task
-        //	} 
+        gantt._cancel_lightbox()
     }, gantt.lightbox_events["default"] = function (t, e) {
         if (e.getAttribute("dhx_button")) gantt.callEvent("onLightboxButton", [e.className, e, t]);
         else {
-            var n, i, a; -1 != e.className.indexOf("dhx_custom_button") && (-1 != e.className.indexOf("dhx_custom_button_") ? (n = e.parentNode.getAttribute("index"), a = e.parentNode.parentNode) : (n = e.getAttribute("index"), a = e.parentNode, e = e.firstChild)), n && (i = gantt.form_blocks[gantt.config.lightbox.sections[n].type], i.button_click(n, e, a, a.nextSibling))
+            var n, i, a; -1 != e.className.indexOf("dhx_custom_button") && (-1 != e.className.indexOf("dhx_custom_button_") ? (n = e.parentNode.getAttribute("index"), a = e.parentNode.parentNode) : (n = e.getAttribute("index"), a = e.parentNode, e = e.firstChild));
+            var s = gantt._get_typed_lightbox_config();
+            n && (i = gantt.form_blocks[s[n].type], i.button_click(n, e, a, a.nextSibling))
         }
     }, dhtmlxEvent(gantt.getLightbox(), "click", function (t) {
         t = t || window.event;
@@ -1604,64 +2548,13 @@ function dataProcessor(t) {
         }
     }
 }, gantt._cancel_lightbox = function () {
-    this.callEvent("onLightboxCancel", [this._lightbox_id, this.$new]), this.hideLightbox()
-}, gantt._save_lightbox = function () {
-    console.log(this);
-    var date_problem = false;
-    var invalid_date = false;
     var t = this.getLightboxValues();
-
-    var childrens = gantt.getChildren(t.id);
-    var day = document.getElementById('day_select').value;
-    var month = document.getElementById('month_select').value;
-    var year = document.getElementById('year_select').value;
-    month = (parseInt(month) + 1).toString();
-    if (parseInt(month) < 10)
-        month = '0' + month;
-    if (parseInt(day) < 10)
-        day = '0' + day;
-    var date = new Date(year + '-' + month + '-' + day);
-    date.setDate(date.getDate() + 1);
-    if (date == 'Invalid Date') {
-        invalid_date = true;
-        alert('Invalid Date');
-    }
-    if (t.parent != 0) {
-        var parent = gantt.getTask(t.parent);
-        if (parent != null) {
-            if (parent.start_date > t.start_date || parent.end_date < t.end_date) {
-                date_problem = true;
-                alert("The date should to be between " + parent.start_date.toDateString() + " and " + parent.end_date.toDateString());
-            }
-        }
-    }
-
-    if (childrens != null) {
-        if (childrens.length != 0) {
-            var limit_start_date = this.getTask(childrens[0]).start_date;
-            var limit_end_date = this.getTask(childrens[0]).end_date;
-            for (var i = 0; i < childrens.length - 1; i++)//search the limits dates in children dates
-            {
-                if (this.getTask(childrens[i + 1]).start_date < this.getTask(childrens[i]).start_date)
-                    limit_start_date = this.getTask(childrens[i + 1]).start_date
-                if (this.getTask(childrens[i + 1]).end_date > this.getTask(childrens[i]).end_date)
-                    limit_end_date = this.getTask(childrens[i + 1]).end_date
-            }
-            if (t.start_date > limit_start_date || t.end_date < limit_end_date) {
-                children_problem = true;
-                alert("The date should be lower than " + parent.start_date.getDay().toDateString() + " and bigger than " + parent.end_date.toDateString());
-            }
-        }
-    }
-    if (date_problem === false && invalid_date === false && t.text != "New task")
-
-        this.callEvent("onLightboxSave", [this._lightbox_id, t, !!t.$new]) && (t.$new ? this.addTask(t) : (dhtmlx.mixin(this.getTask(t.id), t, !0), this.updateTask(t.id)), this.refreshData(), this.hideLightbox())
-    if (t.text === "New task") {
-        alert("Please change the task description");
-    }
-
+    this.callEvent("onLightboxCancel", [this._lightbox_id, t.$new]), t.$new && (this._deleteTask(t.id, !0), this.refreshData()), this.hideLightbox()
+}, gantt._save_lightbox = function () {
+    var t = this.getLightboxValues();
+    this.callEvent("onLightboxSave", [this._lightbox_id, t, !!t.$new]) && (t.$new ? (delete t.$new, this.addTask(t)) : (dhtmlx.mixin(this.getTask(t.id), t, !0), this.updateTask(t.id)), this.refreshData(), this.hideLightbox())
 }, gantt.getLightboxValues = function () {
-    for (var t = dhtmlx.mixin({}, this.getTask(this._lightbox_id)), e = this.config.lightbox.sections, n = 0; n < e.length; n++) {
+    for (var t = dhtmlx.mixin({}, this.getTask(this._lightbox_id)), e = this._get_typed_lightbox_config(), n = 0; n < e.length; n++) {
         var i = document.getElementById(e[n].id);
         i = i ? i.nextSibling : i;
         var a = this.form_blocks[e[n].type],
@@ -1676,20 +2569,25 @@ function dataProcessor(t) {
     this._cover && this._cover.parentNode.removeChild(this._cover), this._cover = null
 }, gantt.resetLightbox = function () {
     gantt._lightbox && !gantt._custom_lightbox && gantt._lightbox.parentNode.removeChild(gantt._lightbox), gantt._lightbox = null
-}, gantt._fill_lightbox = function (t, e) {
-    var n = this.getTask(t),
+}, gantt._set_lightbox_values = function (t, e) {
+    var n = t,
         i = e.getElementsByTagName("span");
     gantt.templates.lightbox_header ? (i[1].innerHTML = "", i[2].innerHTML = gantt.templates.lightbox_header(n.start_date, n.end_date, n)) : (i[1].innerHTML = this.templates.task_time(n.start_date, n.end_date, n), i[2].innerHTML = (this.templates.task_text(n.start_date, n.end_date, n) || "").substr(0, 70));
-    for (var a = this.config.lightbox.sections, s = 0; s < a.length; s++) {
-        var r = a[s],
-            o = document.getElementById(r.id).nextSibling,
-            d = this.form_blocks[r.type],
-            l = dhtmlx.defined(n[r.map_to]) ? n[r.map_to] : r.default_value;
-        d.set_value.call(this, o, l, n, r), r.focus && d.focus.call(this, o)
+    for (var a = this._get_typed_lightbox_config(this.getLightboxType()), s = 0; s < a.length; s++) {
+        var r = a[s];
+        if (this.form_blocks[r.type]) {
+            var o = document.getElementById(r.id).nextSibling,
+                d = this.form_blocks[r.type],
+                l = dhtmlx.defined(n[r.map_to]) ? n[r.map_to] : r.default_value;
+            d.set_value.call(this, o, l, n, r), r.focus && d.focus.call(this, o)
+        }
     }
-    gantt._lightbox_id = t
+    t.id && (gantt._lightbox_id = t.id)
+}, gantt._fill_lightbox = function (t, e) {
+    var n = this.getTask(t);
+    this._set_lightbox_values(n, e)
 }, gantt.getLightboxSection = function (t) {
-    var e = this.config.lightbox.sections,
+    var e = this._get_typed_lightbox_config(),
         n = 0;
     for (n; n < e.length && e[n].name != t; n++);
     var i = e[n];
@@ -1733,54 +2631,57 @@ function dataProcessor(t) {
 }, gantt._focus = function (t, e) {
     t && t.focus && (gantt.config.touch || (e && t.select && t.select(), t.focus()))
 }, gantt.form_blocks = {
-    getTimePicker: function (t) {
-        var e = t.time_format;
-        if (!e) {
-            var e = ["%d", "%m", "%Y"];
-            gantt._get_line(gantt._tasks.unit) < gantt._get_line("day") && e.push("%H:%i")
+    getTimePicker: function (t, e) {
+        var n = t.time_format;
+        if (!n) {
+            var n = ["%d", "%m", "%Y"];
+            gantt._get_line(gantt._tasks.unit) < gantt._get_line("day") && n.push("%H:%i")
         }
         t._time_format_order = {
             size: 0
         };
-        var n = this.config,
-            i = this.date.date_part(new Date(gantt._min_date.valueOf())),
-            a = 1440,
-            s = 0;
-        gantt.config.limit_time_select && (a = 60 * n.last_hour + 1, s = 60 * n.first_hour, i.setHours(n.first_hour));
-        for (var r = "", o = 0; o < e.length; o++) {
-            var d = e[o];
-            switch (o > 0 && (r += " "), d) {
+        var i = this.config,
+            a = this.date.date_part(new Date(gantt._min_date.valueOf())),
+            s = 1440,
+            r = 0;
+        gantt.config.limit_time_select && (s = 60 * i.last_hour + 1, r = 60 * i.first_hour, a.setHours(i.first_hour));
+        for (var o = "", d = 0; d < n.length; d++) {
+            var l = n[d];
+            d > 0 && (o += " ");
+            var _ = "";
+            switch (l) {
                 case "%Y":
-                    t._time_format_order[2] = o, t._time_format_order.size++, r += "<select id=year_select>";
-                    for (var l = i.getFullYear() - 5, h = 0; 10 > h; h++) r += "<option value='" + (l + h) + "'>" + (l + h) + "</option>";
-                    r += "</select> ";
+                    t._time_format_order[2] = d, t._time_format_order.size++;
+                    for (var h = a.getFullYear() - 5, c = 0; 10 > c; c++) _ += "<option value='" + (h + c) + "'>" + (h + c) + "</option>";
                     break;
                 case "%m":
-                    t._time_format_order[1] = o, t._time_format_order.size++, r += "<select id=month_select>";
-                    for (var h = 0; 12 > h; h++) r += "<option value='" + h + "'>" + this.locale.date.month_full[h] + "</option>";
-                    r += "</select>";
+                    t._time_format_order[1] = d, t._time_format_order.size++;
+                    for (var c = 0; 12 > c; c++) _ += "<option value='" + c + "'>" + this.locale.date.month_full[c] + "</option>";
                     break;
                 case "%d":
-                    t._time_format_order[0] = o, t._time_format_order.size++, r += "<select id=day_select>";
-                    for (var h = 1; 32 > h; h++) r += "<option value='" + h + "'>" + h + "</option>";
-                    r += "</select>";
+                    t._time_format_order[0] = d, t._time_format_order.size++;
+                    for (var c = 1; 32 > c; c++) _ += "<option value='" + c + "'>" + c + "</option>";
                     break;
                 case "%H:%i":
-                    var a = 1440,
-                        s = 0;
-                    t._time_format_order[3] = o, t._time_format_order.size++, r += "<select>";
-                    var h = s,
-                        _ = i.getDate();
-                    for (t._time_values = []; a > h;) {
-                        var c = this.templates.time_picker(i);
-                        r += "<option value='" + h + "'>" + c + "</option>", t._time_values.push(h), i.setTime(i.valueOf() + 1e3 * 60 * this._get_timepicker_step());
-                        var g = i.getDate() != _ ? 1 : 0;
-                        h = 60 * 24 * g + 60 * i.getHours() + i.getMinutes()
+                    var s = 1440,
+                        r = 0;
+                    t._time_format_order[3] = d, t._time_format_order.size++;
+                    var c = r,
+                        g = a.getDate();
+                    for (t._time_values = []; s > c;) {
+                        var u = this.templates.time_picker(a);
+                        _ += "<option value='" + c + "'>" + u + "</option>", t._time_values.push(c), a.setTime(a.valueOf() + 1e3 * 60 * this._get_timepicker_step());
+                        var f = a.getDate() != g ? 1 : 0;
+                        c = 60 * 24 * f + 60 * a.getHours() + a.getMinutes()
                     }
-                    r += "</select>"
+            }
+            if (_) {
+                var p = t.readonly ? "disabled='disabled'" : "",
+                    m = e ? " style='display:none'" : "";
+                o += "<select " + p + m + ">" + _ + "</select>"
             }
         }
-        return r
+        return o
     },
     _fill_lightbox_select: function (t, e, n, i) {
         if (t[e + i[0]].value = n.getDate(), t[e + i[1]].value = n.getMonth(), t[e + i[2]].value = n.getFullYear(), dhtmlx.defined(i[3])) {
@@ -1837,21 +2738,20 @@ function dataProcessor(t) {
     time: {
         render: function (t) {
             var e = this.form_blocks.getTimePicker.call(this, t),
-                n = "<div style='height:30px;padding-top:0px;font-size:inherit;text-align:center;' class='dhx_section_time'>" + e + "<span style='font-weight:normal; font-size:10pt;'> &nbsp;&ndash;&nbsp; </span>" + e + "</div>";
-            return n
+                n = ["<div style='height:30px;padding-top:0px;font-size:inherit;text-align:center;' class='dhx_section_time'>"];
+            return n.push(e), t.single_date ? (e = this.form_blocks.getTimePicker.call(this, t, !0), n.push("<span></span>")) : n.push("<span style='font-weight:normal; font-size:10pt;'> &nbsp;&ndash;&nbsp; </span>"), n.push(e), n.push("</div>"), n.join("")
         },
         set_value: function (t, e, n, i) {
-            function a() {
-                var t = new Date(r[o[2]].value, r[o[1]].value, r[o[0]].value, 0, 0),
-                    e = new Date(t.getTime() + 1e3 * 60 * gantt.config.event_duration);
-                this.form_blocks._fill_lightbox_select(r, o.size, e, o, s)
-            }
-            var s = this.config,
-                r = t.getElementsByTagName("select"),
-                o = i._time_format_order;
-            if (i._time_format_size, s.auto_end_date && s.event_duration)
-                for (var d = 0; 4 > d; d++) r[d].onchange = a;
-            this.form_blocks._fill_lightbox_select(r, 0, n.start_date, o, s), this.form_blocks._fill_lightbox_select(r, o.size, n.end_date, o, s)
+            var a = this.config,
+                s = t.getElementsByTagName("select"),
+                r = i._time_format_order;
+            if (i._time_format_size, a.auto_end_date)
+                for (var o = function () {
+                    var t = new Date(s[r[2]].value, s[r[1]].value, s[r[0]].value, 0, 0),
+                        e = gantt.calculateEndDate(t, 1);
+                    this.form_blocks._fill_lightbox_select(s, r.size, e, r, a)
+                }, d = 0; 4 > d; d++) s[d].onchange = o;
+            this.form_blocks._fill_lightbox_select(s, 0, n.start_date, r, a), this.form_blocks._fill_lightbox_select(s, r.size, n.end_date, r, a)
         },
         get_value: function (t, e, n) {
             var i = t.getElementsByTagName("select"),
@@ -1879,17 +2779,19 @@ function dataProcessor(t) {
         render: function (t) {
             var e = this.form_blocks.getTimePicker.call(this, t);
             e = "<div class='dhx_time_selects'>" + e + "</div>";
-            var n = this.locale.labels[this._tasks.unit + "s"],
-                i = "<div class='dhx_gantt_duration'><input type='button' class='dhx_gantt_duration_dec' value='-'><input type='text' value='5' class='dhx_gantt_duration_value'><input type='button' class='dhx_gantt_duration_inc' value='+'> " + n + " <span></span></div>",
-                a = "<div style='height:30px;padding-top:0px;font-size:inherit;' class='dhx_section_time'>" + e + " " + i + "</div>";
-            return a
+            var n = this.locale.labels[this.config.duration_unit + "s"],
+                i = t.single_date ? ' style="display:none"' : "",
+                a = t.readonly ? " disabled='disabled'" : "",
+                s = "<div class='dhx_gantt_duration' " + i + ">" + "<input type='button' class='dhx_gantt_duration_dec' value='-'" + a + ">" + "<input type='text' value='5' class='dhx_gantt_duration_value'" + a + ">" + "<input type='button' class='dhx_gantt_duration_inc' value='+'" + a + "> " + n + " <span></span>" + "</div>",
+                r = "<div style='height:30px;padding-top:0px;font-size:inherit;' class='dhx_section_time'>" + e + " " + s + "</div>";
+            return r
         },
         set_value: function (t, e, n, i) {
             function a() {
                 var e = gantt.form_blocks.duration._get_start_date.call(gantt, t, i),
                     n = gantt.form_blocks.duration._get_duration.call(gantt, t, i),
-                    a = gantt.date.add(e, n, gantt._tasks.unit);
-                _.innerHTML = gantt.templates.task_date(a)
+                    a = gantt.calculateEndDate(e, n);
+                h.innerHTML = gantt.templates.task_date(a)
             }
 
             function s(t) {
@@ -1900,12 +2802,12 @@ function dataProcessor(t) {
                 o = t.getElementsByTagName("select"),
                 d = t.getElementsByTagName("input"),
                 l = d[1],
-                h = [d[0], d[2]],
-                _ = t.getElementsByTagName("span")[0],
+                _ = [d[0], d[2]],
+                h = t.getElementsByTagName("span")[0],
                 c = i._time_format_order;
-            h[0].onclick = dhtmlx.bind(function () {
+            _[0].onclick = dhtmlx.bind(function () {
                 s(-1 * this.config.duration_step)
-            }, this), h[1].onclick = dhtmlx.bind(function () {
+            }, this), _[1].onclick = dhtmlx.bind(function () {
                 s(1 * this.config.duration_step)
             }, this), o[0].onchange = a, o[1].onchange = a, o[2].onchange = a, o[3] && (o[3].onchange = a), l.onkeydown = dhtmlx.bind(function (t) {
                 t = t || window.event;
@@ -1916,8 +2818,8 @@ function dataProcessor(t) {
             }, this), l.onchange = dhtmlx.bind(function () {
                 a()
             }, this), this.form_blocks._fill_lightbox_select(o, 0, n.start_date, c, r);
-            var g, u = gantt._tasks.unit;
-            g = n.end_date ? (n.end_date.valueOf() - n.start_date.valueOf()) / (1e3 * this._get_line(u)) : n.duration, g = Math.round(g), l.value = g, a()
+            var g;
+            g = n.end_date ? gantt.calculateDuration(n.start_date, n.end_date) : n.duration, g = Math.round(g), l.value = g, a()
         },
         _get_start_date: function (t, e) {
             var n = t.getElementsByTagName("select"),
@@ -1937,7 +2839,7 @@ function dataProcessor(t) {
         get_value: function (t, e, n) {
             e.start_date = this.form_blocks.duration._get_start_date(t, n);
             var i = this.form_blocks.duration._get_duration(t, n);
-            return e.end_date = this.date.add(e.start_date, i, this._tasks.unit), e.duration = i, {
+            return e.end_date = this.calculateEndDate(e.start_date, i), e.duration = i, {
                 start_date: new Date(e.start_date),
                 end_date: new Date(e.end_date)
             }
@@ -1945,9 +2847,78 @@ function dataProcessor(t) {
         focus: function (t) {
             gantt._focus(t.getElementsByTagName("select")[0])
         }
+    },
+    typeselect: {
+        render: function (t) {
+            var e = gantt.config.types,
+                n = gantt.locale.labels,
+                i = [];
+            for (var a in e) i.push({
+                key: e[a],
+                label: n["type_" + a]
+            });
+            t.options = i;
+            var s = t.onchange;
+            return t.onchange = function () {
+                gantt.getState().lightbox, gantt.changeLightboxType(this.value), "function" == typeof s && s.apply(this, arguments)
+            }, gantt.form_blocks.select.render.apply(this, arguments)
+        },
+        set_value: function () {
+            return gantt.form_blocks.select.set_value.apply(this, arguments)
+        },
+        get_value: function () {
+            return gantt.form_blocks.select.get_value.apply(this, arguments)
+        },
+        focus: function () {
+            return gantt.form_blocks.select.focus.apply(this, arguments)
+        }
+    },
+    parent: {
+        _filter: function (t, e, n) {
+            var i = e.filter || function () {
+                return !0
+            };
+            t = t.slice(0);
+            for (var a = 0; a < t.length; a++) {
+                var s = t[a];
+                (s.id == n || gantt.isChildOf(s.id, n) || i(s.id, s) === !1) && (t.splice(a, 1), a--)
+            }
+            return t
+        },
+        _display: function (t, e) {
+            var n = [],
+                i = [];
+            e && (n = gantt.getTaskByTime(), t.allow_root && n.unshift({
+                id: gantt.config.root_id,
+                text: t.root_label || ""
+            }), n = this._filter(n, t, e), t.sort && n.sort(t.sort));
+            for (var a = t.template || gantt.templates.task_text, s = 0; s < n.length; s++) {
+                var r = a.apply(gantt, [n[s].start_date, n[s].end_date, n[s]]);
+                void 0 === r && (r = ""), i.push({
+                    key: n[s].id,
+                    label: r
+                })
+            }
+            return t.options = i, t.map_to = t.map_to || "parent", gantt.form_blocks.select.render.apply(this, arguments)
+        },
+        render: function (t) {
+            return gantt.form_blocks.parent._display(t, !1)
+        },
+        set_value: function (t, e, n, i) {
+            var a = document.createElement("div");
+            a.innerHTML = gantt.form_blocks.parent._display(i, n.id);
+            var s = a.removeChild(a.firstChild);
+            return t.onselect = null, t.parentNode.replaceChild(s, t), gantt.form_blocks.select.set_value.apply(this, [s, e, n, i])
+        },
+        get_value: function () {
+            return gantt.form_blocks.select.get_value.apply(this, arguments)
+        },
+        focus: function () {
+            return gantt.form_blocks.select.focus.apply(this, arguments)
+        }
     }
 }, gantt._is_lightbox_timepicker = function () {
-    for (var t = this.config.lightbox.sections, e = 0; e < t.length; e++)
+    for (var t = this._get_typed_lightbox_config(), e = 0; e < t.length; e++)
         if ("time" == t[e].name && "time" == t[e].type) return !0;
     return !1
 }, gantt._dhtmlx_confirm = function (t, e, n, i) {
@@ -1958,6 +2929,22 @@ function dataProcessor(t) {
     e && (a.title = e), i && (a.ok = i), n && (a.callback = function (t) {
         t && n()
     }), dhtmlx.confirm(a)
+}, gantt._get_typed_lightbox_config = function (t) {
+    void 0 === t && (t = this.getLightboxType());
+    var e = this._get_type_name(t);
+    return gantt.config.lightbox[e + "_sections"] ? gantt.config.lightbox[e + "_sections"] : gantt.config.lightbox.sections
+}, gantt._silent_redraw_lightbox = function (t) {
+    var e = this.getLightboxType();
+    if (this.getState().lightbox) {
+        var n = this.getState().lightbox,
+            i = this.getLightboxValues(),
+            a = dhtmlx.copy(this.getTask(n));
+        this.resetLightbox();
+        var s = dhtmlx.mixin(a, i, !0),
+            r = this.getLightbox(t ? t : void 0);
+        this._set_lightbox_values(s, r), this._center_lightbox(this.getLightbox()), this.callEvent("onLightboxChange", [e, this.getLightboxType()])
+    } else this.resetLightbox(), this.getLightbox(t ? t : void 0);
+    this.callEvent("onLightboxChange", [e, this.getLightboxType()])
 }, dataProcessor.prototype = {
     setTransactionMode: function (t, e) {
         this._tMode = t, this._tSend = e
@@ -2073,7 +3060,7 @@ function dataProcessor(t) {
     },
     setVerificator: function (t, e) {
         this.mandatoryFields[t] = e || function (t) {
-            return "" != t
+            return "" !== t
         }
     },
     clearVerificator: function (t) {
@@ -2110,8 +3097,8 @@ function dataProcessor(t) {
                 var o = s[r],
                     d = o.getAttribute("type"),
                     l = o.getAttribute("sid"),
-                    h = o.getAttribute("tid");
-                t.afterUpdateCallback(l, h, d, o)
+                    _ = o.getAttribute("tid");
+                t.afterUpdateCallback(l, _, d, o)
             }
             t.finalizeUpdate()
         }
@@ -2144,7 +3131,7 @@ function dataProcessor(t) {
         return "collision" == e ? (this._need_update = !0, !1) : !0
     },
     fullSync: function () {
-        return 1 == this._need_update && (this._need_update = !1, this.loadUpdate()), !0
+        return this._need_update === !0 && (this._need_update = !1, this.loadUpdate()), !0
     },
     getUpdates: function (t, e) {
         return this._update_busy ? !1 : (this._update_busy = !0, this._loader = this._loader || new dtmlXMLLoaderObject(!0), this._loader.async = !0, this._loader.waitCall = e, this._loader.loadXML(t), void 0)
@@ -2197,7 +3184,7 @@ function dataProcessor(t) {
         this.$container && (this.$container.innerHTML = ""), this._reinit(t)
     }, this.callEvent("onGanttReady", [])
 }, gantt._reinit = function (t) {
-    this._init_html_area(t), this._set_sizes(), this._task_area_pulls = {}, this._task_area_renderers = {}, this._init_touch_events(), this._init_templates(), this._init_grid(), this._init_tasks(), this.render(), this._set_scroll_events(), dhtmlxEvent(this.$container, "click", this._on_click), dhtmlxEvent(this.$container, "dblclick", this._on_dblclick), dhtmlxEvent(this.$container, "mousemove", this._on_mousemove), dhtmlxEvent(this.$container, "contextmenu", this._on_contextmenu)
+    this._init_html_area(t), this._set_sizes(), this._clear_renderers(), this.resetLightbox(), this._update_flags(), this._init_touch_events(), this._init_templates(), this._init_grid(), this._init_tasks(), this.render(), this._set_scroll_events(), dhtmlxEvent(this.$container, "click", this._on_click), dhtmlxEvent(this.$container, "dblclick", this._on_dblclick), dhtmlxEvent(this.$container, "mousemove", this._on_mousemove), dhtmlxEvent(this.$container, "contextmenu", this._on_contextmenu)
 }, gantt._init_html_area = function (t) {
     this._obj = "string" == typeof t ? document.getElementById(t) : t, dhtmlx.assert(this._obj, "Invalid html container: " + t);
     var e = "<div class='gantt_container'><div class='gantt_grid'></div><div class='gantt_task'></div>";
@@ -2213,66 +3200,109 @@ function dataProcessor(t) {
             var e = gantt.locale.labels.confirm_deleting,
                 n = gantt.locale.labels.confirm_deleting_title;
             gantt._dhtmlx_confirm(e, n, function () {
-                gantt.deleteTask(t), gantt.hideLightbox()
+                var e = gantt.getTask(t);
+                e.$new ? (gantt._deleteTask(t, !0), gantt.refreshData()) : gantt.deleteTask(t), gantt.hideLightbox()
             })
         }
     }
+}, gantt._calculate_content_height = function () {
+    var t = this.config.scale_height,
+        e = this._order.length * this.config.row_height,
+        n = this._scroll_hor ? this.config.scroll_size + 1 : 0;
+    return this._is_grid_visible() || this._is_chart_visible() ? t + e + 2 + n : 0
+}, gantt._calculate_content_width = function () {
+    var t = this._get_grid_width(),
+        e = this._tasks ? this._tasks.full_width : 0;
+    return this._scroll_ver ? this.config.scroll_size + 1 : 0, this._is_chart_visible() || (e = 0), this._is_grid_visible() || (t = 0), t + e + 1
+}, gantt._get_resize_options = function () {
+    var t = {
+        x: !1,
+        y: !1
+    };
+    return "xy" == this.config.autosize ? t.x = t.y = !0 : "y" == this.config.autosize || this.config.autosize === !0 ? t.y = !0 : "x" == this.config.autosize && (t.x = !0), t
 }, gantt._set_sizes = function () {
-    this._x = this._obj.clientWidth, this._y = this._obj.clientHeight, this._x < 20 || this._y < 20 || (this.$grid.style.height = this.$task.style.height = this._y - this.$scroll_hor.offsetHeight - 2 + "px", this.$grid_data.style.height = this.$task_data.style.height = this._y - (this.config.scale_height || 0) - this.$scroll_hor.offsetHeight - 2 + "px", this.$grid.style.width = this.config.grid_width - 1 + "px", this.$grid_data.style.width = this.config.grid_width - 1 + "px", this.$task.style.width = this._x - this.config.grid_width - 2 + "px")
+    var t = this._get_resize_options();
+    if (t.y && (this._obj.style.height = this._calculate_content_height() + "px"), t.x && (this._obj.style.width = this._calculate_content_width() + "px"), this._y = this._obj.clientHeight, !(this._y < 20)) {
+        this.$grid.style.height = this.$task.style.height = Math.max(this._y - this.$scroll_hor.offsetHeight - 2, 0) + "px";
+        var e = Math.max(this._y - (this.config.scale_height || 0) - this.$scroll_hor.offsetHeight - 2, 0);
+        this.$grid_data.style.height = this.$task_data.style.height = e + "px";
+        var n = Math.max(this._get_grid_width() - 1, 0);
+        this.$grid.style.width = n + "px", this.$grid.style.display = 0 === n ? "none" : "", this._x = this._obj.clientWidth, this._x < 20 || (this.$grid_data.style.width = Math.max(this._get_grid_width() - 1, 0) + "px", this.$task.style.width = Math.max(this._x - this._get_grid_width() - 2, 0) + "px")
+    }
 }, gantt.getScrollState = function () {
     return {
         x: this.$task.scrollLeft,
         y: this.$task_data.scrollTop
     }
 }, gantt.scrollTo = function (t, e) {
-    null !== t && (this.$task.scrollLeft = t), null !== e && (this.$task_data.scrollTop = e)
+    1 * t == t && (this.$task.scrollLeft = t), 1 * e == e && (this.$task_data.scrollTop = e, this.$grid_data.scrollTop = e)
+}, gantt.showDate = function (t) {
+    var e = this.posFromDate(t),
+        n = Math.max(e - this.config.task_scroll_offset, 0);
+    this.scrollTo(n)
+}, gantt.showTask = function (t) {
+    var e = this.getTaskNode(t);
+    if (e) {
+        var n = Math.max(e.offsetLeft - this.config.task_scroll_offset, 0),
+            i = e.offsetTop - (this.$task_data.offsetHeight - this.config.row_height) / 2;
+        this.scrollTo(n, i)
+    }
 }, gantt._on_resize = gantt.setSizes = function () {
     gantt._set_sizes(), gantt._scroll_resize()
 }, gantt.render = function () {
     if (this._render_grid(), this._render_tasks_scales(), this._scroll_resize(), this._on_resize(), this._render_data(), this.config.initial_scroll) {
-        var t = this._order[0] || 0;
+        var t = this._order[0] || this.config.root_id;
         t && this.showTask(t)
     }
+    this.callEvent("onGanttRender", [])
 }, gantt._set_scroll_events = function () {
+    function t(t) {
+        var e = gantt._get_resize_options();
+        if (t.wheelDeltaX) {
+            if (e.x) return !0;
+            var n = t.wheelDeltaX / -40,
+                i = gantt.$task.scrollLeft + 30 * n;
+            gantt.scrollTo(i, null), gantt.$scroll_hor.scrollTop = a
+        } else {
+            if (e.y) return !0;
+            var n = t.wheelDelta / -40;
+            "undefined" == typeof t.wheelDelta && (n = t.detail);
+            var a = gantt.$grid_data.scrollTop + 30 * n;
+            gantt.scrollTo(null, a), gantt.$scroll_ver.scrollTop = a
+        }
+        return t.preventDefault && t.preventDefault(), t.cancelBubble = !0, !1
+    }
     dhtmlxEvent(this.$scroll_hor, "scroll", function () {
         if (!gantt._touch_scroll_active) {
             var t = gantt.$scroll_hor.scrollLeft;
-            gantt._scroll_task_area(t)
+            gantt.scrollTo(t)
         }
     }), dhtmlxEvent(this.$scroll_ver, "scroll", function () {
         if (!gantt._touch_scroll_active) {
             var t = gantt.$scroll_ver.scrollTop;
-            gantt.$grid_data.scrollTop = t, gantt._scroll_task_area(null, t)
+            gantt.$grid_data.scrollTop = t, gantt.scrollTo(null, t)
         }
     }), dhtmlxEvent(this.$task, "scroll", function () {
-        var t = gantt.$task.scrollLeft;
-        gantt.$scroll_hor.scrollLeft = t
+        var t = gantt.$task.scrollLeft,
+            e = gantt.$scroll_hor.scrollLeft;
+        e != t && (gantt.$scroll_hor.scrollLeft = t)
     }), dhtmlxEvent(this.$task_data, "scroll", function () {
-        var t = gantt.$task_data.scrollTop;
-        gantt.$scroll_ver.scrollTop = gantt.$grid_data.scrollTop = t
-    }), dhtmlxEvent(gantt.$container, "mousewheel", function (t) {
-        if (t.wheelDeltaX) {
-            var e = t.wheelDeltaX / -40,
-                n = gantt.$task.scrollLeft + 30 * e;
-            gantt._scroll_task_area(n, null), gantt.$scroll_hor.scrollTop = i
-        } else {
-            var e = t.wheelDelta / -40;
-            "undefined" == typeof t.wheelDelta && (e = t.detail);
-            var i = gantt.$grid_data.scrollTop + 30 * e;
-            gantt._scroll_task_area(null, i), gantt.$scroll_ver.scrollTop = i
-        }
-        return t.preventDefault && t.preventDefault(), t.cancelBubble = !0, !1
-    })
+        var t = gantt.$task_data.scrollTop,
+            e = gantt.$scroll_ver.scrollTop;
+        e != t && (gantt.$scroll_ver.scrollTop = t)
+    }), dhtmlxEvent(gantt.$container, "DOMMouseScroll", t), dhtmlxEvent(gantt.$container, "mousewheel", t)
 }, gantt._scroll_resize = function () {
     if (!(this._x < 20 || this._y < 20)) {
-        var t = this.config.grid_width,
+        var t = this._get_grid_width(),
             e = this._x - t,
             n = this._y - this.config.scale_height,
-            i = this.$task_data.offsetWidth - this.config.scroll_size,
-            a = this.config.row_height * this._order.length,
-            s = i > e,
-            r = a > n;
-        this.$scroll_hor.style.display = s ? "block" : "none", this.$scroll_hor.style.height = (s ? this.config.scroll_size : 0) + "px", this.$scroll_hor.style.width = this._x - (r ? this.config.scroll_size : 2) + "px", this.$scroll_hor.firstChild.style.width = i + t + this.config.scroll_size + 2 + "px", this.$scroll_ver.style.display = r ? "block" : "none", this.$scroll_ver.style.width = (r ? this.config.scroll_size : 0) + "px", this.$scroll_ver.style.height = this._y - (s ? this.config.scroll_size : 0) - this.config.scale_height + "px", this.$scroll_ver.style.top = this.config.scale_height + "px", this.$scroll_ver.firstChild.style.height = this.config.scale_height + a + "px"
+            i = this.config.scroll_size + 1,
+            a = this.$task_data.offsetWidth - i,
+            s = this.config.row_height * this._order.length,
+            r = this._get_resize_options(),
+            o = this._scroll_hor = r.x ? !1 : a > e,
+            d = this._scroll_ver = r.y ? !1 : s > n;
+        this.$scroll_hor.style.display = o ? "block" : "none", this.$scroll_hor.style.height = (o ? i : 0) + "px", this.$scroll_hor.style.width = this._x - (d ? i : 2) + "px", this.$scroll_hor.firstChild.style.width = a + t + i + 2 + "px", this.$scroll_ver.style.display = d ? "block" : "none", this.$scroll_ver.style.width = (d ? i : 0) + "px", this.$scroll_ver.style.height = this._y - (o ? i : 0) - this.config.scale_height + "px", this.$scroll_ver.style.top = this.config.scale_height + "px", this.$scroll_ver.firstChild.style.height = this.config.scale_height + s + "px"
     }
 }, gantt.locate = function (t) {
     var e = gantt._get_target_node(t);
@@ -2329,9 +3359,10 @@ function dataProcessor(t) {
     return {
         drag_id: this._tasks_dnd.drag.id,
         drag_mode: this._tasks_dnd.drag.mode,
+        drag_from_start: this._tasks_dnd.drag.left,
         selected_task: this._selected_task,
-        min_date: this._min_date,
-        max_date: this._max_date,
+        min_date: new Date(this._min_date),
+        max_date: new Date(this._max_date),
         lightbox: this._lightbox_id
     }
 }, gantt._checkTimeout = function (t, e) {
@@ -2339,21 +3370,22 @@ function dataProcessor(t) {
     var n = 1e3 / e;
     return 1 > n ? !0 : t._on_timeout ? !1 : (setTimeout(function () {
         delete t._on_timeout
-    }, n), t._on_timeout = !0)
+    }, n), t._on_timeout = !0, !0)
 }, gantt.selectTask = function (t) {
-    if (this.config.select_task) {
-        if (t) {
-            if (this._selected_task == t) return this._selected_task;
-            if (!this.callEvent("onBeforeTaskSelected", [t])) return !1;
-            this.unselectTask(), this._selected_task = t, this.refreshTask(t), this.callEvent("onTaskSelected", [t])
-        }
-        return this._selected_task
+    if (!this.config.select_task) return !1;
+    if (t) {
+        if (this._selected_task == t) return this._selected_task;
+        if (!this.callEvent("onBeforeTaskSelected", [t])) return !1;
+        this.unselectTask(), this._selected_task = t, this.refreshTask(t), this.callEvent("onTaskSelected", [t])
     }
+    return this._selected_task
 }, gantt.unselectTask = function () {
     var t = this._selected_task;
     t && (this._selected_task = null, this.refreshTask(t), this.callEvent("onTaskUnselected", [t]))
 }, gantt.getSelectedId = function () {
     return dhtmlx.defined(this._selected_task) ? this._selected_task : null
+}, gantt.changeLightboxType = function (t) {
+    return this.getLightboxType() == t ? !0 : (gantt._silent_redraw_lightbox(t), void 0)
 }, gantt.date = {
     init: function () {
         for (var t = gantt.locale.date.month_short, e = gantt.locale.date.month_short_hash = {}, n = 0; n < t.length; n++) e[t[n]] = n;
@@ -2386,13 +3418,18 @@ function dataProcessor(t) {
         var e = t.getMinutes();
         return this.hour_start(t), t.setMinutes(e), t
     },
+    _add_days: function (t, e) {
+        var n = new Date(t.valueOf());
+        return n.setDate(n.getDate() + e), !t.getHours() && n.getHours() && n.setTime(n.getTime() + 36e5 * (24 - n.getHours())), n
+    },
     add: function (t, e, n) {
         var i = new Date(t.valueOf());
         switch (n) {
-            case "week":
-                e *= 7;
             case "day":
-                i.setDate(i.getDate() + e), !t.getHours() && i.getHours() && i.setTime(i.getTime() + 36e5 * (24 - i.getHours()));
+                i = gantt.date._add_days(i, e);
+                break;
+            case "week":
+                i = gantt.date._add_days(i, 7 * e);
                 break;
             case "month":
                 i.setMonth(i.getMonth() + e);
@@ -2401,10 +3438,10 @@ function dataProcessor(t) {
                 i.setYear(i.getFullYear() + e);
                 break;
             case "hour":
-                i.setHours(i.getHours() + e);
+                i.setTime(i.getTime() + 1e3 * 60 * 60 * e);
                 break;
             case "minute":
-                i.setMinutes(i.getMinutes() + e);
+                i.setTime(i.getTime() + 1e3 * 60 * e);
                 break;
             default:
                 return gantt.date["add_" + n](t, e, n)
@@ -2530,9 +3567,23 @@ function () {
         links: {
             finish_to_start: "0",
             start_to_start: "1",
-            finish_to_finish: "2"
+            finish_to_finish: "2",
+            start_to_finish: "3"
+        },
+        types: {
+            task: "task",
+            project: "project",
+            milestone: "milestone"
         },
         duration_unit: "day",
+        work_time: !1,
+        correct_work_time: !1,
+        skip_off_time: !1,
+        autosize: !1,
+        show_links: !0,
+        show_task_cells: !0,
+        show_chart: !0,
+        show_grid: !0,
         min_duration: 36e5,
         xml_date: "%d-%m-%Y %H:%i",
         api_date: "%d-%m-%Y %H:%i",
@@ -2555,6 +3606,7 @@ function () {
         },
         round_dnd_dates: !0,
         link_wrapper_width: 20,
+        root_id: 0,
         autofit: !0,
         columns: [{
             name: "text",
@@ -2594,6 +3646,40 @@ function () {
                 height: 72,
                 type: "duration",
                 map_to: "auto"
+            }],
+            project_sections: [{
+                name: "description",
+                height: 70,
+                map_to: "text",
+                type: "textarea",
+                focus: !0
+            }, {
+                name: "type",
+                type: "typeselect",
+                map_to: "type"
+            }, {
+                name: "time",
+                height: 72,
+                type: "duration",
+                readonly: !0,
+                map_to: "auto"
+            }],
+            milestone_sections: [{
+                name: "description",
+                height: 70,
+                map_to: "text",
+                type: "textarea",
+                focus: !0
+            }, {
+                name: "type",
+                type: "typeselect",
+                map_to: "type"
+            }, {
+                name: "time",
+                height: 72,
+                type: "duration",
+                single_date: !0,
+                map_to: "auto"
             }]
         },
         drag_lightbox: !0,
@@ -2607,14 +3693,15 @@ function () {
     }), gantt.keys = {
         edit_save: 13,
         edit_cancel: 27
-    }, gantt._init_template = function (t) {
-        this.config[t] && !this.config[t].$used && (this.templates[t] = this.date.date_to_str(this.config[t]), this.config[t] = new String(this.config[t]), this.config[t].$used = !0)
+    }, gantt._init_template = function (t, e) {
+        var n = this._reg_templates || {};
+        this.config[t] && n[t] != this.config[t] && (e && this.templates[t] || (this.templates[t] = this.date.date_to_str(this.config[t]), n[t] = this.config[t])), this._reg_templates = n
     }, gantt._init_templates = function () {
         var t = gantt.locale.labels;
         t.dhx_save_btn = t.icon_save, t.dhx_cancel_btn = t.icon_cancel, t.dhx_delete_btn = t.icon_delete;
         var e = this.date.date_to_str,
             n = this.config;
-        gantt._init_template("date_scale"), gantt._init_template("date_grid"), gantt._init_template("task_date"), dhtmlx.mixin(this.templates, {
+        gantt._init_template("date_scale", !0), gantt._init_template("date_grid", !0), gantt._init_template("task_date", !0), dhtmlx.mixin(this.templates, {
             xml_date: this.date.str_to_date(n.xml_date, n.server_utc),
             xml_format: e(n.xml_date, n.server_utc),
             api_date: this.date.str_to_date(n.api_date),
@@ -2643,9 +3730,6 @@ function () {
                 return ""
             },
             scale_row_class: function () {
-                return ""
-            },
-            task_class: function () {
                 return ""
             },
             grid_indent: function () {
@@ -2694,7 +3778,7 @@ function () {
 }(), window.jQuery && ! function (t) {
     var e = [];
     t.fn.dhx_gantt = function (n) {
-        if ("string" != typeof n) {
+        if (n = n || {}, "string" != typeof n) {
             var i = [];
             return this.each(function () {
                 if (this && this.getAttribute && !this.getAttribute("dhxgantt")) {
@@ -2705,7 +3789,14 @@ function () {
         }
         return e[n] ? e[n].apply(this, []) : (t.error("Method " + n + " does not exist on jQuery.dhx_gantt"), void 0)
     }
-}(jQuery), gantt.locale = {
+}(jQuery), window.dhtmlx && (dhtmlx.attaches || (dhtmlx.attaches = {}), dhtmlx.attaches.attachGantt = function (t, e) {
+    var n = document.createElement("DIV");
+    n.id = "gantt_" + dhtmlx.uid(), n.style.width = "100%", n.style.height = "100%", n.cmp = "grid", document.body.appendChild(n), this.attachObject(n.id);
+    var i = this.vs[this.av];
+    i.grid = gantt, gantt.init(n.id, t, e), n.firstChild.style.border = "none", i.gridId = n.id, i.gridObj = n;
+    var a = "_viewRestore";
+    return this.vs[this[a]()].grid
+}), gantt.locale = {
     date: {
         month_full: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
         month_short: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
@@ -2723,6 +3814,7 @@ function () {
         confirm_deleting: "Task will be deleted permanently, are you sure?",
         section_description: "Description",
         section_time: "Time period",
+        section_type: "Type",
         column_text: "Task name",
         column_start_date: "Start time",
         column_duration: "Duration",
@@ -2731,6 +3823,9 @@ function () {
         confirm_link_deleting: "will be deleted",
         link_start: " (start)",
         link_end: " (end)",
+        type_task: "Task",
+        type_project: "Project",
+        type_milestone: "Milestone",
         minutes: "Minutes",
         hours: "Hours",
         days: "Days",
@@ -2818,9 +3913,9 @@ function () {
         if (!n(t) && r) {
             var l = e(t);
             if (l && d) {
-                var h = d.pageX - l.pageX,
-                    _ = d.pageY - l.pageY;
-                !o && (Math.abs(h) > 5 || Math.abs(_) > 5) && (gantt._touch_scroll_active = o = !0, s = 0, a = gantt.getScrollState()), o && gantt.scrollTo(a.x + h, a.y + _)
+                var _ = d.pageX - l.pageX,
+                    h = d.pageY - l.pageY;
+                !o && (Math.abs(_) > 5 || Math.abs(h) > 5) && (gantt._touch_scroll_active = o = !0, s = 0, a = gantt.getScrollState()), o && gantt.scrollTo(a.x + _, a.y + h)
             }
             return i(t)
         }

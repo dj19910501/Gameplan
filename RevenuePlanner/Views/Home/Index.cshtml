@@ -21,7 +21,7 @@
 @Html.Hidden("showBid", showBid)
 <!--Modified By Maninder Singh Wadhva PL Ticket#47-->
 @Html.Hidden("hdnIsImprovement", isImprovement)
-@Html.Hidden("CurrentPlanId",CurrentPlanId)
+@Html.Hidden("CurrentPlanId", CurrentPlanId)
 
 
 <script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
@@ -53,6 +53,7 @@
         var Currenttime = "planYear";
         $(document).ready(function () {
             var isRender;       //// Added by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
+            var individualClick = false;    //// Added By :- Sohel Pathan on 17/04/2014 for PL ticket #428 to fill filteredIndividuals list according to plan selected.
             //Added by Nirav for Custom Dropdown - 388
             var showBid = $('#showBid').val();
             if (showBid == true) {
@@ -109,10 +110,11 @@
                 $("#CurrentPlanId").val(CurrentPlanId);
                 //// Modified By Maninder Singh Wadhva to Address PL#203
                 GetCollaborators(CurrentPlanId);
+                filters.IndividualsIds = [];    //// Added By :- Sohel Pathan on 16/04/2014 for PL ticket #428 to fill filteredIndividuals list according to plan selected.
                 RefreshCurrentTab();
                 GetHealderData(CurrentPlanId);
                 GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
-                GetIndividualsForFilter(parseInt(CurrentPlanId));   //// Added By :- Sohel Pathan on 14/04/2014 for PL ticket #428 to fill filteredIndividuals list according to plan selected.
+                //GetIndividualsForFilter(parseInt(CurrentPlanId));   //// Added By :- Sohel Pathan on 14/04/2014 for PL ticket #428 to fill filteredIndividuals list according to plan selected.
             });
         }
 
@@ -122,10 +124,21 @@
                 type: "GET",
                 cache: false,
                 url: '@Url.Action("GetIndividualsForFilter", "Home")',
-                data: { PlanId: CurrentPlanId},
+                data: {
+                    PlanId: CurrentPlanId,
+                    Type: type,                             //// Added by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
+                    activeMenu: $('#ActiveMenu').val()      //// Added by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
+                },
                 dataType: "json",
                 success: function (data) {
                     if (data != null || typeof data != 'undefined') {
+                        //// Added by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
+                        var a = $('#accordion-filterIndividuals');
+                        if (a.length == 0) {
+                            $('#individualFilter').append('<div id="accordion-filterIndividuals" class="accordion-body collapse"></div>');
+                        }
+                        ////
+
                         $('#accordion-filterIndividuals').empty();
 
                         $('#individualFilterdiv').find("a").removeClass('chevron-down');
@@ -239,8 +252,8 @@
                     CurrentPlanId = 0;
                 }
                 //int.TryParse(Convert.ToString(RevenuePlanner.Helpers.Sessions.PlanId), out pid);
-                    //    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Create", "Plan", new { id = pid })'">Edit Plan</button>
-                                   <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlan()">Edit Plan</button>/*changed by Nirav for plan consistency on 14 apr 2014*/
+                //    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Create", "Plan", new { id = pid })'">Edit Plan</button>
+                        <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlan()">Edit Plan</button>/*changed by Nirav for plan consistency on 14 apr 2014*/
             }
             else
             {
@@ -304,14 +317,17 @@
 
     <!--First Static Accordion-->
     <!--Modified By Maninder Singh Wadhva PL Ticket#47-->
-    <div class="accordion colors left-nav" id="marketing-activities" style="margin-bottom:0px !important;">
+    <div class="accordion colors left-nav" id="marketing-activities" style="margin-bottom: 0px !important;">
+
         <div class="accordion-group source-sans-proregular">
             <div class="accordion-heading">
                 <a href="#DivAccordionMarketingActivities" data-parent="marketing-activities" data-toggle="collapse" class="accordion-toggle item-741f98 collapsed">
-                    <div class="cf source-sans-prosemibold">Marketing Activities</div>
+                    <div class="cf source-sans-prosemibold ">Marketing Activities</div>
                 </a>
             </div>
-            <div class="accordion-body in collapse" id="DivAccordionMarketingActivities">
+            <div class="scrolled_div" style="position: relative; overflow: hidden;  max-height: 230px;">
+                <div class="accordion-body in collapse" id="DivAccordionMarketingActivities">
+                </div>
             </div>
         </div>
     </div>
@@ -366,7 +382,8 @@
                     </div>
                 }
             </div>
-            <div class="accordion-group">
+            @*Modified by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis *@
+            <div class="accordion-group" id="individualFilter">
                 @if (Model.objIndividuals.Count > 0)
                 {
                     <div class="accordion-heading" id="individualFilterdiv">
@@ -851,11 +868,11 @@
    }
 
    function ApplyOrRemoveFilter() {
+       individualClick = true;      //// Added By :- Sohel Pathan on 17/04/2014 for PL ticket #428 to fill filteredIndividuals list according to plan selected.
        ($(this).toggleClass("x-icon"));
        filters.geographyIds = $.map($("#accordion-filterGeography").find("a.x-icon"), function (a) { return $(a).attr("filterId") });
        filters.IndividualsIds = $.map($("#accordion-filterIndividuals").find("a.x-icon"), function (a) { return $(a).attr("filterId") });
        RefreshCurrentTab();
-
    }
 
    //// Function to get tactic.
@@ -1122,684 +1139,695 @@
          type: "GET",
          cache: false,
          url: '@Url.Action("GetViewControlDetail", "Home")',
-        data: {
-            Type: type,
-            PlanId: CurrentPlanId,
-            IsQuarter: isQuater,
-            geographyIds: filters.geographyIds.join(),
-            individualsIds: filters.IndividualsIds.join(),
-            activeMenu: $('#ActiveMenu').val(),
-            isShowOnlyMyTactic: IsShowOnlyMyTactic
-        },
-        dataType: "json",
-        success: function (data) {
-            $('#RequestCount').html(data.requestCount);
-            planYear = parseInt(data.planYear);
+         data: {
+             Type: type,
+             PlanId: CurrentPlanId,
+             IsQuarter: isQuater,
+             geographyIds: filters.geographyIds.join(),
+             individualsIds: filters.IndividualsIds.join(),
+             activeMenu: $('#ActiveMenu').val(),
+             isShowOnlyMyTactic: IsShowOnlyMyTactic
+         },
+         dataType: "json",
+         success: function (data) {
+             if (typeof individualClick == 'undefined') {
+                 individualClick = false;
+             }
+             $('#RequestCount').html(data.requestCount);
+             planYear = parseInt(data.planYear);
 
-            var isDataExistForTacticTable = false;
-            //// Modified By Maninder Singh Wadhva PL Ticket#47
-            if (typeof data.improvementTacticTypeForAccordion != 'undefined' &&
-                typeof data.improvementTacticForAccordion != 'undefined' &&
-                data.improvementTacticForAccordion.length > 0 &&
-                data.improvementTacticTypeForAccordion.length > 0) {
-                $('#improvements').show()
-                AddAccordionToggleAndInnerImprovementTactic(data.improvementTacticTypeForAccordion, data.improvementTacticForAccordion);
-                isDataExistForTacticTable = true;
-            }
-            else {
-                $('#improvements').hide();
-            }
+             var isDataExistForTacticTable = false;
+             //// Modified By Maninder Singh Wadhva PL Ticket#47
+             if (typeof data.improvementTacticTypeForAccordion != 'undefined' &&
+                 typeof data.improvementTacticForAccordion != 'undefined' &&
+                 data.improvementTacticForAccordion.length > 0 &&
+                 data.improvementTacticTypeForAccordion.length > 0) {
+                 $('#improvements').show()
+                 AddAccordionToggleAndInnerImprovementTactic(data.improvementTacticTypeForAccordion, data.improvementTacticForAccordion);
+                 isDataExistForTacticTable = true;
+             }
+             else {
+                 $('#improvements').hide();
+             }
 
-            //// Modified By Maninder Singh Wadhva PL Ticket#47
-            //// filtering non improvement task data.
-            var filteredNonImprovementData = $.grep(data.taskData, function (value) { return (typeof value.isImprovement == 'undefined') });
-            if (filteredNonImprovementData.length > 0) {
-                isDataExistForTacticTable = true;
-                $('#marketing-activities').show()
+             //// Modified By Maninder Singh Wadhva PL Ticket#47
+             //// filtering non improvement task data.
+             var filteredNonImprovementData = $.grep(data.taskData, function (value) { return (typeof value.isImprovement == 'undefined') });
+             if (filteredNonImprovementData.length > 0) {
+                 isDataExistForTacticTable = true;
+                 $('#marketing-activities').show()
 
-                switch (type) {
-                    case GanttTabs.Tactic:
-                        AddAccordionToggleAndInnerTactic(data);
-                        break;
-                    case GanttTabs.Vertical:
-                        AddAccordionToggleAndInnerVertical(data);
-                        break;
-                    case GanttTabs.Stage:
-                        AddAccordionToggleAndInnerStage(data);
-                        break;
-                    case GanttTabs.Audience:
-                        AddAccordionToggleAndInnerAudience(data);
-                        break;
-                    case GanttTabs.BusinessUnit:
-                        AddAccordionToggleAndInnerBusinessUnit(data);
-                        break;
-                    case GanttTabs.Request:
-                        AddAccordionToggleAndInnerRequest(data);
-                        break;
-                    default:
-                        alert('No match');
-                        break;
-                }
+                 switch (type) {
+                     case GanttTabs.Tactic:
+                         AddAccordionToggleAndInnerTactic(data);
+                         break;
+                     case GanttTabs.Vertical:
+                         AddAccordionToggleAndInnerVertical(data);
+                         break;
+                     case GanttTabs.Stage:
+                         AddAccordionToggleAndInnerStage(data);
+                         break;
+                     case GanttTabs.Audience:
+                         AddAccordionToggleAndInnerAudience(data);
+                         break;
+                     case GanttTabs.BusinessUnit:
+                         AddAccordionToggleAndInnerBusinessUnit(data);
+                         break;
+                     case GanttTabs.Request:
+                         AddAccordionToggleAndInnerRequest(data);
+                         break;
+                     default:
+                         alert('No match');
+                         break;
+                 }
 
-                AttachEventToGroupHeading();
-            }
-            else {
-                $('#marketing-activities').hide()
-            }
+                 AttachEventToGroupHeading();
+             }
+             else {
+                 $('#marketing-activities').hide()
+             }
 
-            renderGantt(data.taskData);
-            ShowChangeLog();
-            //// Hide/Show Tabulated data shown below gantt of request tab.
-            if (GanttTabs.Request == type) {
-                $(".shadow-scroll-gantt").show();
-                $("#table_activities").show();
-                FillTacticTableForRequest(data);
-            } else {
-                $("#table_activities").hide();
-                $(".shadow-scroll-gantt").hide();
-            }
+             renderGantt(data.taskData);
+             ShowChangeLog();
+             //// Hide/Show Tabulated data shown below gantt of request tab.
+             if (GanttTabs.Request == type) {
+                 $(".shadow-scroll-gantt").show();
+                 $("#table_activities").show();
+                 FillTacticTableForRequest(data);
+             } else {
+                 $("#table_activities").hide();
+                 $(".shadow-scroll-gantt").hide();
+             }
 
-            //gantt.render();     ////Added by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-        }
-    });
-}
+             //gantt.render();     ////Added by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
+             //// Added By :- Sohel Pathan on 16/04/2014 for PL ticket #428 to fill filteredIndividuals list according to plan selected.
+             if (individualClick != true) {
+                 GetIndividualsForFilter(parseInt(CurrentPlanId));
+             }
+             else {
+                 individualClick = false;
+             }
+             ////
+         }
+     });
+ }
 
-function FillTacticTableForRequest(data) {
-    onlyTactic = $.grep(data.taskData, function (value) {
-        return ((typeof value.isSubmitted != 'undefined') && (typeof value.isDeclined != 'undefined'))
-    });
+ function FillTacticTableForRequest(data) {
+     onlyTactic = $.grep(data.taskData, function (value) {
+         return ((typeof value.isSubmitted != 'undefined') && (typeof value.isDeclined != 'undefined'))
+     });
 
-    submittedTactic = $.grep(onlyTactic, function (value) {
-        return (value.isSubmitted == true);
-    });
+     submittedTactic = $.grep(onlyTactic, function (value) {
+         return (value.isSubmitted == true);
+     });
 
-    declinedTactic = $.grep(onlyTactic, function (value) {
-        return (value.isDeclined == true);
-    });
+     declinedTactic = $.grep(onlyTactic, function (value) {
+         return (value.isDeclined == true);
+     });
 
-    var submittedDeclinedTactic = submittedTactic.concat(declinedTactic);
-    activities = { data: submittedDeclinedTactic };
+     var submittedDeclinedTactic = submittedTactic.concat(declinedTactic);
+     activities = { data: submittedDeclinedTactic };
 
-    if (activities.data.length > 0) {
-        FillTacticsTable();
-    }
-    else {
-        ////// Modified By Maninder Singh Wadhva PL Ticket#47
-        $('#table_activities > tbody >tr').remove();
-        var varCount = $('#table_activities thead th').length;
-        $('#table_activities > tbody').html('<tr class="no-tactic-found"><td colspan="' + varCount + '">No submitted tactic found.</td></tr>');
-    }
+     if (activities.data.length > 0) {
+         FillTacticsTable();
+     }
+     else {
+         ////// Modified By Maninder Singh Wadhva PL Ticket#47
+         $('#table_activities > tbody >tr').remove();
+         var varCount = $('#table_activities thead th').length;
+         $('#table_activities > tbody').html('<tr class="no-tactic-found"><td colspan="' + varCount + '">No submitted tactic found.</td></tr>');
+     }
 
-    if ($('#IsViewOnly').val() != '') {
-        $("#table_activities th:nth-child(6), #table_activities td:nth-child(6)").remove();
-    }
-}
-function AttachEventToGroupHeading() {
-    var divAccordionGroups = $("div[id^='DivAccordionGroup']").find("div.accordion-heading a");
-    $.each(divAccordionGroups, function (index, accGroup) {
-        var accordionGroup = $(this);
-        if (typeof accordionGroup != 'undefined') {
-            accordionGroup.click(function () {
-                var anchor = $(this).parent().next().find("a");
-                if (typeof anchor != 'undefined') {
-                    anchor.click();
-                }
-            });
-        }
-    })
-}
+     if ($('#IsViewOnly').val() != '') {
+         $("#table_activities th:nth-child(6), #table_activities td:nth-child(6)").remove();
+     }
+ }
+ function AttachEventToGroupHeading() {
+     var divAccordionGroups = $("div[id^='DivAccordionGroup']").find("div.accordion-heading a");
+     $.each(divAccordionGroups, function (index, accGroup) {
+         var accordionGroup = $(this);
+         if (typeof accordionGroup != 'undefined') {
+             accordionGroup.click(function () {
+                 var anchor = $(this).parent().next().find("a");
+                 if (typeof anchor != 'undefined') {
+                     anchor.click();
+                 }
+             });
+         }
+     })
+ }
 
-//// Function to start date of current quarter.
-function getQarterStartDate() {
-    var currentDate = new Date();
-    var quater = Math.floor((currentDate.getMonth()) / 3) + 1;
-    var startDate;
-    var fullYear = currentDate.getFullYear();
-    switch (quater) {
-        case 1:
-            startDate = new Date(fullYear, 00, 01);
-            break;
-        case 2:
-            startDate = new Date(fullYear, 03, 01);
-            break;
-        case 3:
-            startDate = new Date(fullYear, 06, 01);
-            break;
-        case 4:
-            startDate = new Date(fullYear, 09, 01);
-            break;
-        default:
-            startDate = currentDate;
-    }
+ //// Function to start date of current quarter.
+ function getQarterStartDate() {
+     var currentDate = new Date();
+     var quater = Math.floor((currentDate.getMonth()) / 3) + 1;
+     var startDate;
+     var fullYear = currentDate.getFullYear();
+     switch (quater) {
+         case 1:
+             startDate = new Date(fullYear, 00, 01);
+             break;
+         case 2:
+             startDate = new Date(fullYear, 03, 01);
+             break;
+         case 3:
+             startDate = new Date(fullYear, 06, 01);
+             break;
+         case 4:
+             startDate = new Date(fullYear, 09, 01);
+             break;
+         default:
+             startDate = currentDate;
+     }
 
-    return startDate;
-}
+     return startDate;
+ }
 
-//// Function to set common properties of gantt.
-////Modified By Maninder Singh Wadhva PL Ticket#47, 337
-function SetGantt() {
-    gantt.config.grid_width = 236;
-    gantt.config.readonly = true;
-    gantt.config.autofit = true;
-    gantt.config.drag_links = false;
-    gantt.config.drag_resize = true;
-    gantt.config.drag_progress = false;
-}
+ //// Function to set common properties of gantt.
+ ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
+ function SetGantt() {
+     gantt.config.grid_width = 236;
+     gantt.config.readonly = true;
+     gantt.config.autofit = true;
+     gantt.config.drag_links = false;
+     gantt.config.drag_resize = true;
+     gantt.config.drag_progress = false;
+ }
 
-//// Modified By Maninder Singh Wadhva PL Ticket#47
-//// Function to render gantt i.e. for this year or this quarter.
-function renderGantt(taskData) {
-    var tasks = {
-        data: taskData
-    };
+ //// Modified By Maninder Singh Wadhva PL Ticket#47
+ //// Function to render gantt i.e. for this year or this quarter.
+ function renderGantt(taskData) {
+     var tasks = {
+         data: taskData
+     };
 
-    //var tasks = {
-    //    data: [
-    //        { id: 1, text: "ERP V10 Product Launch", start_date: new Date(2013, 00, 05), duration: 10, progress: 1, open: true },
-    //        { id: 2, text: "Q2 Lead Gen", start_date: new Date(2013, 02, 05), duration: 10, progress: 1, open: false }]
-    //};
+     //var tasks = {
+     //    data: [
+     //        { id: 1, text: "ERP V10 Product Launch", start_date: new Date(2013, 00, 05), duration: 10, progress: 1, open: true },
+     //        { id: 2, text: "Q2 Lead Gen", start_date: new Date(2013, 02, 05), duration: 10, progress: 1, open: false }]
+     //};
 
-    $.each(tasks.data, function (index, objData) {
-        objData.start_date = new Date(objData.start_date);
-    });
+     $.each(tasks.data, function (index, objData) {
+         objData.start_date = new Date(objData.start_date);
+     });
 
-    gantt.eachTask(function (task) {
-        gantt.deleteTask(task.id)
-    })
-    if (isQuater == "thisquarter") {
-        //// Setting scale.
-        gantt.config.scale_unit = "month";
-        gantt.config.step = 12;
-        gantt.config.date_scale = " %Y";
+     gantt.eachTask(function (task) {
+         gantt.deleteTask(task.id)
+     })
+     if (isQuater == "thisquarter") {
+         //// Setting scale.
+         gantt.config.scale_unit = "month";
+         gantt.config.step = 12;
+         gantt.config.date_scale = " %Y";
 
-        gantt.config.scale_height = 60;
-        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-        gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+         gantt.config.scale_height = 60;
+         gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
-        //// Getting quarter
-        var startDate = getQarterStartDate();
-        var endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 1);
-        gantt.config.start_date = startDate;
-        gantt.config.end_date = endDate;
-        //// filtering quater data
-        var filteredData = $.grep(tasks.data,
+         //// Getting quarter
+         var startDate = getQarterStartDate();
+         var endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 1);
+         gantt.config.start_date = startDate;
+         gantt.config.end_date = endDate;
+         //// filtering quater data
+         var filteredData = $.grep(tasks.data,
+                                    function (value) {
+                                        return (value.start_date >= startDate && value.start_date <= endDate)
+                                    }
+                                  );
+         var filteredTasks = { data: filteredData };
+
+         gantt.init("gantt_here");
+
+         var json_length = filteredTasks.data.length;
+         var gantt_div = document.getElementById("gantt_here");
+         ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
+         if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
+             gantt_div.style.height = ((json_length * 35) + 94) + "px";
+         }
+         else {
+             gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
+         }
+         ////
+
+         //// Function to add class to each task bar.
+         ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
+         gantt.templates.task_class = function (start, end, task) {
+             return getCSSForTask(task);
+         };
+         gantt.parse(filteredTasks);
+     } else if (isQuater == "thisyear") {
+         gantt.config.scale_unit = "year";
+         gantt.config.step = 1;
+         gantt.config.date_scale = "%Y";
+         gantt.config.scale_height = 60;
+         gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+         //gantt.config.start_date = new Date(planYear, 00, 01);
+         //gantt.config.end_date = new Date(planYear + 1, 00, 01);
+
+         var date = new Date();
+         gantt.config.start_date = new Date(date.getFullYear(), 00, 01);
+         gantt.config.end_date = new Date(date.getFullYear() + 1, 00, 01);
+         gantt.init("gantt_here");
+
+         var json_length = tasks.data.length;
+         var gantt_div = document.getElementById("gantt_here");
+         ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
+         if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
+             gantt_div.style.height = ((json_length * 35) + 94) + "px";
+         }
+         else {
+             gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
+         }
+         ////
+
+         //// Function to add class to each task bar.
+         ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
+         gantt.templates.task_class = function (start, end, task) {
+             return getCSSForTask(task);
+         };
+
+         gantt.parse(tasks);
+     }
+     else if (isQuater == "thismonth") {
+         gantt.config.scale_unit = "month";
+         gantt.config.step = 12;
+         gantt.config.date_scale = " %Y";
+         gantt.config.scale_height = 60;
+         gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+         var date = new Date(), m = date.getMonth();
+         gantt.config.start_date = new Date(date.getFullYear(), m, 01);
+         gantt.config.end_date = new Date(date.getFullYear(), m + 1, 01);
+
+
+         var filteredData = $.grep(tasks.data,
                                    function (value) {
                                        return (value.start_date >= startDate && value.start_date <= endDate)
                                    }
                                  );
-        var filteredTasks = { data: filteredData };
-
-        gantt.init("gantt_here");
-
-        var json_length = filteredTasks.data.length;
-        var gantt_div = document.getElementById("gantt_here");
-        ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-        if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
-            gantt_div.style.height = ((json_length * 35) + 94) + "px";
-        }
-        else {
-            gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
-        }
-        ////
-
-        //// Function to add class to each task bar.
-        ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
-        gantt.templates.task_class = function (start, end, task) {
-            return getCSSForTask(task);
-        };
-        gantt.parse(filteredTasks);
-    } else if (isQuater == "thisyear") {
-        gantt.config.scale_unit = "year";
-        gantt.config.step = 1;
-        gantt.config.date_scale = "%Y";
-        gantt.config.scale_height = 60;
-        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-        gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
-
-        //gantt.config.start_date = new Date(planYear, 00, 01);
-        //gantt.config.end_date = new Date(planYear + 1, 00, 01);
-
-        var date = new Date();
-        gantt.config.start_date = new Date(date.getFullYear(), 00, 01);
-        gantt.config.end_date = new Date(date.getFullYear() + 1, 00, 01);
-        gantt.init("gantt_here");
-
-        var json_length = tasks.data.length;
-        var gantt_div = document.getElementById("gantt_here");
-        ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-        if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
-            gantt_div.style.height = ((json_length * 35) + 94) + "px";
-        }
-        else {
-            gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
-        }
-        ////
-
-        //// Function to add class to each task bar.
-        ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
-        gantt.templates.task_class = function (start, end, task) {
-            return getCSSForTask(task);
-        };
-
-        gantt.parse(tasks);
-    }
-    else if (isQuater == "thismonth") {
-        gantt.config.scale_unit = "month";
-        gantt.config.step = 12;
-        gantt.config.date_scale = " %Y";
-        gantt.config.scale_height = 60;
-        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-        gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
-
-        var date = new Date(), m = date.getMonth();
-        gantt.config.start_date = new Date(date.getFullYear(), m, 01);
-        gantt.config.end_date = new Date(date.getFullYear(), m + 1, 01);
-
-
-        var filteredData = $.grep(tasks.data,
-                                  function (value) {
-                                      return (value.start_date >= startDate && value.start_date <= endDate)
-                                  }
-                                );
-        var filteredTasks = { data: filteredData };
-
-        gantt.init("gantt_here");
-
-        var json_length = tasks.data.length;
-        var gantt_div = document.getElementById("gantt_here");
-        ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-        if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
-            gantt_div.style.height = ((json_length * 35) + 94) + "px";
-        }
-        else {
-            gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
-        }
-        ////
-
-        //// Function to add class to each task bar.
-        ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
-        gantt.templates.task_class = function (start, end, task) {
-            return getCSSForTask(task);
-        };
-
-        gantt.parse(tasks);
-    }
-    else if (isQuater == "nextyear") {
-
-        gantt.config.scale_unit = "year";
-        gantt.config.step = 1;
-        gantt.config.date_scale = "%Y";
-        gantt.config.scale_height = 60;
-        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-        gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
-
-        var date = new Date();
-        gantt.config.start_date = new Date(date.getFullYear() + 1, 00, 01);
-        gantt.config.end_date = new Date(date.getFullYear() + 2, 00, 01);
-        gantt.init("gantt_here");
-
-        var json_length = tasks.data.length;
-        var gantt_div = document.getElementById("gantt_here");
-        ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-        if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
-            gantt_div.style.height = ((json_length * 35) + 94) + "px";
-        }
-        else {
-            gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
-        }
-        ////
-
-        //// Function to add class to each task bar.
-        ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
-        gantt.templates.task_class = function (start, end, task) {
-            return getCSSForTask(task);
-        };
-
-        gantt.parse(tasks);
-    } else if (isQuater == "planYear") {
-        // Edited to add PlanYear option.
-        gantt.config.scale_unit = "year";
-        gantt.config.step = 1;
-        gantt.config.date_scale = "%Y";
-        gantt.config.scale_height = 60;
-        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-        gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
-
-        gantt.config.start_date = new Date(planYear, 00, 01);
-        gantt.config.end_date = new Date(planYear + 1, 00, 01);
-        gantt.init("gantt_here");
-
-        var json_length = tasks.data.length;
-        var gantt_div = document.getElementById("gantt_here");
-        ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-        if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
-            gantt_div.style.height = ((json_length * 35) + 94) + "px";
-        }
-        else {
-            gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
-        }
-        ////
-
-        //// Function to add class to each task bar.
-        ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
-        gantt.templates.task_class = function (start, end, task) {
-            return getCSSForTask(task);
-        };
-
-        gantt.parse(tasks);
-    }
-
-    //// Hide/Show Tabulated data shown below gantt of request tab.
-    if (GanttTabs.Request == type) {
-
-        // Below function commented by dharmraj coz with below function gantt_chart shows lines.
-        //// Calculating height for grid
-        //modSampleHeight();
-
-        var gantt_div1 = document.getElementById("gantt_here");
-        ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-        var totalRecords = tasks.data.length;
-        if (totalRecords.toString() == "0" || parseInt(totalRecords.toString()) <= 9) {
-            gantt_div1.style.height = ((totalRecords * 35) + 94) + "px";
-            $(".shadow-scroll-gantt").addClass("full-width");
-        }
-        else {
-            gantt_div1.style.height = "409px";
-            $(".shadow-scroll-gantt").removeClass("full-width");
-        }
-        ////
-        gantt.config.min_column_width = function (data) {
-            return 10;
-        };
-    }
-
-    //// Modified by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
-    isRender = true;
-    gantt.eachTask(function (task) {
-        gantt.open(task.id);
-        CountTacticForRenderChart(task.id, '');
-    })
-    isRender = false;
-    ////
-
-    AttachEventToTactic();
-}
-
-//// Added by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
-function CountTacticForRenderChart(leftNavTaskID, CampaignID) {
-    /////Modified By Maninder Singh Wadhva PL Ticket#47, 337
-    if (leftNavTaskID.substring(0, 1) == "M") {
-        $("#DivAccordionImprovementActivities").find('span[id^="spnimprovement_"]').each(function (index1) {
-            var tid = this.id.substring(this.id.indexOf('_') + 1);
-            var cnt = 0;
-            var a = gantt.getChildren(leftNavTaskID);
-            $("#accordion-element-improvement-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
-                var taskid = $(this).attr('taskid');
-                var taskVisible = $("#gantt_here").find('div[task_id="' + taskid + '"]');
-                if (CampaignID == '') {
-                    if (taskid == leftNavTaskID && (typeof taskVisible != 'undefined') && taskVisible.length > 0) {
-                        cnt = cnt + 1;
-                    }
-                }
-                else {
-                    if (taskid.indexOf(CampaignID) >= 0 && leftNavTaskID.indexOf("_I") > 0 && !(leftNavTaskID.indexOf("_Y") > 0) &&
-                        (typeof taskVisible != 'undefined') && taskVisible.length > 0) {
-                        cnt = cnt + 1;
-                    }
-                }
-            });
-
-            if ($("#" + this.id).text() != '' && leftNavTaskID.indexOf("_I") > 0) {
-                updateCountOnExpand($("#" + this.id), cnt);
-            }
-        });
-    }
-    else {
-        $("#DivAccordionMarketingActivities").find('span[id^="spn_"]').each(function (index0) {
-            var tid = this.id.substring(this.id.indexOf('_') + 1);
-            cnt = 0;
-            $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index1) {
-                var taskid = $(this).attr('taskid');
-                var taskVisible = $("#gantt_here").find('div[task_id="' + taskid + '"]');
-                if (CampaignID == '') {
-                    if (taskid == leftNavTaskID && (typeof taskVisible != 'undefined') && taskVisible.length > 0) {
-                        cnt = cnt + 1;
-                    }
-                }
-                else {
-                    if (taskid.indexOf(CampaignID) >= 0 && leftNavTaskID.indexOf("_T") > 0 && !(leftNavTaskID.indexOf("_Y") > 0) &&
-                        (typeof taskVisible != 'undefined') && taskVisible.length > 0) {
-                        cnt = cnt + 1;
-                    }
-                }
-            });
-
-            if ($("#" + this.id).text() != '' && leftNavTaskID.indexOf("_T") > 0) {
-                updateCountOnExpand($("#" + this.id), cnt);
-            }
-        });
-    }
-}
-
-////Modified By Maninder Singh Wadhva PL Ticket#47, 337
-function getCSSForTask(task) {
-    if (typeof task.plantacticid != 'undefined' || (typeof task.isImprovement != 'undefined' && task.isImprovement == true)) {
-        var cssClass = task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
-        if (typeof task.isImprovement != 'undefined' && task.isImprovement == true &&
-            typeof task.ImprovementPlanTacticId != 'undefined') {
-            cssClass += ' improvement border-top';
-        }
-        else {
-            if (!task.$open) {
-                ///Modified by Dharmraj PL Ticket#394 - Apply required styling on the Improvement activity in calendar
-                cssClass = ' improvement improvementcolor27A4E5 colorC6EBF3-with-border ';
-            }
-            else {
-                cssClass += ' no_drag ';
-            }
-        }
-    } else {
-        cssClass = task.color + ' no_drag ';
-    }
-
-    return cssClass;
-}
-
-function Quarter() {
-    gantt.config.scale_unit = "month";
-    gantt.config.step = 12;
-    gantt.config.date_scale = " %Y";
-
-    gantt.config.scale_height = 60;
-    gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-    gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
-
-    //// Getting quarter
-    var startDate = getQarterStartDate();
-    var endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 1);
-    gantt.config.start_date = startDate;
-    gantt.config.end_date = endDate;
-
-    //// filtering quater data
-    var filteredData = $.grep(tasks.data,
-                               function (value) {
-                                   return (value.start_date >= startDate && value.start_date <= endDate)
-                               }
-                             );
-    var filteredTasks = { data: filteredData };
-
-    gantt.init("gantt_here");
-
-    var json_length = filteredTasks.data.length;
-    var gantt_div = document.getElementById("gantt_here");
-    gantt_div.style.height = ((json_length * 35) + 94) + "px";
-
-    //// Function to add class to each task bar.
-    gantt.templates.task_class = function (start, end, task) {
-        if (typeof task.plantacticid != 'undefined') {
-            return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
-        } else {
-            return task.color;
-        }
-    };
-    gantt.parse(filteredTasks);
-}
-
-function year() {
-    gantt.config.scale_unit = "year";
-    gantt.config.step = 1;
-    gantt.config.date_scale = "%Y";
-    gantt.config.scale_height = 60;
-    gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-    gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
-
-    gantt.config.start_date = new Date(planYear, 00, 01);
-    gantt.config.end_date = new Date(planYear + 1, 00, 01);
-    gantt.init("gantt_here");
-
-    var json_length = tasks.data.length;
-    var gantt_div = document.getElementById("gantt_here");
-    gantt_div.style.height = ((json_length * 35) + 94) + "px";
-
-    //// Function to add class to each task bar.
-    gantt.templates.task_class = function (start, end, task) {
-        if (typeof task.plantacticid != 'undefined') {
-            return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
-        } else {
-            return task.color;
-        }
-    };
-
-    gantt.parse(tasks);
-}
-
-function thismonth() {
-    gantt.config.scale_unit = "month";
-    gantt.config.step = 12;
-    gantt.config.date_scale = " %Y";
-
-    gantt.config.scale_height = 60;
-    gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-    gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
-
-    //// Getting quarter
-    var date = new Date();
-    var startDate = new Date(date.getFullYear(), date.getMonth(), 1);
-    var endDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-
-    //var startDate = getQarterStartDate();
-    //var endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 1);
-    gantt.config.start_date = startDate;
-    gantt.config.end_date = endDate;
-
-    //// filtering quater data
-    var filteredData = $.grep(tasks.data,
-                               function (value) {
-                                   return (value.start_date >= startDate && value.start_date <= endDate)
-                               }
-                             );
-    var filteredTasks = { data: filteredData };
-
-    gantt.init("gantt_here");
-
-    var json_length = filteredTasks.data.length;
-    var gantt_div = document.getElementById("gantt_here");
-    gantt_div.style.height = ((json_length * 35) + 94) + "px";
-
-    //// Function to add class to each task bar.
-    gantt.templates.task_class = function (start, end, task) {
-        if (typeof task.plantacticid != 'undefined') {
-            return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
-        } else {
-            return task.color;
-        }
-    };
-    gantt.parse(filteredTasks);
-}
-
-function nextyear() {
-    gantt.config.scale_unit = "year";
-    gantt.config.step = 1;
-    gantt.config.date_scale = "%Y";
-    gantt.config.scale_height = 60;
-    gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
-    gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
-
-    gantt.config.start_date = new Date(planYear + 1, 00, 01);
-    gantt.config.end_date = new Date(planYear + 2, 00, 01);
-    gantt.init("gantt_here");
-
-    var json_length = tasks.data.length;
-    var gantt_div = document.getElementById("gantt_here");
-    gantt_div.style.height = ((json_length * 35) + 94) + "px";
-
-    //// Function to add class to each task bar.
-    gantt.templates.task_class = function (start, end, task) {
-        if (typeof task.plantacticid != 'undefined') {
-            return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
-        } else {
-            return task.color;
-        }
-    };
-
-    gantt.parse(tasks);
-}
-
-function modSampleHeight() {
-    var headHeight = 94;
-    var sch = document.getElementById("gantt_here");
-    sch.style.height = (parseInt(document.body.offsetHeight) - headHeight) + "px";
-    //var contbox = document.getElementById("contbox");
-    //contbox.style.width = (parseInt(document.body.offsetWidth)-300)+"px";
-
-    gantt.setSizes();
-}
-
-//// Variable to hold double click event.
-var eventTaskDoubleClick;
-//// Function to attach event to show inspect model.
-function AttachEventToTactic() {
-    //// Detaching double click event.
-    if (eventTaskDoubleClick != undefined) {
-        gantt.detachEvent(eventTaskDoubleClick);
-    }
-
-    //// Attaching double click event
-    eventTaskDoubleClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) { ShowModel(taskId, null) });
-}
-
-//// Modified By Maninder Singh Wadhva PL Ticket#47
-function ShowModel(taskId, isShowInspect) {
-    var task, planTacticId, planProgramId, planCampaignId;
-    var isImprovement = false;
-    if (taskId != null) {
-        task = gantt.getTask(taskId);
-        planCampaignId = task.plancampaignid;
-        planProgramId = task.planprogramid;
-
-        isImprovement = (typeof task.isImprovement != 'undefined' && task.isImprovement == true)
-
-        if (isImprovement) {
-            planTacticId = task.ImprovementPlanTacticId;
-        }
-        else {
-            planTacticId = task.plantacticid;
-        }
-    } else if (isShowInspect) {
-        planTacticId = $("#hdnshowInspectForPlanTacticId").val();
-        planCampaignId = $("#hdnshowInspectForPlanCampaignId").val();
-        planProgramId = $("#hdnshowInspectForPlanProgramId").val();
-        isImprovement = $('#hdnIsImprovement').val().toLowerCase();
-    }
-
-    //// Checking whether current task is improvement tactic or not.
-    if (typeof planTacticId != 'undefined' && planTacticId != 0 && isImprovement == true) {
-
-        modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
-        $("#modal-container-186470").modal('show');
-        $("#successMessage").css("display", "none");
-        $("#errorMessage").css("display", "none");
-        loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", "Setup");
+         var filteredTasks = { data: filteredData };
+
+         gantt.init("gantt_here");
+
+         var json_length = tasks.data.length;
+         var gantt_div = document.getElementById("gantt_here");
+         ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
+         if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
+             gantt_div.style.height = ((json_length * 35) + 94) + "px";
+         }
+         else {
+             gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
+         }
+         ////
+
+         //// Function to add class to each task bar.
+         ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
+         gantt.templates.task_class = function (start, end, task) {
+             return getCSSForTask(task);
+         };
+
+         gantt.parse(tasks);
+     }
+     else if (isQuater == "nextyear") {
+
+         gantt.config.scale_unit = "year";
+         gantt.config.step = 1;
+         gantt.config.date_scale = "%Y";
+         gantt.config.scale_height = 60;
+         gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+         var date = new Date();
+         gantt.config.start_date = new Date(date.getFullYear() + 1, 00, 01);
+         gantt.config.end_date = new Date(date.getFullYear() + 2, 00, 01);
+         gantt.init("gantt_here");
+
+         var json_length = tasks.data.length;
+         var gantt_div = document.getElementById("gantt_here");
+         ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
+         if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
+             gantt_div.style.height = ((json_length * 35) + 94) + "px";
+         }
+         else {
+             gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
+         }
+         ////
+
+         //// Function to add class to each task bar.
+         ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
+         gantt.templates.task_class = function (start, end, task) {
+             return getCSSForTask(task);
+         };
+
+         gantt.parse(tasks);
+     } else if (isQuater == "planYear") {
+         // Edited to add PlanYear option.
+         gantt.config.scale_unit = "year";
+         gantt.config.step = 1;
+         gantt.config.date_scale = "%Y";
+         gantt.config.scale_height = 60;
+         gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+         gantt.config.start_date = new Date(planYear, 00, 01);
+         gantt.config.end_date = new Date(planYear + 1, 00, 01);
+         gantt.init("gantt_here");
+
+         var json_length = tasks.data.length;
+         var gantt_div = document.getElementById("gantt_here");
+         ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
+         if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
+             gantt_div.style.height = ((json_length * 35) + 94) + "px";
+         }
+         else {
+             gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
+         }
+         ////
+
+         //// Function to add class to each task bar.
+         ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
+         gantt.templates.task_class = function (start, end, task) {
+             return getCSSForTask(task);
+         };
+
+         gantt.parse(tasks);
+     }
+
+     //// Hide/Show Tabulated data shown below gantt of request tab.
+     if (GanttTabs.Request == type) {
+
+         // Below function commented by dharmraj coz with below function gantt_chart shows lines.
+         //// Calculating height for grid
+         //modSampleHeight();
+
+         var gantt_div1 = document.getElementById("gantt_here");
+         ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
+         var totalRecords = tasks.data.length;
+         if (totalRecords.toString() == "0" || parseInt(totalRecords.toString()) <= 9) {
+             gantt_div1.style.height = ((totalRecords * 35) + 94) + "px";
+             $(".shadow-scroll-gantt").addClass("full-width");
+         }
+         else {
+             gantt_div1.style.height = "409px";
+             $(".shadow-scroll-gantt").removeClass("full-width");
+         }
+         ////
+         gantt.config.min_column_width = function (data) {
+             return 10;
+         };
+     }
+
+     //// Modified by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
+     isRender = true;
+     gantt.eachTask(function (task) {
+         gantt.open(task.id);
+         CountTacticForRenderChart(task.id, '');
+     })
+     isRender = false;
+     ////
+
+     AttachEventToTactic();
+ }
+
+ //// Added by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
+ function CountTacticForRenderChart(leftNavTaskID, CampaignID) {
+     /////Modified By Maninder Singh Wadhva PL Ticket#47, 337
+     if (leftNavTaskID.substring(0, 1) == "M") {
+         $("#DivAccordionImprovementActivities").find('span[id^="spnimprovement_"]').each(function (index1) {
+             var tid = this.id.substring(this.id.indexOf('_') + 1);
+             var cnt = 0;
+             var a = gantt.getChildren(leftNavTaskID);
+             $("#accordion-element-improvement-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
+                 var taskid = $(this).attr('taskid');
+                 var taskVisible = $("#gantt_here").find('div[task_id="' + taskid + '"]');
+                 if (CampaignID == '') {
+                     if (taskid == leftNavTaskID && (typeof taskVisible != 'undefined') && taskVisible.length > 0) {
+                         cnt = cnt + 1;
+                     }
+                 }
+                 else {
+                     if (taskid.indexOf(CampaignID) >= 0 && leftNavTaskID.indexOf("_I") > 0 && !(leftNavTaskID.indexOf("_Y") > 0) &&
+                         (typeof taskVisible != 'undefined') && taskVisible.length > 0) {
+                         cnt = cnt + 1;
+                     }
+                 }
+             });
+
+             if ($("#" + this.id).text() != '' && leftNavTaskID.indexOf("_I") > 0) {
+                 updateCountOnExpand($("#" + this.id), cnt);
+             }
+         });
+     }
+     else {
+         $("#DivAccordionMarketingActivities").find('span[id^="spn_"]').each(function (index0) {
+             var tid = this.id.substring(this.id.indexOf('_') + 1);
+             cnt = 0;
+             $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index1) {
+                 var taskid = $(this).attr('taskid');
+                 var taskVisible = $("#gantt_here").find('div[task_id="' + taskid + '"]');
+                 if (CampaignID == '') {
+                     if (taskid == leftNavTaskID && (typeof taskVisible != 'undefined') && taskVisible.length > 0) {
+                         cnt = cnt + 1;
+                     }
+                 }
+                 else {
+                     if (taskid.indexOf(CampaignID) >= 0 && leftNavTaskID.indexOf("_T") > 0 && !(leftNavTaskID.indexOf("_Y") > 0) &&
+                         (typeof taskVisible != 'undefined') && taskVisible.length > 0) {
+                         cnt = cnt + 1;
+                     }
+                 }
+             });
+
+             if ($("#" + this.id).text() != '' && leftNavTaskID.indexOf("_T") > 0) {
+                 updateCountOnExpand($("#" + this.id), cnt);
+             }
+         });
+     }
+ }
+
+ ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
+ function getCSSForTask(task) {
+     if (typeof task.plantacticid != 'undefined' || (typeof task.isImprovement != 'undefined' && task.isImprovement == true)) {
+         var cssClass = task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+         if (typeof task.isImprovement != 'undefined' && task.isImprovement == true &&
+             typeof task.ImprovementPlanTacticId != 'undefined') {
+             cssClass += ' improvement border-top';
+         }
+         else {
+             if (!task.$open) {
+                 ///Modified by Dharmraj PL Ticket#394 - Apply required styling on the Improvement activity in calendar
+                 cssClass = ' improvement improvementcolor27A4E5 colorC6EBF3-with-border ';
+             }
+             else {
+                 cssClass += ' no_drag ';
+             }
+         }
+     } else {
+         cssClass = task.color + ' no_drag ';
+     }
+
+     return cssClass;
+ }
+
+ function Quarter() {
+     gantt.config.scale_unit = "month";
+     gantt.config.step = 12;
+     gantt.config.date_scale = " %Y";
+
+     gantt.config.scale_height = 60;
+     gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+     gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+     //// Getting quarter
+     var startDate = getQarterStartDate();
+     var endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 1);
+     gantt.config.start_date = startDate;
+     gantt.config.end_date = endDate;
+
+     //// filtering quater data
+     var filteredData = $.grep(tasks.data,
+                                function (value) {
+                                    return (value.start_date >= startDate && value.start_date <= endDate)
+                                }
+                              );
+     var filteredTasks = { data: filteredData };
+
+     gantt.init("gantt_here");
+
+     var json_length = filteredTasks.data.length;
+     var gantt_div = document.getElementById("gantt_here");
+     gantt_div.style.height = ((json_length * 35) + 94) + "px";
+
+     //// Function to add class to each task bar.
+     gantt.templates.task_class = function (start, end, task) {
+         if (typeof task.plantacticid != 'undefined') {
+             return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+         } else {
+             return task.color;
+         }
+     };
+     gantt.parse(filteredTasks);
+ }
+
+ function year() {
+     gantt.config.scale_unit = "year";
+     gantt.config.step = 1;
+     gantt.config.date_scale = "%Y";
+     gantt.config.scale_height = 60;
+     gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+     gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+     gantt.config.start_date = new Date(planYear, 00, 01);
+     gantt.config.end_date = new Date(planYear + 1, 00, 01);
+     gantt.init("gantt_here");
+
+     var json_length = tasks.data.length;
+     var gantt_div = document.getElementById("gantt_here");
+     gantt_div.style.height = ((json_length * 35) + 94) + "px";
+
+     //// Function to add class to each task bar.
+     gantt.templates.task_class = function (start, end, task) {
+         if (typeof task.plantacticid != 'undefined') {
+             return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+         } else {
+             return task.color;
+         }
+     };
+
+     gantt.parse(tasks);
+ }
+
+ function thismonth() {
+     gantt.config.scale_unit = "month";
+     gantt.config.step = 12;
+     gantt.config.date_scale = " %Y";
+
+     gantt.config.scale_height = 60;
+     gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+     gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+     //// Getting quarter
+     var date = new Date();
+     var startDate = new Date(date.getFullYear(), date.getMonth(), 1);
+     var endDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+     //var startDate = getQarterStartDate();
+     //var endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 3, 1);
+     gantt.config.start_date = startDate;
+     gantt.config.end_date = endDate;
+
+     //// filtering quater data
+     var filteredData = $.grep(tasks.data,
+                                function (value) {
+                                    return (value.start_date >= startDate && value.start_date <= endDate)
+                                }
+                              );
+     var filteredTasks = { data: filteredData };
+
+     gantt.init("gantt_here");
+
+     var json_length = filteredTasks.data.length;
+     var gantt_div = document.getElementById("gantt_here");
+     gantt_div.style.height = ((json_length * 35) + 94) + "px";
+
+     //// Function to add class to each task bar.
+     gantt.templates.task_class = function (start, end, task) {
+         if (typeof task.plantacticid != 'undefined') {
+             return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+         } else {
+             return task.color;
+         }
+     };
+     gantt.parse(filteredTasks);
+ }
+
+ function nextyear() {
+     gantt.config.scale_unit = "year";
+     gantt.config.step = 1;
+     gantt.config.date_scale = "%Y";
+     gantt.config.scale_height = 60;
+     gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+     gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+     gantt.config.start_date = new Date(planYear + 1, 00, 01);
+     gantt.config.end_date = new Date(planYear + 2, 00, 01);
+     gantt.init("gantt_here");
+
+     var json_length = tasks.data.length;
+     var gantt_div = document.getElementById("gantt_here");
+     gantt_div.style.height = ((json_length * 35) + 94) + "px";
+
+     //// Function to add class to each task bar.
+     gantt.templates.task_class = function (start, end, task) {
+         if (typeof task.plantacticid != 'undefined') {
+             return task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
+         } else {
+             return task.color;
+         }
+     };
+
+     gantt.parse(tasks);
+ }
+
+ function modSampleHeight() {
+     var headHeight = 94;
+     var sch = document.getElementById("gantt_here");
+     sch.style.height = (parseInt(document.body.offsetHeight) - headHeight) + "px";
+     //var contbox = document.getElementById("contbox");
+     //contbox.style.width = (parseInt(document.body.offsetWidth)-300)+"px";
+
+     gantt.setSizes();
+ }
+
+ //// Variable to hold double click event.
+ var eventTaskDoubleClick;
+ //// Function to attach event to show inspect model.
+ function AttachEventToTactic() {
+     //// Detaching double click event.
+     if (eventTaskDoubleClick != undefined) {
+         gantt.detachEvent(eventTaskDoubleClick);
+     }
+
+     //// Attaching double click event
+     eventTaskDoubleClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) { ShowModel(taskId, null) });
+ }
+
+ //// Modified By Maninder Singh Wadhva PL Ticket#47
+ function ShowModel(taskId, isShowInspect) {
+     var task, planTacticId, planProgramId, planCampaignId;
+     var isImprovement = false;
+     if (taskId != null) {
+         task = gantt.getTask(taskId);
+         planCampaignId = task.plancampaignid;
+         planProgramId = task.planprogramid;
+
+         isImprovement = (typeof task.isImprovement != 'undefined' && task.isImprovement == true)
+
+         if (isImprovement) {
+             planTacticId = task.ImprovementPlanTacticId;
+         }
+         else {
+             planTacticId = task.plantacticid;
+         }
+     } else if (isShowInspect) {
+         planTacticId = $("#hdnshowInspectForPlanTacticId").val();
+         planCampaignId = $("#hdnshowInspectForPlanCampaignId").val();
+         planProgramId = $("#hdnshowInspectForPlanProgramId").val();
+         isImprovement = $('#hdnIsImprovement').val().toLowerCase();
+     }
+
+     //// Checking whether current task is improvement tactic or not.
+     if (typeof planTacticId != 'undefined' && planTacticId != 0 && isImprovement == true) {
+
+         modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
+         $("#modal-container-186470").modal('show');
+         $("#successMessage").css("display", "none");
+         $("#errorMessage").css("display", "none");
+         loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", "Setup");
     }
         //// Checking whether current task is tactic or not.
     else if (typeof planTacticId != 'undefined' && planTacticId != 0) {
