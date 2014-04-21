@@ -54,10 +54,14 @@
                     @foreach (var item in Model.listMetrics.Where(m => m.MetricType == MetricType_CR || m.MetricType == MetricType_SV))
                     {
                         <tr>
-                            <td title="@item.MetricName">
-                                @Html.DisplayFor(model => item.MetricName)
+                            @* Start -- Modified By :- Sohel on 21/04/2014 for PL ticket #160 to display unwrapped text. *@
+                            <td title="@item.MetricName" style="width:82px;">   
+                                <span class="truncate" title="@item.MetricName">
+                                    @Html.DisplayFor(model => item.MetricName)
+                                </span>
                             </td>
-                            <td style="width:24px;"></td>
+                            <td style="width:10px;"></td>   
+                            @* End -- Modified By :- Sohel on 21/04/2014 for PL ticket #160 to display unwrapped text. *@
                             <td class="small-input">
                                 @Html.TextBoxFor(model => item.ConversionValue, new { placeholder = "Required", require = "true",@class = "priceValue", maxlength = "1", id = @item.MetricID_CR})
                             </td>
@@ -83,7 +87,11 @@
                     {
                         <tr>
                             <td title="@item.MetricName">
-                                @Html.DisplayFor(model => item.MetricName)
+                                @* Start -- Modified By :- Sohel on 21/04/2014 for PL ticket #160 to display unwrapped text. *@
+                                <span class="truncate" title="@item.MetricName">
+                                    @Html.DisplayFor(model => item.MetricName)
+                                </span>
+                                @* End -- Modified By :- Sohel on 21/04/2014 for PL ticket #160 to display unwrapped text. *@
                             </td>
                             <td style="width:150px;">
                                 @Html.TextBoxFor(model => item.ConversionValue, new {placeholder = "Required",@class = "priceValue", require = "true", maxlength = "1", id = @item.MetricID_Size})
@@ -261,5 +269,31 @@
             $("#spanMessage").text(value);
             return false;
         }
+        
+        TruncateMetricName();    @* Added By :- Sohel on 21/04/2014 for PL ticket #160 to display unwrapped text. *@
     });
+
+    @* Added By :- Sohel on 21/04/2014 for PL ticket #160 to display unwrapped text. *@
+    function TruncateMetricName() {
+        $("#tblCR_SV").find('.truncate').each(function () {
+            var title = $(this).text().trim();
+            var mainText = title;
+            if (title.length >= 11) {
+                title = title.substring(0, 11) + "...";
+                $(this).prop('title', mainText);
+            }
+            $(this).text(title);
+        });
+
+        $("#tblSize").find('.truncate').each(function () {
+            var title = $(this).text().trim();
+            var mainText = title;
+            if (title.length >= 11) {
+                title = title.substring(0, 11) + "...";
+                $(this).prop('title', mainText);
+            }
+            $(this).text(title);
+        });
+    }
+    
 </script>
