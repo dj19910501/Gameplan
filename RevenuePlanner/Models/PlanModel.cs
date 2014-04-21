@@ -138,4 +138,65 @@ namespace RevenuePlanner.Models
         public double Velocity { get; set; }
     }
 
+    public class SuggestedImprovementActivities
+    {
+        public int ImprovementPlanTacticId { get; set; }
+        public int ImprovementTacticTypeId { get; set; }
+        public string ImprovementTacticTypeTitle { get; set; }
+        public double Cost { get; set; }
+        public double ProjectedRevenueWithoutTactic { get; set; }
+        public double ProjectedRevenueWithTactic { get; set; }
+        public double ProjectedRevenueLift { get; set; }
+        public double RevenueToCostRatio { get; set; }
+        public bool isExits { get; set; }
+    }
+
+    /// <summary>
+    /// Added By: Maninder Singh Wadhva
+    /// Addressed PL Ticket: 37,38,47,49
+    /// Class for hypothetical model.
+    /// </summary>
+    public class HypotheticalModel
+    {
+        /// <summary>
+        /// Member to hold improved metrics
+        /// </summary>
+        public List<ImprovedMetric> ImprovedMetrics { get; set; }
+    }
+
+    /// <summary>
+    /// Added By: Maninder Singh Wadhva
+    /// Addressed PL Ticket: 37,38,47,49
+    /// Class for improved metric.
+    /// </summary>
+    public class ImprovedMetric
+    {
+        public int MetricId { get; set; }
+        public string MetricType { get; set; }
+        public string MetricCode { get; set; }
+        public int? Level { get; set; }
+        public double Value { get; set; }
+    }
+
+    /// Added by Bhavesh
+    /// Pl Ticket 289,377,378
+    public class SuggestedImprovementActivitiesConversion
+    {
+        public int ImprovementPlanTacticId { get; set; }
+        public int ImprovementTacticTypeId { get; set; }
+        public string ImprovementTacticTypeTitle { get; set; }
+        public double Cost { get; set; }
+        public List<ImprovedMetricWeight> ImprovedMetricsWeight { get; set; }
+        public bool isExits { get; set; }
+    }
+
+    /// Added by Bhavesh
+    /// Pl Ticket 289,377,378
+    public class ImprovedMetricWeight
+    {
+        public int MetricId { get; set; }
+        public int? Level { get; set; }
+        public double Value { get; set; }
+    }
+
 }

@@ -3023,8 +3023,9 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Tactic.</returns>
         public PartialViewResult CreateImprovementTactic(int id = 0)
         {
+            List<int> impTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(it => it.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && it.IsDeleted == false).Select(it => it.ImprovementTacticTypeId).ToList();
             ViewBag.Tactics = from t in db.ImprovementTacticTypes
-                              where t.ClientId == Sessions.User.ClientId && t.IsDeployed == true
+                              where t.ClientId == Sessions.User.ClientId && t.IsDeployed == true && !impTacticList.Contains(t.ImprovementTacticTypeId)
                               orderby t.Title
                               select t;
             ViewBag.IsCreated = true;
@@ -3047,8 +3048,9 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Tactic.</returns>
         public PartialViewResult EditImprovementTactic(int id = 0, string RedirectType = "")
         {
+            List<int> impTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(it => it.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && it.IsDeleted == false && it.ImprovementPlanTacticId != id).Select(it => it.ImprovementTacticTypeId).ToList();
             ViewBag.Tactics = from t in db.ImprovementTacticTypes
-                              where t.ClientId == Sessions.User.ClientId && t.IsDeployed == true
+                              where t.ClientId == Sessions.User.ClientId && t.IsDeployed == true && !impTacticList.Contains(t.ImprovementTacticTypeId)
                               orderby t.Title
                               select t;
             ViewBag.IsCreated = false;
@@ -3736,6 +3738,638 @@ namespace RevenuePlanner.Controllers
                 Revenue = Math.Round(differenceProjectedRevenue, 1),
                 Cost = Math.Round(improvedCost)
             }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get Suggested Recommended Improvement Type
+        /// Added by Bhavesh
+        /// Pl Ticket 289,377,378
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetRecommendedImprovementTacticType()
+        {
+            var improvementTacticList = db.ImprovementTacticTypes.Where(itt => itt.IsDeployed == true && itt.ClientId == Sessions.User.ClientId).ToList();
+            List<Plan_Campaign_Program_Tactic> marketingActivities = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(Sessions.PlanId) && t.IsDeleted == false).Select(t => t).ToList();
+            List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && t.IsDeleted == false).Select(t => t).ToList();
+            double projectedRevenueWithoutTactic = 0;
+            //// Checking whether improvement activities exist.
+            if (improvementActivities.Count() > 0)
+            {
+                double? dealSize = null;
+                double improvedAverageDealSizeForProjectedRevenue = 0;
+                //// Getting deal size improved based on improvement activities.
+                dealSize = Common.GetImprovedDealSize(Sessions.PlanId, improvementActivities);
+                if (dealSize != null)
+                {
+                    improvedAverageDealSizeForProjectedRevenue = Convert.ToDouble(dealSize);
+                }
+                else
+                {
+
+                    int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
+                    //// Get Model id based on effective date From.
+                    modelId = Common.GetModelId(improvementActivities.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), modelId);
+                    //// Getting model.
+                    Model effectiveModel = db.Models.Single(model => model.ModelId.Equals(modelId));
+                    string funnelMarketing = Enums.Funnel.Marketing.ToString();
+                    double averageDealSize = db.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == modelId &&
+                                                                              modelFunnel.Funnel.Title.Equals(funnelMarketing))
+                                                        .Select(mf => mf.AverageDealSize)
+                                                        .SingleOrDefault();
+                    improvedAverageDealSizeForProjectedRevenue = averageDealSize;
+                }
+
+                //// Checking whether marketing and improvement activities exist.
+                if (marketingActivities.Count() > 0)
+                {
+                    //// Getting Projected Reveneue or Closed Won improved based on marketing and improvement activities.
+                    projectedRevenueWithoutTactic = Common.GetImprovedProjectedRevenueOrCW(Sessions.PlanId, marketingActivities, improvementActivities, true, improvedAverageDealSizeForProjectedRevenue);
+                }
+            }
+            else
+            {
+                projectedRevenueWithoutTactic = Common.ProjectedRevenueCalculate(marketingActivities.Select(ma => ma.PlanTacticId).ToList()).Sum(p => p.ProjectedRevenue);
+            }
+
+            List<SuggestedImprovementActivities> suggestedImproveentActivities = new List<SuggestedImprovementActivities>();
+
+            foreach(var imptactic in improvementTacticList)
+            {
+                SuggestedImprovementActivities suggestedImprovement = new SuggestedImprovementActivities();
+                List<Plan_Improvement_Campaign_Program_Tactic> improvementActivitiesWithType = new List<Plan_Improvement_Campaign_Program_Tactic>();
+                improvementActivitiesWithType = (from ia in improvementActivities select ia).ToList();
+                var impExits = improvementActivities.Where(ia => ia.ImprovementTacticTypeId == imptactic.ImprovementTacticTypeId).ToList();
+                if (impExits.Count() == 0)
+                {
+                    Plan_Improvement_Campaign_Program_Tactic ptcpt = new Plan_Improvement_Campaign_Program_Tactic();
+                    ptcpt.ImprovementTacticTypeId = imptactic.ImprovementTacticTypeId;
+                    ptcpt.EffectiveDate = DateTime.Now;
+                    ptcpt.ImprovementPlanTacticId = 0;
+                    improvementActivitiesWithType.Add(ptcpt);
+                    suggestedImprovement.isExits = false;
+                    suggestedImprovement.ImprovementPlanTacticId = 0;
+                }
+                else
+                {
+                    improvementActivitiesWithType = improvementActivitiesWithType.Where(sa => sa.ImprovementTacticTypeId != imptactic.ImprovementTacticTypeId).ToList();
+                    suggestedImprovement.isExits = true;
+                    suggestedImprovement.ImprovementPlanTacticId = improvementActivities.Where(ia => ia.ImprovementTacticTypeId == imptactic.ImprovementTacticTypeId).Select(ia => ia.ImprovementPlanTacticId).SingleOrDefault();
+                }
+
+                double? dealSize = null;
+                double improvedAverageDealSizeForProjectedRevenue = 0;
+                //// Checking whether improvement activities exist.
+                if (improvementActivitiesWithType.Count() > 0)
+                {
+                    //// Getting deal size improved based on improvement activities.
+                    dealSize = Common.GetImprovedDealSize(Sessions.PlanId, improvementActivitiesWithType);
+                }
+                if (dealSize != null)
+                {
+                    improvedAverageDealSizeForProjectedRevenue = Convert.ToDouble(dealSize);
+                }
+                else
+                {
+
+                    int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
+                    //// Get Model id based on effective date From.
+                    if (improvementActivitiesWithType.Count() > 0)
+                    {
+                        modelId = Common.GetModelId(improvementActivitiesWithType.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), modelId);
+                    }
+                    else
+                    {
+                        modelId = Common.GetModelId(DateTime.Now, modelId);
+                    }
+                    
+                    //// Getting model.
+                    Model effectiveModel = db.Models.Single(model => model.ModelId.Equals(modelId));
+                    string funnelMarketing = Enums.Funnel.Marketing.ToString();
+                    double averageDealSize = db.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == modelId &&
+                                                                              modelFunnel.Funnel.Title.Equals(funnelMarketing))
+                                                        .Select(mf => mf.AverageDealSize)
+                                                        .SingleOrDefault();
+                    improvedAverageDealSizeForProjectedRevenue = averageDealSize;
+                }
+                
+                double improvedValue = 0;
+
+                //// Checking whether marketing and improvement activities exist.
+                if (marketingActivities.Count() > 0)
+                {
+                    //// Getting Projected Reveneue or Closed Won improved based on marketing and improvement activities.
+                    improvedValue = Common.GetImprovedProjectedRevenueOrCW(Sessions.PlanId, marketingActivities, improvementActivitiesWithType, true, improvedAverageDealSizeForProjectedRevenue);
+                }
+                double projectedRevenueWithoutTacticTemp = projectedRevenueWithoutTactic;
+                if (suggestedImprovement.isExits)
+                {
+                    double tempValue = 0;
+                    tempValue = projectedRevenueWithoutTacticTemp;
+                    projectedRevenueWithoutTacticTemp = improvedValue;
+                    improvedValue = tempValue;
+                }
+
+                
+                suggestedImprovement.ImprovementTacticTypeId = imptactic.ImprovementTacticTypeId;
+                suggestedImprovement.ImprovementTacticTypeTitle = imptactic.Title;
+                suggestedImprovement.Cost = imptactic.Cost;
+                suggestedImprovement.ProjectedRevenueWithoutTactic = projectedRevenueWithoutTacticTemp;
+                suggestedImprovement.ProjectedRevenueWithTactic = improvedValue;
+                if (projectedRevenueWithoutTacticTemp != 0)
+                {
+                    suggestedImprovement.ProjectedRevenueLift = ((improvedValue - projectedRevenueWithoutTacticTemp) / projectedRevenueWithoutTacticTemp) * 100;
+                }
+                if (imptactic.Cost != 0)
+                {
+                    suggestedImprovement.RevenueToCostRatio = (improvedValue - projectedRevenueWithoutTacticTemp) / imptactic.Cost;
+                }
+
+                suggestedImproveentActivities.Add(suggestedImprovement);
+            }
+
+            var datalist = suggestedImproveentActivities.Select(si => new
+            {
+                ImprovementPlanTacticId = si.ImprovementPlanTacticId,
+                ImprovementTacticTypeId = si.ImprovementTacticTypeId,
+                ImprovementTacticTypeTitle = si.ImprovementTacticTypeTitle,
+                Cost = si.Cost,
+                ProjectedRevenueWithoutTactic = Math.Round(si.ProjectedRevenueWithoutTactic,1),
+                ProjectedRevenueWithTactic = Math.Round(si.ProjectedRevenueWithTactic,1),
+                ProjectedRevenueLift = Math.Round(si.ProjectedRevenueLift,1),
+                RevenueToCostRatio = Math.Round(si.RevenueToCostRatio,1),
+                IsExits = si.isExits
+            }).ToList();
+            return Json(new { data = datalist }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Add Improvement Tactic from Suggested Reccomndetion Improvement tactic
+        /// Added By Bhavesh
+        /// Pl Ticket 289,377,378
+        /// </summary>
+        /// <param name="improvementPlanProgramId"></param>
+        /// <param name="improvementTacticTypeId"></param>
+        /// <returns></returns>
+        public JsonResult AddSuggestedImprovementTactic(int improvementPlanProgramId,int improvementTacticTypeId)
+        {
+            //// Check for duplicate exits or not.
+            var pcpvar = (from pcpt in db.Plan_Improvement_Campaign_Program_Tactic
+                          where pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && pcpt.ImprovementTacticTypeId == improvementTacticTypeId && pcpt.IsDeleted.Equals(false)
+                          select pcpt).FirstOrDefault();
+
+            if (pcpvar != null)
+            {
+                return Json(new { errormsg = Common.objCached.SameImprovementTypeExits });
+            }
+            else
+            {
+                Plan_Improvement_Campaign_Program_Tactic picpt = new Plan_Improvement_Campaign_Program_Tactic();
+                picpt.ImprovementPlanProgramId = improvementPlanProgramId;
+                picpt.Title = db.ImprovementTacticTypes.Where(itactic => itactic.ImprovementTacticTypeId == improvementTacticTypeId).Select(itactic => itactic.Title).SingleOrDefault();
+                picpt.ImprovementTacticTypeId = improvementTacticTypeId;
+                picpt.Cost = db.ImprovementTacticTypes.Where(itactic => itactic.ImprovementTacticTypeId == improvementTacticTypeId).Select(itactic => itactic.Cost).SingleOrDefault();
+                picpt.EffectiveDate = DateTime.Now;
+                picpt.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
+                //// Get Businessunit id from model.
+                picpt.BusinessUnitId = (from m in db.Models
+                                        join p in db.Plans on m.ModelId equals p.ModelId
+                                        where p.PlanId == Sessions.PlanId
+                                        select m.BusinessUnitId).FirstOrDefault();
+                picpt.CreatedBy = Sessions.User.UserId;
+                picpt.CreatedDate = DateTime.Now;
+                db.Entry(picpt).State = EntityState.Added;
+                int result = db.SaveChanges();
+                //// Insert change log entry.
+                result = Common.InsertChangeLog(Sessions.PlanId, null, picpt.ImprovementPlanTacticId, picpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                if (result >= 1)
+                {
+                    return Json(new { redirect = Url.Action("Assortment") });
+                }
+                return Json(new { });
+            }
+        }
+
+        /// <summary>
+        /// Get List of Improvement Tactic for ADS Grid
+        /// Added by Bhavesh
+        /// Pl Ticket 289,377,378
+        /// </summary>
+        /// <param name="SuggestionIMPTacticIdList"></param>
+        /// <returns></returns>
+        public JsonResult GetADSImprovementTacticType(string SuggestionIMPTacticIdList)
+        {
+            List<int> plantacticids = new List<int>();
+            if (SuggestionIMPTacticIdList.ToString() != string.Empty)
+            {
+                plantacticids = SuggestionIMPTacticIdList.Split(',').Select(int.Parse).ToList<int>();
+            }
+
+            List<Plan_Campaign_Program_Tactic> marketingActivities = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(Sessions.PlanId) && t.IsDeleted == false).Select(t => t).ToList();
+            List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && t.IsDeleted == false).OrderBy(t => t.ImprovementPlanTacticId).Select(t => t).ToList();
+            List<Plan_Improvement_Campaign_Program_Tactic> improvementActivitiesWithIncluded = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && t.IsDeleted == false && !plantacticids.Contains(t.ImprovementPlanTacticId)).OrderBy(t => t.ImprovementPlanTacticId).Select(t => t).ToList();
+
+            double improvedValue = 0;
+            double adsWithTactic = 0;
+            //// Checking whether improvement activities exist.
+            if (improvementActivitiesWithIncluded.Count() > 0)
+            {
+                double? dealSize = null;
+                double improvedAverageDealSizeForProjectedRevenue = 0;
+                //// Getting deal size improved based on improvement activities.
+                dealSize = Common.GetImprovedDealSize(Sessions.PlanId, improvementActivitiesWithIncluded);
+                if (dealSize != null)
+                {
+                    improvedAverageDealSizeForProjectedRevenue = Convert.ToDouble(dealSize);
+                }
+                else
+                {
+
+                    int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
+                    //// Get Model id based on effective date From.
+                    modelId = Common.GetModelId(improvementActivitiesWithIncluded.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), modelId);
+                    //// Getting model.
+                    Model effectiveModel = db.Models.Single(model => model.ModelId.Equals(modelId));
+                    string funnelMarketing = Enums.Funnel.Marketing.ToString();
+                    double averageDealSize = db.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == modelId &&
+                                                                              modelFunnel.Funnel.Title.Equals(funnelMarketing))
+                                                        .Select(mf => mf.AverageDealSize)
+                                                        .SingleOrDefault();
+                    improvedAverageDealSizeForProjectedRevenue = averageDealSize;
+                }
+                adsWithTactic = improvedAverageDealSizeForProjectedRevenue;
+                //// Checking whether marketing and improvement activities exist.
+                if (marketingActivities.Count() > 0)
+                {
+                    //// Getting Projected Reveneue or Closed Won improved based on marketing and improvement activities.
+                    improvedValue = Common.GetImprovedProjectedRevenueOrCW(Sessions.PlanId, marketingActivities, improvementActivitiesWithIncluded, true, improvedAverageDealSizeForProjectedRevenue);
+                }
+            }
+            else
+            {
+                improvedValue = Common.ProjectedRevenueCalculate(marketingActivities.Select(ma => ma.PlanTacticId).ToList()).Sum(p => p.ProjectedRevenue);
+            }
+
+            List<SuggestedImprovementActivities> suggestedImprovementActivities = new List<SuggestedImprovementActivities>();
+
+            foreach (var imptactic in improvementActivities)
+            {
+                SuggestedImprovementActivities suggestedImprovement = new SuggestedImprovementActivities();
+                List<Plan_Improvement_Campaign_Program_Tactic> improvementActivitiesWithType = new List<Plan_Improvement_Campaign_Program_Tactic>();
+                improvementActivitiesWithType = (from ia in improvementActivities select ia).ToList();
+
+                bool impExits = plantacticids.Contains(imptactic.ImprovementPlanTacticId);
+                if (!impExits)
+                {
+                    improvementActivitiesWithType = improvementActivitiesWithType.Where(sa => sa.ImprovementPlanTacticId != imptactic.ImprovementPlanTacticId && !plantacticids.Contains(sa.ImprovementPlanTacticId)).ToList();
+                    suggestedImprovement.isExits = true;
+                }
+                else
+                {
+                    List<int> excludedids = new List<int>();
+                    excludedids = (from p in plantacticids select p).ToList();
+                    excludedids.Remove(imptactic.ImprovementPlanTacticId);
+                    improvementActivitiesWithType = improvementActivitiesWithType.Where(sa => !excludedids.Contains(sa.ImprovementPlanTacticId)).ToList();
+                    suggestedImprovement.isExits = false;
+                }
+                
+                suggestedImprovement.ImprovementPlanTacticId = imptactic.ImprovementPlanTacticId;
+
+                double? dealSize = null;
+                double improvedAverageDealSizeForProjectedRevenue = 0;
+                //// Checking whether improvement activities exist.
+                if (improvementActivitiesWithType.Count() > 0)
+                {
+                    //// Getting deal size improved based on improvement activities.
+                    dealSize = Common.GetImprovedDealSize(Sessions.PlanId, improvementActivitiesWithType);
+                }
+                if (dealSize != null)
+                {
+                    improvedAverageDealSizeForProjectedRevenue = Convert.ToDouble(dealSize);
+                }
+                else
+                {
+
+                    int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
+                    //// Get Model id based on effective date From.
+                    if (improvementActivitiesWithType.Count() > 0)
+                    {
+                        modelId = Common.GetModelId(improvementActivitiesWithType.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), modelId);
+                    }
+                    else
+                    {
+                        modelId = Common.GetModelId(DateTime.Now, modelId);
+                    }
+
+                    //// Getting model.
+                    Model effectiveModel = db.Models.Single(model => model.ModelId.Equals(modelId));
+                    string funnelMarketing = Enums.Funnel.Marketing.ToString();
+                    double averageDealSize = db.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == modelId &&
+                                                                              modelFunnel.Funnel.Title.Equals(funnelMarketing))
+                                                        .Select(mf => mf.AverageDealSize)
+                                                        .SingleOrDefault();
+                    improvedAverageDealSizeForProjectedRevenue = averageDealSize;
+                }
+
+                double projectedRevenueWithoutTactic = 0;
+
+                //// Checking whether marketing and improvement activities exist.
+                if (marketingActivities.Count() > 0)
+                {
+                    //// Getting Projected Reveneue or Closed Won improved based on marketing and improvement activities.
+                    projectedRevenueWithoutTactic = Common.GetImprovedProjectedRevenueOrCW(Sessions.PlanId, marketingActivities, improvementActivitiesWithType, true, improvedAverageDealSizeForProjectedRevenue);
+                }
+
+                double projectedRevenueWithoutTacticTemp = improvedValue;
+                double adsTempValue = adsWithTactic;
+                if (!suggestedImprovement.isExits)
+                {
+                    double tempValue = 0;
+                    tempValue = projectedRevenueWithoutTacticTemp;
+                    projectedRevenueWithoutTacticTemp = projectedRevenueWithoutTactic;
+                    projectedRevenueWithoutTactic = tempValue;
+
+                    double tempADSValue = 0;
+                    tempADSValue = improvedAverageDealSizeForProjectedRevenue;
+                    improvedAverageDealSizeForProjectedRevenue = adsTempValue;
+                    adsTempValue = tempADSValue;
+                }
+
+                suggestedImprovement.ImprovementTacticTypeId = imptactic.ImprovementTacticTypeId;
+                suggestedImprovement.ImprovementTacticTypeTitle = imptactic.ImprovementTacticType.Title;
+                suggestedImprovement.Cost = imptactic.Cost;
+                suggestedImprovement.ProjectedRevenueWithoutTactic = improvedAverageDealSizeForProjectedRevenue;// projectedRevenueWithoutTactic;
+                suggestedImprovement.ProjectedRevenueWithTactic = adsTempValue;// improvedValue;
+                
+                if (projectedRevenueWithoutTactic != 0)
+                {
+                    suggestedImprovement.ProjectedRevenueLift = ((projectedRevenueWithoutTacticTemp - projectedRevenueWithoutTactic) / projectedRevenueWithoutTactic) * 100;
+                }
+                if (imptactic.Cost != 0)
+                {
+                    suggestedImprovement.RevenueToCostRatio = (projectedRevenueWithoutTacticTemp - projectedRevenueWithoutTactic) / imptactic.Cost;
+                }
+
+                suggestedImprovementActivities.Add(suggestedImprovement);
+            }
+
+            var datalist = suggestedImprovementActivities.Select(si => new
+            {
+                ImprovementPlanTacticId = si.ImprovementPlanTacticId,
+                ImprovementTacticTypeId = si.ImprovementTacticTypeId,
+                ImprovementTacticTypeTitle = si.ImprovementTacticTypeTitle,
+                Cost = si.Cost,
+                ProjectedRevenueWithoutTactic = Math.Round(si.ProjectedRevenueWithoutTactic, 1),
+                ProjectedRevenueWithTactic = Math.Round(si.ProjectedRevenueWithTactic, 1),
+                ProjectedRevenueLift = Math.Round(si.ProjectedRevenueLift, 1),
+                RevenueToCostRatio = Math.Round(si.RevenueToCostRatio, 1),
+                IsExits = si.isExits
+            }).OrderBy(si => si.ImprovementPlanTacticId).ToList();
+            return Json(new { data = datalist }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get Header value for Suggested Grid
+        /// Added by Bhavesh
+        /// Pl Ticket 289,377,378
+        /// </summary>
+        /// <param name="SuggestionIMPTacticIdList"></param>
+        /// <returns></returns>
+        public JsonResult GetHeaderValueForSuggestedImprovement(string SuggestionIMPTacticIdList)
+        {
+
+            List<int> plantacticids = new List<int>();
+            if (SuggestionIMPTacticIdList.ToString() != string.Empty)
+            {
+                plantacticids = SuggestionIMPTacticIdList.Split(',').Select(int.Parse).ToList<int>();
+            }
+
+            /// Added By: Maninder Singh Wadhva
+            /// Addressed PL Ticket: 37,38,47,49
+            List<int> tacticIds = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(Sessions.PlanId) &&
+                                                                             tactic.IsDeleted == false)
+                                                                 .Select(tactic => tactic.PlanTacticId).ToList();
+
+            //// Calculating CW difference.
+            //// Getting list of marketing activites.
+            List<Plan_Campaign_Program_Tactic> marketingActivities = db.Plan_Campaign_Program_Tactic.Where(t => tacticIds.Contains(t.PlanTacticId) && t.IsDeleted == false).Select(t => t).ToList();
+
+            //// Getting list of improvement activites.
+            List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && !plantacticids.Contains(t.ImprovementPlanTacticId) && t.IsDeleted == false).Select(t => t).ToList();
+
+            double? improvedCW = null;
+
+            //// Checking whether marketing and improvement activities exist.
+            if (marketingActivities.Count() > 0)
+            {
+                //// Getting Projected Reveneue or Closed Won improved based on marketing and improvement activities.
+                improvedCW = Common.GetImprovedProjectedRevenueOrCW(Sessions.PlanId, marketingActivities, improvementActivities, false, 0);
+            }
+
+            double planCW = Common.ProjectedRevenueCalculate(tacticIds, true).Sum(cw => cw.ProjectedRevenue);
+            double differenceCW = Convert.ToDouble(improvedCW) - planCW;
+
+
+            //// Getting model based on plan id.
+            int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
+            string funnelMarketing = Enums.Funnel.Marketing.ToString();
+
+            //// Calcualting Deal size.
+            double? improvedDealSize = null;
+            double differenceDealSize = 0;
+            //// Checking whether improvement activities exist.
+            if (improvementActivities.Count() > 0)
+            {
+                //// Getting deal size improved based on improvement activities.
+                improvedDealSize = Common.GetImprovedDealSize(Sessions.PlanId, improvementActivities);
+
+                
+                //// Get Model id based on effective date From.
+                modelId = Common.GetModelId(improvementActivities.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), modelId);
+                //// Getting model.
+                Model effectiveModel = db.Models.Single(model => model.ModelId.Equals(modelId));
+                
+                double averageDealSize = db.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == modelId &&
+                                                                          modelFunnel.Funnel.Title.Equals(funnelMarketing))
+                                                    .Select(mf => mf.AverageDealSize)
+                                                    .SingleOrDefault();
+                differenceDealSize = Convert.ToDouble(improvedDealSize) - averageDealSize;
+            }
+
+            // Calculate Velocity
+            double? improvedSV = null;
+            double differenceSV = 0;
+
+            //// Checking whether improvement activities exist.
+            if (improvementActivities.Count() > 0)
+            {
+                //// Getting velocity improved based on improvement activities.
+                improvedSV = Common.GetImprovedVelocity(Sessions.PlanId, improvementActivities);
+                string stageTypeSV = Enums.StageType.SV.ToString();
+                double sv = db.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId.Equals(modelId) &&
+                                                                mfs.Model_Funnel.Funnel.Title.Equals(funnelMarketing) &&
+                                                                mfs.StageType.Equals(stageTypeSV))
+                                                   .Sum(stage => stage.Value);
+                differenceSV = Convert.ToDouble(improvedSV) - sv;
+
+            }
+
+            return Json(new
+            {
+                CW = Math.Round(differenceCW, 1),
+                ADS = Math.Round(differenceDealSize),
+                Velocity = Math.Round(differenceSV)
+            }, JsonRequestBehavior.AllowGet);
+
+        }
+
+        /// <summary>
+        /// Get List of Improvement Tactic For Conversion & Velocity Grid
+        /// Added by Bhavesh
+        /// Pl Ticket 289,377,378
+        /// </summary>
+        /// <param name="SuggestionIMPTacticIdList"></param>
+        /// <param name="isConversion"></param>
+        /// <returns></returns>
+        public JsonResult GetConversionImprovementTacticType(string SuggestionIMPTacticIdList, bool isConversion = true)
+        {
+            List<int> plantacticids = new List<int>();
+            if (SuggestionIMPTacticIdList.ToString() != string.Empty)
+            {
+                plantacticids = SuggestionIMPTacticIdList.Split(',').Select(int.Parse).ToList<int>();
+            }
+
+            List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && t.IsDeleted == false).OrderBy(t => t.ImprovementPlanTacticId).Select(t => t).ToList();
+            List<Plan_Improvement_Campaign_Program_Tactic> improvementActivitiesWithIncluded = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && t.IsDeleted == false && !plantacticids.Contains(t.ImprovementPlanTacticId)).OrderBy(t => t.ImprovementPlanTacticId).Select(t => t).ToList();
+            string MetricType = Enums.MetricType.CR.ToString();
+            if (!isConversion)
+            {
+                MetricType = Enums.MetricType.SV.ToString();
+            }
+            List<Metric> metricList = db.Metrics.Where(m => m.ClientId == Sessions.User.ClientId && m.MetricType == MetricType).OrderBy(m => m.Level).ToList();
+            List<int> impTacticTypeIds = improvementActivities.Select(ia => ia.ImprovementTacticTypeId).Distinct().ToList();
+            List<ImprovementTacticType_Metric> improvedMetrcList = db.ImprovementTacticType_Metric.Where(im => impTacticTypeIds.Contains(im.ImprovementTacticTypeId)).ToList();
+
+            List<SuggestedImprovementActivitiesConversion> suggestedImprovementActivitiesConversion = new List<SuggestedImprovementActivitiesConversion>();
+            foreach (var imptactic in improvementActivities)
+            {
+                SuggestedImprovementActivitiesConversion sIconversion = new SuggestedImprovementActivitiesConversion();
+                sIconversion.ImprovementPlanTacticId = imptactic.ImprovementPlanTacticId;
+                sIconversion.ImprovementTacticTypeId = imptactic.ImprovementTacticTypeId;
+                sIconversion.ImprovementTacticTypeTitle = imptactic.ImprovementTacticType.Title;
+                sIconversion.Cost = imptactic.Cost;
+                List<ImprovedMetricWeight> imList = new  List<ImprovedMetricWeight>();
+                foreach(var m in metricList)
+                {
+                    ImprovedMetricWeight im = new ImprovedMetricWeight();
+                    im.MetricId = m.MetricId;
+                    im.Level = m.Level;
+                    var weightValue = improvedMetrcList.Where(iml => iml.ImprovementTacticTypeId == imptactic.ImprovementTacticTypeId && iml.MetricId == m.MetricId).Select(iml => iml.Weight).SingleOrDefault();
+                    if(weightValue != null)
+                    {
+                        im.Value = weightValue;
+                    }
+                    else
+                    {
+                        im.Value = 0;
+                    }
+                    imList.Add(im);
+                }
+                sIconversion.ImprovedMetricsWeight = imList;
+
+                bool impExits = plantacticids.Contains(imptactic.ImprovementPlanTacticId);
+                if (!impExits)
+                {
+                    sIconversion.isExits = true;
+                }
+                else
+                {
+                    sIconversion.isExits = false;
+                }
+
+                suggestedImprovementActivitiesConversion.Add(sIconversion);
+            }
+
+            //// Getting Model based on hypothetical model effective date From.
+            //// Getting model based on plan id.
+            int ModelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
+            //// Get Model id based on effective date From.
+            if (improvementActivitiesWithIncluded.Count() > 0)
+            {
+                ModelId = Common.GetModelId(improvementActivitiesWithIncluded.Select(improvementActivityInc => improvementActivityInc.EffectiveDate).Max(), ModelId);
+            }
+            //// Getting model.
+            Model effectiveModel = db.Models.Single(model => model.ModelId.Equals(ModelId));
+
+            //// Getting hypothetical model - conversion rate.
+            HypotheticalModel hypotheticalModel = Common.GetHypotheticalModel(MetricType, effectiveModel, improvementActivitiesWithIncluded);
+            List<int> finalMetricList = metricList.Select(m => m.MetricId).ToList();
+
+            var datalist = suggestedImprovementActivitiesConversion.Select(si => new
+            {
+                ImprovementPlanTacticId = si.ImprovementPlanTacticId,
+                ImprovementTacticTypeId = si.ImprovementTacticTypeId,
+                ImprovementTacticTypeTitle = si.ImprovementTacticTypeTitle,
+                Cost = si.Cost,
+                IsExits = si.isExits,
+                MetricList = si.ImprovedMetricsWeight
+            }).Select(si => si).OrderBy(si => si.ImprovementPlanTacticId);
+
+
+            var dataMetricList = metricList.Select(ml => new{
+                MetricId = ml.MetricId,
+                Title = ml.MetricName,
+                Level = ml.Level
+            }).OrderBy(ml => ml.Level);
+
+            var dataFinalMetricList = hypotheticalModel.ImprovedMetrics.Where(him => finalMetricList.Contains(him.MetricId)).Select(him => new
+            {
+                MetricId = him.MetricId,
+                Value = him.Value,
+                Level = him.Level
+            }).OrderBy(him => him.Level);
+
+            return Json(new { data = datalist, datametriclist = dataMetricList, datafinalmetriclist = dataFinalMetricList }, JsonRequestBehavior.AllowGet);
+
+        }
+
+        /// <summary>
+        /// Delete Improvement Tactic on click of Save & Continue
+        /// Added by Bhavesh
+        /// Pl Ticket 289,377,378
+        /// </summary>
+        /// <param name="SuggestionIMPTacticIdList"></param>
+        /// <returns></returns>
+        public JsonResult DeleteSuggestedBoxImprovementTactic(string SuggestionIMPTacticIdList)
+        {
+            List<int> plantacticids = new List<int>();
+            if (SuggestionIMPTacticIdList.ToString() != string.Empty)
+            {
+                plantacticids = SuggestionIMPTacticIdList.Split(',').Select(int.Parse).ToList<int>();
+            }
+            try
+            {
+                using (MRPEntities mrp = new MRPEntities())
+                {
+                    using (var scope = new TransactionScope())
+                    {
+                        foreach (int pid in plantacticids)
+                        {
+                            int returnValue = 0;
+                            Plan_Improvement_Campaign_Program_Tactic pcpt = db.Plan_Improvement_Campaign_Program_Tactic.Where(p => p.ImprovementPlanTacticId == pid).SingleOrDefault();
+                            pcpt.IsDeleted = true;
+                            db.Entry(pcpt).State = EntityState.Modified;
+                            returnValue = db.SaveChanges();
+                            returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcpt.ImprovementPlanTacticId, pcpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
+                        }
+                        scope.Complete();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            return Json(new { data = true });
         }
 
         #endregion

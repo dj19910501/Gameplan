@@ -145,9 +145,9 @@
                          @Html.DropDownListFor(m => m.Year, (SelectList)TempData["selectYearList"], new { placeholder = @Model.Year, @class = "myValue" })
 
                         that generates 
-														@Html.TextBoxFor(model => model.MQls, new { placeholder = @Model.MQls, datasubline = "For example: <em>200</em>", datadefault = "MQL", datamask = "ddd-dddd", id = "txtMQL", formatType = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @class = "myValue" })
+														@Html.TextBoxFor(model => model.MQls, new { placeholder = @Model.MQls, datasubline = "For example: <em>200</em>", datadefault = "MQL", datamask = "ddd-dddd", id = "txtMQL", formatType = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @class = "myValueFormat" })
                         @Html.LabelForMQL("MQL") with a budget of
-														@Html.TextBoxFor(model => model.Budget, new { placeholder = @Model.Budget, datasubline = "For example: <em>$800,000</em>", datadefault = "Budget", formatType = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, id = "txtBudget", @class = "myValue" }).
+														@Html.TextBoxFor(model => model.Budget, new { placeholder = @Model.Budget, datasubline = "For example: <em>$800,000</em>", datadefault = "Budget", formatType = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, id = "txtBudget", @class = "myValueFormat" }).
 													    <div class="nl-overlay"></div>
                         <!--To call js for forms animations-->
                         <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
@@ -299,6 +299,12 @@
         $('.myValue').each(function () {
             var iv = $(this).attr("placeholder");
             if ($(this).val() != iv) {
+                changed = true;
+            }
+        });
+        $('.myValueFormat').each(function () {
+            var iv = $(this).attr("placeholder");
+            if (ReplaceCC($(this).val()) != ReplaceCC(iv)) {
                 changed = true;
             }
         });

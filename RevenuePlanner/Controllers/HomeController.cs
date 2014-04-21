@@ -4041,20 +4041,50 @@ namespace RevenuePlanner.Controllers
             Enums.ActiveMenu objactivemenu = Common.GetKey<Enums.ActiveMenu>(Enums.ActiveMenuValues, activeMenu.ToLower());
             List<string> status = GetStatusAsPerTab(type, objactivemenu);
             ////
-            //// Modified by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
-            var TacticUserList = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId == PlanId && status.Contains(pcpt.Status)).Select(a => a.CreatedBy).Distinct().ToList();
-            var ImprovementTacticUserList = db.Plan_Improvement_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) && pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId == PlanId && status.Contains(pcpt.Status)).Select(a => a.CreatedBy).Distinct().ToList();
-            ////
-            TacticUserList.AddRange(ImprovementTacticUserList);
-            TacticUserList = TacticUserList.Distinct().ToList();
-            string strContatedIndividualList = string.Empty;
-            foreach (var item in TacticUserList)
-            {
-                strContatedIndividualList += item.ToString() + ',';
-            }
-            var individuals = bdsUserRepository.GetMultipleTeamMemberDetails(strContatedIndividualList.TrimEnd(','), Sessions.ApplicationId);
 
-            return individuals;
+            //// Added by :- Sohel Pathan on 21/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
+            if (activeMenu.Equals(Enums.ActiveMenu.Plan.ToString()))
+            {
+                List<string> statusCD = new List<string>();
+                statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+                statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+
+                var TacticUserList = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId == PlanId).Distinct().ToList();
+                TacticUserList = TacticUserList.Where(t => status.Contains(t.Status) || ((t.CreatedBy == Sessions.User.UserId && !type.Equals(GanttTabs.Request)) ? statusCD.Contains(t.Status) : false)).Distinct().ToList();
+                
+                var ImprovementTacticUserList = db.Plan_Improvement_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) && pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId == PlanId).Distinct().ToList();
+                ImprovementTacticUserList = ImprovementTacticUserList .Where(t => status.Contains(t.Status) || ((t.CreatedBy == Sessions.User.UserId && !type.Equals(GanttTabs.Request)) ? statusCD.Contains(t.Status) : false)).Distinct().ToList();
+                
+                var mergedList = TacticUserList.Select(a => a.CreatedBy).ToList();
+                mergedList.AddRange(ImprovementTacticUserList.Select(a => a.CreatedBy).ToList());
+                mergedList = mergedList.Distinct().ToList();
+                
+                string strContatedIndividualList = string.Empty;
+                foreach (var item in mergedList)
+                {
+                    strContatedIndividualList += item.ToString() + ',';
+                }
+                var individuals = bdsUserRepository.GetMultipleTeamMemberDetails(strContatedIndividualList.TrimEnd(','), Sessions.ApplicationId);
+
+                return individuals;
+            }
+            else
+            {
+                //// Modified by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
+                var TacticUserList = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId == PlanId && status.Contains(pcpt.Status)).Select(a => a.CreatedBy).Distinct().ToList();
+                var ImprovementTacticUserList = db.Plan_Improvement_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) && pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId == PlanId && status.Contains(pcpt.Status)).Select(a => a.CreatedBy).Distinct().ToList();
+                ////
+                TacticUserList.AddRange(ImprovementTacticUserList);
+                TacticUserList = TacticUserList.Distinct().ToList();
+                string strContatedIndividualList = string.Empty;
+                foreach (var item in TacticUserList)
+                {
+                    strContatedIndividualList += item.ToString() + ',';
+                }
+                var individuals = bdsUserRepository.GetMultipleTeamMemberDetails(strContatedIndividualList.TrimEnd(','), Sessions.ApplicationId);
+
+                return individuals;
+            }
         }
 
         #endregion

@@ -1976,7 +1976,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="improvementActivities">improvement activities.</param>
         /// <param name="isProjectedRevenue">Flag to indicate whether to get improved projected revenue or closed won.</param>
         /// <returns>Returns improved projected revenue or closed won based on isProjectedRevenue flag.</returns>
-        private static double GetImprovedProjectedRevenueOrCW(int planId, List<Plan_Campaign_Program_Tactic> marketingActivities, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities, bool isProjectedRevenue, double averageDealSize)
+        public static double GetImprovedProjectedRevenueOrCW(int planId, List<Plan_Campaign_Program_Tactic> marketingActivities, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities, bool isProjectedRevenue, double averageDealSize)
         {
             MRPEntities db = new MRPEntities();
 
@@ -2096,7 +2096,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="planId">Current plan id.</param>
         /// <param name="improvementActivities">Improvement activities.</param>
         /// <returns>Returns improved deal size.</returns>
-        private static double GetImprovedDealSize(int planId, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities)
+        public static double GetImprovedDealSize(int planId, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities)
         {
             MRPEntities db = new MRPEntities();
 
@@ -2129,7 +2129,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="planId">Current plan Id.</param>
         /// <param name="improvementActivities">Improvement activities.</param>
         /// <returns>Returns improved velocity.</returns>
-        private static double GetImprovedVelocity(int planId, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities)
+        public static double GetImprovedVelocity(int planId, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities)
         {
             MRPEntities db = new MRPEntities();
 
@@ -2158,7 +2158,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="model">Current Model.</param>
         /// <param name="improvementActivitiesForHypotheticalModel">Improvement Activities.</param>
         /// <returns>Returns hypothetical model.</returns>
-        private static HypotheticalModel GetHypotheticalModel(string metricType, Model model, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivitiesForHypotheticalModel)
+        public static HypotheticalModel GetHypotheticalModel(string metricType, Model model, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivitiesForHypotheticalModel)
         {
             MRPEntities db = new MRPEntities();
             //// Get List of metric associated with selected client of current model.
@@ -2370,32 +2370,7 @@ namespace RevenuePlanner.Helpers
             return improvementValue;
         }
 
-        /// <summary>
-        /// Added By: Maninder Singh Wadhva
-        /// Addressed PL Ticket: 37,38,47,49
-        /// Class for hypothetical model.
-        /// </summary>
-        public class HypotheticalModel
-        {
-            /// <summary>
-            /// Member to hold improved metrics
-            /// </summary>
-            public List<ImprovedMetric> ImprovedMetrics { get; set; }
-        }
 
-        /// <summary>
-        /// Added By: Maninder Singh Wadhva
-        /// Addressed PL Ticket: 37,38,47,49
-        /// Class for improved metric.
-        /// </summary>
-        public class ImprovedMetric
-        {
-            public int MetricId { get; set; }
-            public string MetricType { get; set; }
-            public string MetricCode { get; set; }
-            public int? Level { get; set; }
-            public double Value { get; set; }
-        }
         #endregion
 
         #region Check the status of plan before assign to Session
