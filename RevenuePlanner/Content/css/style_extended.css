@@ -2083,12 +2083,6 @@ span.info-icon-grey:hover{
 .dropdown-businessUnit .sbFocus {
     text-shadow: none;
 }
-/* */
-
-.nl-field ul {
-    max-height: 400px;
-    /*overflow:auto;*/
-}
 
 /* Added by KAPIL - Global Change */
 label {
