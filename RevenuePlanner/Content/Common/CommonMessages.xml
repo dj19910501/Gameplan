@@ -289,7 +289,7 @@
 		<Name>StageNotExist</Name>
 		<value>No stage is defined as targeted stage in Model, please define at least one stage as targeted stage in model input screen.</value>
 	</Field>
-<!--For forgot Password functionality Added by Dharmraj Mangukiya on 26-March-2014-->
+	<!--For forgot Password functionality Added by Dharmraj Mangukiya on 26-March-2014-->
 	<Field>
 		<Name>EmailNotExistInDatabse</Name>
 		<value>Email not found. Please correct the indicated error and submit again.</value>
@@ -322,8 +322,12 @@
 		<Name>SecurityQuestionChangesApplied</Name>
 		<value>The changes to the security question applied.</value>
 	</Field>
-  <Field>
-    <Name>CannotSwitchModelForPlan</Name>
-    <value>You can not move to the new model due to the fact that there are tactics in the selected plan that are not present in new model.</value>
-  </Field>
+	<Field>
+		<Name>CannotSwitchModelForPlan</Name>
+		<value>You can not move to the new model due to the fact that there are tactics in the selected plan that are not present in new model.</value>
+	</Field>
+	<Field>
+		<Name>SameImprovementTypeExits</Name>
+		<value>Same improvement tactic type exits.</value>
+	</Field>
 </Messages>

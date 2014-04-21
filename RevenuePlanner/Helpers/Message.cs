@@ -985,6 +985,12 @@ namespace RevenuePlanner.Helpers
             }
         }
 
+        private string _SameImprovementTypeExits;
+        public string SameImprovementTypeExits
+        {
+            get { return _SameImprovementTypeExits; }
+            set { _SameImprovementTypeExits = value; }
+        }
 
 
         #endregion
@@ -1292,6 +1298,9 @@ namespace RevenuePlanner.Helpers
                                         /*Added by Kuber Joshi on 11 Apr 2014 for TFS Point 220 : Ability to switch models for a plan*/
                                         case "CannotSwitchModelForPlan":
                                             _CannotSwitchModelForPlan = strMsgValue;
+                                            break;
+                                        case "SameImprovementTypeExits":
+                                            _SameImprovementTypeExits = strMsgValue;
                                             break;
                                     }
                                 }

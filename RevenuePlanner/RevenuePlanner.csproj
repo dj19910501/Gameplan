@@ -393,6 +393,7 @@
     <Content Include="Content\images\apple-touch-icon-57-precomposed.png" />
     <Content Include="Content\images\apple-touch-icon-72-precomposed.png" />
     <Content Include="Content\images\arrow-d-icon-active.png" />
+    <Content Include="Content\images\arrow-d-icon-blue.png" />
     <Content Include="Content\images\arrow-d-icon.png" />
     <Content Include="Content\images\arrow-down-accordion.png" />
     <Content Include="Content\images\arrow-down-header-white.png" />
@@ -410,6 +411,8 @@
     <Content Include="Content\images\big-arrow-down-accordion.png" />
     <Content Include="Content\images\big-arrow-right-accordion.png" />
     <Content Include="Content\images\big-flag.png" />
+    <Content Include="Content\images\blue-arrow-bottom.png" />
+    <Content Include="Content\images\blue-arrow-top.png" />
     <Content Include="Content\images\blue-row.png" />
     <Content Include="Content\images\border-inner-accordion.png" />
     <Content Include="Content\images\btn-bg-35h-disable.jpg" />
@@ -429,8 +432,10 @@
     <Content Include="Content\images\circle-check-icon-gray.png" />
     <Content Include="Content\images\circle-check-icon-small-blue.png" />
     <Content Include="Content\images\circle-check-icon.png" />
+    <Content Include="Content\images\circle-gray-check-icon.png" />
     <Content Include="Content\images\close-x.png" />
     <Content Include="Content\images\deal-icon-active.png" />
+    <Content Include="Content\images\deal-icon-blue.png" />
     <Content Include="Content\images\deal-icon.png" />
     <Content Include="Content\images\delete-icon.png" />
     <Content Include="Content\images\double-arow-icon.png" />
@@ -439,6 +444,7 @@
     <Content Include="Content\images\edit-icon.png" />
     <Content Include="Content\images\favicon.png" />
     <Content Include="Content\images\filter-icon-active.png" />
+    <Content Include="Content\images\filter-icon-blue.png" />
     <Content Include="Content\images\filter-icon.png" />
     <Content Include="Content\images\flag.png" />
     <Content Include="Content\images\gear-icon-sidebar.png" />
@@ -448,11 +454,14 @@
     <Content Include="Content\images\gradient-body.jpg" />
     <Content Include="Content\images\gradient-header.jpg" />
     <Content Include="Content\images\graph-chart-small.jpg" />
+    <Content Include="Content\images\gray-arrow-bottom.png" />
+    <Content Include="Content\images\gray-arrow-top.png" />
     <Content Include="Content\images\gray-calendar-icon-big.png" />
     <Content Include="Content\images\gray-calendar-icon.png" />
     <Content Include="Content\images\gray-row.png" />
     <Content Include="Content\images\green-arrow-up.png" />
     <Content Include="Content\images\green-row.png" />
+    <Content Include="Content\images\gridCheckbox-icon.png" />
     <Content Include="Content\images\horizontal-shadow-left.png" />
     <Content Include="Content\images\horizontal-shadow-right.png" />
     <Content Include="Content\images\icon-check-accordion.png" />
@@ -470,6 +479,7 @@
     <Content Include="Content\images\left-nav-border.png" />
     <Content Include="Content\images\magnifying_glass.png" />
     <Content Include="Content\images\meter-icon-active.png" />
+    <Content Include="Content\images\meter-icon-blue.png" />
     <Content Include="Content\images\meter-icon.png" />
     <Content Include="Content\images\modal-flag.png" />
     <Content Include="Content\images\mrp-logo.png" />
@@ -500,6 +510,7 @@
     <Content Include="Content\images\support-icon-dark.png" />
     <Content Include="Content\images\support-login-blue-icon.png" />
     <Content Include="Content\images\support-login-icon.png" />
+    <Content Include="Content\images\tactic-recimp-bg.gif" />
     <Content Include="Content\images\to-approve-bar.jpg" />
     <Content Include="Content\images\trophy-02.png" />
     <Content Include="Content\images\user_image_not_found.png" />
@@ -889,7 +900,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>57856</DevelopmentServerPort>
+          <DevelopmentServerPort>60446</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:51115/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
