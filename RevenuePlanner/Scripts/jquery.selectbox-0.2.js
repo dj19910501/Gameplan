@@ -113,6 +113,7 @@
                         self._closeSelectbox(target);
                     } else {
                         self._openSelectbox(target);
+                        $(this).focus();
                     }
                 }
             });
@@ -129,6 +130,7 @@
                         self._closeSelectbox(target);
                     } else {
                         self._openSelectbox(target);
+                        $(this).next().focus();
                     }
                 }
             });
@@ -219,8 +221,10 @@
             }
 
             $.data(target, PROP_NAME, inst);
-
+            
             //sbHolder.data("uid", inst.uid).bind("keydown.sb", function (e) {
+            //sbHolder.data("uid", inst.uid).keydown(function (e) { alert('down'); });
+            //sbHolder.data("uid", inst.uid).keyup(function (e) { alert('up'); });
             sbHolder.data("uid", inst.uid).keypress(function (e) {
                 var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0,
                     $this = $(this),
