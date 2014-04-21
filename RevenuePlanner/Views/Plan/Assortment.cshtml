@@ -137,7 +137,7 @@
     <!--end accordion-->
 </div>
     </div>
-<div class="padding-content" style="padding-bottom:250px;"> <!-- added by kapil - added padding for #415 -->
+<div class="padding-content" style="padding-bottom:150px;" id="divSuggestionBox"> <!-- added by kapil - added padding for #415 -->
     <button class="btn btn-blue btn-large text-shadow-blue source-sans-proregular pull-left font-size14" type="button" id="btnSaveAndContinue">Save & Continue</button>
 </div>
 <div id="DivPartialViewForDeleteImpTactic">
@@ -930,6 +930,7 @@
                 $(this).toggleClass('cf-arrow-blue');
                 $('.gray-add-container').slideDown(200);
                 $("#btnSaveAndContinue").css("display", "block");
+                $("#divSuggestionBox").css("padding-bottom", "150px");
                 /*if($('.grey-container-full').is(':visible')){
                     $('.gray-add-container').slideDown();
                 }*/
@@ -1110,6 +1111,11 @@
                     if (!isLoadSuggestion) {
                         LoadScriptForSuggestion();
                     }
+                    var divsuggstedheight = $(".grey-container-content").outerHeight();
+                    var finalheight = 50 + parseFloat(divsuggstedheight);
+                    $("#divSuggestionBox").css("padding-bottom", finalheight);
+                    //divSuggestionBox
+                    //padding-bottom:250px;
                     //$("#defaultSortingId").focus().click();
                 }
     });
@@ -1243,6 +1249,9 @@
                         }
                     });
 
+                    var divsuggstedheight = $(".grey-container-content").outerHeight();
+                    var finalheight = 50 + parseFloat(divsuggstedheight);
+                    $("#divSuggestionBox").css("padding-bottom", finalheight);
                 }
             });
         }
@@ -1301,7 +1310,9 @@
 
                         }
                     });
-
+                    var divsuggstedheight = $(".grey-container-content").outerHeight();
+                    var finalheight = 50 + parseFloat(divsuggstedheight);
+                    $("#divSuggestionBox").css("padding-bottom", finalheight);
                 }
             });
         }

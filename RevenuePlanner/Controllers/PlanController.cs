@@ -3808,12 +3808,14 @@ namespace RevenuePlanner.Controllers
                     improvementActivitiesWithType.Add(ptcpt);
                     suggestedImprovement.isExits = false;
                     suggestedImprovement.ImprovementPlanTacticId = 0;
+                    suggestedImprovement.Cost = imptactic.Cost;
                 }
                 else
                 {
                     improvementActivitiesWithType = improvementActivitiesWithType.Where(sa => sa.ImprovementTacticTypeId != imptactic.ImprovementTacticTypeId).ToList();
                     suggestedImprovement.isExits = true;
                     suggestedImprovement.ImprovementPlanTacticId = improvementActivities.Where(ia => ia.ImprovementTacticTypeId == imptactic.ImprovementTacticTypeId).Select(ia => ia.ImprovementPlanTacticId).SingleOrDefault();
+                    suggestedImprovement.Cost = improvementActivities.Where(ia => ia.ImprovementTacticTypeId == imptactic.ImprovementTacticTypeId).Select(ia => ia.Cost).SingleOrDefault();
                 }
 
                 double? dealSize = null;
@@ -3872,7 +3874,7 @@ namespace RevenuePlanner.Controllers
                 
                 suggestedImprovement.ImprovementTacticTypeId = imptactic.ImprovementTacticTypeId;
                 suggestedImprovement.ImprovementTacticTypeTitle = imptactic.Title;
-                suggestedImprovement.Cost = imptactic.Cost;
+                
                 suggestedImprovement.ProjectedRevenueWithoutTactic = projectedRevenueWithoutTacticTemp;
                 suggestedImprovement.ProjectedRevenueWithTactic = improvedValue;
                 if (projectedRevenueWithoutTacticTemp != 0)
