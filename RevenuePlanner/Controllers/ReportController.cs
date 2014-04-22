@@ -852,6 +852,13 @@ namespace RevenuePlanner.Controllers
 
             if (rrTacticList.Count() > 0)
             {
+                string inspectStageINQ = Enums.InspectStageValues[Enums.InspectStage.INQ.ToString()].ToString();
+                string inspectStageMQL = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
+                List<Plan_Campaign_Program_Tactic_Actual> planTacticActual = db.Plan_Campaign_Program_Tactic_Actual
+                                                                               .Where(pcpt => rrTacticList.Contains(pcpt.PlanTacticId) &&
+                                                                                             includeMonth.Contains(pcpt.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + pcpt.Period))
+                                                                               .ToList();
+
                 var rdata = new[] { new { 
                 INQGoal = GetConversionProjectedINQData(rrTacticList).AsEnumerable().AsQueryable().Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth))).GroupBy(r => r.Field<string>(ColumnMonth)).Select(g => new
                 {
@@ -859,21 +866,25 @@ namespace RevenuePlanner.Controllers
                     PSum = g.Sum(r => r.Field<double>(ColumnValue))
                 }),
                 monthList = includeMonth,
-                INQActual = (db.Plan_Campaign_Program_Tactic_Actual.ToList().Where(pcpt => rrTacticList.Contains(pcpt.PlanTacticId) && pcpt.StageTitle.Equals(Enums.InspectStageValues[Enums.InspectStage.INQ.ToString()].ToString()))).Select(pcpt => pcpt).ToList().Where(mr => includeMonth.Contains(mr.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + mr.Period)).GroupBy(pt => pt.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + pt.Period).Select(pcptj => new
-                {
-                    PKey = pcptj.Key,
-                    PSum = pcptj.Sum(pt => pt.Actualvalue)
-                }),
+                INQActual =planTacticActual.Where(pcpt => pcpt.StageTitle.Equals(inspectStageINQ))
+                                             .GroupBy(pt => pt.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + pt.Period)
+                                             .Select(pcptj => new
+                                              {
+                                                PKey = pcptj.Key,
+                                                PSum = pcptj.Sum(pt => pt.Actualvalue)
+                                              }),
                 MQLGoal = GetConversionProjectedMQLData(rrTacticList).AsEnumerable().AsQueryable().Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth))).GroupBy(r => r.Field<string>(ColumnMonth)).Select(g => new
                 {
                     PKey = g.Key,
                     PSum = g.Sum(r => r.Field<double>(ColumnValue))
                 }),
-                MQLActual = (db.Plan_Campaign_Program_Tactic_Actual.ToList().Where(pcpt => rrTacticList.Contains(pcpt.PlanTacticId) && pcpt.StageTitle.Equals(Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString()))).Select(pcpt => pcpt).ToList().Where(mr => includeMonth.Contains(mr.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + mr.Period)).GroupBy(pt => pt.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + pt.Period).Select(pcptj => new
-                {
-                    PKey = pcptj.Key,
-                    PSum = pcptj.Sum(pt => pt.Actualvalue)
-                })
+                MQLActual = planTacticActual.Where(pcpt => pcpt.StageTitle.Equals(inspectStageMQL))
+                            .GroupBy(pt => pt.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + pt.Period)
+                            .Select(pcptj => new
+                            {
+                                PKey = pcptj.Key,
+                                PSum = pcptj.Sum(pt => pt.Actualvalue)
+                            })
             }  };
 
                 return Json(rdata, JsonRequestBehavior.AllowGet);
