@@ -825,8 +825,8 @@ a {
 
 /* CSS for Revenue Report : Added By Maninder*/
 .report-chart-group .report-chart {
-    margin: 1%;
-    width: 298px; /* edited by kapil - to resolve wrap issue of last div position */
+    margin: 8px;
+    min-width: 312px; /* edited by kapil 220414 - to resolve graph issue - #447 */
     position: relative;
 }
 
@@ -835,9 +835,17 @@ a {
     padding-top: 8px;
     min-width:958px;
 }
+/* Added by kapil - 210414 - #447 */
+.report-chart-group .dhx_axis_item_y {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size:11px;
+}
+/* */
 /*chart 4*/
 .report-chart4 {
-    width: 285px !important;
+    width: 295px !important;  /* edited by kapil - 210414 - #447 */
     height: 170px !important;
     font-family: 'source_sans_prolight', Arial, "sans-serif" !important;
     font-size: 10px !important;
@@ -851,10 +859,10 @@ a {
     }
 
     .report-chart4 .dhx_axis_item_y {
-        font-size: 12px;
+        /*font-size: 12px;*/  /* edited by kapil - 210414 - #447 */
         font-family: 'source_sans_prosemibold', Arial, "sans-serif";
-        width: 72px !important;
-        margin-left: 0px;
+        width: 65px !important;  /* edited by kapil - 210414 - #447 */
+        margin-left: 5px;
     }
 
     .report-chart4 canvas {
@@ -863,7 +871,7 @@ a {
     }
 /*chart 5*/
 .report-chart5 {
-    width: 325px !important;
+    width: 318px !important;
     height: 210px !important;
     font-family: 'source_sans_prolight', Arial, "sans-serif" !important;
     font-size: 10px !important;
@@ -877,28 +885,29 @@ a {
     }
 
     .report-chart5 .dhx_axis_item_y {
-        font-size: 12px;
+        /*font-size: 12px;*/  /* edited by kapil - 210414 - #447 */
         font-family: 'source_sans_prosemibold', Arial, "sans-serif";
-        width: 83px !important;
-        margin-left: 20px;
+        width: 60px !important;  /* edited by kapil - 210414 - #447 */
+        margin-left: 10px; /* edited by kapil - 210414 - #447 */
+        margin-top:0; /* Added by kapil - 210414 - #447 */
     }
 
     .report-chart5 canvas {
-        margin-left: 60px;
+        margin-left: 25px;  /* edited by kapil - 210414 - #447 */
     }
 /*chart 6*/
 .report-chart6 {
     float: left;
-    width: 310px !important;
+    width: 320px !important;
     height: 230px !important;
     font-family: 'source_sans_prolight', Arial, "sans-serif" !important;
     font-size: 10px !important;
     color: #b3b3b3 !important;
-    margin: 0 0 0 16px!important;
+    margin: 0 0 0 8px!important;  /* edited by kapil - 210414 - #447 */
 }
 
     .report-chart6 canvas {
-        margin-left: 60px;
+        margin-left: 33px;  /* edited by kapil - 210414 - #447 */
     }
 
     .report-chart6 .dhx_axis_item_x {
@@ -906,10 +915,11 @@ a {
     }
 
     .report-chart6 .dhx_axis_item_y {
-        font-size: 12px;
+        /*font-size: 12px;*/  /* edited by kapil - 210414 - #447 */
         font-family: 'source_sans_prosemibold', Arial, "sans-serif";
-        width: 104px !important;
+        width: 76px !important;
         margin-left: 0px;
+        margin-top:0px;  /* Added by kapil - 210414 - #447 */
     }
 
 /*Added to show pointer on hover of report navigation pannel*/
@@ -2128,3 +2138,40 @@ label {
     color:#585858;
 }
 /* */
+@media screen and (max-width:1280px) {
+    .report-chart-group .report-chart {
+        margin:6px;
+        min-width: 304px;
+    }
+
+    .report-chart5 {
+        min-width: 310px !important;
+        width: auto !important;
+    }
+    .report-chart5 canvas {
+        margin-left: 8px;
+    }
+    .report-chart5 .dhx_axis_item_y {
+        width: 40px !important;
+        margin-left:9px;
+    }
+
+
+    .report-chart6 {
+        min-width: 300px !important;
+        width: auto !important;
+        margin: 0 0 0 8px !important;
+    }
+    .report-chart6 canvas {
+        margin-left: 8px;
+    }
+    .report-chart6 .dhx_axis_item_y {
+        width: 52px !important;
+    }
+}
+@media screen and (min-width:1281px) {
+    .report-chart-group .report-chart {
+        width:auto;
+        padding-right: 5px;
+    }
+}
