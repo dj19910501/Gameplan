@@ -1995,6 +1995,11 @@
             });
 
             barChart2.parse(dataset1, "json");
+
+            // added by dharmraj for ticket #447 : Alignment is not proper for charts
+            $("#chartDiv4 .dhx_canvas_text.dhx_axis_item_y").each(function (index, element) {
+                $(element).attr('title', element.innerHTML);
+            });
         }
 
         function FillChartSourcePerformanceGeography() {
@@ -2026,6 +2031,11 @@
             });
 
             barChart3.parse(dataset2, "json");
+
+            // added by dharmraj for ticket #447 : Alignment is not proper for charts
+            $("#chartDiv5 .dhx_canvas_text.dhx_axis_item_y").each(function (index, element) {
+                $(element).attr('title', element.innerHTML);
+            });
         }
 
         function FillChartSourcePerformanceVertical() {
@@ -2057,6 +2067,11 @@
             });
 
             barChart4.parse(dataset3, "json");
+
+            // added by dharmraj for ticket #447 : Alignment is not proper for charts
+            $("#chartDiv6 .dhx_canvas_text.dhx_axis_item_y").each(function (index, element) {
+                $(element).attr('title', element.innerHTML);
+            });
         }
 
         /*remove grid from charts*/
