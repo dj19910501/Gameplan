@@ -2455,7 +2455,7 @@ namespace RevenuePlanner.Helpers
                 ModelId = dbm.Plan_Campaign_Program_Tactic.Where(p => p.PlanTacticId == PlanTacticId).Select(p => p.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).SingleOrDefault();
             }
 
-            return Math.Round(INQ * GetMQLConversionRate(StartDate,ModelId));
+            return Math.Round(INQ * GetMQLConversionRate(StartDate,ModelId),0,MidpointRounding.AwayFromZero);
         }
 
         /// <summary>
@@ -2503,7 +2503,7 @@ namespace RevenuePlanner.Helpers
                                                    select new Plan_Tactic_MQL
                                                       {
                                                           PlanTacticId = t.PlanTacticId,
-                                                          MQL = isRound ? Math.Round(tactic.INQs * ml.ConversionRate) : tactic.INQs * ml.ConversionRate
+                                                          MQL = isRound ? Math.Round(tactic.INQs * ml.ConversionRate, 0, MidpointRounding.AwayFromZero) : tactic.INQs * ml.ConversionRate
                                                       }).ToList();
             return TacticMQLList;
         }

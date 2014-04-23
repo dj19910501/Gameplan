@@ -149,6 +149,7 @@ namespace RevenuePlanner.Models
         public double ProjectedRevenueLift { get; set; }
         public double RevenueToCostRatio { get; set; }
         public bool isExits { get; set; }
+        public bool isOwner { get; set; }
     }
 
     /// <summary>
