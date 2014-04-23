@@ -6446,9 +6446,9 @@ span.left-arrow {
 /* end changes*/
 /*added by Nirav Shah  on 14 feb 2014  for 256: Model list - add delete option for model*/
 #table_baseline tbody tr td span.delete-temp-program {
-    float: left;
+    float: right;
     /*margin-right: 10px;*/ /*commented by dharmraj #452*/
-    margin-left:10px;
+    margin-left:7px;
     visibility: hidden;
 }
 
@@ -6467,10 +6467,9 @@ input.delete-icon + span:hover, span.delete-tactic:hover, .delete-temp-program:h
     background: url("../images/edit-icon-dark.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
     cursor: pointer;
     visibility: visible;
-    float: left;
+    float: right;
     height: 15px;
     margin-top: 6px;
-    margin-left:12px;
     width: 15px;    
     
 }
