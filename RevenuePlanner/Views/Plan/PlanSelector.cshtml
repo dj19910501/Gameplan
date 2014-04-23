@@ -59,6 +59,7 @@
                 <th class="width150px">Budget</th>
                 <th>Status</th>
                 <th class="width75">Last Updated</th>
+                <th class="width50px">Action</th>
             </tr>
         </thead>
         <tbody>
@@ -114,6 +115,17 @@
             var PlanId = $(this).attr("id");
             if (PlanId != null) {
                 var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + "Plan" + '&currentPlanId=' + PlanId;
+                window.location.href = url;
+            }
+        });
+
+        // Function to redirect to the Plan edit screen based on selected plan
+        $('#table_baseline').on('click', 'tbody tr td .edit-temp-program', function (e) {
+            e.stopPropagation();
+            var PlanId = $(this).parent().parent().attr("id");
+            //alert(PlanId);
+            if (PlanId != null) {
+                var url = '@Url.Content("~/Plan/Create/")' + PlanId;
                 window.location.href = url;
             }
         });
@@ -275,12 +287,13 @@
         var $baselineTable = $('#table_baseline > tbody');
         var $html = "";
         $html += '<tr id="' + _PlanId + '">' +
-                '<td><span class="delete-temp-program width5"></span><span class="title-baseline-model truncate">' + _Title + '</span><span class="search-icon"></span></td>' +
+                '<td><span class="title-baseline-model truncate">' + _Title + '</span><span class="search-icon"></span></td>' +
                 @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to Shift “Last Updated” column next to Status column. *@
                 '<td>' + _MQLs + '</td>' +
                 '<td>$' + _Budget + '</td>' +
                 '<td>' + _Status + '</td>' +
                 '<td>' + _LastUpdated + '</td>' +
+                '<td><span class="edit-temp-program width5"></span><span class="delete-temp-program width5"></span></td>' +
                 '</tr>';
         $baselineTable.append($html);
         
