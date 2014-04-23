@@ -176,14 +176,14 @@
 
     $("#btnSaveAndContinue").click(function () {
         if (isApply) {
-            $('#cErrorDuplicatePlan').html('<strong>Error! </strong> Please add atleast one campaign.');
+            $('#cErrorDuplicatePlan').html('<strong>Error! </strong> Please add at least one campaign.');
             $("#errorMessageDuplicatePlan").slideDown(3000);
         }
         else {
             // Added By Bhavesh
             // PL Ticket 289,377,378
             if (SuggestionIMPTacticIdList.length != 0) {
-                if (confirm('Are you sure you want to delete unselected improvement tactic?')) {
+                if (confirm('Are you sure you want to delete the un-deployed improvement tactic? Please note that any changes to the improvement tactic owned by others won\'t be saved.')) {
                     $.ajax({
                         type: 'POST',
                         url: '@Url.Content("~/Plan/DeleteSuggestedBoxImprovementTactic/")',
@@ -989,7 +989,7 @@
 
         function FillGrayImprovementContainerEmpty() {
             var $html = '<p class="text1">Adding improvement tactics can boost your planned efforts.</p>' +
-											'<p class="text2">Add your marketing activities first, then add improvement tactics.' +
+											'<p class="text2">Add your marketing activities first, then add</br> improvement tactics.' +
 											'The impact of improvement tactics across Average Deal Size,' +
 											'Stage Velocity and Funnel Conversion can be seen here.</p>';
             var $ContainerImprovement = $('#grayImprovementContainer');
@@ -1131,7 +1131,7 @@
                 //alert(JSON.stringify(RecommendedImprovementTacticType));
                 if (RecommendedImprovementTacticType.data.length) {
                     for (i in RecommendedImprovementTacticType.data) {
-                        addRowRecommendedImprovementTacticType(RecommendedImprovementTacticType.data[i].ImprovementPlanTacticId, RecommendedImprovementTacticType.data[i].ImprovementTacticTypeTitle, RecommendedImprovementTacticType.data[i].ProjectedRevenueWithoutTactic, RecommendedImprovementTacticType.data[i].Cost, RecommendedImprovementTacticType.data[i].ProjectedRevenueWithTactic, RecommendedImprovementTacticType.data[i].ProjectedRevenueLift, RecommendedImprovementTacticType.data[i].RevenueToCostRatio, RecommendedImprovementTacticType.data[i].ImprovementTacticTypeId, RecommendedImprovementTacticType.data[i].IsExits);
+                        addRowRecommendedImprovementTacticType(RecommendedImprovementTacticType.data[i].ImprovementPlanTacticId, RecommendedImprovementTacticType.data[i].ImprovementTacticTypeTitle, RecommendedImprovementTacticType.data[i].ProjectedRevenueWithoutTactic, RecommendedImprovementTacticType.data[i].Cost, RecommendedImprovementTacticType.data[i].ProjectedRevenueWithTactic, RecommendedImprovementTacticType.data[i].ProjectedRevenueLift, RecommendedImprovementTacticType.data[i].RevenueToCostRatio, RecommendedImprovementTacticType.data[i].ImprovementTacticTypeId, RecommendedImprovementTacticType.data[i].IsExits, RecommendedImprovementTacticType.data[i].IsOwner);
                     }
                 }
             }
@@ -1146,14 +1146,19 @@
 
         // Added By Bhavesh
         // PL Ticket 289,377,378
-        function addRowRecommendedImprovementTacticType(ImprovementPlanTacticId, ImprovementTacticTypeTitle, ProjectedRevenueWithoutTactic, Cost, ProjectedRevenueWithTactic, ProjectedRevenueLift, RevenueToCostRatio, ImprovementTacticTypeId, IsExits) {
+        function addRowRecommendedImprovementTacticType(ImprovementPlanTacticId, ImprovementTacticTypeTitle, ProjectedRevenueWithoutTactic, Cost, ProjectedRevenueWithTactic, ProjectedRevenueLift, RevenueToCostRatio, ImprovementTacticTypeId, IsExits, IsOwner) {
             var $tableImprovementTactic = $('#tableImprovementTypeSuggested > tbody');
             var $html = '<tr';
             if (IsExits) {
                 $html += ' class="added"';
             }
             $html += '><td data-column="1" class="left-text">' + ImprovementTacticTypeTitle + '</td>'
-                                + '	<td data-column="2">$' + FormatCommas(Cost.toString(), false) + '</td>';
+                                + '	<td data-column="2"';
+            
+            if (!isADS) {
+                $html += ' class="noRightBorder"';
+            }
+            $html += ' >$' + FormatCommas(Cost.toString(), false) + '</td>';
             var isDashedDisplay = false;
             if (isADS) {
                 if (ProjectedRevenueWithoutTactic == ProjectedRevenueWithTactic) {
@@ -1175,7 +1180,11 @@
                                 + '	<td data-column="7" class="text-center noRightBorder addToPlan"><span';
 
             if (IsExits) {
-                $html += ' IMPTacticTypeId="' + ImprovementPlanTacticId + '" class="circle-check-icon-blue"';
+                $html += ' IMPTacticTypeId="' + ImprovementPlanTacticId + '"';
+                if(IsOwner || isADS)
+                {
+                    $html += ' class="circle-check-icon-blue"';
+                }
             }
             else {
                 if (isADS) {
@@ -1466,7 +1475,7 @@
                                                    '<thead>' +
                                                        '<tr>' +
                                                            '<th data-column="1" class="left-text">Improvement Tactic Type</th>' +
-                                                           '<th data-column="2" class="tacticTable-arrow-icon arrow-bottom" width="9%" sortText="Cost">Cost</th>' +
+                                                           '<th data-column="2" class="noRightBorder tacticTable-arrow-icon arrow-bottom" width="9%" sortText="Cost">Cost</th>' +
                                                            '<th data-column="3" class="noRightBorder" width="15%">Projected Revenue Without Tactic</th>' +
                                                            '<th data-column="4" class="tacticTable-arrow-icon arrow-bottom" width="17%" sortText="ProjectedRevenueWithTactic">Projected Revenue With Tactic<!--<span class="tacticTable-arrow-icon arrow-bottom"></span> --></th>' +
                                                            '<th id="defaultSortingId" data-column="5" class="tacticTable-arrow-icon arrow-bottom" width="13%" sortText="ProjectedRevenueLift">Projected Revenue Lift</th>' +
@@ -1520,7 +1529,7 @@
             if (dataid == 1) {
                 if (!isMarketingTacticExits) {
                     $("#suggested-tactics").empty();
-                    $("#suggested-tactics").html('<h2 class="source-sans-probold">There is not any marketing activities exits.</h2>');
+                    $("#suggested-tactics").html('<h2 class="source-sans-probold">No marketing activities exits.</h2>');
                 }
                 else {
                     LoadRecommendedGrid();
@@ -1529,7 +1538,7 @@
             else if (dataid == 2) {
                 if (!isImprovementTacticExits) {
                     $("#ads").empty();
-                    $("#ads").html('<h2 class="source-sans-probold">There is not any improvement tactic exits.</h2>');
+                    $("#ads").html('<h2 class="source-sans-probold">No improvement tactic(s) exits.</h2>');
                 }
                 else {
                     isADS = true;
@@ -1539,7 +1548,7 @@
             else if (dataid == 3) {
                 if (!isImprovementTacticExits) {
                     $("#conversion").empty();
-                    $("#conversion").html('<h2 class="source-sans-probold">There is not any improvement tactic exits.</h2>');
+                    $("#conversion").html('<h2 class="source-sans-probold">No improvement tactic(s) exits.</h2>');
                 }
                 else {
                     isConversion = true;
@@ -1549,7 +1558,7 @@
             else if (dataid == 4) {
                 if (!isImprovementTacticExits) {
                     $("#conversion").empty();
-                    $("#conversion").html('<h2 class="source-sans-probold">There is not any improvement tactic exits.</h2>');
+                    $("#conversion").html('<h2 class="source-sans-probold">No improvement tactic(s) exits.</h2>');
                 }
                 else {
                     isConversion = false;
