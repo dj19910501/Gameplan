@@ -441,6 +441,7 @@
     <Content Include="Content\images\double-arow-icon.png" />
     <Content Include="Content\images\drop-down-logo.png" />
     <Content Include="Content\images\duplicate-icon-sidebar.png" />
+    <Content Include="Content\images\edit-icon-dark.png" />
     <Content Include="Content\images\edit-icon.png" />
     <Content Include="Content\images\favicon.png" />
     <Content Include="Content\images\filter-icon-active.png" />
