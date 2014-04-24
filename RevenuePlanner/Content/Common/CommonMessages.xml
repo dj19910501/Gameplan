@@ -324,7 +324,7 @@
 	</Field>
 	<Field>
 		<Name>CannotSwitchModelForPlan</Name>
-		<value>You can not move to the new model due to the fact that there are tactics in the selected plan that are not present in new model.</value>
+		<value>You can not move to the new model due to the fact that there are tactics ([TacticNameToBeReplaced]) in the selected plan that are not present in new model.</value>
 	</Field>
 	<Field>
 		<Name>SameImprovementTypeExits</Name>

@@ -245,9 +245,11 @@ namespace RevenuePlanner.Controllers
                         if (plan.ModelId != objPlanModel.ModelId)
                         {
                             //Check whether the Model switching is valid or not - check whether Model to switch to has all of the tactics present that are present in the plan
-                            if (CheckModelTacticType(objPlanModel.PlanId, objPlanModel.ModelId))
+                            List<string> lstTactic = CheckModelTacticType(objPlanModel.PlanId, objPlanModel.ModelId);
+                            if (lstTactic.Count() > 0)
                             {
-                                return Json(new { id = -1 });
+                                string msg = RevenuePlanner.Helpers.Common.objCached.CannotSwitchModelForPlan.Replace("[TacticNameToBeReplaced]", String.Join(" ,", lstTactic));
+                                return Json(new { id = -1, imsg = msg });
                             }
                             else
                             {
@@ -303,7 +305,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="planId"></param>
         /// <param name="modelId"></param>
         /// <returns></returns>
-        private bool CheckModelTacticType(int planId, int modelId)
+        private List<string> CheckModelTacticType(int planId, int modelId)
         {
             //Check if any Tactic exists for this Plan
             var objPlan_Campaign_Program_Tactic = (from pc in db.Plan_Campaign
@@ -318,11 +320,11 @@ namespace RevenuePlanner.Controllers
                         join pcp in db.Plan_Campaign_Program on pc.PlanCampaignId equals pcp.PlanCampaignId
                         join pcpt in db.Plan_Campaign_Program_Tactic on pcp.PlanProgramId equals pcpt.PlanProgramId
                         where pc.PlanId == planId && pcpt.IsDeleted == false && !lstTacticType.Contains(pcpt.TacticType.Title)
-                        select pcpt).Any();
+                        select pcpt.Title).ToList();
             }
             else
             {
-                return false;
+                return new List<string>();
             }
         }
 
@@ -1397,7 +1399,7 @@ namespace RevenuePlanner.Controllers
                 description = p.Description,
                 cost = p.Cost.HasValue ? p.Cost : 0,
                 inqs = p.INQs.HasValue ? p.INQs : 0,
-                mqls = Common.GetMQLTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == p.PlanCampaignId && t.IsDeleted == false).Select(t => t.PlanTacticId).ToList(),true).Sum(tm => tm.MQL),
+                mqls = Common.GetMQLTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == p.PlanCampaignId && t.IsDeleted == false).Select(t => t.PlanTacticId).ToList(), true).Sum(tm => tm.MQL),
                 /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
         changed by : Nirav Shah on 13 feb 2014*/
                 isOwner = Sessions.User.UserId == p.CreatedBy ? 0 : 1,
@@ -1408,7 +1410,7 @@ namespace RevenuePlanner.Controllers
                     description = pcpj.Description,
                     cost = pcpj.Cost.HasValue ? pcpj.Cost : 0,
                     inqs = pcpj.INQs.HasValue ? pcpj.INQs : 0,
-                    mqls = Common.GetMQLTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcpj.PlanProgramId && t.IsDeleted == false).Select(t => t.PlanTacticId).ToList(),true).Sum(tm => tm.MQL),
+                    mqls = Common.GetMQLTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcpj.PlanProgramId && t.IsDeleted == false).Select(t => t.PlanTacticId).ToList(), true).Sum(tm => tm.MQL),
                     isOwner = Sessions.User.UserId == pcpj.CreatedBy ? 0 : 1,
                     tactics = (db.Plan_Campaign_Program_Tactic.ToList().Where(pcpt => pcpt.PlanProgramId.Equals(pcpj.PlanProgramId) && pcpt.IsDeleted.Equals(false)).Select(pcpt => pcpt).ToList()).Select(pcptj => new
                     {
@@ -3793,7 +3795,7 @@ namespace RevenuePlanner.Controllers
 
             List<SuggestedImprovementActivities> suggestedImproveentActivities = new List<SuggestedImprovementActivities>();
 
-            foreach(var imptactic in improvementTacticList)
+            foreach (var imptactic in improvementTacticList)
             {
                 SuggestedImprovementActivities suggestedImprovement = new SuggestedImprovementActivities();
                 List<Plan_Improvement_Campaign_Program_Tactic> improvementActivitiesWithType = new List<Plan_Improvement_Campaign_Program_Tactic>();
@@ -3848,7 +3850,7 @@ namespace RevenuePlanner.Controllers
                     {
                         modelId = Common.GetModelId(DateTime.Now, modelId);
                     }
-                    
+
                     //// Getting model.
                     Model effectiveModel = db.Models.Single(model => model.ModelId.Equals(modelId));
                     string funnelMarketing = Enums.Funnel.Marketing.ToString();
@@ -3858,7 +3860,7 @@ namespace RevenuePlanner.Controllers
                                                         .SingleOrDefault();
                     improvedAverageDealSizeForProjectedRevenue = averageDealSize;
                 }
-                
+
                 double improvedValue = 0;
 
                 //// Checking whether marketing and improvement activities exist.
@@ -3876,10 +3878,10 @@ namespace RevenuePlanner.Controllers
                     improvedValue = tempValue;
                 }
 
-                
+
                 suggestedImprovement.ImprovementTacticTypeId = imptactic.ImprovementTacticTypeId;
                 suggestedImprovement.ImprovementTacticTypeTitle = imptactic.Title;
-                
+
                 suggestedImprovement.ProjectedRevenueWithoutTactic = projectedRevenueWithoutTacticTemp;
                 suggestedImprovement.ProjectedRevenueWithTactic = improvedValue;
                 if (projectedRevenueWithoutTacticTemp != 0)
@@ -3900,10 +3902,10 @@ namespace RevenuePlanner.Controllers
                 ImprovementTacticTypeId = si.ImprovementTacticTypeId,
                 ImprovementTacticTypeTitle = si.ImprovementTacticTypeTitle,
                 Cost = si.Cost,
-                ProjectedRevenueWithoutTactic = Math.Round(si.ProjectedRevenueWithoutTactic,1),
-                ProjectedRevenueWithTactic = Math.Round(si.ProjectedRevenueWithTactic,1),
-                ProjectedRevenueLift = Math.Round(si.ProjectedRevenueLift,1),
-                RevenueToCostRatio = Math.Round(si.RevenueToCostRatio,1),
+                ProjectedRevenueWithoutTactic = Math.Round(si.ProjectedRevenueWithoutTactic, 1),
+                ProjectedRevenueWithTactic = Math.Round(si.ProjectedRevenueWithTactic, 1),
+                ProjectedRevenueLift = Math.Round(si.ProjectedRevenueLift, 1),
+                RevenueToCostRatio = Math.Round(si.RevenueToCostRatio, 1),
                 IsExits = si.isExits,
                 IsOwner = si.isOwner
             }).OrderBy(si => si.ImprovementTacticTypeTitle).ToList();
@@ -3918,7 +3920,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="improvementPlanProgramId"></param>
         /// <param name="improvementTacticTypeId"></param>
         /// <returns></returns>
-        public JsonResult AddSuggestedImprovementTactic(int improvementPlanProgramId,int improvementTacticTypeId)
+        public JsonResult AddSuggestedImprovementTactic(int improvementPlanProgramId, int improvementTacticTypeId)
         {
             //// Check for duplicate exits or not.
             var pcpvar = (from pcpt in db.Plan_Improvement_Campaign_Program_Tactic
@@ -3980,43 +3982,43 @@ namespace RevenuePlanner.Controllers
             double adsWithTactic = 0;
             double? dealSize = null;
             double improvedAverageDealSizeForProjectedRevenue = 0;
-           
+
             //// Checking whether improvement activities exist.
             if (improvementActivitiesWithIncluded.Count() > 0)
             {
                 //// Getting deal size improved based on improvement activities.
                 dealSize = Common.GetImprovedDealSize(Sessions.PlanId, improvementActivitiesWithIncluded);
             }
-                if (dealSize != null)
-                {
-                    improvedAverageDealSizeForProjectedRevenue = Convert.ToDouble(dealSize);
-                }
-                else
-                {
+            if (dealSize != null)
+            {
+                improvedAverageDealSizeForProjectedRevenue = Convert.ToDouble(dealSize);
+            }
+            else
+            {
 
-                    int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
+                int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
                 if (improvementActivitiesWithIncluded.Count() > 0)
                 {
                     //// Get Model id based on effective date From.
                     modelId = Common.GetModelId(improvementActivitiesWithIncluded.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), modelId);
                 }
-                    //// Getting model.
-                    Model effectiveModel = db.Models.Single(model => model.ModelId.Equals(modelId));
-                    string funnelMarketing = Enums.Funnel.Marketing.ToString();
-                    double averageDealSize = db.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == modelId &&
-                                                                              modelFunnel.Funnel.Title.Equals(funnelMarketing))
-                                                        .Select(mf => mf.AverageDealSize)
-                                                        .SingleOrDefault();
-                    improvedAverageDealSizeForProjectedRevenue = averageDealSize;
-                }
-                adsWithTactic = improvedAverageDealSizeForProjectedRevenue;
+                //// Getting model.
+                Model effectiveModel = db.Models.Single(model => model.ModelId.Equals(modelId));
+                string funnelMarketing = Enums.Funnel.Marketing.ToString();
+                double averageDealSize = db.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == modelId &&
+                                                                          modelFunnel.Funnel.Title.Equals(funnelMarketing))
+                                                    .Select(mf => mf.AverageDealSize)
+                                                    .SingleOrDefault();
+                improvedAverageDealSizeForProjectedRevenue = averageDealSize;
+            }
+            adsWithTactic = improvedAverageDealSizeForProjectedRevenue;
 
-                //// Checking whether marketing and improvement activities exist.
+            //// Checking whether marketing and improvement activities exist.
             if (marketingActivities.Count() > 0 && improvementActivitiesWithIncluded.Count() > 0)
-                {
-                    //// Getting Projected Reveneue or Closed Won improved based on marketing and improvement activities.
-                    improvedValue = Common.GetImprovedProjectedRevenueOrCW(Sessions.PlanId, marketingActivities, improvementActivitiesWithIncluded, true, improvedAverageDealSizeForProjectedRevenue);
-                }
+            {
+                //// Getting Projected Reveneue or Closed Won improved based on marketing and improvement activities.
+                improvedValue = Common.GetImprovedProjectedRevenueOrCW(Sessions.PlanId, marketingActivities, improvementActivitiesWithIncluded, true, improvedAverageDealSizeForProjectedRevenue);
+            }
             else
             {
                 improvedValue = Common.ProjectedRevenueCalculate(marketingActivities.Select(ma => ma.PlanTacticId).ToList()).Sum(p => p.ProjectedRevenue);
@@ -4044,7 +4046,7 @@ namespace RevenuePlanner.Controllers
                     improvementActivitiesWithType = improvementActivitiesWithType.Where(sa => !excludedids.Contains(sa.ImprovementPlanTacticId)).ToList();
                     suggestedImprovement.isExits = false;
                 }
-                
+
                 suggestedImprovement.ImprovementPlanTacticId = imptactic.ImprovementPlanTacticId;
 
                 double? dealSizeInner = null;
@@ -4113,7 +4115,7 @@ namespace RevenuePlanner.Controllers
                 suggestedImprovement.Cost = imptactic.Cost;
                 suggestedImprovement.ProjectedRevenueWithoutTactic = improvedAverageDealSizeForProjectedRevenueInner;// projectedRevenueWithoutTactic;
                 suggestedImprovement.ProjectedRevenueWithTactic = adsTempValue;// improvedValue;
-                
+
                 if (projectedRevenueWithoutTactic != 0)
                 {
                     suggestedImprovement.ProjectedRevenueLift = ((projectedRevenueWithoutTacticTemp - projectedRevenueWithoutTactic) / projectedRevenueWithoutTactic) * 100;
@@ -4196,12 +4198,12 @@ namespace RevenuePlanner.Controllers
                 //// Getting deal size improved based on improvement activities.
                 improvedDealSize = Common.GetImprovedDealSize(Sessions.PlanId, improvementActivities);
 
-                
+
                 //// Get Model id based on effective date From.
                 modelId = Common.GetModelId(improvementActivities.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), modelId);
                 //// Getting model.
                 Model effectiveModel = db.Models.Single(model => model.ModelId.Equals(modelId));
-                
+
                 double averageDealSize = db.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == modelId &&
                                                                           modelFunnel.Funnel.Title.Equals(funnelMarketing))
                                                     .Select(mf => mf.AverageDealSize)
@@ -4271,14 +4273,14 @@ namespace RevenuePlanner.Controllers
                 sIconversion.ImprovementTacticTypeId = imptactic.ImprovementTacticTypeId;
                 sIconversion.ImprovementTacticTypeTitle = imptactic.ImprovementTacticType.Title;
                 sIconversion.Cost = imptactic.Cost;
-                List<ImprovedMetricWeight> imList = new  List<ImprovedMetricWeight>();
-                foreach(var m in metricList)
+                List<ImprovedMetricWeight> imList = new List<ImprovedMetricWeight>();
+                foreach (var m in metricList)
                 {
                     ImprovedMetricWeight im = new ImprovedMetricWeight();
                     im.MetricId = m.MetricId;
                     im.Level = m.Level;
                     var weightValue = improvedMetrcList.Where(iml => iml.ImprovementTacticTypeId == imptactic.ImprovementTacticTypeId && iml.MetricId == m.MetricId).Select(iml => iml.Weight).SingleOrDefault();
-                    if(weightValue != null)
+                    if (weightValue != null)
                     {
                         im.Value = weightValue;
                     }
@@ -4329,7 +4331,8 @@ namespace RevenuePlanner.Controllers
             }).Select(si => si).OrderBy(si => si.ImprovementPlanTacticId);
 
 
-            var dataMetricList = metricList.Select(ml => new{
+            var dataMetricList = metricList.Select(ml => new
+            {
                 MetricId = ml.MetricId,
                 Title = ml.MetricName,
                 Level = ml.Level
@@ -4372,10 +4375,10 @@ namespace RevenuePlanner.Controllers
                             Plan_Improvement_Campaign_Program_Tactic pcpt = db.Plan_Improvement_Campaign_Program_Tactic.Where(p => p.ImprovementPlanTacticId == pid).SingleOrDefault();
                             if (pcpt.CreatedBy == Sessions.User.UserId)
                             {
-                            pcpt.IsDeleted = true;
-                            db.Entry(pcpt).State = EntityState.Modified;
-                            returnValue = db.SaveChanges();
-                            returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcpt.ImprovementPlanTacticId, pcpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
+                                pcpt.IsDeleted = true;
+                                db.Entry(pcpt).State = EntityState.Modified;
+                                returnValue = db.SaveChanges();
+                                returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcpt.ImprovementPlanTacticId, pcpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
                             }
                         }
                         scope.Complete();

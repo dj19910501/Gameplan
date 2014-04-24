@@ -260,7 +260,7 @@
                               if (data.id == -1) {
                                   $("#errorMessage").css("display", "block");
                                   $("#spanMessageError").empty();
-                                  $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.CannotSwitchModelForPlan");
+                                  $("#spanMessageError").text(data.imsg);
                                   return false;
                               }
                               else if (data.id != 0) {
