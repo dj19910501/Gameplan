@@ -56,7 +56,7 @@
             var individualClick = false;    //// Added By :- Sohel Pathan on 17/04/2014 for PL ticket #428 to fill filteredIndividuals list according to plan selected.
             //Added by Nirav for Custom Dropdown - 388
             var showBid = $('#showBid').val();
-            if (showBid == true) {
+            if (showBid == 'True') {
                 var id = $('#ddlBusinessUnit').val();
                 $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + id + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val());//activeMenu parameter added
             }

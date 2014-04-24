@@ -129,7 +129,8 @@ namespace RevenuePlanner.Controllers
                 string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
                 activePlan = activePlan.Where(p => p.Status.Equals(planPublishedStatus));
             }
-
+            // Added by Bhavesh, Current year first plan select in dropdown
+            string currentYear = DateTime.Now.Year.ToString();
             if (activePlan.Count() != 0)
             {
                 try
@@ -144,7 +145,15 @@ namespace RevenuePlanner.Controllers
                         /* added by Nirav shah for TFS Point : 218*/
                         if (Sessions.PublishedPlanId == 0)
                         {
+                            // Added by Bhavesh, Current year first plan select in dropdown
+                            if (activePlan.Where(p => p.Year == currentYear).Count() > 0)
+                            {
+                                currentPlan = activePlan.Where(p => p.Year == currentYear).Select(p => p).FirstOrDefault();
+                            }
+                            else
+                            {
                             currentPlan = activePlan.Select(p => p).FirstOrDefault();
+                            }
                         }
                         else
                         {
@@ -156,7 +165,15 @@ namespace RevenuePlanner.Controllers
                         /* added by Nirav shah for TFS Point : 218*/
                         if (Sessions.PlanId == 0)
                         {
+                            // Added by Bhavesh, Current year first plan select in dropdown
+                            if (activePlan.Where(p => p.Year == currentYear).Count() > 0)
+                            {
+                                currentPlan = activePlan.Where(p => p.Year == currentYear).Select(p => p).FirstOrDefault();
+                            }
+                            else
+                            {
                             currentPlan = activePlan.Select(p => p).FirstOrDefault();
+                            }
                         }
                         else
                         {

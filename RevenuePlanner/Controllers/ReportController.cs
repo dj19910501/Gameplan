@@ -67,12 +67,12 @@ namespace RevenuePlanner.Controllers
 
 
             //List of Plans
-            List<SelectListItem> lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Status.Equals(planPublishedStatus) && pl.Year.Equals(currentYear)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
+            List<SelectListItem> lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
 
             if (Sessions.BusinessUnitId != Guid.Empty)
             {
                 lstBusinessUnits.Where(lbu => lbu.Value == Convert.ToString(Sessions.BusinessUnitId)).ToList().ForEach(lbu => lbu.Selected = true);
-                lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Model.BusinessUnitId == Sessions.BusinessUnitId && pl.Status.Equals(planPublishedStatus) && pl.Year.Equals(currentYear)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
+                lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Model.BusinessUnitId == Sessions.BusinessUnitId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
             }
             /* added by Nirav shah for TFS Point : 218*/
             if (Sessions.PlanId != 0 && !isFromReport)
@@ -112,9 +112,13 @@ namespace RevenuePlanner.Controllers
             return View(objFilterData);
         }
 
+        /// <summary>
+        /// Set Report Parameter : Update by Bhavesh
+        /// </summary>
+        /// <param name="BusinessUnitId"></param>
+        /// <param name="PlanId"></param>
         public void SetReportParameter(string BusinessUnitId = "", string PlanId = "")
         {
-            SummaryReportModel objSummaryReportModel = new SummaryReportModel();
             ViewBag.IsPlanExistToShowReport = false;
 
             //// Getting current year's all published plan for all business unit of clientid of director.
@@ -129,11 +133,12 @@ namespace RevenuePlanner.Controllers
                 int int_PlanId = Convert.ToInt32(PlanId);
                 plans = plans.Where(p => p.PlanId.Equals(int_PlanId)).ToList();
                 Sessions.ReportPlanId = int_PlanId;
+                    Sessions.PlanId = int_PlanId;
             }
             else if (PlanId == "0" || PlanId == "") // This means all plans are selected
             {
                 Sessions.ReportPlanId = 0;
-                //Sessions.PlanId = 0;/* added by Nirav shah for TFS Point : 218*/
+                Sessions.PlanId = 0;/* added by Nirav shah for TFS Point : 218*/
                 Sessions.PublishedPlanId = 0;
             }
 
@@ -172,10 +177,10 @@ namespace RevenuePlanner.Controllers
                 Sessions.ReportPlanId = int_PlanId;
                 Sessions.PlanId = int_PlanId;/* added by Nirav shah for TFS Point : 218*/
             }
-            else if (PlanId == "0") // This means all plans are selected
+            else if (PlanId == "0" || string.IsNullOrEmpty(PlanId)) // This means all plans are selected
             {
                 Sessions.ReportPlanId = 0;
-                //Sessions.PlanId = 0;/* added by Nirav shah for TFS Point : 218*/
+                Sessions.PlanId = 0;/* added by Nirav shah for TFS Point : 218*/
                 Sessions.PublishedPlanId = 0;
             }
             if (!string.IsNullOrEmpty(BusinessUnitId) && BusinessUnitId != "0" && BusinessUnitId != Convert.ToString(Guid.Empty))
@@ -443,8 +448,6 @@ namespace RevenuePlanner.Controllers
             // return Partial view
             return PartialView("_Summary", objSummaryReportModel);
         }
-
-
 
         /// <summary>
         /// This method returns the list of Plan for given BusinessUnit Id (This will return only Published plan for Current year)
@@ -788,12 +791,12 @@ namespace RevenuePlanner.Controllers
             List<SelectListItem> lstBusinessUnits = Common.GetBussinessUnitIds(Sessions.User.ClientId).Select(p => new SelectListItem() { Text = p.Text, Value = p.Value.ToString(), Selected = false }).ToList();
 
             //List of Plans
-            List<SelectListItem> lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Status.Equals(planPublishedStatus) && pl.Year.Equals(currentYear)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
+            List<SelectListItem> lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
 
             if (Sessions.BusinessUnitId != Guid.Empty)
             {
                 lstBusinessUnits.Where(lbu => lbu.Value == Convert.ToString(Sessions.BusinessUnitId)).ToList().ForEach(lbu => lbu.Selected = true);
-                lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Model.BusinessUnitId == Sessions.BusinessUnitId && pl.Status.Equals(planPublishedStatus) && pl.Year.Equals(currentYear)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
+                lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Model.BusinessUnitId == Sessions.BusinessUnitId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
             }
 
 
@@ -1460,12 +1463,12 @@ namespace RevenuePlanner.Controllers
             List<SelectListItem> lstBusinessUnits = Common.GetBussinessUnitIds(Sessions.User.ClientId).Select(p => new SelectListItem() { Text = p.Text, Value = p.Value.ToString(), Selected = false }).ToList();
 
             //List of Plans
-            List<SelectListItem> lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Status.Equals(planPublishedStatus) && pl.Year.Equals(currentYear)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
+            List<SelectListItem> lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
 
             if (Sessions.BusinessUnitId != Guid.Empty)
             {
                 lstBusinessUnits.Where(lbu => lbu.Value == Convert.ToString(Sessions.BusinessUnitId)).ToList().ForEach(lbu => lbu.Selected = true);
-                lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Model.BusinessUnitId == Sessions.BusinessUnitId && pl.Status.Equals(planPublishedStatus) && pl.Year.Equals(currentYear)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
+                lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Model.BusinessUnitId == Sessions.BusinessUnitId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
             }
 
 
