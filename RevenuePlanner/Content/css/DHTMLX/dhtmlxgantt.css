@@ -2211,7 +2211,7 @@ div.dhx_modal_cover
 .gantt_task_content
 {
     font-size: 12px;
-    color: #fff;
+    color:rgba(0, 0, 0, 0); /*color: #fff;  Modified by dharmraj for internal revirew points 24-04-2014 */  
     position: absolute;
     white-space: nowrap;
     text-align: center;
