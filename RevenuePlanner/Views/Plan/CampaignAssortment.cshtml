@@ -31,7 +31,7 @@
 </div>
 <div id="frm_campaigns" name="frm_campaigns">
     @using (Html.BeginForm(new { @id = "frmSaveCampaign" }))
-    {
+    {    
         <script type="text/javascript">
             $(document).ready(function () {
                 $(".verticalIdSelectBox select").selectbox();
@@ -45,7 +45,7 @@
             @Html.HiddenFor(model => model.TEndDate, new { id = "hdnTEndDate" })
 
             <label class="t_title">Campaign Title</label>
-            @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true", maxlength = "255" })
+            @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true", maxlength = "255", id="txtTitle" }) @* Modified by :- Sohel Pathan on 24/04/2014 for internal review point to stop form posting on ENTERKEY press event *@
 
             <label>Description</label>
             @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", rows = "3", maxlength = "4000" })
@@ -124,16 +124,16 @@
         </div>
         <!--end content dark-->
         if((bool)ViewBag.IsOwner)
-                {
-        <div class="wraper-btns cf">
-            <div class="span6">
-                <button id="save_campaign" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
+        {
+            <div class="wraper-btns cf">
+                <div class="span6">
+                    <button id="save_campaign" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
+                </div>
+                <div class="span6">
+                    <button class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
+                </div>
             </div>
-            <div class="span6">
-                <button class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
-            </div>
-        </div>
-             }
+        }
         <!--End buttons-->
 @* TFS Point 253,206 : Model/Plan - sidebars - integrate gear icon with feature to delete/duplicate tactic
     Added by Nirav Shah on 17 feb 2014
@@ -146,7 +146,7 @@
         <!--End content dark-->
             }*@
     }
-
+  
 </div>
 @*</div>*@
 <script type="text/javascript">
@@ -162,6 +162,14 @@
             $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
             $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
         }
+
+        //// Added by :- Sohel Pathan on 24/04/2014 for internal review point to stop form posting on ENTERKEY (Keycode = 13) press event for Title textBox
+        $("#txtTitle").keypress(function (e) {
+            if (e.keyCode == 13) {
+                e.preventDefault();
+                return false;
+            }
+        });
 
         $("span.tool-tip").tooltip();
 
