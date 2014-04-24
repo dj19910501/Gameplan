@@ -3936,7 +3936,7 @@ namespace RevenuePlanner.Controllers
                 picpt.Title = db.ImprovementTacticTypes.Where(itactic => itactic.ImprovementTacticTypeId == improvementTacticTypeId).Select(itactic => itactic.Title).SingleOrDefault();
                 picpt.ImprovementTacticTypeId = improvementTacticTypeId;
                 picpt.Cost = db.ImprovementTacticTypes.Where(itactic => itactic.ImprovementTacticTypeId == improvementTacticTypeId).Select(itactic => itactic.Cost).SingleOrDefault();
-                picpt.EffectiveDate = DateTime.Now;
+                picpt.EffectiveDate = DateTime.Now.Date;
                 picpt.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
                 //// Get Businessunit id from model.
                 picpt.BusinessUnitId = (from m in db.Models
