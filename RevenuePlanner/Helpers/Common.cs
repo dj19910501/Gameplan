@@ -2683,7 +2683,8 @@ namespace RevenuePlanner.Helpers
             MRPEntities mdb = new MRPEntities();
             List<TacticModelRelation> tacticModelList = GetTacticModelRelation(tlist);
             List<ModelConvertionRateRelation> mlist = GetModelConversionRate(tacticModelList.Select(t => t.ModelId).Distinct().ToList(), Enums.Stage.CW.ToString());
-            List<ProjectedRevenueClass> tacticList = (from tactic in mdb.Plan_Campaign_Program_Tactic.ToList()
+            List<int> tacticIds = tacticModelList.Select(tactic => tactic.PlanTacticId).ToList();
+            List<ProjectedRevenueClass> tacticList = (from tactic in mdb.Plan_Campaign_Program_Tactic.Where(planTactic => tacticIds.Contains(planTactic.PlanTacticId)).ToList()
                                                       join t in tacticModelList on tactic.PlanTacticId equals t.PlanTacticId
                                                       join ml in mlist on t.ModelId equals ml.ModelId
                                                       select new ProjectedRevenueClass

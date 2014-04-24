@@ -949,58 +949,39 @@ namespace RevenuePlanner.Controllers
         {
             // Businessunit id =  B478B6E8-5C9D-4549-BCA2-B810FD22508E
 
-            var returnDataGuid = (db.BusinessUnits.ToList().Where(bu => bu.ClientId.Equals(Sessions.User.ClientId) && bu.IsDeleted.Equals(false)).Select(bu => bu).ToList()).Select(b => new
-            {
-                id = b.BusinessUnitId,
-                title = b.Title
-            }).Select(b => b).Distinct().OrderBy(b => b.id);
-
-            var returnDataInt = (db.Audiences.ToList().Where(au => au.ClientId.Equals(Sessions.User.ClientId) && au.IsDeleted.Equals(false)).Select(au => au).ToList()).Select(a => new
-            {
-                id = a.AudienceId,
-                title = a.Title
-            }).Select(a => a).Distinct().OrderBy(a => a.id);
+            var returnDataGuid = new object();
 
             if (ParentTab == Common.BusinessUnit)
             {
-                returnDataGuid = (db.BusinessUnits.ToList().Where(bu => bu.ClientId.Equals(Sessions.User.ClientId) && bu.IsDeleted.Equals(false)).Select(bu => bu).ToList()).Select(b => new
+                returnDataGuid = (db.BusinessUnits.Where(bu => bu.ClientId.Equals(Sessions.User.ClientId) && bu.IsDeleted.Equals(false))).Select(b => new
                 {
                     id = b.BusinessUnitId,
                     title = b.Title
-                }).Select(b => b).Distinct().OrderBy(b => b.id);
-
-                return Json(returnDataGuid, JsonRequestBehavior.AllowGet);
+                }).Distinct().OrderBy(b => b.id);
             }
             else if (ParentTab == Common.Audience)
             {
-                returnDataInt = (db.Audiences.ToList().Where(au => au.ClientId.Equals(Sessions.User.ClientId) && au.IsDeleted.Equals(false)).Select(au => au).ToList()).Select(a => new
+                returnDataGuid = (db.Audiences.ToList().Where(au => au.ClientId.Equals(Sessions.User.ClientId) && au.IsDeleted.Equals(false))).Select(a => new
                 {
                     id = a.AudienceId,
                     title = a.Title
-                }).Select(a => a).Distinct().OrderBy(a => a.id);
-
-                return Json(returnDataInt, JsonRequestBehavior.AllowGet);
+                }).Distinct().OrderBy(a => a.id);
             }
-
             else if (ParentTab == Common.Geography)
             {
-                returnDataGuid = (db.Geographies.ToList().Where(ge => ge.ClientId.Equals(Sessions.User.ClientId) && ge.IsDeleted.Equals(false)).Select(ge => ge).ToList()).Select(g => new
+                returnDataGuid = (db.Geographies.ToList().Where(ge => ge.ClientId.Equals(Sessions.User.ClientId) && ge.IsDeleted.Equals(false))).Select(g => new
                 {
                     id = g.GeographyId,
                     title = g.Title
-                }).Select(g => g).Distinct().OrderBy(g => g.id);
-
-                return Json(returnDataGuid, JsonRequestBehavior.AllowGet);
+                }).Distinct().OrderBy(g => g.id);
             }
             else if (ParentTab == Common.Vertical)
             {
-                returnDataInt = (db.Verticals.ToList().Where(ve => ve.ClientId.Equals(Sessions.User.ClientId) && ve.IsDeleted.Equals(false)).Select(ve => ve).ToList()).Select(v => new
+                returnDataGuid = (db.Verticals.ToList().Where(ve => ve.ClientId.Equals(Sessions.User.ClientId) && ve.IsDeleted.Equals(false))).Select(v => new
                 {
                     id = v.VerticalId,
                     title = v.Title
-                }).Select(v => v).Distinct().OrderBy(v => v.id);
-
-                return Json(returnDataInt, JsonRequestBehavior.AllowGet);
+                }).Distinct().OrderBy(v => v.id);
             }
 
             return Json(returnDataGuid, JsonRequestBehavior.AllowGet);
