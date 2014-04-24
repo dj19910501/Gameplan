@@ -1247,9 +1247,9 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Conversion Summary Report
-
         /// <summary>
         /// This will return the data for Conversion Summary report
+        /// Modified By: Maninde Singh Wadhva for #426 	Conversion Reporting Page is slow to render.
         /// </summary>
         /// <param name="ParentConversionSummaryTab"></param>
         /// <param name="Id"></param>
@@ -1258,7 +1258,7 @@ namespace RevenuePlanner.Controllers
         {
             List<string> includeYearList = GetYearList(selectOption);
             List<int> tacticIds = GetTacticForReport(includeYearList);
-            var tacticListobj = db.Plan_Campaign_Program_Tactic.Where(pcpt => tacticIds.Contains(pcpt.PlanTacticId) &&
+            List<Plan_Campaign_Program_Tactic> tacticListobj = db.Plan_Campaign_Program_Tactic.Where(pcpt => tacticIds.Contains(pcpt.PlanTacticId) &&
                 ((ParentConversionSummaryTab == Common.BusinessUnit && pcpt.BusinessUnit.ClientId == Sessions.User.ClientId) ||
                 (ParentConversionSummaryTab == Common.Audience && pcpt.Audience.ClientId == Sessions.User.ClientId) ||
                 (ParentConversionSummaryTab == Common.Geography && pcpt.Geography.ClientId == Sessions.User.ClientId) ||
@@ -1306,18 +1306,23 @@ namespace RevenuePlanner.Controllers
             string stageTitleRevenue = Enums.InspectStage.Revenue.ToString();
             string marketing = Enums.Funnel.Marketing.ToString();
 
+            List<Plan_Campaign_Program_Tactic_Actual> planTacticActual = db.Plan_Campaign_Program_Tactic_Actual
+                                                                           .Where(pcpta => tacticIds.Contains(pcpta.PlanTacticId) && 
+                                                                                           includeMonth.Contains(pcpta.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + pcpta.Period))
+                                                                           .ToList();
+
             var DataListFinal = DataTitleList.Select(p => new
             {
                 Title = p.Title,
-                INQ = GetActualValueForConversionSummary(p.planTacticList, includeMonth, stageTitleINQ),
-                MQL = GetActualValueForConversionSummary(p.planTacticList, includeMonth, stageTitleMQL),
-                ActualCW = GetActualValueForConversionSummary(p.planTacticList, includeMonth, stageTitleCW),
-                ActualRevenue = GetActualValueForConversionSummary(p.planTacticList, includeMonth, stageTitleRevenue),
-                ActualADS = CalculateActualADS(p.planTacticList, includeMonth, stageTitleCW, stageTitleRevenue),
+                INQ = GetActualValueForConversionSummary(planTacticActual.Where(t => p.planTacticList.Contains(t.PlanTacticId)).ToList(), stageTitleINQ),
+                MQL = GetActualValueForConversionSummary(planTacticActual.Where(t => p.planTacticList.Contains(t.PlanTacticId)).ToList(), stageTitleMQL),
+                ActualCW = GetActualValueForConversionSummary(planTacticActual.Where(t => p.planTacticList.Contains(t.PlanTacticId)).ToList(), stageTitleCW),
+                ActualRevenue = GetActualValueForConversionSummary(planTacticActual.Where(t => p.planTacticList.Contains(t.PlanTacticId)).ToList(), stageTitleRevenue),
+                ActualADS = CalculateActualADS(planTacticActual.Where(t => p.planTacticList.Contains(t.PlanTacticId)).ToList(), stageTitleCW, stageTitleRevenue),
                 ProjectedCW = GetProjectedRevenueData(p.planTacticList, true).AsEnumerable().AsQueryable().Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth))).Sum(r => r.Field<double>(ColumnValue)),
                 ProjectedRevenue = GetProjectedRevenueData(p.planTacticList).AsEnumerable().AsQueryable().Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth))).Sum(r => r.Field<double>(ColumnValue)),
                 ProjectedADS = db.Model_Funnel.Where(mf => mf.Funnel.Title == marketing && (db.Plan_Campaign_Program_Tactic.Where(t => p.planTacticList.Contains(t.PlanTacticId)).Select(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).Distinct()).Contains(mf.ModelId)).Sum(mf => mf.AverageDealSize)
-            }).Select(p => p).Distinct().OrderBy(p => p.Title);
+            }).Distinct().OrderBy(p => p.Title);
 
             return Json(new { data = DataListFinal }, JsonRequestBehavior.AllowGet);
         }
@@ -1325,42 +1330,39 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Get Actual value based on stagetitle
         /// Added by Bhavesh
+        /// Modified By: Maninde Singh Wadhva for #426 	Conversion Reporting Page is slow to render.
         /// </summary>
-        /// <param name="TacticIds"></param>
-        /// <param name="includeMonth"></param>
-        /// <param name="stagetitle"></param>
-        /// <returns></returns>
-        private double GetActualValueForConversionSummary(List<int> TacticIds, List<string> includeMonth, string stagetitle)
+        /// <param name="planTacticActual">Plan tactic actual</param>
+        /// <param name="stagetitle">Stage title.</param>
+        /// <returns>Returns actual value for conversion summary.</returns>
+        private double GetActualValueForConversionSummary(List<Plan_Campaign_Program_Tactic_Actual> planTacticActual, string stagetitle)
         {
-            double actualValue = 0;
-            var actualList = db.Plan_Campaign_Program_Tactic_Actual.Where(pcpta => TacticIds.Contains(pcpta.PlanTacticId) && includeMonth.Contains(pcpta.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + pcpta.Period) && pcpta.StageTitle == stagetitle).ToList();
-            if (actualList.Count() > 0)
-            {
-                actualValue = actualList.Sum(pcpta => pcpta.Actualvalue);
-            }
+            double actualValue = planTacticActual.Where(pcpta => pcpta.StageTitle == stagetitle)
+                                                 .Sum(pcpta => pcpta.Actualvalue);
             return actualValue;
         }
 
         /// <summary>
         /// Calculate ADS based on actual value i.e. Revenue / CW
         /// Added By Bhavesh 
+        /// Modified By: Maninde Singh Wadhva for #426 	Conversion Reporting Page is slow to render.
         /// </summary>
-        /// <param name="TacticIds"></param>
-        /// <param name="includeMonth"></param>
-        /// <param name="stagetitleCW"></param>
-        /// <param name="stagetitleRevenue"></param>
-        /// <returns></returns>
-        private double CalculateActualADS(List<int> TacticIds, List<string> includeMonth, string stagetitleCW, string stagetitleRevenue)
+        /// <param name="planTacticActual">Plan tactic actual.</param>
+        /// <param name="stagetitleCW">Stage title CW.</param>
+        /// <param name="stagetitleRevenue">Stage title revenue.</param>
+        /// <returns>Returns calculated ADS.</returns>
+        private double CalculateActualADS(List<Plan_Campaign_Program_Tactic_Actual> planTacticActual, string stagetitleCW, string stagetitleRevenue)
         {
             double ads = 0;
-            double actualRevenue = GetActualValueForConversionSummary(TacticIds, includeMonth, stagetitleRevenue);
-            double actualCW = GetActualValueForConversionSummary(TacticIds, includeMonth, stagetitleCW);
+            double actualRevenue = GetActualValueForConversionSummary(planTacticActual, stagetitleRevenue);
+            double actualCW = GetActualValueForConversionSummary(planTacticActual, stagetitleCW);
             if (actualCW > 0)
             {
                 ads = actualRevenue / actualCW;
             }
             return ads;
         }
+
 
         /// <summary>
         /// Returns the list of child tab for selected Master tab
@@ -1660,13 +1662,16 @@ namespace RevenuePlanner.Controllers
 
         /// <summary>
         /// Get Projected Revenue Data & Calculation.
+        /// Modified By: Maninde Singh Wadhva for #426 	Conversion Reporting Page is slow to render.
         /// </summary>
-        /// <param name="cl"></param>
+        /// <param name="planTacticList">Plan tactic list.</param>
+        /// <param name="isCW">Plan tactic list.</param>
         /// <returns></returns>
         public DataTable GetProjectedRevenueData(List<int> planTacticList, bool isCW = false)
         {
-            List<ProjectedRevenueClass> prlist = Common.ProjectedRevenueCalculate(planTacticList, isCW).ToList();
-            List<TacticDataTable> tacticdata = (from t in db.Plan_Campaign_Program_Tactic.ToList()
+            List<ProjectedRevenueClass> prlist = Common.ProjectedRevenueCalculate(planTacticList, isCW);
+            List<int> tacticIds = prlist.Select(tactic => tactic.PlanTacticId).ToList();
+            List<TacticDataTable> tacticdata = (from t in db.Plan_Campaign_Program_Tactic.Where(tactic => tacticIds.Contains(tactic.PlanTacticId)).ToList()
                                                 join p in prlist on t.PlanTacticId equals p.PlanTacticId
                                                 select new TacticDataTable
                                                 {
@@ -1680,7 +1685,6 @@ namespace RevenuePlanner.Controllers
 
             return GetDatatable(tacticdata);
         }
-
         #endregion
 
         #region Revenue Realization
