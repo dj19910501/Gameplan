@@ -1970,7 +1970,7 @@
             $('#chartDiv4Parent').find('#chartDiv4').remove();
             $('#chartDiv4Parent').append('<div id="chartDiv4" class="report-chart4"></div>');
 
-            var xAxisConfig = GetAxisConfiguration(dataset1)
+            var xAxisConfig = GetAxisConfiguration(dataset1);
 
             /*bar chart*/
             var barChart2 = new dhtmlXChart({
@@ -1991,6 +1991,9 @@
                 yAxis: {
                     template: "#Title#",
                     lines: false,
+                },
+                padding: {
+                    left: 75
                 }
             });
 
@@ -2027,6 +2030,9 @@
                 yAxis: {
                     template: "#Title#",
                     lines: false,
+                },
+                padding: {
+                    left:75
                 }
             });
 
@@ -2063,6 +2069,9 @@
                 yAxis: {
                     template: "#Title#",
                     lines: false,
+                },
+                padding: {
+                    left: 85
                 }
             });
 

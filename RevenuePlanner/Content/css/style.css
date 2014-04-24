@@ -4671,7 +4671,7 @@ span.red-arrow-down-icon {
 /*chart 4*/
 .report-chart4 {
     width: 250px !important;
-    height: 170px !important;
+    height: 230px !important;
     font-family: 'source_sans_prolight', Arial, "sans-serif" !important;
     font-size: 10px !important;
     color: #b3b3b3 !important;
@@ -4680,7 +4680,7 @@ span.red-arrow-down-icon {
 }
 
     .report-chart4 .dhx_axis_item_x {
-        color: #ffffff!important;
+        color: #ffffff!important; 
     }
 
     .report-chart4 .dhx_axis_item_y {
@@ -4691,14 +4691,13 @@ span.red-arrow-down-icon {
     }
 
     .report-chart4 canvas {
-        margin-left: 35px;
-        ;
-        height: 150px;
+        /*margin-left: 35px;
+        height: 150px;*/
     }
 /*chart 5*/
 .report-chart5 {
     width: 290px !important;
-    height: 210px !important;
+    height: 230px !important;
     font-family: 'source_sans_prolight', Arial, "sans-serif" !important;
     font-size: 10px !important;
     color: #b3b3b3 !important;
@@ -4718,7 +4717,7 @@ span.red-arrow-down-icon {
     }
 
     .report-chart5 canvas {
-        margin-left: 70px;
+        /*margin-left: 70px;*/
     }
 /*chart 6*/
 .report-chart6 {
@@ -4731,7 +4730,7 @@ span.red-arrow-down-icon {
 }
 
     .report-chart6 canvas {
-        margin-left: 50px;
+        /*margin-left: 50px;*/
     }
 
     .report-chart6 .dhx_axis_item_x {
