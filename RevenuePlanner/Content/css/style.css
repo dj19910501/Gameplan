@@ -4671,7 +4671,7 @@ span.red-arrow-down-icon {
 /*chart 4*/
 .report-chart4 {
     width: 250px !important;
-    height: 230px !important;
+    height: 220px !important;
     font-family: 'source_sans_prolight', Arial, "sans-serif" !important;
     font-size: 10px !important;
     color: #b3b3b3 !important;
@@ -4680,7 +4680,7 @@ span.red-arrow-down-icon {
 }
 
     .report-chart4 .dhx_axis_item_x {
-        color: #ffffff!important; 
+        /*color: #ffffff!important;*/ /* edited by Dharmraj - #348 */
     }
 
     .report-chart4 .dhx_axis_item_y {
@@ -4697,7 +4697,7 @@ span.red-arrow-down-icon {
 /*chart 5*/
 .report-chart5 {
     width: 290px !important;
-    height: 230px !important;
+    height: 220px !important;
     font-family: 'source_sans_prolight', Arial, "sans-serif" !important;
     font-size: 10px !important;
     color: #b3b3b3 !important;
@@ -4706,7 +4706,7 @@ span.red-arrow-down-icon {
 }
 
     .report-chart5 .dhx_axis_item_x {
-        color: #ffffff!important;
+        /*color: #ffffff!important;*/ /* edited by Dharmraj - #348 */
     }
 
     .report-chart5 .dhx_axis_item_y {
@@ -4722,7 +4722,7 @@ span.red-arrow-down-icon {
 /*chart 6*/
 .report-chart6 {
     width: 290px !important;
-    height: 230px !important;
+    height: 220px !important;
     font-family: 'source_sans_prolight', Arial, "sans-serif" !important;
     font-size: 10px !important;
     color: #b3b3b3 !important;
@@ -4734,7 +4734,7 @@ span.red-arrow-down-icon {
     }
 
     .report-chart6 .dhx_axis_item_x {
-        color: #ffffff!important;
+        /*color: #ffffff!important;*/ /* edited by Dharmraj - #348 */
     }
 
     .report-chart6 .dhx_axis_item_y {

@@ -576,7 +576,7 @@ function GetAxisConfiguration(dataset) {
     console.log(endValue);
     console.log(stepValue);
 
-    return [{ "stepValue": stepValue, "endValue": endValue }];
+    return { "stepValue": stepValue, "endValue": endValue };
 
 }
 

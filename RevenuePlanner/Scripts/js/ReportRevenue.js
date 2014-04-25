@@ -123,10 +123,36 @@
             yAxis: {
                 template: "#Title#",
                 lines: false,
+            },
+            padding: {
+                left: 80
             }
         });
 
         barChart2.parse(dataset1, "json");
+
+        // added by dharmraj for ticket #447 : Alignment is not proper for charts
+        $("#chartDiv4 .dhx_canvas_text.dhx_axis_item_y").each(function (index, element) {
+            $(element).attr('title', element.innerHTML);
+        });
+
+        // added by dharmraj for ticket #348
+        $("#chartDiv4 .dhx_canvas_text.dhx_axis_item_x").each(function (index, element) {
+            var newText = GetAbberiviatedValue(element.innerHTML.toString());
+
+            if (newText.indexOf('.') > 0) {
+                var arr = newText.toString().split('.');
+                newText = arr[0] + arr[1].substr(arr[1].length - 1, 1);
+
+                $(element).attr('title', newText);
+                $(element).html(newText);
+            }
+            else {
+                $(element).attr('title', newText);
+                $(element).html(newText);
+            }
+        });
+
     }
     function FillChartSourcePerformanceGeography() {
         var xAxisConfig = GetAxisConfiguration(dataset2)
@@ -150,10 +176,35 @@
             yAxis: {
                 template: "#Title#",
                 lines: false,
+            },
+            padding: {
+                left: 75
             }
         });
 
         barChart3.parse(dataset2, "json");
+
+        // added by dharmraj for ticket #447 : Alignment is not proper for charts
+        $("#chartDiv5 .dhx_canvas_text.dhx_axis_item_y").each(function (index, element) {
+            $(element).attr('title', element.innerHTML);
+        });
+
+        // added by dharmraj for ticket #348
+        $("#chartDiv5 .dhx_canvas_text.dhx_axis_item_x").each(function (index, element) {
+            var newText = GetAbberiviatedValue(element.innerHTML.toString());
+
+            if (newText.indexOf('.') > 0) {
+                var arr = newText.toString().split('.');
+                newText = arr[0] + arr[1].substr(arr[1].length - 1, 1);
+
+                $(element).attr('title', newText);
+                $(element).html(newText);
+            }
+            else {
+                $(element).attr('title', newText);
+                $(element).html(newText);
+            }
+        });
     }
     function FillChartSourcePerformanceVertical() {
         var xAxisConfig = GetAxisConfiguration(dataset3)
@@ -177,9 +228,35 @@
             yAxis: {
                 template: "#Title#",
                 lines: false,
+            },
+            padding: {
+                left: 90
             }
         });
 
         barChart4.parse(dataset3, "json");
+
+        // added by dharmraj for ticket #447 : Alignment is not proper for charts
+        $("#chartDiv6 .dhx_canvas_text.dhx_axis_item_y").each(function (index, element) {
+            $(element).attr('title', element.innerHTML);
+        });
+
+        // added by dharmraj for ticket #348
+        $("#chartDiv6 .dhx_canvas_text.dhx_axis_item_x").each(function (index, element) {
+            var newText = GetAbberiviatedValue(element.innerHTML.toString());
+
+            if (newText.indexOf('.') > 0) {
+                var arr = newText.toString().split('.');
+                newText = arr[0] + arr[1].substr(arr[1].length - 1, 1);
+
+                $(element).attr('title', newText);
+                $(element).html(newText);
+            }
+            else {
+                $(element).attr('title', newText);
+                $(element).html(newText);
+            }
+        });
+
     }
 }
