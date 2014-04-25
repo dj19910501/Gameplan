@@ -133,7 +133,7 @@ namespace RevenuePlanner.Controllers
                 int int_PlanId = Convert.ToInt32(PlanId);
                 plans = plans.Where(p => p.PlanId.Equals(int_PlanId)).ToList();
                 Sessions.ReportPlanId = int_PlanId;
-                    Sessions.PlanId = int_PlanId;
+                Sessions.PlanId = int_PlanId;
             }
             else if (PlanId == "0" || PlanId == "") // This means all plans are selected
             {
@@ -897,13 +897,13 @@ namespace RevenuePlanner.Controllers
 
         /// <summary>
         /// Get Projected INQ Data With Month Wise.
+        /// Modified By: Maninde Singh Wadhva for #426 	Conversion Reporting Page is slow to render.
         /// </summary>
         /// <param name="cl"></param>
         /// <returns></returns>
         public DataTable GetConversionProjectedINQData(List<int> tlist)
         {
-            List<TacticDataTable> tacticdata = (from tactic in db.Plan_Campaign_Program_Tactic.ToList()
-                                                where tlist.Contains(tactic.PlanTacticId)
+            List<TacticDataTable> tacticdata = (from tactic in db.Plan_Campaign_Program_Tactic.Where(t => tlist.Contains(t.PlanTacticId)).ToList()
                                                 select new TacticDataTable
                                                 {
                                                     TacticId = tactic.PlanTacticId,
@@ -919,14 +919,14 @@ namespace RevenuePlanner.Controllers
 
         /// <summary>
         /// Get Projected MQL Data With Month Wise.
+        /// Modified By: Maninde Singh Wadhva for #426 	Conversion Reporting Page is slow to render.
         /// </summary>
         /// <param name="cl"></param>
         /// <returns></returns>
         public DataTable GetConversionProjectedMQLData(List<int> tlist)
         {
             List<Plan_Tactic_MQL> MQLTacticList = Common.GetMQLTacticList(tlist);
-            List<TacticDataTable> tacticdata = (from tactic in db.Plan_Campaign_Program_Tactic.ToList()
-                                                where tlist.Contains(tactic.PlanTacticId)
+            List<TacticDataTable> tacticdata = (from tactic in db.Plan_Campaign_Program_Tactic.Where(t => tlist.Contains(t.PlanTacticId)).ToList()
                                                 select new TacticDataTable
                                                 {
                                                     TacticId = tactic.PlanTacticId,
@@ -1288,7 +1288,7 @@ namespace RevenuePlanner.Controllers
             string marketing = Enums.Funnel.Marketing.ToString();
 
             List<Plan_Campaign_Program_Tactic_Actual> planTacticActual = db.Plan_Campaign_Program_Tactic_Actual
-                                                                           .Where(pcpta => tacticIds.Contains(pcpta.PlanTacticId) && 
+                                                                           .Where(pcpta => tacticIds.Contains(pcpta.PlanTacticId) &&
                                                                                            includeMonth.Contains(pcpta.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + pcpta.Period))
                                                                            .ToList();
 
@@ -3196,7 +3196,7 @@ namespace RevenuePlanner.Controllers
                 projectedMQL = GetProjectedMQLData(tacticIds).AsEnumerable().AsQueryable().Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth))).Sum(r => r.Field<double>(ColumnValue));
                 actualMQL = planTacticActual.Where(ta => ta.StageTitle.Equals(mql))
                                             .Sum(ta => ta.Actualvalue);
-        }
+            }
 
             return Json(new { ProjectedRevenueValue = projectedRevenue, ActualRevenueValue = actualRevenue, ProjectedMQLValue = Math.Round(projectedMQL), ActualMQLValue = Math.Round(actualMQL) });
         }
