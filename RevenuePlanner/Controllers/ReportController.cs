@@ -1067,6 +1067,7 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Added By: Maninder Singh Wadhva.
         /// Function to get source perfromance trend.
+        /// Modified By: Maninde Singh Wadhva for #426 	Conversion Reporting Page is slow to render.
         /// </summary>
         /// <returns>Returns json result of source perfromance trend.</returns>
         private JsonResult GetMQLPerformanceTrend(string selectOption)
@@ -1106,7 +1107,7 @@ namespace RevenuePlanner.Controllers
                                 Trend = ((ta.Sum(actual => actual.Actualvalue) / currentMonth) * lastMonth)
                             });
 
-            var businessUnits = db.BusinessUnits.ToList().Where(b => b.ClientId.Equals(Sessions.User.ClientId))
+            var businessUnits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId).ToList()
                                            .Select(b => new
                                            {
                                                Title = b.Title,
@@ -1114,7 +1115,7 @@ namespace RevenuePlanner.Controllers
                                                Value = tacticTrenBusinessUnit.Any(bu => bu.BusinessUnitId.Equals(b.BusinessUnitId)) ? tacticTrenBusinessUnit.Where(bu => bu.BusinessUnitId.Equals(b.BusinessUnitId)).First().Trend : 0
 
                                            });
-            var vertical = db.Verticals.ToList().Where(v => v.ClientId.Equals(Sessions.User.ClientId))
+            var vertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId).ToList()
                                                 .Select(v => new
                                                 {
                                                     Title = v.Title,
@@ -1122,7 +1123,7 @@ namespace RevenuePlanner.Controllers
                                                     Value = tacticTrendVertical.Any(ve => ve.VerticalId.Equals(v.VerticalId)) ? tacticTrendVertical.Where(ve => ve.VerticalId.Equals(v.VerticalId)).First().Trend : 0
                                                 });
 
-            var geography = db.Geographies.ToList().Where(g => g.ClientId.Equals(Sessions.User.ClientId))
+            var geography = db.Geographies.Where(g => g.ClientId == Sessions.User.ClientId).ToList()
                                                 .Select(g => new
                                                 {
                                                     Title = g.Title,
@@ -1141,6 +1142,7 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Added By: Maninder Singh Wadhva.
         /// Function to get source perfromance actual.
+        /// Modified By: Maninde Singh Wadhva for #426 	Conversion Reporting Page is slow to render.
         /// </summary>
         /// <returns>Returns json result of source perfromance actual.</returns>
         private JsonResult GetMQLPerformanceActual(string selectOption)
@@ -1149,27 +1151,46 @@ namespace RevenuePlanner.Controllers
             List<string> includeMonth = GetMonthList(selectOption, true);
             List<int> tacticIds = GetTacticForReport(includeYearList);
             string mql = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
-            var businessUnits = db.BusinessUnits.ToList().Where(b => b.ClientId.Equals(Sessions.User.ClientId))
+            List<Plan_Campaign_Program_Tactic_Actual> planTacticActuals = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => tacticIds.Contains(ta.PlanTacticId)).ToList();
+            var businessUnits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId).ToList()
                                                 .Select(b => new
                                                 {
                                                     Title = b.Title,
                                                     ColorCode = string.Format("#{0}", b.ColorCode),
-                                                    Value = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => tacticIds.Contains(ta.PlanTacticId) && ta.StageTitle.Equals(mql)).Any(ta => ta.Plan_Campaign_Program_Tactic.BusinessUnitId.Equals(b.BusinessUnitId)) ? db.Plan_Campaign_Program_Tactic_Actual.Where(ta => tacticIds.Contains(ta.PlanTacticId) && ta.Plan_Campaign_Program_Tactic.BusinessUnitId == b.BusinessUnitId && ta.StageTitle.Equals(mql)).Select(pcpt => pcpt).ToList().Where(mr => includeMonth.Contains(mr.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + mr.Period)).Sum(ta => ta.Actualvalue) : 0
+                                                    Value = planTacticActuals.Any(ta => ta.StageTitle.Equals(mql) && 
+                                                                                        ta.Plan_Campaign_Program_Tactic.BusinessUnitId.Equals(b.BusinessUnitId)) ? 
+                                                            planTacticActuals.Where(ta => ta.Plan_Campaign_Program_Tactic.BusinessUnitId == b.BusinessUnitId && 
+                                                                                          ta.StageTitle.Equals(mql) && 
+                                                                                          includeMonth.Contains(ta.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + ta.Period))
+                                                                             .Sum(ta => ta.Actualvalue) : 
+                                                                             0
                                                 });
-            var vertical = db.Verticals.ToList().Where(v => v.ClientId.Equals(Sessions.User.ClientId))
+            var vertical = db.Verticals.ToList().Where(v => v.ClientId == Sessions.User.ClientId).ToList()
                                                 .Select(v => new
                                                 {
                                                     Title = v.Title,
                                                     ColorCode = string.Format("#{0}", v.ColorCode),
-                                                    Value = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => tacticIds.Contains(ta.PlanTacticId) && ta.StageTitle.Equals(mql)).Any(ta => ta.Plan_Campaign_Program_Tactic.VerticalId.Equals(v.VerticalId)) ? db.Plan_Campaign_Program_Tactic_Actual.Where(ta => tacticIds.Contains(ta.PlanTacticId) && ta.Plan_Campaign_Program_Tactic.VerticalId == v.VerticalId && ta.StageTitle.Equals(mql)).Select(pcpt => pcpt).ToList().Where(mr => includeMonth.Contains(mr.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + mr.Period)).Sum(ta => ta.Actualvalue) : 0
+                                                    Value = planTacticActuals.Any(ta => ta.StageTitle.Equals(mql) && 
+                                                                                        ta.Plan_Campaign_Program_Tactic.VerticalId.Equals(v.VerticalId)) ? 
+                                                            planTacticActuals.Where(ta => ta.Plan_Campaign_Program_Tactic.VerticalId == v.VerticalId && 
+                                                                                          ta.StageTitle.Equals(mql) && 
+                                                                                          includeMonth.Contains(ta.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + ta.Period))
+                                                                             .Sum(ta => ta.Actualvalue) : 
+                                                                             0
                                                 });
 
-            var geography = db.Geographies.ToList().Where(g => g.ClientId.Equals(Sessions.User.ClientId))
+            var geography = db.Geographies.ToList().Where(g => g.ClientId == Sessions.User.ClientId).ToList()
                                                 .Select(g => new
                                                 {
                                                     Title = g.Title,
                                                     ColorCode = "#1627a0",
-                                                    Value = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => tacticIds.Contains(ta.PlanTacticId) && ta.StageTitle.Equals(mql)).Any(ta => ta.Plan_Campaign_Program_Tactic.GeographyId.Equals(g.GeographyId)) ? db.Plan_Campaign_Program_Tactic_Actual.Where(ta => tacticIds.Contains(ta.PlanTacticId) && ta.Plan_Campaign_Program_Tactic.GeographyId == g.GeographyId && ta.StageTitle.Equals(mql)).Select(pcpt => pcpt).ToList().Where(mr => includeMonth.Contains(mr.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + mr.Period)).Sum(ta => ta.Actualvalue) : 0
+                                                    Value = planTacticActuals.Any(ta => ta.StageTitle.Equals(mql) && 
+                                                                                        ta.Plan_Campaign_Program_Tactic.GeographyId.Equals(g.GeographyId)) ? 
+                                                            planTacticActuals.Where(ta => ta.Plan_Campaign_Program_Tactic.GeographyId == g.GeographyId && 
+                                                                                          ta.StageTitle.Equals(mql) && 
+                                                                                          includeMonth.Contains(ta.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + ta.Period))
+                                                                             .Sum(ta => ta.Actualvalue) : 
+                                                                             0
                                                 });
             return Json(new
             {
@@ -1182,6 +1203,7 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Added By: Maninder Singh Wadhva.
         /// Function to get source perfromance projected.
+        /// Modified By: Maninde Singh Wadhva for #426 	Conversion Reporting Page is slow to render.
         /// </summary>
         /// <returns>Returns json result of source perfromance projected.</returns>
         private JsonResult GetMQLPerformanceProjected(string selectOption)
@@ -1190,31 +1212,56 @@ namespace RevenuePlanner.Controllers
             List<string> includeMonth = GetMonthList(selectOption, true);
             List<int> tacticIds = GetTacticForReport(includeYearList);
             //// Applying filters i.e. bussiness unit, audience, vertical or geography.
+            List<Plan_Campaign_Program_Tactic> tactics = db.Plan_Campaign_Program_Tactic.Where(t => tacticIds.Contains(t.PlanTacticId)).ToList(); 
 
-            var businessUnits = db.BusinessUnits.ToList().Where(b => b.ClientId.Equals(Sessions.User.ClientId))
+            var businessUnits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId).ToList()
                                                 .Select(b => new
                                                 {
                                                     Title = b.Title,
                                                     ColorCode = string.Format("#{0}", b.ColorCode),
-                                                    Value = db.Plan_Campaign_Program_Tactic.Where(t => tacticIds.Contains(t.PlanTacticId)).Any(t => t.BusinessUnitId.Equals(b.BusinessUnitId)) ? GetProjectedMQLData(db.Plan_Campaign_Program_Tactic.Where(t => tacticIds.Contains(t.PlanTacticId) && t.BusinessUnitId.Equals(b.BusinessUnitId)).Select(t => t.PlanTacticId).ToList()).AsEnumerable().AsQueryable().Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth))).Sum(r => r.Field<double>(ColumnValue)) : 0
+                                                    Value = tactics.Any(t => t.BusinessUnitId.Equals(b.BusinessUnitId)) ? 
+                                                            GetProjectedMQLData(tactics.Where(t => t.BusinessUnitId.Equals(b.BusinessUnitId))
+                                                                                        .Select(t => t.PlanTacticId)
+                                                                                        .ToList())
+                                                                                        .AsEnumerable()
+                                                                                        .AsQueryable()
+                                                                                        .Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth)))
+                                                                                        .Sum(r => r.Field<double>(ColumnValue)) : 
+                                                                                        0
                                                 });
 
 
 
-            var vertical = db.Verticals.ToList().Where(v => v.ClientId.Equals(Sessions.User.ClientId))
+            var vertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId).ToList()
                                                 .Select(v => new
                                                 {
                                                     Title = v.Title,
                                                     ColorCode = string.Format("#{0}", v.ColorCode),
-                                                    Value = db.Plan_Campaign_Program_Tactic.Where(t => tacticIds.Contains(t.PlanTacticId)).Any(t => t.VerticalId.Equals(v.VerticalId)) ? GetProjectedMQLData(db.Plan_Campaign_Program_Tactic.Where(t => tacticIds.Contains(t.PlanTacticId) && t.VerticalId.Equals(v.VerticalId)).Select(t => t.PlanTacticId).ToList()).AsEnumerable().AsQueryable().Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth))).Sum(r => r.Field<double>(ColumnValue)) : 0
+                                                    Value = tactics.Any(t => t.VerticalId.Equals(v.VerticalId)) ? 
+                                                            GetProjectedMQLData(tactics.Where(t => t.VerticalId.Equals(v.VerticalId))
+                                                                                       .Select(t => t.PlanTacticId)
+                                                                                       .ToList())
+                                                                                       .AsEnumerable()
+                                                                                       .AsQueryable()
+                                                                                       .Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth)))
+                                                                                       .Sum(r => r.Field<double>(ColumnValue)) : 
+                                                                                       0
                                                 });
 
-            var geography = db.Geographies.ToList().Where(g => g.ClientId.Equals(Sessions.User.ClientId))
+            var geography = db.Geographies.Where(g => g.ClientId == Sessions.User.ClientId).ToList()
                                                 .Select(g => new
                                                 {
                                                     Title = g.Title,
                                                     ColorCode = "#1627a0",
-                                                    Value = db.Plan_Campaign_Program_Tactic.Where(t => tacticIds.Contains(t.PlanTacticId)).Any(t => t.GeographyId.Equals(g.GeographyId)) ? GetProjectedMQLData(db.Plan_Campaign_Program_Tactic.Where(t => tacticIds.Contains(t.PlanTacticId) && t.GeographyId.Equals(g.GeographyId)).Select(t => t.PlanTacticId).ToList()).AsEnumerable().AsQueryable().Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth))).Sum(r => r.Field<double>(ColumnValue)) : 0
+                                                    Value = tactics.Any(t => t.GeographyId.Equals(g.GeographyId)) ? 
+                                                    GetProjectedMQLData(tactics.Where(t => t.GeographyId.Equals(g.GeographyId))
+                                                                               .Select(t => t.PlanTacticId)
+                                                                               .ToList())
+                                                                               .AsEnumerable()
+                                                                               .AsQueryable()
+                                                                               .Where(mr => includeMonth.Contains(mr.Field<string>(ColumnMonth)))
+                                                                               .Sum(r => r.Field<double>(ColumnValue)) : 
+                                                                               0
                                                 });
             return Json(new
             {
