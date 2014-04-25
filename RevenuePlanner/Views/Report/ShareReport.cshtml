@@ -174,12 +174,17 @@
 
         function GetHTMLConversion()
         {
-            var html =$('#ParentULConversionSummary').wrap('<p/>').parent().html() + $('#ChildULConversionSummary').wrap('<p/>').parent().html() + $('#DivHtmlContent').wrap('<p/>').parent().html();
+            //$("#MQLPerformance").before('<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />');
+
+            //+ $('#ChildULConversionSummary').wrap('<p/>').parent().html()
+            var html =$('#ParentULConversionSummary').wrap('<p/>').parent().html() + $('#DivHtmlContent').wrap('<p/>').parent().html();
             var $html = $('<div id="content_wraper" class="span10 all-height" style="width:100%">' + html + '</div>');
+            $html.find("#MQLPerformance").before('<div style="width:100%;height:400px;"></div>');
             $html.find('div[id="chartDiv1"]').empty();
             $html.find('div[id="chartDiv2"]').empty();
             $html.find('div[id="chartDiv3"]').empty();
             html = $html.wrap('<p/>').parent().html();
+
             return escape(html);
         }
 
@@ -187,6 +192,7 @@
         {
             var html =$('#ParentULRevenueSummary').wrap('<p/>').parent().html() + $('#ChildULRevenueSummary').wrap('<p/>').parent().html() + $('#DivHtmlContent').wrap('<p/>').parent().html();
             var $html = $('<div id="content_wraper" class="span10 all-height" style="width:100%">' + html + '</div>');
+            $html.find("#ParentULSourcePerformance").before('<div style="width:100%;height:80px;"></div>');
             $html.find('div[id="chartDiv3"]').empty();
             $html.find('div[id="chartDiv4"]').empty();
             $html.find('div[id="chartDiv5"]').empty();
