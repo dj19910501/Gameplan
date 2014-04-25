@@ -335,6 +335,7 @@
             $('#slidepanel-container').load('@Url.Content("~/Plan/CreateCampaign")', AssignDefaultValue);
             $("#slidepanel").css("right", "0px");
             myApp.hidePleaseWait();
+            e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue 
         });
 
         $(document).on("click", ".blue-bg-text", function (e) {
@@ -352,6 +353,7 @@
             }
             $("#slidepanel").css("right", "0px");
             myApp.hidePleaseWait();
+            e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
         });
         //Manoj Start 28Jan2014 : Bug-12 (User can lose data via navigation in application)
         function AssignDefaultValue() {
@@ -407,6 +409,7 @@
             }
             $("#slidepanel").css("right", "0px");
             myApp.hidePleaseWait();
+            e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
         });
 
         $(document).on("click", ".add-icon.program", function (e) {
@@ -419,6 +422,7 @@
             $('#slidepanel-container').load(url + '?id=' + idCampaing, AssignDefaultValue);
             $("#slidepanel").css("right", "0px");
             myApp.hidePleaseWait();
+            e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
         });
 
         $(document).on("click", "#divTactic", function (e) {
