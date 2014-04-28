@@ -6787,3 +6787,18 @@ span.circle-check-icon-gray{margin-left: auto;margin-right: auto;background: url
     margin-top: 4px;
 }
 /* End - Added by Sohel Pathan on 28/04/2014 for Internal Review Points #10 to set misplaced delete icon to proper*/
+
+/* Start - Added by Sohel Pathan on 28/04/2014 for Internal Review Points #7 to set styling for Show on my tactic link */
+.show-my-tactic-padding {
+    padding-right:20px !important;
+    padding-left:20px !important;
+}
+
+.link-alone-margin-left label {
+    font-family: 'source_sans_proregular', Arial, "sans-serif" !important;
+    font-size: 13px!important;
+    color: #808080 !important;
+    padding:5px 15px;
+    margin:0;
+}
+/* End - Added by Sohel Pathan on 28/04/2014 for Internal Review Points #7 to set styling for Show on my tactic link */

@@ -331,8 +331,10 @@
             </div>
         </div>
     </div>
-    <div class="ShowOnlyMyTactic left-nav">
-        <a class="link-alone" id="AShowOnlyMyTactic" href="#">
+    @* Added by Sohel Pathan on 28/04/2014 for Internal Review Point #7 to remove border around of show only my tactic tab *@
+    <div id="divBorderBottom" style="border-top: 1px solid #dddddd; margin-left:20px; margin-right:20px;"></div> 
+    <div class="show-my-tactic-padding"> @* Modified by Sohel Pathan on 28/04/2014 for Internal Review Point #7 to remove border around of show only my tactic tab *@
+        <a class="link-alone-margin-left" id="AShowOnlyMyTactic" href="#">
             <label>Show only My Tactics</label></a>
     </div>
     <!--First Static Accordion END-->
@@ -1186,8 +1188,8 @@
              var filteredNonImprovementData = $.grep(data.taskData, function (value) { return (typeof value.isImprovement == 'undefined') });
              if (filteredNonImprovementData.length > 0) {
                  isDataExistForTacticTable = true;
-                 $('#marketing-activities').show()
-
+                 $('#marketing-activities').show();
+                 $('#divBorderBottom').show();  // Added by Sohel Pathan on 28/04/2014 for Internal Review Point #7 to remove border around of show only my tactic tab.
                  switch (type) {
                      case GanttTabs.Tactic:
                          AddAccordionToggleAndInnerTactic(data);
@@ -1215,7 +1217,8 @@
                  AttachEventToGroupHeading();
              }
              else {
-                 $('#marketing-activities').hide()
+                 $('#marketing-activities').hide();
+                 $('#divBorderBottom').hide();  // Added by Sohel Pathan on 28/04/2014 for Internal Review Point #7 to remove border around of show only my tactic tab.
              }
 
              renderGantt(data.taskData);
