@@ -1594,6 +1594,11 @@
      ////
 
      AttachEventToTactic();
+
+     // added by dharmraj to display tooltip on camp., prog., tactic name in calendar.
+     $(".gantt_container .gantt_tree_content").each(function (index, element) {
+         $(element).attr("title", element.innerHTML);
+     });
  }
 
  //// Added by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu

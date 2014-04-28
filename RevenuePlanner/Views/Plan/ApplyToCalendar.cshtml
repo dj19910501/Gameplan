@@ -793,6 +793,11 @@
 
        AttachEventToTactic();
        HideDragHandleOfTask();
+
+       // added by dharmraj to display tooltip on camp., prog., tactic name in calendar.
+       $(".gantt_container .gantt_tree_content").each(function (index, element) {
+           $(element).attr("title", element.innerHTML);
+       });
    }
 
    /// Modified By Maninder Singh Wadhva PL Ticket#47
