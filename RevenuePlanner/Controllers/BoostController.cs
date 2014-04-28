@@ -176,7 +176,7 @@ namespace RevenuePlanner.Controllers
                         Active = TargetStage(itt.ImprovementTacticTypeId, ittmobj.MetricCode)
                     }).Select(ittmobj => ittmobj).Distinct()
             }).Select(itt => itt);
-            return Json(ImprovementTacticList, JsonRequestBehavior.AllowGet);
+            return Json(ImprovementTacticList.OrderBy(t => t.Title).ToList(), JsonRequestBehavior.AllowGet); // Modified By :- Sohel Pathan on 28/04/2014 for Internal Review Points #9 to provide sorting for Listings
         }
 
         /// <summary>

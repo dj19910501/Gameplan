@@ -1985,7 +1985,7 @@ a {
 
 /* Added by KAPIL */
 .tblCR_SV {
-    width: 80%;
+    width: 99%; /* Modified by Sohel Pathan on 28/04/2014 for Internal Review Points #10 to solve design issue */     
     margin-top:20px;
 }
 .tblCR_SV th, .tblCR_SV td {
@@ -2012,6 +2012,7 @@ input {
     display:inline-block;
     font-size:16px;
     font-weight:normal;
+    padding-top:5px;    /* Added by Sohel Pathan on 28/04/2014 for Internal Review Points #10 to solve design issue */
 }
 .tblCR_SV span.info-icon {
     float: none;
@@ -2035,7 +2036,7 @@ a.error-red {
 }
 
 .nav-gray li a.organization span {
-    background-position: 0 0 !important;
+    background-position: -204px 0 !important;       /* Modified by Sohel Pathan on 28/04/2014 for Internal Review Points #11 to set on hover icon change */
 }
 .nav-gray li.active a.organization .trophy {
     background-position: 0 -30px !important;

@@ -6779,3 +6779,11 @@ span.circle-check-icon-gray{margin-left: auto;margin-right: auto;background: url
 {
     float: right;
 }
+
+/* Start - Added by Sohel Pathan on 28/04/2014 for Internal Review Points #10 to set misplaced delete icon to proper*/
+.float-left-margin-top4-margin-right10 {
+    float: left !important;
+    margin-right: 10px;
+    margin-top: 4px;
+}
+/* End - Added by Sohel Pathan on 28/04/2014 for Internal Review Points #10 to set misplaced delete icon to proper*/

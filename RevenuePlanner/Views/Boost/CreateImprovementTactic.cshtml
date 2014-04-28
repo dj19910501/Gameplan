@@ -86,7 +86,7 @@
                     @foreach (var item in Model.listMetricssize.Where(m => m.MetricType == MetricType_Size))
                     {
                         <tr>
-                            <td title="@item.MetricName">
+                            <td title="@item.MetricName" style="width:92px;">   @* Modified By :- Sohel Pathan on 28/04/2014 for Internal Review Points #9 *@
                                 @* Start -- Modified By :- Sohel on 21/04/2014 for PL ticket #160 to display unwrapped text. *@
                                 <span class="truncate" title="@item.MetricName">
                                     @Html.DisplayFor(model => item.MetricName)
