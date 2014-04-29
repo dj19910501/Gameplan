@@ -6615,6 +6615,10 @@ h2.title-header {
 .improvementcolor6ae11f .gantt_task_drag{background: none repeat scroll 0 0 #6ae11f !important;}
 .improvementcolor6ae11f .gantt_task_drag:after{border-top-color: #6ae11f;}
 
+.improvementcolora989d5.gantt_task_line{border-color: #a989d5;}
+.improvementcolora989d5 .gantt_task_drag{background: none repeat scroll 0 0 #a989d5 !important;}
+.improvementcolora989d5 .gantt_task_drag:after{border-top-color: #a989d5;}
+
 .improvementcolorbbb748.gantt_task_line{border-color: #bbb748;}
 .improvementcolorbbb748 .gantt_task_drag{background: none repeat scroll 0 0 #bbb748 !important;}
 .improvementcolorbbb748 .gantt_task_drag:after{border-top-color: #bbb748;}
