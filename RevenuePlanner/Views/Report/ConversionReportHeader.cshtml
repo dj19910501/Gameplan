@@ -73,7 +73,10 @@
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Report/GetReportRevenueHeader/")',
-                data: { option: OptionMain },
+                data: {
+                    option: OptionMain,
+                    isRevenue: false
+                },
                 success: function (data) {
                     if (data != undefined) {
                         setLabel(data);

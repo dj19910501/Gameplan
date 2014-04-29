@@ -1361,7 +1361,7 @@ namespace RevenuePlanner.Helpers
             var plan = db.Plans.Where(p => p.PlanId == planId && p.IsDeleted == false && p.IsActive == true).Select(m => m).FirstOrDefault();
             if (plan != null)
             {
-                var planTacticIds = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && tacticStatus.Contains(t.Status) && t.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).Select(t => t.PlanTacticId).ToList();
+                List<Plan_Campaign_Program_Tactic> planTacticIds = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && tacticStatus.Contains(t.Status) && t.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).ToList();
 
                 if (plan.Status == Enums.PlanStatusValues[Enums.PlanStatus.Draft.ToString()].ToString())
                 {
@@ -1382,7 +1382,7 @@ namespace RevenuePlanner.Helpers
                 {
                     // Added BY Bhavesh
                     // Calculate MQL at runtime #376
-                    objHomePlanModelHeader.MQLs = Common.GetMQLTacticList(planTacticIds).Sum(tm => tm.MQL);
+                    objHomePlanModelHeader.MQLs = Common.GetMQLValueTacticList(planTacticIds).Sum(tm => tm.MQL);
                     string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
                     if (string.IsNullOrEmpty(MQLStageLabel))
                     {
@@ -1394,7 +1394,7 @@ namespace RevenuePlanner.Helpers
                     }
                     if (planTacticIds.Count() > 0)
                     {
-                        objHomePlanModelHeader.Budget = db.Plan_Campaign_Program_Tactic.Where(t => planTacticIds.Contains(t.PlanTacticId)).Sum(t => t.Cost);
+                        objHomePlanModelHeader.Budget = planTacticIds.Sum(t => t.Cost);
                     }
                     objHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Cost.ToString()].ToString();
                 }
@@ -1955,8 +1955,8 @@ namespace RevenuePlanner.Helpers
             // Get PlanTactic Ids
             // Added BY Bhavesh
             // Calculate MQL at runtime #376
-            List<int> PlanTacticIds = marketingActivities.Where(tactic => !affectedMarketingActivityIds.Contains(tactic.PlanTacticId)).Select(tactic => tactic.PlanTacticId).ToList();
-            double unaffectedMarketingActivitiesMQLs = Common.GetMQLTacticList(PlanTacticIds).Sum(tm => tm.MQL);
+            List<Plan_Campaign_Program_Tactic> PlanTacticIds = marketingActivities.Where(tactic => !affectedMarketingActivityIds.Contains(tactic.PlanTacticId)).ToList();
+            double unaffectedMarketingActivitiesMQLs = Common.GetMQLValueTacticList(PlanTacticIds).Sum(tm => tm.MQL);
 
             //// Adding to improved MQL.
             improvedMQL += unaffectedMarketingActivitiesMQLs;
@@ -2064,18 +2064,18 @@ namespace RevenuePlanner.Helpers
                 }
             }
 
-            List<int> unaffectedMarketingActivitiesIds = marketingActivities.Where(tactic => !affectedMarketingActivityIds.Contains(tactic.PlanTacticId)).Select(tactic => tactic.PlanTacticId).ToList();
+            List<Plan_Campaign_Program_Tactic> unaffectedMarketingActivitiesIds = marketingActivities.Where(tactic => !affectedMarketingActivityIds.Contains(tactic.PlanTacticId)).ToList();
             if (unaffectedMarketingActivitiesIds.Count > 0)
             {
                 List<ProjectedRevenueClass> unaffectedMarketingActivities = null;
 
                 if (isProjectedRevenue)
                 {
-                    unaffectedMarketingActivities = ProjectedRevenueCalculate(unaffectedMarketingActivitiesIds);
+                    unaffectedMarketingActivities = ProjectedRevenueCalculateList(unaffectedMarketingActivitiesIds);
                 }
                 else
                 {
-                    unaffectedMarketingActivities = ProjectedRevenueCalculate(unaffectedMarketingActivitiesIds, true);
+                    unaffectedMarketingActivities = ProjectedRevenueCalculateList(unaffectedMarketingActivitiesIds, true);
                 }
 
                 //// Getting CW of all unaffected marketing activities.
@@ -2491,13 +2491,12 @@ namespace RevenuePlanner.Helpers
         /// <param name="PlanTacticIds"></param>
         /// <param name="isRound"></param>
         /// <returns></returns>
-        public static List<Plan_Tactic_MQL> GetMQLTacticList(List<int> PlanTacticIds, bool isRound = true)
+        public static List<Plan_Tactic_MQL> GetMQLValueTacticList(List<Plan_Campaign_Program_Tactic> PlanTacticList, bool isRound = true)
         {
-            MRPEntities db = new MRPEntities();
-            List<TacticModelRelation> tacticModelList = GetTacticModelRelation(PlanTacticIds);
+            List<TacticModelRelation> tacticModelList = GetTacticModelRelationList(PlanTacticList);
             List<ModelConvertionRateRelation> mlist = GetModelConversionRate(tacticModelList.Select(t => t.ModelId).Distinct().ToList(), Enums.Stage.MQL.ToString());
 
-            List<Plan_Tactic_MQL> TacticMQLList = (from tactic in db.Plan_Campaign_Program_Tactic.ToList()
+            List<Plan_Tactic_MQL> TacticMQLList = (from tactic in PlanTacticList
                                join t in tacticModelList on tactic.PlanTacticId equals t.PlanTacticId
                                                       join ml in mlist on t.ModelId equals ml.ModelId
                                                    select new Plan_Tactic_MQL
@@ -2514,29 +2513,17 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="tlist"></param>
         /// <returns></returns>
-        public static List<TacticModelRelation> GetTacticModelRelation(List<int> tlist)
+        public static List<TacticModelRelation> GetTacticModelRelationList(List<Plan_Campaign_Program_Tactic> tlist)
         {
-            MRPEntities modeldb = new MRPEntities();
-            var tacticModel = (from tactic in modeldb.Plan_Campaign_Program_Tactic
-                               join m in modeldb.Models on tactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId equals m.ModelId
-                               where tlist.Contains(tactic.PlanTacticId)
-                               select new
-                               {
-                                   PlanTacticId = tactic.PlanTacticId,
-                                   StartDate = tactic.StartDate,
-                                   ModelId = m.ModelId
-                               }).ToList();
-
-            List<TacticModelRelation> tacticModellist = (from t in tacticModel
+            List<TacticModelRelation> tacticModellist = (from t in tlist
                                                          select new TacticModelRelation
                                                          {
                                                              PlanTacticId = t.PlanTacticId,
-                                                             ModelId = GetModelId(t.StartDate, t.ModelId)
+                                                             ModelId = GetModelId(t.StartDate, t.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId)
                                                          }).ToList();
 
             return tacticModellist;
         }
-
         #endregion
 
         #region "Report Calculation"
@@ -2678,13 +2665,12 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="tlist"></param>
         /// <returns></returns>
-        public static List<ProjectedRevenueClass> ProjectedRevenueCalculate(List<int> tlist, bool isCW = false)
+        public static List<ProjectedRevenueClass> ProjectedRevenueCalculateList(List<Plan_Campaign_Program_Tactic> tlist, bool isCW = false)
         {
             MRPEntities mdb = new MRPEntities();
-            List<TacticModelRelation> tacticModelList = GetTacticModelRelation(tlist);
+            List<TacticModelRelation> tacticModelList = GetTacticModelRelationList(tlist);
             List<ModelConvertionRateRelation> mlist = GetModelConversionRate(tacticModelList.Select(t => t.ModelId).Distinct().ToList(), Enums.Stage.CW.ToString());
-            List<int> tacticIds = tacticModelList.Select(tactic => tactic.PlanTacticId).ToList();
-            List<ProjectedRevenueClass> tacticList = (from tactic in mdb.Plan_Campaign_Program_Tactic.Where(planTactic => tacticIds.Contains(planTactic.PlanTacticId)).ToList()
+            List<ProjectedRevenueClass> tacticList = (from tactic in tlist
                                                       join t in tacticModelList on tactic.PlanTacticId equals t.PlanTacticId
                                                       join ml in mlist on t.ModelId equals ml.ModelId
                                                       select new ProjectedRevenueClass

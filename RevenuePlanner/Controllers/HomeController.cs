@@ -1343,9 +1343,9 @@ namespace RevenuePlanner.Controllers
             string tacticStatusDeclined = Enums.TacticStatusValues.Single(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value;
             // Added BY Bhavesh
             // Calculate MQL at runtime #376
-            List<Plan_Tactic_MQL> MQLTacticList = Common.GetMQLTacticList((from t in tactic select t.PlanTacticId).ToList<int>());
+            List<Plan_Tactic_MQL> MQLTacticList = Common.GetMQLValueTacticList(tactic);
             // Ticket #345
-            List<ProjectedRevenueClass> tacticList = Common.ProjectedRevenueCalculate((from t in tactic select t.PlanTacticId).ToList<int>());
+            List<ProjectedRevenueClass> tacticList = Common.ProjectedRevenueCalculateList(tactic);
             var taskDataTactic = tactic.Select(t => new
             {
                 id = string.Format("C{0}_P{1}_T{2}_Y{3}", t.Plan_Campaign_Program.PlanCampaignId, t.Plan_Campaign_Program.PlanProgramId, t.PlanTacticId, t.TacticTypeId),
@@ -2304,11 +2304,10 @@ namespace RevenuePlanner.Controllers
             string[] aryStageTitle = new string[] { Enums.InspectStageValues[Enums.InspectStage.INQ.ToString()].ToString(), Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString(), Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString(), Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString() };
             ViewBag.StageTitle = aryStageTitle;
             InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower());
-            List<int> tid = new List<int>();
-            tid.Add(id);
-            List<ProjectedRevenueClass> tacticList = Common.ProjectedRevenueCalculate(tid);
+            List<Plan_Campaign_Program_Tactic> tid = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == id).ToList();
+            List<ProjectedRevenueClass> tacticList = Common.ProjectedRevenueCalculateList(tid);
             im.Revenues = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 1);
-            tacticList = Common.ProjectedRevenueCalculate(tid, true);
+            tacticList = Common.ProjectedRevenueCalculateList(tid, true);
             im.CWs = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 1);
             string modifiedBy = string.Empty;
             string createdBy = string.Empty;
@@ -2988,8 +2987,8 @@ namespace RevenuePlanner.Controllers
             }
             // Added BY Bhavesh
             // Calculate MQL at runtime #376
-            List<int> PlanTacticIds = db.Plan_Campaign_Program_Tactic.Where(ppt => ppt.PlanProgramId == id && ppt.IsDeleted == false).Select(t => t.PlanTacticId).ToList();
-            im.MQLs = Common.GetMQLTacticList(PlanTacticIds).Sum(t => t.MQL);
+            List<Plan_Campaign_Program_Tactic> PlanTacticIds = db.Plan_Campaign_Program_Tactic.Where(ppt => ppt.PlanProgramId == id && ppt.IsDeleted == false).ToList();
+            im.MQLs = Common.GetMQLValueTacticList(PlanTacticIds).Sum(t => t.MQL);
             ViewBag.ProgramDetail = im;
 
             var businessunittitle = (from bun in db.BusinessUnits
@@ -3102,8 +3101,8 @@ namespace RevenuePlanner.Controllers
             }
             // Added BY Bhavesh
             // Calculate MQL at runtime #376
-            List<int> PlanTacticIds = db.Plan_Campaign_Program_Tactic.Where(ppt => ppt.Plan_Campaign_Program.PlanCampaignId == id && ppt.IsDeleted == false).Select(t => t.PlanTacticId).ToList();
-            im.MQLs = Common.GetMQLTacticList(PlanTacticIds).Sum(t => t.MQL);
+            List<Plan_Campaign_Program_Tactic> PlanTacticIds = db.Plan_Campaign_Program_Tactic.Where(ppt => ppt.Plan_Campaign_Program.PlanCampaignId == id && ppt.IsDeleted == false).ToList();
+            im.MQLs = Common.GetMQLValueTacticList(PlanTacticIds).Sum(t => t.MQL);
             ViewBag.CampaignDetail = im;
 
             var businessunittitle = (from bun in db.BusinessUnits
@@ -3597,43 +3596,42 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Json Result.</returns>
         public JsonResult GetActualTactic(int status)
         {
-            List<int> tacticIds = new List<int>();
+            List<Plan_Campaign_Program_Tactic> TacticList = new List<Plan_Campaign_Program_Tactic>();
             List<string> tacticStatus = Common.GetStatusListAfterApproved();
             if (status == 0)
             {
                 //// Modified By: Maninder Singh for TFS Bug#282: Extra Tactics Displaying in Add Actual Screen
-                tacticIds = db.Plan_Campaign_Program_Tactic.Where(planTactic => planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(Sessions.PlanId) &&
+                TacticList = db.Plan_Campaign_Program_Tactic.Where(planTactic => planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(Sessions.PlanId) &&
                                                                        tacticStatus.Contains(planTactic.Status) &&
                                                                        planTactic.IsDeleted.Equals(false) && planTactic.CostActual == null &&
                                                                        !planTactic.Plan_Campaign_Program_Tactic_Actual.Any())
-                                                            .Select(planTactic => planTactic.PlanTacticId).ToList();
+                                                            .ToList();
             }
             else
             {
-                tacticIds = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId && tacticStatus.Contains(t.Status) && t.IsDeleted == false).Select(t => t.PlanTacticId).ToList();
+                TacticList = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId && tacticStatus.Contains(t.Status) && t.IsDeleted == false).ToList();
 
             }
-
+            List<int> TacticIds = TacticList.Select(t => t.PlanTacticId).ToList();
             var dtTactic = (from pt in db.Plan_Campaign_Program_Tactic_Actual
-                            where tacticIds.Contains(pt.PlanTacticId)
+                            where TacticIds.Contains(pt.PlanTacticId)
                             select new { pt.PlanTacticId, pt.CreatedBy, pt.CreatedDate }).GroupBy(pt => pt.PlanTacticId).Select(pt => pt.FirstOrDefault());
             List<Guid> userListId = new List<Guid>();
             userListId = (from ta in dtTactic select ta.CreatedBy).ToList<Guid>();
 
-            var tactic = db.Plan_Campaign_Program_Tactic.Where(t => tacticIds.Contains(t.PlanTacticId)).Select(t => t).ToList();
             // Added BY Bhavesh
             // Calculate MQL at runtime #376
-            List<Plan_Tactic_MQL> MQLTacticList = Common.GetMQLTacticList(tacticIds);
-            List<ProjectedRevenueClass> tacticList = Common.ProjectedRevenueCalculate(tacticIds);
-            List<ProjectedRevenueClass> tacticListCW = Common.ProjectedRevenueCalculate(tacticIds, true);
-            var listModified = tactic.Where(t => t.ModifiedDate != null).Select(t => t).ToList();
+            List<Plan_Tactic_MQL> MQLTacticList = Common.GetMQLValueTacticList(TacticList);
+            List<ProjectedRevenueClass> tacticList = Common.ProjectedRevenueCalculateList(TacticList);
+            List<ProjectedRevenueClass> tacticListCW = Common.ProjectedRevenueCalculateList(TacticList, true);
+            var listModified = TacticList.Where(t => t.ModifiedDate != null).Select(t => t).ToList();
             foreach (var t in listModified)
             {
                 userListId.Add(new Guid(t.ModifiedBy.ToString()));
             }
             string userList = string.Join(",", userListId.Select(s => s.ToString()).ToArray());
             List<User> userName = objBDSUserRepository.GetMultipleTeamMemberDetails(userList, Sessions.ApplicationId);
-            var tacticObj = tactic.Select(t => new
+            var tacticObj = TacticList.Select(t => new
             {
                 id = t.PlanTacticId,
                 title = t.Title,

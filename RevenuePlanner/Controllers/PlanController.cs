@@ -1399,7 +1399,7 @@ namespace RevenuePlanner.Controllers
                 description = p.Description,
                 cost = p.Cost.HasValue ? p.Cost : 0,
                 inqs = p.INQs.HasValue ? p.INQs : 0,
-                mqls = Common.GetMQLTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == p.PlanCampaignId && t.IsDeleted == false).Select(t => t.PlanTacticId).ToList(), true).Sum(tm => tm.MQL),
+                mqls = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == p.PlanCampaignId && t.IsDeleted == false).ToList(), true).Sum(tm => tm.MQL),
                 /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
         changed by : Nirav Shah on 13 feb 2014*/
                 isOwner = Sessions.User.UserId == p.CreatedBy ? 0 : 1,
@@ -1410,7 +1410,7 @@ namespace RevenuePlanner.Controllers
                     description = pcpj.Description,
                     cost = pcpj.Cost.HasValue ? pcpj.Cost : 0,
                     inqs = pcpj.INQs.HasValue ? pcpj.INQs : 0,
-                    mqls = Common.GetMQLTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcpj.PlanProgramId && t.IsDeleted == false).Select(t => t.PlanTacticId).ToList(), true).Sum(tm => tm.MQL),
+                    mqls = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcpj.PlanProgramId && t.IsDeleted == false).ToList(), true).Sum(tm => tm.MQL),
                     isOwner = Sessions.User.UserId == pcpj.CreatedBy ? 0 : 1,
                     tactics = (db.Plan_Campaign_Program_Tactic.ToList().Where(pcpt => pcpt.PlanProgramId.Equals(pcpj.PlanProgramId) && pcpt.IsDeleted.Equals(false)).Select(pcpt => pcpt).ToList()).Select(pcptj => new
                     {
@@ -1517,7 +1517,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
             pcm.INQs = pc.INQs;
-            pcm.MQLs = Common.GetMQLTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == pc.PlanCampaignId && t.IsDeleted == false).Select(t => t.PlanTacticId).ToList()).Sum(tm => tm.MQL);
+            pcm.MQLs = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == pc.PlanCampaignId && t.IsDeleted == false).ToList()).Sum(tm => tm.MQL);
             pcm.Cost = pc.Cost;
             if (Sessions.User.UserId == pc.CreatedBy)
             {
@@ -1845,7 +1845,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
             pcpm.INQs = pcp.INQs;
-            pcpm.MQLs = Common.GetMQLTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcp.PlanProgramId && t.IsDeleted == false).Select(t => t.PlanTacticId).ToList()).Sum(tm => tm.MQL);
+            pcpm.MQLs = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcp.PlanProgramId && t.IsDeleted == false).ToList()).Sum(tm => tm.MQL);
             pcpm.Cost = pcp.Cost;
             /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
             if (Sessions.User.UserId == pcp.CreatedBy)
@@ -3672,16 +3672,16 @@ namespace RevenuePlanner.Controllers
         {
             /// Added By: Maninder Singh Wadhva
             /// Addressed PL Ticket: 37,38,47,49
-            List<int> tacticIds = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(Sessions.PlanId) &&
+            List<Plan_Campaign_Program_Tactic> tacticIds = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(Sessions.PlanId) &&
                                                                              tactic.IsDeleted == false)
-                                                                 .Select(tactic => tactic.PlanTacticId).ToList();
+                                                                 .ToList();
 
             //// Calculating MQL difference.
             double? improvedMQL = Common.CalculateImprovedMQL(Sessions.PlanId, false);
             double planMQL = 0;
             if (tacticIds.Count > 0)
             {
-                planMQL = Common.GetMQLTacticList(tacticIds).Sum(tm => tm.MQL);
+                planMQL = Common.GetMQLValueTacticList(tacticIds).Sum(tm => tm.MQL);
             }
             double differenceMQL = Convert.ToDouble(improvedMQL) - planMQL;
 
@@ -3689,7 +3689,7 @@ namespace RevenuePlanner.Controllers
 
             //// Calculating CW difference.
             double? improvedCW = Common.CalculateImprovedProjectedRevenueOrCW(Sessions.PlanId, false, 0);
-            double planCW = Common.ProjectedRevenueCalculate(tacticIds, true).Sum(cw => cw.ProjectedRevenue);
+            double planCW = Common.ProjectedRevenueCalculateList(tacticIds, true).Sum(cw => cw.ProjectedRevenue);
             double differenceCW = Convert.ToDouble(improvedCW) - planCW;
 
 
@@ -3727,7 +3727,7 @@ namespace RevenuePlanner.Controllers
                 improvedAverageDealSizeForProjectedRevenue = Convert.ToDouble(improvedDealSize);
             }
             double? improvedProjectedRevenue = Common.CalculateImprovedProjectedRevenueOrCW(Sessions.PlanId, true, improvedAverageDealSizeForProjectedRevenue);
-            double projectedRevenue = Common.ProjectedRevenueCalculate(tacticIds).Sum(cw => cw.ProjectedRevenue);
+            double projectedRevenue = Common.ProjectedRevenueCalculateList(tacticIds).Sum(cw => cw.ProjectedRevenue);
             double differenceProjectedRevenue = Convert.ToDouble(improvedProjectedRevenue) - projectedRevenue;
 
             double improvedCost = improvementActivities.Sum(improvementActivity => improvementActivity.Cost);
@@ -3790,7 +3790,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                projectedRevenueWithoutTactic = Common.ProjectedRevenueCalculate(marketingActivities.Select(ma => ma.PlanTacticId).ToList()).Sum(p => p.ProjectedRevenue);
+                projectedRevenueWithoutTactic = Common.ProjectedRevenueCalculateList(marketingActivities).Sum(p => p.ProjectedRevenue);
             }
 
             List<SuggestedImprovementActivities> suggestedImproveentActivities = new List<SuggestedImprovementActivities>();
@@ -4021,7 +4021,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                improvedValue = Common.ProjectedRevenueCalculate(marketingActivities.Select(ma => ma.PlanTacticId).ToList()).Sum(p => p.ProjectedRevenue);
+                improvedValue = Common.ProjectedRevenueCalculateList(marketingActivities).Sum(p => p.ProjectedRevenue);
             }
 
             List<SuggestedImprovementActivities> suggestedImprovementActivities = new List<SuggestedImprovementActivities>();
@@ -4159,15 +4159,10 @@ namespace RevenuePlanner.Controllers
                 plantacticids = SuggestionIMPTacticIdList.Split(',').Select(int.Parse).ToList<int>();
             }
 
-            /// Added By: Maninder Singh Wadhva
-            /// Addressed PL Ticket: 37,38,47,49
-            List<int> tacticIds = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(Sessions.PlanId) &&
-                                                                             tactic.IsDeleted == false)
-                                                                 .Select(tactic => tactic.PlanTacticId).ToList();
-
             //// Calculating CW difference.
             //// Getting list of marketing activites.
-            List<Plan_Campaign_Program_Tactic> marketingActivities = db.Plan_Campaign_Program_Tactic.Where(t => tacticIds.Contains(t.PlanTacticId) && t.IsDeleted == false).Select(t => t).ToList();
+            List<Plan_Campaign_Program_Tactic> marketingActivities = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(Sessions.PlanId) &&
+                                                                             tactic.IsDeleted == false).ToList();
 
             //// Getting list of improvement activites.
             List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && !plantacticids.Contains(t.ImprovementPlanTacticId) && t.IsDeleted == false).Select(t => t).ToList();
@@ -4181,7 +4176,7 @@ namespace RevenuePlanner.Controllers
                 improvedCW = Common.GetImprovedProjectedRevenueOrCW(Sessions.PlanId, marketingActivities, improvementActivities, false, 0);
             }
 
-            double planCW = Common.ProjectedRevenueCalculate(tacticIds, true).Sum(cw => cw.ProjectedRevenue);
+            double planCW = Common.ProjectedRevenueCalculateList(marketingActivities, true).Sum(cw => cw.ProjectedRevenue);
             double differenceCW = Convert.ToDouble(improvedCW) - planCW;
 
 

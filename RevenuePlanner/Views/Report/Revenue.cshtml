@@ -173,10 +173,12 @@
                 @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId != Guid.Empty)
                 {
                     @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnit, "BusinessUnitId", "Title", @RevenuePlanner.Helpers.Sessions.BusinessUnitId), new { @class = "ddlStyleReport", @disabled = "disabled" })
+                    @Html.Hidden("hdnBusinessUnitId", true);
                 }
                 else
                 {
                     @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnit, "BusinessUnitId", "Title"), new { @class = "ddlStyleReport" })
+                    @Html.Hidden("hdnBusinessUnitId", false);
                 }
             </span>
             <span class="selectBox" id="ddlCampaignSelectBox">
@@ -975,6 +977,14 @@
             reportTableInfo3 = r;
             fillReportTable3();
             $(".selectBox select").selectbox('attach');
+            if ($("#hdnBusinessUnitId").val() == 'True') {
+                $("#ddlBusinessUnitSelectBox").find('.sbSelector').each(function () {
+                    $(this).unbind("click");
+                    $(this).removeAttr("href");
+                    $(this).prev().unbind("click");
+                    $(this).prev().removeAttr("href");
+                });
+            }
         },
         error: function () {
             $(".selectBox select").selectbox('attach');
