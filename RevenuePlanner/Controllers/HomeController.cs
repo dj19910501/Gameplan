@@ -156,16 +156,16 @@ namespace RevenuePlanner.Controllers
                             // Added by Bhavesh, Current year first plan select in dropdown
                             if (activePlan.Where(p => p.Year == currentYear).Count() > 0)
                             {
-                                currentPlan = activePlan.Where(p => p.Year == currentYear).FirstOrDefault();
+                                currentPlan = activePlan.Where(p => p.Year == currentYear).OrderBy(p => p.Title).FirstOrDefault();
                             }
                             else
                             {
-                            currentPlan = activePlan.Select(p => p).FirstOrDefault();
+                                currentPlan = activePlan.Select(p => p).OrderBy(p => p.Title).FirstOrDefault();
                             }
                         }
                         else
                         {
-                            currentPlan = activePlan.Where(p => p.PlanId.Equals(Sessions.PublishedPlanId)).FirstOrDefault();
+                            currentPlan = activePlan.Where(p => p.PlanId.Equals(Sessions.PublishedPlanId)).OrderBy(p => p.Title).FirstOrDefault();
                         }
                     }
                     else
@@ -176,11 +176,11 @@ namespace RevenuePlanner.Controllers
                             // Added by Bhavesh, Current year first plan select in dropdown
                             if (activePlan.Where(p => p.Year == currentYear).Count() > 0)
                             {
-                                currentPlan = activePlan.Where(p => p.Year == currentYear).FirstOrDefault();
+                                currentPlan = activePlan.Where(p => p.Year == currentYear).OrderBy(p => p.Title).FirstOrDefault();
                             }
                             else
                             {
-                            currentPlan = activePlan.FirstOrDefault();
+                                currentPlan = activePlan.OrderBy(p => p.Title).FirstOrDefault();
                             }
                         }
                         else
