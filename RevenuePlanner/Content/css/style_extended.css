@@ -1980,6 +1980,8 @@ a {
 .nav-gray li a .trophy {background:url("../images/trophy-02.png") no-repeat 0 0 !important;}
 .nav-gray li.active a.organization .trophy {background-position:0 0 !important;}
 .nav-gray li:hover a.organization .trophy {background-position:0 -30px !important;}
+.nav-gray li.active a.bestInClass .trophy {background-position:0 0 !important;}
+.nav-gray li:hover a.bestInClass .trophy {background-position:0 -30px !important;}
 
 /* Added by Kuber on 3 April 2014 for #159 */
 
@@ -2041,6 +2043,11 @@ a.error-red {
 .nav-gray li.active a.organization .trophy {
     background-position: 0 -30px !important;
 }
+
+.nav-gray li a.bestInClass span {
+    background-position: 0 0 !important;
+}
+
 span.info-icon-grey {
     background: url("../images/info-icon.png") no-repeat;
     width: 27px;
