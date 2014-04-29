@@ -87,7 +87,7 @@ namespace RevenuePlanner.Controllers
                 var clientBusinessUnit = db.BusinessUnits.Where(b => b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
                 businessUnitIds = clientBusinessUnit.ToList();
                 planmodel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId); //commented due to not used any where
-                ViewBag.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId);//Added by Nirav for Custom Dropdown - 388
+                ViewBag.BusinessUnitIds = planmodel.BusinessUnitIds;//Added by Nirav for Custom Dropdown - 388
                 ViewBag.showBid = true;
             }
             else if (Sessions.IsDirector || Sessions.IsClientAdmin)
@@ -95,7 +95,7 @@ namespace RevenuePlanner.Controllers
                 var clientBusinessUnit = db.BusinessUnits.Where(b => b.ClientId.Equals(Sessions.User.ClientId) && b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
                 businessUnitIds = clientBusinessUnit.ToList();
                 planmodel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId); //commented due to not used any where
-                ViewBag.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId);//Added by Nirav for Custom Dropdown - 388
+                ViewBag.BusinessUnitIds = planmodel.BusinessUnitIds;//Added by Nirav for Custom Dropdown - 388
                 ViewBag.showBid = true;
             
             }
@@ -108,26 +108,34 @@ namespace RevenuePlanner.Controllers
 
             //// Getting active model of above business unit. 
             string modelPublishedStatus = Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Published.ToString())).Value;
-            var models = db.Models.Where(m => businessUnitIds.Contains(m.BusinessUnitId) && m.IsDeleted == false).Select(m => m);
+            List<Model> models = db.Models.Where(m => businessUnitIds.Contains(m.BusinessUnitId) && m.IsDeleted == false).ToList();
             if (currentPlanId == 0)
             {
                 /*added by Nirav for plan consistency on 14 apr 2014*/
                 if (Sessions.BusinessUnitId != Guid.Empty)
                 {
-                    models = db.Models.Where(m => m.BusinessUnitId == Sessions.BusinessUnitId && m.IsDeleted == false).Select(m => m);
+                    List<Model> filteredModels = models.Where(m => m.BusinessUnitId == Sessions.BusinessUnitId).ToList();
+                    if (filteredModels.Count() > 0)
+                    {
+                        models = filteredModels;
+                    }
+                    else
+                    {
+                        models = db.Models.Where(m => m.BusinessUnitId == Sessions.BusinessUnitId && m.IsDeleted == false).ToList();
+                    }
                 }
             }
 
             //// Getting modelIds
             var modelIds = models.Select(m => m.ModelId).ToList();
 
-            var activePlan = db.Plans.Where(p => modelIds.Contains(p.Model.ModelId) && p.IsActive.Equals(true) && p.IsDeleted == false).Select(p => p);
+            List<Plan> activePlan = db.Plans.Where(p => modelIds.Contains(p.Model.ModelId) && p.IsActive.Equals(true) && p.IsDeleted == false).ToList();
 
             if (Enums.ActiveMenu.Home.Equals(activeMenu))
             {
                 //// Getting Active plan for all above models.
                 string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
-                activePlan = activePlan.Where(p => p.Status.Equals(planPublishedStatus));
+                activePlan = activePlan.Where(p => p.Status.Equals(planPublishedStatus)).ToList();
             }
             // Added by Bhavesh, Current year first plan select in dropdown
             string currentYear = DateTime.Now.Year.ToString();
@@ -138,7 +146,7 @@ namespace RevenuePlanner.Controllers
                     Plan currentPlan = new Plan();
                     if (currentPlanId != 0)
                     {
-                        currentPlan = activePlan.Where(p => p.PlanId.Equals(currentPlanId)).Select(p => p).FirstOrDefault();
+                        currentPlan = activePlan.Where(p => p.PlanId.Equals(currentPlanId)).FirstOrDefault();
                     }
                     else if (!Common.IsPlanPublished(Sessions.PlanId))
                     {
@@ -148,7 +156,7 @@ namespace RevenuePlanner.Controllers
                             // Added by Bhavesh, Current year first plan select in dropdown
                             if (activePlan.Where(p => p.Year == currentYear).Count() > 0)
                             {
-                                currentPlan = activePlan.Where(p => p.Year == currentYear).Select(p => p).FirstOrDefault();
+                                currentPlan = activePlan.Where(p => p.Year == currentYear).FirstOrDefault();
                             }
                             else
                             {
@@ -157,7 +165,7 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-                            currentPlan = activePlan.Where(p => p.PlanId.Equals(Sessions.PublishedPlanId)).Select(p => p).FirstOrDefault();
+                            currentPlan = activePlan.Where(p => p.PlanId.Equals(Sessions.PublishedPlanId)).FirstOrDefault();
                         }
                     }
                     else
@@ -168,16 +176,16 @@ namespace RevenuePlanner.Controllers
                             // Added by Bhavesh, Current year first plan select in dropdown
                             if (activePlan.Where(p => p.Year == currentYear).Count() > 0)
                             {
-                                currentPlan = activePlan.Where(p => p.Year == currentYear).Select(p => p).FirstOrDefault();
+                                currentPlan = activePlan.Where(p => p.Year == currentYear).FirstOrDefault();
                             }
                             else
                             {
-                            currentPlan = activePlan.Select(p => p).FirstOrDefault();
+                            currentPlan = activePlan.FirstOrDefault();
                             }
                         }
                         else
                         {
-                            currentPlan = activePlan.Where(p => p.PlanId.Equals(Sessions.PlanId)).Select(p => p).FirstOrDefault();
+                            currentPlan = activePlan.Where(p => p.PlanId.Equals(Sessions.PlanId)).FirstOrDefault();
                         }
                     }
                     /*added by Nirav for plan consistency on 14 apr 2014*/
@@ -191,24 +199,10 @@ namespace RevenuePlanner.Controllers
                     List<SelectListItem> UpcomingActivityList = Common.GetUpcomingActivity().Select(p => new SelectListItem() { Text = p.Text, Value = p.Value.ToString(), Selected = p.Selected }).ToList();
                     planmodel.objplanhomemodelheader.UpcomingActivity = UpcomingActivityList;
 
-                    // planList.Single(p => p.Value.Equals(currentPlan.PlanId.ToString())).Selected = true;
-                    // planmodel.objHomePlan.plans = planList;
-
                     //Start Maninder Singh Wadhva : 11/25/2013 - Getting list of geographies and individuals.
                     planmodel.objGeography = db.Geographies.Where(g => g.IsDeleted.Equals(false) && g.ClientId.Equals(Sessions.User.ClientId)).Select(g => g).OrderBy(g => g.Title).ToList();
 
-                    BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
-                    //// Start Modified by :- Sohel Pathan on 14/04/2014 for PL ticket #428 Filter by individual.
-                    var individuals = GetIndividualsByPlanId(currentPlan.PlanId, GanttTabs.Tactic, activeMenu.ToString()); //// Modified by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
-                    //// End Modified by :- Sohel Pathan on 14/04/2014 for PL ticket #428 Filter by individual.
-                    planmodel.objIndividuals = individuals.OrderBy(i => string.Format("{0} {1}", i.FirstName, i.LastName)).ToList();
-                    //End Maninder Singh Wadhva : 11/25/2013 - Getting list of geographies and individuals.
-
                     Sessions.PlanId = planmodel.PlanId;
-
-                    //// Modified By Maninder Singh Wadhva to Address PL#203
-                    //planmodel.CollaboratorId = GetCollaborator(currentPlan);
-
                 }
                 catch (Exception e)
                 {
@@ -407,14 +401,14 @@ namespace RevenuePlanner.Controllers
             var programId = program.Select(pcp => pcp.PlanProgramId);
 
             //// Geography Filter Criteria.
-            List<string> filterGeography = string.IsNullOrWhiteSpace(geographyIds) ? new List<string>() : geographyIds.Split(',').ToList();
+            List<Guid> filterGeography = string.IsNullOrWhiteSpace(geographyIds) ? new List<Guid>() : geographyIds.Split(',').Select(geographyId => Guid.Parse(geographyId)).ToList();
 
             //// Individual filter criteria.
-            List<string> filterIndividual = string.IsNullOrWhiteSpace(individualsIds) ? new List<string>() : individualsIds.Split(',').ToList();
+            List<Guid> filterIndividual = string.IsNullOrWhiteSpace(individualsIds) ? new List<Guid>() : individualsIds.Split(',').Select(individualId => Guid.Parse(individualId)).ToList();
 
             if (isShowOnlyMyTactic)
             {
-                filterIndividual.Add(Sessions.User.UserId.ToString());
+                filterIndividual.Add(Sessions.User.UserId);
             }
 
             //// Start Commented By :- Sohel Pathan on 16/04/2014 for PL #248 to Filter By Individual 
@@ -430,21 +424,21 @@ namespace RevenuePlanner.Controllers
             //// End Commented By :- Sohel Pathan on 16/04/2014 for PL #248 to Filter By Individual 
 
             //// Applying filters to tactic (IsDelete, Geography, Individuals and Show My Tactic)
-            var tactic = db.Plan_Campaign_Program_Tactic.ToList()
-                                                        .Where(pcpt => pcpt.IsDeleted.Equals(false) &&
+            var tactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) &&
                                                                        programId.Contains(pcpt.PlanProgramId) &&
+                                                            //// Geography Filter
+                                                                       (filterGeography.Count.Equals(0) || filterGeography.Contains(pcpt.GeographyId)) &&
+                                                            //// Individual & Show my Tactic Filter 
+                                                            //// Start Modified by :- Sohel Pathan on 14/04/2014 for PL ticket #428 Filter by individual.
+                                                                       (filterIndividual.Count.Equals(0) || filterIndividual.Contains(pcpt.CreatedBy)))
+                                                            //// End Modified by :- Sohel Pathan on 14/04/2014 for PL ticket #428 Filter by individual.
+                                                        .ToList()
+                                                        .Where(pcpt => 
                                                             //// Checking start and end date
                                                         Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
                                                                                                     CalendarEndDate,
                                                                                                     pcpt.StartDate,
-                                                                                                    pcpt.EndDate).Equals(false) &&
-                                                            //// Geography Filter
-                                                                       (filterGeography.Count.Equals(0) || filterGeography.Contains(pcpt.GeographyId.ToString())) &&
-                                                            //// Individual & Show my Tactic Filter 
-                                                            //// Start Modified by :- Sohel Pathan on 14/04/2014 for PL ticket #428 Filter by individual.
-                                                                       (filterIndividual.Count.Equals(0) || filterIndividual.Contains(pcpt.CreatedBy.ToString())))
-                                                            //// End Modified by :- Sohel Pathan on 14/04/2014 for PL ticket #428 Filter by individual.
-                                                        .Select(pcpt => pcpt);
+                                                                                                                    pcpt.EndDate).Equals(false));
 
             //// Modified By Maninder Singh Wadhva PL Ticket#47
             List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(improveTactic => improveTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(planId) &&

@@ -109,6 +109,7 @@
                 CurrentPlanId = $(this).attr('value');
                 $("#CurrentPlanId").val(CurrentPlanId);
                 //// Modified By Maninder Singh Wadhva to Address PL#203
+                ShowChangeLog();
                 GetCollaborators(CurrentPlanId);
                 filters.IndividualsIds = [];    //// Added By :- Sohel Pathan on 16/04/2014 for PL ticket #428 to fill filteredIndividuals list according to plan selected.
                 RefreshCurrentTab();
@@ -386,23 +387,12 @@
             </div>
             @*Modified by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis *@
             <div class="accordion-group" id="individualFilter">
-                @if (Model.objIndividuals.Count > 0)
-                {
+
                     <div class="accordion-heading" id="individualFilterdiv">
                         <a class="accordion-toggle collapsed chevron-right" data-toggle="collapse" data-parent="#accordion-Filter" href="#accordion-filterIndividuals">Individuals</a>
                     </div>
                     <div id="accordion-filterIndividuals" class="accordion-body collapse">
-                        @foreach (var individual in Model.objIndividuals)
-                        {
-                            <a href="#" class="accordion-inner" filterId="@individual.UserId">@string.Format("{0} {1}", individual.FirstName, individual.LastName)<span class="pull-right"></span></a>                        
-                        }
                     </div>
-                }
-                else
-                {
-                    <div class="accordion-heading" id="individualFilterdiv"><a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-Filter" href="#">Individuals</a></div>
-                }
-
             </div>
         </div>
     </div>
@@ -1222,7 +1212,6 @@
              }
 
              renderGantt(data.taskData);
-             ShowChangeLog();
              //// Hide/Show Tabulated data shown below gantt of request tab.
              if (GanttTabs.Request == type) {
                  $(".shadow-scroll-gantt").show();
