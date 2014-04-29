@@ -22,15 +22,15 @@
 	</Field>
 	<Field>
 		<Name>UserAdded</Name>
-		<value>User added sucessfully.</value>
+		<value>User added successfully.</value>
 	</Field>
 	<Field>
 		<Name>UserEdited</Name>
-		<value>User edited sucessfully.</value>
+		<value>User edited successfully.</value>
 	</Field>
 	<Field>
 		<Name>UserDeleted</Name>
-		<value>User deleted sucessfully.</value>
+		<value>User deleted successfully.</value>
 	</Field>
 	<Field>
 		<Name>UserCantDeleted</Name>
