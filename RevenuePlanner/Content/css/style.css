@@ -526,6 +526,10 @@ body {
     background-position: -204px 0 !important;
 }
 
+.nav-gray li a.bestInClass span {
+    background-position: 0 0 !important; 
+}
+
 .nav-gray li a:hover {
     color: #1a638a !important;
 }
