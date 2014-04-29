@@ -2159,8 +2159,7 @@ function GetNumberOfActivityPerMonByPlanId(intplanid, strParam) {
         url: '@Url.Action("GetNumberOfActivityPerMonthByPlanId", "Home")',
         data: {
             planid: intplanid,
-            strparam: strParam,
-            geographyIds: filters.geographyIds.join(), individualsIds: filters.IndividualsIds.join(), isShowOnlyMyTactic: IsShowOnlyMyTactic
+            strparam: strParam
         },
         dataType: "json",
         success: function (data) {
