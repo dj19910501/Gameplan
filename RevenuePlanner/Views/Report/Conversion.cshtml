@@ -698,6 +698,9 @@
                         if (pvalue != 0) {
                             value = ((avalue - pvalue) / pvalue) * 100;
                         }
+                        else if (avalue != 0) {
+                            value = 100;
+                        }
                     }
                     else if (_type == 6) {
                         var pvalue = parseFloat(ColMQLProjected[k]);
@@ -705,13 +708,19 @@
                         if (pvalue != 0) {
                             value = ((avalue - pvalue) / pvalue) * 100;
                         }
+                        else if (avalue != 0) {
+                            value = 100;
+                        }
                     }
 
                     if (value < 0) {
                         htmlappend += '<td class="td-class-arrow red-value"><span class="red-arrow-down-icon"></span><span>' + FormatNumber(Math.abs(value), true) + '</span></td>';
                     }
-                    else {
+                    else if(value > 0) {
                         htmlappend += '<td class="td-class-arrow green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(Math.abs(value), true) + '</span></td>';
+                    }
+                    else {
+                        htmlappend += '<td class="td-class-arrow"><span>' + FormatNumber(Math.abs(value), true) + '</span></td>';
                     }
                     k++;
                 }

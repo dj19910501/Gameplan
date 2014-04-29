@@ -405,10 +405,13 @@ namespace RevenuePlanner.Controllers
             double percentage = 0;
             if (projected != 0)
             {
-                percentage = (actual / projected) * 100;
+                percentage = (actual - projected / projected) * 100;
+            }
+            else if(actual != 0)
+            {
+                percentage = 100;
             }
 
-            percentage = (percentage - 100);
             return percentage;
         }
 
@@ -1776,6 +1779,10 @@ namespace RevenuePlanner.Controllers
             if (costTotal != 0)
             {
                 RevenueSpend = ((revenueTotal - costTotal) / costTotal);
+            }
+            else if (revenueTotal != 0)
+            {
+                RevenueSpend = 1;
             }
             return RevenueSpend;
         }

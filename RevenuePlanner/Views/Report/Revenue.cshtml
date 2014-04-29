@@ -1259,12 +1259,19 @@
         if (planRevenueTotal != 0) {
             perTotalRevenue = ((parseFloat(actualRevenueTotal) - parseFloat(planRevenueTotal)) / parseFloat(planRevenueTotal)) * 100;
         }
+        else if (actualRevenueTotal != 0)
+        {
+            perTotalRevenue = 100;
+        }
         perTotalRevenue = (Math.round(perTotalRevenue * 100) / 100)
         if (perTotalRevenue < 0) {
             htmlLastRow += '<td class="total-row border-r red-value"><span class="red-arrow-down-icon"></span><span>' + perTotalRevenue.toString().replace('-', '') + '%</span></td>';
         }
-        else {
+        else if (perTotalRevenue > 0) {
             htmlLastRow += '<td class="total-row border-r green-value"><span class="green-arrow-up-icon"></span><span>' + perTotalRevenue + '%</span></td>';
+        }
+        else {
+            htmlLastRow += '<td class="total-row border-r"><span>' + perTotalRevenue + '%</span></td>';
         }
         //'<td class="total-row border-r green-value"><span class="green-arrow-up-icon"></span><span class="pull-left">0</span></td>' +
         htmlLastRow += '<td class="total-row">' + FormatNumber(planCostTotal, false) + '</td>' +
@@ -1275,12 +1282,18 @@
         if (planCostTotal != 0) {
             perTotalCost = ((parseFloat(actualCostTotal) - parseFloat(planCostTotal)) / parseFloat(planCostTotal)) * 100;
         }
+        else if (actualCostTotal != 0) {
+            perTotalCost = 100;
+        }
         perTotalCost = (Math.round(perTotalCost * 100) / 100)
         if (perTotalCost < 0) {
             htmlLastRow += '<td class="total-row border-r red-value"><span class="red-arrow-down-icon"></span><span>' + FormatNumber(Math.abs(perTotalCost), true) + '</span></td>';
         }
-        else {
+        else if (perTotalCost > 0) {
             htmlLastRow += '<td class="total-row border-r green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(perTotalCost, true) + '</span></td>';
+        }
+        else {
+            htmlLastRow += '<td class="total-row border-r"><span>' + FormatNumber(perTotalCost, true) + '</span></td>';
         }
 
         htmlLastRow += '<td class="total-row">' + FormatNumber(runRateTotal, false) + '</td>' ;//+
@@ -1290,13 +1303,19 @@
         if (totalRevSpendCost != 0) {
             perRevSpend = ((parseFloat(totalRevSpendRevenue) - parseFloat(totalRevSpendCost)) / parseFloat(totalRevSpendCost));
         }
+        else if (totalRevSpendRevenue) {
+            perRevSpend = 100;
+        }
         // Change for PL issue 353 to percentage.
         //perRevSpend = (Math.round(perRevSpend * 100) / 100)
         if (perRevSpend < 0) {
             htmlLastRow += '<td class="total-row border-r red-value"><span class="red-arrow-down-icon"></span><span>' + FormatNumber(Math.abs(perRevSpend) * 100, true) + '</span></td>';
         }
-        else {
+        else if (perRevSpend > 0) {
             htmlLastRow += '<td class="total-row border-r green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(perRevSpend * 100, true) + '</span></td>';
+        }
+        else {
+            htmlLastRow += '<td class="total-row border-r"><span>' + FormatNumber(perRevSpend * 100, true) + '</span></td>';
         }
         htmlLastRow += '</tr>';
         $('#table_reports4 > tbody').append(htmlLastRow);
@@ -1329,12 +1348,18 @@
         if (_PlanRevenue != 0) {
             perRevenue = ((parseFloat(_ActualRevenue) - parseFloat(_PlanRevenue)) / parseFloat(_PlanRevenue)) * 100;
         }
+        else if (_ActualRevenue != 0) {
+            perRevenue = 100;
+        }
         perRevenue = (Math.round(perRevenue * 100) / 100)
         if (perRevenue < 0) {
             htmlCon += '<td class="border-r red-value"><span class="red-arrow-down-icon"></span><span>' + FormatNumber(Math.abs(perRevenue), true) + '</span></td>';
         }
-        else {
+        else if (perRevenue > 0) {
             htmlCon += '<td class="border-r green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(perRevenue, true) + '</span></td>';
+        }
+        else {
+            htmlCon += '<td class="border-r"><span>' + FormatNumber(perRevenue, true) + '</span></td>';
         }
         htmlCon += '<td>' + FormatNumber(_PlanCost, false) + '</td>' +
                                 '<td>' + FormatNumber(_ActualCost, false) + '</td>';// +
@@ -1343,12 +1368,19 @@
         if (_PlanCost != 0) {
             perCost = ((parseFloat(_ActualCost) - parseFloat(_PlanCost)) / parseFloat(_PlanCost)) * 100;
         }
+        else if(_ActualCost != 0)
+        {
+            perCost = 100;
+        }
         perCost = (Math.round(perCost * 100) / 100)
         if (perCost < 0) {
             htmlCon += '<td class="border-r red-value"><span class="red-arrow-down-icon"></span><span>' + FormatNumber(Math.abs(perCost), true) + '</span></td>';
         }
-        else {
+        else if (perCost > 0) {
             htmlCon += '<td class="border-r green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(perCost, true) + '</span></td>';
+        }
+        else {
+            htmlCon += '<td class="border-r"><span>' + FormatNumber(perCost, true) + '</span></td>';
         }
 
         htmlCon += '<td>' + FormatNumber(_RunRate, false) + '</td>'; //+
@@ -1358,9 +1390,12 @@
             //htmlCon += '<td class="border-r red-value"><span class="red-arrow-down-icon"></span><span>' + numberWithCommas(Math.round(Math.abs(_RevSpend) * 100) / 100) + '</span></td>';
             htmlCon += '<td class="border-r red-value"><span class="red-arrow-down-icon"></span><span>' + FormatNumber(Math.abs(_RevSpend) * 100, true) + '</span></td>';
         }
-        else {
+        else if (_RevSpend > 0) {
             //htmlCon += '<td class="border-r green-value"><span class="green-arrow-up-icon"></span><span>' + numberWithCommas(Math.round(_RevSpend * 100) / 100) + '</span></td>';
             htmlCon += '<td class="border-r green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(_RevSpend * 100, true) + '</span></td>';
+        }
+        else {
+            htmlCon += '<td class="border-r"><span>' + FormatNumber(_RevSpend * 100, true) + '</span></td>';
         }
         htmlCon += '</tr>';
         $tableReports4.append(htmlCon);
@@ -1905,7 +1940,16 @@
                             '<td>' + _title + '</td>';
                 for (member in _goal) {
                     if (_goal[member] != null) {
-                        htmlplan += (parseFloat(_goal[member].Value) >= 0) ? '<td class="green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(_goal[member].Value, true) + '</span></td>' : '<td class="red-value"><span class="red-arrow-down-icon"></span><span>' + FormatNumber(Math.abs(_goal[member].Value), true) + '</span></td>';
+                        if (parseFloat(_goal[member].Value) > 0) {
+                            htmlplan += '<td class="green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(_goal[member].Value, true) + '</span></td>';
+                        }
+                        else if (parseFloat(_goal[member].Value) < 0){
+                            htmlplan += '<td class="red-value"><span class="red-arrow-down-icon"></span><span>' + FormatNumber(Math.abs(_goal[member].Value), true) + '</span></td>';
+                        }
+                        else{
+                            htmlplan += '<td><span>' + FormatNumber(Math.abs(_goal[member].Value), true) + '</span></td>';
+                        }
+                        
                     }
                 }
                 htmlplan += '</tr>';
