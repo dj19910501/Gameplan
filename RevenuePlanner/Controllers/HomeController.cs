@@ -3141,7 +3141,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="planid">Plan Id.</param>
         /// <returns>JsonResult.</returns>
-        public JsonResult GetNumberOfActivityPerMonthByPlanId(int planid, string strparam, string geographyIds, string individualsIds, bool isShowOnlyMyTactic = false)
+        public JsonResult GetNumberOfActivityPerMonthByPlanId(int planid, string strparam)
         {
             string planYear = db.Plans.Single(p => p.PlanId.Equals(planid)).Year;
             CalendarStartDate = DateTime.Now;
@@ -3150,8 +3150,7 @@ namespace RevenuePlanner.Controllers
 
             //Start Maninder Singh Wadhva : 11/15/2013 - Getting list of tactic for view control for plan version id.
             //// Selecting campaign(s) of plan whose IsDelete=false.
-            var campaign = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(planid) && pc.IsDeleted.Equals(false))
-                                            .Select(pc => pc).ToList().Where(pc => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
+            var campaign = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(planid) && pc.IsDeleted.Equals(false)).ToList().Where(pc => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
                                                                                                                                CalendarEndDate,
                                                                                                                                pc.StartDate, pc.EndDate).Equals(false));
 
@@ -3169,42 +3168,16 @@ namespace RevenuePlanner.Controllers
 
             //// Selecting programIds.
             var programId = program.Select(pcp => pcp.PlanProgramId);
-
-            //// Geography Filter Criteria.
-            List<string> filterGeography = string.IsNullOrWhiteSpace(geographyIds) ? new List<string>() : geographyIds.Split(',').ToList();
-
-            //// Individual filter criteria.
-            List<string> filterIndividual = string.IsNullOrWhiteSpace(individualsIds) ? new List<string>() : individualsIds.Split(',').ToList();
-
-            if (isShowOnlyMyTactic)
-            {
-                filterIndividual.Add(Sessions.User.UserId.ToString());
-            }
-
-            var objPlan_Campaign_Program_Tactic_Comment = db.Plan_Campaign_Program_Tactic_Comment.Where(pc => pc.PlanTacticId != null).ToList()
-                                                        .Where(pcptc => pcptc.Plan_Campaign_Program_Tactic.IsDeleted.Equals(false) &&
-                                                            programId.Contains(pcptc.Plan_Campaign_Program_Tactic.PlanProgramId) &&
-                                                            //// Individual & Show my Tactic Filter 
-                                                           (filterIndividual.Count.Equals(0) || filterIndividual.Contains(pcptc.CreatedBy.ToString()))).ToList();
-
-            //// Applying filters to tactic comment (IsDelete, Individuals and Show My Tactic)
-            List<int?> tacticId = objPlan_Campaign_Program_Tactic_Comment
-                                                        .Select(pcptc => pcptc.PlanTacticId).ToList();
             
             //// Applying filters to tactic (IsDelete, Geography, Individuals and Show My Tactic)
-            var objPlan_Campaign_Program_Tactic = db.Plan_Campaign_Program_Tactic.ToList()
-                                                        .Where(pcpt => pcpt.IsDeleted.Equals(false) &&
-                                                                       programId.Contains(pcpt.PlanProgramId) &&
-                                                            //// Checking start and end date
-                                                        Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
-                                                                                                    CalendarEndDate,
-                                                                                                    pcpt.StartDate,
-                                                                                                    pcpt.EndDate).Equals(false) &&
-                                                            //// Geography Filter
-                                                                       (filterGeography.Count.Equals(0) || filterGeography.Contains(pcpt.GeographyId.ToString())) &&
-                                                            //// Individual & Show my Tactic Filter 
-                                                                       (filterIndividual.Count.Equals(0) || filterIndividual.Contains(pcpt.CreatedBy.ToString()) || filterIndividual.Contains(pcpt.ModifiedBy.ToString()) || tacticId.Contains(pcpt.PlanTacticId)))
-                                                        .Select(pcpt => pcpt);
+            List<Plan_Campaign_Program_Tactic> objPlan_Campaign_Program_Tactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) &&
+                                                                                                programId.Contains(pcpt.PlanProgramId)).ToList()
+                                                                                 .Where(pcpt =>
+                                                                                     //// Checking start and end date
+                                                                                                    Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
+                                                                                                                                                CalendarEndDate,
+                                                                                                                                                pcpt.StartDate,
+                                                                                                                                                pcpt.EndDate).Equals(false)).ToList();
 
 
             Dictionary<int, string> activitymonth = new Dictionary<int, string>();
@@ -3215,27 +3188,27 @@ namespace RevenuePlanner.Controllers
             if (objPlan_Campaign_Program_Tactic != null && objPlan_Campaign_Program_Tactic.Count() > 0)
             {
                 IEnumerable<string> diff;
-                foreach (var a in objPlan_Campaign_Program_Tactic)
+                int year = 0;
+                if (strparam != null)
+                {
+                    if (strparam == Enums.UpcomingActivities.planYear.ToString() || strparam == "")
+                    {
+                        year = Convert.ToInt32(objPlan_Campaign_Program_Tactic[0].Plan_Campaign_Program.Plan_Campaign.Plan.Year);
+                    }
+                    else if (strparam == Enums.UpcomingActivities.thisyear.ToString())
+                    {
+                        year = DateTime.Now.Year;
+                    }
+                    else if (strparam == Enums.UpcomingActivities.nextyear.ToString())
+                    {
+                        year = DateTime.Now.Year + 1;
+                    }
+                }
+
+                foreach (Plan_Campaign_Program_Tactic a in objPlan_Campaign_Program_Tactic)
                 {
                     var start = Convert.ToDateTime(a.StartDate);
                     var end = Convert.ToDateTime(a.EndDate);
-                    int year = 0;
-                    if (strparam != null)
-                    {
-                        if (strparam == Enums.UpcomingActivities.planYear.ToString() || strparam == "")
-                        {
-                            year = Convert.ToInt32(a.Plan_Campaign_Program.Plan_Campaign.Plan.Year);
-                        }
-                        else if (strparam == Enums.UpcomingActivities.thisyear.ToString())
-                        {
-                            year = DateTime.Now.Year;
-                        }
-                        else if (strparam == Enums.UpcomingActivities.nextyear.ToString())
-                        {
-                            year = DateTime.Now.Year + 1;
-                        }
-                    }
-
                     if (year != 0)
                     {
                         if (start.Year == year)

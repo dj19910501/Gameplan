@@ -68,7 +68,7 @@
             //var option = $.grep($('#dropdown-plan-title option'), function (value) { return $(value).text() == planTitle; })
             //CurrentPlanId = $(option[0]).val();
             CurrentPlanId = $(this).attr('value');
-
+            ShowChangeLog();
             //// Modified By Maninder Singh Wadhva to Address PL#203
             GetCollaborators(CurrentPlanId);
             RefreshCalendar();
@@ -515,7 +515,6 @@
                  planYear = parseInt(data.planYear);
                  isPublished = data.isPublished;
                  renderGantt(data.taskData);
-                 ShowChangeLog();
                  if (isPublished) {
                      $("#BtnPublishPlan").hide();
                  }
@@ -605,8 +604,7 @@
             url: '@Url.Action("GetNumberOfActivityPerMonthByPlanId", "Home")',
            data: {
                planid: intplanid,
-               strparam: strParam,
-               geographyIds: '', individualsIds: ''
+               strparam: strParam
            },
            dataType: "json",
            success: function (data) {

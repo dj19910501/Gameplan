@@ -869,7 +869,6 @@ namespace RevenuePlanner.Controllers
             Common.GetPlanGanttStartEndDate(plan.Year, isQuater, ref CalendarStartDate, ref CalendarEndDate);
 
             var taskDataCampaign = db.Plan_Campaign.Where(c => c.PlanId.Equals(plan.PlanId) && c.IsDeleted.Equals(false))
-                                                   .Select(c => c)
                                                    .ToList()
                                                    .Where(c => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
                                                                                                             CalendarEndDate,
@@ -909,7 +908,6 @@ namespace RevenuePlanner.Controllers
             var taskDataProgram = db.Plan_Campaign_Program.Where(p => p.Plan_Campaign.PlanId.Equals(plan.PlanId) &&
                                                                       p.IsDeleted.Equals(false))
                                                           .Select(p => p)
-                                                          .ToList()
                                                           .Where(p => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
                                                                                                                   CalendarEndDate,
                                                                                                                   p.StartDate,
@@ -950,7 +948,6 @@ namespace RevenuePlanner.Controllers
             var taskDataTactic = db.Plan_Campaign_Program_Tactic.Where(p => p.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId) &&
                                                                             p.IsDeleted.Equals(false))
                                                                 .Select(p => p)
-                                                                .ToList()
                                                                 .Where(p => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
                                                                                                                         CalendarEndDate,
                                                                                                                         p.StartDate,
