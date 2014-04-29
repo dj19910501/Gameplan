@@ -907,7 +907,7 @@ namespace RevenuePlanner.Controllers
 
             var taskDataProgram = db.Plan_Campaign_Program.Where(p => p.Plan_Campaign.PlanId.Equals(plan.PlanId) &&
                                                                       p.IsDeleted.Equals(false))
-                                                          .Select(p => p)
+                                                          .ToList()
                                                           .Where(p => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
                                                                                                                   CalendarEndDate,
                                                                                                                   p.StartDate,
@@ -928,7 +928,7 @@ namespace RevenuePlanner.Controllers
                                                               PlanProgramId = p.PlanProgramId,
                                                               IsHideDragHandleLeft = p.StartDate < CalendarStartDate,
                                                               IsHideDragHandleRight = p.EndDate > CalendarEndDate
-                                                          }).Select(p => p).Distinct().OrderBy(p => p.text);
+                                                          }).Select(p => p).Distinct().OrderBy(p => p.text).ToList();
 
             var NewtaskDataProgram = taskDataProgram.Select(t => new
             {
@@ -947,7 +947,7 @@ namespace RevenuePlanner.Controllers
 
             var taskDataTactic = db.Plan_Campaign_Program_Tactic.Where(p => p.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId) &&
                                                                             p.IsDeleted.Equals(false))
-                                                                .Select(p => p)
+                                                                .ToList()
                                                                 .Where(p => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
                                                                                                                         CalendarEndDate,
                                                                                                                         p.StartDate,
@@ -968,7 +968,7 @@ namespace RevenuePlanner.Controllers
                                                                     plantacticid = t.PlanTacticId,
                                                                     IsHideDragHandleLeft = t.StartDate < CalendarStartDate,
                                                                     IsHideDragHandleRight = t.EndDate > CalendarEndDate
-                                                                }).OrderBy(t => t.text);
+                                                                }).OrderBy(t => t.text).ToList();
 
             var NewTaskDataTactic = taskDataTactic.Select(t => new
             {
