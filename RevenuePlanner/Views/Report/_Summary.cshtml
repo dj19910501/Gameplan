@@ -26,7 +26,7 @@
             </div>
             <div class="info">
                 <h6>Revenue</h6>
-                <h3 id="h3Revenue" class="truncate">$@Model.Revenue</h3>
+                <h3 id="h3Revenue" class="truncate">@Model.Revenue</h3>
 
                 @if (Convert.ToDouble(Model.RevenuePercentage) < 0)
                 {
@@ -183,6 +183,13 @@
         function SetTipsy() {
             SetFormatForLabel("#h3MQLActual", 5);
             SetFormatForLabel("#h3Revenue", 5);
+
+            //// Added By Maninder Singh Wadhva to address PL#465 Realized Revenue Number Not Displaying
+            var h3Revenue = $("#h3Revenue");
+            var isCurrencySymbolExist = (h3Revenue.text().indexOf('$') == -1);
+            if (isCurrencySymbolExist) {
+                h3Revenue.text('$' + h3Revenue.text());
+            }
         }
     });
 
