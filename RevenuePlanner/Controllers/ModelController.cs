@@ -3060,7 +3060,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    var existTactic = db.TacticTypes.Where(t => (t.ModelId == ModelId || t.ModelId == null) && t.ClientId == Sessions.User.ClientId && t.Title.ToLower() == Title.ToLower() && t.TacticTypeId != TacticTypeId).ToList();
+                    var existTactic = db.TacticTypes.Where(t => (t.ModelId == ModelId || t.ModelId == null) && t.ClientId == Sessions.User.ClientId && t.Title.ToLower() == Title.ToLower() && t.TacticTypeId != TacticTypeId && (t.IsDeleted == null || t.IsDeleted == false)).ToList();
                     var addNewTactic = db.TacticTypes.Where(t => (t.ModelId == null || t.ModelId == 0) && (t.ClientId == Guid.Empty || t.ClientId == null) && t.TacticTypeId == TacticTypeId).ToList();
                     if (addNewTactic.Count == 1)
                     {
