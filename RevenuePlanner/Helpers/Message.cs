@@ -991,8 +991,20 @@ namespace RevenuePlanner.Helpers
             get { return _SameImprovementTypeExits; }
             set { _SameImprovementTypeExits = value; }
         }
-
-
+        //Start Manoj Limbachiya 05May2014 PL#458
+        private string _ModelTacticDeleted;
+        public string ModelTacticDeleted
+        {
+            get { return _ModelTacticDeleted; }
+            set { _ModelTacticDeleted = value; }
+        }
+        private string _ModelTacticCannotDelete;
+        public string ModelTacticCannotDelete
+        {
+            get { return _ModelTacticCannotDelete; }
+            set { _ModelTacticCannotDelete = value; }
+        }
+        //End Manoj Limbachiya 05May2014 PL#458
         #endregion
 
         #region  Functions
@@ -1302,6 +1314,14 @@ namespace RevenuePlanner.Helpers
                                         case "SameImprovementTypeExits":
                                             _SameImprovementTypeExits = strMsgValue;
                                             break;
+                                            //Start Manoj Limbachiya 05May2014 PL#458
+                                        case "ModelTacticDeleted":
+                                            _ModelTacticDeleted = strMsgValue;
+                                            break;
+                                        case "ModelTacticCannotDelete":
+                                            _ModelTacticCannotDelete = strMsgValue;
+                                            break;
+                                        //End Manoj Limbachiya 05May2014 PL#458
                                     }
                                 }
                                 i = i + 1;

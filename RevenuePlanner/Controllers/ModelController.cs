@@ -2833,13 +2833,13 @@ namespace RevenuePlanner.Controllers
                 Change : add some check in lstTitle,TacticList,Masterlist and add new deletedTacticlist
             */
             //return all tactics of model
-            var lstModelsTactic = from f in db.TacticTypes where f.ModelId == id && f.ClientId == Sessions.User.ClientId select f;
+            var lstModelsTactic = from f in db.TacticTypes where f.ModelId == id && f.ClientId == Sessions.User.ClientId && (f.IsDeleted == null || f.IsDeleted == false) select f;
 
             //distinct title of all tactic of model
             var lstDistinctModelTacticTitle = lstModelsTactic.Select(s => s.Title).Distinct().ToList();
 
             //returns deleted list of matched tactics
-            var deletedTacticlist = from f in db.TacticTypes where !lstDistinctModelTacticTitle.Contains(f.Title) && f.ClientId == Sessions.User.ClientId && f.ModelId == null select f;
+            var deletedTacticlist = from f in db.TacticTypes where !lstDistinctModelTacticTitle.Contains(f.Title) && f.ClientId == Sessions.User.ClientId && f.ModelId == null && (f.IsDeleted == null || f.IsDeleted == false) select f;
 
             //distinct title of deleted tactic of model
             var deletedTacticTitle = deletedTacticlist.Select(s => s.Title).Distinct().ToList();
@@ -2848,7 +2848,7 @@ namespace RevenuePlanner.Controllers
             var objTacticList = deletedTacticlist.Union(lstModelsTactic).ToList();
 
             //returns master list of matched tactics
-            var lstMstaerTactic = from f in db.TacticTypes where !lstDistinctModelTacticTitle.Contains(f.Title) && !deletedTacticTitle.Contains(f.Title) && f.ClientId == null select f;
+            var lstMstaerTactic = from f in db.TacticTypes where !lstDistinctModelTacticTitle.Contains(f.Title) && !deletedTacticTitle.Contains(f.Title) && f.ClientId == null && (f.IsDeleted == null || f.IsDeleted == false) select f;
 
             //returns all tactics
             objTacticList = objTacticList.Union(lstMstaerTactic).ToList();
@@ -2903,6 +2903,13 @@ namespace RevenuePlanner.Controllers
                 {
                     ViewBag.IsDeployed = false;
                 }
+                //Start Manoj Limbachiya 05May2014 PL#458
+                ViewBag.CanDelete = false;
+                if (mtp.ModelId != null || mtp.ClientId != null)
+                {
+                   ViewBag.CanDelete = true;
+                }
+                //End Manoj Limbachiya 05May2014 PL#458
             }
             catch (Exception e)
             {
@@ -2928,9 +2935,84 @@ namespace RevenuePlanner.Controllers
             //tm.ProjectedInquiries = 0;
             tm.ProjectedMQLs = 0;
             tm.ProjectedRevenue = 0;   /*end changes*/
+            //Start Manoj Limbachiya 05May2014 PL#458
+            ViewBag.CanDelete = false;
+            //End Manoj Limbachiya 05May2014 PL#458
             return PartialView("CreateTactic", tm);
         }
+        /// <summary>
+        /// Delete tactic type from client level and model level
+        /// Author: Manoj Limbachiya
+        /// Reference: PL#458
+        /// Date: 05May2014
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DeleteTactic(int id = 0)
+        {
+            TacticType ttModel = db.TacticTypes.Where(t => t.TacticTypeId == id).SingleOrDefault();
+            if (ttModel != null)
+            {
+                int ModelId = ttModel.Model.ModelId;
+                Model objModel = db.Models.Where(m => m.ModelId == ModelId).SingleOrDefault();
+                if (objModel != null)
+                {
+                    if (objModel.Status.ToLower() == ModelPublished)
+                    {
+                        List<TacticType> lstTactictTypes = db.TacticTypes.Where(t => t.ModelId == ModelId && (t.IsDeleted == null || t.IsDeleted == false)).ToList();
+                        if (lstTactictTypes.Count == 1)
+                        {
+                            return Json(new { status = "ERROR", Message = string.Format(Common.objCached.ModelTacticCannotDelete) });
+                        }
+                    }
+                }
+            }
 
+            Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.Where(p => p.TacticTypeId == id).FirstOrDefault();
+            if (pcpt != null)
+            {
+                if (pcpt.IsDeleted || pcpt.Plan_Campaign_Program.IsDeleted || pcpt.Plan_Campaign_Program.Plan_Campaign.IsDeleted)
+                {
+                    db.Plan_Campaign_Program_Tactic.Attach(pcpt);
+                    db.Entry(pcpt).State = EntityState.Deleted;
+                    db.SaveChanges();
+                    pcpt = null;
+                }
+            }
+            if (pcpt == null)
+            {
+                TacticType tt = db.TacticTypes.Where(t => t.TacticTypeId == id).SingleOrDefault();
+                if (tt != null)
+                {
+                    db.TacticTypes.Attach(tt);
+                    db.Entry(tt).State = EntityState.Deleted;
+                    db.SaveChanges();
+                    Common.InsertChangeLog(Sessions.ModelId, 0, tt.TacticTypeId, tt.Title, Enums.ChangeLog_ComponentType.tactictype, Enums.ChangeLog_TableName.Model, Enums.ChangeLog_Actions.removed);
+                    db.Dispose();
+                    TempData["SuccessMessage"] = string.Format(Common.objCached.ModelTacticDeleted, tt.Title);
+                    return Json(new { status = "SUCCESS" });
+                }
+            }
+            else
+            {
+                TacticType tt = db.TacticTypes.Where(t => t.TacticTypeId == id).SingleOrDefault();
+                if (tt != null)
+                {
+                    tt.IsDeleted = true;
+                    tt.ModifiedBy = Sessions.User.UserId;
+                    tt.ModifiedDate = DateTime.Now;
+                    db.TacticTypes.Attach(tt);
+                    db.Entry(tt).State = EntityState.Modified;
+                    db.SaveChanges();
+                    Common.InsertChangeLog(Sessions.ModelId, 0, tt.TacticTypeId, tt.Title, Enums.ChangeLog_ComponentType.tactictype, Enums.ChangeLog_TableName.Model, Enums.ChangeLog_Actions.removed);
+                    db.Dispose();
+                    TempData["SuccessMessage"] = string.Format(Common.objCached.ModelTacticDeleted, tt.Title);
+                    return Json(new { status = "SUCCESS" });
+                }
+            }
+            return Json(new { status = "ERROR", Message = string.Format(Common.objCached.ErrorOccured) });
+        }
         /// <summary>
         /// Added By: Nirav Shah.
         /// Action to Save Tactic data .

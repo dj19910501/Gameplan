@@ -5,6 +5,15 @@
         <span class="close-form source-sans-proregular">» CLOSE MENU</span>
         <div class="cf">
             <h2 class="source-sans-prolight">Tactic Detail</h2>
+            @if ((bool)ViewBag.IsCreated == false && (bool)ViewBag.CanDelete == true)
+            {
+            <div class="btn-group pull-right gear-dropdown">
+                <span class="gear-sidebar dropdown-toggle" data-toggle="dropdown"></span>
+                <ul class="dropdown-menu">
+                    <li><a id="deleteTactic">Delete Tactic</a></li>
+                </ul>
+            </div>
+            }
         </div>
     </div>
     <div id="errorMsg" class="alert alert-error hide message-position-small">
@@ -118,7 +127,31 @@
                 $("#projectStage").html('Projected [Stage]');
             }
         });
+        $("#deleteTactic").click(function () {
+            if (confirm('Are you sure you want to delete this tactic?')) {
+                var idTactic = $("#hdnTacticTypeId").val();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Model/DeleteTactic")',
+                    data: {
+                        ID: idTactic
+                    },
+                    success: function (data) {
+                        if (data.status == 'SUCCESS') {
+                            $('.close-form', this.$panel).click();
+                            window.location.reload(true);
+                        }
+                        if (data.status == 'ERROR') {
+                            ShowError(data.Message);
+                        }
 
+                    }
+                });
+            }
+            else {
+                return false;
+            }
+        });
         if ($("#latestModelId").val() == $("#mode").val()) {
             $("#CreateTactic").show();
             $("#save_tactic").show();

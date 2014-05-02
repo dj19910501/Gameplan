@@ -330,4 +330,12 @@
 		<Name>SameImprovementTypeExits</Name>
 		<value>Same improvement tactic type exits.</value>
 	</Field>
+  <Field>
+    <Name>ModelTacticDeleted</Name>
+    <value>Tactic {0} deleted successfully.</value>
+  </Field>
+  <Field>
+    <Name>ModelTacticCannotDelete</Name>
+    <value>Cannot delete tactic, As this is the only tactic in this published model.</value>
+  </Field>
 </Messages>

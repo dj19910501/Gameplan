@@ -34,6 +34,7 @@ namespace RevenuePlanner.Models
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
         public Nullable<int> PreviousTacticTypeId { get; set; }
+        public Nullable<bool> IsDeleted { get; set; }
     
         public virtual Model Model { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }

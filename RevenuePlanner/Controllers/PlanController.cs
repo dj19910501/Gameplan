@@ -1537,7 +1537,7 @@ namespace RevenuePlanner.Controllers
         {
             var tacticType = from t in db.TacticTypes
                              join p in db.Plans on t.ModelId equals p.ModelId
-                             where p.PlanId == Sessions.PlanId
+                             where p.PlanId == Sessions.PlanId && (t.IsDeleted == null || t.IsDeleted == false)
                              orderby t.Title
                              select new { t.Title, t.TacticTypeId };
             return Json(tacticType, JsonRequestBehavior.AllowGet);
@@ -2101,7 +2101,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
             ViewBag.Tactics = from t in db.TacticTypes
                               join p in db.Plans on t.ModelId equals p.ModelId
-                              where p.PlanId == Sessions.PlanId
+                              where p.PlanId == Sessions.PlanId && (t.IsDeleted == null || t.IsDeleted == false)
                               orderby t.Title
                               select t;
             ViewBag.IsCreated = true;
@@ -2132,9 +2132,9 @@ namespace RevenuePlanner.Controllers
             ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
             ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
             ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
-            ViewBag.Tactics = from t in db.TacticTypes
+            var tList = from t in db.TacticTypes
                               join p in db.Plans on t.ModelId equals p.ModelId
-                              where p.PlanId == Sessions.PlanId
+                              where p.PlanId == Sessions.PlanId && (t.IsDeleted == null || t.IsDeleted == false)
                               orderby t.Title
                               select t;
             ViewBag.IsCreated = false;
@@ -2183,6 +2183,19 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.IsOwner = false;
             }
+            List<TacticType> tnewList = tList.ToList();
+            TacticType tobj = db.TacticTypes.Where(t=>t.TacticTypeId == pcptm.TacticTypeId && t.IsDeleted == true).SingleOrDefault();
+            if (tobj != null)
+            {
+                TacticType tSameExist = tnewList.Where(t => t.Title.Equals(tobj.Title)).SingleOrDefault();
+                if (tSameExist != null)
+                {
+                    tnewList.Remove(tSameExist);
+                }
+                tnewList.Add(tobj);
+                
+            }
+            ViewBag.Tactics = tnewList.OrderBy(t => t.Title);
             ViewBag.Program = pcpt.Plan_Campaign_Program.Title;
             ViewBag.Campaign = pcpt.Plan_Campaign_Program.Plan_Campaign.Title;
             ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
