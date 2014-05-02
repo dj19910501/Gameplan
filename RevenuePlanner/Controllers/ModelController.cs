@@ -3043,7 +3043,7 @@ namespace RevenuePlanner.Controllers
                  */
                 if (TacticTypeId == 0)
                 {
-                    var exist = db.TacticTypes.Where(t => t.ModelId == ModelId && t.ClientId == Sessions.User.ClientId && t.Title.ToLower() == Title.ToLower()).ToList();
+                    var exist = db.TacticTypes.Where(t => t.ModelId == ModelId && t.ClientId == Sessions.User.ClientId && t.Title.ToLower() == Title.ToLower() && (t.IsDeleted == null || t.IsDeleted == false)).ToList();
                     if (exist.Count == 0)
                     {
                         db.TacticTypes.Attach(objtactic);
