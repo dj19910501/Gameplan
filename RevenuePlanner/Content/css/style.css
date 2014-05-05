@@ -6827,3 +6827,12 @@ span.circle-check-icon-gray{margin-left: auto;margin-right: auto;background: url
     text-decoration:none !important;
 }
 /* End - Added by Sohel Pathan on 29/04/2014 for Internal Review Points #7 to set styling for Show on my tactic link */	
+/* CSS for 003.501.Prefs.Integrations.Populated */
+.nav-gray-plan li a.integrations span{background-position: -238px 0 !important;}
+.nav-gray-plan li a.integrations:hover span{background-position: -238px -30px !important;}
+.nav-gray-plan li.active a.integrations span{background-position: -238px -30px !important;}
+
+/* CSS for 003.501.Prefs.Integrations.Populated */
+.nav-gray li a.integrations span{background-position: -238px 0 !important;}
+.nav-gray li a.integrations:hover span{background-position: -238px -30px !important;}
+.nav-gray li.active a.integrations span{background-position: -238px -30px !important;}
