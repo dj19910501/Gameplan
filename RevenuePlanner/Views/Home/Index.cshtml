@@ -515,7 +515,7 @@
                 <!-- position:relative = added by kapil -->
             </div>
             <div>
-                <div class="gantt-padding cf lenght-div" style="min-height:300px;">
+                <div class="gantt-padding cf lenght-div"> <!-- removed by min height by kapil - to resolve extra available space from bottom - #454 -->
                     <div id="gantt_here"></div>
                 </div>
                 <div class="shadow-scroll-gantt"></div>
@@ -1375,16 +1375,16 @@
          var json_length = filteredTasks.data.length;
          var gantt_div = document.getElementById("gantt_here");
          ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-         //if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
-             //gantt_div.style.height = ((json_length * 35) + 94) + "px";
-         //}
-         //else {
-             //gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
-         //}
+         if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
+             gantt_div.style.height = ((json_length * 35) + 94) + "px";
+         }
+         else {
+             gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
+         }
          ////
 
-         // Added by KAPIL - #454 - to resolve extra space
-         CalGanntHeight();
+         //// Added by KAPIL - #454 - to resolve extra space
+         //CalGanntHeight();
 
          //// Function to add class to each task bar.
          ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
@@ -1411,16 +1411,16 @@
          var json_length = tasks.data.length;
          var gantt_div = document.getElementById("gantt_here");
          ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-         //if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
-             //gantt_div.style.height = ((json_length * 35) + 94) + "px";
-         //}
-         //else {
-             //gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
-         //}
+         if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
+             gantt_div.style.height = ((json_length * 35) + 94) + "px";
+         }
+         else {
+             gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
+         }
          ////
 
-         // Added by KAPIL - #454 - to resolve extra space
-         CalGanntHeight();
+         //// Added by KAPIL - #454 - to resolve extra space
+         //CalGanntHeight();
 
          //// Function to add class to each task bar.
          ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
@@ -1455,16 +1455,16 @@
          var json_length = tasks.data.length;
          var gantt_div = document.getElementById("gantt_here");
          ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-         //if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
-             //gantt_div.style.height = ((json_length * 35) + 94) + "px";
-         //}
-         //else {
-             //gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
-         //}
+         if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
+             gantt_div.style.height = ((json_length * 35) + 94) + "px";
+         }
+         else {
+             gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
+         }
          ////
 
-         // Added by KAPIL - #454 - to resolve extra space
-         CalGanntHeight();
+         //// Added by KAPIL - #454 - to resolve extra space
+         //CalGanntHeight();
 
          //// Function to add class to each task bar.
          ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
@@ -1491,16 +1491,16 @@
          var json_length = tasks.data.length;
          var gantt_div = document.getElementById("gantt_here");
          ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-         //if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
-             //gantt_div.style.height = ((json_length * 35) + 94) + "px";
-         //}
-         //else {
-             //gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
-         //}
+         if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
+             gantt_div.style.height = ((json_length * 35) + 94) + "px";
+         }
+         else {
+             gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
+         }
          ////
 
-         // Added by KAPIL - #454 - to resolve extra space
-         CalGanntHeight();
+         //// Added by KAPIL - #454 - to resolve extra space
+         //CalGanntHeight();
 
          //// Function to add class to each task bar.
          ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
@@ -1525,16 +1525,16 @@
          var json_length = tasks.data.length;
          var gantt_div = document.getElementById("gantt_here");
          ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-         //if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
-             //gantt_div.style.height = ((json_length * 35) + 94) + "px";
-         //}
-         //else {
-             //gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
-         //}
+         if (json_length.toString() == "0" || parseInt(json_length.toString()) <= 9) {
+             gantt_div.style.height = ((json_length * 35) + 94) + "px";
+         }
+         else {
+             gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
+         }
          ////
 
-         // Added by KAPIL - #454 - to resolve extra space
-         CalGanntHeight();
+         //// Added by KAPIL - #454 - to resolve extra space
+         //CalGanntHeight();
 
          //// Function to add class to each task bar.
          ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
@@ -1554,18 +1554,18 @@
 
          var gantt_div1 = document.getElementById("gantt_here");
          ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
-         //var totalRecords = tasks.data.length;
-         //if (totalRecords.toString() == "0" || parseInt(totalRecords.toString()) <= 9) {
-             //gantt_div1.style.height = ((totalRecords * 35) + 94) + "px";
-             //$(".shadow-scroll-gantt").addClass("full-width");
-         //}
-         //else {
-             //gantt_div1.style.height = "409px";
-             //$(".shadow-scroll-gantt").removeClass("full-width");
-         //}
+         var totalRecords = tasks.data.length;
+         if (totalRecords.toString() == "0" || parseInt(totalRecords.toString()) <= 9) {
+             gantt_div1.style.height = ((totalRecords * 35) + 94) + "px";
+             $(".shadow-scroll-gantt").addClass("full-width");
+         }
+         else {
+             gantt_div1.style.height = "409px";
+             $(".shadow-scroll-gantt").removeClass("full-width");
+         }
 
-         // Added by KAPIL - #454 - to resolve extra space
-         CalGanntHeight();
+         //// Added by KAPIL - #454 - to resolve extra space
+         //CalGanntHeight();
 
          ////
          gantt.config.min_column_width = function (data) {
