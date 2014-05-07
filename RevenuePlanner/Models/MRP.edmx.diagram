@@ -96,6 +96,17 @@
         <AssociationConnector Association="MRPModel.FK__Tactic_Sh__PlanP__44952D46" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Vertical" />
+        <EntityTypeShape EntityType="MRPModel.GameplanDataType" Width="1.5" PointX="7.8465532715649129" PointY="8.0640107281804134" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationInstance" Width="1.5" PointX="2.1989814965980972" PointY="5.6404457118550528" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationInstance_Attribute" Width="1.5" PointX="4.3923777231911094" PointY="9.4234179600250982" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationInstanceDataTypeMapping" Width="1.5" PointX="11.524772459419804" PointY="2.8589620901546264" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationType" Width="1.5" PointX="4.781253449982616" PointY="16.466473795690796" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationTypeAttribute" Width="1.5" PointX="6.4411151588154567" PointY="7.6828054374469472" />
+        <EntityTypeShape EntityType="MRPModel.SyncFrequency" Width="1.5" PointX="1.9316841130758096" PointY="21.701511214348258" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationInstance_Attribute_IntegrationInstance" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationInstance_IntegrationType" />
+        <AssociationConnector Association="MRPModel.FK_SyncFrequency_IntegrationInstance" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationInstance_Attribute_IntegrationTypeAttribute" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

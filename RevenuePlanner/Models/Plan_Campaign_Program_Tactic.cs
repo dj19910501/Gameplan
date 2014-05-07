@@ -49,6 +49,8 @@ namespace RevenuePlanner.Models
         public Nullable<double> ROI { get; set; }
         public Nullable<double> ROIActual { get; set; }
         public bool IsDeleted { get; set; }
+        public bool IsDeployedToIntegration { get; set; }
+        public string IntegrationInstanceTacticId { get; set; }
     
         public virtual Audience Audience { get; set; }
         public virtual BusinessUnit BusinessUnit { get; set; }

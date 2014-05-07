@@ -67,6 +67,13 @@ namespace RevenuePlanner.Models
         public DbSet<Vertical> Verticals { get; set; }
         public DbSet<Plan_Campaign> Plan_Campaign { get; set; }
         public DbSet<Plan_Campaign_Program> Plan_Campaign_Program { get; set; }
+        public DbSet<GameplanDataType> GameplanDataTypes { get; set; }
+        public DbSet<IntegrationInstance> IntegrationInstances { get; set; }
+        public DbSet<IntegrationInstance_Attribute> IntegrationInstance_Attribute { get; set; }
+        public DbSet<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
+        public DbSet<IntegrationType> IntegrationTypes { get; set; }
+        public DbSet<IntegrationTypeAttribute> IntegrationTypeAttributes { get; set; }
+        public DbSet<SyncFrequency> SyncFrequencies { get; set; }
     
         public virtual int Plan_Campaign_Program_Tactic_ActualDelete(Nullable<int> planTacticId, ObjectParameter returnValue)
         {

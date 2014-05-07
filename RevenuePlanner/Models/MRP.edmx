@@ -13,10 +13,16 @@
           <EntitySet Name="Field" EntityType="MRPModel.Store.Field" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Funnel" EntityType="MRPModel.Store.Funnel" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Funnel_Field" EntityType="MRPModel.Store.Funnel_Field" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="GameplanDataType" EntityType="MRPModel.Store.GameplanDataType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Geography" EntityType="MRPModel.Store.Geography" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="ImprovementTacticType" EntityType="MRPModel.Store.ImprovementTacticType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="ImprovementTacticType_Metric" EntityType="MRPModel.Store.ImprovementTacticType_Metric" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="ImprovementTacticType_Touches" EntityType="MRPModel.Store.ImprovementTacticType_Touches" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="IntegrationInstance" EntityType="MRPModel.Store.IntegrationInstance" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="IntegrationInstance_Attribute" EntityType="MRPModel.Store.IntegrationInstance_Attribute" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="IntegrationInstanceDataTypeMapping" EntityType="MRPModel.Store.IntegrationInstanceDataTypeMapping" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="IntegrationType" EntityType="MRPModel.Store.IntegrationType" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="IntegrationTypeAttribute" EntityType="MRPModel.Store.IntegrationTypeAttribute" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Metric" EntityType="MRPModel.Store.Metric" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Model" EntityType="MRPModel.Store.Model" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Model_Audience_Event" EntityType="MRPModel.Store.Model_Audience_Event" store:Type="Tables" Schema="dbo" />
@@ -40,6 +46,7 @@
           <EntitySet Name="Plan_Team" EntityType="MRPModel.Store.Plan_Team" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Report_Share" EntityType="MRPModel.Store.Report_Share" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Stage" EntityType="MRPModel.Store.Stage" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="SyncFrequency" EntityType="MRPModel.Store.SyncFrequency" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Tactic_Share" EntityType="MRPModel.Store.Tactic_Share" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="TacticType" EntityType="MRPModel.Store.TacticType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="User_Filter" EntityType="MRPModel.Store.User_Filter" store:Type="Tables" Schema="dbo" />
@@ -88,6 +95,18 @@
           <AssociationSet Name="FK_ImprovementTacticType_Touches_Metric" Association="MRPModel.Store.FK_ImprovementTacticType_Touches_Metric">
             <End Role="Metric" EntitySet="Metric" />
             <End Role="ImprovementTacticType_Touches" EntitySet="ImprovementTacticType_Touches" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IntegrationInstance_Attribute_IntegrationInstance" Association="MRPModel.Store.FK_IntegrationInstance_Attribute_IntegrationInstance">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
+            <End Role="IntegrationInstance_Attribute" EntitySet="IntegrationInstance_Attribute" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IntegrationInstance_Attribute_IntegrationTypeAttribute" Association="MRPModel.Store.FK_IntegrationInstance_Attribute_IntegrationTypeAttribute">
+            <End Role="IntegrationTypeAttribute" EntitySet="IntegrationTypeAttribute" />
+            <End Role="IntegrationInstance_Attribute" EntitySet="IntegrationInstance_Attribute" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IntegrationInstance_IntegrationType" Association="MRPModel.Store.FK_IntegrationInstance_IntegrationType">
+            <End Role="IntegrationType" EntitySet="IntegrationType" />
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
           </AssociationSet>
           <AssociationSet Name="FK_Model_Audience_Event_Model_Audience_Event" Association="MRPModel.Store.FK_Model_Audience_Event_Model_Audience_Event">
             <End Role="Model" EntitySet="Model" />
@@ -237,6 +256,10 @@
             <End Role="Model" EntitySet="Model" />
             <End Role="Plan" EntitySet="Plan" />
           </AssociationSet>
+          <AssociationSet Name="FK_SyncFrequency_IntegrationInstance" Association="MRPModel.Store.FK_SyncFrequency_IntegrationInstance">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
+            <End Role="SyncFrequency" EntitySet="SyncFrequency" />
+          </AssociationSet>
           <AssociationSet Name="FK_Tactic_Share_Plan_Campaign_Program_Tactic1" Association="MRPModel.Store.FK_Tactic_Share_Plan_Campaign_Program_Tactic1">
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
@@ -352,6 +375,16 @@
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
         </EntityType>
+        <EntityType Name="GameplanDataType">
+          <Key>
+            <PropertyRef Name="GameplanDataTypeId" />
+          </Key>
+          <Property Name="GameplanDataTypeId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="TableName" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="ActualFieldName" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="DisplayFieldName" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
         <EntityType Name="Geography">
           <Key>
             <PropertyRef Name="GeographyId" />
@@ -401,6 +434,69 @@
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
+        <EntityType Name="IntegrationInstance">
+          <Key>
+            <PropertyRef Name="IntegrationInstanceId" />
+          </Key>
+          <Property Name="IntegrationInstanceId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="IntegrationTypeId" Type="int" Nullable="false" />
+          <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Instance" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="Username" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="Password" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="LastSyncDate" Type="datetime" />
+          <Property Name="LastSyncStatus" Type="nvarchar" MaxLength="50" />
+          <Property Name="IsImportActuals" Type="bit" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="ModifiedBy" Type="uniqueidentifier" />
+        </EntityType>
+        <EntityType Name="IntegrationInstance_Attribute">
+          <Key>
+            <PropertyRef Name="IntegrationInstanceId" />
+            <PropertyRef Name="IntegrationTypeAttributeId" />
+          </Key>
+          <Property Name="IntegrationInstanceId" Type="int" Nullable="false" />
+          <Property Name="IntegrationTypeAttributeId" Type="int" Nullable="false" />
+          <Property Name="Value" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="IntegrationInstanceDataTypeMapping">
+          <Key>
+            <PropertyRef Name="IntegrationInstanceDataTypeMappingId" />
+          </Key>
+          <Property Name="IntegrationInstanceDataTypeMappingId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="IntegrationInstanceId" Type="int" Nullable="false" />
+          <Property Name="GameplanDataTypeId" Type="int" Nullable="false" />
+          <Property Name="TargetDataType" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="IntegrationType">
+          <Key>
+            <PropertyRef Name="IntegrationTypeId" />
+          </Key>
+          <Property Name="IntegrationTypeId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Title" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="Description" Type="nvarchar" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="APIVersion" Type="nvarchar" MaxLength="25" />
+          <Property Name="APIURL" Type="nvarchar" MaxLength="1000" />
+        </EntityType>
+        <EntityType Name="IntegrationTypeAttribute">
+          <Key>
+            <PropertyRef Name="IntegrationTypeAttributeId" />
+          </Key>
+          <Property Name="IntegrationTypeAttributeId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="IntegrationTypeId" Type="int" Nullable="false" />
+          <Property Name="Attribute" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="AttributeType" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
         <EntityType Name="Metric">
           <Key>
             <PropertyRef Name="MetricId" />
@@ -437,6 +533,7 @@
           <Property Name="ParentModelId" Type="int" />
           <Property Name="IsBenchmarked" Type="bit" />
           <Property Name="EffectiveDate" Type="datetime" />
+          <Property Name="IntegrationInstanceId" Type="int" />
         </EntityType>
         <EntityType Name="Model_Audience_Event">
           <Key>
@@ -613,6 +710,8 @@
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
           <Property Name="Status" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="IsDeployedToIntegration" Type="bit" Nullable="false" />
+          <Property Name="IntegrationInstanceCampaignId" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program">
           <Key>
@@ -635,6 +734,8 @@
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
           <Property Name="Status" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="IsDeployedToIntegration" Type="bit" Nullable="false" />
+          <Property Name="IntegrationInstanceProgramId" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic">
           <Key>
@@ -668,6 +769,8 @@
           <Property Name="ROI" Type="float" />
           <Property Name="ROIActual" Type="float" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="IsDeployedToIntegration" Type="bit" Nullable="false" />
+          <Property Name="IntegrationInstanceTacticId" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_Actual">
           <Key>
@@ -793,6 +896,18 @@
           <Property Name="Code" Type="nvarchar" MaxLength="255" />
           <Property Name="Funnel" Type="nvarchar" MaxLength="10" />
         </EntityType>
+        <EntityType Name="SyncFrequency">
+          <Key>
+            <PropertyRef Name="IntegrationInstanceId" />
+          </Key>
+          <Property Name="IntegrationInstanceId" Type="int" Nullable="false" />
+          <Property Name="Frequency" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="Time" Type="time" />
+          <Property Name="DayofWeek" Type="nvarchar" MaxLength="50" />
+          <Property Name="Day" Type="nvarchar" MaxLength="255" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
         <EntityType Name="Tactic_Share">
           <Key>
             <PropertyRef Name="TacticShareId" />
@@ -826,6 +941,7 @@
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
           <Property Name="PreviousTacticTypeId" Type="int" />
           <Property Name="IsDeleted" Type="bit" />
+          <Property Name="IsDeployedToIntegration" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="User_Filter">
           <Key>
@@ -992,6 +1108,42 @@
             </Principal>
             <Dependent Role="ImprovementTacticType_Touches">
               <PropertyRef Name="MetricId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IntegrationInstance_Attribute_IntegrationInstance">
+          <End Role="IntegrationInstance" Type="MRPModel.Store.IntegrationInstance" Multiplicity="1" />
+          <End Role="IntegrationInstance_Attribute" Type="MRPModel.Store.IntegrationInstance_Attribute" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="IntegrationInstance_Attribute">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IntegrationInstance_Attribute_IntegrationTypeAttribute">
+          <End Role="IntegrationTypeAttribute" Type="MRPModel.Store.IntegrationTypeAttribute" Multiplicity="1" />
+          <End Role="IntegrationInstance_Attribute" Type="MRPModel.Store.IntegrationInstance_Attribute" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationTypeAttribute">
+              <PropertyRef Name="IntegrationTypeAttributeId" />
+            </Principal>
+            <Dependent Role="IntegrationInstance_Attribute">
+              <PropertyRef Name="IntegrationTypeAttributeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IntegrationInstance_IntegrationType">
+          <End Role="IntegrationType" Type="MRPModel.Store.IntegrationType" Multiplicity="1" />
+          <End Role="IntegrationInstance" Type="MRPModel.Store.IntegrationInstance" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationType">
+              <PropertyRef Name="IntegrationTypeId" />
+            </Principal>
+            <Dependent Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1439,6 +1591,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_SyncFrequency_IntegrationInstance">
+          <End Role="IntegrationInstance" Type="MRPModel.Store.IntegrationInstance" Multiplicity="1" />
+          <End Role="SyncFrequency" Type="MRPModel.Store.SyncFrequency" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="SyncFrequency">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Tactic_Share_Plan_Campaign_Program_Tactic1">
           <End Role="Plan_Campaign_Program_Tactic" Type="MRPModel.Store.Plan_Campaign_Program_Tactic" Multiplicity="0..1" />
           <End Role="Tactic_Share" Type="MRPModel.Store.Tactic_Share" Multiplicity="*" />
@@ -1801,6 +1965,29 @@
             <End Role="Vertical" EntitySet="Verticals" />
             <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
           </AssociationSet>
+          <EntitySet Name="GameplanDataTypes" EntityType="MRPModel.GameplanDataType" />
+          <EntitySet Name="IntegrationInstances" EntityType="MRPModel.IntegrationInstance" />
+          <EntitySet Name="IntegrationInstance_Attribute" EntityType="MRPModel.IntegrationInstance_Attribute" />
+          <EntitySet Name="IntegrationInstanceDataTypeMappings" EntityType="MRPModel.IntegrationInstanceDataTypeMapping" />
+          <EntitySet Name="IntegrationTypes" EntityType="MRPModel.IntegrationType" />
+          <EntitySet Name="IntegrationTypeAttributes" EntityType="MRPModel.IntegrationTypeAttribute" />
+          <EntitySet Name="SyncFrequencies" EntityType="MRPModel.SyncFrequency" />
+          <AssociationSet Name="FK_IntegrationInstance_Attribute_IntegrationInstance" Association="MRPModel.FK_IntegrationInstance_Attribute_IntegrationInstance">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
+            <End Role="IntegrationInstance_Attribute" EntitySet="IntegrationInstance_Attribute" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IntegrationInstance_IntegrationType" Association="MRPModel.FK_IntegrationInstance_IntegrationType">
+            <End Role="IntegrationType" EntitySet="IntegrationTypes" />
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SyncFrequency_IntegrationInstance" Association="MRPModel.FK_SyncFrequency_IntegrationInstance">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
+            <End Role="SyncFrequency" EntitySet="SyncFrequencies" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IntegrationInstance_Attribute_IntegrationTypeAttribute" Association="MRPModel.FK_IntegrationInstance_Attribute_IntegrationTypeAttribute">
+            <End Role="IntegrationTypeAttribute" EntitySet="IntegrationTypeAttributes" />
+            <End Role="IntegrationInstance_Attribute" EntitySet="IntegrationInstance_Attribute" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Audience">
           <Key>
@@ -2020,6 +2207,7 @@
           <NavigationProperty Name="Model2" Relationship="MRPModel.FK_Model_Model" FromRole="Model1" ToRole="Model" />
           <NavigationProperty Name="Plans" Relationship="MRPModel.FK_Plan_Plan" FromRole="Model" ToRole="Plan" />
           <NavigationProperty Name="TacticTypes" Relationship="MRPModel.fk_TacticType_Model" FromRole="Model" ToRole="TacticType" />
+          <Property Type="Int32" Name="IntegrationInstanceId" />
         </EntityType>
         <EntityType Name="Model_Audience_Event">
           <Key>
@@ -2234,6 +2422,8 @@
           <NavigationProperty Name="Vertical" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Vertical" FromRole="Plan_Campaign_Program_Tactic" ToRole="Vertical" />
           <NavigationProperty Name="Tactic_Share" Relationship="MRPModel.FK_Tactic_Share_Plan_Campaign_Program_Tactic1" FromRole="Plan_Campaign_Program_Tactic" ToRole="Tactic_Share" />
           <NavigationProperty Name="Plan_Campaign_Program" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program" FromRole="Plan_Campaign_Program_Tactic" ToRole="Plan_Campaign_Program" />
+          <Property Type="Boolean" Name="IsDeployedToIntegration" Nullable="false" />
+          <Property Type="String" Name="IntegrationInstanceTacticId" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_Actual">
           <Key>
@@ -2416,6 +2606,7 @@
           <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" FromRole="TacticType" ToRole="Plan_Campaign_Program_Tactic" />
           <NavigationProperty Name="Stage" Relationship="MRPModel.fk_TacticType_Stage" FromRole="TacticType" ToRole="Stage" />
           <Property Type="Boolean" Name="IsDeleted" />
+          <Property Type="Boolean" Name="IsDeployedToIntegration" Nullable="false" />
         </EntityType>
         <EntityType Name="User_Filter">
           <Key>
@@ -2953,6 +3144,8 @@
           <NavigationProperty Name="Tactic_Share" Relationship="MRPModel.FK__Tactic_Sh__PlanC__4589517F" FromRole="Plan_Campaign" ToRole="Tactic_Share" />
           <NavigationProperty Name="Plan_Campaign_Program" Relationship="MRPModel.FK_Plan_Campaign_Program_Plan_Campaign" FromRole="Plan_Campaign" ToRole="Plan_Campaign_Program" />
           <NavigationProperty Name="Vertical" Relationship="MRPModel.FK_Plan_Campaign_Vertical" FromRole="Plan_Campaign" ToRole="Vertical" />
+          <Property Type="Boolean" Name="IsDeployedToIntegration" Nullable="false" />
+          <Property Type="String" Name="IntegrationInstanceCampaignId" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program">
           <Key>
@@ -2982,6 +3175,8 @@
           <NavigationProperty Name="Tactic_Share" Relationship="MRPModel.FK__Tactic_Sh__PlanP__44952D46" FromRole="Plan_Campaign_Program" ToRole="Tactic_Share" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program" FromRole="Plan_Campaign_Program" ToRole="Plan_Campaign_Program_Tactic" />
           <NavigationProperty Name="Vertical" Relationship="MRPModel.FK_Plan_Campaign_Program_Vertical" FromRole="Plan_Campaign_Program" ToRole="Vertical" />
+          <Property Type="Boolean" Name="IsDeployedToIntegration" Nullable="false" />
+          <Property Type="String" Name="IntegrationInstanceProgramId" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_Plan_Campaign_Audience">
           <End Type="MRPModel.Audience" Role="Audience" Multiplicity="0..1" />
@@ -3136,6 +3331,147 @@
             </Principal>
             <Dependent Role="Plan_Campaign_Program">
               <PropertyRef Name="VerticalId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="GameplanDataType">
+          <Key>
+            <PropertyRef Name="GameplanDataTypeId" />
+          </Key>
+          <Property Type="Int32" Name="GameplanDataTypeId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="TableName" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="ActualFieldName" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="DisplayFieldName" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
+        </EntityType>
+        <EntityType Name="IntegrationInstance">
+          <Key>
+            <PropertyRef Name="IntegrationInstanceId" />
+          </Key>
+          <Property Type="Int32" Name="IntegrationInstanceId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="IntegrationTypeId" Nullable="false" />
+          <Property Type="Guid" Name="ClientId" Nullable="false" />
+          <Property Type="String" Name="Instance" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Username" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Password" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="Boolean" Name="IsActive" Nullable="false" />
+          <Property Type="DateTime" Name="LastSyncDate" Precision="3" />
+          <Property Type="String" Name="LastSyncStatus" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="Boolean" Name="IsImportActuals" Nullable="false" />
+          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
+          <Property Type="Guid" Name="ModifiedBy" />
+          <NavigationProperty Name="IntegrationInstance_Attribute" Relationship="MRPModel.FK_IntegrationInstance_Attribute_IntegrationInstance" FromRole="IntegrationInstance" ToRole="IntegrationInstance_Attribute" />
+          <NavigationProperty Name="IntegrationType" Relationship="MRPModel.FK_IntegrationInstance_IntegrationType" FromRole="IntegrationInstance" ToRole="IntegrationType" />
+          <NavigationProperty Name="SyncFrequency" Relationship="MRPModel.FK_SyncFrequency_IntegrationInstance" FromRole="IntegrationInstance" ToRole="SyncFrequency" />
+        </EntityType>
+        <EntityType Name="IntegrationInstance_Attribute">
+          <Key>
+            <PropertyRef Name="IntegrationInstanceId" />
+            <PropertyRef Name="IntegrationTypeAttributeId" />
+          </Key>
+          <Property Type="Int32" Name="IntegrationInstanceId" Nullable="false" />
+          <Property Type="Int32" Name="IntegrationTypeAttributeId" Nullable="false" />
+          <Property Type="String" Name="Value" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_IntegrationInstance_Attribute_IntegrationInstance" FromRole="IntegrationInstance_Attribute" ToRole="IntegrationInstance" />
+          <NavigationProperty Name="IntegrationTypeAttribute" Relationship="MRPModel.FK_IntegrationInstance_Attribute_IntegrationTypeAttribute" FromRole="IntegrationInstance_Attribute" ToRole="IntegrationTypeAttribute" />
+        </EntityType>
+        <EntityType Name="IntegrationInstanceDataTypeMapping">
+          <Key>
+            <PropertyRef Name="IntegrationInstanceDataTypeMappingId" />
+          </Key>
+          <Property Type="Int32" Name="IntegrationInstanceDataTypeMappingId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="IntegrationInstanceId" Nullable="false" />
+          <Property Type="Int32" Name="GameplanDataTypeId" Nullable="false" />
+          <Property Type="String" Name="TargetDataType" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+        </EntityType>
+        <EntityType Name="IntegrationType">
+          <Key>
+            <PropertyRef Name="IntegrationTypeId" />
+          </Key>
+          <Property Type="Int32" Name="IntegrationTypeId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="Title" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Description" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
+          <Property Type="String" Name="APIVersion" MaxLength="25" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="APIURL" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="IntegrationInstances" Relationship="MRPModel.FK_IntegrationInstance_IntegrationType" FromRole="IntegrationType" ToRole="IntegrationInstance" />
+        </EntityType>
+        <EntityType Name="IntegrationTypeAttribute">
+          <Key>
+            <PropertyRef Name="IntegrationTypeAttributeId" />
+          </Key>
+          <Property Type="Int32" Name="IntegrationTypeAttributeId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="IntegrationTypeId" Nullable="false" />
+          <Property Type="String" Name="Attribute" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="AttributeType" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
+          <NavigationProperty Name="IntegrationInstance_Attribute" Relationship="MRPModel.FK_IntegrationInstance_Attribute_IntegrationTypeAttribute" FromRole="IntegrationTypeAttribute" ToRole="IntegrationInstance_Attribute" />
+        </EntityType>
+        <EntityType Name="SyncFrequency">
+          <Key>
+            <PropertyRef Name="IntegrationInstanceId" />
+          </Key>
+          <Property Type="Int32" Name="IntegrationInstanceId" Nullable="false" />
+          <Property Type="String" Name="Frequency" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="Time" Name="Time" Precision="7" />
+          <Property Type="String" Name="DayofWeek" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Day" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_SyncFrequency_IntegrationInstance" FromRole="SyncFrequency" ToRole="IntegrationInstance" />
+        </EntityType>
+        <Association Name="FK_IntegrationInstance_Attribute_IntegrationInstance">
+          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="1" />
+          <End Type="MRPModel.IntegrationInstance_Attribute" Role="IntegrationInstance_Attribute" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="IntegrationInstance_Attribute">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IntegrationInstance_IntegrationType">
+          <End Type="MRPModel.IntegrationType" Role="IntegrationType" Multiplicity="1" />
+          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationType">
+              <PropertyRef Name="IntegrationTypeId" />
+            </Principal>
+            <Dependent Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SyncFrequency_IntegrationInstance">
+          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="1" />
+          <End Type="MRPModel.SyncFrequency" Role="SyncFrequency" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="SyncFrequency">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IntegrationInstance_Attribute_IntegrationTypeAttribute">
+          <End Type="MRPModel.IntegrationTypeAttribute" Role="IntegrationTypeAttribute" Multiplicity="1" />
+          <End Type="MRPModel.IntegrationInstance_Attribute" Role="IntegrationInstance_Attribute" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationTypeAttribute">
+              <PropertyRef Name="IntegrationTypeAttributeId" />
+            </Principal>
+            <Dependent Role="IntegrationInstance_Attribute">
+              <PropertyRef Name="IntegrationTypeAttributeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3325,6 +3661,7 @@
           <EntitySetMapping Name="Models">
             <EntityTypeMapping TypeName="MRPModel.Model">
               <MappingFragment StoreEntitySet="Model">
+                <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
                 <ScalarProperty Name="EffectiveDate" ColumnName="EffectiveDate" />
                 <ScalarProperty Name="IsBenchmarked" ColumnName="IsBenchmarked" />
                 <ScalarProperty Name="ParentModelId" ColumnName="ParentModelId" />
@@ -3509,6 +3846,8 @@
           <EntitySetMapping Name="Plan_Campaign_Program_Tactic">
             <EntityTypeMapping TypeName="MRPModel.Plan_Campaign_Program_Tactic">
               <MappingFragment StoreEntitySet="Plan_Campaign_Program_Tactic">
+                <ScalarProperty Name="IntegrationInstanceTacticId" ColumnName="IntegrationInstanceTacticId" />
+                <ScalarProperty Name="IsDeployedToIntegration" ColumnName="IsDeployedToIntegration" />
                 <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="ROIActual" ColumnName="ROIActual" />
                 <ScalarProperty Name="ROI" ColumnName="ROI" />
@@ -3688,6 +4027,7 @@
           <EntitySetMapping Name="TacticTypes">
             <EntityTypeMapping TypeName="MRPModel.TacticType">
               <MappingFragment StoreEntitySet="TacticType">
+                <ScalarProperty Name="IsDeployedToIntegration" ColumnName="IsDeployedToIntegration" />
                 <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="PreviousTacticTypeId" ColumnName="PreviousTacticTypeId" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
@@ -3748,6 +4088,8 @@
           <EntitySetMapping Name="Plan_Campaign">
             <EntityTypeMapping TypeName="MRPModel.Plan_Campaign">
               <MappingFragment StoreEntitySet="Plan_Campaign">
+                <ScalarProperty Name="IntegrationInstanceCampaignId" ColumnName="IntegrationInstanceCampaignId" />
+                <ScalarProperty Name="IsDeployedToIntegration" ColumnName="IsDeployedToIntegration" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
                 <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
@@ -3771,6 +4113,8 @@
           <EntitySetMapping Name="Plan_Campaign_Program">
             <EntityTypeMapping TypeName="MRPModel.Plan_Campaign_Program">
               <MappingFragment StoreEntitySet="Plan_Campaign_Program">
+                <ScalarProperty Name="IntegrationInstanceProgramId" ColumnName="IntegrationInstanceProgramId" />
+                <ScalarProperty Name="IsDeployedToIntegration" ColumnName="IsDeployedToIntegration" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
                 <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
@@ -3788,6 +4132,97 @@
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="PlanCampaignId" ColumnName="PlanCampaignId" />
                 <ScalarProperty Name="PlanProgramId" ColumnName="PlanProgramId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="GameplanDataTypes">
+            <EntityTypeMapping TypeName="MRPModel.GameplanDataType">
+              <MappingFragment StoreEntitySet="GameplanDataType">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="DisplayFieldName" ColumnName="DisplayFieldName" />
+                <ScalarProperty Name="ActualFieldName" ColumnName="ActualFieldName" />
+                <ScalarProperty Name="TableName" ColumnName="TableName" />
+                <ScalarProperty Name="GameplanDataTypeId" ColumnName="GameplanDataTypeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IntegrationInstances">
+            <EntityTypeMapping TypeName="MRPModel.IntegrationInstance">
+              <MappingFragment StoreEntitySet="IntegrationInstance">
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="IsImportActuals" ColumnName="IsImportActuals" />
+                <ScalarProperty Name="LastSyncStatus" ColumnName="LastSyncStatus" />
+                <ScalarProperty Name="LastSyncDate" ColumnName="LastSyncDate" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="Instance" ColumnName="Instance" />
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
+                <ScalarProperty Name="IntegrationTypeId" ColumnName="IntegrationTypeId" />
+                <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IntegrationInstance_Attribute">
+            <EntityTypeMapping TypeName="MRPModel.IntegrationInstance_Attribute">
+              <MappingFragment StoreEntitySet="IntegrationInstance_Attribute">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="IntegrationTypeAttributeId" ColumnName="IntegrationTypeAttributeId" />
+                <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IntegrationInstanceDataTypeMappings">
+            <EntityTypeMapping TypeName="MRPModel.IntegrationInstanceDataTypeMapping">
+              <MappingFragment StoreEntitySet="IntegrationInstanceDataTypeMapping">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="TargetDataType" ColumnName="TargetDataType" />
+                <ScalarProperty Name="GameplanDataTypeId" ColumnName="GameplanDataTypeId" />
+                <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
+                <ScalarProperty Name="IntegrationInstanceDataTypeMappingId" ColumnName="IntegrationInstanceDataTypeMappingId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IntegrationTypes">
+            <EntityTypeMapping TypeName="MRPModel.IntegrationType">
+              <MappingFragment StoreEntitySet="IntegrationType">
+                <ScalarProperty Name="APIURL" ColumnName="APIURL" />
+                <ScalarProperty Name="APIVersion" ColumnName="APIVersion" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="IntegrationTypeId" ColumnName="IntegrationTypeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IntegrationTypeAttributes">
+            <EntityTypeMapping TypeName="MRPModel.IntegrationTypeAttribute">
+              <MappingFragment StoreEntitySet="IntegrationTypeAttribute">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="AttributeType" ColumnName="AttributeType" />
+                <ScalarProperty Name="Attribute" ColumnName="Attribute" />
+                <ScalarProperty Name="IntegrationTypeId" ColumnName="IntegrationTypeId" />
+                <ScalarProperty Name="IntegrationTypeAttributeId" ColumnName="IntegrationTypeAttributeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SyncFrequencies">
+            <EntityTypeMapping TypeName="MRPModel.SyncFrequency">
+              <MappingFragment StoreEntitySet="SyncFrequency">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Day" ColumnName="Day" />
+                <ScalarProperty Name="DayofWeek" ColumnName="DayofWeek" />
+                <ScalarProperty Name="Time" ColumnName="Time" />
+                <ScalarProperty Name="Frequency" ColumnName="Frequency" />
+                <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -178,6 +178,7 @@
     <Compile Include="Controllers\BoostController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\ExternalServiceController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImprovementController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
@@ -221,6 +222,9 @@
     <Compile Include="Models\Funnel_Field.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\GameplanDataType.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Geography.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
@@ -236,6 +240,25 @@
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\InspectModel.cs" />
+    <Compile Include="Models\IntegrationInstance.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\IntegrationInstanceDataTypeMapping.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\IntegrationInstanceModel.cs" />
+    <Compile Include="Models\IntegrationInstance_Attribute.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\IntegrationModel.cs" />
+    <Compile Include="Models\IntegrationType.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\IntegrationTypeAttribute.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\IntegrationTypeAttributeModel.cs" />
+    <Compile Include="Models\IntegrationTypeModel.cs" />
     <Compile Include="Models\LoginModel.cs" />
     <Compile Include="Models\Metric.cs">
       <DependentUpon>MRP.tt</DependentUpon>
@@ -323,6 +346,10 @@
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SummaryReportModel.cs" />
+    <Compile Include="Models\SyncFrequency.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SyncFrequencyModel.cs" />
     <Compile Include="Models\TacticType.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
@@ -861,6 +888,9 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
     <Content Include="Views\Shared\_ForgotPasswordLayout.cshtml" />
+    <Content Include="Views\ExternalService\index.cshtml" />
+    <Content Include="Views\ExternalService\Create.cshtml" />
+    <Content Include="Views\ExternalService\Edit.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>
