@@ -13,6 +13,8 @@
                                               bool PublisheStatus = ViewBag.Flag;
     @Html.Hidden("PublisheStatus", PublisheStatus);
                                                   var currentdate = System.DateTime.Today.ToShortDateString();
+                                                  bool IsModelIntegrated = ViewBag.IsModelIntegrated;
+    @Html.Hidden("IsModelIntegrated", IsModelIntegrated);
  
 }
 @section nlFormContent{
@@ -53,7 +55,7 @@
             </li>
         }
         <li class="item">
-            <a class="source-sans-probold integrations leftnav" id="aIntegration" href="#" style="cursor:default !important;"><span style="cursor:default;"></span>@Html.Raw("INTEGRATION")</a>
+            <a class="source-sans-probold integrations leftnav" id="aIntegration" href="#"><span></span>@Html.Raw("INTEGRATIONS")</a>
         </li>
     </ul>
     <ul class="nav nav-list nav-gray-plan">
@@ -154,7 +156,12 @@
             @*    <th>Projected @Html.LabelForINQ("INQ")</th>*@
                 <th>Projected @Html.LabelForMQL("MQL")</th>
                 <th class="border-r">Projected Cost</th>
-                <th>Deploy to Model</th>
+                <th class="border-r width50px" style="text-align:center;">Deploy to Model</th>
+
+                @if(IsModelIntegrated)
+                {
+                    <th class="width50px" style="text-align:center;">Deploy to Integration</th>
+                }
             </tr>
         </thead>
         <tbody>
@@ -240,7 +247,9 @@
             else if ($(this).attr('id') == 'aAudience') {
                 url = '@Url.Content("~/Model/Audience")';
             }
-
+            else if ($(this).attr('id') == 'aIntegration') {
+                url = '@Url.Content("~/Model/Integration")';
+            }
             else if ($(this).attr('id') == 'aResults') {
                 url = '@Url.Content("~/Model/Results")';
                 isResults = '1';
@@ -393,15 +402,15 @@
                             Changed By : Nirav shah on 6 Feb 2014
                             Change : pass new parameter modelid
                         */
-                        addRowTactic(i, tactic[i].id, tactic[i].clientid, tactic[i].modelId, tactic[i].title, tactic[i].Stage,/* tactic[i].inquiries,*/ tactic[i].mqls, tactic[i].revenue);
+                        addRowTactic(i, tactic[i].id, tactic[i].clientid, tactic[i].modelId, tactic[i].title, tactic[i].Stage,/* tactic[i].inquiries,*/ tactic[i].mqls, tactic[i].revenue, tactic[i].IsDeployedToIntegration);
                     }
                 } else {
-                    $('#table_tactics > tbody').append('<tr><td colspan="8" class="gray">No saved tactics to display.</td></tr>');
+                    $('#table_tactics > tbody').append('<tr><td colspan="9" class="gray">No saved tactics to display.</td></tr>');
                 }
             }
         }
         //add row in tactics table
-        function addRowTactic(_index, _id, _Clientid, _modelId, _title, Stage,/* _inquiries,*/ _mqls, _revenue) {
+        function addRowTactic(_index, _id, _Clientid, _modelId, _title, Stage,/* _inquiries,*/ _mqls, _revenue, _IsDeployedToIntegration) {
             var $tableTactics = $('#table_tactics > tbody');
             var $table_activities = $('#table_activities > tbody');
             var $html = "";
@@ -420,8 +429,13 @@
                           //'<td   class="sm" id="' + _id + '">' + FormatCommas(_inquiries.toString(), false) + '</td>' +
                           '<td   class="sm" id="' + _id + '">' + FormatCommas(_mqls.toString(), false) + '</td>' +
                           '<td  class="border-r sm" id="' + _id + '">$' + FormatCommas(_revenue.toString(), false) + '</td>' +
-                          '<td ><span class="circle-check-icon circle-check-icon-blue"  id = "' + "rej" + _id + '"></span></td>' +
-                      '</tr>';
+                          '<td class="border-r"><span class="circle-check-icon circle-check-icon-blue"  id = "' + "rej" + _id + '"></span></td>';
+
+                if ($("#IsModelIntegrated").val() == 'True') {
+                    $html += '<td><span class="circle-check-icon-integration  ' + (_IsDeployedToIntegration == true ? "circle-check-icon-integration-blue" : "") + '"  id = "' + "int" + _id + '"></span></td>';
+                }
+
+                $html += '</tr>';
 
             } else {
                 $html += '<tr clientid="0" class="rejected" id="' + _id + '" data-index="' + _index + '">' +
@@ -430,8 +444,14 @@
                             //'<td  id="' + _id + '" class="sm">' + FormatCommas(_inquiries.toString(), false) + '</td>' +
                             '<td  id="' + _id + '" class="sm">' + FormatCommas(_mqls.toString(), false) + '</td>' +
                             '<td id="' + _id + '" class="border-r sm">$' + FormatCommas(_revenue.toString(), false) + '</td>' +
-                  '<td ><span class="circle-check-icon"  id = "' + "rej" + _id + '"></span></td>' +
-              '</tr>'
+                            '<td class="border-r"><span class="circle-check-icon"  id = "' + "rej" + _id + '"></span></td>';
+
+                if ($("#IsModelIntegrated").val() == 'True') {
+                    $html += '<td><span class="circle-check-icon-integration  ' + (_IsDeployedToIntegration == true ? "circle-check-icon-integration-blue" : "") + '"  id = "' + "int" + _id + '"></span></td>';
+                }
+              
+                $html += '</tr>';
+
             }
             $tableTactics.append($html);
         }
@@ -459,12 +479,36 @@
             if ($("#latestModelId").val() == lastModelId) {
                 if ($(this).hasClass('circle-check-icon-blue')) {
                     $(this).removeClass('circle-check-icon-blue');
+
+                    if ($(this).parent().next().find("span").hasClass("circle-check-icon-integration-blue"))
+                    {
+                        $(this).parent().next().find("span").removeClass("circle-check-icon-integration-blue")
+                    }
                 }
                 else {
                     $(this).addClass('circle-check-icon-blue');
                 }
             }
         });
+
+        $(document).on('click', '#table_tactics tbody tr td span.circle-check-icon-integration', function (e) {
+            if ($("#latestModelId").val() == lastModelId) {
+
+                if ($(this).parent().prev().find("span").hasClass("circle-check-icon-blue")) {
+
+                    if ($(this).hasClass('circle-check-icon-integration-blue')) {
+                        $(this).removeClass('circle-check-icon-integration-blue');
+                    }
+                    else {
+                        $(this).addClass('circle-check-icon-integration-blue');
+                    }
+                }
+                else {
+                    alert("For Deploy to Integration, The tactic must be Deployed to Model.");
+                }
+            }
+        });
+
         $("#cancel-button").click(function () {
             $('#DivBackgroundModel').css("display", "none");
             $('#DivPublishModelPopup').css("display", "none");
@@ -531,10 +575,25 @@
             var rejid = [];
             var ModelId = $("#latestModelId").val();
             $('#table_tactics tbody tr td span.circle-check-icon.circle-check-icon-blue').each(function () {
-                ids.push(this.id);
+
+                if ($(this).parent().next().find("span").hasClass("circle-check-icon-integration-blue")) {
+                    ids.push(this.id + '_true');
+                }
+                else {
+                    ids.push(this.id + '_false');
+                }
+
             });
+
             $('#table_tactics tbody tr td span.circle-check-icon').each(function () {
-                rejid.push(this.id);
+
+                if ($(this).parent().next().find("span").hasClass("circle-check-icon-integration-blue")) {
+                    rejid.push(this.id + '_true');
+                }
+                else {
+                    rejid.push(this.id + '_false');
+                }
+
             });
 
             var totlen = rejid.length;

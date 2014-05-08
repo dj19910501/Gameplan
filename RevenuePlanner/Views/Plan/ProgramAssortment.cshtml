@@ -1,5 +1,10 @@
 ﻿@model RevenuePlanner.Models.Plan_Campaign_ProgramModel
 @using RevenuePlanner.Helpers
+
+@{
+    string ExtIntService = ViewBag.ExtIntService;
+}
+
 <style type="text/css">
     .verticalIdSelectBox .sbHolder {
         width: 90%;
@@ -47,12 +52,28 @@
             @Html.HiddenFor(model => model.CEndDate, new { id = "hdnCEndDate" })
             @Html.HiddenFor(model => model.TStartDate, new { id = "hdnTStartDate" })
             @Html.HiddenFor(model => model.TEndDate, new { id = "hdnTEndDate" })
+            @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
 
             <label class="t_title">Program Title</label>
             @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true", maxlength = "255", id="txtTitle" }) @* Modified by :- Sohel Pathan on 24/04/2014 for internal review point to stop form posting on ENTERKEY press event *@
 
             <label>Description</label>
             @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", rows = "3", maxlength = "4000" })
+
+
+            @if (ExtIntService!=string.Empty)
+            {
+                <label>Status</label>
+                if (Model.IsDeployedToIntegration)
+                {
+                     <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to @ExtIntService" maxlength="18" readonly />
+                }
+                else
+                {    
+                     <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to @ExtIntService" maxlength="18" readonly />
+                }
+            }
+
 
             @if ((bool)ViewBag.RedirectType)
             {
@@ -166,6 +187,21 @@
             if (e.keyCode == 13) {
                 e.preventDefault();
                 return false;
+            }
+        });
+
+        $("#t_integration_status").click(function () {
+            if ($(this).hasClass("icon-check-blue")) {
+                $(this).val("Not Sync to @ExtIntService");
+                $(this).addClass("icon-check-gray");
+                $(this).removeClass("icon-check-blue");
+                $("#hdnIsDeployedToIntegration").val(false);
+            }
+            else {
+                $(this).val("Sync to @ExtIntService");
+                $(this).addClass("icon-check-blue");
+                $(this).removeClass("icon-check-gray");
+                $("#hdnIsDeployedToIntegration").val(true);
             }
         });
 

@@ -1004,7 +1004,21 @@ namespace RevenuePlanner.Helpers
             get { return _ModelTacticCannotDelete; }
             set { _ModelTacticCannotDelete = value; }
         }
-        //End Manoj Limbachiya 05May2014 PL#458
+        //End Manoj Limbachiya 05May2014 PL#458	  
+
+private string _ModelIntegrationSaveSuccess;
+        public string ModelIntegrationSaveSuccess
+        {
+            get
+            {
+                return _ModelIntegrationSaveSuccess;
+            }
+            set
+            {
+                _ModelIntegrationSaveSuccess = value;
+            }
+        }
+
         #endregion
 
         #region  Functions
@@ -1208,6 +1222,9 @@ namespace RevenuePlanner.Helpers
                                             break;
                                         case "ValidationForMqlGreaterThanINQ":
                                             _ValidationForMqlGreaterThanINQ = strMsgValue;
+                                            break;
+                                        case "ModelIntegrationSaveSuccess":
+                                            _ModelIntegrationSaveSuccess = strMsgValue;
                                             break;
                                         /*
                            * changed by : Nirav Shah on 31 Jan 2013

@@ -2770,6 +2770,10 @@ namespace RevenuePlanner.Controllers
                     break;
             }
             int Modelid = id;
+
+            var objModel = db.Models.SingleOrDefault(varM => varM.ModelId == Modelid);
+            ViewBag.IsModelIntegrated = objModel.IntegrationInstanceId == null ? false : true;
+
             Tactic_TypeModel objTacticTypeModel = FillInitialTacticData(id);
             objTacticTypeModel.ModelId = id;
             ViewBag.Version = id;
@@ -2863,7 +2867,9 @@ namespace RevenuePlanner.Controllers
                 // inquiries = (p.ProjectedInquiries == null) ? 0 : p.ProjectedInquiries,
                 mqls = (p.ProjectedMQLs == null) ? 0 : p.ProjectedMQLs,
                 revenue = (p.ProjectedRevenue == null) ? 0 : p.ProjectedRevenue,
+                IsDeployedToIntegration = p.IsDeployedToIntegration
             }).Select(p => p).Distinct().OrderBy(p => p.title);
+
             return Json(allTactic, JsonRequestBehavior.AllowGet);
         }
 
@@ -2876,6 +2882,9 @@ namespace RevenuePlanner.Controllers
             Tactic_TypeModel tm = new Tactic_TypeModel();
             try
             {
+                var objModel = db.Models.SingleOrDefault(varM => varM.ModelId == ModelId);
+                ViewBag.IsModelIntegrated = objModel.IntegrationInstanceId == null ? false : true;
+
                 /*changed by Nirav Shah on 2 APR 2013*/
                 //ViewBag.Stages = db.Stages.Where(s => s.IsDeleted == false && s.ClientId == Sessions.User.ClientId);
                 string Marketing = Convert.ToString(Enums.Funnel.Marketing).ToLower();
@@ -2893,6 +2902,11 @@ namespace RevenuePlanner.Controllers
                 tm.ProjectedMQLs = (mtp.ProjectedMQLs != null) ? mtp.ProjectedMQLs : 0;
                 tm.ProjectedRevenue = (mtp.ProjectedRevenue != null) ? mtp.ProjectedRevenue : 0;
                 /*end changes*/
+
+                // added by dharmraj for ticket #433 Integration - Model Screen Tactic List
+                tm.IsDeployedToIntegration = mtp.IsDeployedToIntegration;
+
+
                 tm.StageId = mtp.StageId;
                 tm.ModelId = (mtp.ModelId == 0 || mtp.ModelId == null) ? ModelId : mtp.ModelId;
                 if (mtp.ModelId != null && mtp.ClientId != null)
@@ -2924,6 +2938,9 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         public PartialViewResult CreateTacticData(int ModelId = 0)
         {
+            var objModel = db.Models.SingleOrDefault(varM => varM.ModelId == ModelId);
+            ViewBag.IsModelIntegrated = objModel.IntegrationInstanceId == null ? false : true;
+
             //ViewBag.Stages = db.Stages.Where(s => s.IsDeleted == false && s.ClientId == Sessions.User.ClientId);
             /*changed by Nirav Shah on 2 APR 2013*/
             string StageType = Enums.StageType.CR.ToString();
@@ -3018,7 +3035,7 @@ namespace RevenuePlanner.Controllers
         /// Action to Save Tactic data .
         /// </summary>
         [HttpPost]
-        public ActionResult SaveTactic(string Title, string Description, int? StageId, int ProjectedMQLs, /*int ProjectedInquiries, */int ProjectedRevenue, int TacticTypeId, string modelID)
+        public ActionResult SaveTactic(string Title, string Description, int? StageId, int ProjectedMQLs, /*int ProjectedInquiries, */int ProjectedRevenue, int TacticTypeId, string modelID, bool isDeployedToIntegration)
         {
             try
             {
@@ -3038,6 +3055,10 @@ namespace RevenuePlanner.Controllers
                 objtactic.ClientId = Sessions.User.ClientId;
                 objtactic.CreatedBy = Sessions.User.UserId;
                 objtactic.ModelId = ModelId;
+
+                // Added by Dharmraj for ticket #433 Integration - Model Screen Tactic List
+                objtactic.IsDeployedToIntegration = isDeployedToIntegration;
+
                 /* Change TFS Bug - 166 : Improper behavior when editing Tactic in model 
                    Changed By : Nirav shah on 6 Feb 2014
                  */
@@ -3138,7 +3159,8 @@ namespace RevenuePlanner.Controllers
                     for (int i = 0; i < rejid.Length; i++)
                     {
                         int tacticId;
-                        int.TryParse(rejid[i].Replace("rej", ""), out tacticId);
+                        string[] strArr = rejid[i].Replace("rej", "").Split('_');
+                        int.TryParse(strArr[0], out tacticId);
                         if (tacticId != 0)
                         {
                             TacticType rejobj = db.TacticTypes.Where(t => t.TacticTypeId == tacticId).FirstOrDefault();
@@ -3205,6 +3227,7 @@ namespace RevenuePlanner.Controllers
                                             {
                                                 rejobj.ModelId = null;
                                                 rejobj.PreviousTacticTypeId = null;
+                                                rejobj.IsDeployedToIntegration = false;
                                                 db.TacticTypes.Attach(rejobj);
                                                 db.Entry(rejobj).State = EntityState.Modified;
                                                 result = db.SaveChanges();
@@ -3241,10 +3264,12 @@ namespace RevenuePlanner.Controllers
                     for (int i = 0; i < id.Length; i++)
                     {
                         int tacticId;
-                        int.TryParse(id[i].Replace("rej", ""), out tacticId);
+                        string[] strArr = id[i].Replace("rej", "").Split('_');
+                        int.TryParse(strArr[0], out tacticId);
+                        bool IsDeployToIntegration = Convert.ToBoolean(strArr[1]);
                         if (tacticId != 0)
                         {
-                            int tid = Convert.ToInt32(Convert.ToString(id[i].Replace("rej", "")));
+                            int tid = Convert.ToInt32(Convert.ToString(strArr[0]));
                             var obj = db.TacticTypes.Where(t => t.TacticTypeId == tid).FirstOrDefault();
                             objtactic.Title = obj.Title;
                             objtactic.Description = obj.Description;
@@ -3271,6 +3296,10 @@ namespace RevenuePlanner.Controllers
                             objtactic.CreatedBy = Sessions.User.UserId;
                             objtactic.ModelId = ModelId;
                             objtactic.PreviousTacticTypeId = obj.PreviousTacticTypeId;
+
+                            // Added by dharmraj for ticket #433 Integration - Model Screen Tactic List
+                            objtactic.IsDeployedToIntegration = IsDeployToIntegration;
+
                             if (obj.ModelId == null && obj.ClientId == null)
                             {
                                 MRPEntities dbadd = new MRPEntities();
@@ -3519,6 +3548,127 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
+        #region Integration
+
+        /// <summary>
+        /// Added By: Dharmraj Mangukiya
+        /// Action to show model integration screen.
+        /// </summary>
+        public ActionResult Integration(int id = 0)
+        {
+            ViewBag.ModelId = id;
+
+            var objModel = db.Models.SingleOrDefault(b => b.ModelId == id && b.IsDeleted == false);
+
+            ViewBag.ModelStatus = objModel.Status;
+            ViewBag.ModelTitle = objModel.Title;
+            
+            var businessunit = db.Models.Where(b => b.ModelId == id && b.IsDeleted == false).OrderByDescending(c => c.CreatedDate).Select(u => u.BusinessUnitId).FirstOrDefault();
+            var IsBenchmarked = (id == 0) ? true : db.Models.Where(b => b.ModelId == id && b.IsDeleted == false).OrderByDescending(c => c.CreatedDate).Select(u => u.IsBenchmarked).FirstOrDefault();
+            ViewBag.BusinessUnitId = Convert.ToString(businessunit);
+            ViewBag.ActiveMenu = Enums.ActiveMenu.Model;
+            ViewBag.IsBenchmarked = (IsBenchmarked != null) ? IsBenchmarked : true;
+            BaselineModel objBaselineModel = FillInitialData(id, businessunit);
+            string Title = objBaselineModel.Versions.Where(s => s.IsLatest == true).Select(s => s.Title).FirstOrDefault();
+            if (Title != null && Title != string.Empty)
+            {
+                ViewBag.Msg = string.Format(Common.objCached.ModelTacticTypeNotexist, Title);
+            }
+            
+            ViewBag.ModelPublishEdit = Common.objCached.ModelPublishEdit;
+            ViewBag.ModelPublishCreateNew = Common.objCached.ModelPublishCreateNew;
+            ViewBag.ModelPublishComfirmation = Common.objCached.ModelPublishComfirmation;
+            ViewBag.Flag = false;
+            if (id != 0)
+            {
+                ViewBag.Flag = chekckParentPublishModel(id);
+            }
+            return View(objBaselineModel);
+        }
+
+        /// <summary>
+        /// Added By: Dharmraj mangukiya
+        /// Action to show Integrations List by ModelId.
+        /// </summary>
+        public JsonResult GetIntegrationDatabyid(int id)
+        {
+            var objModel = db.Models.FirstOrDefault(varM => varM.ModelId == id);
+            int integrationInstanceId = objModel.IntegrationInstanceId == null ? 0 : Convert.ToInt32(objModel.IntegrationInstanceId);
+
+            var lstIntegrationInstance = db.IntegrationInstances.Where(varI => varI.IsDeleted == false && varI.IsActive == true && varI.ClientId == Sessions.User.ClientId).ToList().Select(varI => varI);
+
+            //returns all Integrations
+            var allIntegrationInstance = lstIntegrationInstance.Select(p => new
+            {
+                id = p.IntegrationInstanceId,
+                clientid = p.ClientId,
+                provider = p.IntegrationType.Title,
+                instance = p.Instance,
+                lastSync = GetFormatedDate(p.LastSyncDate),
+                target = p.IntegrationInstanceId == integrationInstanceId ? true : false
+            }).Select(p => p).Distinct().OrderBy(p => p.provider);
+
+            return Json(allIntegrationInstance, JsonRequestBehavior.AllowGet);
+        }
+
+        public string GetFormatedDate(DateTime? objDate)
+        {
+            if (objDate == null)
+                return string.Empty;
+            else
+                return Convert.ToDateTime(objDate).ToString("MMM dd") + " at " + Convert.ToDateTime(objDate).ToString("hh:mm tt");
+        }
+
+        /// <summary>
+        /// Added By: Dharmraj mangukiya
+        /// Action to save integration for model by integrationInstanceId and modelId.
+        /// </summary>
+        public JsonResult SaveAllIntegration(int modelId, int integrationId)
+        {
+            bool returnValue = false;
+            string message = string.Empty;
+
+            try
+            {
+                var businessunit = db.Models.Where(b => b.ModelId == modelId && b.IsDeleted == false).OrderByDescending(c => c.CreatedDate).Select(u => u.BusinessUnitId).FirstOrDefault();
+
+                List<ModelVersion> lstVersions = GetVersions(modelId, businessunit);
+
+                foreach (var version in lstVersions)
+                {
+                    var objModel = db.Models.SingleOrDefault(varM => varM.ModelId == version.ModelId);
+
+                    if (objModel.IntegrationInstanceId == integrationId)
+                    {
+                        objModel.IntegrationInstanceId = null;
+                    }
+                    else
+                    {
+                        objModel.IntegrationInstanceId = integrationId;
+                    }
+
+                    db.Entry(objModel).State = EntityState.Modified;
+                    db.SaveChanges();    
+                }
+
+                message = Common.objCached.ModelIntegrationSaveSuccess;
+
+                returnValue = true;
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+                message = Common.objCached.ErrorOccured;
+            }
+
+            var obj = new { returnValue = returnValue, message = message };
+
+            return Json(obj, JsonRequestBehavior.AllowGet);
+        }
+
+
+        #endregion
+
         #region ChangeLog
         /// <summary>
         /// Load overview
@@ -3551,26 +3701,42 @@ namespace RevenuePlanner.Controllers
 
         #region Model Publish
         /// <summary>
-        /// Added By: Nirav Shah.
-        /// Modified By Maninder Singh Wadhva to address TFS Bug#239
+        /// Added By: Dharmraj Mangukiya
         /// Action to publish Model.
         /// </summary>
-        //public JsonResult ModelPublish(int id)
-        //{
-        //    bool isTacticTypeExist = false;
-        //    bool isModelPublished = PublishModel(id,effectiveDate, out isTacticTypeExist);
-        //    if (isModelPublished.Equals(true))
-        //    {
-        //        TempData["SuccessMessage"] = string.Format(Common.objCached.ModelPublishSuccess);
-        //        TempData["ErrorMessage"] = string.Empty;
-        //        return Json(new { redirect = Url.Action("ModelZero") });
-        //    }
-        //    else
-        //    {
-        //        TempData["SuccessMessage"] = string.Empty;
-        //        return Json(new { errorMessage = Common.objCached.ErrorOccured });
-        //    }
-        //}
+        public JsonResult ModelPublish(int ModelId, string EffectiveDate)
+        {
+            bool isTacticTypeExist = false;
+            string errorMessage = string.Empty, successMessage = string.Empty;
+            Model objModel = db.Models.Where(t => t.ModelId == ModelId).FirstOrDefault();
+            string Title = objModel.Title;
+
+            bool isPublished = PublishModel(ModelId, EffectiveDate, out isTacticTypeExist);
+            if (isPublished.Equals(true))
+            {
+                successMessage = string.Format(Common.objCached.ModelPublishSuccess);
+                TempData["SuccessMessage"] = string.Format(Common.objCached.ModelPublishSuccess);
+                TempData["ErrorMessage"] = string.Empty;
+                return Json(new { successMessage }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+
+                TempData["SuccessMessage"] = string.Empty;
+                if (isTacticTypeExist.Equals(false))
+                {
+                    TempData["ErrorMessage"] = string.Format(Common.objCached.ModelTacticTypeNotexist, Title);
+                    errorMessage = string.Format(Common.objCached.ModelTacticTypeNotexist, Title);
+                    return Json(new { errorMessage }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
+                    errorMessage = Common.objCached.ErrorOccured;
+                    return Json(new { errorMessage }, JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
 
         /// <summary>
         /// Function to publish model.

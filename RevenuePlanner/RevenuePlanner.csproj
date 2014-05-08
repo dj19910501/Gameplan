@@ -891,6 +891,7 @@
     <Content Include="Views\ExternalService\index.cshtml" />
     <Content Include="Views\ExternalService\Create.cshtml" />
     <Content Include="Views\ExternalService\Edit.cshtml" />
+    <Content Include="Views\Model\Integration.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

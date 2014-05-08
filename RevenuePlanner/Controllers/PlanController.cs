@@ -1440,6 +1440,25 @@ namespace RevenuePlanner.Controllers
             //ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
             //ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
             //ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
+
+            // added by Dharmraj for ticket #435 MAP/CRM Integration - Tactic Creation
+            bool flag = false; // check for weather the model is integrated to external integration service or not.
+            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
+            if (objPlan.Model.IntegrationInstanceId != null)
+            {
+                int integrationInstanceId = Convert.ToInt32(objPlan.Model.IntegrationInstanceId);
+                string ExternalIntegrationService = db.IntegrationInstances.SingleOrDefault(varI => varI.IntegrationInstanceId == integrationInstanceId).IntegrationType.Title;
+                ViewBag.ExtIntService = ExternalIntegrationService;
+                flag = true;
+            }
+            else
+            {
+                ViewBag.ExtIntService = string.Empty;
+            }
+
+            ViewBag.IsDeployedToIntegration = flag;
+
+
             ViewBag.IsCreated = true;
             ViewBag.RedirectType = false;
             ViewBag.IsOwner = true;
@@ -1479,10 +1498,24 @@ namespace RevenuePlanner.Controllers
                 return null;
             }
 
+            // added by Dharmraj for ticket #435 MAP/CRM Integration - Tactic Creation
+            if (pc.Plan.Model.IntegrationInstanceId != null)
+            {
+                int integrationInstanceId = Convert.ToInt32(pc.Plan.Model.IntegrationInstanceId);
+                string ExternalIntegrationService = db.IntegrationInstances.SingleOrDefault(varI => varI.IntegrationInstanceId == integrationInstanceId).IntegrationType.Title;
+                ViewBag.ExtIntService = ExternalIntegrationService;
+            }
+            else
+            {
+                ViewBag.ExtIntService = string.Empty;
+            }
+
             Plan_CampaignModel pcm = new Plan_CampaignModel();
             pcm.PlanCampaignId = pc.PlanCampaignId;
             pcm.Title = pc.Title;
             pcm.Description = pc.Description;
+            pcm.IsDeployedToIntegration = pc.IsDeployedToIntegration;
+            ViewBag.IsDeployedToIntegration = pcm.IsDeployedToIntegration;
             /* changed by Nirav on 11 APR for PL 322*/
             //pcm.VerticalId = pc.VerticalId;
             //pcm.AudienceId = pc.AudienceId;
@@ -1575,6 +1608,7 @@ namespace RevenuePlanner.Controllers
                                 pcobj.PlanId = Sessions.PlanId;
                                 pcobj.Title = form.Title;
                                 pcobj.Description = form.Description;
+                                pcobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
                                 /* changed by Nirav on 11 APR for PL 322*/
                                 //pcobj.VerticalId = form.VerticalId;
                                 //pcobj.AudienceId = form.AudienceId;
@@ -1646,6 +1680,7 @@ namespace RevenuePlanner.Controllers
                                 //Change Plan Id
                                 pcobj.Title = form.Title;
                                 pcobj.Description = form.Description;
+                                pcobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
                                 /* changed by Nirav on 11 APR for PL 322*/
                                 //pcobj.VerticalId = form.VerticalId;
                                 //pcobj.AudienceId = form.AudienceId;
@@ -1771,8 +1806,25 @@ namespace RevenuePlanner.Controllers
             //ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
             //ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
             ViewBag.IsCreated = true;
+
+            // added by Dharmraj for ticket #435 MAP/CRM Integration - Tactic Creation
+            bool flag = false; // check for weather the model is integrated to external integration service or not.
+            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
+            if (objPlan.Model.IntegrationInstanceId != null)
+            {
+                int integrationInstanceId = Convert.ToInt32(objPlan.Model.IntegrationInstanceId);
+                string ExternalIntegrationService = db.IntegrationInstances.SingleOrDefault(varI => varI.IntegrationInstanceId == integrationInstanceId).IntegrationType.Title;
+                ViewBag.ExtIntService = ExternalIntegrationService;
+                flag = true;
+            }
+            else
+            {
+                ViewBag.ExtIntService = string.Empty;
+            }
+
             Plan_Campaign_ProgramModel pcpm = new Plan_Campaign_ProgramModel();
             pcpm.PlanCampaignId = id;
+            pcpm.IsDeployedToIntegration = flag;
             //Plan_Campaign pc = db.Plan_Campaign.Where(pco => pco.PlanCampaignId == id).SingleOrDefault();
             /* changed by Nirav on 11 APR for PL 322*/
             //pcpm.GeographyId = pc.GeographyId;
@@ -1815,6 +1867,18 @@ namespace RevenuePlanner.Controllers
                 return null;
             }
 
+            // added by Dharmraj for ticket #435 MAP/CRM Integration - Tactic Creation
+            if (pcp.Plan_Campaign.Plan.Model.IntegrationInstanceId != null)
+            {
+                int integrationInstanceId = Convert.ToInt32(pcp.Plan_Campaign.Plan.Model.IntegrationInstanceId);
+                string ExternalIntegrationService = db.IntegrationInstances.SingleOrDefault(varI => varI.IntegrationInstanceId == integrationInstanceId).IntegrationType.Title;
+                ViewBag.ExtIntService = ExternalIntegrationService;
+            }
+            else
+            {
+                ViewBag.ExtIntService = string.Empty;
+            }
+
             Plan_Campaign_ProgramModel pcpm = new Plan_Campaign_ProgramModel();
             pcpm.PlanProgramId = pcp.PlanProgramId;
             pcpm.PlanCampaignId = pcp.PlanCampaignId;
@@ -1845,6 +1909,9 @@ namespace RevenuePlanner.Controllers
             pcpm.MQLs = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcp.PlanProgramId && t.IsDeleted == false).ToList()).Sum(tm => tm.MQL);
             pcpm.Cost = pcp.Cost;
             /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
+
+            pcpm.IsDeployedToIntegration = pcp.IsDeployedToIntegration;
+
             if (Sessions.User.UserId == pcp.CreatedBy)
             {
                 ViewBag.IsOwner = true;
@@ -1901,6 +1968,8 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.CreatedBy = Sessions.User.UserId;
                                 pcpobj.CreatedDate = DateTime.Now;
                                 pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(); //status field added for Plan_Campaign_Program table
+                                pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
+
                                 db.Entry(pcpobj).State = EntityState.Added;
                                 int result = db.SaveChanges();
                                 int programid = pcpobj.PlanProgramId;
@@ -1971,6 +2040,7 @@ namespace RevenuePlanner.Controllers
                                 //Change Plan Id
                                 pcpobj.Title = form.Title;
                                 pcpobj.Description = form.Description;
+                                pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
                                 /* changed by Nirav on 11 APR for PL 322*/
                                 //pcpobj.VerticalId = form.VerticalId;
                                 //pcpobj.AudienceId = form.AudienceId;
@@ -2105,8 +2175,24 @@ namespace RevenuePlanner.Controllers
                               orderby t.Title
                               select t;
             ViewBag.IsCreated = true;
+
+            // added by Dharmraj for ticket #435 MAP/CRM Integration - Tactic Creation
+            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
+            if (objPlan.Model.IntegrationInstanceId != null)
+            {
+                int integrationInstanceId = Convert.ToInt32(objPlan.Model.IntegrationInstanceId);
+                string ExternalIntegrationService = db.IntegrationInstances.SingleOrDefault(varI => varI.IntegrationInstanceId == integrationInstanceId).IntegrationType.Title;
+                ViewBag.ExtIntService = ExternalIntegrationService;
+            }
+            else
+            {
+                ViewBag.ExtIntService = string.Empty;
+            }
+
+
             Plan_Campaign_Program_TacticModel pcptm = new Plan_Campaign_Program_TacticModel();
             pcptm.PlanProgramId = id;
+            pcptm.IsDeployedToIntegration = false;
             //Plan_Campaign_Program pcp = db.Plan_Campaign_Program.Where(pcpo => pcpo.PlanProgramId == id).SingleOrDefault();
             //pcptm.GeographyId = pcp.GeographyId;
             //pcptm.VerticalId = pcp.VerticalId;
@@ -2153,6 +2239,20 @@ namespace RevenuePlanner.Controllers
                 return null;
             }
 
+            // added by Dharmraj for ticket #435 MAP/CRM Integration - Tactic Creation
+            if (pcpt.TacticType.Model.IntegrationInstanceId != null)
+            {
+                int integrationInstanceId = Convert.ToInt32(pcpt.TacticType.Model.IntegrationInstanceId);
+
+                string ExternalIntegrationService = db.IntegrationInstances.SingleOrDefault(varI => varI.IntegrationInstanceId == integrationInstanceId).IntegrationType.Title;
+
+                ViewBag.ExtIntService = ExternalIntegrationService;
+            }
+            else
+            {
+                ViewBag.ExtIntService = string.Empty;
+            }
+
             Plan_Campaign_Program_TacticModel pcptm = new Plan_Campaign_Program_TacticModel();
             pcptm.PlanProgramId = pcpt.PlanProgramId;
             pcptm.PlanTacticId = pcpt.PlanTacticId;
@@ -2174,6 +2274,9 @@ namespace RevenuePlanner.Controllers
             pcptm.INQs = pcpt.INQs;
             pcptm.MQLs = Common.CalculateMQLTactic(pcpt.INQs, pcpt.StartDate, pcpt.PlanTacticId, pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId);
             pcptm.Cost = pcpt.Cost;
+
+            pcptm.IsDeployedToIntegration = pcpt.IsDeployedToIntegration;
+
             /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
             if (Sessions.User.UserId == pcpt.CreatedBy)
             {
@@ -2252,6 +2355,7 @@ namespace RevenuePlanner.Controllers
                                                          join p in db.Plans on m.ModelId equals p.ModelId
                                                          where p.PlanId == Sessions.PlanId
                                                          select m.BusinessUnitId).FirstOrDefault();
+                                pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
                                 pcpobj.CreatedBy = Sessions.User.UserId;
                                 pcpobj.CreatedDate = DateTime.Now;
                                 db.Entry(pcpobj).State = EntityState.Added;
@@ -2383,6 +2487,9 @@ namespace RevenuePlanner.Controllers
                                 }
                                 /* TFS Bug 207 : end changes */
                                 // pcpobj.Cost = form.Cost; 
+
+                                pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
+
                                 pcpobj.ModifiedBy = Sessions.User.UserId;
                                 pcpobj.ModifiedDate = DateTime.Now;
                                 db.Entry(pcpobj).State = EntityState.Modified;

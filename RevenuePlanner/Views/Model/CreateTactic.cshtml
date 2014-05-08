@@ -1,6 +1,9 @@
 ﻿@model RevenuePlanner.Models.Tactic_TypeModel
 @using RevenuePlanner.Models
 @using RevenuePlanner.Helpers
+@{
+    bool IsModelIntegrated = ViewBag.IsModelIntegrated;
+}
     <div class="head">
         <span class="close-form source-sans-proregular">» CLOSE MENU</span>
         <div class="cf">
@@ -44,7 +47,7 @@
                 <label>Target Stage</label>
                 <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.StageId, new SelectList((System.Collections.IEnumerable)ViewBag.Stages, "StageId", "Code"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
 
-                <label>Status</label>
+                <label class="margin-top10">Status</label>
                 @{
         if (Model.ClientId != null)
         {
@@ -60,6 +63,19 @@
                 
                     <span id="t_status" class="setbackground">@Html.Raw("Not Deployed")</span>
         }
+
+        if (IsModelIntegrated)
+        {
+            if(Model.IsDeployedToIntegration)
+            {
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Deployed to Integration" maxlength="18" readonly />
+            }
+            else
+            {
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Deployed to Integration" maxlength="18" readonly />
+            }
+        }
+        
                 }
             </div>
             <!--End content-->
@@ -175,6 +191,19 @@
             $("#slidepanel-container").empty();
         });
 
+        $("#frm_tactics #t_integration_status").click(function () {
+            if ($(this).hasClass("icon-check-blue")) {
+                $(this).val("Not Deployed to Integration");
+                $(this).addClass("icon-check-gray");
+                $(this).removeClass("icon-check-blue");
+            }
+            else {
+                $(this).val("Deployed to Integration");
+                $(this).addClass("icon-check-blue");
+                $(this).removeClass("icon-check-gray");
+            }
+        });
+
    
         $('form').find('input[type=text], select, textarea').each(function () {
             $(this).change(function () {
@@ -264,12 +293,19 @@
                 StageId = 'null';
             }
             var ModelTacticTypeId = $("#hdnTacticTypeId").val();
+
+            var isDeployedToIntegration = false;
+
+            if ($("#t_integration_status").hasClass("icon-check-blue")) {
+                isDeployedToIntegration = true;
+            }
+
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Model/SaveTactic/")',
                 data: 'Title=' + Title + '&Description=' + Description + '&StageId=' + StageId + '&ProjectedMQLs=' + ProjectedMQLs + 
                  '&ProjectedRevenue=' + ProjectedRevenue + '&TacticTypeId=' + TacticTypeId
-               + '&modelID=' + modelID,
+               + '&modelID=' + modelID + '&isDeployedToIntegration=' + isDeployedToIntegration,
                 success: function (data) {
                     if (data.redirect) {
                         $("#slidepanel").css("display", "none");

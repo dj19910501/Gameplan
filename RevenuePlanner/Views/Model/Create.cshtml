@@ -55,11 +55,11 @@
         string ulclass = "";
         if (ModelId == "" || ModelId == "0")
         {
-            ulclass = "nav nav-listc nav-gray-planc";
+            ulclass = "nav nav-list nav-gray-planc";
         }
         else
         {
-            ulclass = "nav nav-listc nav-gray-plan";
+            ulclass = "nav nav-list nav-gray-plan";
         }
     }
 
@@ -83,7 +83,7 @@
             </li>
         }
         <li class="item">
-            <a class="source-sans-probold integrations leftnav" id="aIntegration" href="#" style="cursor:default !important;"><span style="cursor:default;"></span>@Html.Raw("INTEGRATION")</a>
+            <a class="source-sans-probold integrations leftnav" id="aIntegration" href="#"><span></span>@Html.Raw("INTEGRATIONS")</a>
         </li>
     </ul>
 
@@ -442,6 +442,9 @@ $(".leftnav").click(function () {
     }
     else if ($(this).attr('id') == 'aTactics') {
         url = '@Url.Content("~/Model/Tactics")';
+    }
+    else if ($(this).attr('id') == 'aIntegration') {
+        url = '@Url.Content("~/Model/Integration")';
     }
     else if ($(this).attr('id') == 'aResults') {
         url = '@Url.Content("~/Model/Results")';
