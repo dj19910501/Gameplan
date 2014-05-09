@@ -344,4 +344,8 @@
 		<Name>ModelIntegrationSaveSuccess</Name>
 		<value>Model integration saved successfully.</value>
 	</Field>
+  <Field>
+    <Name>DeployedToIntegrationStatusSaveSuccess</Name>
+    <value>Deployed to Integration status saved successfully.</value>
+  </Field>
 </Messages>

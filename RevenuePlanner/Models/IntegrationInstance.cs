@@ -17,6 +17,7 @@ namespace RevenuePlanner.Models
         public IntegrationInstance()
         {
             this.IntegrationInstance_Attribute = new HashSet<IntegrationInstance_Attribute>();
+            this.IntegrationInstanceDataTypeMappings = new HashSet<IntegrationInstanceDataTypeMapping>();
         }
     
         public int IntegrationInstanceId { get; set; }
@@ -38,5 +39,6 @@ namespace RevenuePlanner.Models
         public virtual ICollection<IntegrationInstance_Attribute> IntegrationInstance_Attribute { get; set; }
         public virtual IntegrationType IntegrationType { get; set; }
         public virtual SyncFrequency SyncFrequency { get; set; }
+        public virtual ICollection<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
     }
 }

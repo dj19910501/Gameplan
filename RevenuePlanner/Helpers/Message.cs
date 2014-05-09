@@ -1006,7 +1006,7 @@ namespace RevenuePlanner.Helpers
         }
         //End Manoj Limbachiya 05May2014 PL#458	  
 
-private string _ModelIntegrationSaveSuccess;
+        private string _ModelIntegrationSaveSuccess;
         public string ModelIntegrationSaveSuccess
         {
             get
@@ -1016,6 +1016,19 @@ private string _ModelIntegrationSaveSuccess;
             set
             {
                 _ModelIntegrationSaveSuccess = value;
+            }
+        }
+
+        private string _DeployedToIntegrationStatusSaveSuccess;
+        public string DeployedToIntegrationStatusSaveSuccess
+        {
+            get
+            {
+                return _DeployedToIntegrationStatusSaveSuccess;
+            }
+            set
+            {
+                _DeployedToIntegrationStatusSaveSuccess = value;
             }
         }
 
@@ -1225,6 +1238,9 @@ private string _ModelIntegrationSaveSuccess;
                                             break;
                                         case "ModelIntegrationSaveSuccess":
                                             _ModelIntegrationSaveSuccess = strMsgValue;
+                                            break;
+                                        case "DeployedToIntegrationStatusSaveSuccess":
+                                            _DeployedToIntegrationStatusSaveSuccess = strMsgValue;
                                             break;
                                         /*
                            * changed by : Nirav Shah on 31 Jan 2013

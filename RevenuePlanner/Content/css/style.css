@@ -651,7 +651,15 @@ body {
 }
 
 .nav-gray-plan li a.tactics:hover span {
-    background-position: -170px -30px !important;
+    background-position: -70px -30px !important;
+}
+
+.nav-gray-plan li a.tactics span {
+    background-position: -70px 0 !important;
+}
+
+.nav-gray-plan li a.integrations span {
+    background-position: -235px 0px !important;
 }
 
 .nav-gray-plan li a.integrations:hover span {

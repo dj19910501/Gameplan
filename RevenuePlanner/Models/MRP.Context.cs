@@ -36,7 +36,6 @@ namespace RevenuePlanner.Models
         public DbSet<Funnel> Funnels { get; set; }
         public DbSet<Funnel_Field> Funnel_Field { get; set; }
         public DbSet<Geography> Geographies { get; set; }
-        public DbSet<ImprovementTacticType> ImprovementTacticTypes { get; set; }
         public DbSet<ImprovementTacticType_Metric> ImprovementTacticType_Metric { get; set; }
         public DbSet<ImprovementTacticType_Touches> ImprovementTacticType_Touches { get; set; }
         public DbSet<Metric> Metrics { get; set; }
@@ -74,6 +73,7 @@ namespace RevenuePlanner.Models
         public DbSet<Plan_Campaign> Plan_Campaign { get; set; }
         public DbSet<Plan_Campaign_Program> Plan_Campaign_Program { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
+        public DbSet<ImprovementTacticType> ImprovementTacticTypes { get; set; }
     
         public virtual int Plan_Campaign_Program_Tactic_ActualDelete(Nullable<int> planTacticId, ObjectParameter returnValue)
         {

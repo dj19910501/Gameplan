@@ -14,10 +14,21 @@ namespace RevenuePlanner.Models
     
     public partial class GameplanDataType
     {
+        public GameplanDataType()
+        {
+            this.IntegrationInstanceDataTypeMappings = new HashSet<IntegrationInstanceDataTypeMapping>();
+        }
+    
         public int GameplanDataTypeId { get; set; }
         public string TableName { get; set; }
         public string ActualFieldName { get; set; }
         public string DisplayFieldName { get; set; }
         public bool IsDeleted { get; set; }
+        public int IntegrationTypeId { get; set; }
+        public bool IsGet { get; set; }
+        public bool IsStage { get; set; }
+    
+        public virtual IntegrationType IntegrationType { get; set; }
+        public virtual ICollection<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
     }
 }

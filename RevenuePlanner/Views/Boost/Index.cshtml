@@ -46,7 +46,8 @@
                 <th class="border-r width340">Tactic Type</th>
                 <th class="border-r width452">Improvement Target</th>
                 <th class="border-r width65px">Cost</th>
-                <th class="width65px">Active</th>
+                <th class="border-r width65px">Active</th>
+                <th class="width65px" style="text-align:center;">Deploy to Integration</th>
             </tr>
         </thead>
         <tbody>
@@ -78,6 +79,7 @@
         }
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
     });
+
     function LoadTactics() {
         $.ajax({
             type: 'get',
@@ -91,25 +93,130 @@
             }
         });
     }
+
     $("#create_new_tactic").click(function () {
         $("#slidepanel").css("display", "block");
         var url = '@Url.Content("~/Boost/DetailImprovementTacticData")';
-    $('#slidepanel-container').load(url + '?id=' + 0);
-    $("#slidepanel").css("right", "0px");
-});
-$(document).on('click', '#table_boost tbody tr', function (e) {
-    var id = $(this).attr("id");
-    $("#slidepanel").css("display", "block");
-    var url = '@Url.Content("~/Boost/DetailImprovementTacticData")';
+        $('#slidepanel-container').load(url + '?id=' + 0);
+        $("#slidepanel").css("right", "0px");
+    });
+
+    $(document).on('click', '#table_boost tbody tr', function (e) {
+        var id = $(this).attr("id");
+        $("#slidepanel").css("display", "block");
+        var url = '@Url.Content("~/Boost/DetailImprovementTacticData")';
         $('#slidepanel-container').load(url + '?id=' + id);
         $("#slidepanel").css("right", "0px");
     });
+
+
+    $(document).on('click', '#table_boost tbody tr td span.circle-check-icon-integration', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+
+        var impTacticTypeId = this.id.split('_')[1];
+
+        if ($(this).hasClass('circle-check-icon-integration-blue')) {
+            $(this).removeClass('circle-check-icon-integration-blue');
+            SaveDeployedToIntegrationStatus(impTacticTypeId, false);
+        }
+        else {
+            $(this).addClass('circle-check-icon-integration-blue');
+            SaveDeployedToIntegrationStatus(impTacticTypeId, true);
+        }
+
+    });
+
+    $(document).on('click', '#table_boost tbody tr td span.circle-check-icon', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+
+        var impTacticTypeId = this.id.split('_')[1];
+
+        if ($(this).hasClass('circle-check-icon-blue')) {
+            $(this).removeClass('circle-check-icon-blue');
+            SaveDeployeStatus(impTacticTypeId, false);
+        }
+        else {
+            $(this).addClass('circle-check-icon-blue');
+            SaveDeployeStatus(impTacticTypeId, true);
+        }
+
+    });
+
+    function SaveDeployedToIntegrationStatus(ImpTacticTypeId, flag) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Boost/SaveDeployedToIntegrationStatus/")',
+            data: {
+                id: ImpTacticTypeId,
+                isDeployedToIntegration: flag
+            },
+            dataType: "json",
+            success: function (r) {
+
+                if (r.returnValue) {
+
+                    $('#successMessage').css("display", "block");
+                    $('#cSuccess').html('<strong>Success.</strong> ' + r.message)
+                    $("#successMessage").slideDown(1200); // Show the Alert
+                    $("#successMessage").slideUp(3000);
+                    $('#errorMessage').css("display", "none");
+
+                }
+                else {
+                    $('#errorMessage').css("display", "block");
+                    $('#cError').html('<strong>Error.</strong> ' + r.message)
+                    $("#errorMessage").slideDown(1200); // Show the Alert
+                    $('#successMessage').css("display", "none");
+                }
+
+                myApp.hidePleaseWait();
+            }
+        });
+
+    }
+
+    function SaveDeployeStatus(ImpTacticTypeId, flag) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Boost/SaveDeployeStatus/")',
+            data: {
+                id: ImpTacticTypeId,
+                isDeployed: flag
+            },
+            dataType: "json",
+            success: function (r) {
+
+                if (r.returnValue) {
+
+                    $('#successMessage').css("display", "block");
+                    $('#cSuccess').html('<strong>Success.</strong> ' + r.message)
+                    $("#successMessage").slideDown(1200); // Show the Alert
+                    $("#successMessage").slideUp(3000);
+                    $('#errorMessage').css("display", "none");
+
+                }
+                else {
+                    $('#errorMessage').css("display", "block");
+                    $('#cError').html('<strong>Error.</strong> ' + r.message)
+                    $("#errorMessage").slideDown(1200); // Show the Alert
+                    $('#successMessage').css("display", "none");
+                }
+
+                myApp.hidePleaseWait();
+            }
+        });
+
+    }
+
+
     //fill tactics table with data from json
     function fillTacticsTable() {
         if (improvementTactics != 'undefined') {
             if (improvementTactics.length) {
                 for (i in improvementTactics) {
-                    addRowTactic(i, improvementTactics[i].Id, improvementTactics[i].Title, improvementTactics[i].Cost, improvementTactics[i].TargetStage, improvementTactics[i].IsDeployed);
+                    addRowTactic(i, improvementTactics[i].Id, improvementTactics[i].Title, improvementTactics[i].Cost, improvementTactics[i].TargetStage, improvementTactics[i].IsDeployed, improvementTactics[i].IsDeployedToIntegration);
                 }
             } else {
                 $('#table_boost > tbody').append('<tr><td colspan="8" class="gray">No saved improvement tactics to display.</td></tr>');
@@ -117,7 +224,7 @@ $(document).on('click', '#table_boost tbody tr', function (e) {
         }
     }
     //add row in tactics table
-    function addRowTactic(_index, _id, _Title, _Cost, _TargetStage, _IsDeployed) {
+    function addRowTactic(_index, _id, _Title, _Cost, _TargetStage, _IsDeployed, _IsDeployedToIntegration) {
         var $table_boost = $('#table_boost > tbody');
         var $html = "";
         $html += '<tr data-slidepanel="panel" id="' + _id + '" data-index="' + _index + '">' +
@@ -149,11 +256,19 @@ $(document).on('click', '#table_boost tbody tr', function (e) {
         $html += '</td>';
         $html += ' <td class="border-r tipsyclass">$' + FormatCommas(_Cost.toString(), false) + '</td>';
         if (_IsDeployed != true) {
-            $html += '<td><span class="circle-check-icon"></span></td>';
+            $html += '<td class="border-r"><span class="circle-check-icon" id="spnStatus_' + _id + '"></span></td>';
         }
         else {
-            $html += '<td><span class="circle-check-icon-blue"></span></td>';
+            $html += '<td class="border-r"><span class="circle-check-icon circle-check-icon-blue" id="spnStatus_' + _id + '"></span></td>';
         }
+
+        if (_IsDeployedToIntegration != true) {
+            $html += '<td><span class="circle-check-icon-integration" id="spn_' + _id + '"></span></td>';
+        }
+        else {
+            $html += '<td><span class="circle-check-icon-integration circle-check-icon-integration-blue" id="spn_' + _id + '"></span></td>';
+        }
+
         $html += '</tr>';
         $table_boost.append($html);
     }

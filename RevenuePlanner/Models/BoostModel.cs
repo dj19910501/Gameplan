@@ -18,6 +18,7 @@ namespace RevenuePlanner.Models
         public int MetricId { get; set; }
         public List<MetricModel> listMetricssize { get; set; }
         public List<MetricModel> listMetrics { get; set; }
+        public bool IsDeployedToIntegration { get; set; }
         
     }
     public class MetricModel

@@ -36,6 +36,18 @@
                     @Html.TextBoxFor(model => model.IsDeployed, new { @readonly = true, id = "t_status" })
                 </td>
             </tr>
+            <tr>
+                <td colspan="3">
+                    @if(Model.IsDeployedToIntegration)
+                    {
+                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Deployed to Integration" maxlength="18" readonly />
+                    }
+                    else
+                    {
+                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Deployed to Integration" maxlength="18" readonly />
+                    }
+                </td>
+            </tr>
         </table>
         <label>Improvement Weight(1-5)</label>
         <div class="accordion sidebar-accordion" id="accordion-1">
@@ -123,6 +135,20 @@
             $("#slidepanel").css("display", "none");
             $("#slidepanel-container").empty();
         });
+
+        $("#frm_tactics #t_integration_status").click(function () {
+            if ($(this).hasClass("icon-check-blue")) {
+                $(this).val("Not Deployed to Integration");
+                $(this).addClass("icon-check-gray");
+                $(this).removeClass("icon-check-blue");
+            }
+            else {
+                $(this).val("Deployed to Integration");
+                $(this).addClass("icon-check-blue");
+                $(this).removeClass("icon-check-gray");
+            }
+        });
+
         var status = $("#frm_tactics #t_status").val();
         if (status != "True") {
             $("#frm_tactics #t_status").val("Not Active");
@@ -243,11 +269,17 @@
                     ids.push(value);
                 }
             });
+
+            var isDeployedToIntegration = false;
+            if ($("#t_integration_status").hasClass("icon-check-blue")) {
+                isDeployedToIntegration = true;
+            }
+
             $.ajax({
                 type: 'post',
                 url: '@Url.Content("~/Boost/saveImprovementTacticData")',
                 data: 'improvementId=' + $("#ImprovementTacticTypeId").val() + '&improvementDetails=' + ids + '&status=' + status + '&cost=' + ReplaceCC($("#hdnCost").val()) + '&desc=' + $("#hdndesc").val()
-                       + '&title=' + $("#hdntitle").val(),
+                       + '&title=' + $("#hdntitle").val() + '&deployToIntegrationStatus=' + isDeployedToIntegration,
                 success: function (data) {
                     if (data.redirect) {
                         $("#slidepanel").css("display", "none");

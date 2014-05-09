@@ -20,5 +20,8 @@ namespace RevenuePlanner.Models
         public string TargetDataType { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
+    
+        public virtual GameplanDataType GameplanDataType { get; set; }
+        public virtual IntegrationInstance IntegrationInstance { get; set; }
     }
 }

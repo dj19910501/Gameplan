@@ -13,7 +13,6 @@
         <EntityTypeShape EntityType="MRPModel.Funnel" Width="1.5" PointX="5.0304407314539148" PointY="28.819537056991614" />
         <EntityTypeShape EntityType="MRPModel.Funnel_Field" Width="1.5" PointX="9.4134535442169067" PointY="16.768906914055769" />
         <EntityTypeShape EntityType="MRPModel.Geography" Width="1.5" PointX="6.1078605065624512" PointY="23.993372555819047" />
-        <EntityTypeShape EntityType="MRPModel.ImprovementTacticType" Width="1.5" PointX="7.3415921979311811" PointY="27.448042420413366" />
         <EntityTypeShape EntityType="MRPModel.ImprovementTacticType_Metric" Width="1.5" PointX="0.84524023013433447" PointY="24.357864465731133" />
         <EntityTypeShape EntityType="MRPModel.ImprovementTacticType_Touches" Width="1.5" PointX="11.682093908862255" PointY="16.276602678129731" />
         <EntityTypeShape EntityType="MRPModel.Metric" Width="1.5" PointX="10.132629179457496" PointY="25.826246914372895" />
@@ -28,15 +27,15 @@
         <EntityTypeShape EntityType="MRPModel.Plan" Width="1.5" PointX="2.0280356323477045" PointY="28.852768196190134" />
         <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_Actual" Width="1.5" PointX="1.2966903733539816" PointY="5.5703083004664204" />
         <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_Comment" Width="1.5" PointX="10.380301867788798" PointY="5.4001054341905306" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign" Width="1.5" PointX="9.4847534212678468" PointY="24.888445612456856" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign" Width="1.5" PointX="9.25" PointY="22.375" />
         <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign_Program" Width="1.5" PointX="10.125" PointY="31.25" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign_Program_Tactic" Width="1.5" PointX="10.5" PointY="26.125" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign_Program_Tactic" Width="1.5" PointX="12.25" PointY="25.375" />
         <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign_Program_Tactic_Comment" Width="1.5" PointX="7.3066710714747529" PointY="22.195210616195208" />
         <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign_Program_Tactic_Share" Width="1.5" PointX="3.90276126559021" PointY="23.102879758506493" />
         <EntityTypeShape EntityType="MRPModel.Plan_Team" Width="1.5" PointX="3.6439063081722267" PointY="4.6789027921291551" />
         <EntityTypeShape EntityType="MRPModel.Report_Share" Width="1.5" PointX="3.815175590950612" PointY="8.3009748348505124" />
         <EntityTypeShape EntityType="MRPModel.Stage" Width="1.5" PointX="1.8417976618939069" PointY="16.75677352433874" />
-        <EntityTypeShape EntityType="MRPModel.Tactic_Share" Width="1.5" PointX="11.8389989062394" PointY="25.04583570037309" />
+        <EntityTypeShape EntityType="MRPModel.Tactic_Share" Width="1.5" PointX="11.75" PointY="21.875" />
         <EntityTypeShape EntityType="MRPModel.TacticType" Width="1.5" PointX="3.710306957229184" PointY="18.655535036071917" />
         <EntityTypeShape EntityType="MRPModel.User_Filter" Width="1.5" PointX="6.8591159595451856" PointY="11.90956633347532" />
         <EntityTypeShape EntityType="MRPModel.User_Notification" Width="1.5" PointX="7.10616354230147" PointY="2.299482227442545" />
@@ -48,9 +47,6 @@
         <AssociationConnector Association="MRPModel.FK_Funnel_Field_Funnel" />
         <AssociationConnector Association="MRPModel.FK_Model_Funnel_Funnel" />
         <AssociationConnector Association="MRPModel.FK_ModelReview_Funnel_Field" />
-        <AssociationConnector Association="MRPModel.FK_ImprovementTacticType_Metric_ImprovementTacticType" />
-        <AssociationConnector Association="MRPModel.FK_ImprovementTacticType_Touches_ImprovementTacticType" />
-        <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType" />
         <AssociationConnector Association="MRPModel.FK_ImprovementTacticType_Metric_Metric" />
         <AssociationConnector Association="MRPModel.FK_ImprovementTacticType_Touches_Metric" />
         <AssociationConnector Association="MRPModel.FK_Model_Audience_Event_Model_Audience_Event" />
@@ -84,7 +80,7 @@
         <AssociationConnector Association="MRPModel.FK_IntegrationInstance_Attribute_IntegrationTypeAttribute" />
         <EntityTypeShape EntityType="MRPModel.Plan_Campaign" Width="1.5" PointX="5.0059728049700958" PointY="21.458365435459822" />
         <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program" Width="1.5" PointX="10.391128632422131" PointY="15.967121295615621" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic" Width="1.5" PointX="10.403816950695504" PointY="23.191550965975761" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic" Width="1.5" PointX="13.75" PointY="23.375" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Audience" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Audience" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Audience" />
@@ -107,6 +103,13 @@
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Vertical" />
         <AssociationConnector Association="MRPModel.FK_Tactic_Share_Plan_Campaign_Program_Tactic1" />
+        <EntityTypeShape EntityType="MRPModel.ImprovementTacticType" Width="1.5" PointX="7.95804136244489" PointY="10.807503943707562" />
+        <AssociationConnector Association="MRPModel.FK_GameplanDataType_IntegrationType" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationInstanceDataTypeMapping_GameplanDataType" />
+        <AssociationConnector Association="MRPModel.FK_ImprovementTacticType_Metric_ImprovementTacticType" />
+        <AssociationConnector Association="MRPModel.FK_ImprovementTacticType_Touches_ImprovementTacticType" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationInstanceDataTypeMapping_IntegrationInstance" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

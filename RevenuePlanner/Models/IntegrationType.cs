@@ -17,6 +17,7 @@ namespace RevenuePlanner.Models
         public IntegrationType()
         {
             this.IntegrationInstances = new HashSet<IntegrationInstance>();
+            this.GameplanDataTypes = new HashSet<GameplanDataType>();
         }
     
         public int IntegrationTypeId { get; set; }
@@ -27,5 +28,6 @@ namespace RevenuePlanner.Models
         public string APIURL { get; set; }
     
         public virtual ICollection<IntegrationInstance> IntegrationInstances { get; set; }
+        public virtual ICollection<GameplanDataType> GameplanDataTypes { get; set; }
     }
 }
