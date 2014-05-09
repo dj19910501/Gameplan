@@ -51,10 +51,12 @@ namespace RevenuePlanner.Models
         public bool IsDeleted { get; set; }
         public bool IsDeployedToIntegration { get; set; }
         public string IntegrationInstanceTacticId { get; set; }
+        public Nullable<System.DateTime> LastSyncDate { get; set; }
     
         public virtual Audience Audience { get; set; }
         public virtual BusinessUnit BusinessUnit { get; set; }
         public virtual Geography Geography { get; set; }
+        public virtual Plan_Campaign_Program Plan_Campaign_Program { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic_Actual> Plan_Campaign_Program_Tactic_Actual { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic_Comment> Plan_Campaign_Program_Tactic_Comment { get; set; }
         public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic1 { get; set; }
@@ -62,6 +64,5 @@ namespace RevenuePlanner.Models
         public virtual TacticType TacticType { get; set; }
         public virtual Vertical Vertical { get; set; }
         public virtual ICollection<Tactic_Share> Tactic_Share { get; set; }
-        public virtual Plan_Campaign_Program Plan_Campaign_Program { get; set; }
     }
 }

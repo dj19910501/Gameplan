@@ -503,6 +503,8 @@
     <Content Include="Content\images\imagesarrow-down-header-white.png.png" />
     <Content Include="Content\images\info-blue-icon.png" />
     <Content Include="Content\images\info-icon.png" />
+    <Content Include="Content\images\integration-white-small.png" />
+    <Content Include="Content\images\integration.png" />
     <Content Include="Content\images\left-double-arrow.png" />
     <Content Include="Content\images\left-nav-border.png" />
     <Content Include="Content\images\magnifying_glass.png" />

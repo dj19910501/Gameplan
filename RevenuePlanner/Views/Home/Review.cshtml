@@ -2,7 +2,7 @@
 @{
     var tacticReview = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
 }
-<div class="span5 width360" id="inspect-modal-right-div">
+<div class="span5 width360" id="inspect-modal-right-div" style="width:420px !important;">
     <div class="font-size18">Overview</div>
     <div id="campaign-title" class="bold padding-top16 font-size18">@tacticReview.CampaignTitle</div>
     <div id="program-title" class="font-size18">@tacticReview.ProgramTitle</div>
@@ -50,6 +50,12 @@
                 <label id="audience">Audience</label></div>
             <span id="audience-id" class="blue-text bold" title="@tacticReview.AudiencTitle">@tacticReview.AudiencTitle</span>
         </div>
+        <div class="pull-left size65x38 margin-left20">
+            <div class="integration-review"></div>
+            <div>
+                <label id="integration">Integration</label></div>
+            <span id="integration-id" class="blue-text bold" title="@tacticReview.IntegrationType">@tacticReview.IntegrationType</span>
+        </div>
     </div>
 </div>
 
@@ -84,7 +90,7 @@
     <div class="cf pull-left">
      
         <div style="float: right; margin-top: 10px;">
-            <button class="btn btn-blue text-shadow-blue source-sans-proregular  button-inspect-result-modal pull-right  resize-button margin-left20 btn-blue share-tactic-icon" id="BtnShareTactic" type="button"><span class="flag-icon"></span>Share </button>
+            <button class="btn btn-blue text-shadow-blue source-sans-proregular  button-inspect-result-modal pull-right  resize-button margin-left20 btn-blue share-tactic-icon" id="BtnShareTactic" type="button" style="width:80px;"><span class="flag-icon"></span>Share </button>
         </div>
        
         @{
@@ -97,18 +103,7 @@
             {
 
                 if ((bool)ViewBag.IsValidDirectorUser)
-                 {
-                     if ((bool)ViewBag.IsValidOwner)
-                     {
-                         aryStatus.Add(Submit);    
-                     }
-                    else
-                     {
-                         isVisibleStatus = false;
-                     }
-                 }
-                 else
-                 {
+                {
                     if ((bool)ViewBag.IsValidOwner)
                     {
                         aryStatus.Add(Submit);
@@ -117,7 +112,18 @@
                     {
                         isVisibleStatus = false;
                     }
-                 }
+                }
+                else
+                {
+                    if ((bool)ViewBag.IsValidOwner)
+                    {
+                        aryStatus.Add(Submit);
+                    }
+                    else
+                    {
+                        isVisibleStatus = false;
+                    }
+                }
             }
             else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()))
             {
@@ -152,8 +158,8 @@
                     }
                     else
                     {
-                    aryStatus.Add(Approve);
-                }
+                        aryStatus.Add(Approve);
+                    }
                 }
                 else
                 {
@@ -182,17 +188,17 @@
             if (isVisibleStatus)
             {
                 int len = aryStatus.Count;
-                if(len > 0)
+                if (len > 0)
                 {
-                string firstStatus = aryStatus[0];
+                    string firstStatus = aryStatus[0];
                 
-            <div class="btn-container div-container-buttom " style="float: right;">
+            <div class="margin-top10" style="float: right;">
                 <div id="btn_change_status" class="btn-group dropup">
-                    <button id="btnApproved" data-toggle="dropdown" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular">
+                    <button id="btnApproved" data-toggle="dropdown" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular margin-left20" style="width:80px;">
                         <span class="flag-icon approve-icon-dropdown"></span>
                         <span id="spanTactic">@firstStatus</span>
                     </button>
-                     @Html.Hidden("hdnStatusValue", firstStatus, new { id = "hdnStatusValue"});
+                     @Html.Hidden("hdnStatusValue", firstStatus, new { id = "hdnStatusValue" });
                     @if (len >= 2)
                     {
                         <button data-toggle="dropdown" class="btn dropdown-toggle height25 btn-blue displayinherit">
@@ -212,16 +218,50 @@
                 </div>
 
             </div> 
+                }
             }
-            }
+
+
+            if ((bool)ViewBag.IsModelDeploy)
+            {
+                <div class="margin-top10" style="float: right;">
+                <div id="btn_sync_status" class="btn-group dropup">
+                    <button id="btnSync" data-toggle="dropdown" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width:80px;">
+                        <span class="flag-icon sync-icon-dropdown"></span>
+                        <span id="spanSyncStatus">
+                            @if (tacticReview.IsDeployedToIntegration)
+                            {
+                                @Html.Raw("Sync")
+                            }
+                            else
+                            {
+                                @Html.Raw("Don't Sync") 
+                            }
+
+                        </span>
+                    </button>
+                        <button data-toggle="dropdown" class="btn dropdown-toggle height25 btn-blue displayinherit">
+                            <span class="caret "></span>
+                        </button>                
+                        <ul class="dropdown-menu " id="uldivSync">
+                            <li>
+                                <a id="aSync">Sync</a>
+                            </li>
+                            <li>
+                                <a id="aNotSync">Don't Sync</a>
+                            </li>
+                        </ul>
+                </div>
+            </div> 
+            }            
+            
         }
     </div>
 </div>
 <div id="DivPartialShareTactic">
 </div>
 <script type="text/javascript">
-    $(document).ready(
-      function () {
+    $(document).ready(function () {
 
           SetFormatForLabel("#inq-id", 5);
           SetFormatForLabel("#mqls-id", 5);
@@ -234,6 +274,43 @@
           $("#uldiv li a").click(function () {
               $("#spanTactic").html($(this).text());
               $("#hdnStatusValue").val($(this).text());
+          });
+
+          $("#uldivSync li a").click(function () {
+              $("#spanSyncStatus").html($(this).text());
+              var IsDeployedToIntegration = false;
+              if (this.id == 'aSync') {
+                  IsDeployedToIntegration = true;
+              }
+              var PlanTacticId = $('#hdnPlanTacticId').val();
+
+              $.ajax({
+                  type: 'POST',
+                  url: '@Url.Content("~/Home/SaveSyncToIntegration/")',
+                  data: {
+                      id: PlanTacticId,
+                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", //section parameter added to save tactic comment
+                      IsDeployedToIntegration: IsDeployedToIntegration
+                  },
+                  success: function (data) {
+                      if (data.result) {
+                          $("#successMessage").css("display", "block");
+                          var topsize = $(document).scrollTop() + 41;
+                          $("#modal-container-186470").css("top", topsize + "px");
+                          $("#spanMessageSuccess").empty();
+                          $("#spanMessageSuccess").text(data.msg);
+                      }
+                  },
+                  error: function () {
+                      $("#errorMessage").css("display", "block");
+                      var topsize = $(document).scrollTop() + 41;
+                      $("#modal-container-186470").css("top", topsize + "px");
+                      $("#spanMessageError").empty();
+                      GoToLogin();
+                      return false;
+                  }
+              });
+
           });
 
           var divheight = $("#divInnerComment").height();

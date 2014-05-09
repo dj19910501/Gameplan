@@ -3611,6 +3611,11 @@ namespace RevenuePlanner.Controllers
             return Json(allIntegrationInstance, JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// Function to return datetime in formatted pattern.
+        /// </summary>
+        /// <param name="objDate"></param>
+        /// <returns></returns>
         public string GetFormatedDate(DateTime? objDate)
         {
             if (objDate == null)

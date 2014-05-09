@@ -5078,7 +5078,7 @@ input::-moz-placeholder {
 
 .last-updated {
     margin-right: calc(100% - 333px);
-    margin-top: 34px;
+    margin-top: 20px;
     width: 300px;
 }
 
@@ -6911,3 +6911,15 @@ input.icon-check-gray{background-image: url("../images/circle-check-icon-gray.pn
 input.icon-check-blue{background-image: url("../images/circle-check-icon-small-blue.png"); background-repeat: no-repeat; background-position: right;}
 
 /* End - Added by dharmraj for model integration */	
+
+/* Added by dharmraj for Plan integration */	
+.integration-review {
+    background: url("../images/integration.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    cursor: pointer;
+    display: block;
+    height: 31px;
+    width: 37px;
+}
+.sync-icon-dropdown {background: url("../images/integration-white-small.png") no-repeat 0 0; display: block; float: left; width:30px; height: 30px; margin: -5px -5px -5px -15px;}
+
+/* End - Added by dharmraj for Plan integration */	

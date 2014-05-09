@@ -1985,6 +1985,7 @@ namespace RevenuePlanner.Controllers
                                         int tacid = Convert.ToInt32(tac);
                                         pcptobj.TacticTypeId = tacid;
                                         TacticType mt = db.TacticTypes.Where(m => m.TacticTypeId == tacid).FirstOrDefault();
+                                        pcptobj.IsDeployedToIntegration = mt.Model.IntegrationInstanceId == null ? false : true;
                                         pcptobj.Title = mt.Title;
                                         /* changed by Nirav on 11 APR for PL 322*/
                                         pcptobj.VerticalId = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId).Select(s => s.VerticalId).FirstOrDefault();

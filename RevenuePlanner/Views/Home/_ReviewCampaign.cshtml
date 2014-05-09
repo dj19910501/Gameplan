@@ -3,7 +3,7 @@
     var campaignReview = (RevenuePlanner.Models.InspectModel)ViewBag.CampaignDetail;
     var db = new RevenuePlanner.Models.MRPEntities();
 }
-<div class="span5 width360" id="inspect-modal-right-div">
+<div class="span5 width360" id="inspect-modal-right-div" style="width:420px !important;">
     <div class="font-size18">Overview</div>
     <div class="cf source-sans-proregular padding-top32">
         <div class="chart-gray pull-left size65x38 without-padding">
@@ -50,6 +50,12 @@
             </div>
             <span id="audience-id" class="blue-text bold">@campaignReview.AudiencTitle</span>
         </div>*@
+        <div class="pull-left size65x38 margin-left20">
+            <div class="integration-review"></div>
+            <div>
+                <label id="integration">Integration</label></div>
+            <span id="integration-id" class="blue-text bold" title="@campaignReview.IntegrationType">@campaignReview.IntegrationType</span>
+        </div>
     </div>
 </div>
 
@@ -85,7 +91,7 @@
     <div class="cf pull-left">
 
         <div style="float: right; margin-top: 10px;">
-            <button class="btn btn-blue text-shadow-blue source-sans-proregular  button-inspect-result-modal pull-right  resize-button margin-left20 btn-blue share-tactic-icon" id="BtnShareTactic" type="button"><span class="flag-icon"></span>Share </button>
+            <button class="btn btn-blue text-shadow-blue source-sans-proregular  button-inspect-result-modal pull-right  resize-button margin-left20 btn-blue share-tactic-icon" id="BtnShareTactic" type="button" style="width:80px;"><span class="flag-icon"></span>Share </button>
         </div>
 
         @{
@@ -103,7 +109,7 @@
             var countNotSubmittedProgram = 0;
             var countNotDeclineTactic = 0;
             var countNotDeclineProgram = 0;
-            
+
             string statuscreate = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString();
             string statussubmit = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString();
             string statusapprve = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString();
@@ -116,10 +122,10 @@
             countNotApprovedTactic = tacticList.Where(p => !p.Status.Equals(statusapprve) && !p.Status.Equals(statusinprogress) && !p.Status.Equals(statuscomplete)).Count();
             countNotSubmittedTactic = tacticList.Where(p => !p.Status.Equals(statussubmit)).Count();
             countNotDeclineTactic = tacticList.Where(p => !p.Status.Equals(statusdecline)).Count();
-            
+
             countNotCreatedTactic = db.Plan_Campaign_Program_Tactic.Where(p => p.Plan_Campaign_Program.PlanCampaignId == campaignReview.PlanCampaignId && p.IsDeleted == false && !p.Status.Equals(statuscreate)).Count();
             countNotApprovedTactic = db.Plan_Campaign_Program_Tactic.Where(p => p.Plan_Campaign_Program.PlanCampaignId == campaignReview.PlanCampaignId && p.IsDeleted == false && (!p.Status.Equals(statusapprve) && !p.Status.Equals(statusinprogress) && !p.Status.Equals(statuscomplete))).Count();
-            countNotSubmittedTactic = db.Plan_Campaign_Program_Tactic.Where(p => p.Plan_Campaign_Program.PlanCampaignId == campaignReview.PlanCampaignId && p.IsDeleted == false  && !p.Status.Equals(statussubmit)).Count();
+            countNotSubmittedTactic = db.Plan_Campaign_Program_Tactic.Where(p => p.Plan_Campaign_Program.PlanCampaignId == campaignReview.PlanCampaignId && p.IsDeleted == false && !p.Status.Equals(statussubmit)).Count();
             countNotDeclineTactic = db.Plan_Campaign_Program_Tactic.Where(p => p.Plan_Campaign_Program.PlanCampaignId == campaignReview.PlanCampaignId && p.IsDeleted == false && !p.Status.Equals(statusdecline)).Count();
 
             var programList = db.Plan_Campaign_Program.Where(p => p.PlanCampaignId == campaignReview.PlanCampaignId && p.IsDeleted == false).ToList();
@@ -127,21 +133,21 @@
             countNotApprovedProgram = programList.Where(p => !p.Status.Equals(statusapprve) && !p.Status.Equals(statusinprogress) && !p.Status.Equals(statuscomplete)).Count();
             countNotSubmittedProgram = programList.Where(p => !p.Status.Equals(statussubmit)).Count();
             countNotDeclineProgram = programList.Where(p => !p.Status.Equals(statusdecline)).Count();
-            
+
             if (campaignReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString()))
             {
-               
+
                 if ((bool)ViewBag.IsValidOwner)
                 {
 
-                     if (countNotSubmittedTactic == 0 && countNotSubmittedProgram == 0)
-                     {
-                         aryStatus.Add(Submit);
-                     }
-                     else if(countNotCreatedTactic == 0 && countNotCreatedProgram ==0)
-                     {
-                         aryStatus.Add(Submit);
-                     }
+                    if (countNotSubmittedTactic == 0 && countNotSubmittedProgram == 0)
+                    {
+                        aryStatus.Add(Submit);
+                    }
+                    else if (countNotCreatedTactic == 0 && countNotCreatedProgram == 0)
+                    {
+                        aryStatus.Add(Submit);
+                    }
                 }
                 else
                 {
@@ -190,24 +196,24 @@
                         }
                     }
                     else
-                {
-                    if(countNotDeclineProgram  == 0 &&  countNotDeclineTactic == 0)
                     {
-                        aryStatus.Add(Approve);
+                        if (countNotDeclineProgram == 0 && countNotDeclineTactic == 0)
+                        {
+                            aryStatus.Add(Approve);
+                        }
                     }
-                }
                 }
                 else
                 {
                     if ((bool)ViewBag.IsValidOwner)
-                {
-                    if(countNotDeclineProgram  == 0 &&  countNotDeclineTactic == 0)
                     {
-                        aryStatus.Add(Submit);
+                        if (countNotDeclineProgram == 0 && countNotDeclineTactic == 0)
+                        {
+                            aryStatus.Add(Submit);
+                        }
                     }
-                }
-            else
-            {
+                    else
+                    {
                         isVisibleStatus = false;
                     }
                 }
@@ -233,9 +239,9 @@
                 {
                     string firstStatus = aryStatus[0];
                
-            <div class="btn-container div-container-buttom " style="float: right;">
+            <div class="margin-top10" style="float: right;">
                 <div id="btn_change_status" class="btn-group dropup">
-                    <button id="btnApproved" data-toggle="dropdown" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular">
+                    <button id="btnApproved" data-toggle="dropdown" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular margin-left20" style="width:80px;">
                         <span class="flag-icon approve-icon-dropdown"></span>
                         <span id="spanTactic">@firstStatus</span>
                     </button>
@@ -261,6 +267,41 @@
             </div> 
                 }
             }
+
+
+            if ((bool)ViewBag.IsModelDeploy)
+            {
+                <div class="margin-top10" style="float: right;">
+                <div id="btn_sync_status" class="btn-group dropup">
+                    <button id="btnSync" data-toggle="dropdown" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width:80px;">
+                        <span class="flag-icon sync-icon-dropdown"></span>
+                        <span id="spanSyncStatus">
+                            @if (campaignReview.IsDeployedToIntegration)
+                            {
+                                @Html.Raw("Sync")
+                            }
+                            else
+                            {
+                                @Html.Raw("Don't Sync") 
+                            }
+
+                        </span>
+                    </button>
+                        <button data-toggle="dropdown" class="btn dropdown-toggle height25 btn-blue displayinherit">
+                            <span class="caret "></span>
+                        </button>                
+                        <ul class="dropdown-menu " id="uldivSync">
+                            <li>
+                                <a id="aSync">Sync</a>
+                            </li>
+                            <li>
+                                <a id="aNotSync">Don't Sync</a>
+                            </li>
+                        </ul>
+                </div>
+            </div> 
+            }   
+            
             }
     </div>
 </div>
@@ -282,6 +323,45 @@
               $("#spanTactic").html($(this).text());
               $("#hdnStatusValue").val($(this).text());
           });
+
+
+          $("#uldivSync li a").click(function () {
+              $("#spanSyncStatus").html($(this).text());
+              var IsDeployedToIntegration = false;
+              if (this.id == 'aSync') {
+                  IsDeployedToIntegration = true;
+              }
+              var PlanCampaignId = $('#hdnPlanCampaignId').val();
+
+              $.ajax({
+                  type: 'POST',
+                  url: '@Url.Content("~/Home/SaveSyncToIntegration/")',
+                  data: {
+                      id: PlanCampaignId,
+                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", //section parameter added to save tactic comment
+                      IsDeployedToIntegration: IsDeployedToIntegration
+                  },
+                  success: function (data) {
+                      if (data.result) {
+                          $("#successMessage").css("display", "block");
+                          var topsize = $(document).scrollTop() + 41;
+                          $("#modal-container-186470").css("top", topsize + "px");
+                          $("#spanMessageSuccess").empty();
+                          $("#spanMessageSuccess").text(data.msg);
+                      }
+                  },
+                  error: function () {
+                      $("#errorMessage").css("display", "block");
+                      var topsize = $(document).scrollTop() + 41;
+                      $("#modal-container-186470").css("top", topsize + "px");
+                      $("#spanMessageError").empty();
+                      GoToLogin();
+                      return false;
+                  }
+              });
+
+          });
+
 
           var divheight = $("#divInnerComment").height();
           $("#divComment").scrollTop(divheight);
