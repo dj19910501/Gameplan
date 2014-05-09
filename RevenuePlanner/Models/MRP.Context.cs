@@ -74,6 +74,7 @@ namespace RevenuePlanner.Models
         public DbSet<Plan_Campaign_Program> Plan_Campaign_Program { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
         public DbSet<ImprovementTacticType> ImprovementTacticTypes { get; set; }
+        public DbSet<IntegrationInstanceLog> IntegrationInstanceLogs { get; set; }
     
         public virtual int Plan_Campaign_Program_Tactic_ActualDelete(Nullable<int> planTacticId, ObjectParameter returnValue)
         {

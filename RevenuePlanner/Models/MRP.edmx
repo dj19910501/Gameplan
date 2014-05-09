@@ -21,6 +21,7 @@
           <EntitySet Name="IntegrationInstance" EntityType="MRPModel.Store.IntegrationInstance" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationInstance_Attribute" EntityType="MRPModel.Store.IntegrationInstance_Attribute" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationInstanceDataTypeMapping" EntityType="MRPModel.Store.IntegrationInstanceDataTypeMapping" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="IntegrationInstanceLog" EntityType="MRPModel.Store.IntegrationInstanceLog" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationType" EntityType="MRPModel.Store.IntegrationType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationTypeAttribute" EntityType="MRPModel.Store.IntegrationTypeAttribute" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Metric" EntityType="MRPModel.Store.Metric" store:Type="Tables" Schema="dbo" />
@@ -119,6 +120,14 @@
           <AssociationSet Name="FK_IntegrationInstanceDataTypeMapping_IntegrationInstance" Association="MRPModel.Store.FK_IntegrationInstanceDataTypeMapping_IntegrationInstance">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
             <End Role="IntegrationInstanceDataTypeMapping" EntitySet="IntegrationInstanceDataTypeMapping" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IntegrationInstanceLog_IntegrationInstance" Association="MRPModel.Store.FK_IntegrationInstanceLog_IntegrationInstance">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
+            <End Role="IntegrationInstanceLog" EntitySet="IntegrationInstanceLog" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IntegrationTypeAttribute_IntegrationType" Association="MRPModel.Store.FK_IntegrationTypeAttribute_IntegrationType">
+            <End Role="IntegrationType" EntitySet="IntegrationType" />
+            <End Role="IntegrationTypeAttribute" EntitySet="IntegrationTypeAttribute" />
           </AssociationSet>
           <AssociationSet Name="FK_Model_Audience_Event_Model_Audience_Event" Association="MRPModel.Store.FK_Model_Audience_Event_Model_Audience_Event">
             <End Role="Model" EntitySet="Model" />
@@ -491,6 +500,18 @@
           <Property Name="TargetDataType" Type="nvarchar" Nullable="false" MaxLength="255" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="IntegrationInstanceLog">
+          <Key>
+            <PropertyRef Name="IntegrationInstanceLogId" />
+          </Key>
+          <Property Name="IntegrationInstanceLogId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="IntegrationInstanceId" Type="int" Nullable="false" />
+          <Property Name="SyncTimeStamp" Type="datetime" Nullable="false" />
+          <Property Name="Status" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="ErrorDescription" Type="nvarchar" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" />
         </EntityType>
         <EntityType Name="IntegrationType">
           <Key>
@@ -1199,6 +1220,30 @@
             </Principal>
             <Dependent Role="IntegrationInstanceDataTypeMapping">
               <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IntegrationInstanceLog_IntegrationInstance">
+          <End Role="IntegrationInstance" Type="MRPModel.Store.IntegrationInstance" Multiplicity="1" />
+          <End Role="IntegrationInstanceLog" Type="MRPModel.Store.IntegrationInstanceLog" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="IntegrationInstanceLog">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IntegrationTypeAttribute_IntegrationType">
+          <End Role="IntegrationType" Type="MRPModel.Store.IntegrationType" Multiplicity="1" />
+          <End Role="IntegrationTypeAttribute" Type="MRPModel.Store.IntegrationTypeAttribute" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationType">
+              <PropertyRef Name="IntegrationTypeId" />
+            </Principal>
+            <Dependent Role="IntegrationTypeAttribute">
+              <PropertyRef Name="IntegrationTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2054,6 +2099,15 @@
           <AssociationSet Name="FK_IntegrationInstanceDataTypeMapping_IntegrationInstance" Association="MRPModel.FK_IntegrationInstanceDataTypeMapping_IntegrationInstance">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
             <End Role="IntegrationInstanceDataTypeMapping" EntitySet="IntegrationInstanceDataTypeMappings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IntegrationTypeAttribute_IntegrationType" Association="MRPModel.FK_IntegrationTypeAttribute_IntegrationType">
+            <End Role="IntegrationType" EntitySet="IntegrationTypes" />
+            <End Role="IntegrationTypeAttribute" EntitySet="IntegrationTypeAttributes" />
+          </AssociationSet>
+          <EntitySet Name="IntegrationInstanceLogs" EntityType="MRPModel.IntegrationInstanceLog" />
+          <AssociationSet Name="FK_IntegrationInstanceLog_IntegrationInstance" Association="MRPModel.FK_IntegrationInstanceLog_IntegrationInstance">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
+            <End Role="IntegrationInstanceLog" EntitySet="IntegrationInstanceLogs" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Audience">
@@ -3013,6 +3067,7 @@
           <NavigationProperty Name="IntegrationType" Relationship="MRPModel.FK_IntegrationInstance_IntegrationType" FromRole="IntegrationInstance" ToRole="IntegrationType" />
           <NavigationProperty Name="SyncFrequency" Relationship="MRPModel.FK_SyncFrequency_IntegrationInstance" FromRole="IntegrationInstance" ToRole="SyncFrequency" />
           <NavigationProperty Name="IntegrationInstanceDataTypeMappings" Relationship="MRPModel.FK_IntegrationInstanceDataTypeMapping_IntegrationInstance" FromRole="IntegrationInstance" ToRole="IntegrationInstanceDataTypeMapping" />
+          <NavigationProperty Name="IntegrationInstanceLogs" Relationship="MRPModel.FK_IntegrationInstanceLog_IntegrationInstance" FromRole="IntegrationInstance" ToRole="IntegrationInstanceLog" />
         </EntityType>
         <EntityType Name="IntegrationInstance_Attribute">
           <Key>
@@ -3052,6 +3107,7 @@
           <Property Type="String" Name="APIURL" MaxLength="1000" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="IntegrationInstances" Relationship="MRPModel.FK_IntegrationInstance_IntegrationType" FromRole="IntegrationType" ToRole="IntegrationInstance" />
           <NavigationProperty Name="GameplanDataTypes" Relationship="MRPModel.FK_GameplanDataType_IntegrationType" FromRole="IntegrationType" ToRole="GameplanDataType" />
+          <NavigationProperty Name="IntegrationTypeAttributes" Relationship="MRPModel.FK_IntegrationTypeAttribute_IntegrationType" FromRole="IntegrationType" ToRole="IntegrationTypeAttribute" />
         </EntityType>
         <EntityType Name="IntegrationTypeAttribute">
           <Key>
@@ -3063,6 +3119,7 @@
           <Property Type="String" Name="AttributeType" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
           <NavigationProperty Name="IntegrationInstance_Attribute" Relationship="MRPModel.FK_IntegrationInstance_Attribute_IntegrationTypeAttribute" FromRole="IntegrationTypeAttribute" ToRole="IntegrationInstance_Attribute" />
+          <NavigationProperty Name="IntegrationType" Relationship="MRPModel.FK_IntegrationTypeAttribute_IntegrationType" FromRole="IntegrationTypeAttribute" ToRole="IntegrationType" />
         </EntityType>
         <EntityType Name="SyncFrequency">
           <Key>
@@ -3587,6 +3644,43 @@
               <PropertyRef Name="IntegrationInstanceId" />
             </Principal>
             <Dependent Role="IntegrationInstanceDataTypeMapping">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IntegrationTypeAttribute_IntegrationType">
+          <End Type="MRPModel.IntegrationType" Role="IntegrationType" Multiplicity="1" />
+          <End Type="MRPModel.IntegrationTypeAttribute" Role="IntegrationTypeAttribute" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationType">
+              <PropertyRef Name="IntegrationTypeId" />
+            </Principal>
+            <Dependent Role="IntegrationTypeAttribute">
+              <PropertyRef Name="IntegrationTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="IntegrationInstanceLog">
+          <Key>
+            <PropertyRef Name="IntegrationInstanceLogId" />
+          </Key>
+          <Property Type="Int32" Name="IntegrationInstanceLogId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="IntegrationInstanceId" Nullable="false" />
+          <Property Type="DateTime" Name="SyncTimeStamp" Nullable="false" Precision="3" />
+          <Property Type="String" Name="Status" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="ErrorDescription" Nullable="false" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" />
+          <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_IntegrationInstanceLog_IntegrationInstance" FromRole="IntegrationInstanceLog" ToRole="IntegrationInstance" />
+        </EntityType>
+        <Association Name="FK_IntegrationInstanceLog_IntegrationInstance">
+          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="1" />
+          <End Type="MRPModel.IntegrationInstanceLog" Role="IntegrationInstanceLog" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="IntegrationInstanceLog">
               <PropertyRef Name="IntegrationInstanceId" />
             </Dependent>
           </ReferentialConstraint>
@@ -4346,6 +4440,19 @@
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="ImprovementTacticTypeId" ColumnName="ImprovementTacticTypeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IntegrationInstanceLogs">
+            <EntityTypeMapping TypeName="MRPModel.IntegrationInstanceLog">
+              <MappingFragment StoreEntitySet="IntegrationInstanceLog">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="ErrorDescription" ColumnName="ErrorDescription" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="SyncTimeStamp" ColumnName="SyncTimeStamp" />
+                <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
+                <ScalarProperty Name="IntegrationInstanceLogId" ColumnName="IntegrationInstanceLogId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

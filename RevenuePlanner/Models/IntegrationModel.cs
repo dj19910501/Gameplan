@@ -42,6 +42,7 @@ namespace RevenuePlanner.Models
         [Display(Name = "IsImportActuals?")]
         public bool IsImportActuals { get; set; }
 
+        [Display(Name = "Delete Integration?")]
         public bool IsDeleted { get; set; }
 
         public DateTime CreatedDate { get; set; }

@@ -110,6 +110,9 @@
         <AssociationConnector Association="MRPModel.FK_ImprovementTacticType_Touches_ImprovementTacticType" />
         <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceDataTypeMapping_IntegrationInstance" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationTypeAttribute_IntegrationType" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationInstanceLog" Width="1.5" PointX="4.8507486529884618" PointY="1.3515951192712388" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationInstanceLog_IntegrationInstance" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
