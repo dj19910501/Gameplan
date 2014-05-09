@@ -13,7 +13,8 @@
 @Html.Hidden("ErrMsg", TempData["ErrorMessage"])
 
 @{
-    ViewBag.Title = "Create";
+    ViewBag.Title = "Add Integration";
+    ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -26,7 +27,7 @@
             <a class="source-sans-probold inputs" href="#" id="aMyProfile"><span></span>MY PROFILE</a>
         </li>
         <li class="item active">
-            <a class="source-sans-probold organization" href="#"><span></span>INTEGRATIONS</a>
+            <a class="source-sans-probold integrations" href="#"><span></span>INTEGRATIONS</a>
         </li>
     </ul>
 }
@@ -97,7 +98,7 @@
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.Password)
 
-                @Html.TextBoxFor(model => model.Password)
+                @Html.TextBoxFor(model => model.Password, new { type = "password" } )
                 <span id="result"></span>
                 @Html.ValidationMessageFor(model => model.Password)
             </div>
@@ -110,7 +111,7 @@
                     @Html.HiddenFor(model => model.IntegrationTypeAttributes[i].IntegrationTypeAttributeId)
                     @if (Model.IntegrationTypeAttributes[i].AttributeType == "textbox")
                     { 
-                        @Html.TextBoxFor(model => model.IntegrationTypeAttributes[i].Attribute)
+                        @Html.TextBoxFor(model => model.IntegrationTypeAttributes[i].Value)
                     }
                 </div>
             }
@@ -149,7 +150,7 @@
             <div class="cf inputs-aligned-horizontal">
                 <label></label>
                 <div id="divDateOptions" style="margin-left:20px; display:inline-block;">
-                    @Html.TextBoxFor(model => model.SyncFrequency.Day, new { width = "234px !important"})
+                    @Html.TextBoxFor(model => model.SyncFrequency.Day, new { style = "width:235px !important"})
                 </div>
             </div>
             
@@ -173,7 +174,7 @@
                 </div>
                 <div class="container-button">
                     <span class="span5">
-                        <button id="btnCancel" class="close-form btn-link source-sans-proregular" type="button" style="margin-left: 90px;">Cancel</button>
+                        <button id="btnCancel" class="close-form btn-link source-sans-proregular" type="button" style="margin-left: 10px;">Cancel</button>
                     </span>
                 </div>
             </div>
@@ -218,6 +219,8 @@
                 e.preventDefault();
             }
         });
+
+        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
     });
 
     $('#aMyProfile').click(function () {
@@ -260,6 +263,30 @@
 
     function testIntegration() {
         alert("Test integration");
+
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            url: 'TestIntegration',
+            data: { instanceName: $('#Instance').val(), userName: $('#Username').val(), password: $('#Password').val() },
+            success: function (data) {
+                if (data != null) {
+                    if (data.status == 1) {
+                        $('#cSuccess').append('<span>' + data.SuccessMessage.toString() + '</span>');
+                        $("#successMessage").slideDown(1200);
+                        $("#successMessage").slideUp(3000);
+                        return true;
+                    }
+                    else {
+                        $('#cError').append('<span>' + data.ErrorMessage.toString() + '</span>');
+                        $("#errorMessage").slideDown(400);
+                        $("html, body").animate({ scrollTop: 0 }, 1000);
+                        return false;
+                    }
+                }
+            }
+        });
+
         return false;
     }
 
@@ -282,11 +309,13 @@
 
         $('#content :input').each(function () {
             if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
-                var input = $(this).val();
-                if (input == '') {
-                    $(this).addClass("error");
-                } else {
-                    $(this).removeClass("error");
+                if (this.id != 'importActuals' && this.id != 'integrationStatus') {
+                    var input = $(this).val();
+                    if (input == '') {
+                        $(this).addClass("error");
+                    } else {
+                        $(this).removeClass("error");
+                    }
                 }
             }
         });
@@ -297,31 +326,22 @@
             return false;
         }
 
-      @*  $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/ExternalService/Create")',
-            data: $("form").serialize() + '&integrationTypeId=' + $('#integrationTypeId').val(),
-            success: function (data) {
-                //if (data.redirect) {
-                //window.location.href = data.redirect;
-                return;
-                //}
-                //if (data.errormsg) {
-                //ShowError(data.errormsg);
-                //  return;
-                //}
-
-            }
-        });*@
+        if ($('#IsActive').val().toString() != "true")
+        {
+            alert("Please test integration credentials");
+            return false;
+        }
     });
 
     //function to add or remove class ERROR when inputs text are empty.
     $('input').blur(function () {
         if ($(this).attr('type') == 'text' || $(this).attr('type') == 'password') {
-            if ($(this).val() == '') {
-                $(this).addClass("error");
-            } else {
-                $(this).removeClass("error");
+            if (this.id != 'importActuals' && this.id != 'integrationStatus') {
+                if ($(this).val() == '') {
+                    $(this).addClass("error");
+                } else {
+                    $(this).removeClass("error");
+                }
             }
         }
     });
@@ -339,8 +359,6 @@
     });
 
     $("#integrationStatus").click(function () {
-        var index = parseInt($('#table_tactics tbody tr').attr("index"));
-        /*change status checkmark according to JSON data*/
         if ($(this).hasClass("icon-check-blue")) {
             $(this).val("Inactive");
             $('#IsActive').val(false);
@@ -355,8 +373,6 @@
     });
 
     $("#importActuals").click(function () {
-        var index = parseInt($('#table_tactics tbody tr').attr("index"));
-        /*change status checkmark according to JSON data*/
         if ($(this).hasClass("icon-check-blue")) {
             $(this).val("Inactive");
             $('#IsImportActuals').val(false);

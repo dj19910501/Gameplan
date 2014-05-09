@@ -337,15 +337,45 @@
 	<Field>
 		<Name>ModelTacticCannotDelete</Name>
 		<value>Cannot delete tactic, As this is the only tactic in this published model.</value>
-	</Field>  
-
-<!--For Model integration functionality Added by Dharmraj Mangukiya -->
+	</Field>
+	<!--For Model integration functionality Added by Dharmraj Mangukiya -->
 	<Field>
 		<Name>ModelIntegrationSaveSuccess</Name>
 		<value>Model integration saved successfully.</value>
 	</Field>
-  <Field>
-    <Name>DeployedToIntegrationStatusSaveSuccess</Name>
-    <value>Deployed to Integration status saved successfully.</value>
-  </Field>
+	
+	<Field>
+		<Name>DeployedToIntegrationStatusSaveSuccess</Name>
+		<value>Deployed to Integration status saved successfully.</value>
+	</Field>   
+    <!--Start - Added by : Sohel Pathan on 09/05/2014 for PL #430-->    
+    <Field>
+		<Name>IntegrationAdded</Name>
+		<value>Integration added successfully.</value>
+	</Field>
+	<Field>
+		<Name>IntegrationEdited</Name>
+		<value>Integration edited successfully.</value>
+	</Field>
+	<Field>
+		<Name>IntegrationDeleted</Name>
+		<value>Integration deleted successfully.</value>
+	</Field>
+	<Field>
+		<Name>IntegrationDuplicate</Name>
+		<value>Integration with same Instance already exists in our database.</value>
+	</Field>
+	<Field>
+		<Name>IntegrationDeleteConfirmationMsg</Name>
+		<value>Model data associated with this integration will be deleted. Are you sure to proceed ?</value>
+	</Field>
+	<Field>
+		<Name>TestIntegrationSuccess</Name>
+		<value>Integration Service Credentials has been verified successfully.</value>
+	</Field>
+	<Field>
+		<Name>TestIntegrationFail</Name>
+		<value>Provided Integration Service Credentials are not verified.</value>
+	</Field>
+	<!--End - Added by : Sohel Pathan on 09/05/2014 for PL #430-->
 </Messages>

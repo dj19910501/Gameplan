@@ -1031,6 +1031,95 @@ namespace RevenuePlanner.Helpers
                 _DeployedToIntegrationStatusSaveSuccess = value;
             }
         }
+	   // Start - Added by : Sohel Pathan on 09/05/2014 for PL #430 
+        private string _IntegrationAdded;
+        public string IntegrationAdded
+        {
+            get { return _IntegrationAdded; }
+            set
+            {
+                _IntegrationAdded = value;
+            }
+        }
+
+        private string _IntegrationEdited;
+        public string IntegrationEdited
+        {
+            get
+            {
+                return _IntegrationEdited;
+            }
+            set
+            {
+                _IntegrationEdited = value;
+            }
+        }
+
+        private string _IntegrationDeleted;
+        public string IntegrationDeleted
+        {
+            get
+            {
+                return _IntegrationDeleted;
+            }
+            set
+            {
+                _IntegrationDeleted = value;
+            }
+        }
+        
+        private string _IntegrationDeleteConfirmationMsg;
+        public string IntegrationDeleteConfirmationMsg
+        {
+            get
+            {
+                return _IntegrationDeleteConfirmationMsg;
+            }
+            set
+            {
+                _IntegrationDeleteConfirmationMsg = value;
+            }
+        }
+
+        private string _IntegrationDuplicate;
+        public string IntegrationDuplicate
+        {
+            get
+            {
+                return _IntegrationDuplicate;
+            }
+            set
+            {
+                _IntegrationDuplicate = value;
+            }
+        }
+
+        private string _TestIntegrationSuccess;
+        public string TestIntegrationSuccess
+        {
+            get
+            {
+                return _TestIntegrationSuccess;
+            }
+            set
+            {
+                _TestIntegrationSuccess = value;
+            }
+        }
+
+        private string _TestIntegrationFail;
+        public string TestIntegrationFail
+        {
+            get
+            {
+                return _TestIntegrationFail;
+            }
+            set
+            {
+                _TestIntegrationFail = value;
+            }
+        }
+        // End - Added by : Sohel Pathan on 09/05/2014 for PL #430 
 
         #endregion
 
@@ -1355,6 +1444,30 @@ namespace RevenuePlanner.Helpers
                                             _ModelTacticCannotDelete = strMsgValue;
                                             break;
                                         //End Manoj Limbachiya 05May2014 PL#458
+
+                                        // Start - Added by : Sohel Pathan on 09/05/2014 for PL #430 
+                                        case "IntegrationAdded":
+                                            _IntegrationAdded = strMsgValue;
+                                            break;
+                                        case "IntegrationEdited":
+                                            _IntegrationEdited = strMsgValue;
+                                            break;
+                                        case "IntegrationDeleted":
+                                            _IntegrationDeleted = strMsgValue;
+                                            break;
+                                        case "IntegrationDuplicate":
+                                            _IntegrationDuplicate = strMsgValue;
+                                            break;
+                                        case "IntegrationDeleteConfirmationMsg":
+                                            _IntegrationDeleteConfirmationMsg = strMsgValue;
+                                            break;
+                                        case "TestIntegrationSuccess":
+                                            _TestIntegrationSuccess = strMsgValue;
+                                            break;
+                                        case "TestIntegrationFail":
+                                            _TestIntegrationFail = strMsgValue;
+                                            break;
+                                        // End - Added by : Sohel Pathan on 09/05/2014 for PL #430 
                                     }
                                 }
                                 i = i + 1;

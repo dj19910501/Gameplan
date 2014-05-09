@@ -11,10 +11,13 @@
 @Html.Hidden("integrationTypeId", integrationTypeId)*@
 @Html.Hidden("SuccMsg", TempData["SuccessMessage"])
 @Html.Hidden("ErrMsg", TempData["ErrorMessage"])
+@Html.Hidden("DeleteConfirmationMsg", TempData["DeleteConfirmationMsg"])
 
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Edit Integration";
+    ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     Layout = "~/Views/Shared/_Layout.cshtml";
+    
 }
 
 @section Sidebar {
@@ -26,7 +29,7 @@
             <a class="source-sans-probold inputs" href="#" id="aMyProfile"><span></span>MY PROFILE</a>
         </li>
         <li class="item active">
-            <a class="source-sans-probold organization" href="#"><span></span>INTEGRATIONS</a>
+            <a class="source-sans-probold integrations" href="#"><span></span>INTEGRATIONS</a>
         </li>
     </ul>
 }
@@ -34,7 +37,6 @@
 <!--success message-->
 <div id="successMessage" class="alert hide alert-success message-position">
     <a class="close">×</a>
-
     <div id="cSuccess">@Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))</div>
 </div>
 <div id="errorMessage" class="alert alert-error hide message-position">
@@ -66,10 +68,11 @@
             </div>
         </div>
         <div class="span10 content-colum-info-user">
-        @using (Html.BeginForm("Edit", "ExternalService", FormMethod.Post))
+        @using (Html.BeginForm("Edit", "ExternalService", FormMethod.Post, new { id = "integrationForm" } ))
         {
             @Html.ValidationSummary(true)
             @Html.HiddenFor(model => model.IntegrationTypeId);
+            @Html.HiddenFor(model => model.IntegrationInstanceId);
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.IntegrationType.Title)
 
@@ -97,7 +100,7 @@
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.Password)
 
-                @Html.TextBoxFor(model => model.Password)
+                @Html.TextBoxFor(model => model.Password , new { type = "password" })
                 <span id="result"></span>
                 @Html.ValidationMessageFor(model => model.Password)
             </div>
@@ -110,14 +113,20 @@
                     @Html.HiddenFor(model => model.IntegrationTypeAttributes[i].IntegrationTypeAttributeId)
                     @if (Model.IntegrationTypeAttributes[i].AttributeType == "textbox")
                     { 
-                        @Html.TextBoxFor(model => model.IntegrationInstance_Attribute[i].Value)
+                        @Html.TextBoxFor(model => model.IntegrationTypeAttributes[i].Value)
                     }
                 </div>
             }
             
             <div class="cf inputs-aligned-horizontal content dark inline-ellipsis">
                 @Html.Label("Integration Status")
-                <input type="text" readonly="" maxlength="18" placeholder="Inactive" class="icon-check-gray" name="t_status" id="integrationStatus">
+                @if (Model.IsActive == true) { 
+                    <input type="text" readonly="" maxlength="18" placeholder="Active" class="icon-check-blue" name="t_status" id="integrationStatus">
+                }
+                else
+                { 
+                    <input type="text" readonly="" maxlength="18" placeholder="Inactive" class="icon-check-gray" name="t_status" id="integrationStatus">
+                }
                 @Html.HiddenFor(model => model.IsActive)
             </div>
             
@@ -135,36 +144,43 @@
                     @Html.DropDownListFor(model => model.SyncFrequency.Frequency, new SelectList((System.Collections.IEnumerable)TempData["lstSyncFreq"], "Value", "Text"), new { require = "true", Id = "ddlSyncFrequency" })
                 </div>
             </div>
-            if (Model.SyncFrequency.Frequency != "Weekly")
-            {
+                if (Model.SyncFrequency.Frequency != "Hourly")
+                {
                 <div class="cf inputs-aligned-horizontal">
                     <label></label>
                     <div class="selectBox" id="divTimeOptions">
                         @Html.DropDownListFor(model => model.SyncFrequency.Time, new SelectList((System.Collections.IEnumerable)TempData["lst24Hours"], "Value", "Text"), new { require = "true", Id = "timeOptions" })
                     </div>
                 </div>
-            }
-            if (Model.SyncFrequency.Frequency == "Weekly")
-            {
+                }
+                if (Model.SyncFrequency.Frequency == "Weekly")
+                {
                 <div class="cf inputs-aligned-horizontal">
                     <label></label>
                     <div class="selectBox" id="divDayOptions">
                         @Html.DropDownListFor(model => model.SyncFrequency.DayofWeek, new SelectList((System.Collections.IEnumerable)TempData["lstWeekdays"], "Value", "Text"), new { Id = "dayOptions" })
                     </div>
                 </div>
-            }
-            if (Model.SyncFrequency.Frequency == "Monthly")
-            {
+                }
+                if (Model.SyncFrequency.Frequency == "Monthly")
+                {
                 <div class="cf inputs-aligned-horizontal">
                     <label></label>
                     <div id="divDateOptions" style="margin-left:20px; display:inline-block;">
-                        @Html.TextBoxFor(model => model.SyncFrequency.Day, new { width = "234px !important"})
+                        @Html.TextBoxFor(model => model.SyncFrequency.Day, new { width = "234px !important" })
                     </div>
                 </div>
-            }
+                }
             <div class="cf inputs-aligned-horizontal content">
                 @Html.Label("Import Actuals from Integration")
+                @if (Model.IsImportActuals == true)
+                {
+                    <input id="importActuals" class="icon-check-blue" type="text" readonly="" maxlength="18" placeholder="Active" name="importActuals"> 
+                }
+                else
+                {
                 <input id="importActuals" class="icon-check-gray" type="text" readonly="" maxlength="18" placeholder="Inactive" name="importActuals">
+                }
                 @Html.HiddenFor(model => model.IsImportActuals)
             </div>
             
@@ -173,6 +189,15 @@
                     <span>Note that imported values override user-generated values.</span>
                 </div>
             </div>
+            										
+            <div class="cf inputs-aligned-horizontal" style="margin-left: 179px;">
+			    <div class="delete-container">
+                    @Html.LabelFor(model => model.IsDeleted, new { style = "float:left;padding-left:20px;padding-top:2px;" })
+                    <div class="selectBox" id="ddlIsDeletedSelectBox">
+                        @Html.DropDownListFor(model => model.IsDeleted, new SelectList((System.Collections.IEnumerable)TempData["lstDelete"], "Value", "Text"), new { Id = "IsDeleted", style = "width:54px; height:23px;float:right;margin-top:10px;margin-right:12px;" })
+                    </div>
+                </div>
+			</div>		
             
             <div class="cf inputs-aligned-horizontal">
                 <div class="Add-Integration">
@@ -182,7 +207,7 @@
                 </div>
                 <div class="container-button">
                     <span class="span5">
-                        <button id="btnCancel" class="close-form btn-link source-sans-proregular" type="button" style="margin-left: 90px;">Cancel</button>
+                        <button id="btnCancel" class="close-form btn-link source-sans-proregular" type="button" style="margin-left: 10px;">Cancel</button>
                     </span>
                 </div>
             </div>
@@ -197,10 +222,25 @@
     $(document).ready(function () {
         $(".selectBox select").selectbox();
 
-        $("#divTimeOptions").hide();
-        $("#divDayOptions").hide();
-        $("#divDateOptions").hide();
-        $("#Day").css("width", "235px !important");
+        if ($('#SuccMsg').val() == null || $('#SuccMsg').val() == '') {
+            $("#successMessage").slideUp(400);
+        }
+        else {
+            $("#successMessage").slideDown(1200);
+            $("#successMessage").slideUp(3000);
+        }
+        if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
+            $("#errorMessage").slideUp(400);
+        }
+        else {
+            $("#errorMessage").slideDown(400);
+            $("html, body").animate({ scrollTop: 0 }, 1000);
+        }
+
+        //$("#divTimeOptions").hide();
+        //$("#divDayOptions").hide();
+        //$("#divDateOptions").hide();
+        //$("#Day").css("width", "235px !important");
 
         $("#Day").keydown(function (e) {
             var count = $(this).val();
@@ -227,8 +267,7 @@
                 e.preventDefault();
             }
         });
-
-   
+           
         if ($('#IsActive').val() == false) {
             $(this).val("Inactive");
             $('#IsActive').val(false);
@@ -253,6 +292,8 @@
             $(this).addClass("icon-check-blue");
             $(this).removeClass("icon-check-gray");
         }
+        
+        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
     });
 
     $('#aMyProfile').click(function () {
@@ -298,30 +339,17 @@
         return false;
     }
 
-    $('#btnSave').click(function () {
-
-        if ($('#SuccMsg').val() == null || $('#SuccMsg').val() == '') {
-            $("#successMessage").slideUp(400);
-        }
-        else {
-            $("#successMessage").slideDown(1200);
-            $("#successMessage").slideUp(3000);
-        }
-        if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
-            $("#errorMessage").slideUp(400);
-        }
-        else {
-            $("#errorMessage").slideDown(400);
-            $("html, body").animate({ scrollTop: 0 }, 1000);
-        }
+    $('#btnSave').click(function (e) {
 
         $('#content :input').each(function () {
             if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
-                var input = $(this).val();
-                if (input == '') {
-                    $(this).addClass("error");
-                } else {
-                    $(this).removeClass("error");
+                if (this.id != 'importActuals' && this.id != 'integrationStatus') {
+                    var input = $(this).val();
+                    if (input == '') {
+                        $(this).addClass("error");
+                    } else {
+                        $(this).removeClass("error");
+                    }
                 }
             }
         });
@@ -331,32 +359,29 @@
             $('#result').addClass('check-icon-red')
             return false;
         }
+    });
 
-      @*  $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/ExternalService/Create")',
-            data: $("form").serialize() + '&integrationTypeId=' + $('#integrationTypeId').val(),
-            success: function (data) {
-                //if (data.redirect) {
-                //window.location.href = data.redirect;
-                return;
-                //}
-                //if (data.errormsg) {
-                //ShowError(data.errormsg);
-                //  return;
-                //}
-
+    $('#integrationForm').submit(function (e) {
+        if ($('#IsDeleted').val().toLowerCase() == 'true'){
+            if (confirm($("#DeleteConfirmationMsg").val())) {
+                return true;
             }
-        });*@
+            else {
+                e.preventDefault();
+                return false;
+            }
+        }
     });
 
     //function to add or remove class ERROR when inputs text are empty.
     $('input').blur(function () {
         if ($(this).attr('type') == 'text' || $(this).attr('type') == 'password') {
-            if ($(this).val() == '') {
-                $(this).addClass("error");
-            } else {
-                $(this).removeClass("error");
+            if (this.id != 'importActuals' && this.id != 'integrationStatus') {
+                if ($(this).val() == '') {
+                    $(this).addClass("error");
+                } else {
+                    $(this).removeClass("error");
+                }
             }
         }
     });
@@ -404,4 +429,5 @@
             $(this).removeClass("icon-check-gray");
         }
     });
+
 </script>
