@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="bb8fdfed9bf64c98807c1b637575aba9" Name="Diagram1">
+        <EntityTypeShape EntityType="MRPModel.Audience" Width="1.5" PointX="0.75" PointY="2.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.BestInClass" Width="1.5" PointX="6" PointY="2.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.BusinessUnit" Width="1.5" PointX="1.5" PointY="31.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.ChangeLog" Width="1.5" PointX="15.75" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Field" Width="1.5" PointX="4.5" PointY="49.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Funnel" Width="1.5" PointX="4.5" PointY="45.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Funnel_Field" Width="1.5" PointX="6.75" PointY="49.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.GameplanDataType" Width="1.5" PointX="13" PointY="18.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Geography" Width="1.5" PointX="0.75" PointY="13.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.ImprovementTacticType" Width="1.5" PointX="3.75" PointY="19.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.ImprovementTacticType_Metric" Width="1.5" PointX="6" PointY="19.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.ImprovementTacticType_Touches" Width="1.5" PointX="6" PointY="17" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationInstance" Width="1.5" PointX="13" PointY="22.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationInstance_Attribute" Width="1.5" PointX="18.25" PointY="25.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationInstanceDataTypeMapping" Width="1.5" PointX="15.25" PointY="21.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationInstanceLog" Width="1.5" PointX="15.25" PointY="25" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationType" Width="1.5" PointX="10.75" PointY="23.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationTypeAttribute" Width="1.5" PointX="13" PointY="28.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Metric" Width="1.5" PointX="3.75" PointY="14.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Model" Width="1.5" PointX="1.5" PointY="24" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Model_Audience_Event" Width="1.5" PointX="3.75" PointY="24.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Model_Audience_Inbound" Width="1.5" PointX="3.75" PointY="28" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Model_Audience_Outbound" Width="1.5" PointX="3.75" PointY="39.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Model_Funnel" Width="1.5" PointX="6.75" PointY="31.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Model_Funnel_Stage" Width="1.5" PointX="11.25" PointY="13.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.ModelReview" Width="1.5" PointX="9" PointY="30.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Notification" Width="1.5" PointX="15.75" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Plan" Width="1.5" PointX="0.75" PointY="17.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Campaign" Width="1.5" PointX="3" PointY="6.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program" Width="1.5" PointX="5.25" PointY="6.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic" Width="1.5" PointX="13.5" PointY="5.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_Actual" Width="1.5" PointX="15.75" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_Comment" Width="1.5" PointX="7.5" PointY="8.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign" Width="1.5" PointX="1.5" PointY="35.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign_Program" Width="1.5" PointX="3.75" PointY="35.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign_Program_Tactic" Width="1.5" PointX="6" PointY="24.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign_Program_Tactic_Comment" Width="1.5" PointX="8.25" PointY="24.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign_Program_Tactic_Share" Width="1.5" PointX="8.25" PointY="27.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Team" Width="1.5" PointX="3" PointY="4.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Report_Share" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Stage" Width="1.5" PointX="9" PointY="3" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.SyncFrequency" Width="1.5" PointX="15.25" PointY="28.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Tactic_Share" Width="1.5" PointX="10.5" PointY="8.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.TacticType" Width="1.5" PointX="11.25" PointY="2.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.User_Filter" Width="1.5" PointX="7.75" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.User_Notification" Width="1.5" PointX="18" PointY="1.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="MRPModel.Vertical" Width="1.5" PointX="0.75" PointY="8.25" IsExpanded="true" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Audience" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Audience" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Audience" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_BestInClass_Metric" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Model_BusinessUnit" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_BusinessUnit" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_BusinessUnit" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Funnel_Field_Field" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Funnel_Field_Funnel" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Model_Funnel_Funnel" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_ModelReview_Funnel_Field" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_GameplanDataType_IntegrationType" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationInstanceDataTypeMapping_GameplanDataType" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Geography" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Geography" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Geography" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_ImprovementTacticType_Metric_ImprovementTacticType" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_ImprovementTacticType_Touches_ImprovementTacticType" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_ImprovementTacticType_Metric_Metric" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_ImprovementTacticType_Touches_Metric" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationInstance_Attribute_IntegrationInstance" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationInstance_IntegrationType" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationInstanceDataTypeMapping_IntegrationInstance" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationInstanceLog_IntegrationInstance" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_SyncFrequency_IntegrationInstance" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationInstance_Attribute_IntegrationTypeAttribute" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationTypeAttribute_IntegrationType" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Model_Audience_Event_Model_Audience_Event" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Model_Audience_Inbound_Model" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Model_Audience_Outbound_Model" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Model_Funnel_Model" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Model_Model" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Plan" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.fk_TacticType_Model" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Model_Funnel_Stage_Model_Funnel" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_ModelReview_Model_Funnel" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Model_Category_Stage_Stage" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_User_Notification_Notification" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Plan" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Collaborator_Plan" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Plan" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK__Plan_Camp__PlanC__43A1090D" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK__Tactic_Sh__PlanC__4589517F" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Plan_Campaign" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Vertical" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK__Plan_Camp__PlanP__42ACE4D4" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK__Tactic_Sh__PlanP__44952D46" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Vertical" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Actual_Plan_Campaign_Program_Tactic" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Comment_Plan_Campaign_Program_Tactic" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program_Tactic" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Vertical" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Tactic_Share_Plan_Campaign_Program_Tactic1" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Plan_Improvement_Campaign" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Plan_Improvement_Campaign_Program" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Comment_Plan_Improvement_Campaign_Program_Tactic" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Share_Plan_Improvement_Campaign_Program_Tactic" ManuallyRouted="false" />
+        <AssociationConnector Association="MRPModel.fk_TacticType_Stage" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

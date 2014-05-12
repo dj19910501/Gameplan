@@ -196,181 +196,25 @@
     <Compile Include="Helpers\Message.cs" />
     <Compile Include="Helpers\ModelCalculation.cs" />
     <Compile Include="Helpers\Sessions.cs" />
-    <Compile Include="Models\Audience.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\AudiencePlanModel.cs" />
     <Compile Include="Models\BaselineModel.cs" />
-    <Compile Include="Models\BestInClass.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\BoostModel.cs" />
-    <Compile Include="Models\BusinessUnit.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\ChangeLog.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\ChangeLog_ViewModel.cs" />
     <Compile Include="Models\ExtrenalServiceModel.cs" />
-    <Compile Include="Models\Field.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\ForgotPasswordModel.cs" />
-    <Compile Include="Models\Funnel.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Funnel_Field.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\GameplanDataType.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Geography.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\HomePlanModel.cs" />
     <Compile Include="Models\ImprovementModel.cs" />
-    <Compile Include="Models\ImprovementTacticType.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\ImprovementTacticType_Metric.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\ImprovementTacticType_Touches.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\InspectModel.cs" />
-    <Compile Include="Models\IntegrationInstance.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\IntegrationInstanceDataTypeMapping.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\IntegrationInstanceLog.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\IntegrationInstanceModel.cs" />
-    <Compile Include="Models\IntegrationInstance_Attribute.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\IntegrationModel.cs" />
-    <Compile Include="Models\IntegrationType.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\IntegrationTypeAttribute.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\IntegrationTypeAttributeModel.cs" />
     <Compile Include="Models\IntegrationTypeModel.cs" />
     <Compile Include="Models\LoginModel.cs" />
-    <Compile Include="Models\Metric.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Model.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\ModelReview.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Model_Audience_Event.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Model_Audience_Inbound.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Model_Audience_Outbound.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Model_Funnel.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Model_Funnel_Stage.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\MRP.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MRP.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\MRP.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\MRP.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MRP.edmx</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Notification.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Plan.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\PlanModel.cs" />
-    <Compile Include="Models\Plan_Campaign.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Plan_Campaign_Program.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Plan_Campaign_Program_Tactic.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Plan_Campaign_Program_Tactic_Actual.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Plan_Campaign_Program_Tactic_Comment.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Plan_Improvement_Campaign.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Plan_Improvement_Campaign_Program.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Plan_Improvement_Campaign_Program_Tactic.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Plan_Improvement_Campaign_Program_Tactic_Comment.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Plan_Improvement_Campaign_Program_Tactic_Share.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Plan_Team.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Report_Share.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Stage.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\SummaryReportModel.cs" />
-    <Compile Include="Models\SyncFrequency.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\SyncFrequencyModel.cs" />
-    <Compile Include="Models\TacticType.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Tactic_Share.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\Tactic_TypeModel.cs" />
     <Compile Include="Models\UserModel.cs" />
-    <Compile Include="Models\User_Filter.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\User_Notification.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Vertical.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service References\BDSService\Reference.cs">
       <AutoGen>True</AutoGen>
@@ -677,23 +521,6 @@
     <Content Include="Content\fonts\sourcesanspro-semibold-webfont.woff" />
     <Content Include="Scripts\jquery.selectbox-0.2.js" />
     <Content Include="Scripts\js\jquery-migrate-1.2.1.min.js" />
-    <EntityDeploy Include="Models\MRP.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>MRP.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <Content Include="Models\MRP.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>MRP.edmx</DependentUpon>
-      <LastGenOutput>MRP.Context.cs</LastGenOutput>
-    </Content>
-    <Content Include="Models\MRP.edmx.diagram">
-      <DependentUpon>MRP.edmx</DependentUpon>
-    </Content>
-    <Content Include="Models\MRP.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>MRP.edmx</DependentUpon>
-      <LastGenOutput>MRP.cs</LastGenOutput>
-    </Content>
     <None Include="Service References\BDSService\BDSService.disco" />
     <None Include="Service References\BDSService\configuration91.svcinfo" />
     <None Include="Service References\BDSService\configuration.svcinfo" />
@@ -922,6 +749,16 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadataStorage Include="Service References\BDSService\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Entities\Entities.csproj">
+      <Project>{c7aa3463-8e84-4280-a893-c6e7d38ea8d2}</Project>
+      <Name>Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Integration\Integration.csproj">
+      <Project>{b312ef9a-c33a-4e44-8bd6-b141080302e0}</Project>
+      <Name>Integration</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
