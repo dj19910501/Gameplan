@@ -6932,3 +6932,18 @@ input.icon-check-blue{background-image: url("../images/circle-check-icon-small-b
 .sync-icon-dropdown {background: url("../images/integration-white-small.png") no-repeat 0 0; display: block; float: left; width:30px; height: 30px; margin: -5px -5px -5px -15px;}
 
 /* End - Added by dharmraj for Plan integration */	
+
+/* Start - Added by Sohel on 12/05/2014 for PL #430 Integration Screen */
+.nav li.disabled {
+    background-color:#EEEEEE !important;
+}
+.nav li.disabled a {
+    background-color:#EEEEEE !important; 
+    text-decoration:none !important;
+} 
+
+.nav li.disabled a:hover {
+    background-color:#EEEEEE !important;
+    color: #999999 !important;
+}
+/* End - Added by Sohel on 12/05/2014 for PL #430 Integration Screen */

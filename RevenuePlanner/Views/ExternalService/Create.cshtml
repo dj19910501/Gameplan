@@ -60,7 +60,7 @@
                     <li class="active">
                         <a href="#">Integration Credentials</a>
                     </li>
-                    <li>
+                    <li class="disabled">
                         <a href="#">Map Data Types</a>
                     </li>
                 </ul>
@@ -196,9 +196,8 @@
         $("#divTimeOptions").hide();
         $("#divDayOptions").hide();
         $("#divDateOptions").hide();
-        $("#Day").css("width", "235px !important");
 
-        $("#Day").keydown(function (e) {
+        $("#SyncFrequency_Day").keydown(function (e) {
             var count = $(this).val();
             
             // Allow: backspace, delete, tab, escape, enter and .
@@ -216,7 +215,7 @@
             }
         });
 
-        $("#Day").blur(function (e) {
+        $("#SyncFrequency_Day").blur(function (e) {
             var count = $(this).val();
             if (parseInt(count) > 31 || count.length > 2) {
                 $(this).val('');
@@ -364,9 +363,9 @@
         }
     });
 
-    $('#Username').keyup(function () {
-        $('#isUsernameExist').html('');
-    });
+    //$('#Username').keyup(function () {
+    //    $('#isUsernameExist').html('');
+    //});
 
     $("#integrationStatus").click(function () {
         if ($(this).hasClass("icon-check-blue")) {

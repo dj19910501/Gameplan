@@ -148,33 +148,24 @@
                     @Html.DropDownListFor(model => model.SyncFrequency.Frequency, new SelectList((System.Collections.IEnumerable)TempData["lstSyncFreq"], "Value", "Text"), new { require = "true", Id = "ddlSyncFrequency" })
                 </div>
             </div>
-                if (Model.SyncFrequency.Frequency != "Hourly")
-                {
-                <div class="cf inputs-aligned-horizontal">
-                    <label></label>
-                    <div class="selectBox" id="divTimeOptions">
-                        @Html.DropDownListFor(model => model.SyncFrequency.Time, new SelectList((System.Collections.IEnumerable)TempData["lst24Hours"], "Value", "Text"), new { require = "true", Id = "timeOptions" })
-                    </div>
+            <div class="cf inputs-aligned-horizontal">
+                <label></label>
+                <div class="selectBox" id="divTimeOptions">
+                    @Html.DropDownListFor(model => model.SyncFrequency.Time, new SelectList((System.Collections.IEnumerable)TempData["lst24Hours"], "Value", "Text"), new { require = "true", Id = "timeOptions" })
                 </div>
-                }
-                if (Model.SyncFrequency.Frequency == "Weekly")
-                {
-                <div class="cf inputs-aligned-horizontal">
-                    <label></label>
-                    <div class="selectBox" id="divDayOptions">
-                        @Html.DropDownListFor(model => model.SyncFrequency.DayofWeek, new SelectList((System.Collections.IEnumerable)TempData["lstWeekdays"], "Value", "Text"), new { Id = "dayOptions" })
-                    </div>
+            </div>
+            <div class="cf inputs-aligned-horizontal">
+                <label></label>
+                <div class="selectBox" id="divDayOptions">
+                    @Html.DropDownListFor(model => model.SyncFrequency.DayofWeek, new SelectList((System.Collections.IEnumerable)TempData["lstWeekdays"], "Value", "Text"), new { Id = "dayOptions" })
                 </div>
-                }
-                if (Model.SyncFrequency.Frequency == "Monthly")
-                {
-                <div class="cf inputs-aligned-horizontal">
-                    <label></label>
-                    <div id="divDateOptions" style="margin-left:20px; display:inline-block;">
-                        @Html.TextBoxFor(model => model.SyncFrequency.Day, new { width = "234px !important" })
-                    </div>
+            </div>
+            <div class="cf inputs-aligned-horizontal">
+                <label></label>
+                <div id="divDateOptions" style="margin-left:20px; display:inline-block;">
+                    @Html.TextBoxFor(model => model.SyncFrequency.Day, new { style = "width:235px !important"})
                 </div>
-                }
+            </div>
             <div class="cf inputs-aligned-horizontal content">
                 @Html.LabelFor(model => model.IsImportActuals, new  { id="lblImportActuals"})
                 @if (Model.IsImportActuals == true)
@@ -241,12 +232,31 @@
             $("html, body").animate({ scrollTop: 0 }, 1000);
         }
 
-        //$("#divTimeOptions").hide();
-        //$("#divDayOptions").hide();
-        //$("#divDateOptions").hide();
-        //$("#Day").css("width", "235px !important");
+        var selectedSpan = $('#ddlSyncFrequency').val();
+        if (selectedSpan != "") {
+            if (selectedSpan == "Hourly") {
+                $("#divTimeOptions").hide();
+                $("#divDayOptions").hide();
+                $("#divDateOptions").hide();
+            }
+            else if (selectedSpan == "Daily") {
+                $("#divTimeOptions").show();
+                $("#divDayOptions").hide();
+                $("#divDateOptions").hide();
+            }
+            else if (selectedSpan == "Weekly") {
+                $("#divTimeOptions").show();
+                $("#divDayOptions").show();
+                $("#divDateOptions").hide();
+            }
+            else if (selectedSpan == "Monthly") {
+                $("#divTimeOptions").show();
+                $("#divDayOptions").hide();
+                $("#divDateOptions").show();
+            }
+        }
 
-        $("#Day").keydown(function (e) {
+        $("#SyncFrequency_Day").keydown(function (e) {
             var count = $(this).val();
 
             // Allow: backspace, delete, tab, escape, enter and .
@@ -264,7 +274,7 @@
             }
         });
 
-        $("#Day").blur(function (e) {
+        $("#SyncFrequency_Day").blur(function (e) {
             var count = $(this).val();
             if (parseInt(count) > 31 || count.length > 2) {
                 $(this).val('');
@@ -427,9 +437,9 @@
         }
     });
 
-    $('#Username').keyup(function () {
-        $('#isUsernameExist').html('');
-    });
+    //$('#Username').keyup(function () {
+    //    $('#isUsernameExist').html('');
+    //});
 
     $("#integrationStatus").click(function () {
         if ($(this).hasClass("icon-check-blue")) {
