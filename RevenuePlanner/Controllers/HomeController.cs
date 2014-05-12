@@ -2353,7 +2353,15 @@ namespace RevenuePlanner.Controllers
                 returnValue = "N/A";
             else
             {
-                returnValue = db.IntegrationTypes.SingleOrDefault(varI => varI.IntegrationTypeId == objModel.IntegrationInstanceId).Title;
+                var objIntegrationType =db.IntegrationTypes.SingleOrDefault(varI => varI.IntegrationTypeId == objModel.IntegrationInstanceId);
+                if (objIntegrationType == null)
+                {
+                    returnValue = "N/A";
+                }
+                else
+                {
+                    returnValue = objIntegrationType.Title;
+                }
             }
 
             return returnValue;
