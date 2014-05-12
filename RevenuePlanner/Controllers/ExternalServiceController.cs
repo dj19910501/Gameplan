@@ -167,7 +167,7 @@ namespace RevenuePlanner.Controllers
                             objSyncFrequency.Day = form.SyncFrequency.Day;
                         if (form.SyncFrequency.Frequency != "Hourly")
                         {
-                            if (form.SyncFrequency.Time.Length == 7)
+                            if (form.SyncFrequency.Time.Length == 8)
                             {
                                 int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
                                 if (form.SyncFrequency.Time.Substring(5, 2) == "PM" && hour != 12)
@@ -261,8 +261,8 @@ namespace RevenuePlanner.Controllers
             while (dtToday < dtTomorrow)
             {
                 SelectListItem objTime = new SelectListItem();
-                objTime.Text = dtToday.ToString("hh : tt");
-                objTime.Value = dtToday.ToString("hh : tt");
+                objTime.Text = dtToday.ToString("hh:00 tt");
+                objTime.Value = dtToday.ToString("hh:00 tt");
                 lst24Hours.Add(objTime);
                 dtToday = dtToday.AddHours(1);
             }
@@ -341,9 +341,9 @@ namespace RevenuePlanner.Controllers
             if (recordSync.Time.HasValue == true)
             {
                 if (recordSync.Time.Value.Hours > 12)
-                    objSync.Time = recordSync.Time.Value.Hours.ToString("hh") + " : " + "PM";
+                    objSync.Time = recordSync.Time.Value.Hours.ToString().PadLeft(2, '0') + ":00 " + "PM";
                 else
-                    objSync.Time = recordSync.Time.Value.Hours.ToString("hh") + " : " + "AM";
+                    objSync.Time = recordSync.Time.Value.Hours.ToString().PadLeft(2, '0') + ":00 " + "AM";
             }
             objSync.IntegrationInstanceId = recordSync.IntegrationInstanceId;
             
@@ -428,10 +428,10 @@ namespace RevenuePlanner.Controllers
                         }
                         else if (form.SyncFrequency.Frequency == "Daily")
                         {
-                            if (form.SyncFrequency.Time.Length == 7)
+                            if (form.SyncFrequency.Time.Length == 8)
                             {
                                 int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
-                                if (form.SyncFrequency.Time.Substring(5, 2) == "PM" && hour != 12)
+                                if (form.SyncFrequency.Time.Substring(6, 2) == "PM" && hour != 12)
                                     hour = hour + 12;
                                 objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
                             }
@@ -440,10 +440,10 @@ namespace RevenuePlanner.Controllers
                         }
                         else if (form.SyncFrequency.Frequency == "Weekly")
                         {
-                            if (form.SyncFrequency.Time.Length == 7)
+                            if (form.SyncFrequency.Time.Length == 8)
                             {
                                 int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
-                                if (form.SyncFrequency.Time.Substring(5, 2) == "PM" && hour != 12)
+                                if (form.SyncFrequency.Time.Substring(6, 2) == "PM" && hour != 12)
                                     hour = hour + 12;
                                 objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
                             }
@@ -452,10 +452,10 @@ namespace RevenuePlanner.Controllers
                         }
                         else if (form.SyncFrequency.Frequency == "Monthly")
                         {
-                            if (form.SyncFrequency.Time.Length == 7)
+                            if (form.SyncFrequency.Time.Length == 8)
                             {
                                 int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
-                                if (form.SyncFrequency.Time.Substring(5, 2) == "PM" && hour != 12)
+                                if (form.SyncFrequency.Time.Substring(6, 2) == "PM" && hour != 12)
                                     hour = hour + 12;
                                 objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
                             }
