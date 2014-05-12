@@ -183,5 +183,10 @@ namespace BDSService
             BDSUserRepository obj = new BDSUserRepository();
             return obj.UpdateUserSecurityQuestion(user);
         }
+        public List<BDSEntities.User> GetUserListByClientId(Guid clientId, Guid applicationId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetUserListByClientId(clientId, applicationId);
+        }
     }
 }
