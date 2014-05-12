@@ -11,6 +11,7 @@ using System.Transactions;
 using System.Dynamic;
 using System.Reflection;
 using Integration.BDSService;
+using Newtonsoft.Json.Linq;
 
 namespace Integration.Salesforce
 {
@@ -48,6 +49,8 @@ namespace Integration.Salesforce
         private readonly string objectName;
         private string _parentId { get; set; }
         private string ColumnParentId = "ParentId";
+        private string ColumnId = "Id";
+        private List<string> IntegrationInstanceTacticIds { get; set; }
         private bool _isAuthenticated { get; set; }
 
         public bool IsAuthenticated
@@ -108,6 +111,19 @@ namespace Integration.Salesforce
             }
         }
 
+        public List<string> GetTargetDataType()
+        {
+            List<string> TargetDataTypeList = new List<string>();
+            string metadata = _client.ReadMetaData(this.objectName);
+            JObject data = JObject.Parse(metadata);
+            foreach (var result in data["fields"])
+            {
+                TargetDataTypeList.Add((string)result["name"]);
+            }
+
+            return TargetDataTypeList;
+        }
+
         public void SyncData()
         {
             SetMappingDetails();
@@ -137,6 +153,84 @@ namespace Integration.Salesforce
             {
                 SyncInstanceData();
             }
+            if (IntegrationInstanceTacticIds.Count > 0)
+            {
+                GetDataForTacticandUpdate();
+            }
+        }
+
+        private void GetDataForTacticandUpdate()
+        {
+            string actualCost = "CostActual";
+            //Change Integration Type Id whenever used
+            List<IntegrationInstanceDataTypeMapping> dataTypeMapping = db.IntegrationInstanceDataTypeMappings.Where(mapping => mapping.GameplanDataType.IntegrationTypeId.Equals(2)).ToList();
+            Dictionary<string, string> mappingGetTactic = dataTypeMapping.Where(gameplandata => gameplandata.GameplanDataType.TableName == "Plan_Campaign_Program_Tactic" &&
+                                                                   gameplandata.GameplanDataType.IsGet)
+                                            .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
+                                            .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+
+            string columnList = String.Join(",", (from r in mappingGetTactic.AsEnumerable() select r.Value));
+            if (columnList != string.Empty)
+            {
+                columnList += " , " + ColumnId;
+            }
+            string integrationTacticIds = String.Join("','", (from r in IntegrationInstanceTacticIds select r));
+            var AllRecords = _client.Query<object>("SELECT " + columnList + " FROM " + this.objectName + " WHERE " + ColumnId + " in ('" + integrationTacticIds + "')");
+            
+            //put below code in transaction
+            List<Plan_Campaign_Program_Tactic_Actual> actualTacicList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => IntegrationInstanceTacticIds.Contains(ta.Plan_Campaign_Program_Tactic.IntegrationInstanceTacticId)).ToList();
+            actualTacicList.ForEach(t => db.Entry(t).State = EntityState.Deleted);
+            db.SaveChanges();
+
+            List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(t => IntegrationInstanceTacticIds.Contains(t.IntegrationInstanceTacticId)).ToList();
+            foreach (var resultin in AllRecords)
+            {
+                string TacticResult = resultin.ToString();
+                JObject jobj = JObject.Parse(TacticResult);
+                string idvalue = Convert.ToString(jobj[ColumnId]);
+                Plan_Campaign_Program_Tactic tactic = tacticList.Where(t => t.IntegrationInstanceTacticId == idvalue).Single();
+                foreach (var mapping in mappingGetTactic)
+                {
+                    if (mapping.Key == actualCost)
+                    {
+                        int index = tacticList.IndexOf(tactic);
+                        if (index >= 0)
+                        {
+                            tactic.CostActual = Convert.ToInt32(jobj[mapping.Value]);
+                            tacticList[index] = tactic;
+                        }
+                    }
+                    else
+                    {
+                        if (jobj[mapping.Value] != null && Convert.ToString(jobj[mapping.Value]) != string.Empty)
+                        {
+                            double actualValue = Convert.ToDouble(jobj[mapping.Value]);
+                            int totalMonth = 0;
+                            if (tactic.StartDate.Month == tactic.EndDate.Month)
+                            {
+                                totalMonth = 1;
+                            }
+                            else
+                            {
+                                totalMonth = tactic.EndDate.Month - tactic.StartDate.Month + 1;
+                            }
+                            for (int iMonth = tactic.StartDate.Month; iMonth <= tactic.EndDate.Month; iMonth++)
+                            {
+                                Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
+                                actualTactic.Actualvalue = Math.Round(actualValue / totalMonth);
+                                actualTactic.PlanTacticId = tactic.PlanTacticId;
+                                actualTactic.Period = "Y" + iMonth;
+                                actualTactic.StageTitle = mapping.Key;
+                                //change date & created by
+                                actualTactic.CreatedDate = DateTime.Now;
+                                actualTactic.CreatedBy = tactic.CreatedBy;
+                                db.Entry(actualTactic).State = EntityState.Added;
+                            }
+                        }
+                    }
+                }
+            }
+            db.SaveChanges();
         }
 
         private void SetMappingDetails()
@@ -174,6 +268,7 @@ namespace Integration.Salesforce
             Guid applicationId = Guid.Parse("1c10d4b9-7931-4a7c-99e9-a158ce158951");
             _mappingUser = objBDSservice.GetUserListByClientId(clientId, applicationId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + "" + u.LastName);
 
+			IntegrationInstanceTacticIds = new List<string>();
         }
 
         private Plan_Campaign SyncCampaingData(Plan_Campaign planCampaign)
@@ -395,6 +490,7 @@ namespace Integration.Salesforce
         private bool UpdateTactic(Plan_Campaign_Program_Tactic planTactic)
         {
             Dictionary<string, object> tactic = GetTactic(planTactic, Mode.Update);
+            IntegrationInstanceTacticIds.Add(Convert.ToString(planTactic.IntegrationInstanceTacticId));
             return _client.Update(objectName, planTactic.IntegrationInstanceTacticId, tactic);
         }
 

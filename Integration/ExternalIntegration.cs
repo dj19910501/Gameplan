@@ -145,5 +145,29 @@ namespace Integration
 
             }
         }
+
+        public List<string> GetTargetDataMember()
+        {
+            _integrationInstanceId = _id;
+            if (_integrationInstanceId.HasValue)
+            {
+                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Title;
+            }
+
+            if (_integrationType.Equals(IntegrationType.Salesforce.ToString()))
+            {
+                IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType);
+                if (integrationSalesforceClient.IsAuthenticated)
+                {
+                    return integrationSalesforceClient.GetTargetDataType();
+                }
+            }
+            else if (_integrationType.Equals(IntegrationType.Eloqua.ToString()))
+            {
+
+            }
+
+            return null;
+        }
     }
 }
