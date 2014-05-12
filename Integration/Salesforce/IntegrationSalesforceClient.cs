@@ -58,6 +58,9 @@ namespace Integration.Salesforce
             }
         }
 
+        public IntegrationSalesforceClient()
+        {
+        }
 
         public IntegrationSalesforceClient(int integrationInstanceId, int id, EntityType entityType)
         {
@@ -69,10 +72,6 @@ namespace Integration.Salesforce
             SetIntegrationInstanceDetail();
             //// Authenticate
             this.Authenticate();
-        }
-
-        public IntegrationSalesforceClient()
-        {
         }
 
         private void SetIntegrationInstanceDetail()
@@ -90,24 +89,6 @@ namespace Integration.Salesforce
             this._username = integrationInstance.Username;//"brijmohan.bhavsar@indusa.com";
             this._password = integrationInstance.Password; //"brijmohan";
             this._apiURL = integrationInstance.IntegrationType.APIURL; //"https://test.salesforce.com/services/oauth2/token";
-        }
-
-        private void SetIntegrationInstanceDetail(Dictionary<string, string> integrationInstanceDetail)
-        {
-            string ConsumerKey = "ConsumerKey";
-            string ConsumerSecret = "ConsumerSecret";
-            string SecurityToken = "SecurityToken";
-            string Username = "Username";
-            string Password = "Password";
-            string APIURL = "APIURL";
-
-            //// set below properties using dictionary.
-            this._securityToken = integrationInstanceDetail[SecurityToken]; //"6to1YjygSTkAiZUusnuoJBAN";
-            this._consumerKey = integrationInstanceDetail[ConsumerKey]; // "3MVG9zJJ_hX_0bb.x24JN3A5KwgO2gmkr5JfDDUx6U8FrvE_cFweCf7y3OkkLZeSkQDraDWZIrFcNqSvnAil_";
-            this._consumerSecret = integrationInstanceDetail[ConsumerSecret];  //"2775499149223461438";
-            this._username = integrationInstanceDetail[Username];//"brijmohan.bhavsar@indusa.com";
-            this._password = integrationInstanceDetail[Password]; //"brijmohan";
-            this._apiURL = integrationInstanceDetail[APIURL]; //"https://test.salesforce.com/services/oauth2/token";
         }
 
         public void Authenticate()
@@ -195,172 +176,6 @@ namespace Integration.Salesforce
 
         }
 
-        private void SyncTacticData()
-        {
-            try
-            {
-                using (var scope = new TransactionScope())
-                {
-
-                    //// Get tactic based on _id property.
-                    Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Single(tactic => tactic.PlanTacticId == _id);
-                    if (planTactic.Status.Equals("In-Progress") || planTactic.Status.Equals("Approved"))
-                    {
-                        Mode currentMode = GetMode(planTactic.IsDeleted, planTactic.IsDeployedToIntegration, planTactic.IntegrationInstanceTacticId, planTactic.Status);
-                        if (currentMode.Equals(Mode.Create))
-                        {
-                            Plan_Campaign_Program planProgram = planTactic.Plan_Campaign_Program;
-                            _parentId = planProgram.IntegrationInstanceProgramId;
-                            if (string.IsNullOrWhiteSpace(_parentId))
-                            {
-                                Plan_Campaign planCampaign = planTactic.Plan_Campaign_Program.Plan_Campaign;
-                                _parentId = planCampaign.IntegrationInstanceCampaignId;
-                                if (string.IsNullOrWhiteSpace(_parentId))
-                                {
-                                    _parentId = CreateCampaign(planCampaign);
-                                    planCampaign.IntegrationInstanceCampaignId = _parentId;
-                                    db.Entry(planCampaign).State = EntityState.Modified;
-                                    db.SaveChanges();
-                                }
-
-                                _parentId = CreateProgram(planProgram);
-                                planProgram.IntegrationInstanceProgramId = _parentId;
-                                db.Entry(planProgram).State = EntityState.Modified;
-                                db.SaveChanges();
-                            }
-
-                            planTactic.IntegrationInstanceTacticId = CreateTactic(planTactic);
-                            db.Entry(planTactic).State = EntityState.Modified;
-                            db.SaveChanges();
-                        }
-                        else if (currentMode.Equals(Mode.Update))
-                        {
-                            if (UpdateTactic(planTactic))
-                            {
-                                // Get data & update actual in actual table & actual cost
-                                //dynamic objtactic = new ExpandoObject();
-                                //objTactic = _client.FindById<objtactic>(planTactic.IntegrationInstanceTacticId);
-                                //db.Entry(planTactic).State = EntityState.Modified;
-                                //db.SaveChanges();
-                            }
-                        }
-                        else if (currentMode.Equals(Mode.Delete))
-                        {
-                            planTactic.IntegrationInstanceTacticId = Delete(planTactic.IntegrationInstanceTacticId);
-                        }
-                    }
-                    scope.Complete();
-                }
-            }
-            catch (Exception e)
-            {
-
-                throw;
-            }
-        }
-
-        private void SyncProgramData()
-        {
-            try
-            {
-                using (var scope = new TransactionScope())
-                {
-
-                    //// Get program based on _id property.
-                    Plan_Campaign_Program planProgram = db.Plan_Campaign_Program.Single(program => program.PlanProgramId == _id);
-                    if (planProgram.Status.Equals("In-Progress") || planProgram.Status.Equals("Approved"))
-                    {
-                        Mode currentMode = GetMode(planProgram.IsDeleted, planProgram.IsDeployedToIntegration, planProgram.IntegrationInstanceProgramId, planProgram.Status);
-                        if (currentMode.Equals(Mode.Create))
-                        {
-                            Plan_Campaign planCampaign = planProgram.Plan_Campaign;
-                            _parentId = planCampaign.IntegrationInstanceCampaignId;
-                            if (string.IsNullOrWhiteSpace(_parentId))
-                            {
-                                _parentId = CreateCampaign(planCampaign);
-                                planCampaign.IntegrationInstanceCampaignId = _parentId;
-                                db.Entry(planCampaign).State = EntityState.Modified;
-                                db.SaveChanges();
-                            }
-
-                            planProgram.IntegrationInstanceProgramId = CreateProgram(planProgram);
-                            db.Entry(planProgram).State = EntityState.Modified;
-                            db.SaveChanges();
-                        }
-                        else if (currentMode.Equals(Mode.Update))
-                        {
-                            if (UpdateProgram(planProgram))
-                            {
-                            }
-                        }
-                        else if (currentMode.Equals(Mode.Delete))
-                        {
-
-                            var tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanProgramId == planProgram.PlanProgramId && tactic.IntegrationInstanceTacticId != null).ToList();
-                            tacticList.ForEach(t => { t.IntegrationInstanceTacticId = Delete(t.IntegrationInstanceTacticId); });
-
-                            planProgram.IntegrationInstanceProgramId = Delete(planProgram.IntegrationInstanceProgramId);
-
-                            db.SaveChanges();
-                        }
-                    }
-                    scope.Complete();
-                }
-            }
-            catch (Exception e)
-            {
-
-                throw;
-            }
-        }
-
-        private void SyncCampaingData()
-        {
-            try
-            {
-                using (var scope = new TransactionScope())
-                {
-
-                    //// Get campaign based on _id property.
-                    Plan_Campaign planCampaign = db.Plan_Campaign.Single(campaign => campaign.PlanCampaignId == _id);
-                    if (planCampaign.Status.Equals("In-Progress") || planCampaign.Status.Equals("Approved"))
-                    {
-                        Mode currentMode = GetMode(planCampaign.IsDeleted, planCampaign.IsDeployedToIntegration, planCampaign.IntegrationInstanceCampaignId, planCampaign.Status);
-                        if (currentMode.Equals(Mode.Create))
-                        {
-                            planCampaign.IntegrationInstanceCampaignId = CreateCampaign(planCampaign);
-                            db.Entry(planCampaign).State = EntityState.Modified;
-                            db.SaveChanges();
-                        }
-                        else if (currentMode.Equals(Mode.Update))
-                        {
-                            if (UpdateCampaign(planCampaign))
-                            {
-                            }
-                        }
-                        else if (currentMode.Equals(Mode.Delete))
-                        {
-                            var tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.PlanCampaignId == planCampaign.PlanCampaignId && tactic.IntegrationInstanceTacticId != null).ToList();
-                            tacticList.ForEach(t => { t.IntegrationInstanceTacticId = Delete(t.IntegrationInstanceTacticId); });
-
-                            var programList = db.Plan_Campaign_Program.Where(program => program.PlanCampaignId == planCampaign.PlanCampaignId && program.IntegrationInstanceProgramId != null).ToList();
-                            programList.ForEach(p => { p.IntegrationInstanceProgramId = Delete(p.IntegrationInstanceProgramId); });
-
-                            planCampaign.IntegrationInstanceCampaignId = Delete(planCampaign.IntegrationInstanceCampaignId);
-
-                            db.SaveChanges();
-                        }
-                    }
-                    scope.Complete();
-                }
-            }
-            catch (Exception e)
-            {
-
-                throw;
-            }
-        }
-
         private Plan_Campaign SyncCampaingData(Plan_Campaign planCampaign)
         {
             //// Get campaign based on _id property.
@@ -385,8 +200,6 @@ namespace Integration.Salesforce
                 var programList = db.Plan_Campaign_Program.Where(program => program.PlanCampaignId == planCampaign.PlanCampaignId && program.IntegrationInstanceProgramId != null).ToList();
                 programList.ForEach(p => { p.IntegrationInstanceProgramId = Delete(p.IntegrationInstanceProgramId); });
 
-                db.SaveChanges();
-
                 // Set null value if delete true to integrationinstance..id
                 planCampaign.IntegrationInstanceCampaignId = Delete(planCampaign.IntegrationInstanceCampaignId);
             }
@@ -407,7 +220,6 @@ namespace Integration.Salesforce
                     _parentId = CreateCampaign(planCampaign);
                     planCampaign.IntegrationInstanceCampaignId = _parentId;
                     db.Entry(planCampaign).State = EntityState.Modified;
-                    db.SaveChanges();
                 }
 
                 planProgram.IntegrationInstanceProgramId = CreateProgram(planProgram);
@@ -422,8 +234,6 @@ namespace Integration.Salesforce
             {
                 var tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanProgramId == planProgram.PlanProgramId && tactic.IntegrationInstanceTacticId != null).ToList();
                 tacticList.ForEach(t => { t.IntegrationInstanceTacticId = Delete(t.IntegrationInstanceTacticId); });
-                db.SaveChanges();
-
                 planProgram.IntegrationInstanceProgramId = Delete(planProgram.IntegrationInstanceProgramId); ;
             }
 
@@ -446,13 +256,11 @@ namespace Integration.Salesforce
                         _parentId = CreateCampaign(planCampaign);
                         planCampaign.IntegrationInstanceCampaignId = _parentId;
                         db.Entry(planCampaign).State = EntityState.Modified;
-                        db.SaveChanges();
                     }
 
                     _parentId = CreateProgram(planProgram);
                     planProgram.IntegrationInstanceProgramId = _parentId;
                     db.Entry(planProgram).State = EntityState.Modified;
-                    db.SaveChanges();
                 }
 
                 planTactic.IntegrationInstanceTacticId = CreateTactic(planTactic);
