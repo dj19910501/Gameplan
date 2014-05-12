@@ -24,35 +24,40 @@ namespace Integration.Salesforce
 
     public class IntegrationSalesforceClient
     {
-        int _integrationInstanceId { get; set; }
-        int _id { get; set; }
-        EntityType _entityType { get; set; }
-        string _parentId { get; set; }
+        public string _username { get; set; }
+        public string _password { get; set; }
+        public string _consumerKey { get; set; }
+        public string _consumerSecret { get; set; }
+        public string _securityToken { get; set; }
+        public string _apiURL { get; set; }
 
-        string _username { get; set; }
-        string _password { get; set; }
-        string _consumerKey { get; set; }
-        string _consumerSecret { get; set; }
-        string _securityToken { get; set; }
-        string _apiURL { get; set; }
-      
-        SalesforceClient _client { get; set; }
+        private MRPEntities db = new MRPEntities();
+        private SalesforceClient _client { get; set; }
+        private Dictionary<string, string> _mappingCampaign { get; set; }
+        private Dictionary<string, string> _mappingProgram { get; set; }
+        private Dictionary<string, string> _mappingTactic { get; set; }
+        private Dictionary<string, string> _mappingImprovement { get; set; }
+        private Dictionary<int, string> _mappingVertical { get; set; }
+        private Dictionary<int, string> _mappingAudience { get; set; }
+        private Dictionary<Guid, string> _mappingGeography { get; set; }
+        private Dictionary<Guid, string> _mappingBusinessunit { get; set; }
+        private Dictionary<Guid, string> _mappingUser { get; set; }
+        private int _integrationInstanceId { get; set; }
+        private int _id { get; set; }
+        private EntityType _entityType { get; set; }
+        private readonly string objectName;
+        private string _parentId { get; set; }
+        private string ColumnParentId = "ParentId";
+        private bool _isAuthenticated { get; set; }
 
-        readonly string objectName;
-        Dictionary<string, string> _mappingCampaign { get; set; }
-        Dictionary<string, string> _mappingProgram { get; set; }
-        Dictionary<string, string> _mappingTactic { get; set; }
-        Dictionary<string, string> _mappingImprovement { get; set; }
-        Dictionary<int, string> _mappingVertical { get; set; }
-        Dictionary<int, string> _mappingAudience { get; set; }
-        Dictionary<Guid, string> _mappingGeography { get; set; }
-        Dictionary<Guid, string> _mappingBusinessunit { get; set; }
-        Dictionary<Guid, string> _mappingUser { get; set; }
+        public bool IsAuthenticated
+        {
+            get
+            {
+                return _isAuthenticated;
+            }
+        }
 
-        MRPEntities db = new MRPEntities();
-        string ColumnParentId = "ParentId";
-
-        public bool _isAuthenticated { get; set; }
 
         public IntegrationSalesforceClient(int integrationInstanceId, int id, EntityType entityType)
         {
@@ -63,14 +68,11 @@ namespace Integration.Salesforce
 
             SetIntegrationInstanceDetail();
             //// Authenticate
-            _isAuthenticated = this.Authenticate();
+            this.Authenticate();
         }
 
-        public IntegrationSalesforceClient(Dictionary<string, string> integrationInstanceDetail)
+        public IntegrationSalesforceClient()
         {
-            SetIntegrationInstanceDetail(integrationInstanceDetail);
-            //// Authenticate
-            _isAuthenticated = this.Authenticate();
         }
 
         private void SetIntegrationInstanceDetail()
@@ -108,7 +110,7 @@ namespace Integration.Salesforce
             this._apiURL = integrationInstanceDetail[APIURL]; //"https://test.salesforce.com/services/oauth2/token";
         }
 
-        public bool Authenticate()
+        public void Authenticate()
         {
             _client = new SalesforceClient();
             var authFlow = new UsernamePasswordAuthenticationFlow(_consumerKey, _consumerSecret, _username, _password + _securityToken);
@@ -116,12 +118,12 @@ namespace Integration.Salesforce
             try
             {
                 _client.Authenticate(authFlow);
-                return true;
+                _isAuthenticated = true;
             }
             catch (SalesforceException ex)
             {
                 //Console.WriteLine("Authentication failed: {0} : {1}", ex.Error, ex.Message);
-                return false;
+                _isAuthenticated = false;
             }
         }
 
@@ -152,7 +154,7 @@ namespace Integration.Salesforce
             }
             else
             {
-               SyncInstanceData();
+                SyncInstanceData();
             }
         }
 
@@ -189,8 +191,8 @@ namespace Integration.Salesforce
 
             BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
             Guid applicationId = Guid.Parse("1c10d4b9-7931-4a7c-99e9-a158ce158951");
-            _mappingUser = objBDSservice.GetUserListByClientId(clientId, applicationId).Select(u => new { u.UserId, u.FirstName, u.LastName}).ToDictionary(u => u.UserId, u => u.FirstName + "" + u.LastName);
-            
+            _mappingUser = objBDSservice.GetUserListByClientId(clientId, applicationId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + "" + u.LastName);
+
         }
 
         private void SyncTacticData()

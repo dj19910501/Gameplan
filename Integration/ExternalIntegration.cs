@@ -135,7 +135,7 @@ namespace Integration
             if (_integrationType.Equals(IntegrationType.Salesforce.ToString()))
             {
                 IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType);
-                if (integrationSalesforceClient._isAuthenticated)
+                if (integrationSalesforceClient.IsAuthenticated)
                 {
                     integrationSalesforceClient.SyncData();
                 }

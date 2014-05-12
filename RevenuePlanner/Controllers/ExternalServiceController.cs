@@ -583,8 +583,8 @@ namespace RevenuePlanner.Controllers
             listGameplanDataTypeModel = (from i in db.IntegrationInstances
                                          join d in db.GameplanDataTypes on i.IntegrationTypeId equals d.IntegrationTypeId
                                          join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
-                                         from m in mapping.DefaultIfEmpty()
-                                         where i.IntegrationInstanceId == id
+                                         from m in mapping.Where(map=>map.IntegrationInstanceId == id).DefaultIfEmpty()
+                                         where i.IntegrationInstanceId == id && d.IsDeleted == false 
                                          select new GameplanDataTypeModel
                                          {
                                              GameplanDataTypeId = d.GameplanDataTypeId,
@@ -600,7 +600,7 @@ namespace RevenuePlanner.Controllers
                                          ).ToList();
             if (listGameplanDataTypeModel != null && listGameplanDataTypeModel.Count > 0)
             {
-                return View(listGameplanDataTypeModel);
+                return View(listGameplanDataTypeModel.OrderBy(map=>map.DisplayFieldName).ToList());
             }
             else
             {

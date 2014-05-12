@@ -235,10 +235,10 @@
                 for (i in _TargetStage) {
 
                     if ((_TargetStage[i].Active) == true) {
-                        $html += '<span class="improve-trget active">' + _TargetStage[i].Stages + '</span>';
+                        $html += '<span class="improve-trget active" title="' + _TargetStage[i].Stages + '">' + _TargetStage[i].Stages + '</span>';
                     }
                     else {
-                        $html += '<span class="improve-trget">' + _TargetStage[i].Stages + '</span>';
+                        $html += '<span class="improve-trget" title="' + _TargetStage[i].Stages + '">' + _TargetStage[i].Stages + '</span>';
                     }
                 }
             }
