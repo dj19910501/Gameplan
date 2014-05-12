@@ -97,5 +97,8 @@ namespace BDSService
 
         [OperationContract]
         int UpdateUserSecurityQuestion(BDSEntities.User user);
+
+        [OperationContract]
+        List<BDSEntities.User> GetUserListByClientId(Guid clientId, Guid applicationId);
     }
 }

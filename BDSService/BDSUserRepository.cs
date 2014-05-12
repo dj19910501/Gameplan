@@ -246,6 +246,24 @@ namespace BDSService
             return teamMemberList;
         }
 
+        /// <summary>
+        /// Function to get list of users of specific client.
+        /// </summary>
+        /// <param name="clientId">Client Id.</param>
+        /// <param name="applicationId">Application Id.</param>
+        /// <returns>Returns list of users of specific client.</returns>
+        public List<BDSEntities.User> GetUserListByClientId(Guid clientId, Guid applicationId)
+        {
+            return db.User_Application.Where(user => user.ApplicationId == applicationId && user.User.ClientId == clientId).Select(user =>
+                new BDSEntities.User
+                {
+                    UserId = user.User.UserId,
+                    FirstName = user.User.FirstName,
+                    LastName = user.User.LastName
+                }).ToList();
+        }
+
+
         #endregion
 
         #region Change Password
@@ -775,7 +793,7 @@ namespace BDSService
         #endregion
 
         #region Get Password reset request
-        
+
         /// <summary>
         /// Function to get PasswordResetRequest detail.
         /// </summary>
@@ -878,7 +896,7 @@ namespace BDSService
         #endregion
 
         #region Get Multiple Security Questions
-        
+
         /// <summary>
         /// Function to get list of secutity questions.
         /// </summary>
