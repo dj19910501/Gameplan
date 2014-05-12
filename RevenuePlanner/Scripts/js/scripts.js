@@ -39,7 +39,7 @@ $(document).ready(function () {
             alwaysVisible: false,
             distance: '6px',
             wheelStep: 3,
-            allowPageScroll: false,
+            allowPageScroll: true,
             disableFadeOut: false
         });
         //sideBar bottomshadow
@@ -84,7 +84,7 @@ $(document).ready(function () {
         alwaysVisible: true,
         distance: '7px',
         wheelStep: 3,
-        allowPageScroll: false,
+        allowPageScroll: true,
         disableFadeOut: false,
         color: '#fff',
     });

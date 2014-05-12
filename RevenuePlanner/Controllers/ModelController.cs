@@ -2862,7 +2862,7 @@ namespace RevenuePlanner.Controllers
                 clientid = p.ClientId,
                 modelId = p.ModelId,/*  TFS Bug - 179 : Improper behavior when editing Tactic in model   Changed By : Nirav shah on 6 Feb 2014        Change : add modelId = p.ModelId,    */
                 title = p.Title,
-                Stage = (p.StageId == null) ? "-" : p.Stage.Code,
+                Stage = (p.StageId == null) ? "-" : p.Stage.Title, // Modified by dharmraj for ticket #475, Old line : Stage = (p.StageId == null) ? "-" : p.Stage.Code
                 /*changed by Nirav Shah on 2 APR 2013*/
                 // inquiries = (p.ProjectedInquiries == null) ? 0 : p.ProjectedInquiries,
                 mqls = (p.ProjectedMQLs == null) ? 0 : p.ProjectedMQLs,
@@ -2889,7 +2889,15 @@ namespace RevenuePlanner.Controllers
                 //ViewBag.Stages = db.Stages.Where(s => s.IsDeleted == false && s.ClientId == Sessions.User.ClientId);
                 string Marketing = Convert.ToString(Enums.Funnel.Marketing).ToLower();
                 string StageType = Enums.StageType.CR.ToString();
-                ViewBag.Stages = db.Model_Funnel_Stage.Where(s => s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true && s.StageType == StageType && s.Model_Funnel.Funnel.Title == Marketing).Select(n => new { n.StageId, n.Stage.Code }).Distinct().ToList();
+                //Changed by dharmraj for ticket #475
+                //ViewBag.Stages = db.Model_Funnel_Stage.Where(s => s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true && s.StageType == StageType && s.Model_Funnel.Funnel.Title == Marketing).Select(n => new { n.StageId, n.Stage.Code }).Distinct().ToList();
+                ViewBag.Stages = db.Model_Funnel_Stage.Where(s => s.Model_Funnel.ModelId == ModelId && 
+                                                                  s.AllowedTargetStage == true && 
+                                                                  s.StageType == StageType && 
+                                                                  s.Model_Funnel.Funnel.Title == Marketing)
+                                                      .Select(n => new { n.StageId, n.Stage.Title })
+                                                      .Distinct()
+                                                      .ToList();
                 ViewBag.IsCreated = false;
                 TacticType mtp = db.TacticTypes.Where(m => m.TacticTypeId.Equals(id)).FirstOrDefault();
                 tm.TacticTypeId = mtp.TacticTypeId;

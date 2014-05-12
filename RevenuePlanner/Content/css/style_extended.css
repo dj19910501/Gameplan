@@ -1707,7 +1707,7 @@ a {
 #table_boost.boost-table tr:hover td{background-color: #F6D87F;}
 #table_boost.boost-table tbody > tr:hover:nth-child(2n+1) > td{ background-color: #F6D87F;}
 
-.improve-trget{display:inline-block; background:#d4d4d4; color:#fff; text-align:center; width:41px !important; height:14px !important; font-size:15px; line-height:15px; padding:2px 3px; border-radius:10px; margin-left:8px; text-transform:uppercase; font-family: 'source_sans_probold', Arial, sans-serif;}
+.improve-trget{display:inline-block; background:#d4d4d4; color:#fff; text-align:center; width:41px !important; height:14px !important; font-size:15px; line-height:15px; padding:2px 3px; border-radius:10px; margin-left:8px; text-transform:uppercase; font-family: 'source_sans_probold', Arial, sans-serif;overflow:hidden;text-overflow:ellipsis;}
 .improve-trget:first-child{margin-left:0;}
 .improve-trget.active{background:#5693b3;}
 

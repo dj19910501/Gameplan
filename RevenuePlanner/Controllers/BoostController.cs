@@ -163,6 +163,10 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         public JsonResult ImprovementTacticList()
         {
+
+            string MetricTypeSV = Enums.MetricType.SV.ToString();
+            string MetricTypeSize = Enums.MetricType.Size.ToString();
+
             var objImprovementTactic = db.ImprovementTacticTypes.Where(s => s.IsDeleted == false && s.ClientId == Sessions.User.ClientId).Select(s => s).ToList();
             var ImprovementTacticList = objImprovementTactic.Select(itt => new
             {
@@ -170,11 +174,14 @@ namespace RevenuePlanner.Controllers
                 Title = itt.Title,
                 Cost = itt.Cost,
                 IsDeployed = itt.IsDeployed,
-                TargetStage = (db.Metrics.ToList().Where(metrics => metrics.IsDeleted == false && metrics.ClientId == Sessions.User.ClientId).Select(metrics => metrics).Distinct().OrderBy(metrics => metrics.Level).ToList()).Select(ittmobj => new
-                    {
-                        Stages = ittmobj.MetricCode,
-                        Active = TargetStage(itt.ImprovementTacticTypeId, ittmobj.MetricCode)
-                    }).Select(ittmobj => ittmobj).Distinct(),
+                TargetStage = (db.Metrics.Where(metrics => metrics.IsDeleted == false && metrics.ClientId == Sessions.User.ClientId && (metrics.MetricType == MetricTypeSV || metrics.MetricType == MetricTypeSize))
+                                         .Select(metrics => metrics)
+                                         .OrderBy(metrics => metrics.Level).ToList())
+                                         .Select(ittmobj => new
+                                         {
+                                             Stages = ittmobj.MetricName,
+                                             Active = TargetStage(itt.ImprovementTacticTypeId, ittmobj.MetricCode)
+                                         }).Select(ittmobj => ittmobj),
                 IsDeployedToIntegration = itt.IsDeployedToIntegration
             }).Select(itt => itt);
             return Json(ImprovementTacticList.OrderBy(t => t.Title).ToList(), JsonRequestBehavior.AllowGet); // Modified By :- Sohel Pathan on 28/04/2014 for Internal Review Points #9 to provide sorting for Listings
