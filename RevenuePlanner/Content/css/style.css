@@ -3072,15 +3072,17 @@ span.circle-check-icon {
     width: 26px;
     height: 26px;
     display: block;
+    cursor:pointer;
 }
 
 span.circle-check-icon-blue {
     margin-left: auto;
     margin-right: auto;
-    background: url('../images/circle-check-icon-blue.png') no-repeat;
+    background: url('../images/circle-check-icon-blue.png') no-repeat !important;
     width: 26px;
     height: 26px;
     display: block;
+    cursor:pointer;
 }
 
 span.circle-check-icon-integration {
@@ -6883,7 +6885,7 @@ span.circle-check-icon-gray{margin-left: auto;margin-right: auto;background: url
     background-position: -238px 0 !important;
 }
 	  #content_wraper .small-content{margin:0px 20px 20px 20px; font-size:14px;}
-#content_wraper .small-content a{font-weight:bold;color:#908D88 !important;}
+#content_wraper .small-content a{font-weight:bold;color:#333333 !important;}
 
 #table_integrations{color: #908d88 !important;}
 #table_integrations.table-striped tbody > tr:nth-child(2n+1) > td, .table-striped tbody > tr:nth-child(2n+1) > th { background-color: #f2f2f2;}
@@ -6891,14 +6893,14 @@ span.circle-check-icon-gray{margin-left: auto;margin-right: auto;background: url
 #table_integrations th, #table_integrations td {border-top: none !important; text-align: right;}
 #table_integrations tr th:first-child, #table_integrations tr td:first-child{text-align: left;}
 #table_integrations th.border-r, #table_integrations td.border-r {border-right: 1px solid #c7ced1 !important; padding-right: 20px !important;}
-#table_integrations tbody tr{cursor: pointer; font-size: 24px; border-bottom: 1px solid #c7ced1; font-family: 'source_sans_prosemibold', Arial; font-weight:normal;}
+#table_integrations tbody tr{cursor: default; font-size: 24px; border-bottom: 1px solid #c7ced1; font-family: 'source_sans_prosemibold', Arial; font-weight:normal;}
 #table_integrations tbody tr.draf{color: #cccccc;}
 #table_integrations tbody tr.draf a{color: #9DC4D9;}
 #table_integrations tbody tr td{line-height: 26px;}
 #table_integrations tbody tr:hover > td, #table_integrations tbody tr:hover > th, #table_integrations.table-striped tbody > tr:nth-child(2n+1):hover > td, 
 .table-striped tbody > tr:nth-child(2n+1):hover > th{background-color: #e9f6fd;}
 #table_integrations tbody{border-top: 1px solid #c7ced1;}
-#table_integrations tbody tr td span.title-baseline-model{float: left; margin-right: 10px;}
+#table_integrations tbody tr td span.title-baseline-model{float: left; margin-right: 10px;width:280px;}
 #table_integrations tbody tr td span.search-icon{visibility: hidden; background: url("../images/magnifying_glass.png") no-repeat; width: 16px; height: 16px; display: block; float: left; margin-top: 3px;}
 #table_integrations tbody tr:hover td span.search-icon{visibility: visible;}
 
@@ -6908,6 +6910,10 @@ span.circle-check-icon-gray{margin-left: auto;margin-right: auto;background: url
 #table_integrations tbody tr:hover td span.delete-temp-program{visibility: visible;}
 
 #table_integrations tbody tr td span.circle-check-icon {margin-right:0px;}
+
+
+.width180 {min-width:180px;}
+.width280 {width:280px;}
 
 .padding-left34{padding-left:34px !important;}
 #table_integrations a{color:#5693b3;}
