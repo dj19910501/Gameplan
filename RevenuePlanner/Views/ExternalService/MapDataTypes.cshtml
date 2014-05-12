@@ -1,0 +1,132 @@
+﻿@model IList<RevenuePlanner.Models.GameplanDataTypeModel>
+@using RevenuePlanner.Helpers
+@{
+    ViewBag.Title = "Map Data Types";
+    ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section nlFormContent{
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
+}
+@section Sidebar {
+    <div class="padding-content2">
+        <h4 class="text-shadow-black source-sans-prolight">Preferences</h4>
+    </div>
+    <ul class="nav nav-list nav-gray">
+        <li class="item">
+            <a class="source-sans-probold inputs" href="#" id="aMyProfile"><span></span>MY PROFILE</a>
+        </li>
+        <li class="item active">
+            <a class="source-sans-probold integrations" href="#"><span></span>INTEGRATIONS</a>
+        </li>
+    </ul>
+}
+@using (Html.BeginForm(new { id = ViewBag.IntegrationInstanceId }))
+{
+    <!--success message-->
+    <div id="successMessage" class="alert hide alert-success message-position">
+        <a class="close">×</a>
+        <strong>Success.</strong> <span id="spanMessageSuccess">@TempData["SuccessMessage"]</span>
+    </div>
+    <!--success message-->
+
+    <!--error message-->
+    <div id="errorMessage" class="alert hide alert-error message-position">
+        <a class="close">×</a>
+        <strong>Error!</strong> <span id="spanMessageError">@TempData["ErrorMessage"]</span>
+    </div>
+    <!--error message-->
+
+    <ul class="nav nav-tabs margin-bottom0">
+        <li class="source-sans-proregular">
+            <h2 class="title-header">External Service Integrations</h2>
+        </li>
+    </ul>
+    <a class="link-gray" href="#">« BACK TO LIST</a>
+
+    <div class="padding-content cf source-sans-proregular">
+        <div class="row">
+            <div class="span2 myaccount-colum">
+                <div class="width216">
+                    <ul class="nav nav-pills nav-stacked width216">
+                        <li><a href="@Url.Content("~/ExternalService/Edit/")@ViewBag.IntegrationInstanceId.ToString()">Integration Credentials</a></li>
+                        <li class="active"><a href="#">Map Data Types</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="span8 content-colum-mapDataTypes">
+                <p>@Html.Raw("Please indicate which variables in Gameplan sync to the respective counterpart in " + Convert.ToString(ViewBag.IntegrationTypeName) + ". Changing these variables can significantly impact the utility of your Gameplan integration.")</p>
+                <table id="table_integrations" class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th class="source-sans-prosemibold">Gameplan Source Data Type</th>
+                            <th class="source-sans-prosemibold" style="text-align: left;">@Convert.ToString(ViewBag.IntegrationTypeName) Target Data Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < Model.Count; i++)
+                        {
+                            @Html.HiddenFor(x => x[i].GameplanDataTypeId)   
+                            @Html.HiddenFor(x => x[i].IntegrationTypeId)   
+                            @Html.HiddenFor(x => x[i].TableName)   
+                            @Html.HiddenFor(x => x[i].ActualFieldName)   
+                            @Html.HiddenFor(x => x[i].DisplayFieldName)   
+                            @Html.HiddenFor(x => x[i].IsGet)   
+                            @Html.HiddenFor(x => x[i].IntegrationInstanceDataTypeMappingId)   
+                            @Html.HiddenFor(x => x[i].IntegrationInstanceId)   
+                            <tr class="fieldRow">
+                                <td class="title1">
+                                    @Html.DisplayFor(x => x[i].DisplayFieldName)
+                                </td>
+                                <td style="text-align: left;">
+                                    @*<div class="nl-form">*@
+                                    @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)ViewData["ExternalFieldList"], "TargetDataType", "TargetDataType", Model[i].TargetDataType), "Select")
+                                    @*</div>*@
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="nl-overlay"></div>
+                <script type="text/javascript">
+                    var nlform = new NLForm(document.getElementById('table_integrations'));
+                </script>
+                <span class="span5">
+                    <button id="button-save" type="submit" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" name="button-save">Update</button>
+                </span>
+            </div>
+        </div>
+    </div>
+}
+<script type="text/javascript">
+    $('#aMyProfile').click(function () {
+        var url = '';
+        url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
+        window.location.href = url;
+     });
+    $(document).ready(function () {
+        if ($('#spanMessageError').html() == '' && $('#spanMessageSuccess').html() == '') {
+            $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
+        }
+        else {
+            $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+        }
+        if ($('#spanMessageSuccess').html() == '') {
+            $("#successMessage").slideUp(100);
+        }
+        else {
+            $("#successMessage").slideDown(1200);
+            $("#successMessage").slideUp(1000);
+        }
+
+        if ($('#spanMessageError').html() == '') {
+            $("#errorMessage").slideUp(100);
+        }
+        else {
+            $("#errorMessage").slideDown(400);
+        }
+    });
+</script>

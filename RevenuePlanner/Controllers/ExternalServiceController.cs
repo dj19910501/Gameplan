@@ -1,11 +1,13 @@
 ﻿using Elmah;
+using Newtonsoft.Json.Linq;
 using RevenuePlanner.Helpers;
 using RevenuePlanner.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
 using System.Linq;
 using System.Transactions;
-using System.Web;
 using System.Web.Mvc;
 
 namespace RevenuePlanner.Controllers
@@ -14,6 +16,22 @@ namespace RevenuePlanner.Controllers
     {
         #region Variables
         private MRPEntities db = new MRPEntities();
+        private static readonly string SecurityToken = ConfigurationSettings.AppSettings["SecurityToken"];
+        private static readonly string ConsumerKey = ConfigurationSettings.AppSettings["ConsumerKey"];
+        private static readonly string ConsumerSecret = ConfigurationSettings.AppSettings["ConsumerSecret"];
+        private static readonly string Username = ConfigurationSettings.AppSettings["Username"];
+        private static readonly string Password = ConfigurationSettings.AppSettings["Password"] + SecurityToken;
+        private List<ExternalField> ExternalFields
+        {
+            get
+            {
+                List<ExternalField> lst = new List<ExternalField>();
+                lst.Add(new ExternalField { TargetDataType = "Field 1" });
+                lst.Add(new ExternalField { TargetDataType = "Field 2" });
+                lst.Add(new ExternalField { TargetDataType = "Field 3" });
+                return lst;
+            }
+        }
         #endregion
 
         public ActionResult Index()
@@ -541,6 +559,114 @@ namespace RevenuePlanner.Controllers
         {
             return true;
         }
+
+        #region Map Data Types
+
+        /// <summary>
+        /// Map External Service - Gameplan Data Types (Fields)
+        /// </summary>
+        public ActionResult MapDataTypes(int id)
+        {
+            if (!Sessions.IsClientAdmin && !Sessions.IsSystemAdmin)
+            {
+                return RedirectToAction("Index", "NoAccess");
+            }
+            ViewData["ExternalFieldList"] = ExternalFields;
+            ViewBag.IntegrationInstanceId = id;
+            string integrationTypeName = (from i in db.IntegrationInstances
+                                          join t in db.IntegrationTypes on i.IntegrationTypeId equals t.IntegrationTypeId
+                                          where i.IsDeleted == false && t.IsDeleted == false && i.IntegrationInstanceId == id
+                                          select t.Title).SingleOrDefault();
+            if (string.IsNullOrEmpty(integrationTypeName)) ViewBag.IntegrationTypeName = ""; else ViewBag.IntegrationTypeName = integrationTypeName;
+
+            List<GameplanDataTypeModel> listGameplanDataTypeModel = new List<GameplanDataTypeModel>();
+            listGameplanDataTypeModel = (from i in db.IntegrationInstances
+                                         join d in db.GameplanDataTypes on i.IntegrationTypeId equals d.IntegrationTypeId
+                                         join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
+                                         from m in mapping.DefaultIfEmpty()
+                                         where i.IntegrationInstanceId == id
+                                         select new GameplanDataTypeModel
+                                         {
+                                             GameplanDataTypeId = d.GameplanDataTypeId,
+                                             IntegrationTypeId = d.IntegrationTypeId,
+                                             TableName = d.TableName,
+                                             ActualFieldName = d.ActualFieldName,
+                                             DisplayFieldName = d.DisplayFieldName,
+                                             IsGet = d.IsGet,
+                                             IntegrationInstanceDataTypeMappingId = m.IntegrationInstanceDataTypeMappingId,
+                                             IntegrationInstanceId = i.IntegrationInstanceId,
+                                             TargetDataType = m.TargetDataType
+                                         }
+                                         ).ToList();
+            if (listGameplanDataTypeModel != null && listGameplanDataTypeModel.Count > 0)
+            {
+                return View(listGameplanDataTypeModel);
+            }
+            else
+            {
+                TempData["ErrorMessage"] = Common.objCached.DataTypeMappingNotConfigured;
+                return RedirectToAction("Edit", new { id = id });
+            }
+        }
+
+        /// <summary>
+        /// Map External Service - Gameplan Data Types (Fields)
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult MapDataTypes(int id, IList<GameplanDataTypeModel> form)
+        {
+            try
+            {
+                using (MRPEntities mrp = new MRPEntities())
+                {
+                    using (var scope = new TransactionScope())
+                    {
+                        List<int> lstIds = mrp.IntegrationInstanceDataTypeMappings.Where(m => m.IntegrationInstanceId == id).Select(m => m.IntegrationInstanceDataTypeMappingId).ToList();
+                        if (lstIds != null && lstIds.Count > 0)
+                        {
+                            foreach (int ids in lstIds)
+                            {
+                                IntegrationInstanceDataTypeMapping obj = mrp.IntegrationInstanceDataTypeMappings.Where(m => m.IntegrationInstanceDataTypeMappingId == ids).SingleOrDefault();
+                                if (obj != null)
+                                {
+                                    mrp.Entry(obj).State = EntityState.Deleted;
+                                    mrp.SaveChanges();
+                                }
+                            }
+
+                        }
+                        foreach (GameplanDataTypeModel obj in form)
+                        {
+                            if (!string.IsNullOrEmpty(obj.TargetDataType))
+                            {
+                                IntegrationInstanceDataTypeMapping objMapping = new IntegrationInstanceDataTypeMapping();
+                                int instanceId;
+                                int.TryParse(Convert.ToString(obj.IntegrationInstanceId), out instanceId);
+                                objMapping.IntegrationInstanceId = instanceId;
+                                objMapping.GameplanDataTypeId = obj.GameplanDataTypeId;
+                                objMapping.TargetDataType = obj.TargetDataType;
+                                objMapping.CreatedDate = DateTime.Now;
+                                objMapping.CreatedBy = Sessions.User.UserId;
+                                mrp.Entry(objMapping).State = EntityState.Added;
+                                mrp.SaveChanges();
+                            }
+                        }
+                        scope.Complete();
+                    }
+                }
+                TempData["SuccessMessage"] = Common.objCached.DataTypeMappingSaveSuccess;
+            }
+            catch (Exception e)
+            {
+                TempData["ErrorMessage"] = Common.objCached.ErrorOccured + e.Message;
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            return RedirectToAction("MapDataTypes", new { id = id });
+        }
+
+        #endregion
 
     }
 }

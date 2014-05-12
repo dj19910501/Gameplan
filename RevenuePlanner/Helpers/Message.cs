@@ -1120,8 +1120,32 @@ namespace RevenuePlanner.Helpers
             }
         }
         // End - Added by : Sohel Pathan on 09/05/2014 for PL #430 
-
+        private string _DataTypeMappingSaveSuccess;
+        public string DataTypeMappingSaveSuccess
+        {
+            get
+            {
+                return _DataTypeMappingSaveSuccess;
+            }
+            set
+            {
+                _DataTypeMappingSaveSuccess = value;
+            }
+        }
+        private string _DataTypeMappingNotConfigured;
+        public string DataTypeMappingNotConfigured
+        {
+            get
+            {
+                return _DataTypeMappingNotConfigured;
+            }
+            set
+            {
+                _DataTypeMappingNotConfigured = value;
+            }
+        }
         #endregion
+
 
         #region  Functions
         public string loadMsg(string XmlFilePath)
@@ -1468,6 +1492,12 @@ namespace RevenuePlanner.Helpers
                                             _TestIntegrationFail = strMsgValue;
                                             break;
                                         // End - Added by : Sohel Pathan on 09/05/2014 for PL #430 
+                                        case "DataTypeMappingSaveSuccess":
+                                            _DataTypeMappingSaveSuccess = strMsgValue;
+                                            break;
+                                        case "DataTypeMappingNotConfigured":
+                                            _DataTypeMappingNotConfigured = strMsgValue;
+                                            break;
                                     }
                                 }
                                 i = i + 1;

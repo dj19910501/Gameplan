@@ -212,6 +212,7 @@
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ChangeLog_ViewModel.cs" />
+    <Compile Include="Models\ExtrenalServiceModel.cs" />
     <Compile Include="Models\Field.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
@@ -897,6 +898,7 @@
     <Content Include="Views\ExternalService\Create.cshtml" />
     <Content Include="Views\ExternalService\Edit.cshtml" />
     <Content Include="Views\Model\Integration.cshtml" />
+    <Content Include="Views\ExternalService\MapDataTypes.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

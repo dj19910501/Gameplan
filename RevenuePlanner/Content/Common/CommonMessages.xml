@@ -378,4 +378,12 @@
 		<value>Provided Integration Service Credentials are not verified.</value>
 	</Field>
 	<!--End - Added by : Sohel Pathan on 09/05/2014 for PL #430-->
+  <Field>
+    <Name>DataTypeMappingSaveSuccess</Name>
+    <value>External service integration data mapping saved successfully.</value>
+  </Field>
+  <Field>
+    <Name>DataTypeMappingNotConfigured</Name>
+    <value>Gameplan source data types or Integration instance not configured.</value>
+  </Field>
 </Messages>
