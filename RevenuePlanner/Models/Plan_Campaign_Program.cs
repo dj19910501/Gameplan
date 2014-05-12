@@ -38,6 +38,9 @@ namespace RevenuePlanner.Models
         public Nullable<System.Guid> ModifiedBy { get; set; }
         public bool IsDeleted { get; set; }
         public string Status { get; set; }
+        public bool IsDeployedToIntegration { get; set; }
+        public string IntegrationInstanceProgramId { get; set; }
+        public Nullable<System.DateTime> LastSyncDate { get; set; }
     
         public virtual Audience Audience { get; set; }
         public virtual Geography Geography { get; set; }

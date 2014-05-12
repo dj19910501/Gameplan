@@ -1,0 +1,517 @@
+﻿@model RevenuePlanner.Models.BaselineModel
+@using RevenuePlanner.Models
+@using RevenuePlanner.Helpers
+
+@{
+    ViewBag.Title = "Integration";
+    ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Model;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string ModelId = Convert.ToString(ViewBag.ModelId);
+    string ModelStatus = Convert.ToString(ViewBag.ModelStatus);
+    string ModelTitle = Convert.ToString(ViewBag.ModelTitle);
+    string ShowModelResultsTab = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ShowModelResultsTab"]);
+    @Html.Hidden("hdnShowModelResultsTab", ShowModelResultsTab);
+                                                               string PublishedMsg = ViewBag.ModelPublishComfirmation;
+    @Html.Hidden("PublishedMsg", PublishedMsg);
+                                              bool PublisheStatus = ViewBag.Flag;
+    @Html.Hidden("PublisheStatus", PublisheStatus);
+                                                  var currentdate = System.DateTime.Today.ToShortDateString();
+    
+}
+
+@section nlFormContent{
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.slidepanel.css")" type="text/css" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/dropdown-info-user.js")"></script>
+}
+
+@section Sidebar
+{
+    <div class="padding-content padding-bottom0">
+        <h4 class="text-shadow-black source-sans-prolight">Model Summary</h4>
+        <div class="wraper-btns cf">
+            <div class="span6">
+                <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" id="NewModel">@Html.Raw("New Model")</button>
+            </div>
+            <div class="span6">
+                <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button" id="publish">@Html.Raw("Publish")</button>
+            </div>
+        </div>
+    </div>
+
+    <ul class="nav nav-list nav-gray">
+        <li class="item">
+            <a class="source-sans-probold inputs leftnav" id="aInput" href="#"><span></span>@Html.Raw("INPUTS")</a>
+        </li>
+        @if (ShowModelResultsTab == null || ShowModelResultsTab == "" || ShowModelResultsTab.ToLower() == "true")
+        {
+            <li class="item">
+                <a class="source-sans-probold audience leftnav" id="aAudience" href="#"><span></span>@Html.Raw("AUDIENCE")</a>
+            </li>
+        }
+        <li class="item">
+            <a class="source-sans-probold tactics leftnav" id="aTactics" href="#"><span></span>@Html.Raw("TACTICS")</a>
+        </li>
+        @if (ShowModelResultsTab == null || ShowModelResultsTab == "" || ShowModelResultsTab.ToLower() == "true")
+        {
+            <li class="item">
+                <a class="source-sans-probold result leftnav" id="aResults" href="#"><span></span>@Html.Raw("RESULTS")</a>
+            </li>
+        }
+        <li class="item active">
+            <a class="source-sans-probold integrations leftnav" id="aIntegration" href="#"><span></span>@Html.Raw("INTEGRATIONS")</a>
+        </li>
+    </ul>
+    <ul class="nav nav-list nav-gray-plan">
+        <li id="change-log" class="nav-header">
+            <span>Change Log</span>
+            <div class="changes">None</div>
+        </li>
+    </ul>
+    @Html.Hidden("hdnMsg", (string)TempData["ErrorMessage"], new { id = "hdnMsg" })
+}
+
+<!--success message-->
+<div id="successMessage" class="alert hide alert-success message-position">
+    <a class="close">×</a>
+    <div id="cSuccess">@Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))</div>
+</div>
+<div id="errorMessage" class="alert alert-error hide message-position">
+    <a class="close">×</a>
+    <div id="cError">@Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))</div>
+</div>
+@Html.HiddenFor(model => ModelId, new { id = "hdnModelId" })
+@Html.HiddenFor(model => ModelStatus, new { id = "hdnStatus" })
+@Html.Hidden("EffectiveDate", currentdate)
+
+<div id="DivBackgroundModel" class="modal-backdrop fade in" style="z-index: 1501; display: none;"></div>
+<div id="DivNoIntegrationModelPopup" class="form-inspect-share hide fade in" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none; height: 220px; z-index: 1502;">
+    <h2 class="primary-title source-sans-prosemibold">No Integration Exists</h2>
+    <p class="source-sans-prosemi" style="font-weight: normal; color: #FFFFFF; font-size: 17px; margin-bottom: 40px;">
+        Gameplan syncs activites to existing external automation systems via API integration. To utilize this ability, you must add an integration.
+    </p>
+    <div style="width: 100%; margin: 0px auto;">
+        <button class="form-inspect-share-button btn btn-large" id="Add-Integration" value="Submit" style="margin-top: 0px !important; margin-right: 10px; width: 80px;">Add Integration</button>
+        &nbsp;
+        <button class="btn-link" id="integration-cancel-button" type="button" style="margin-top: 0px !important; width: 80px; line-height: 41px;">Cancel</button>
+    </div>
+</div>
+<div id="DivPublishModelPopup" class="form-inspect-share hide fade in" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none; height: 205px; z-index: 1502;">
+    <h2 class="primary-title source-sans-prosemibold">Select effective date</h2>
+    <div class="dp datepicker input-append date  calendar-width" id="dp_start" data-date="today();" data-date-format="@RevenuePlanner.Helpers.Common.dateFormat">
+        <input id="t_startdate" class="black-border-right font-size13 height30px" style="background-color: #ffffff; border-color: #f3f3f3; color: #000000; width: 240px; margin-top: 0px; border-radius: 4px;" size="16" type="text">
+        <span class="add-on height30" style="border-radius: 4px;">
+            <img src="~/Content/images/gray-calendar-icon-big.png"></span>
+    </div>
+    <div style="width: 100%; margin: 0px auto;">
+        <button class="form-inspect-share-button btn btn-large" id="Save-publish" value="Submit" style="margin-top: 0px !important; margin-right: 10px; width: 80px;">Save</button>
+        &nbsp;
+        <button class="btn-link" id="cancel-button" type="button" style="margin-top: 0px !important; width: 80px; line-height: 41px;">Cancel</button>
+    </div>
+</div>
+
+<ul class="nav nav-tabs" style="margin-bottom: 20px;padding-bottom:10px;">
+    <input type="hidden" value="@ModelId" id="latestModelId" />
+    <li class="title-header source-sans-proregular" title="@Model.Title">
+        <h2 id="lblTitle">@Model.Title <span class="gray source-sans-prolight" title="@ModelStatus">@ModelStatus</span></h2>
+    </li>
+</ul>
+<p class="small-content source-sans-prolight">Please select the target integration for this model. limit one target for available integrations.</p>
+<div id="table_request" class="padding-content padding-top0 cf source-sans-proregular">
+    <table id="table_integrations" class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th class="width275">Provider</th>
+                <th class="width86">Instance</th>
+                <th class="width222">Last Sync</th>
+                <th class="width50px">Target</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!--tr elements are add dinamically with javascript (view script.js file)-->
+
+        </tbody>
+    </table>
+</div>
+<p class="small-content source-sans-prolight">
+    Manage integrations in <a href='@Url.Content("~/ExternalService/Index")'>Settings.</a>
+</p>
+
+<script type="text/javascript">
+
+    var lastModelId;
+    var modelStatus;
+
+    $(document).ready(function () {
+
+        $('#DivBackgroundModel').css("display", "none");
+        $('#DivPublishModelPopup').css("display", "none");
+        $('#DivNoIntegrationModelPopup').css("display", "none");
+
+        //$('.changes').html('');
+        //var url = '@Url.Content("~/Model/LoadChangeLog/")';
+        //$('.changes').load(url + '?objectId=' + $("#hdnModelId").val());
+
+        var ismsg = $("#hdnMsg").val();
+        if ($('#cSuccess').html() != '') {
+            $('#cSuccess').html('<strong>Success.</strong> ' + $('#cSuccess').html())
+            $("#successMessage").slideDown(1200);
+            $("#successMessage").slideUp(3000);
+        }
+        if ($('#cError').html() != '') {
+            $("#errorMessage").slideDown(1200);
+        }
+        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+
+        $('#NewModel').click(function (e) {
+            window.location.href = "@Url.Action("Create", "Model")";
+        });
+
+        if ($('#hdnModelId').val() == $("#latestModelId").val()) {
+            if ($('#hdnStatus').val() == "Draft") {
+                $("#publish").removeClass('btn-blue-disable');
+                $("#publish").addClass('btn-blue');
+            }
+        }
+
+        LoadModelData($("#latestModelId").val(), true);
+        function LoadModelData(modelId, bool) {
+            if ($('#hdnModelId').val() != modelId) {
+                modelId = $('#hdnModelId').val();
+                $("#create_new_tactic").hide();
+                $("#continue").hide();
+
+            }
+            else {
+                $("#create_new_tactic").show();
+                $("#continue").show();
+
+            }
+
+            $('#ver_' + modelId).removeClass('disabled pull-right');
+            $('#ver_' + modelId).addClass('active pull-right');
+            if (lastModelId != null) {
+                $('#ver_' + lastModelId).removeClass('active pull-right');
+                $('#ver_' + lastModelId).addClass('disabled pull-right');
+            }
+            lastModelId = modelId;
+            /*Added by Nirav Shah on 18 feb 2014 for TFS Point 252: Editing a published model*/
+        }
+
+        $(".leftnav").click(function () {
+            var url = '';
+            var isResults = '';
+            if ($(this).attr('id') == 'aInput') {
+                url = '@Url.Content("~/Model/Create")';
+            }
+            else if ($(this).attr('id') == 'aAudience') {
+                url = '@Url.Content("~/Model/Audience")';
+            }
+            else if ($(this).attr('id') == 'aTactics') {
+                url = '@Url.Content("~/Model/Tactics")';
+            }
+            else if ($(this).attr('id') == 'aResults') {
+                url = '@Url.Content("~/Model/Results")';
+                isResults = '1';
+            }
+            if (url != '' && lastModelId != null && lastModelId != 0) {
+                if (isResults == '1') {
+                    window.location.href = url + '?mid1=' + lastModelId + '&mid2=' + lastModelId;
+                }
+                else {
+                    window.location.href = url + '?id=' + lastModelId;
+                }
+            }
+        });
+
+        $(document).on("click", "a[name='versionId']", function (e) {
+            var latest = $("#latestModelId").val();
+            var id = $(this).attr("id");
+            if (id == latest) {
+                $("#NewModel").removeClass('btn-blue-disable');
+                $("#NewModel").addClass('btn-blue');
+                $("#mode").val(latest);
+                if ($('#hdnStatus').val() == "Draft") {
+                    $("#publish").removeClass('btn-blue-disable');
+                    $("#publish").addClass('btn-blue');
+                }
+                else {
+                    $("#publish").removeClass('btn-blue');
+                    $("#publish").addClass('btn-blue-disable');
+                }
+            }
+            else {
+                $("#publish").removeClass('btn-blue');
+                $("#publish").addClass('btn-blue-disable');
+
+            }
+            $('#ver_' + id).removeClass('disabled pull-right');
+            $('#ver_' + id).addClass('active pull-right');
+            if (lastModelId != null) {
+                $('#ver_' + lastModelId).removeClass('active pull-right');
+                $('#ver_' + lastModelId).addClass('disabled pull-right');
+            }
+            lastModelId = id;
+            var status;
+            $("#table_integrations tbody tr").remove();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Model/GetIntegrationDatabyid/")',
+                data: {
+                    id: lastModelId
+                },
+                dataType: "json",
+                success: function (r) {
+                    integration = r;
+                    fillIntegrationTable();
+                    myApp.hidePleaseWait();
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/Model/FillVersion")',
+                        data: { id: lastModelId },
+                        dataType: "json",
+                        success: function (r) {
+                            for (i in r) {
+                                $("#lblTitle").html('');
+                                $("#lblTitle").html(r[i].Title + '<span class="gray source-sans-prolight">' + r[i].Status + '</span>');
+                            }
+
+                            myApp.hidePleaseWait();
+                        }
+                    });
+                }
+            });
+
+        });
+
+        $("#Add-Integration").click(function () {
+            window.location.href = '@Url.Content("~/ExternalService/Index")';
+            return true;
+        });
+
+        $("#integration-cancel-button").click(function () {
+            $('#DivBackgroundModel').css("display", "none");
+            $('#DivPublishModelPopup').css("display", "none");
+            $("#DivNoIntegrationModelPopup").css("display", "none");
+            return false;
+        });
+
+        $('#publish').click(function (e) {
+            if ($("#latestModelId").val() == lastModelId && $('#hdnStatus').val() == "Draft") {
+                if ($('#PublisheStatus').val().toLocaleLowerCase() == 'true') {
+                    if (confirm($("#PublishedMsg").val())) {
+                        $('#DivBackgroundModel').css("display", "block");
+                        $('#DivPublishModelPopup').css("display", "block");
+                        var date = $("#EffectiveDate").val();
+                        $("#t_startdate").val(date);
+                        return false;
+                    }
+                    else {
+                        $('#DivBackgroundModel').css("display", "none");
+                        $('#DivPublishModelPopup').css("display", "none");
+                        return false;
+                    }
+                }
+                else {
+                    $('#DivBackgroundModel').css("display", "block");
+                    $('#DivPublishModelPopup').css("display", "block");
+                    var date = $("#EffectiveDate").val();
+                    $("#t_startdate").val(date);
+                    return false;
+                }
+            }
+            else {
+                $('#DivBackgroundModel').css("display", "none");
+                $('#DivPublishModelPopup').css("display", "none");
+                return false;
+            }
+        });
+
+        $("#cancel-button").click(function () {
+            $('#DivBackgroundModel').css("display", "none");
+            $('#DivPublishModelPopup').css("display", "none");
+            return false;
+        });
+
+        $("#Save-publish").click(function () {
+            var date = $("#t_startdate").val();
+            $("#EffectiveDate").val(date);
+            publishModel();
+            return true;
+        });
+
+        function publishModel() {
+
+            var ModelId = $("#latestModelId").val();
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Model/ModelPublish/")',
+                data: 'ModelId=' + ModelId + '&EffectiveDate=' + $("#EffectiveDate").val(),
+                success: function (data) {
+                    if (data.errorMessage != undefined) {
+                        url = '@Url.Content("~/Model/Integration")';
+                        window.location.href = url + '?id=' + ModelId;
+                    }
+                    else if (data.successMessage != undefined) {
+                        var hdnShowModelResultsTab = $("#hdnShowModelResultsTab").val();
+                        if (hdnShowModelResultsTab == null || hdnShowModelResultsTab == '' || hdnShowModelResultsTab.toLowerCase() == 'true') {
+                            url = '@Url.Content("~/Model/Results")';
+                            window.location.href = url + '?mid1=' + ModelId + '&mid2=' + ModelId;
+                            return;
+                        }
+                        else {
+                            url = '@Url.Content("~/Model/ModelZero")';
+                            window.location.href = url;
+                        }
+
+                    }
+                    else {
+                        url = '@Url.Content("~/Model/ModelZero")';
+                        window.location.href = url;
+                    }
+                }
+            });
+
+    }
+
+        // Fill Tactic selection Table
+        var mid;
+        if ($('#hdnModelId').val() != $("#latestModelId").val()) {
+            mid = $('#hdnModelId').val();
+        }
+        else {
+            mid = $('#latestModelId').val();
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Model/GetIntegrationDatabyid/")',
+            data: {
+                id: mid
+            },
+            dataType: "json",
+            success: function (r) {
+                integration = r;
+                fillIntegrationTable();
+                myApp.hidePleaseWait();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Model/FillVersion")',
+                    data: { id: mid },
+                    dataType: "json",
+                    success: function (r) {
+                        for (i in r) {
+                            $("#lblTitle").html('');
+                            $("#lblTitle").html(r[i].Title + '<span class="gray source-sans-prolight">' + r[i].Status + '</span>');
+                        }
+
+                        myApp.hidePleaseWait();
+                    }
+                });
+            }
+        });
+
+        function fillIntegrationTable() {
+            if (integration != 'undefined') {
+                if (integration.length) {
+
+                    $('#table_integrations > tbody').find("tr").remove();
+
+                    for (i in integration) {
+                        addRowIntegration(i, integration[i].id, integration[i].clientid, integration[i].provider, integration[i].instance, integration[i].lastSync, integration[i].target);
+                    }
+                } else {
+                    $('#DivBackgroundModel').css("display", "block");
+                    $('#DivNoIntegrationModelPopup').css("display", "block");
+                    $('#table_integrations > tbody').append('<tr><td>---</td><td>---</td><td></td><td></td></tr>');
+                }
+            }
+        }
+        //add row in tactics table
+        function addRowIntegration(_index, _id, _Clientid, _provider, _instance, _lastSync, _target) {
+            var $tableProvider = $('#table_integrations > tbody');
+            var $html = "";
+
+            if (_target) {
+
+                $html += '<tr id="' + _id + '">' +
+                        '<td><span class="title-baseline-model truncate">' + _provider + '</td>' +
+                        '<td>' + _instance + '</td>' +
+                        '<td>' + _lastSync + '</td>' +
+                        '<td><span class="circle-check-icon circle-check-icon-blue"  id = "' + "int_" + _id + '"></span></td>' +
+                        '</tr>';
+
+            } else {
+                $html += '<tr id="' + _id + '" class="draf">' +
+                        '<td><span class="title-baseline-model truncate">' + _provider + '</td>' +
+                        '<td>' + _instance + '</td>' +
+                        '<td>' + _lastSync + '</td>' +
+                        '<td><span class="circle-check-icon"  id = "' + "int_" + _id + '"></span></td>' +
+                        '</tr>';
+            }
+
+            $tableProvider.append($html);
+
+        }
+
+        $(document).on('click', '#table_integrations tbody tr td span.circle-check-icon', function (e) {
+
+            var id = this.id;
+
+            var integrationInstanceId = id.split('_')[1];
+
+            SaveAllIntegration(integrationInstanceId);
+
+        });
+
+        function SaveAllIntegration(integrationInstanceId) {
+            var ModelId = lastModelId;
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Model/SaveAllIntegration/")',
+                data: {
+                    modelId: ModelId,
+                    integrationId: integrationInstanceId
+                },
+                dataType: "json",
+                success: function (r) {
+
+                    if (r.returnValue) {
+
+                        $('#successMessage').css("display", "block");
+                        $('#cSuccess').html('<strong>Success.</strong> ' + r.message)
+                        $("#successMessage").slideDown(1200); // Show the Alert
+                        $("#successMessage").slideUp(3000);
+                        $('#errorMessage').css("display", "none");
+
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Content("~/Model/GetIntegrationDatabyid/")',
+                            data: {
+                                id: ModelId
+                            },
+                            dataType: "json",
+                            success: function (r) {
+                                integration = r;
+                                fillIntegrationTable();
+                                myApp.hidePleaseWait();
+                            }
+                        });
+                    }
+                    else {
+                        $('#errorMessage').css("display", "block");
+                        $('#cError').html('<strong>Error.</strong> ' + r.message)
+                        $("#errorMessage").slideDown(1200); // Show the Alert
+                        $('#successMessage').css("display", "none");
+                    }
+
+
+                    myApp.hidePleaseWait();
+                }
+            });
+
+        }
+
+    });
+
+</script>

@@ -127,6 +127,12 @@ namespace RevenuePlanner.Models
         public double? ROI { get; set; }
 
         public double? ROIActual { get; set; }
+
+        public string IntegrationType { get; set; }
+
+        public bool IsDeployedToIntegration { get; set; }
+
+        public DateTime? LastSyncDate { get; set; }
     }
 
     public class InspectReviewModel

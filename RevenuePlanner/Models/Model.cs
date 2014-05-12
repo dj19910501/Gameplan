@@ -41,6 +41,7 @@ namespace RevenuePlanner.Models
         public Nullable<int> ParentModelId { get; set; }
         public Nullable<bool> IsBenchmarked { get; set; }
         public Nullable<System.DateTime> EffectiveDate { get; set; }
+        public Nullable<int> IntegrationInstanceId { get; set; }
     
         public virtual BusinessUnit BusinessUnit { get; set; }
         public virtual ICollection<Model_Audience_Event> Model_Audience_Event { get; set; }

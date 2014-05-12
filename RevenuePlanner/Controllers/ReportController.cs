@@ -405,7 +405,7 @@ namespace RevenuePlanner.Controllers
             double percentage = 0;
             if (projected != 0)
             {
-                percentage = (actual - projected / projected) * 100;
+                percentage = ((actual - projected) / projected) * 100;    //// Modified by :- Sohel on 09/05/2014 for PL #474 to corrrect the calcualtion formula
             }
             else if(actual != 0)
             {

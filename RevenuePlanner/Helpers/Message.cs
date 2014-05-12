@@ -1004,7 +1004,123 @@ namespace RevenuePlanner.Helpers
             get { return _ModelTacticCannotDelete; }
             set { _ModelTacticCannotDelete = value; }
         }
-        //End Manoj Limbachiya 05May2014 PL#458
+        //End Manoj Limbachiya 05May2014 PL#458	  
+
+        private string _ModelIntegrationSaveSuccess;
+        public string ModelIntegrationSaveSuccess
+        {
+            get
+            {
+                return _ModelIntegrationSaveSuccess;
+            }
+            set
+            {
+                _ModelIntegrationSaveSuccess = value;
+            }
+        }
+
+        private string _DeployedToIntegrationStatusSaveSuccess;
+        public string DeployedToIntegrationStatusSaveSuccess
+        {
+            get
+            {
+                return _DeployedToIntegrationStatusSaveSuccess;
+            }
+            set
+            {
+                _DeployedToIntegrationStatusSaveSuccess = value;
+            }
+        }
+	   // Start - Added by : Sohel Pathan on 09/05/2014 for PL #430 
+        private string _IntegrationAdded;
+        public string IntegrationAdded
+        {
+            get { return _IntegrationAdded; }
+            set
+            {
+                _IntegrationAdded = value;
+            }
+        }
+
+        private string _IntegrationEdited;
+        public string IntegrationEdited
+        {
+            get
+            {
+                return _IntegrationEdited;
+            }
+            set
+            {
+                _IntegrationEdited = value;
+            }
+        }
+
+        private string _IntegrationDeleted;
+        public string IntegrationDeleted
+        {
+            get
+            {
+                return _IntegrationDeleted;
+            }
+            set
+            {
+                _IntegrationDeleted = value;
+            }
+        }
+        
+        private string _IntegrationDeleteConfirmationMsg;
+        public string IntegrationDeleteConfirmationMsg
+        {
+            get
+            {
+                return _IntegrationDeleteConfirmationMsg;
+            }
+            set
+            {
+                _IntegrationDeleteConfirmationMsg = value;
+            }
+        }
+
+        private string _IntegrationDuplicate;
+        public string IntegrationDuplicate
+        {
+            get
+            {
+                return _IntegrationDuplicate;
+            }
+            set
+            {
+                _IntegrationDuplicate = value;
+            }
+        }
+
+        private string _TestIntegrationSuccess;
+        public string TestIntegrationSuccess
+        {
+            get
+            {
+                return _TestIntegrationSuccess;
+            }
+            set
+            {
+                _TestIntegrationSuccess = value;
+            }
+        }
+
+        private string _TestIntegrationFail;
+        public string TestIntegrationFail
+        {
+            get
+            {
+                return _TestIntegrationFail;
+            }
+            set
+            {
+                _TestIntegrationFail = value;
+            }
+        }
+        // End - Added by : Sohel Pathan on 09/05/2014 for PL #430 
+
         #endregion
 
         #region  Functions
@@ -1209,6 +1325,12 @@ namespace RevenuePlanner.Helpers
                                         case "ValidationForMqlGreaterThanINQ":
                                             _ValidationForMqlGreaterThanINQ = strMsgValue;
                                             break;
+                                        case "ModelIntegrationSaveSuccess":
+                                            _ModelIntegrationSaveSuccess = strMsgValue;
+                                            break;
+                                        case "DeployedToIntegrationStatusSaveSuccess":
+                                            _DeployedToIntegrationStatusSaveSuccess = strMsgValue;
+                                            break;
                                         /*
                            * changed by : Nirav Shah on 31 Jan 2013
                            * Bug 19:Model - should not be able to publish a model with no tactics selected */
@@ -1322,6 +1444,30 @@ namespace RevenuePlanner.Helpers
                                             _ModelTacticCannotDelete = strMsgValue;
                                             break;
                                         //End Manoj Limbachiya 05May2014 PL#458
+
+                                        // Start - Added by : Sohel Pathan on 09/05/2014 for PL #430 
+                                        case "IntegrationAdded":
+                                            _IntegrationAdded = strMsgValue;
+                                            break;
+                                        case "IntegrationEdited":
+                                            _IntegrationEdited = strMsgValue;
+                                            break;
+                                        case "IntegrationDeleted":
+                                            _IntegrationDeleted = strMsgValue;
+                                            break;
+                                        case "IntegrationDuplicate":
+                                            _IntegrationDuplicate = strMsgValue;
+                                            break;
+                                        case "IntegrationDeleteConfirmationMsg":
+                                            _IntegrationDeleteConfirmationMsg = strMsgValue;
+                                            break;
+                                        case "TestIntegrationSuccess":
+                                            _TestIntegrationSuccess = strMsgValue;
+                                            break;
+                                        case "TestIntegrationFail":
+                                            _TestIntegrationFail = strMsgValue;
+                                            break;
+                                        // End - Added by : Sohel Pathan on 09/05/2014 for PL #430 
                                     }
                                 }
                                 i = i + 1;

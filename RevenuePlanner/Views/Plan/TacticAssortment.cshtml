@@ -1,6 +1,11 @@
 ﻿@model RevenuePlanner.Models.Plan_Campaign_Program_TacticModel
 @using RevenuePlanner.Helpers
 @*<script type="text/javascript" src="~/Scripts/js/Mask.js"></script>*@
+
+@{
+    string ExtIntService = ViewBag.ExtIntService;
+}
+
 <div class="head">
     <span class="close-form source-sans-proregular">» CLOSE MENU</span>
     <div class="cf">
@@ -43,6 +48,7 @@
             @Html.HiddenFor(model => model.PEndDate, new { id = "hdnPEndDate" })
             @Html.HiddenFor(model => model.CStartDate, new { id = "hdnCStartDate" })
             @Html.HiddenFor(model => model.CEndDate, new { id = "hdnCEndDate" })
+            @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
 
 
             <label class="t_title">Tactic Title</label>
@@ -70,6 +76,23 @@
 
             <label style="margin-top:6px;">Geography</label>
             <span class="verticalIdSelectBox" style="  margin-left: -2px;">@Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
+            
+
+            @if (ExtIntService!=string.Empty)
+            {
+                
+             if(Model.IsDeployedToIntegration)
+             {
+                 <label style="margin-top:6px;">Status</label>
+                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to @ExtIntService" maxlength="18" readonly />
+             }
+             else
+             {
+                 <label style="margin-top:6px;">Status</label>
+                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to @ExtIntService" maxlength="18" readonly />
+             }
+             }
+
             @Html.Hidden("hdnRedirect", (bool)ViewBag.RedirectType, new { id = "hdnRedirectType" })
             @if ((bool)ViewBag.RedirectType)
             {
@@ -195,6 +218,22 @@ if ((bool)ViewBag.IsOwner)
 
                 }
             });
+        });
+
+
+        $("#t_integration_status").click(function () {
+            if ($(this).hasClass("icon-check-blue")) {
+                $(this).val("Not Sync to @ExtIntService");
+                $(this).addClass("icon-check-gray");
+                $(this).removeClass("icon-check-blue");
+                $("#hdnIsDeployedToIntegration").val(false);
+            }
+            else {
+                $(this).val("Sync to @ExtIntService");
+                $(this).addClass("icon-check-blue");
+                $(this).removeClass("icon-check-gray");
+                $("#hdnIsDeployedToIntegration").val(true);
+            }
         });
 
         var isOwner = "@ViewBag.IsOwner";
@@ -371,6 +410,19 @@ if ((bool)ViewBag.IsOwner)
                         $("#txtCost").val(pcost);
                         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
                         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+
+                        if (data.IsDeployedToIntegration) {
+                            $("#t_integration_status").val("Sync to @ExtIntService");
+                            $("#t_integration_status").addClass("icon-check-blue");
+                            $("#t_integration_status").removeClass("icon-check-gray");
+                            $("#hdnIsDeployedToIntegration").val(true);
+                        }
+                        else {
+                            $("#t_integration_status").val("Not Sync to @ExtIntService");
+                            $("#t_integration_status").addClass("icon-check-gray");
+                            $("#t_integration_status").removeClass("icon-check-blue");
+                            $("#hdnIsDeployedToIntegration").val(false);
+                        }
                     }
                 });
             }

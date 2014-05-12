@@ -54,6 +54,8 @@ namespace RevenuePlanner.Models
         public DateTime? PEndDate { get; set; }
         public DateTime? TStartDate { get; set; }
         public DateTime? TEndDate { get; set; }
+
+        public bool IsDeployedToIntegration { get; set; }
     }
 
     public class Plan_Campaign_ProgramModel
@@ -75,6 +77,8 @@ namespace RevenuePlanner.Models
         public DateTime CEndDate { get; set; }
         public DateTime? TStartDate { get; set; }
         public DateTime? TEndDate { get; set; }
+
+        public bool IsDeployedToIntegration { get; set; }
     }
 
     public class Plan_Campaign_Program_TacticModel
@@ -98,6 +102,8 @@ namespace RevenuePlanner.Models
         public DateTime PEndDate { get; set; }
         public DateTime CStartDate { get; set; }
         public DateTime CEndDate { get; set; }
+
+        public bool IsDeployedToIntegration { get; set; }
     }
 
     public class Plan_Selector

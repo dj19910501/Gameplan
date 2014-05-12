@@ -637,6 +637,7 @@ body {
     background-position: -170px 0 !important;
 }
 
+
 .nav-gray-plan li a:hover {
     color: #1a638a !important;
 }
@@ -650,7 +651,19 @@ body {
 }
 
 .nav-gray-plan li a.tactics:hover span {
-    background-position: -170px -30px !important;
+    background-position: -70px -30px !important;
+}
+
+.nav-gray-plan li a.tactics span {
+    background-position: -70px 0 !important;
+}
+
+.nav-gray-plan li a.integrations span {
+    background-position: -235px 0px !important;
+}
+
+.nav-gray-plan li a.integrations:hover span {
+    background-position: -235px -30px !important;
 }
 
 .nav-gray-plan li.active a.inputs span {
@@ -3070,6 +3083,24 @@ span.circle-check-icon-blue {
     display: block;
 }
 
+span.circle-check-icon-integration {
+    margin-left: auto;
+    margin-right: auto;
+    background: url('../images/circle-check-icon.png') no-repeat;
+    width: 26px;
+    height: 26px;
+    display: block;
+}
+
+span.circle-check-icon-integration-blue {
+    margin-left: auto;
+    margin-right: auto;
+    background: url('../images/circle-check-icon-blue.png') no-repeat;
+    width: 26px;
+    height: 26px;
+    display: block;
+}
+
 #table_baseline {
     color: #908d88 !important;
 }
@@ -5055,7 +5086,7 @@ input::-moz-placeholder {
 
 .last-updated {
     margin-right: calc(100% - 333px);
-    margin-top: 34px;
+    margin-top: 20px;
     width: 300px;
 }
 
@@ -6827,12 +6858,77 @@ span.circle-check-icon-gray{margin-left: auto;margin-right: auto;background: url
     text-decoration:none !important;
 }
 /* End - Added by Sohel Pathan on 29/04/2014 for Internal Review Points #7 to set styling for Show on my tactic link */	
-/* CSS for 003.501.Prefs.Integrations.Populated */
-.nav-gray-plan li a.integrations span{background-position: -238px 0 !important;}
-.nav-gray-plan li a.integrations:hover span{background-position: -238px -30px !important;}
-.nav-gray-plan li.active a.integrations span{background-position: -238px -30px !important;}
+
+/* Added by dharmraj for model integration */
 
 /* CSS for 003.501.Prefs.Integrations.Populated */
 .nav-gray li a.integrations span{background-position: -238px 0 !important;}
 .nav-gray li a.integrations:hover span{background-position: -238px -30px !important;}
 .nav-gray li.active a.integrations span{background-position: -238px -30px !important;}
+		   .Add-Integration {
+    line-height: 20px;
+    margin-bottom: 5px;
+    margin-left: 180px;
+    width:235px !important;
+}
+
+.nav-gray li.active a.integrations span {
+    background-position: -238px -30px !important;
+}
+
+.nav-gray li a.integrations span {
+    background-position: -238px 0 !important;
+}
+	.nav-gray li a.integrations span {
+    background-position: -238px 0 !important;
+}
+	  #content_wraper .small-content{margin:0px 20px 20px 20px; font-size:14px;}
+#content_wraper .small-content a{font-weight:bold;color:#908D88 !important;}
+
+#table_integrations{color: #908d88 !important;}
+#table_integrations.table-striped tbody > tr:nth-child(2n+1) > td, .table-striped tbody > tr:nth-child(2n+1) > th { background-color: #f2f2f2;}
+#table_integrations td.gray{background-color: #f7f7f7 !important;}
+#table_integrations th, #table_integrations td {border-top: none !important; text-align: right;}
+#table_integrations tr th:first-child, #table_integrations tr td:first-child{text-align: left;}
+#table_integrations th.border-r, #table_integrations td.border-r {border-right: 1px solid #c7ced1 !important; padding-right: 20px !important;}
+#table_integrations tbody tr{cursor: pointer; font-size: 24px; border-bottom: 1px solid #c7ced1; font-family: 'source_sans_prosemibold', Arial; font-weight:normal;}
+#table_integrations tbody tr.draf{color: #cccccc;}
+#table_integrations tbody tr.draf a{color: #9DC4D9;}
+#table_integrations tbody tr td{line-height: 26px;}
+#table_integrations tbody tr:hover > td, #table_integrations tbody tr:hover > th, #table_integrations.table-striped tbody > tr:nth-child(2n+1):hover > td, 
+.table-striped tbody > tr:nth-child(2n+1):hover > th{background-color: #e9f6fd;}
+#table_integrations tbody{border-top: 1px solid #c7ced1;}
+#table_integrations tbody tr td span.title-baseline-model{float: left; margin-right: 10px;}
+#table_integrations tbody tr td span.search-icon{visibility: hidden; background: url("../images/magnifying_glass.png") no-repeat; width: 16px; height: 16px; display: block; float: left; margin-top: 3px;}
+#table_integrations tbody tr:hover td span.search-icon{visibility: visible;}
+
+#table_integrations tbody tr.last-row .title-baseline-model{ text-decoration:underline; padding-left:25px;}
+
+#table_integrations tbody tr td span.delete-temp-program{visibility: hidden; float: left; margin-right:10px;}
+#table_integrations tbody tr:hover td span.delete-temp-program{visibility: visible;}
+
+#table_integrations tbody tr td span.circle-check-icon {margin-right:0px;}
+
+.padding-left34{padding-left:34px !important;}
+#table_integrations a{color:#5693b3;}
+.error-text{color:#c6605a;}
+
+#table_integrations .nl-form{line-height:24px;}
+#table_integrations .title-baseline-model .nl-field-toggle{font-family: 'source_sans_prolight', Arial; font-weight:normal; font-size:24px;}
+
+input.icon-check-gray{background-image: url("../images/circle-check-icon-gray.png"); background-repeat: no-repeat; background-position: right;}
+input.icon-check-blue{background-image: url("../images/circle-check-icon-small-blue.png"); background-repeat: no-repeat; background-position: right;}
+
+/* End - Added by dharmraj for model integration */	
+
+/* Added by dharmraj for Plan integration */	
+.integration-review {
+    background: url("../images/integration.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    cursor: pointer;
+    display: block;
+    height: 31px;
+    width: 37px;
+}
+.sync-icon-dropdown {background: url("../images/integration-white-small.png") no-repeat 0 0; display: block; float: left; width:30px; height: 30px; margin: -5px -5px -5px -15px;}
+
+/* End - Added by dharmraj for Plan integration */	

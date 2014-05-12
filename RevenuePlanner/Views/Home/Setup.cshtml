@@ -1,6 +1,7 @@
 ﻿@model RevenuePlanner.Models.InspectModel
 @{
     var tactic = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
+    var deployStatus = Model.IsDeployedToIntegration == true ? "Yes" : "No";
 }
 
 @using (Html.BeginForm())
@@ -52,11 +53,13 @@
         @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
         <p>Cost</p>
             @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true", title = tactic.Cost })
+        <p style="width:110%;">Deployed to Integration</p>
+            @Html.TextBox("txtDeployStatus",deployStatus,new {@class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true"})
     </div>
                                         
     <span class="flag-icon"></span>
     <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular gear-icon button-inspect-review-modal pull-right"
-        id="button-review-tactic" name="button-save" value="Review Tactic" style="display: none;"></input>
+        id="button-review-tactic" name="button-save" value="Review Tactic" style="display: none;" />
 }
 
 <script type="text/javascript">

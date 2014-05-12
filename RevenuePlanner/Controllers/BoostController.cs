@@ -174,7 +174,8 @@ namespace RevenuePlanner.Controllers
                     {
                         Stages = ittmobj.MetricCode,
                         Active = TargetStage(itt.ImprovementTacticTypeId, ittmobj.MetricCode)
-                    }).Select(ittmobj => ittmobj).Distinct()
+                    }).Select(ittmobj => ittmobj).Distinct(),
+                IsDeployedToIntegration = itt.IsDeployedToIntegration
             }).Select(itt => itt);
             return Json(ImprovementTacticList.OrderBy(t => t.Title).ToList(), JsonRequestBehavior.AllowGet); // Modified By :- Sohel Pathan on 28/04/2014 for Internal Review Points #9 to provide sorting for Listings
         }
@@ -199,6 +200,9 @@ namespace RevenuePlanner.Controllers
                 bittobj.Cost = ittobj.Cost;
                 bittobj.IsDeployed = ittobj.IsDeployed;
                 bittobj.ImprovementTacticTypeId = id;
+
+                bittobj.IsDeployedToIntegration = ittobj.IsDeployedToIntegration;
+
                 ViewBag.Title = "Tactic Detail";
 
             }
@@ -207,6 +211,9 @@ namespace RevenuePlanner.Controllers
                 bittobj.ImprovementTacticTypeId = 0;
                 bittobj.Cost = 0;
                 bittobj.IsDeployed = false;
+
+                bittobj.IsDeployedToIntegration = false;
+
                 ViewBag.Title = "New Tactic";
             }
             /*get the metrics related to improvement Tactic and display in view*/
@@ -253,7 +260,7 @@ namespace RevenuePlanner.Controllers
         /// Added By: Nirav Shah.
         /// Action to save Improvement Tactics Details in respective tables.
         /// </summary>
-        public ActionResult saveImprovementTacticData(int improvementId, string improvementDetails, bool status, double cost, string desc, string title)
+        public ActionResult saveImprovementTacticData(int improvementId, string improvementDetails, bool status, double cost, string desc, string title, bool deployToIntegrationStatus)
         {
             string successMessage = string.Empty;
             string ErrorMessage = string.Empty;
@@ -273,6 +280,7 @@ namespace RevenuePlanner.Controllers
                         objIt.Description = desc;
                         objIt.Cost = cost;
                         objIt.IsDeployed = status;
+                        objIt.IsDeployedToIntegration = deployToIntegrationStatus;
                         db.Entry(objIt).State = EntityState.Modified;
                         int result = db.SaveChanges();
                         while (db.ImprovementTacticType_Metric.Where(itm => itm.ImprovementTacticTypeId == improvementId).Count() != 0)
@@ -307,9 +315,12 @@ namespace RevenuePlanner.Controllers
                         objIt.CreatedDate = System.DateTime.Now;
                         int intRandomColorNumber = rnd.Next(colorcodeList.Count);
                         objIt.ColorCode = Convert.ToString(colorcodeList[intRandomColorNumber]);
+                        objIt.IsDeployedToIntegration = deployToIntegrationStatus;
+
                         db.ImprovementTacticTypes.Attach(objIt);
                         db.Entry(objIt).State = EntityState.Added;
                         int result = db.SaveChanges();
+                        
                         improvementId = objIt.ImprovementTacticTypeId;
                         successMessage = string.Format(Common.objCached.NewImprovementTacticSaveSucess);
                     }
@@ -350,6 +361,71 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { redirect = Url.Action("Index") });
         }
+
+        /// <summary>
+        /// Added By: Dharmraj mangukiya
+        /// Action to save deploy to integration flag for improvement tactic type
+        /// </summary>
+        public JsonResult SaveDeployedToIntegrationStatus(int id, bool isDeployedToIntegration)
+        {
+            bool returnValue = false;
+            string message = string.Empty;
+
+            try
+            {
+                var objImprovementTacticType = db.ImprovementTacticTypes.SingleOrDefault(varI => varI.ImprovementTacticTypeId == id);
+
+                objImprovementTacticType.IsDeployedToIntegration = isDeployedToIntegration;
+                db.Entry(objImprovementTacticType).State = EntityState.Modified;
+                db.SaveChanges();
+
+                message = Common.objCached.DeployedToIntegrationStatusSaveSuccess;
+
+                returnValue = true;
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+                message = Common.objCached.ErrorOccured;
+            }
+
+            var obj = new { returnValue = returnValue, message = message };
+
+            return Json(obj, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Added By: Dharmraj mangukiya
+        /// Action to save deploy status for improvement tactic type
+        /// </summary>
+        public JsonResult SaveDeployeStatus(int id, bool isDeployed)
+        {
+            bool returnValue = false;
+            string message = string.Empty;
+
+            try
+            {
+                var objImprovementTacticType = db.ImprovementTacticTypes.SingleOrDefault(varI => varI.ImprovementTacticTypeId == id);
+
+                objImprovementTacticType.IsDeployed = isDeployed;
+                db.Entry(objImprovementTacticType).State = EntityState.Modified;
+                db.SaveChanges();
+
+                message = Common.objCached.EditImprovementTacticSaveSucess;
+
+                returnValue = true;
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+                message = Common.objCached.ErrorOccured;
+            }
+
+            var obj = new { returnValue = returnValue, message = message };
+
+            return Json(obj, JsonRequestBehavior.AllowGet);
+        }
+
         #endregion
 
         #endregion

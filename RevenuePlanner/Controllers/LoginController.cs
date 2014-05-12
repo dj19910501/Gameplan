@@ -35,7 +35,7 @@ namespace RevenuePlanner.Controllers
             //HttpCookie authCookie = System.Web.HttpContext.Current.Request.Cookies[FormsAuthentication.FormsCookieName.ToString()];
             //if (authCookie != null)
             //{
-            //    FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(authCookie.Value);
+            //    FormsAuthenticationTicket authTicket = FormsAuthentication.Decdecrypt(authCookie.Value);
             //    if (authTicket != null & !authTicket.Expired)
             //    {
             //        string cookieValue = authTicket.Name;

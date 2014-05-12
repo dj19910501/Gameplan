@@ -22,8 +22,8 @@ namespace RevenuePlanner.Models
         public Nullable<int> PlanProgramId { get; set; }
         public Nullable<int> PlanCampaignId { get; set; }
     
-        public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic { get; set; }
         public virtual Plan_Campaign Plan_Campaign { get; set; }
         public virtual Plan_Campaign_Program Plan_Campaign_Program { get; set; }
+        public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic { get; set; }
     }
 }

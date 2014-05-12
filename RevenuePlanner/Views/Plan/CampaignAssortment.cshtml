@@ -1,5 +1,10 @@
 ﻿@model RevenuePlanner.Models.Plan_CampaignModel
 @using RevenuePlanner.Helpers
+
+@{
+    string ExtIntService = ViewBag.ExtIntService;
+}
+
 @*<div id="slidepanel-container">*@
 <div class="head">
     <span class="close-form source-sans-proregular">» CLOSE MENU</span>
@@ -43,12 +48,27 @@
             @Html.HiddenFor(model => model.PEndDate, new { id = "hdnPEndDate" })
             @Html.HiddenFor(model => model.TStartDate, new { id = "hdnTStartDate" })
             @Html.HiddenFor(model => model.TEndDate, new { id = "hdnTEndDate" })
+            @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
 
             <label class="t_title">Campaign Title</label>
             @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true", maxlength = "255", id="txtTitle" }) @* Modified by :- Sohel Pathan on 24/04/2014 for internal review point to stop form posting on ENTERKEY press event *@
 
             <label>Description</label>
             @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", rows = "3", maxlength = "4000" })
+
+            @if (ExtIntService!=string.Empty)
+            {
+                <label>Status</label>
+                if (ViewBag.IsDeployedToIntegration)
+                {
+                     <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to @ExtIntService" maxlength="18" readonly />
+                }
+                else
+                {    
+                     <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to @ExtIntService" maxlength="18" readonly />
+                }
+            }
+
 
 @*            <label>Vertical</label>
             <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
@@ -168,6 +188,30 @@
             if (e.keyCode == 13) {
                 e.preventDefault();
                 return false;
+            }
+        });
+
+        if ($("#t_integration_status").val() == '') {
+            if ($("#t_integration_status").hasClass("icon-check-blue")) {
+                $("#hdnIsDeployedToIntegration").val(true);
+            }
+            else {
+                $("#hdnIsDeployedToIntegration").val(true);
+            }
+        }
+
+        $("#t_integration_status").click(function () {
+            if ($(this).hasClass("icon-check-blue")) {
+                $(this).val("Not Sync to @ExtIntService");
+                $(this).addClass("icon-check-gray");
+                $(this).removeClass("icon-check-blue");
+                $("#hdnIsDeployedToIntegration").val(false);
+            }
+            else {
+                $(this).val("Sync to @ExtIntService");
+                $(this).addClass("icon-check-blue");
+                $(this).removeClass("icon-check-gray");
+                $("#hdnIsDeployedToIntegration").val(true);
             }
         });
 

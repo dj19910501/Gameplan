@@ -97,7 +97,7 @@ namespace RevenuePlanner.Controllers
                 planmodel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId); //commented due to not used any where
                 ViewBag.BusinessUnitIds = planmodel.BusinessUnitIds;//Added by Nirav for Custom Dropdown - 388
                 ViewBag.showBid = true;
-            
+
             }
             else
             {
@@ -283,10 +283,10 @@ namespace RevenuePlanner.Controllers
                         planList.FirstOrDefault().Selected = true;
                     }
                 }
-         
+
             }
             objHomePlan.plans = planList;
-         
+
             return PartialView("_PlanDropdown", objHomePlan);
         }
         #endregion
@@ -417,7 +417,7 @@ namespace RevenuePlanner.Controllers
             //                                                programId.Contains(pcptc.Plan_Campaign_Program_Tactic.PlanProgramId) &&
             //                                                //// Individual & Show my Tactic Filter 
             //                                               (filterIndividual.Count.Equals(0) || filterIndividual.Contains(pcptc.CreatedBy.ToString()))).ToList();
-            
+
             ////// Applying filters to tactic comment (IsDelete, Individuals and Show My Tactic)
             //List<int?> tacticId = objPlan_Campaign_Program_Tactic_Comment
             //                                            .Select(pcptc => pcptc.PlanTacticId).ToList();
@@ -426,14 +426,14 @@ namespace RevenuePlanner.Controllers
             //// Applying filters to tactic (IsDelete, Geography, Individuals and Show My Tactic)
             var tactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) &&
                                                                        programId.Contains(pcpt.PlanProgramId) &&
-                                                            //// Geography Filter
+                //// Geography Filter
                                                                        (filterGeography.Count.Equals(0) || filterGeography.Contains(pcpt.GeographyId)) &&
-                                                            //// Individual & Show my Tactic Filter 
-                                                            //// Start Modified by :- Sohel Pathan on 14/04/2014 for PL ticket #428 Filter by individual.
+                //// Individual & Show my Tactic Filter 
+                //// Start Modified by :- Sohel Pathan on 14/04/2014 for PL ticket #428 Filter by individual.
                                                                        (filterIndividual.Count.Equals(0) || filterIndividual.Contains(pcpt.CreatedBy)))
-                                                            //// End Modified by :- Sohel Pathan on 14/04/2014 for PL ticket #428 Filter by individual.
+                //// End Modified by :- Sohel Pathan on 14/04/2014 for PL ticket #428 Filter by individual.
                                                         .ToList()
-                                                        .Where(pcpt => 
+                                                        .Where(pcpt =>
                                                             //// Checking start and end date
                                                         Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
                                                                                                     CalendarEndDate,
@@ -778,137 +778,137 @@ namespace RevenuePlanner.Controllers
 
             if (planTactic.Count > 0)
             {
-            var queryBusinessUnitTacticType = new
-            {
-                id = string.Format("B{0}", businessUnit.BusinessUnitId),
-                text = businessUnit.Title,
-                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateStageAndBusinessUnit(planTactic.Select(c => c.Plan_Campaign_Program.Plan_Campaign).ToList(),
-                                                                        planTactic.Select(c => c.Plan_Campaign_Program).ToList(),
-                                                                        planTactic.Select(c => c).ToList())),
-                duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
-                                                          CalendarEndDate,
-                            GetMinStartDateStageAndBusinessUnit(planTactic.Select(c => c.Plan_Campaign_Program.Plan_Campaign).ToList(),
-                                                                        planTactic.Select(c => c.Plan_Campaign_Program).ToList(),
-                                                                        planTactic.Select(c => c).ToList()),
-                                                          GetMaxEndDateStageAndBusinessUnit(planTactic.Select(c => c.Plan_Campaign_Program.Plan_Campaign).ToList(),
-                                                                        planTactic.Select(c => c.Plan_Campaign_Program).ToList(),
-                                                                        planTactic.Select(c => c).ToList())),
-                progress = GetProgress(Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateStageAndBusinessUnit(planTactic.Select(c => c.Plan_Campaign_Program.Plan_Campaign).ToList(),
-                                                                        planTactic.Select(c => c.Plan_Campaign_Program).ToList(),
-                                                                        planTactic.Select(c => c).ToList())),
-                                                   Common.GetEndDateAsPerCalendar(CalendarStartDate,
-                                                          CalendarEndDate,
-                                                            GetMinStartDateStageAndBusinessUnit(planTactic.Select(c => c.Plan_Campaign_Program.Plan_Campaign).ToList(),
-                                                                        planTactic.Select(c => c.Plan_Campaign_Program).ToList(),
-                                                                        planTactic.Select(c => c).ToList()),
-                                                            GetMaxEndDateStageAndBusinessUnit(planTactic.Select(c => c.Plan_Campaign_Program.Plan_Campaign).ToList(),
-                                                                        planTactic.Select(c => c.Plan_Campaign_Program).ToList(),
-                                                                        planTactic.Select(c => c).ToList())), planTactic, improvementTactic),//progress = 0,
-                open = false,
-                color = string.Concat(GANTT_BAR_CSS_CLASS_PREFIX, businessUnit.ColorCode.ToLower())
-            };
+                var queryBusinessUnitTacticType = new
+                {
+                    id = string.Format("B{0}", businessUnit.BusinessUnitId),
+                    text = businessUnit.Title,
+                    start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateStageAndBusinessUnit(planTactic.Select(c => c.Plan_Campaign_Program.Plan_Campaign).ToList(),
+                                                                            planTactic.Select(c => c.Plan_Campaign_Program).ToList(),
+                                                                            planTactic.Select(c => c).ToList())),
+                    duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
+                                                              CalendarEndDate,
+                                GetMinStartDateStageAndBusinessUnit(planTactic.Select(c => c.Plan_Campaign_Program.Plan_Campaign).ToList(),
+                                                                            planTactic.Select(c => c.Plan_Campaign_Program).ToList(),
+                                                                            planTactic.Select(c => c).ToList()),
+                                                              GetMaxEndDateStageAndBusinessUnit(planTactic.Select(c => c.Plan_Campaign_Program.Plan_Campaign).ToList(),
+                                                                            planTactic.Select(c => c.Plan_Campaign_Program).ToList(),
+                                                                            planTactic.Select(c => c).ToList())),
+                    progress = GetProgress(Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateStageAndBusinessUnit(planTactic.Select(c => c.Plan_Campaign_Program.Plan_Campaign).ToList(),
+                                                                            planTactic.Select(c => c.Plan_Campaign_Program).ToList(),
+                                                                            planTactic.Select(c => c).ToList())),
+                                                       Common.GetEndDateAsPerCalendar(CalendarStartDate,
+                                                              CalendarEndDate,
+                                                                GetMinStartDateStageAndBusinessUnit(planTactic.Select(c => c.Plan_Campaign_Program.Plan_Campaign).ToList(),
+                                                                            planTactic.Select(c => c.Plan_Campaign_Program).ToList(),
+                                                                            planTactic.Select(c => c).ToList()),
+                                                                GetMaxEndDateStageAndBusinessUnit(planTactic.Select(c => c.Plan_Campaign_Program.Plan_Campaign).ToList(),
+                                                                            planTactic.Select(c => c.Plan_Campaign_Program).ToList(),
+                                                                            planTactic.Select(c => c).ToList())), planTactic, improvementTactic),//progress = 0,
+                    open = false,
+                    color = string.Concat(GANTT_BAR_CSS_CLASS_PREFIX, businessUnit.ColorCode.ToLower())
+                };
 
-            var newQueryBusinessUnitTacticType = new
-            {
-                id = queryBusinessUnitTacticType.id,
-                text = queryBusinessUnitTacticType.text,
-                start_date = queryBusinessUnitTacticType.start_date,
-                duration = queryBusinessUnitTacticType.duration,
-                progress = queryBusinessUnitTacticType.progress,
-                open = queryBusinessUnitTacticType.open,
-                color = queryBusinessUnitTacticType.color + ((queryBusinessUnitTacticType.progress > 0) ? "stripe" : "")
-            };
+                var newQueryBusinessUnitTacticType = new
+                {
+                    id = queryBusinessUnitTacticType.id,
+                    text = queryBusinessUnitTacticType.text,
+                    start_date = queryBusinessUnitTacticType.start_date,
+                    duration = queryBusinessUnitTacticType.duration,
+                    progress = queryBusinessUnitTacticType.progress,
+                    open = queryBusinessUnitTacticType.open,
+                    color = queryBusinessUnitTacticType.color + ((queryBusinessUnitTacticType.progress > 0) ? "stripe" : "")
+                };
 
-            //// Tactic
-            var taskDataTactic = planTactic.Select(bt => new
-            {
-                id = string.Format("B{0}_C{1}_P{2}_T{3}", businessUnit.BusinessUnitId, bt.Plan_Campaign_Program.PlanCampaignId, bt.Plan_Campaign_Program.PlanProgramId, bt.PlanTacticId),
-                text = bt.Title,
-                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, bt.StartDate),
-                duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
-                                                          CalendarEndDate,
-                                                          bt.StartDate,
-                                                          bt.EndDate),
-                progress = GetTacticProgress(bt, improvementTactic), //progress = 0,
-                open = false,
-                parent = string.Format("B{0}_C{1}_P{2}", businessUnit.BusinessUnitId, bt.Plan_Campaign_Program.PlanCampaignId, bt.Plan_Campaign_Program.PlanProgramId),
-                color = string.Concat(GANTT_BAR_CSS_CLASS_PREFIX, businessUnit.ColorCode.ToLower()),
-                plantacticid = bt.PlanTacticId
-            }).OrderBy(t => t.text);
+                //// Tactic
+                var taskDataTactic = planTactic.Select(bt => new
+                {
+                    id = string.Format("B{0}_C{1}_P{2}_T{3}", businessUnit.BusinessUnitId, bt.Plan_Campaign_Program.PlanCampaignId, bt.Plan_Campaign_Program.PlanProgramId, bt.PlanTacticId),
+                    text = bt.Title,
+                    start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, bt.StartDate),
+                    duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
+                                                              CalendarEndDate,
+                                                              bt.StartDate,
+                                                              bt.EndDate),
+                    progress = GetTacticProgress(bt, improvementTactic), //progress = 0,
+                    open = false,
+                    parent = string.Format("B{0}_C{1}_P{2}", businessUnit.BusinessUnitId, bt.Plan_Campaign_Program.PlanCampaignId, bt.Plan_Campaign_Program.PlanProgramId),
+                    color = string.Concat(GANTT_BAR_CSS_CLASS_PREFIX, businessUnit.ColorCode.ToLower()),
+                    plantacticid = bt.PlanTacticId
+                }).OrderBy(t => t.text);
 
-            var newTaskDataTactic = taskDataTactic.Select(t => new
-            {
-                id = t.id,
-                text = t.text,
-                start_date = t.start_date,
-                duration = t.duration,
-                progress = t.progress,
-                open = t.open,
-                parent = t.parent,
-                color = t.color + (t.progress == 1 ? " stripe" : ""),
-                plantacticid = t.plantacticid
-            });
+                var newTaskDataTactic = taskDataTactic.Select(t => new
+                {
+                    id = t.id,
+                    text = t.text,
+                    start_date = t.start_date,
+                    duration = t.duration,
+                    progress = t.progress,
+                    open = t.open,
+                    parent = t.parent,
+                    color = t.color + (t.progress == 1 ? " stripe" : ""),
+                    plantacticid = t.plantacticid
+                });
 
-            //// Program
-            var taskDataProgram = planTactic.Select(bt => new
-            {
-                id = string.Format("B{0}_C{1}_P{2}", businessUnit.BusinessUnitId, bt.Plan_Campaign_Program.PlanCampaignId, bt.Plan_Campaign_Program.PlanProgramId),
-                text = bt.Plan_Campaign_Program.Title,
-                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, bt.Plan_Campaign_Program.StartDate),
-                duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
-                                                          CalendarEndDate,
-                                                          bt.Plan_Campaign_Program.StartDate,
-                                                          bt.Plan_Campaign_Program.EndDate),
+                //// Program
+                var taskDataProgram = planTactic.Select(bt => new
+                {
+                    id = string.Format("B{0}_C{1}_P{2}", businessUnit.BusinessUnitId, bt.Plan_Campaign_Program.PlanCampaignId, bt.Plan_Campaign_Program.PlanProgramId),
+                    text = bt.Plan_Campaign_Program.Title,
+                    start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, bt.Plan_Campaign_Program.StartDate),
+                    duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
+                                                              CalendarEndDate,
+                                                              bt.Plan_Campaign_Program.StartDate,
+                                                              bt.Plan_Campaign_Program.EndDate),
                     progress = GetProgramProgress(planTactic, bt.Plan_Campaign_Program, improvementTactic),//progress = 0,
-                open = false,
-                parent = string.Format("B{0}_C{1}", businessUnit.BusinessUnitId, bt.Plan_Campaign_Program.PlanCampaignId),
-                color = "",
-                planprogramid = bt.Plan_Campaign_Program.PlanProgramId
-            }).Select(p => p).Distinct().OrderBy(p => p.text);
+                    open = false,
+                    parent = string.Format("B{0}_C{1}", businessUnit.BusinessUnitId, bt.Plan_Campaign_Program.PlanCampaignId),
+                    color = "",
+                    planprogramid = bt.Plan_Campaign_Program.PlanProgramId
+                }).Select(p => p).Distinct().OrderBy(p => p.text);
 
-            var newTaskDataProgram = taskDataProgram.Select(t => new
-            {
-                id = t.id,
-                text = t.text,
-                start_date = t.start_date,
-                duration = t.duration,
-                progress = t.progress,
-                open = t.open,
-                parent = t.parent,
-                color = (t.progress == 1 ? " stripe stripe-no-border " : (t.progress > 0 ? "partialStripe" : "")),
-                planprogramid = t.planprogramid
-            });
+                var newTaskDataProgram = taskDataProgram.Select(t => new
+                {
+                    id = t.id,
+                    text = t.text,
+                    start_date = t.start_date,
+                    duration = t.duration,
+                    progress = t.progress,
+                    open = t.open,
+                    parent = t.parent,
+                    color = (t.progress == 1 ? " stripe stripe-no-border " : (t.progress > 0 ? "partialStripe" : "")),
+                    planprogramid = t.planprogramid
+                });
 
-            //// Campaign
-            var taskDataCampaign = planTactic.Select(bt => new
-            {
-                id = string.Format("B{0}_C{1}", businessUnit.BusinessUnitId, bt.Plan_Campaign_Program.PlanCampaignId),
-                text = bt.Plan_Campaign_Program.Plan_Campaign.Title,
-                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, bt.Plan_Campaign_Program.Plan_Campaign.StartDate),
-                duration = (bt.Plan_Campaign_Program.Plan_Campaign.EndDate - bt.Plan_Campaign_Program.Plan_Campaign.StartDate).TotalDays,
+                //// Campaign
+                var taskDataCampaign = planTactic.Select(bt => new
+                {
+                    id = string.Format("B{0}_C{1}", businessUnit.BusinessUnitId, bt.Plan_Campaign_Program.PlanCampaignId),
+                    text = bt.Plan_Campaign_Program.Plan_Campaign.Title,
+                    start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, bt.Plan_Campaign_Program.Plan_Campaign.StartDate),
+                    duration = (bt.Plan_Campaign_Program.Plan_Campaign.EndDate - bt.Plan_Campaign_Program.Plan_Campaign.StartDate).TotalDays,
                     progress = GetCampaignProgress(planTactic, bt.Plan_Campaign_Program.Plan_Campaign, improvementTactic),//progress = 0,
-                open = false,
-                parent = string.Format("B{0}", businessUnit.BusinessUnitId),
-                color = Common.COLORC6EBF3_WITH_BORDER,
-                plancampaignid = bt.Plan_Campaign_Program.PlanCampaignId
-            }).Select(c => c).Distinct().OrderBy(c => c.text);
+                    open = false,
+                    parent = string.Format("B{0}", businessUnit.BusinessUnitId),
+                    color = Common.COLORC6EBF3_WITH_BORDER,
+                    plancampaignid = bt.Plan_Campaign_Program.PlanCampaignId
+                }).Select(c => c).Distinct().OrderBy(c => c.text);
 
-            var newTaskDataCampaign = taskDataCampaign.Select(t => new
-            {
-                id = t.id,
-                text = t.text,
-                start_date = t.start_date,
-                duration = t.duration,
-                progress = t.progress,
-                open = t.open,
-                parent = t.parent,
-                color = t.color + (t.progress == 1 ? " stripe" : (t.progress > 0 ? "stripe" : "")),
-                plancampaignid = t.plancampaignid
-            });
+                var newTaskDataCampaign = taskDataCampaign.Select(t => new
+                {
+                    id = t.id,
+                    text = t.text,
+                    start_date = t.start_date,
+                    duration = t.duration,
+                    progress = t.progress,
+                    open = t.open,
+                    parent = t.parent,
+                    color = t.color + (t.progress == 1 ? " stripe" : (t.progress > 0 ? "stripe" : "")),
+                    plancampaignid = t.plancampaignid
+                });
 
-            //return taskDataCampaign.Concat<object>(taskDataProgram).Concat<object>(taskDataTactic).Concat(new[] { queryBusinessUnitTacticType }).ToList<object>();
-            return newTaskDataCampaign.Concat<object>(newTaskDataProgram).Concat<object>(newTaskDataTactic).Concat(new[] { newQueryBusinessUnitTacticType }).ToList<object>();
-        }
+                //return taskDataCampaign.Concat<object>(taskDataProgram).Concat<object>(taskDataTactic).Concat(new[] { queryBusinessUnitTacticType }).ToList<object>();
+                return newTaskDataCampaign.Concat<object>(newTaskDataProgram).Concat<object>(newTaskDataTactic).Concat(new[] { newQueryBusinessUnitTacticType }).ToList<object>();
+            }
             else
                 return null;
 
@@ -1109,7 +1109,7 @@ namespace RevenuePlanner.Controllers
                 plantacticid = t.PlanTacticId
             }).OrderBy(t => t.text);
 
-            var newTaskDataTactic = taskDataTactic.Select(t => new 
+            var newTaskDataTactic = taskDataTactic.Select(t => new
             {
                 id = t.id,
                 text = t.text,
@@ -1331,7 +1331,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="program">Program of plan version.</param>
         /// <param name="tactic">Tactic of plan version.</param>
         /// <returns>Returns list of task for GANNT CHART.</returns>
-        public List<object> GetTaskDetailTactic(List<Plan_Campaign_Program_Tactic> tactic,List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic)
+        public List<object> GetTaskDetailTactic(List<Plan_Campaign_Program_Tactic> tactic, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic)
         {
             string tacticStatusSubmitted = Enums.TacticStatusValues.Single(s => s.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value;
             string tacticStatusDeclined = Enums.TacticStatusValues.Single(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value;
@@ -1478,7 +1478,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="planCampaignProgram"></param>
         /// <param name="improvementTactic"></param>
         /// <returns>return progress B/W 0 and 1</returns>
-        public double GetProgramProgress(List<Plan_Campaign_Program_Tactic> tactic,Plan_Campaign_Program planCampaignProgram, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic)
+        public double GetProgramProgress(List<Plan_Campaign_Program_Tactic> tactic, Plan_Campaign_Program planCampaignProgram, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic)
         {
             if (improvementTactic.Count > 0)
             {
@@ -1534,7 +1534,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="planCampaign"></param>
         /// <param name="improvementTactic"></param>
         /// <returns>return progress B/W 0 and 1</returns>
-        public double GetCampaignProgress(List<Plan_Campaign_Program_Tactic> tactic,Plan_Campaign planCampaign, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic)
+        public double GetCampaignProgress(List<Plan_Campaign_Program_Tactic> tactic, Plan_Campaign planCampaign, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic)
         {
             if (improvementTactic.Count > 0)
             {
@@ -1825,44 +1825,44 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
-                            Plan_Campaign_Program_Tactic tactic = db.Plan_Campaign_Program_Tactic.Where(pt => pt.PlanTacticId == planTacticId).SingleOrDefault();
-                            tactic.Status = status;
-                            tactic.ModifiedBy = Sessions.User.UserId;
-                            tactic.ModifiedDate = DateTime.Now;
+                                Plan_Campaign_Program_Tactic tactic = db.Plan_Campaign_Program_Tactic.Where(pt => pt.PlanTacticId == planTacticId).SingleOrDefault();
+                                tactic.Status = status;
+                                tactic.ModifiedBy = Sessions.User.UserId;
+                                tactic.ModifiedDate = DateTime.Now;
 
-                            Plan_Campaign_Program_Tactic_Comment pcptc = new Plan_Campaign_Program_Tactic_Comment()
-                            {
-                                PlanTacticId = planTacticId,
-                                Comment = string.Format("Tactic {0} by {1}", status, Sessions.User.DisplayName),
-                                CreatedDate = DateTime.Now,
-                                CreatedBy = Sessions.User.UserId
-                            };
+                                Plan_Campaign_Program_Tactic_Comment pcptc = new Plan_Campaign_Program_Tactic_Comment()
+                                {
+                                    PlanTacticId = planTacticId,
+                                    Comment = string.Format("Tactic {0} by {1}", status, Sessions.User.DisplayName),
+                                    CreatedDate = DateTime.Now,
+                                    CreatedBy = Sessions.User.UserId
+                                };
 
-                            db.Entry(pcptc).State = EntityState.Added;
-                            db.Entry(tactic).State = EntityState.Modified;
-                            result = db.SaveChanges();
-                            if (result == 2)
-                            {
-                                if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
+                                db.Entry(pcptc).State = EntityState.Added;
+                                db.Entry(tactic).State = EntityState.Modified;
+                                result = db.SaveChanges();
+                                if (result == 2)
                                 {
-                                    result = Common.InsertChangeLog(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, 0, planTacticId, tactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved);
+                                    if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
+                                    {
+                                        result = Common.InsertChangeLog(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, 0, planTacticId, tactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved);
+                                    }
+                                    else if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
+                                    {
+                                        result = Common.InsertChangeLog(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, 0, planTacticId, tactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined);
+                                    }
+                                    Common.mailSendForTactic(planTacticId, status, tactic.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
+                                    if (result >= 1)
+                                    {
+                                        scope.Complete();
+                                        return Json(new { result = true }, JsonRequestBehavior.AllowGet);
+                                    }
                                 }
-                                else if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
-                                {
-                                    result = Common.InsertChangeLog(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, 0, planTacticId, tactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined);
-                                }
-                                Common.mailSendForTactic(planTacticId, status, tactic.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
-                                if (result >= 1)
-                                {
-                                    scope.Complete();
-                                    return Json(new { result = true }, JsonRequestBehavior.AllowGet);
-                                }
-                            }
                             }
 
                             /// Modified By Maninder Singh Wadhva PL Ticket#47
-                                return Json(new { result = false }, JsonRequestBehavior.AllowGet);
-                            }
+                            return Json(new { result = false }, JsonRequestBehavior.AllowGet);
+                        }
                     }
                 }
             }
@@ -2069,6 +2069,7 @@ namespace RevenuePlanner.Controllers
             }
             im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.INQs), im.StartDate, im.PlanTacticId);
             ViewBag.TacticDetail = im;
+            ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
 
             var businessunittitle = (from bun in db.BusinessUnits
                                      where bun.BusinessUnitId == im.BusinessUnitId
@@ -2078,7 +2079,7 @@ namespace RevenuePlanner.Controllers
             bool isValidOwner = false;
             if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
             {
-               isValidDirectorUser = true;
+                isValidDirectorUser = true;
             }
             if (im.OwnerId == Sessions.User.UserId)
             {
@@ -2087,6 +2088,45 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsValidDirectorUser = isValidDirectorUser;
             ViewBag.IsValidOwner = isValidOwner;
             return PartialView("Review");
+        }
+
+        public JsonResult SaveSyncToIntegration(int id, string section, bool IsDeployedToIntegration)
+        {
+            bool returnValue = false;
+
+            try
+            {
+                if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
+                {
+                    var objTactic = db.Plan_Campaign_Program_Tactic.SingleOrDefault(varT => varT.PlanTacticId == id);
+                    objTactic.IsDeployedToIntegration = IsDeployedToIntegration;
+                    db.Entry(objTactic).State = EntityState.Modified;
+                    db.SaveChanges();
+                    returnValue = true;
+                }
+                else if (section == Convert.ToString(Enums.Section.Program).ToLower())
+                {
+                    var objProgram = db.Plan_Campaign_Program.SingleOrDefault(varT => varT.PlanProgramId == id);
+                    objProgram.IsDeployedToIntegration = IsDeployedToIntegration;
+                    db.Entry(objProgram).State = EntityState.Modified;
+                    db.SaveChanges();
+                    returnValue = true;
+                }
+                else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
+                {
+                    var objCampaign = db.Plan_Campaign.SingleOrDefault(varT => varT.PlanCampaignId == id);
+                    objCampaign.IsDeployedToIntegration = IsDeployedToIntegration;
+                    db.Entry(objCampaign).State = EntityState.Modified;
+                    db.SaveChanges();
+                    returnValue = true;
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+
+            return Json(new { result = returnValue, msg = "Result Updated Successfully" }, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -2143,8 +2183,13 @@ namespace RevenuePlanner.Controllers
                                   Revenues = pcpt.Revenues == null ? 0 : pcpt.Revenues,
                                   RevenuesActual = pcpt.RevenuesActual == null ? 0 : pcpt.RevenuesActual,
                                   ROI = pcpt.ROI == null ? 0 : pcpt.ROI,
-                                  ROIActual = pcpt.ROIActual == null ? 0 : pcpt.ROIActual
+                                  ROIActual = pcpt.ROIActual == null ? 0 : pcpt.ROIActual,
+                                  IsDeployedToIntegration = pcpt.IsDeployedToIntegration,
+                                  LastSyncDate = pcpt.LastSyncDate
                               }).SingleOrDefault();
+
+                    imodel.IntegrationType = GetIntegrationTypeTitleByModel(db.Plan_Campaign_Program_Tactic.SingleOrDefault(varT => varT.PlanTacticId == id).TacticType.Model);
+
                 }
                 if (section == Convert.ToString(Enums.Section.Program).ToLower())
                 {
@@ -2190,9 +2235,13 @@ namespace RevenuePlanner.Controllers
                     imodel.EndDate = objPlan_Campaign_Program.EndDate;
                     imodel.INQs = objPlan_Campaign_Program.INQs;
 
-                   
                     imodel.VerticalTitle = objPlan_Campaign_Program.Vertical.Title;
                     imodel.AudiencTitle = objPlan_Campaign_Program.Audience.Title;
+
+                    imodel.IsDeployedToIntegration = objPlan_Campaign_Program.IsDeployedToIntegration;
+                    imodel.LastSyncDate = objPlan_Campaign_Program.LastSyncDate;
+
+                    imodel.IntegrationType = GetIntegrationTypeTitleByModel(objPlan_Campaign_Program.Plan_Campaign.Plan.Model);
                 }
 
                 if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
@@ -2249,9 +2298,13 @@ namespace RevenuePlanner.Controllers
                     imodel.StartDate = objPlan_Campaign.StartDate;
                     imodel.EndDate = objPlan_Campaign.EndDate;
                     imodel.INQs = objPlan_Campaign.INQs;
-                    
+
                     imodel.VerticalTitle = objPlan_Campaign.Vertical.Title;
                     imodel.AudiencTitle = objPlan_Campaign.Audience.Title;
+
+                    imodel.IsDeployedToIntegration = objPlan_Campaign.IsDeployedToIntegration;
+                    imodel.IntegrationType = GetIntegrationTypeTitleByModel(objPlan_Campaign.Plan.Model);
+                    imodel.LastSyncDate = objPlan_Campaign.LastSyncDate;
 
                 }
 
@@ -2285,6 +2338,25 @@ namespace RevenuePlanner.Controllers
                 ErrorSignal.FromCurrentContext().Raise(e);
             }
             return imodel;
+        }
+
+        /// <summary>
+        /// Return integration type title by model
+        /// </summary>
+        /// <param name="objModel"></param>
+        /// <returns></returns>
+        public string GetIntegrationTypeTitleByModel(Model objModel)
+        {
+            string returnValue = string.Empty;
+
+            if (objModel.IntegrationInstanceId == null)
+                returnValue = "N/A";
+            else
+            {
+                returnValue = db.IntegrationTypes.SingleOrDefault(varI => varI.IntegrationTypeId == objModel.IntegrationInstanceId).Title;
+            }
+
+            return returnValue;
         }
 
         /// <summary>
@@ -2338,7 +2410,33 @@ namespace RevenuePlanner.Controllers
                 if (im.OwnerId != Sessions.User.UserId) isValidUser = false;
             }
             ViewBag.IsValidUser = isValidUser;
+
+            ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
+            if (im.LastSyncDate != null)
+            {
+                TimeZone localZone = TimeZone.CurrentTimeZone;
+                
+                ViewBag.LastSync = "Last synced with " + im.IntegrationType + " " + GetFormatedDate(im.LastSyncDate) + ".";
+            }
+            else
+            {
+                ViewBag.LastSync = string.Empty;
+            }
+
             return PartialView("Actual");
+        }
+
+        /// <summary>
+        /// Function to return datetime in formatted pattern.
+        /// </summary>
+        /// <param name="objDate"></param>
+        /// <returns></returns>
+        public string GetFormatedDate(DateTime? objDate)
+        {
+            if (objDate == null)
+                return string.Empty;
+            else
+                return Convert.ToDateTime(objDate).ToString("MMM dd") + " at " + Convert.ToDateTime(objDate).ToString("hh:mm tt");
         }
 
         /// <summary>
@@ -2397,24 +2495,24 @@ namespace RevenuePlanner.Controllers
                             {
                                 if (actualResult.IsActual)
                                 {
-                                foreach (var t in tacticactual)
-                                {
-                                    Plan_Campaign_Program_Tactic_Actual objpcpta = new Plan_Campaign_Program_Tactic_Actual();
-                                    objpcpta.PlanTacticId = t.PlanTacticId;
-                                    objpcpta.StageTitle = t.StageTitle;
-                                    if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.INQ.ToString()].ToString()) inq += t.ActualValue;
-                                    if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString()) mql += t.ActualValue;
-                                    if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString()) cw += t.ActualValue;
-                                    if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString()) revenue += t.ActualValue;
-                                    objpcpta.Period = t.Period;
-                                    objpcpta.Actualvalue = t.ActualValue;
-                                    objpcpta.CreatedDate = DateTime.Now;
-                                    objpcpta.CreatedBy = Sessions.User.UserId;
-                                    db.Entry(objpcpta).State = EntityState.Added;
-                                    db.Plan_Campaign_Program_Tactic_Actual.Add(objpcpta);
-                                    db.SaveChanges();
+                                    foreach (var t in tacticactual)
+                                    {
+                                        Plan_Campaign_Program_Tactic_Actual objpcpta = new Plan_Campaign_Program_Tactic_Actual();
+                                        objpcpta.PlanTacticId = t.PlanTacticId;
+                                        objpcpta.StageTitle = t.StageTitle;
+                                        if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.INQ.ToString()].ToString()) inq += t.ActualValue;
+                                        if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString()) mql += t.ActualValue;
+                                        if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString()) cw += t.ActualValue;
+                                        if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString()) revenue += t.ActualValue;
+                                        objpcpta.Period = t.Period;
+                                        objpcpta.Actualvalue = t.ActualValue;
+                                        objpcpta.CreatedDate = DateTime.Now;
+                                        objpcpta.CreatedBy = Sessions.User.UserId;
+                                        db.Entry(objpcpta).State = EntityState.Added;
+                                        db.Plan_Campaign_Program_Tactic_Actual.Add(objpcpta);
+                                        db.SaveChanges();
+                                    }
                                 }
-                            }
                             }
 
                             Plan_Campaign_Program_Tactic objPCPT = db.Plan_Campaign_Program_Tactic.Where(pt => pt.PlanTacticId == actualResult.PlanTacticId).SingleOrDefault();
@@ -2621,27 +2719,27 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                    Plan_Campaign_Program_Tactic_Comment pcptc = new Plan_Campaign_Program_Tactic_Comment();
-                    if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
-                    {
-                        pcptc.PlanTacticId = planTacticId;
-                    }
-                    else if (section == Convert.ToString(Enums.Section.Program).ToLower())
-                    {
-                        pcptc.PlanProgramId = planTacticId;
-                    }
-                    else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
-                    {
-                        pcptc.PlanCampaignId = planTacticId;
-                    }
-                    pcptc.Comment = comment;
-                    DateTime currentdate = DateTime.Now;
-                    pcptc.CreatedDate = currentdate;
-                    string displayDate = currentdate.ToString("MMM dd") + " at " + currentdate.ToString("hh:mmtt");
-                    pcptc.CreatedBy = Sessions.User.UserId;
-                    db.Entry(pcptc).State = EntityState.Added;
-                    db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
-                    result = db.SaveChanges();
+                        Plan_Campaign_Program_Tactic_Comment pcptc = new Plan_Campaign_Program_Tactic_Comment();
+                        if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
+                        {
+                            pcptc.PlanTacticId = planTacticId;
+                        }
+                        else if (section == Convert.ToString(Enums.Section.Program).ToLower())
+                        {
+                            pcptc.PlanProgramId = planTacticId;
+                        }
+                        else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
+                        {
+                            pcptc.PlanCampaignId = planTacticId;
+                        }
+                        pcptc.Comment = comment;
+                        DateTime currentdate = DateTime.Now;
+                        pcptc.CreatedDate = currentdate;
+                        string displayDate = currentdate.ToString("MMM dd") + " at " + currentdate.ToString("hh:mmtt");
+                        pcptc.CreatedBy = Sessions.User.UserId;
+                        db.Entry(pcptc).State = EntityState.Added;
+                        db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
+                        result = db.SaveChanges();
                     }
 
                     if (result >= 1)
@@ -2717,31 +2815,31 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
-                            Plan_Campaign_Program_Tactic_Comment pcptc = new Plan_Campaign_Program_Tactic_Comment();
-                            if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
-                            {
-                                pcptc.PlanTacticId = planTacticId;
-                                approvedComment = Convert.ToString(Enums.Section.Tactic) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
-                            }
-                            else if (section == Convert.ToString(Enums.Section.Program).ToLower())
-                            {
-                                pcptc.PlanProgramId = planTacticId;
-                                approvedComment = Convert.ToString(Enums.Section.Program) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
-                            }
-                            else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
-                            {
-                                pcptc.PlanCampaignId = planTacticId;
-                                approvedComment = Convert.ToString(Enums.Section.Campaign) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
-                            }
-                            //approvedComment = "Tactic " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
-                            pcptc.Comment = approvedComment;
-                            DateTime currentdate = DateTime.Now;
-                            pcptc.CreatedDate = currentdate;
-                            string displayDate = currentdate.ToString("MMM dd") + " at " + currentdate.ToString("hh:mmtt");
-                            pcptc.CreatedBy = Sessions.User.UserId;
-                            db.Entry(pcptc).State = EntityState.Added;
-                            db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
-                            result = db.SaveChanges();
+                                Plan_Campaign_Program_Tactic_Comment pcptc = new Plan_Campaign_Program_Tactic_Comment();
+                                if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
+                                {
+                                    pcptc.PlanTacticId = planTacticId;
+                                    approvedComment = Convert.ToString(Enums.Section.Tactic) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                                }
+                                else if (section == Convert.ToString(Enums.Section.Program).ToLower())
+                                {
+                                    pcptc.PlanProgramId = planTacticId;
+                                    approvedComment = Convert.ToString(Enums.Section.Program) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                                }
+                                else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
+                                {
+                                    pcptc.PlanCampaignId = planTacticId;
+                                    approvedComment = Convert.ToString(Enums.Section.Campaign) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                                }
+                                //approvedComment = "Tactic " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                                pcptc.Comment = approvedComment;
+                                DateTime currentdate = DateTime.Now;
+                                pcptc.CreatedDate = currentdate;
+                                string displayDate = currentdate.ToString("MMM dd") + " at " + currentdate.ToString("hh:mmtt");
+                                pcptc.CreatedBy = Sessions.User.UserId;
+                                db.Entry(pcptc).State = EntityState.Added;
+                                db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
+                                result = db.SaveChanges();
                             }
                             if (result == 1)
                             {
@@ -2821,7 +2919,7 @@ namespace RevenuePlanner.Controllers
                                         }
                                         else if (program.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
                                         {
-                                            
+
                                             string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString();
                                             db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == planTacticId).ToList().ForEach(pcpt => pcpt.Status = strstatus);
                                             db.SaveChanges();
@@ -2989,7 +3087,7 @@ namespace RevenuePlanner.Controllers
                                      where bun.BusinessUnitId == im.BusinessUnitId
                                      select bun.Title).FirstOrDefault();
             ViewBag.BudinessUnitTitle = businessunittitle.ToString();
-            
+
             bool isValidDirectorUser = false;
             bool isValidOwner = false;
             if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
@@ -3002,6 +3100,9 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.IsValidDirectorUser = isValidDirectorUser;
             ViewBag.IsValidOwner = isValidOwner;
+
+            ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
+
             return PartialView("_ReviewProgram");
         }
 
@@ -3103,7 +3204,7 @@ namespace RevenuePlanner.Controllers
                                      where bun.BusinessUnitId == im.BusinessUnitId
                                      select bun.Title).FirstOrDefault();
             ViewBag.BudinessUnitTitle = businessunittitle.ToString();
-            
+
             bool isValidDirectorUser = false;
             bool isValidOwner = false;
             if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
@@ -3116,6 +3217,9 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.IsValidDirectorUser = isValidDirectorUser;
             ViewBag.IsValidOwner = isValidOwner;
+
+            ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
+
             return PartialView("_ReviewCampaign");
         }
 
@@ -3168,7 +3272,7 @@ namespace RevenuePlanner.Controllers
 
             //// Selecting programIds.
             var programId = program.Select(pcp => pcp.PlanProgramId);
-            
+
             //// Applying filters to tactic (IsDelete, Geography, Individuals and Show My Tactic)
             List<Plan_Campaign_Program_Tactic> objPlan_Campaign_Program_Tactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) &&
                                                                                                 programId.Contains(pcpt.PlanProgramId)).ToList()
@@ -3716,28 +3820,28 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else
                                 {
-                                Tactic_Share tacticShare = new Tactic_Share();
-                                if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
-                                {
-                                    tacticShare.PlanTacticId = planTacticId;
-                                }
-                                else if (section == Convert.ToString(Enums.Section.Program).ToLower())
-                                {
-                                    tacticShare.PlanProgramId = planTacticId;
-                                }
-                                else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
-                                {
-                                    tacticShare.PlanCampaignId = planTacticId;
-                                }
-                                tacticShare.EmailId = toEmail;
-                                //// Modified by Sohel on 3rd April for PL#398 to encode the email body while inserting into DB.
-                                tacticShare.EmailBody = HttpUtility.HtmlEncode(emailBody);
-                                ////
-                                tacticShare.CreatedDate = DateTime.Now;
-                                tacticShare.CreatedBy = Sessions.User.UserId;
-                                db.Entry(tacticShare).State = EntityState.Added;
-                                db.Tactic_Share.Add(tacticShare);
-                                result = db.SaveChanges();
+                                    Tactic_Share tacticShare = new Tactic_Share();
+                                    if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
+                                    {
+                                        tacticShare.PlanTacticId = planTacticId;
+                                    }
+                                    else if (section == Convert.ToString(Enums.Section.Program).ToLower())
+                                    {
+                                        tacticShare.PlanProgramId = planTacticId;
+                                    }
+                                    else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
+                                    {
+                                        tacticShare.PlanCampaignId = planTacticId;
+                                    }
+                                    tacticShare.EmailId = toEmail;
+                                    //// Modified by Sohel on 3rd April for PL#398 to encode the email body while inserting into DB.
+                                    tacticShare.EmailBody = HttpUtility.HtmlEncode(emailBody);
+                                    ////
+                                    tacticShare.CreatedDate = DateTime.Now;
+                                    tacticShare.CreatedBy = Sessions.User.UserId;
+                                    db.Entry(tacticShare).State = EntityState.Added;
+                                    db.Tactic_Share.Add(tacticShare);
+                                    result = db.SaveChanges();
                                 }
 
                                 if (result == 1)
@@ -3892,8 +3996,8 @@ namespace RevenuePlanner.Controllers
                                      where bun.BusinessUnitId == im.BusinessUnitId
                                      select bun.Title).FirstOrDefault();
             ViewBag.BudinessUnitTitle = businessunittitle.ToString();
-             ViewBag.ApprovedStatus = true;
-             ViewBag.NoOfTacticBoosts = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && t.StartDate >= im.StartDate && t.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId).ToList().Count();
+            ViewBag.ApprovedStatus = true;
+            ViewBag.NoOfTacticBoosts = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && t.StartDate >= im.StartDate && t.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId).ToList().Count();
 
             return PartialView("_SetupImprovementTactic", im);
         }
@@ -4033,14 +4137,14 @@ namespace RevenuePlanner.Controllers
 
                 var TacticUserList = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId == PlanId).Distinct().ToList();
                 TacticUserList = TacticUserList.Where(t => status.Contains(t.Status) || ((t.CreatedBy == Sessions.User.UserId && !type.Equals(GanttTabs.Request)) ? statusCD.Contains(t.Status) : false)).Distinct().ToList();
-                
+
                 var ImprovementTacticUserList = db.Plan_Improvement_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted.Equals(false) && pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId == PlanId).Distinct().ToList();
-                ImprovementTacticUserList = ImprovementTacticUserList .Where(t => status.Contains(t.Status) || ((t.CreatedBy == Sessions.User.UserId && !type.Equals(GanttTabs.Request)) ? statusCD.Contains(t.Status) : false)).Distinct().ToList();
-                
+                ImprovementTacticUserList = ImprovementTacticUserList.Where(t => status.Contains(t.Status) || ((t.CreatedBy == Sessions.User.UserId && !type.Equals(GanttTabs.Request)) ? statusCD.Contains(t.Status) : false)).Distinct().ToList();
+
                 var mergedList = TacticUserList.Select(a => a.CreatedBy).ToList();
                 mergedList.AddRange(ImprovementTacticUserList.Select(a => a.CreatedBy).ToList());
                 mergedList = mergedList.Distinct().ToList();
-                
+
                 string strContatedIndividualList = string.Empty;
                 foreach (var item in mergedList)
                 {

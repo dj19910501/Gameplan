@@ -36,7 +36,6 @@ namespace RevenuePlanner.Models
         public DbSet<Funnel> Funnels { get; set; }
         public DbSet<Funnel_Field> Funnel_Field { get; set; }
         public DbSet<Geography> Geographies { get; set; }
-        public DbSet<ImprovementTacticType> ImprovementTacticTypes { get; set; }
         public DbSet<ImprovementTacticType_Metric> ImprovementTacticType_Metric { get; set; }
         public DbSet<ImprovementTacticType_Touches> ImprovementTacticType_Touches { get; set; }
         public DbSet<Metric> Metrics { get; set; }
@@ -49,7 +48,6 @@ namespace RevenuePlanner.Models
         public DbSet<ModelReview> ModelReviews { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Plan> Plans { get; set; }
-        public DbSet<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Actual> Plan_Campaign_Program_Tactic_Actual { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Comment> Plan_Campaign_Program_Tactic_Comment { get; set; }
         public DbSet<Plan_Improvement_Campaign> Plan_Improvement_Campaign { get; set; }
@@ -65,8 +63,18 @@ namespace RevenuePlanner.Models
         public DbSet<User_Filter> User_Filter { get; set; }
         public DbSet<User_Notification> User_Notification { get; set; }
         public DbSet<Vertical> Verticals { get; set; }
+        public DbSet<GameplanDataType> GameplanDataTypes { get; set; }
+        public DbSet<IntegrationInstance> IntegrationInstances { get; set; }
+        public DbSet<IntegrationInstance_Attribute> IntegrationInstance_Attribute { get; set; }
+        public DbSet<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
+        public DbSet<IntegrationType> IntegrationTypes { get; set; }
+        public DbSet<IntegrationTypeAttribute> IntegrationTypeAttributes { get; set; }
+        public DbSet<SyncFrequency> SyncFrequencies { get; set; }
         public DbSet<Plan_Campaign> Plan_Campaign { get; set; }
         public DbSet<Plan_Campaign_Program> Plan_Campaign_Program { get; set; }
+        public DbSet<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
+        public DbSet<ImprovementTacticType> ImprovementTacticTypes { get; set; }
+        public DbSet<IntegrationInstanceLog> IntegrationInstanceLogs { get; set; }
     
         public virtual int Plan_Campaign_Program_Tactic_ActualDelete(Nullable<int> planTacticId, ObjectParameter returnValue)
         {
