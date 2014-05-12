@@ -113,6 +113,10 @@
                     { 
                         @Html.TextBoxFor(model => model.IntegrationTypeAttributes[i].Value)
                     }
+                    else if (Model.IntegrationTypeAttributes[i].AttributeType == "dropdown")
+                    {
+                        @Html.DropDownListFor(model => model.IntegrationTypeAttributes[i].Value, new SelectList((System.Collections.IEnumerable)Model.IntegrationTypeAttributes[i].Value, "Value", "Text"))
+                    }
                 </div>
             }
             
@@ -155,14 +159,14 @@
             </div>
             
             <div class="cf inputs-aligned-horizontal content">
-                @Html.Label("Import Actuals from Integration")
+                @Html.LabelFor(model => model.IsImportActuals)
                 <input id="importActuals" class="icon-check-gray" type="text" readonly="" maxlength="18" placeholder="Inactive" name="importActuals">
                 @Html.HiddenFor(model => model.IsImportActuals)
             </div>
             
             <div class="cf inputs-aligned-horizontal">
-                <div class="Add-Integration">
-                    <span>Note that imported values override user-generated values.</span>
+                <div class="Add-Integration" >
+                    <span style=" width: 253px;">Note that imported values override user-generated values.</span>
                 </div>
             </div>
             
@@ -174,7 +178,7 @@
                 </div>
                 <div class="container-button">
                     <span class="span5">
-                        <button id="btnCancel" class="close-form btn-link source-sans-proregular" type="button" style="margin-left: 10px;">Cancel</button>
+                        <button id="btnCancel" class="close-form btn-link source-sans-proregular" type="button" style="margin-left: 90px;">Cancel</button>
                     </span>
                 </div>
             </div>
@@ -262,7 +266,7 @@
     });
 
     function testIntegration() {
-        alert("Test integration");
+        //alert("Test integration");
 
         $.ajax({
             type: 'GET',
@@ -275,6 +279,12 @@
                         $('#cSuccess').append('<span>' + data.SuccessMessage.toString() + '</span>');
                         $("#successMessage").slideDown(1200);
                         $("#successMessage").slideUp(3000);
+
+                        $('#integrationStatus').val("Active");
+                        $('#IsActive').val(true);
+                        $('#integrationStatus').addClass("icon-check-blue");
+                        $('#integrationStatus').removeClass("icon-check-gray");
+                            
                         return true;
                     }
                     else {

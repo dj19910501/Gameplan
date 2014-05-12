@@ -6866,9 +6866,10 @@ span.circle-check-icon-gray{margin-left: auto;margin-right: auto;background: url
 .nav-gray li a.integrations:hover span{background-position: -238px -30px !important;}
 .nav-gray li.active a.integrations span{background-position: -238px -30px !important;}
 		   .Add-Integration {
-    line-height: 32px;
+    line-height: 20px;
     margin-bottom: 5px;
     margin-left: 180px;
+    width:235px !important;
 }
 
 .nav-gray li.active a.integrations span {

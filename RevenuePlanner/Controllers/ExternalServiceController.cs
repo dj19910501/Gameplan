@@ -173,6 +173,7 @@ namespace RevenuePlanner.Controllers
                                 objIntegrationInstance_Attribute.Value = item.Value;
                                 db.Entry(objIntegrationInstance_Attribute).State = System.Data.EntityState.Added;
                                 db.IntegrationInstance_Attribute.Add(objIntegrationInstance_Attribute);
+                                db.SaveChanges();
                             }
                         }
 

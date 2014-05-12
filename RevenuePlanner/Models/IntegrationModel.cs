@@ -39,7 +39,7 @@ namespace RevenuePlanner.Models
         [Display(Name = "LastSyncStatus")]
         public string LastSyncStatus { get; set; }
 
-        [Display(Name = "IsImportActuals?")]
+        [Display(Name = "Import Actuals")]
         public bool IsImportActuals { get; set; }
 
         [Display(Name = "Delete Integration?")]

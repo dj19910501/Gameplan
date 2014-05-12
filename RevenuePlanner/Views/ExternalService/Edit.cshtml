@@ -115,6 +115,10 @@
                     { 
                         @Html.TextBoxFor(model => model.IntegrationTypeAttributes[i].Value)
                     }
+                    else if (Model.IntegrationTypeAttributes[i].AttributeType == "dropdown")
+                    {
+                        @Html.DropDownListFor(model => model.IntegrationTypeAttributes[i].Value, new SelectList((System.Collections.IEnumerable)Model.IntegrationTypeAttributes[i].Value, "Value", "Text"))
+                    }
                 </div>
             }
             
@@ -172,14 +176,14 @@
                 </div>
                 }
             <div class="cf inputs-aligned-horizontal content">
-                @Html.Label("Import Actuals from Integration")
+                @Html.LabelFor(model => model.IsImportActuals, new  { id="lblImportActuals"})
                 @if (Model.IsImportActuals == true)
                 {
                     <input id="importActuals" class="icon-check-blue" type="text" readonly="" maxlength="18" placeholder="Active" name="importActuals"> 
                 }
                 else
                 {
-                <input id="importActuals" class="icon-check-gray" type="text" readonly="" maxlength="18" placeholder="Inactive" name="importActuals">
+                    <input id="importActuals" class="icon-check-gray" type="text" readonly="" maxlength="18" placeholder="Inactive" name="importActuals">
                 }
                 @Html.HiddenFor(model => model.IsImportActuals)
             </div>
@@ -207,7 +211,7 @@
                 </div>
                 <div class="container-button">
                     <span class="span5">
-                        <button id="btnCancel" class="close-form btn-link source-sans-proregular" type="button" style="margin-left: 10px;">Cancel</button>
+                        <button id="btnCancel" class="close-form btn-link source-sans-proregular" type="button" style="margin-left: 90px;">Cancel</button>
                     </span>
                 </div>
             </div>
@@ -268,7 +272,7 @@
             }
         });
            
-        if ($('#IsActive').val() == false) {
+        if ($('#IsActive').val().toString().toLowerCase() == "false") {
             $(this).val("Inactive");
             $('#IsActive').val(false);
             $(this).addClass("icon-check-gray");
@@ -281,7 +285,7 @@
         }
         
 
-        if ($('#IsImportActuals').val() == false) {
+        if ($('#IsImportActuals').val().toString().toLowerCase() == "false") {
             $(this).val("Inactive");
             $('#IsImportActuals').val(false);
             $(this).addClass("icon-check-gray");
@@ -335,7 +339,31 @@
     });
 
     function testIntegration() {
-        alert("Test integration");
+        //alert("Test integration");
+
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            url: 'TestIntegration',
+            data: { instanceName: $('#Instance').val(), userName: $('#Username').val(), password: $('#Password').val() },
+            success: function (data) {
+                if (data != null) {
+                    if (data.status == 1) {
+                        $('#cSuccess').append('<span>' + data.SuccessMessage.toString() + '</span>');
+                        $("#successMessage").slideDown(1200);
+                        $("#successMessage").slideUp(3000);
+                        return true;
+                    }
+                    else {
+                        $('#cError').append('<span>' + data.ErrorMessage.toString() + '</span>');
+                        $("#errorMessage").slideDown(400);
+                        $("html, body").animate({ scrollTop: 0 }, 1000);
+                        return false;
+                    }
+                }
+            }
+        });
+
         return false;
     }
 
@@ -357,6 +385,11 @@
         if ($('#result').text() != '' && $('#result').text().toLowerCase() == 'too short') {
             $('#result').removeClass();
             $('#result').addClass('check-icon-red')
+            return false;
+        }
+
+        if ($('#IsActive').val().toString() != "true") {
+            alert("Please test integration credentials");
             return false;
         }
     });
@@ -399,8 +432,6 @@
     });
 
     $("#integrationStatus").click(function () {
-        var index = parseInt($('#table_tactics tbody tr').attr("index"));
-        /*change status checkmark according to JSON data*/
         if ($(this).hasClass("icon-check-blue")) {
             $(this).val("Inactive");
             $('#IsActive').val(false);
@@ -415,8 +446,6 @@
     });
 
     $("#importActuals").click(function () {
-        var index = parseInt($('#table_tactics tbody tr').attr("index"));
-        /*change status checkmark according to JSON data*/
         if ($(this).hasClass("icon-check-blue")) {
             $(this).val("Inactive");
             $('#IsImportActuals').val(false);
