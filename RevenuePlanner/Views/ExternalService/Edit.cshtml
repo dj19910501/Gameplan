@@ -4,14 +4,10 @@
 <script src="@Url.Content("~/Scripts/jquery.validate.js")"></script>
 <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")"></script>
 
-@*@{
-    int integrationTypeId = ViewBag.integrationTypeId;
-}
-
-@Html.Hidden("integrationTypeId", integrationTypeId)*@
 @Html.Hidden("SuccMsg", TempData["SuccessMessage"])
 @Html.Hidden("ErrMsg", TempData["ErrorMessage"])
 @Html.Hidden("DeleteConfirmationMsg", TempData["DeleteConfirmationMsg"])
+@Html.Hidden("InActiveConfirmationMsg", TempData["InActiveConfirmationMsg"])
 
 @{
     ViewBag.Title = "Edit Integration";
@@ -73,6 +69,7 @@
             @Html.ValidationSummary(true)
             @Html.HiddenFor(model => model.IntegrationTypeId);
             @Html.HiddenFor(model => model.IntegrationInstanceId);
+            @Html.HiddenFor(model => model.IsActiveStatuChanged);
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.IntegrationType.Title)
 
@@ -134,6 +131,7 @@
                     <input type="text" readonly="" maxlength="18" placeholder="Inactive" class="icon-check-gray" name="t_status" id="integrationStatus">
                 }
                 @Html.HiddenFor(model => model.IsActive)
+                @Html.HiddenFor(model => model.IsActive, new { id = "hdnIsActiveIntact" })
             </div>
             
             <div class="cf inputs-aligned-horizontal">
@@ -233,6 +231,8 @@
             $("#errorMessage").slideDown(400);
             $("html, body").animate({ scrollTop: 0 }, 1000);
         }
+
+        $('#hdnIsActiveIntact').val($('#IsActive').val());
 
         $('#content :input').each(function () {
             if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
@@ -379,10 +379,14 @@
 
         if ($('#Instance').val().trim() != "" && $('#Username').val().trim() != "" && $('#Password').val().trim() != "") {
             $.ajax({
-                type: 'GET',
+                //type: 'GET',
                 cache: false,
-                url: 'TestIntegration',
-                data: { instanceName: $('#Instance').val(), userName: $('#Username').val(), password: $('#Password').val() },
+                cache: false,
+                type: 'POST',
+                url: '@Url.Content("~/ExternalService/TestIntegration")',
+                data: $("form").serialize(),
+                //url: 'TestIntegration',
+                //data: { instanceName: $('#Instance').val(), userName: $('#Username').val(), password: $('#Password').val() },
                 success: function (data) {
                     if (data != null) {
                         if (data.status == 1) {
@@ -433,13 +437,25 @@
             return false;
         }
 
-        if ($('#IsActive').val().toString() != "true") {
-            alert("Please test integration credentials");
-            return false;
-        }
+        //if ($('#IsActive').val().toString() != "true") {
+        //    alert("Please test integration credentials");
+        //    return false;
+        //}
     });
 
     $('#integrationForm').submit(function (e) {
+        if ($('#hdnIsActiveIntact').val() != $('#IsActive').val() && $('#IsActive').val().toString() == "false" && $('#hdnIsActiveIntact').val().toString() == "true")
+        {
+            if (confirm($("#InActiveConfirmationMsg").val())) {
+                $('#IsActiveStatuChanged').val(true);
+                return true;
+            }
+            else {
+                $('#IsActiveStatuChanged').val(false);
+                e.preventDefault();
+                return false;
+            }
+        }
         if ($('#IsDeleted').val().toLowerCase() == 'true'){
             if (confirm($("#DeleteConfirmationMsg").val())) {
                 return true;

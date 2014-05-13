@@ -311,10 +311,13 @@
 
         if ($('#Instance').val().trim() != "" && $('#Username').val().trim() != "" && $('#Password').val().trim() != "") {
             $.ajax({
-                type: 'GET',
+                //type: 'GET',
                 cache: false,
-                url: 'TestIntegration',
-                data: { instanceName: $('#Instance').val(), userName: $('#Username').val(), password: $('#Password').val() },
+                type: 'POST',
+                url: '@Url.Content("~/ExternalService/TestIntegration")',
+                data: $("form").serialize(),
+                //url: 'TestIntegration',
+                //data: { instanceName: $('#Instance').val(), userName: $('#Username').val(), password: $('#Password').val() },
                 success: function (data) {
                     if (data != null) {
                         if (data.status == 1) {

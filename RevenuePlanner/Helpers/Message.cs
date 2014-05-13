@@ -1119,6 +1119,19 @@ namespace RevenuePlanner.Helpers
                 _TestIntegrationFail = value;
             }
         }
+
+        private string _IntegrationInActiveConfirmationMsg;
+        public string IntegrationInActiveConfirmationMsg
+        {
+            get
+            {
+                return _IntegrationInActiveConfirmationMsg;
+            }
+            set
+            {
+                _IntegrationInActiveConfirmationMsg = value;
+            }
+        }
         // End - Added by : Sohel Pathan on 09/05/2014 for PL #430 
         private string _DataTypeMappingSaveSuccess;
         public string DataTypeMappingSaveSuccess
@@ -1497,6 +1510,9 @@ namespace RevenuePlanner.Helpers
                                             break;
                                         case "DataTypeMappingNotConfigured":
                                             _DataTypeMappingNotConfigured = strMsgValue;
+                                            break;
+                                        case "IntegrationInActiveConfirmationMsg":
+                                            _IntegrationInActiveConfirmationMsg = strMsgValue;
                                             break;
                                     }
                                 }
