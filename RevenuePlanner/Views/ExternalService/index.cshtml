@@ -141,8 +141,9 @@
         });
 
         $(document).on('click', '.sync_service', function (e) {
-            $(this).html('Syncing...');
-            $(this).css("color", "red");
+            var syncNow = $(this);
+            syncNow.html('Syncing...');
+            //syncNow.css("color", "red");
             var id = $(this).attr("id").replace("syncnow_", "");
             
             $.ajax({
@@ -153,21 +154,18 @@
                 success: function (data) {
                     if (data != null)
                     {
-                        if (data.status == "Complete") {
-                            $(this).html('Syncing Now');
-                        }
-                        else if (data.status == "InProgress") {
-                            $(this).html('Syncing...');
-                            $(this).css("color", "#0088CC");
+                        if (data.status == "Active") {
+                            //// Test
                         }
                         else {
-                            $(this).html('Syncing...');
-                            $(this).css("color", "#0088CC");
+                            //// Test
                         }
                     }
+
+                    syncNow.html('Sync Now');
                 }
             });
-            myApp.hidePleaseWait();
+
             return false;
         });
         

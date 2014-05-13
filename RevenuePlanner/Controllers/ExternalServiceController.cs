@@ -541,23 +541,17 @@ namespace RevenuePlanner.Controllers
 
         public JsonResult SyncNow(int id)
         {
-            IntegrationInstanceLog objIntegrationInstanceLog = new IntegrationInstanceLog();
-
-            // API Call for Sync
-
-            // log the Sync history
-
-            //objIntegrationInstanceLog.IntegrationInstanceId = id;
-            //objIntegrationInstanceLog.Status = "InProgress";
-            //objIntegrationInstanceLog.SyncTimeStamp = DateTime.Now;
-            //objIntegrationInstanceLog.ErrorDescription = "";
-            //objIntegrationInstanceLog.CreatedDate = DateTime.Now;
-            //objIntegrationInstanceLog.CreatedBy = Sessions.User.UserId;
-            //db.Entry(objIntegrationInstanceLog).State = System.Data.EntityState.Added;
-            //db.IntegrationInstanceLogs.Add(objIntegrationInstanceLog);
-            //db.SaveChanges();
-            
-            return Json(new { status = "inProgress" }, JsonRequestBehavior.AllowGet);
+            try
+            {
+                //ExternalIntegration externalIntegration = new ExternalIntegration(id);
+                //externalIntegration.Sync();
+                return Json(new { status = "Active" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception)
+            {
+                return Json(new { status = "Error" }, JsonRequestBehavior.AllowGet);
+                throw;
+            }
         }
 
         public JsonResult TestIntegration(string instanceName, string userName, string password)
