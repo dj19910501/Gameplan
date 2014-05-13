@@ -120,8 +120,7 @@ namespace Integration.Salesforce
             {
                 TargetDataTypeList.Add((string)result["name"]);
             }
-
-            return TargetDataTypeList;
+            return TargetDataTypeList.OrderBy(q => q).ToList();
         }
 
         public void SyncData()

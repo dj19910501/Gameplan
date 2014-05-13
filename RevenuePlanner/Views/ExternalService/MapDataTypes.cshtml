@@ -82,7 +82,7 @@
                                 </td>
                                 <td style="text-align: left;">
                                     @*<div class="nl-form">*@
-                                    @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)ViewData["ExternalFieldList"], "TargetDataType", "TargetDataType", Model[i].TargetDataType), "Select")
+                                    @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)ViewData["ExternalFieldList"], Model[i].TargetDataType), "Select")
                                     @*</div>*@
                                 </td>
                             </tr>

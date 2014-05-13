@@ -1,10 +1,9 @@
 ﻿using Elmah;
-using Newtonsoft.Json.Linq;
 using RevenuePlanner.Helpers;
 using RevenuePlanner.Models;
+using Integration;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Transactions;
@@ -16,22 +15,6 @@ namespace RevenuePlanner.Controllers
     {
         #region Variables
         private MRPEntities db = new MRPEntities();
-        private static readonly string SecurityToken = ConfigurationSettings.AppSettings["SecurityToken"];
-        private static readonly string ConsumerKey = ConfigurationSettings.AppSettings["ConsumerKey"];
-        private static readonly string ConsumerSecret = ConfigurationSettings.AppSettings["ConsumerSecret"];
-        private static readonly string Username = ConfigurationSettings.AppSettings["Username"];
-        private static readonly string Password = ConfigurationSettings.AppSettings["Password"] + SecurityToken;
-        private List<ExternalField> ExternalFields
-        {
-            get
-            {
-                List<ExternalField> lst = new List<ExternalField>();
-                lst.Add(new ExternalField { TargetDataType = "Field 1" });
-                lst.Add(new ExternalField { TargetDataType = "Field 2" });
-                lst.Add(new ExternalField { TargetDataType = "Field 3" });
-                return lst;
-            }
-        }
         #endregion
 
         public ActionResult Index()
@@ -571,42 +554,58 @@ namespace RevenuePlanner.Controllers
             {
                 return RedirectToAction("Index", "NoAccess");
             }
-            ViewData["ExternalFieldList"] = ExternalFields;
-            ViewBag.IntegrationInstanceId = id;
-            string integrationTypeName = (from i in db.IntegrationInstances
-                                          join t in db.IntegrationTypes on i.IntegrationTypeId equals t.IntegrationTypeId
-                                          where i.IsDeleted == false && t.IsDeleted == false && i.IntegrationInstanceId == id
-                                          select t.Title).SingleOrDefault();
-            if (string.IsNullOrEmpty(integrationTypeName)) ViewBag.IntegrationTypeName = ""; else ViewBag.IntegrationTypeName = integrationTypeName;
+            try
+            {
+                ExternalIntegration objEx = new ExternalIntegration(id);
+                List<string> ExternalFields = objEx.GetTargetDataMember();
+                if (ExternalFields == null)
+                {
+                    ExternalFields = new List<string>();
+                }
+                ViewData["ExternalFieldList"] = ExternalFields;
+                ViewBag.IntegrationInstanceId = id;
+                string integrationTypeName = (from i in db.IntegrationInstances
+                                              join t in db.IntegrationTypes on i.IntegrationTypeId equals t.IntegrationTypeId
+                                              where i.IsDeleted == false && t.IsDeleted == false && i.IntegrationInstanceId == id
+                                              select t.Title).SingleOrDefault();
+                if (string.IsNullOrEmpty(integrationTypeName)) ViewBag.IntegrationTypeName = ""; else ViewBag.IntegrationTypeName = integrationTypeName;
 
-            List<GameplanDataTypeModel> listGameplanDataTypeModel = new List<GameplanDataTypeModel>();
-            listGameplanDataTypeModel = (from i in db.IntegrationInstances
-                                         join d in db.GameplanDataTypes on i.IntegrationTypeId equals d.IntegrationTypeId
-                                         join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
-                                         from m in mapping.Where(map=>map.IntegrationInstanceId == id).DefaultIfEmpty()
-                                         where i.IntegrationInstanceId == id && d.IsDeleted == false 
-                                         select new GameplanDataTypeModel
-                                         {
-                                             GameplanDataTypeId = d.GameplanDataTypeId,
-                                             IntegrationTypeId = d.IntegrationTypeId,
-                                             TableName = d.TableName,
-                                             ActualFieldName = d.ActualFieldName,
-                                             DisplayFieldName = d.DisplayFieldName,
-                                             IsGet = d.IsGet,
-                                             IntegrationInstanceDataTypeMappingId = m.IntegrationInstanceDataTypeMappingId,
-                                             IntegrationInstanceId = i.IntegrationInstanceId,
-                                             TargetDataType = m.TargetDataType
-                                         }
-                                         ).ToList();
-            if (listGameplanDataTypeModel != null && listGameplanDataTypeModel.Count > 0)
-            {
-                return View(listGameplanDataTypeModel.OrderBy(map=>map.DisplayFieldName).ToList());
+                List<GameplanDataTypeModel> listGameplanDataTypeModel = new List<GameplanDataTypeModel>();
+                listGameplanDataTypeModel = (from i in db.IntegrationInstances
+                                             join d in db.GameplanDataTypes on i.IntegrationTypeId equals d.IntegrationTypeId
+                                             join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
+                                             from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
+                                             where i.IntegrationInstanceId == id && d.IsDeleted == false
+                                             select new GameplanDataTypeModel
+                                             {
+                                                 GameplanDataTypeId = d.GameplanDataTypeId,
+                                                 IntegrationTypeId = d.IntegrationTypeId,
+                                                 TableName = d.TableName,
+                                                 ActualFieldName = d.ActualFieldName,
+                                                 DisplayFieldName = d.DisplayFieldName,
+                                                 IsGet = d.IsGet,
+                                                 IntegrationInstanceDataTypeMappingId = m.IntegrationInstanceDataTypeMappingId,
+                                                 IntegrationInstanceId = i.IntegrationInstanceId,
+                                                 TargetDataType = m.TargetDataType
+                                             }
+                                             ).ToList();
+                if (listGameplanDataTypeModel != null && listGameplanDataTypeModel.Count > 0)
+                {
+                    return View(listGameplanDataTypeModel.OrderBy(map => map.DisplayFieldName).ToList());
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = Common.objCached.DataTypeMappingNotConfigured;
+                    return RedirectToAction("Edit", new { id = id });
+                }
             }
-            else
+            catch (Exception e)
             {
-                TempData["ErrorMessage"] = Common.objCached.DataTypeMappingNotConfigured;
+                TempData["ErrorMessage"] = Common.objCached.DataTypeMappingNotConfigured + e.Message;
+                ErrorSignal.FromCurrentContext().Raise(e);
                 return RedirectToAction("Edit", new { id = id });
             }
+            
         }
 
         /// <summary>
