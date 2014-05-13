@@ -553,24 +553,28 @@
             success: function (r) {
                 campaign = r;
                 fillCampaignsTable();
-                if('@ViewBag.EditOjbect' == "Tactic" && '@ViewBag.TacticId' != 0)
-                {
-                    $("[id=divTactic][index=" + @ViewBag.TacticId + "]").click();
-                    return false;
-                }
-                else if ('@ViewBag.EditOjbect' == "Program" && '@ViewBag.ProgramId' != 0)
-                {
-                    //alert("Hi");
-                    $('.gray-bg-text').each(function () {
-                        if ($(this).parent().parent().attr('id') == '@ViewBag.ProgramId')
-                        {
+                // call load improvement tactic beacuase it execute after campaign activity process over.
+                LoadImprovementTactic();
+                NumberFormatterTipsyTitle(".tipsyclassTitle", 40);
+                Showmsg();
+            }
+        });
+
+        function LoadClickEvents() {
+            if ('@ViewBag.EditOjbect' == "Tactic" && '@ViewBag.TacticId' != 0) {
+                $("[id=divTactic][index=" + @ViewBag.TacticId + "]").click();
+                return false;
+            }
+            else if ('@ViewBag.EditOjbect' == "Program" && '@ViewBag.ProgramId' != 0) {
+                //alert("Hi");
+                $('.gray-bg-text').each(function () {
+                    if ($(this).parent().parent().attr('id') == '@ViewBag.ProgramId') {
                             $(this).click();
                             return false;
                         }
                     });
                 }
-                else if ('ViewBag.EditOjbect' == "Campaign" && '@ViewBag.CampaignId' != 0)
-                {
+                else if ('@ViewBag.EditOjbect' == "Campaign" && '@ViewBag.CampaignId' != 0) {
                     $('.blue-bg-text').each(function () {
                         if ($(this).parent().parent().attr('id') == '@ViewBag.CampaignId') {
                             $(this).click();
@@ -578,12 +582,11 @@
                         }
                     });
                 }
-                // call load improvement tactic beacuase it execute after campaign activity process over.
-                LoadImprovementTactic();
-                NumberFormatterTipsyTitle(".tipsyclassTitle", 40);
-                Showmsg();
+                else if ('@ViewBag.EditOjbect' == "ImprovementTactic" && '@ViewBag.TacticId' != 0) {
+                    $("[id=divimpTactic][index=" + @ViewBag.TacticId + "]").find("#divPanelImp").click();
+                return false;
             }
-        });
+        }
 
         function LoadImprovementTactic() {
             $.ajax({
@@ -599,16 +602,15 @@
                         if (ImprovementTactic.length) {
                             isImp = true;
                             FillGrayImprovementContainer(ImprovementTactic.length);
+                            LoadClickEvents();
                         }
                     }
                     if (!isImp) {
                         FillGrayImprovementContainerEmpty();
+                        LoadClickEvents();
                     }
                      NumberFormatterTipsy(".tipsyclass", 9);
-                     if ('@ViewBag.EditOjbect' == "ImprovementTactic" && '@ViewBag.TacticId' != 0) {
-                         $("[id=divimpTactic][index=" + @ViewBag.TacticId + "]").find("#divPanelImp").click();
-                        return false;
-                    }
+                     
                     loadscript();
                 }
             });

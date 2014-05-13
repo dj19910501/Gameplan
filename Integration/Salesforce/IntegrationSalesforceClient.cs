@@ -12,6 +12,8 @@ using System.Dynamic;
 using System.Reflection;
 using Integration.BDSService;
 using Newtonsoft.Json.Linq;
+using System.Security.Cryptography;
+using System.IO;
 
 namespace Integration.Salesforce
 {
@@ -45,7 +47,9 @@ namespace Integration.Salesforce
         private Dictionary<string, string> _mappingCampaign { get; set; }
         private Dictionary<string, string> _mappingProgram { get; set; }
         private Dictionary<string, string> _mappingTactic { get; set; }
-        private Dictionary<string, string> _mappingImprovement { get; set; }
+        private Dictionary<string, string> _mappingImprovementCampaign { get; set; }
+        private Dictionary<string, string> _mappingImprovementProgram { get; set; }
+        private Dictionary<string, string> _mappingImprovementTactic { get; set; }
         private Dictionary<int, string> _mappingVertical { get; set; }
         private Dictionary<int, string> _mappingAudience { get; set; }
         private Dictionary<Guid, string> _mappingGeography { get; set; }
@@ -98,8 +102,40 @@ namespace Integration.Salesforce
             this._consumerKey = attributeKeyPair[ConsumerKey]; // "3MVG9zJJ_hX_0bb.x24JN3A5KwgO2gmkr5JfDDUx6U8FrvE_cFweCf7y3OkkLZeSkQDraDWZIrFcNqSvnAil_";
             this._consumerSecret = attributeKeyPair[ConsumerSecret];  //"2775499149223461438";
             this._username = integrationInstance.Username;//"brijmohan.bhavsar@indusa.com";
-            this._password = integrationInstance.Password; //"brijmohan";
+            this._password = Decrypt(integrationInstance.Password); //"brijmohan";
             this._apiURL = integrationInstance.IntegrationType.APIURL; //"https://test.salesforce.com/services/oauth2/token";
+        }
+
+        /// <summary>
+        /// Decrypt string
+        /// </summary>
+        /// <param name="strText"></param>
+        /// <returns></returns>
+        private static string Decrypt(string strText)
+        {
+            byte[] byKey = null;
+            byte[] IV = { 0X12, 0X34, 0X56, 0X78, 0X90, 0XAB, 0XCD, 0XEF };
+            byte[] inputByteArray = new byte[strText.Length + 1];
+
+            try
+            {
+                byKey = System.Text.Encoding.UTF8.GetBytes(((string)("&%#@?,:*")).Substring(0, 8));
+                DESCryptoServiceProvider des = new DESCryptoServiceProvider();
+                inputByteArray = Convert.FromBase64String(strText);
+                MemoryStream ms = new MemoryStream();
+                CryptoStream cs = new CryptoStream(ms, des.CreateDecryptor(byKey, IV), CryptoStreamMode.Write);
+
+                cs.Write(inputByteArray, 0, inputByteArray.Length);
+                cs.FlushFinalBlock();
+                System.Text.Encoding encoding = System.Text.Encoding.UTF8;
+
+                return encoding.GetString(ms.ToArray());
+
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
         }
 
         public void Authenticate()
@@ -156,13 +192,26 @@ namespace Integration.Salesforce
                 planCampaign = SyncCampaingData(planCampaign);
                 db.SaveChanges();
             }
+            else if (EntityType.ImprovementTactic.Equals(_entityType))
+            {
+                List<string> statusList = GetStatusListAfterApproved();
+                Plan_Improvement_Campaign_Program_Tactic planImprovementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(imptactic => imptactic.ImprovementPlanTacticId == _id && statusList.Contains(imptactic.Status)).SingleOrDefault();
+                planImprovementTactic = SyncImprovementData(planImprovementTactic);
+                db.SaveChanges();
+            }
             else
             {
                 SyncInstanceData();
             }
-            if (IntegrationInstanceTacticIds.Count > 0)
+            // When isimport actual flag true then allow to get actual.
+            bool isImport = false;
+            isImport = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId.Equals(_integrationInstanceId)).IsImportActuals;
+            if (isImport)
             {
-                GetDataForTacticandUpdate();
+                if (IntegrationInstanceTacticIds.Count > 0)
+                {
+                    GetDataForTacticandUpdate();
+                }
             }
         }
 
@@ -284,6 +333,24 @@ namespace Integration.Salesforce
                                            !gameplandata.GameplanDataType.IsGet)
                     .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
                     .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+
+            _mappingImprovementTactic = dataTypeMapping.Where(gameplandata => gameplandata.GameplanDataType.TableName == "Plan_Improvement_Campaign_Program_Tactic" &&
+                                                                   !gameplandata.GameplanDataType.IsStage &&
+                                                                   !gameplandata.GameplanDataType.IsGet)
+                                            .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
+                                            .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+
+            _mappingImprovementProgram = dataTypeMapping.Where(gameplandata => gameplandata.GameplanDataType.TableName == "Plan_Improvement_Campaign_Program" &&
+                                                                  !gameplandata.GameplanDataType.IsStage &&
+                                                                  !gameplandata.GameplanDataType.IsGet)
+                                           .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
+                                           .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+
+            _mappingImprovementCampaign = dataTypeMapping.Where(gameplandata => gameplandata.GameplanDataType.TableName == "Plan_Improvement_Campaign" &&
+                                                                  !gameplandata.GameplanDataType.IsStage &&
+                                                                  !gameplandata.GameplanDataType.IsGet)
+                                           .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
+                                           .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
 
             Guid clientId = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
             _mappingVertical = db.Verticals.Where(v => v.ClientId == clientId).Select(v => new { v.VerticalId, v.Title })
@@ -410,6 +477,64 @@ namespace Integration.Salesforce
             return planTactic;
         }
 
+        private Plan_Improvement_Campaign SyncImprovementCampaingData(Plan_Improvement_Campaign planIMPCampaign)
+        {
+            if (!string.IsNullOrWhiteSpace(planIMPCampaign.IntegrationInstanceCampaignId))
+            {
+                if (planIMPCampaign.Plan.IsDeleted)
+                {
+                    // Set null value if delete true to integrationinstance..id
+                    var tacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId == planIMPCampaign.ImprovementPlanCampaignId && tactic.IntegrationInstanceTacticId != null).ToList();
+                    tacticList.ForEach(t => { t.IntegrationInstanceTacticId = Delete(t.IntegrationInstanceTacticId); });
+
+                    // Set null value if delete true to integrationinstance..id
+                    var programList = db.Plan_Improvement_Campaign_Program.Where(program => program.ImprovementPlanCampaignId == planIMPCampaign.ImprovementPlanCampaignId && program.IntegrationInstanceProgramId != null).ToList();
+                    programList.ForEach(p => { p.IntegrationInstanceProgramId = Delete(p.IntegrationInstanceProgramId); });
+
+                    // Set null value if delete true to integrationinstance..id
+                    planIMPCampaign.IntegrationInstanceCampaignId = Delete(planIMPCampaign.IntegrationInstanceCampaignId);
+                }
+            }
+            return planIMPCampaign;
+        }
+
+        private Plan_Improvement_Campaign_Program_Tactic SyncImprovementData(Plan_Improvement_Campaign_Program_Tactic planIMPTactic)
+        {
+            Mode currentMode = GetMode(planIMPTactic.IsDeleted, planIMPTactic.IsDeployedToIntegration, planIMPTactic.IntegrationInstanceTacticId, planIMPTactic.Status);
+            if (currentMode.Equals(Mode.Create))
+            {
+                Plan_Improvement_Campaign_Program planIMPProgram = planIMPTactic.Plan_Improvement_Campaign_Program;
+                _parentId = planIMPProgram.IntegrationInstanceProgramId;
+                if (string.IsNullOrWhiteSpace(_parentId))
+                {
+                    Plan_Improvement_Campaign planIMPCampaign = planIMPTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign;
+                    _parentId = planIMPCampaign.IntegrationInstanceCampaignId;
+                    if (string.IsNullOrWhiteSpace(_parentId))
+                    {
+                        _parentId = CreateImprovementCampaign(planIMPCampaign);
+                        planIMPCampaign.IntegrationInstanceCampaignId = _parentId;
+                        db.Entry(planIMPCampaign).State = EntityState.Modified;
+                    }
+
+                    _parentId = CreateImprovementProgram(planIMPProgram);
+                    planIMPProgram.IntegrationInstanceProgramId = _parentId;
+                    db.Entry(planIMPProgram).State = EntityState.Modified;
+                }
+
+                planIMPTactic.IntegrationInstanceTacticId = CreateImprovementTactic(planIMPTactic);
+            }
+            else if (currentMode.Equals(Mode.Update))
+            {
+                UpdateImprovementTactic(planIMPTactic);
+            }
+            else if (currentMode.Equals(Mode.Delete))
+            {
+                planIMPTactic.IntegrationInstanceTacticId = Delete(planIMPTactic.IntegrationInstanceTacticId);
+            }
+
+            return planIMPTactic;
+        }
+
         private void SyncInstanceData()
         {
             List<int> planIds = db.Plans.Where(p => p.Model.IntegrationInstanceId == _integrationInstanceId && p.Model.Status.Equals("Published")).Select(p => p.PlanId).ToList();
@@ -446,6 +571,28 @@ namespace Integration.Salesforce
                     for (int index = 0; index < tacticList.Count; index++)
                     {
                         tacticList[index] = SyncTacticData(tacticList[index]);
+                    }
+                    db.SaveChanges();
+                    scope.Complete();
+                }
+
+                using (var scope = new TransactionScope())
+                {
+                    List<Plan_Improvement_Campaign> campaignList = db.Plan_Improvement_Campaign.Where(campaign => planIds.Contains(campaign.ImprovePlanId)).ToList();
+                    for (int index = 0; index < campaignList.Count; index++)
+                    {
+                        campaignList[index] = SyncImprovementCampaingData(campaignList[index]);
+                    }
+                    db.SaveChanges();
+                    scope.Complete();
+                }
+
+                using (var scope = new TransactionScope())
+                {
+                    List<Plan_Improvement_Campaign_Program_Tactic> tacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId) && statusList.Contains(tactic.Status)).ToList();
+                    for (int index = 0; index < tacticList.Count; index++)
+                    {
+                        tacticList[index] = SyncImprovementData(tacticList[index]);
                     }
                     db.SaveChanges();
                     scope.Complete();
@@ -506,6 +653,27 @@ namespace Integration.Salesforce
             return tacticId;
         }
 
+        private string CreateImprovementCampaign(Plan_Improvement_Campaign planIMPCampaign)
+        {
+            Dictionary<string, object> campaign = GetImprovementCampaign(planIMPCampaign);
+            string campaignId = _client.Create(objectName, campaign);
+            return campaignId;
+        }
+
+        private string CreateImprovementProgram(Plan_Improvement_Campaign_Program planIMPProgram)
+        {
+            Dictionary<string, object> program = GetImprovementProgram(planIMPProgram, Mode.Create);
+            string programId = _client.Create(objectName, program);
+            return programId;
+        }
+
+        private string CreateImprovementTactic(Plan_Improvement_Campaign_Program_Tactic planIMPTactic)
+        {
+            Dictionary<string, object> tactic = GetImprovementTactic(planIMPTactic, Mode.Create);
+            string tacticId = _client.Create(objectName, tactic);
+            return tacticId;
+        }
+
         private bool UpdateCampaign(Plan_Campaign planCampaign)
         {
             Dictionary<string, object> campaign = GetCampaign(planCampaign);
@@ -523,6 +691,12 @@ namespace Integration.Salesforce
             Dictionary<string, object> tactic = GetTactic(planTactic, Mode.Update);
             IntegrationInstanceTacticIds.Add(Convert.ToString(planTactic.IntegrationInstanceTacticId));
             return _client.Update(objectName, planTactic.IntegrationInstanceTacticId, tactic);
+        }
+
+        private bool UpdateImprovementTactic(Plan_Improvement_Campaign_Program_Tactic planIMPTactic)
+        {
+            Dictionary<string, object> tactic = GetImprovementTactic(planIMPTactic, Mode.Update);
+            return _client.Update(objectName, planIMPTactic.IntegrationInstanceTacticId, tactic);
         }
 
         private string Delete(string recordid)
@@ -576,6 +750,35 @@ namespace Integration.Salesforce
             return tactic;
         }
 
+        private Dictionary<string, object> GetImprovementCampaign(Plan_Improvement_Campaign planIMPCampaign)
+        {
+            Dictionary<string, object> campaign = GetTargetKeyValue<Plan_Improvement_Campaign>(planIMPCampaign, _mappingImprovementCampaign);
+            return campaign;
+        }
+
+        private Dictionary<string, object> GetImprovementProgram(Plan_Improvement_Campaign_Program planIMPProgram, Mode mode)
+        {
+            Dictionary<string, object> program = GetTargetKeyValue<Plan_Improvement_Campaign_Program>(planIMPProgram, _mappingImprovementProgram);
+
+            if (mode.Equals(Mode.Create))
+            {
+                program.Add(ColumnParentId, _parentId);
+            }
+            return program;
+        }
+
+        private Dictionary<string, object> GetImprovementTactic(Plan_Improvement_Campaign_Program_Tactic planIMPTactic, Mode mode)
+        {
+            Dictionary<string, object> tactic = GetTargetKeyValue<Plan_Improvement_Campaign_Program_Tactic>(planIMPTactic, _mappingImprovementTactic);
+            if (mode.Equals(Mode.Create))
+            {
+                tactic.Add(ColumnParentId, _parentId);
+            }
+
+            return tactic;
+        }
+
+
         private Dictionary<string, object> GetTargetKeyValue<T>(object obj, Dictionary<string, string> mappingDataType)
         {
             string status = "Status";
@@ -586,6 +789,7 @@ namespace Integration.Salesforce
             string createdBy = "CreatedBy";
             string statDate = "StartDate";
             string endDate = "EndDate";
+            string effectiveDate = "EffectiveDate";
 
             Type sourceType = ((T)obj).GetType();
             PropertyInfo[] sourceProps = sourceType.GetProperties();
@@ -621,7 +825,7 @@ namespace Integration.Salesforce
                     {
                         value = _mappingUser[Guid.Parse(value)];
                     }
-                    else if (mapping.Key == statDate || mapping.Key == endDate)
+                    else if (mapping.Key == statDate || mapping.Key == endDate || mapping.Key == effectiveDate)
                     {
                         value = Convert.ToDateTime(value).ToString("yyyy-MM-ddThh:mm:ss+hh:mm");
                     }
