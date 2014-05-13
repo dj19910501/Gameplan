@@ -436,15 +436,16 @@
             $('#result').addClass('check-icon-red')
             return false;
         }
-
-        //if ($('#IsActive').val().toString() != "true") {
-        //    alert("Please test integration credentials");
-        //    return false;
-        //}
+        if (($('#hdnIsActiveIntact').val().toLowerCase().toString() == $('#IsActive').val().toLowerCase().toString()) &&
+            ($('#IsActive').val().toLowerCase().toString()) == "false") {
+                alert("Please test integration credentials");
+                return false;
+        }
     });
 
     $('#integrationForm').submit(function (e) {
-        if ($('#hdnIsActiveIntact').val() != $('#IsActive').val() && $('#IsActive').val().toString() == "false" && $('#hdnIsActiveIntact').val().toString() == "true")
+        if (($('#hdnIsActiveIntact').val().toLowerCase().toString() != $('#IsActive').val().toLowerCase().toString()) &&
+            ($('#IsActive').val().toLowerCase().toString()) == "false" && ($('#hdnIsActiveIntact').val().toLowerCase().toString() == "true"))
         {
             if (confirm($("#InActiveConfirmationMsg").val())) {
                 $('#IsActiveStatuChanged').val(true);
@@ -487,10 +488,6 @@
             $(this).removeClass("error");
         }
     });
-
-    //$('#Username').keyup(function () {
-    //    $('#isUsernameExist').html('');
-    //});
 
     $("#integrationStatus").click(function () {
         if ($(this).hasClass("icon-check-blue")) {

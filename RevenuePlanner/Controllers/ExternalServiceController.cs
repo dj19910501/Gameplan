@@ -503,7 +503,21 @@ namespace RevenuePlanner.Controllers
                             // Status changed from Active to InActive, So remove all the integration dependency with Models.
                             if (form.IsActiveStatuChanged == true && form.IsActive == false)
                             {
+                                // Remove association of Integrartion from Plan
 
+                                var objModelList = db.Models.Where(a => a.IsDeleted.Equals(false) && a.IntegrationInstanceId == form.IntegrationInstanceId).ToList();
+
+                                if (objModelList != null)
+                                {
+                                    foreach (var item in objModelList)
+                                    {
+                                        item.IntegrationInstanceId = null;
+                                        item.ModifiedDate = DateTime.Now;
+                                        item.ModifiedBy = Sessions.User.UserId;
+                                        db.Entry(item).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+                                }
                             }
 
                             if (IntegrationInstancesCount > 0 && SyncFrequenciesCount > 0)
