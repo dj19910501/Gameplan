@@ -191,17 +191,19 @@
         });
 
         $("#t_integration_status").click(function () {
-            if ($(this).hasClass("icon-check-blue")) {
-                $(this).val("Not Sync to @ExtIntService");
-                $(this).addClass("icon-check-gray");
-                $(this).removeClass("icon-check-blue");
-                $("#hdnIsDeployedToIntegration").val(false);
-            }
-            else {
-                $(this).val("Sync to @ExtIntService");
-                $(this).addClass("icon-check-blue");
-                $(this).removeClass("icon-check-gray");
-                $("#hdnIsDeployedToIntegration").val(true);
+            if (isOwner == 'True') {
+                if ($(this).hasClass("icon-check-blue")) {
+                    $(this).val("Not Sync to @ExtIntService");
+                    $(this).addClass("icon-check-gray");
+                    $(this).removeClass("icon-check-blue");
+                    $("#hdnIsDeployedToIntegration").val(false);
+                }
+                else {
+                    $(this).val("Sync to @ExtIntService");
+                    $(this).addClass("icon-check-blue");
+                    $(this).removeClass("icon-check-gray");
+                    $("#hdnIsDeployedToIntegration").val(true);
+                }
             }
         });
 

@@ -32,6 +32,8 @@ namespace RevenuePlanner.Models
         public DateTime EffectiveDate { get; set; }
         public double Cost { get; set; }
         public string Status { get; set; }
+
+        public bool IsDeployedToIntegration { get; set; }
     }
 
     public class ImprovementStage

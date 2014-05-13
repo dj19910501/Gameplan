@@ -24,6 +24,9 @@ namespace RevenuePlanner.Models
         public string Title { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
+        public bool IsDeployedToIntegration { get; set; }
+        public string IntegrationInstanceCampaignId { get; set; }
+        public Nullable<System.DateTime> LastSyncDate { get; set; }
     
         public virtual Plan Plan { get; set; }
         public virtual ICollection<Plan_Improvement_Campaign_Program> Plan_Improvement_Campaign_Program { get; set; }

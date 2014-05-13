@@ -1,6 +1,11 @@
 ﻿@model RevenuePlanner.Models.PlanImprovementTactic
 @using RevenuePlanner.Helpers
 @*<script type="text/javascript" src="~/Scripts/js/Mask.js"></script>*@
+
+@{
+    string ExtIntService = ViewBag.ExtIntService;
+}
+
 <div class="head">
     <span class="close-form source-sans-proregular">» CLOSE MENU</span>
     <div class="cf">
@@ -38,6 +43,7 @@
         <div class="content">
             @Html.HiddenFor(model => model.ImprovementPlanProgramId, new { id = "hdnPlanProgramId" })
             @Html.HiddenFor(model => model.ImprovementPlanTacticId, new { id = "hdnPlanTacticId" })
+            @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
 
             <label class="t_title">Improvement Tactic Title</label>
             @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true", maxlength = "255" })
@@ -66,6 +72,22 @@
                                     </div>
                              </div>
                 </div>
+            <div>
+                @if (ExtIntService!=string.Empty)
+            {
+                
+             if(Model.IsDeployedToIntegration)
+             {
+                 <label style="margin-top:6px;">Status</label>
+                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to @ExtIntService" maxlength="18" readonly />
+             }
+             else
+             {
+                 <label style="margin-top:6px;">Status</label>
+                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to @ExtIntService" maxlength="18" readonly />
+             }
+             }
+            </div>
         <label>Improvement</label>
 							<div class="accordion sidebar-accordion" id="Improvementaccordion">
 							</div>
@@ -112,6 +134,23 @@
             $("#slidepanel-container").empty();
         });
 
+        $("#t_integration_status").click(function () {
+            if (isOwner == 'True') {
+                if ($(this).hasClass("icon-check-blue")) {
+                    $(this).val("Not Sync to @ExtIntService");
+                    $(this).addClass("icon-check-gray");
+                    $(this).removeClass("icon-check-blue");
+                    $("#hdnIsDeployedToIntegration").val(false);
+                }
+                else {
+                    $(this).val("Sync to @ExtIntService");
+                    $(this).addClass("icon-check-blue");
+                    $(this).removeClass("icon-check-gray");
+                    $("#hdnIsDeployedToIntegration").val(true);
+                }
+            }
+           });
+
         var ValueCost = 0;
         LoadImprovementTacticStages(false);
         function LoadImprovementTacticStages(isCostUpdate) {
@@ -124,6 +163,20 @@
                     ValueCost = data.cost;
                     if (isCostUpdate) {
                         $("#txtCost").val(FormatCurrency((ValueCost).toString(), false));
+                        
+                        if (data.isDeployedToIntegration) {
+                            $("#t_integration_status").val("Sync to @ExtIntService");
+                            $("#t_integration_status").addClass("icon-check-blue");
+                            $("#t_integration_status").removeClass("icon-check-gray");
+                            $("#hdnIsDeployedToIntegration").val(true);
+                        }
+                        else {
+                            $("#t_integration_status").val("Not Sync to @ExtIntService");
+                            $("#t_integration_status").addClass("icon-check-gray");
+                            $("#t_integration_status").removeClass("icon-check-blue");
+                            $("#hdnIsDeployedToIntegration").val(false);
+                        }
+
                     }
                     LoadImprovementData();
                 }

@@ -429,10 +429,10 @@
                           //'<td   class="sm" id="' + _id + '">' + FormatCommas(_inquiries.toString(), false) + '</td>' +
                           '<td   class="sm" id="' + _id + '">' + FormatCommas(_mqls.toString(), false) + '</td>' +
                           '<td  class="border-r sm" id="' + _id + '">$' + FormatCommas(_revenue.toString(), false) + '</td>' +
-                          '<td class="border-r"><span class="circle-check-icon circle-check-icon-blue"  id = "' + "rej" + _id + '"></span></td>';
+                          '<td class="border-r"><span class="circle-check-icon-gray circle-check-icon-blue"  id = "' + "rej" + _id + '"></span></td>';
 
                 if ($("#IsModelIntegrated").val() == 'True') {
-                    $html += '<td><span class="circle-check-icon-integration  ' + (_IsDeployedToIntegration == true ? "circle-check-icon-integration-blue" : "") + '"  id = "' + "int" + _id + '"></span></td>';
+                    $html += '<td><span class="circle-check-icon-gray-integration  ' + (_IsDeployedToIntegration == true ? "circle-check-icon-integration-blue" : "") + '"  id = "' + "int" + _id + '"></span></td>';
                 }
 
                 $html += '</tr>';
@@ -444,10 +444,10 @@
                             //'<td  id="' + _id + '" class="sm">' + FormatCommas(_inquiries.toString(), false) + '</td>' +
                             '<td  id="' + _id + '" class="sm">' + FormatCommas(_mqls.toString(), false) + '</td>' +
                             '<td id="' + _id + '" class="border-r sm">$' + FormatCommas(_revenue.toString(), false) + '</td>' +
-                            '<td class="border-r"><span class="circle-check-icon"  id = "' + "rej" + _id + '"></span></td>';
+                            '<td class="border-r"><span class="circle-check-icon-gray"  id = "' + "rej" + _id + '"></span></td>';
 
                 if ($("#IsModelIntegrated").val() == 'True') {
-                    $html += '<td><span class="circle-check-icon-integration  ' + (_IsDeployedToIntegration == true ? "circle-check-icon-integration-blue" : "") + '"  id = "' + "int" + _id + '"></span></td>';
+                    $html += '<td><span class="circle-check-icon-gray-integration  ' + (_IsDeployedToIntegration == true ? "circle-check-icon-integration-blue" : "") + '"  id = "' + "int" + _id + '"></span></td>';
                 }
               
                 $html += '</tr>';
@@ -475,7 +475,7 @@
             }
         });
 
-        $(document).on('click', '#table_tactics tbody tr td span.circle-check-icon', function (e) {
+        $(document).on('click', '#table_tactics tbody tr td span.circle-check-icon-gray', function (e) {
             if ($("#latestModelId").val() == lastModelId) {
                 if ($(this).hasClass('circle-check-icon-blue')) {
                     $(this).removeClass('circle-check-icon-blue');
@@ -491,7 +491,7 @@
             }
         });
 
-        $(document).on('click', '#table_tactics tbody tr td span.circle-check-icon-integration', function (e) {
+        $(document).on('click', '#table_tactics tbody tr td span.circle-check-icon-gray-integration', function (e) {
             if ($("#latestModelId").val() == lastModelId) {
 
                 if ($(this).parent().prev().find("span").hasClass("circle-check-icon-blue")) {
@@ -574,7 +574,7 @@
             var ids = [];
             var rejid = [];
             var ModelId = $("#latestModelId").val();
-            $('#table_tactics tbody tr td span.circle-check-icon.circle-check-icon-blue').each(function () {
+            $('#table_tactics tbody tr td span.circle-check-icon-gray.circle-check-icon-blue').each(function () {
 
                 if ($(this).parent().next().find("span").hasClass("circle-check-icon-integration-blue")) {
                     ids.push(this.id + '_true');
@@ -585,7 +585,7 @@
 
             });
 
-            $('#table_tactics tbody tr td span.circle-check-icon').each(function () {
+            $('#table_tactics tbody tr td span.circle-check-icon-gray').each(function () {
 
                 if ($(this).parent().next().find("span").hasClass("circle-check-icon-integration-blue")) {
                     rejid.push(this.id + '_true');

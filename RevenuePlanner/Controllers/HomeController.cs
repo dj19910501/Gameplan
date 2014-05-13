@@ -2287,10 +2287,12 @@ namespace RevenuePlanner.Controllers
 
                     imodel.CampaignTitle = objPlan_Campaign.Title;
                     imodel.Status = objPlan_Campaign.Status;
-                    imodel.VerticalId = objPlan_Campaign.VerticalId;
+                    if (objPlan_Campaign.VerticalId != null)
+                        imodel.VerticalId = objPlan_Campaign.VerticalId;
                     imodel.ColorCode = Campaign_InspectPopup_Flag_Color;
                     imodel.Description = objPlan_Campaign.Description;
-                    imodel.AudienceId = objPlan_Campaign.AudienceId;
+                    if (objPlan_Campaign.AudienceId != null)
+                        imodel.AudienceId = objPlan_Campaign.AudienceId;
                     imodel.PlanCampaignId = objPlan_Campaign.PlanCampaignId;
                     imodel.OwnerId = objPlan_Campaign.CreatedBy;
                     imodel.BusinessUnitId = objPlan_Campaign.Plan.Model.BusinessUnitId;
@@ -2299,8 +2301,10 @@ namespace RevenuePlanner.Controllers
                     imodel.EndDate = objPlan_Campaign.EndDate;
                     imodel.INQs = objPlan_Campaign.INQs;
 
-                    imodel.VerticalTitle = objPlan_Campaign.Vertical.Title;
-                    imodel.AudiencTitle = objPlan_Campaign.Audience.Title;
+                    if (objPlan_Campaign.Vertical != null)
+                        imodel.VerticalTitle = objPlan_Campaign.Vertical.Title;
+                    if (objPlan_Campaign.Audience != null)
+                        imodel.AudiencTitle = objPlan_Campaign.Audience.Title;
 
                     imodel.IsDeployedToIntegration = objPlan_Campaign.IsDeployedToIntegration;
                     imodel.IntegrationType = GetIntegrationTypeTitleByModel(objPlan_Campaign.Plan.Model);

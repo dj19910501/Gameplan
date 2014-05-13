@@ -2953,7 +2953,7 @@ namespace RevenuePlanner.Controllers
             /*changed by Nirav Shah on 2 APR 2013*/
             string StageType = Enums.StageType.CR.ToString();
             string Marketing = Convert.ToString(Enums.Funnel.Marketing).ToLower();
-            ViewBag.Stages = db.Model_Funnel_Stage.Where(s => s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true && s.StageType == StageType && s.Model_Funnel.Funnel.Title == Marketing).Select(n => new { n.StageId, n.Stage.Code }).Distinct().ToList();
+            ViewBag.Stages = db.Model_Funnel_Stage.Where(s => s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true && s.StageType == StageType && s.Model_Funnel.Funnel.Title == Marketing).Select(n => new { n.StageId, n.Stage.Title }).Distinct().ToList();
             ViewBag.IsCreated = true;
             Tactic_TypeModel tm = new Tactic_TypeModel();
             /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/

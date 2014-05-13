@@ -3149,10 +3149,27 @@ namespace RevenuePlanner.Controllers
                               orderby t.Title
                               select t;
             ViewBag.IsCreated = true;
+
+
+            // added by Dharmraj for ticket #470 MAP/CRM Integration - Improvement Tactic Creation
+            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
+            if (objPlan.Model.IntegrationInstanceId != null)
+            {
+                int integrationInstanceId = Convert.ToInt32(objPlan.Model.IntegrationInstanceId);
+                string ExternalIntegrationService = db.IntegrationInstances.SingleOrDefault(varI => varI.IntegrationInstanceId == integrationInstanceId).IntegrationType.Title;
+                ViewBag.ExtIntService = ExternalIntegrationService;
+            }
+            else
+            {
+                ViewBag.ExtIntService = string.Empty;
+            }
+
             PlanImprovementTactic pitm = new PlanImprovementTactic();
             pitm.ImprovementPlanProgramId = id;
             // Set today date as default for effective date.
             pitm.EffectiveDate = DateTime.Now;
+            pitm.IsDeployedToIntegration = false;
+
             ViewBag.IsOwner = true;
             ViewBag.RedirectType = false;
             ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
@@ -3183,6 +3200,20 @@ namespace RevenuePlanner.Controllers
                 ViewBag.RedirectType = true;
 
             }
+
+            // added by Dharmraj for ticket #470 MAP/CRM Integration - Improvement Tactic Creation
+            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
+            if (objPlan.Model.IntegrationInstanceId != null)
+            {
+                int integrationInstanceId = Convert.ToInt32(objPlan.Model.IntegrationInstanceId);
+                string ExternalIntegrationService = db.IntegrationInstances.SingleOrDefault(varI => varI.IntegrationInstanceId == integrationInstanceId).IntegrationType.Title;
+                ViewBag.ExtIntService = ExternalIntegrationService;
+            }
+            else
+            {
+                ViewBag.ExtIntService = string.Empty;
+            }
+
             Plan_Improvement_Campaign_Program_Tactic pcpt = db.Plan_Improvement_Campaign_Program_Tactic.Where(pcptobj => pcptobj.ImprovementPlanTacticId.Equals(id)).SingleOrDefault();
             if (pcpt == null)
             {
@@ -3197,6 +3228,8 @@ namespace RevenuePlanner.Controllers
             pcptm.Description = pcpt.Description;
             pcptm.EffectiveDate = pcpt.EffectiveDate;
             pcptm.Cost = pcpt.Cost;
+            pcptm.IsDeployedToIntegration = pcpt.IsDeployedToIntegration;
+
             if (Sessions.User.UserId == pcpt.CreatedBy)
             {
                 ViewBag.IsOwner = true;
@@ -3255,8 +3288,40 @@ namespace RevenuePlanner.Controllers
                                                         select m.BusinessUnitId).FirstOrDefault();
                                 picpt.CreatedBy = Sessions.User.UserId;
                                 picpt.CreatedDate = DateTime.Now;
+                                picpt.IsDeployedToIntegration = form.IsDeployedToIntegration;
+
                                 db.Entry(picpt).State = EntityState.Added;
                                 int result = db.SaveChanges();
+
+                                // Set isDeployedToIntegration in improvement program and improvement campaign
+                                var objIProgram = db.Plan_Improvement_Campaign_Program.SingleOrDefault(varP => varP.ImprovementPlanProgramId == picpt.ImprovementPlanProgramId);
+                                var objICampaign = db.Plan_Improvement_Campaign.SingleOrDefault(varC => varC.ImprovementPlanCampaignId == objIProgram.ImprovementPlanCampaignId);
+                                if (form.IsDeployedToIntegration)
+                                {
+                                    objIProgram.IsDeployedToIntegration = true;
+                                    db.Entry(objIProgram).State = EntityState.Modified;
+                                    db.SaveChanges();
+
+                                    objICampaign.IsDeployedToIntegration = true;
+                                    db.Entry(objICampaign).State = EntityState.Modified;
+                                    db.SaveChanges();
+                                }
+                                else
+                                {
+                                    bool flag = false;
+                                    flag = objIProgram.Plan_Improvement_Campaign_Program_Tactic.Any(varT => varT.IsDeployedToIntegration == true && varT.IsDeleted == false);
+                                    if (!flag)
+                                    {
+                                        objIProgram.IsDeployedToIntegration = false;
+                                        db.Entry(objIProgram).State = EntityState.Modified;
+                                        db.SaveChanges();
+
+                                        objICampaign.IsDeployedToIntegration = false;
+                                        db.Entry(objICampaign).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+                                }
+
                                 //// Insert change log entry.
                                 result = Common.InsertChangeLog(Sessions.PlanId, null, picpt.ImprovementPlanTacticId, picpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                                 if (result >= 1)
@@ -3318,6 +3383,7 @@ namespace RevenuePlanner.Controllers
 
                                 pcpobj.ModifiedBy = Sessions.User.UserId;
                                 pcpobj.ModifiedDate = DateTime.Now;
+                                pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
                                 db.Entry(pcpobj).State = EntityState.Modified;
                                 int result;
                                 if (Common.CheckAfterApprovedStatus(pcpobj.Status))
@@ -3330,6 +3396,37 @@ namespace RevenuePlanner.Controllers
                                     Common.mailSendForTactic(pcpobj.ImprovementPlanTacticId, pcpobj.Status, pcpobj.Title, section: Convert.ToString(Enums.Section.ImprovementTactic).ToLower());
                                 }
                                 result = db.SaveChanges();
+
+
+                                // Set isDeployedToIntegration in improvement program and improvement campaign
+                                var objIProgram = db.Plan_Improvement_Campaign_Program.SingleOrDefault(varP => varP.ImprovementPlanProgramId == pcpobj.ImprovementPlanProgramId);
+                                var objICampaign = db.Plan_Improvement_Campaign.SingleOrDefault(varC => varC.ImprovementPlanCampaignId == objIProgram.ImprovementPlanCampaignId);
+                                if (form.IsDeployedToIntegration)
+                                {
+                                    objIProgram.IsDeployedToIntegration = true;
+                                    db.Entry(objIProgram).State = EntityState.Modified;
+                                    db.SaveChanges();
+
+                                    objICampaign.IsDeployedToIntegration = true;
+                                    db.Entry(objICampaign).State = EntityState.Modified;
+                                    db.SaveChanges();
+                                }
+                                else
+                                {
+                                    bool flag = false;
+                                    flag = objIProgram.Plan_Improvement_Campaign_Program_Tactic.Any(varT => varT.IsDeployedToIntegration == true && varT.IsDeleted == false);
+                                    if (!flag)
+                                    {
+                                        objIProgram.IsDeployedToIntegration = false;
+                                        db.Entry(objIProgram).State = EntityState.Modified;
+                                        db.SaveChanges();
+
+                                        objICampaign.IsDeployedToIntegration = false;
+                                        db.Entry(objICampaign).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+                                }
+
                                 if (result >= 1)
                                 {
                                     scope.Complete();
@@ -3412,7 +3509,10 @@ namespace RevenuePlanner.Controllers
             int ImprovementPlanTacticId = form.ImprovementPlanTacticId;
             int ImprovementTacticTypeId = form.ImprovementTacticTypeId;
             DateTime EffectiveDate = form.EffectiveDate;
-            double Cost = db.ImprovementTacticTypes.Where(itt => itt.ImprovementTacticTypeId == ImprovementTacticTypeId).Select(iit => iit.Cost).SingleOrDefault();
+
+            var objImprovementTacticType = db.ImprovementTacticTypes.Where(itt => itt.ImprovementTacticTypeId == ImprovementTacticTypeId).SingleOrDefault();
+            double Cost = objImprovementTacticType == null ? 0 : objImprovementTacticType.Cost;
+            bool isDeployedToIntegration = objImprovementTacticType == null ? false : objImprovementTacticType.IsDeployedToIntegration;
 
             // Call function for calculate improvement for each Stage.
             List<ImprovementStage> ImprovementMetric = GetImprovementStages(ImprovementPlanTacticId, ImprovementTacticTypeId, EffectiveDate);
@@ -3428,7 +3528,7 @@ namespace RevenuePlanner.Controllers
                 PlanWithTactic = p.PlanWithTactic,
             }).Select(p => p).Distinct().OrderBy(p => p.MetricId);
 
-            return Json(new { data = tacticobj, cost = Cost }, JsonRequestBehavior.AllowGet);
+            return Json(new { data = tacticobj, cost = Cost, isDeployedToIntegration = isDeployedToIntegration }, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>

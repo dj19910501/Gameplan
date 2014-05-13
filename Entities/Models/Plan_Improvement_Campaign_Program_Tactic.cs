@@ -34,6 +34,9 @@ namespace RevenuePlanner.Models
         public System.Guid CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
+        public bool IsDeployedToIntegration { get; set; }
+        public string IntegrationInstanceTacticId { get; set; }
+        public Nullable<System.DateTime> LastSyncDate { get; set; }
     
         public virtual BusinessUnit BusinessUnit { get; set; }
         public virtual ImprovementTacticType ImprovementTacticType { get; set; }

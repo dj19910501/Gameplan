@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="MRPModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="MRPModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityContainer Name="MRPModelStoreContainer">
           <EntitySet Name="Audience" EntityType="MRPModel.Store.Audience" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="BestInClass" EntityType="MRPModel.Store.BestInClass" store:Type="Tables" Schema="dbo" />
@@ -846,6 +846,9 @@
           <Property Name="Title" Type="nvarchar" Nullable="false" MaxLength="255" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="IsDeployedToIntegration" Type="bit" Nullable="false" />
+          <Property Name="IntegrationInstanceCampaignId" Type="nvarchar" MaxLength="50" />
+          <Property Name="LastSyncDate" Type="datetime" />
         </EntityType>
         <EntityType Name="Plan_Improvement_Campaign_Program">
           <Key>
@@ -856,6 +859,9 @@
           <Property Name="Title" Type="nvarchar" Nullable="false" MaxLength="255" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="IsDeployedToIntegration" Type="bit" Nullable="false" />
+          <Property Name="IntegrationInstanceProgramId" Type="nvarchar" MaxLength="50" />
+          <Property Name="LastSyncDate" Type="datetime" />
         </EntityType>
         <EntityType Name="Plan_Improvement_Campaign_Program_Tactic">
           <Key>
@@ -875,6 +881,9 @@
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
+          <Property Name="IsDeployedToIntegration" Type="bit" Nullable="false" />
+          <Property Name="IntegrationInstanceTacticId" Type="nvarchar" MaxLength="50" />
+          <Property Name="LastSyncDate" Type="datetime" />
         </EntityType>
         <EntityType Name="Plan_Improvement_Campaign_Program_Tactic_Comment">
           <Key>
@@ -1782,8 +1791,7 @@
           <Parameter Name="CreatedBy" Type="uniqueidentifier" Mode="In" />
           <Parameter Name="ReturnValue" Type="int" Mode="InOut" />
         </Function>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="MRPModel" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -1821,9 +1829,6 @@
           <EntitySet Name="Plan_Campaign_Program_Tactic" EntityType="MRPModel.Plan_Campaign_Program_Tactic" />
           <EntitySet Name="Plan_Campaign_Program_Tactic_Actual" EntityType="MRPModel.Plan_Campaign_Program_Tactic_Actual" />
           <EntitySet Name="Plan_Campaign_Program_Tactic_Comment" EntityType="MRPModel.Plan_Campaign_Program_Tactic_Comment" />
-          <EntitySet Name="Plan_Improvement_Campaign" EntityType="MRPModel.Plan_Improvement_Campaign" />
-          <EntitySet Name="Plan_Improvement_Campaign_Program" EntityType="MRPModel.Plan_Improvement_Campaign_Program" />
-          <EntitySet Name="Plan_Improvement_Campaign_Program_Tactic" EntityType="MRPModel.Plan_Improvement_Campaign_Program_Tactic" />
           <EntitySet Name="Plan_Improvement_Campaign_Program_Tactic_Comment" EntityType="MRPModel.Plan_Improvement_Campaign_Program_Tactic_Comment" />
           <EntitySet Name="Plan_Improvement_Campaign_Program_Tactic_Share" EntityType="MRPModel.Plan_Improvement_Campaign_Program_Tactic_Share" />
           <EntitySet Name="Plan_Team" EntityType="MRPModel.Plan_Team" />
@@ -1858,10 +1863,6 @@
           <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_BusinessUnit" Association="MRPModel.FK_Plan_Campaign_Program_Tactic_BusinessUnit">
             <End Role="BusinessUnit" EntitySet="BusinessUnits" />
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Plan_Improvement_Campaign_Program_Tactic_BusinessUnit" Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_BusinessUnit">
-            <End Role="BusinessUnit" EntitySet="BusinessUnits" />
-            <End Role="Plan_Improvement_Campaign_Program_Tactic" EntitySet="Plan_Improvement_Campaign_Program_Tactic" />
           </AssociationSet>
           <AssociationSet Name="FK_Funnel_Field_Field" Association="MRPModel.FK_Funnel_Field_Field">
             <End Role="Field" EntitySet="Fields" />
@@ -1906,10 +1907,6 @@
           <AssociationSet Name="FK_ImprovementTacticType_Touches_ImprovementTacticType" Association="MRPModel.FK_ImprovementTacticType_Touches_ImprovementTacticType">
             <End Role="ImprovementTacticType" EntitySet="ImprovementTacticTypes" />
             <End Role="ImprovementTacticType_Touches" EntitySet="ImprovementTacticType_Touches" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType" Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType">
-            <End Role="ImprovementTacticType" EntitySet="ImprovementTacticTypes" />
-            <End Role="Plan_Improvement_Campaign_Program_Tactic" EntitySet="Plan_Improvement_Campaign_Program_Tactic" />
           </AssociationSet>
           <AssociationSet Name="FK_ImprovementTacticType_Metric_Metric" Association="MRPModel.FK_ImprovementTacticType_Metric_Metric">
             <End Role="Metric" EntitySet="Metrics" />
@@ -1999,10 +1996,6 @@
             <End Role="Plan" EntitySet="Plans" />
             <End Role="Plan_Team" EntitySet="Plan_Team" />
           </AssociationSet>
-          <AssociationSet Name="FK_Plan_Improvement_Campaign_Plan" Association="MRPModel.FK_Plan_Improvement_Campaign_Plan">
-            <End Role="Plan" EntitySet="Plans" />
-            <End Role="Plan_Improvement_Campaign" EntitySet="Plan_Improvement_Campaign" />
-          </AssociationSet>
           <AssociationSet Name="FK__Plan_Camp__PlanC__43A1090D" Association="MRPModel.FK__Plan_Camp__PlanC__43A1090D">
             <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
             <End Role="Plan_Campaign_Program_Tactic_Comment" EntitySet="Plan_Campaign_Program_Tactic_Comment" />
@@ -2059,22 +2052,6 @@
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
           </AssociationSet>
-          <AssociationSet Name="FK_Plan_Improvement_Campaign_Program_Plan_Improvement_Campaign" Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Plan_Improvement_Campaign">
-            <End Role="Plan_Improvement_Campaign" EntitySet="Plan_Improvement_Campaign" />
-            <End Role="Plan_Improvement_Campaign_Program" EntitySet="Plan_Improvement_Campaign_Program" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Plan_Improvement_Campaign_Program_Tactic_Plan_Improvement_Campaign_Program" Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Plan_Improvement_Campaign_Program">
-            <End Role="Plan_Improvement_Campaign_Program" EntitySet="Plan_Improvement_Campaign_Program" />
-            <End Role="Plan_Improvement_Campaign_Program_Tactic" EntitySet="Plan_Improvement_Campaign_Program_Tactic" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Plan_Improvement_Campaign_Program_Tactic_Comment_Plan_Improvement_Campaign_Program_Tactic" Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Comment_Plan_Improvement_Campaign_Program_Tactic">
-            <End Role="Plan_Improvement_Campaign_Program_Tactic" EntitySet="Plan_Improvement_Campaign_Program_Tactic" />
-            <End Role="Plan_Improvement_Campaign_Program_Tactic_Comment" EntitySet="Plan_Improvement_Campaign_Program_Tactic_Comment" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Plan_Improvement_Campaign_Program_Tactic_Share_Plan_Improvement_Campaign_Program_Tactic" Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Share_Plan_Improvement_Campaign_Program_Tactic">
-            <End Role="Plan_Improvement_Campaign_Program_Tactic" EntitySet="Plan_Improvement_Campaign_Program_Tactic" />
-            <End Role="Plan_Improvement_Campaign_Program_Tactic_Share" EntitySet="Plan_Improvement_Campaign_Program_Tactic_Share" />
-          </AssociationSet>
           <AssociationSet Name="fk_TacticType_Stage" Association="MRPModel.fk_TacticType_Stage">
             <End Role="Stage" EntitySet="Stages" />
             <End Role="TacticType" EntitySet="TacticTypes" />
@@ -2110,7 +2087,42 @@
             <Parameter Name="CreatedBy" Mode="In" Type="Guid" />
             <Parameter Name="ReturnValue" Mode="InOut" Type="Int32" />
           </FunctionImport>
-        </EntityContainer>
+          <AssociationSet Name="FK_Model_IntegrationInstance" Association="MRPModel.FK_Model_IntegrationInstance">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
+            <End Role="Model" EntitySet="Models" />
+          </AssociationSet>
+          <EntitySet Name="Plan_Improvement_Campaign" EntityType="MRPModel.Plan_Improvement_Campaign" />
+          <EntitySet Name="Plan_Improvement_Campaign_Program" EntityType="MRPModel.Plan_Improvement_Campaign_Program" />
+          <EntitySet Name="Plan_Improvement_Campaign_Program_Tactic" EntityType="MRPModel.Plan_Improvement_Campaign_Program_Tactic" />
+          <AssociationSet Name="FK_Plan_Improvement_Campaign_Program_Tactic_BusinessUnit" Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_BusinessUnit">
+            <End Role="BusinessUnit" EntitySet="BusinessUnits" />
+            <End Role="Plan_Improvement_Campaign_Program_Tactic" EntitySet="Plan_Improvement_Campaign_Program_Tactic" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType" Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType">
+            <End Role="ImprovementTacticType" EntitySet="ImprovementTacticTypes" />
+            <End Role="Plan_Improvement_Campaign_Program_Tactic" EntitySet="Plan_Improvement_Campaign_Program_Tactic" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Improvement_Campaign_Plan" Association="MRPModel.FK_Plan_Improvement_Campaign_Plan">
+            <End Role="Plan" EntitySet="Plans" />
+            <End Role="Plan_Improvement_Campaign" EntitySet="Plan_Improvement_Campaign" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Improvement_Campaign_Program_Plan_Improvement_Campaign" Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Plan_Improvement_Campaign">
+            <End Role="Plan_Improvement_Campaign" EntitySet="Plan_Improvement_Campaign" />
+            <End Role="Plan_Improvement_Campaign_Program" EntitySet="Plan_Improvement_Campaign_Program" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Improvement_Campaign_Program_Tactic_Plan_Improvement_Campaign_Program" Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Plan_Improvement_Campaign_Program">
+            <End Role="Plan_Improvement_Campaign_Program" EntitySet="Plan_Improvement_Campaign_Program" />
+            <End Role="Plan_Improvement_Campaign_Program_Tactic" EntitySet="Plan_Improvement_Campaign_Program_Tactic" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Improvement_Campaign_Program_Tactic_Comment_Plan_Improvement_Campaign_Program_Tactic" Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Comment_Plan_Improvement_Campaign_Program_Tactic">
+            <End Role="Plan_Improvement_Campaign_Program_Tactic" EntitySet="Plan_Improvement_Campaign_Program_Tactic" />
+            <End Role="Plan_Improvement_Campaign_Program_Tactic_Comment" EntitySet="Plan_Improvement_Campaign_Program_Tactic_Comment" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Improvement_Campaign_Program_Tactic_Share_Plan_Improvement_Campaign_Program_Tactic" Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Share_Plan_Improvement_Campaign_Program_Tactic">
+            <End Role="Plan_Improvement_Campaign_Program_Tactic" EntitySet="Plan_Improvement_Campaign_Program_Tactic" />
+            <End Role="Plan_Improvement_Campaign_Program_Tactic_Share" EntitySet="Plan_Improvement_Campaign_Program_Tactic_Share" />
+          </AssociationSet>
+          </EntityContainer>
         <EntityType Name="Audience">
           <Key>
             <PropertyRef Name="AudienceId" />
@@ -2321,6 +2333,7 @@
           <NavigationProperty Name="IntegrationInstanceDataTypeMappings" Relationship="MRPModel.FK_IntegrationInstanceDataTypeMapping_IntegrationInstance" FromRole="IntegrationInstance" ToRole="IntegrationInstanceDataTypeMapping" />
           <NavigationProperty Name="IntegrationInstanceLogs" Relationship="MRPModel.FK_IntegrationInstanceLog_IntegrationInstance" FromRole="IntegrationInstance" ToRole="IntegrationInstanceLog" />
           <NavigationProperty Name="SyncFrequency" Relationship="MRPModel.FK_SyncFrequency_IntegrationInstance" FromRole="IntegrationInstance" ToRole="SyncFrequency" />
+          <NavigationProperty Name="Models" Relationship="MRPModel.FK_Model_IntegrationInstance" FromRole="IntegrationInstance" ToRole="Model" />
         </EntityType>
         <EntityType Name="IntegrationInstance_Attribute">
           <Key>
@@ -2436,6 +2449,7 @@
           <NavigationProperty Name="Model2" Relationship="MRPModel.FK_Model_Model" FromRole="Model1" ToRole="Model" />
           <NavigationProperty Name="Plans" Relationship="MRPModel.FK_Plan_Plan" FromRole="Model" ToRole="Plan" />
           <NavigationProperty Name="TacticTypes" Relationship="MRPModel.fk_TacticType_Model" FromRole="Model" ToRole="TacticType" />
+          <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_Model_IntegrationInstance" FromRole="Model" ToRole="IntegrationInstance" />
         </EntityType>
         <EntityType Name="Model_Audience_Event">
           <Key>
@@ -2747,54 +2761,6 @@
           <NavigationProperty Name="Plan_Campaign_Program" Relationship="MRPModel.FK__Plan_Camp__PlanP__42ACE4D4" FromRole="Plan_Campaign_Program_Tactic_Comment" ToRole="Plan_Campaign_Program" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Comment_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic_Comment" ToRole="Plan_Campaign_Program_Tactic" />
         </EntityType>
-        <EntityType Name="Plan_Improvement_Campaign">
-          <Key>
-            <PropertyRef Name="ImprovementPlanCampaignId" />
-          </Key>
-          <Property Name="ImprovementPlanCampaignId" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
-          <Property Name="ImprovePlanId" Type="Int32" Nullable="false" />
-          <Property Name="Title" Type="String" Nullable="false" MaxLength="255" Unicode="true" FixedLength="false" />
-          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="CreatedBy" Type="Guid" Nullable="false" />
-          <NavigationProperty Name="Plan" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Plan" FromRole="Plan_Improvement_Campaign" ToRole="Plan" />
-          <NavigationProperty Name="Plan_Improvement_Campaign_Program" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Plan_Improvement_Campaign" FromRole="Plan_Improvement_Campaign" ToRole="Plan_Improvement_Campaign_Program" />
-        </EntityType>
-        <EntityType Name="Plan_Improvement_Campaign_Program">
-          <Key>
-            <PropertyRef Name="ImprovementPlanProgramId" />
-          </Key>
-          <Property Name="ImprovementPlanProgramId" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
-          <Property Name="ImprovementPlanCampaignId" Type="Int32" Nullable="false" />
-          <Property Name="Title" Type="String" Nullable="false" MaxLength="255" Unicode="true" FixedLength="false" />
-          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="CreatedBy" Type="Guid" Nullable="false" />
-          <NavigationProperty Name="Plan_Improvement_Campaign" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Plan_Improvement_Campaign" FromRole="Plan_Improvement_Campaign_Program" ToRole="Plan_Improvement_Campaign" />
-          <NavigationProperty Name="Plan_Improvement_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Plan_Improvement_Campaign_Program" FromRole="Plan_Improvement_Campaign_Program" ToRole="Plan_Improvement_Campaign_Program_Tactic" />
-        </EntityType>
-        <EntityType Name="Plan_Improvement_Campaign_Program_Tactic">
-          <Key>
-            <PropertyRef Name="ImprovementPlanTacticId" />
-          </Key>
-          <Property Name="ImprovementPlanTacticId" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
-          <Property Name="ImprovementPlanProgramId" Type="Int32" Nullable="false" />
-          <Property Name="ImprovementTacticTypeId" Type="Int32" Nullable="false" />
-          <Property Name="Title" Type="String" Nullable="false" MaxLength="255" Unicode="false" FixedLength="false" />
-          <Property Name="Description" Type="String" MaxLength="4000" Unicode="false" FixedLength="false" />
-          <Property Name="BusinessUnitId" Type="Guid" Nullable="false" />
-          <Property Name="EffectiveDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Cost" Type="Double" Nullable="false" />
-          <Property Name="Status" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
-          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
-          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="CreatedBy" Type="Guid" Nullable="false" />
-          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
-          <Property Name="ModifiedBy" Type="Guid" />
-          <NavigationProperty Name="BusinessUnit" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_BusinessUnit" FromRole="Plan_Improvement_Campaign_Program_Tactic" ToRole="BusinessUnit" />
-          <NavigationProperty Name="ImprovementTacticType" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType" FromRole="Plan_Improvement_Campaign_Program_Tactic" ToRole="ImprovementTacticType" />
-          <NavigationProperty Name="Plan_Improvement_Campaign_Program" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Plan_Improvement_Campaign_Program" FromRole="Plan_Improvement_Campaign_Program_Tactic" ToRole="Plan_Improvement_Campaign_Program" />
-          <NavigationProperty Name="Plan_Improvement_Campaign_Program_Tactic_Comment" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Comment_Plan_Improvement_Campaign_Program_Tactic" FromRole="Plan_Improvement_Campaign_Program_Tactic" ToRole="Plan_Improvement_Campaign_Program_Tactic_Comment" />
-          <NavigationProperty Name="Plan_Improvement_Campaign_Program_Tactic_Share" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Share_Plan_Improvement_Campaign_Program_Tactic" FromRole="Plan_Improvement_Campaign_Program_Tactic" ToRole="Plan_Improvement_Campaign_Program_Tactic_Share" />
-        </EntityType>
         <EntityType Name="Plan_Improvement_Campaign_Program_Tactic_Comment">
           <Key>
             <PropertyRef Name="ImprovementPlanTacticCommentId" />
@@ -3026,18 +2992,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Plan_Improvement_Campaign_Program_Tactic_BusinessUnit">
-          <End Role="BusinessUnit" Type="MRPModel.BusinessUnit" Multiplicity="1" />
-          <End Role="Plan_Improvement_Campaign_Program_Tactic" Type="MRPModel.Plan_Improvement_Campaign_Program_Tactic" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="BusinessUnit">
-              <PropertyRef Name="BusinessUnitId" />
-            </Principal>
-            <Dependent Role="Plan_Improvement_Campaign_Program_Tactic">
-              <PropertyRef Name="BusinessUnitId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Funnel_Field_Field">
           <End Role="Field" Type="MRPModel.Field" Multiplicity="1" />
           <End Role="Funnel_Field" Type="MRPModel.Funnel_Field" Multiplicity="*" />
@@ -3166,18 +3120,6 @@
               <PropertyRef Name="ImprovementTacticTypeId" />
             </Principal>
             <Dependent Role="ImprovementTacticType_Touches">
-              <PropertyRef Name="ImprovementTacticTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType">
-          <End Role="ImprovementTacticType" Type="MRPModel.ImprovementTacticType" Multiplicity="1" />
-          <End Role="Plan_Improvement_Campaign_Program_Tactic" Type="MRPModel.Plan_Improvement_Campaign_Program_Tactic" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ImprovementTacticType">
-              <PropertyRef Name="ImprovementTacticTypeId" />
-            </Principal>
-            <Dependent Role="Plan_Improvement_Campaign_Program_Tactic">
               <PropertyRef Name="ImprovementTacticTypeId" />
             </Dependent>
           </ReferentialConstraint>
@@ -3446,18 +3388,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Plan_Improvement_Campaign_Plan">
-          <End Role="Plan" Type="MRPModel.Plan" Multiplicity="1" />
-          <End Role="Plan_Improvement_Campaign" Type="MRPModel.Plan_Improvement_Campaign" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Plan">
-              <PropertyRef Name="PlanId" />
-            </Principal>
-            <Dependent Role="Plan_Improvement_Campaign">
-              <PropertyRef Name="ImprovePlanId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK__Plan_Camp__PlanC__43A1090D">
           <End Role="Plan_Campaign" Type="MRPModel.Plan_Campaign" Multiplicity="0..1" />
           <End Role="Plan_Campaign_Program_Tactic_Comment" Type="MRPModel.Plan_Campaign_Program_Tactic_Comment" Multiplicity="*" />
@@ -3626,54 +3556,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Plan_Improvement_Campaign_Program_Plan_Improvement_Campaign">
-          <End Role="Plan_Improvement_Campaign" Type="MRPModel.Plan_Improvement_Campaign" Multiplicity="1" />
-          <End Role="Plan_Improvement_Campaign_Program" Type="MRPModel.Plan_Improvement_Campaign_Program" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Plan_Improvement_Campaign">
-              <PropertyRef Name="ImprovementPlanCampaignId" />
-            </Principal>
-            <Dependent Role="Plan_Improvement_Campaign_Program">
-              <PropertyRef Name="ImprovementPlanCampaignId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Plan_Improvement_Campaign_Program_Tactic_Plan_Improvement_Campaign_Program">
-          <End Role="Plan_Improvement_Campaign_Program" Type="MRPModel.Plan_Improvement_Campaign_Program" Multiplicity="1" />
-          <End Role="Plan_Improvement_Campaign_Program_Tactic" Type="MRPModel.Plan_Improvement_Campaign_Program_Tactic" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Plan_Improvement_Campaign_Program">
-              <PropertyRef Name="ImprovementPlanProgramId" />
-            </Principal>
-            <Dependent Role="Plan_Improvement_Campaign_Program_Tactic">
-              <PropertyRef Name="ImprovementPlanProgramId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Plan_Improvement_Campaign_Program_Tactic_Comment_Plan_Improvement_Campaign_Program_Tactic">
-          <End Role="Plan_Improvement_Campaign_Program_Tactic" Type="MRPModel.Plan_Improvement_Campaign_Program_Tactic" Multiplicity="1" />
-          <End Role="Plan_Improvement_Campaign_Program_Tactic_Comment" Type="MRPModel.Plan_Improvement_Campaign_Program_Tactic_Comment" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Plan_Improvement_Campaign_Program_Tactic">
-              <PropertyRef Name="ImprovementPlanTacticId" />
-            </Principal>
-            <Dependent Role="Plan_Improvement_Campaign_Program_Tactic_Comment">
-              <PropertyRef Name="ImprovementPlanTacticId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Plan_Improvement_Campaign_Program_Tactic_Share_Plan_Improvement_Campaign_Program_Tactic">
-          <End Role="Plan_Improvement_Campaign_Program_Tactic" Type="MRPModel.Plan_Improvement_Campaign_Program_Tactic" Multiplicity="1" />
-          <End Role="Plan_Improvement_Campaign_Program_Tactic_Share" Type="MRPModel.Plan_Improvement_Campaign_Program_Tactic_Share" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Plan_Improvement_Campaign_Program_Tactic">
-              <PropertyRef Name="ImprovementPlanTacticId" />
-            </Principal>
-            <Dependent Role="Plan_Improvement_Campaign_Program_Tactic_Share">
-              <PropertyRef Name="ImprovementPlanTacticId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="fk_TacticType_Stage">
           <End Role="Stage" Type="MRPModel.Stage" Multiplicity="0..1" />
           <End Role="TacticType" Type="MRPModel.TacticType" Multiplicity="*" />
@@ -3686,7 +3568,160 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-      </Schema>
+        <Association Name="FK_Model_IntegrationInstance">
+          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="0..1" />
+          <End Type="MRPModel.Model" Role="Model" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="Model">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Plan_Improvement_Campaign">
+          <Key>
+            <PropertyRef Name="ImprovementPlanCampaignId" />
+          </Key>
+          <Property Type="Int32" Name="ImprovementPlanCampaignId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="ImprovePlanId" Nullable="false" />
+          <Property Type="String" Name="Title" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <Property Type="Boolean" Name="IsDeployedToIntegration" Nullable="false" />
+          <Property Type="String" Name="IntegrationInstanceCampaignId" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="LastSyncDate" Precision="3" />
+          <NavigationProperty Name="Plan" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Plan" FromRole="Plan_Improvement_Campaign" ToRole="Plan" />
+          <NavigationProperty Name="Plan_Improvement_Campaign_Program" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Plan_Improvement_Campaign" FromRole="Plan_Improvement_Campaign" ToRole="Plan_Improvement_Campaign_Program" />
+        </EntityType>
+        <EntityType Name="Plan_Improvement_Campaign_Program">
+          <Key>
+            <PropertyRef Name="ImprovementPlanProgramId" />
+          </Key>
+          <Property Type="Int32" Name="ImprovementPlanProgramId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="ImprovementPlanCampaignId" Nullable="false" />
+          <Property Type="String" Name="Title" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <Property Type="Boolean" Name="IsDeployedToIntegration" Nullable="false" />
+          <Property Type="String" Name="IntegrationInstanceProgramId" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="LastSyncDate" Precision="3" />
+          <NavigationProperty Name="Plan_Improvement_Campaign" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Plan_Improvement_Campaign" FromRole="Plan_Improvement_Campaign_Program" ToRole="Plan_Improvement_Campaign" />
+          <NavigationProperty Name="Plan_Improvement_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Plan_Improvement_Campaign_Program" FromRole="Plan_Improvement_Campaign_Program" ToRole="Plan_Improvement_Campaign_Program_Tactic" />
+        </EntityType>
+        <EntityType Name="Plan_Improvement_Campaign_Program_Tactic">
+          <Key>
+            <PropertyRef Name="ImprovementPlanTacticId" />
+          </Key>
+          <Property Type="Int32" Name="ImprovementPlanTacticId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="ImprovementPlanProgramId" Nullable="false" />
+          <Property Type="Int32" Name="ImprovementTacticTypeId" Nullable="false" />
+          <Property Type="String" Name="Title" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Description" MaxLength="4000" FixedLength="false" Unicode="false" />
+          <Property Type="Guid" Name="BusinessUnitId" Nullable="false" />
+          <Property Type="DateTime" Name="EffectiveDate" Nullable="false" Precision="3" />
+          <Property Type="Double" Name="Cost" Nullable="false" />
+          <Property Type="String" Name="Status" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
+          <Property Type="Guid" Name="ModifiedBy" />
+          <Property Type="Boolean" Name="IsDeployedToIntegration" Nullable="false" />
+          <Property Type="String" Name="IntegrationInstanceTacticId" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="LastSyncDate" Precision="3" />
+          <NavigationProperty Name="BusinessUnit" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_BusinessUnit" FromRole="Plan_Improvement_Campaign_Program_Tactic" ToRole="BusinessUnit" />
+          <NavigationProperty Name="ImprovementTacticType" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType" FromRole="Plan_Improvement_Campaign_Program_Tactic" ToRole="ImprovementTacticType" />
+          <NavigationProperty Name="Plan_Improvement_Campaign_Program" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Plan_Improvement_Campaign_Program" FromRole="Plan_Improvement_Campaign_Program_Tactic" ToRole="Plan_Improvement_Campaign_Program" />
+          <NavigationProperty Name="Plan_Improvement_Campaign_Program_Tactic_Comment" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Comment_Plan_Improvement_Campaign_Program_Tactic" FromRole="Plan_Improvement_Campaign_Program_Tactic" ToRole="Plan_Improvement_Campaign_Program_Tactic_Comment" />
+          <NavigationProperty Name="Plan_Improvement_Campaign_Program_Tactic_Share" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Share_Plan_Improvement_Campaign_Program_Tactic" FromRole="Plan_Improvement_Campaign_Program_Tactic" ToRole="Plan_Improvement_Campaign_Program_Tactic_Share" />
+        </EntityType>
+        <Association Name="FK_Plan_Improvement_Campaign_Program_Tactic_BusinessUnit">
+          <End Type="MRPModel.BusinessUnit" Role="BusinessUnit" Multiplicity="1" />
+          <End Type="MRPModel.Plan_Improvement_Campaign_Program_Tactic" Role="Plan_Improvement_Campaign_Program_Tactic" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BusinessUnit">
+              <PropertyRef Name="BusinessUnitId" />
+            </Principal>
+            <Dependent Role="Plan_Improvement_Campaign_Program_Tactic">
+              <PropertyRef Name="BusinessUnitId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType">
+          <End Type="MRPModel.ImprovementTacticType" Role="ImprovementTacticType" Multiplicity="1" />
+          <End Type="MRPModel.Plan_Improvement_Campaign_Program_Tactic" Role="Plan_Improvement_Campaign_Program_Tactic" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ImprovementTacticType">
+              <PropertyRef Name="ImprovementTacticTypeId" />
+            </Principal>
+            <Dependent Role="Plan_Improvement_Campaign_Program_Tactic">
+              <PropertyRef Name="ImprovementTacticTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Improvement_Campaign_Plan">
+          <End Type="MRPModel.Plan" Role="Plan" Multiplicity="1" />
+          <End Type="MRPModel.Plan_Improvement_Campaign" Role="Plan_Improvement_Campaign" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan">
+              <PropertyRef Name="PlanId" />
+            </Principal>
+            <Dependent Role="Plan_Improvement_Campaign">
+              <PropertyRef Name="ImprovePlanId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Improvement_Campaign_Program_Plan_Improvement_Campaign">
+          <End Type="MRPModel.Plan_Improvement_Campaign" Role="Plan_Improvement_Campaign" Multiplicity="1" />
+          <End Type="MRPModel.Plan_Improvement_Campaign_Program" Role="Plan_Improvement_Campaign_Program" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Improvement_Campaign">
+              <PropertyRef Name="ImprovementPlanCampaignId" />
+            </Principal>
+            <Dependent Role="Plan_Improvement_Campaign_Program">
+              <PropertyRef Name="ImprovementPlanCampaignId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Improvement_Campaign_Program_Tactic_Plan_Improvement_Campaign_Program">
+          <End Type="MRPModel.Plan_Improvement_Campaign_Program" Role="Plan_Improvement_Campaign_Program" Multiplicity="1" />
+          <End Type="MRPModel.Plan_Improvement_Campaign_Program_Tactic" Role="Plan_Improvement_Campaign_Program_Tactic" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Improvement_Campaign_Program">
+              <PropertyRef Name="ImprovementPlanProgramId" />
+            </Principal>
+            <Dependent Role="Plan_Improvement_Campaign_Program_Tactic">
+              <PropertyRef Name="ImprovementPlanProgramId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Improvement_Campaign_Program_Tactic_Comment_Plan_Improvement_Campaign_Program_Tactic">
+          <End Type="MRPModel.Plan_Improvement_Campaign_Program_Tactic" Role="Plan_Improvement_Campaign_Program_Tactic" Multiplicity="1" />
+          <End Type="MRPModel.Plan_Improvement_Campaign_Program_Tactic_Comment" Role="Plan_Improvement_Campaign_Program_Tactic_Comment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Improvement_Campaign_Program_Tactic">
+              <PropertyRef Name="ImprovementPlanTacticId" />
+            </Principal>
+            <Dependent Role="Plan_Improvement_Campaign_Program_Tactic_Comment">
+              <PropertyRef Name="ImprovementPlanTacticId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Improvement_Campaign_Program_Tactic_Share_Plan_Improvement_Campaign_Program_Tactic">
+          <End Type="MRPModel.Plan_Improvement_Campaign_Program_Tactic" Role="Plan_Improvement_Campaign_Program_Tactic" Multiplicity="1" />
+          <End Type="MRPModel.Plan_Improvement_Campaign_Program_Tactic_Share" Role="Plan_Improvement_Campaign_Program_Tactic_Share" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Improvement_Campaign_Program_Tactic">
+              <PropertyRef Name="ImprovementPlanTacticId" />
+            </Principal>
+            <Dependent Role="Plan_Improvement_Campaign_Program_Tactic_Share">
+              <PropertyRef Name="ImprovementPlanTacticId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -4259,48 +4294,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Plan_Improvement_Campaign">
-            <EntityTypeMapping TypeName="MRPModel.Plan_Improvement_Campaign">
-              <MappingFragment StoreEntitySet="Plan_Improvement_Campaign">
-                <ScalarProperty Name="ImprovementPlanCampaignId" ColumnName="ImprovementPlanCampaignId" />
-                <ScalarProperty Name="ImprovePlanId" ColumnName="ImprovePlanId" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Plan_Improvement_Campaign_Program">
-            <EntityTypeMapping TypeName="MRPModel.Plan_Improvement_Campaign_Program">
-              <MappingFragment StoreEntitySet="Plan_Improvement_Campaign_Program">
-                <ScalarProperty Name="ImprovementPlanProgramId" ColumnName="ImprovementPlanProgramId" />
-                <ScalarProperty Name="ImprovementPlanCampaignId" ColumnName="ImprovementPlanCampaignId" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Plan_Improvement_Campaign_Program_Tactic">
-            <EntityTypeMapping TypeName="MRPModel.Plan_Improvement_Campaign_Program_Tactic">
-              <MappingFragment StoreEntitySet="Plan_Improvement_Campaign_Program_Tactic">
-                <ScalarProperty Name="ImprovementPlanTacticId" ColumnName="ImprovementPlanTacticId" />
-                <ScalarProperty Name="ImprovementPlanProgramId" ColumnName="ImprovementPlanProgramId" />
-                <ScalarProperty Name="ImprovementTacticTypeId" ColumnName="ImprovementTacticTypeId" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="BusinessUnitId" ColumnName="BusinessUnitId" />
-                <ScalarProperty Name="EffectiveDate" ColumnName="EffectiveDate" />
-                <ScalarProperty Name="Cost" ColumnName="Cost" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Plan_Improvement_Campaign_Program_Tactic_Comment">
             <EntityTypeMapping TypeName="MRPModel.Plan_Improvement_Campaign_Program_Tactic_Comment">
               <MappingFragment StoreEntitySet="Plan_Improvement_Campaign_Program_Tactic_Comment">
@@ -4457,6 +4450,57 @@
           <FunctionImportMapping FunctionImportName="Plan_Task_Delete" FunctionName="MRPModel.Store.Plan_Task_Delete" />
           <FunctionImportMapping FunctionImportName="PlanDuplicate" FunctionName="MRPModel.Store.PlanDuplicate" />
           <FunctionImportMapping FunctionImportName="SaveModelInboundOutboundEvent" FunctionName="MRPModel.Store.SaveModelInboundOutboundEvent" />
+          <EntitySetMapping Name="Plan_Improvement_Campaign">
+            <EntityTypeMapping TypeName="MRPModel.Plan_Improvement_Campaign">
+              <MappingFragment StoreEntitySet="Plan_Improvement_Campaign">
+                <ScalarProperty Name="LastSyncDate" ColumnName="LastSyncDate" />
+                <ScalarProperty Name="IntegrationInstanceCampaignId" ColumnName="IntegrationInstanceCampaignId" />
+                <ScalarProperty Name="IsDeployedToIntegration" ColumnName="IsDeployedToIntegration" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="ImprovePlanId" ColumnName="ImprovePlanId" />
+                <ScalarProperty Name="ImprovementPlanCampaignId" ColumnName="ImprovementPlanCampaignId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Plan_Improvement_Campaign_Program">
+            <EntityTypeMapping TypeName="MRPModel.Plan_Improvement_Campaign_Program">
+              <MappingFragment StoreEntitySet="Plan_Improvement_Campaign_Program">
+                <ScalarProperty Name="LastSyncDate" ColumnName="LastSyncDate" />
+                <ScalarProperty Name="IntegrationInstanceProgramId" ColumnName="IntegrationInstanceProgramId" />
+                <ScalarProperty Name="IsDeployedToIntegration" ColumnName="IsDeployedToIntegration" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="ImprovementPlanCampaignId" ColumnName="ImprovementPlanCampaignId" />
+                <ScalarProperty Name="ImprovementPlanProgramId" ColumnName="ImprovementPlanProgramId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Plan_Improvement_Campaign_Program_Tactic">
+            <EntityTypeMapping TypeName="MRPModel.Plan_Improvement_Campaign_Program_Tactic">
+              <MappingFragment StoreEntitySet="Plan_Improvement_Campaign_Program_Tactic">
+                <ScalarProperty Name="LastSyncDate" ColumnName="LastSyncDate" />
+                <ScalarProperty Name="IntegrationInstanceTacticId" ColumnName="IntegrationInstanceTacticId" />
+                <ScalarProperty Name="IsDeployedToIntegration" ColumnName="IsDeployedToIntegration" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Cost" ColumnName="Cost" />
+                <ScalarProperty Name="EffectiveDate" ColumnName="EffectiveDate" />
+                <ScalarProperty Name="BusinessUnitId" ColumnName="BusinessUnitId" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="ImprovementTacticTypeId" ColumnName="ImprovementTacticTypeId" />
+                <ScalarProperty Name="ImprovementPlanProgramId" ColumnName="ImprovementPlanProgramId" />
+                <ScalarProperty Name="ImprovementPlanTacticId" ColumnName="ImprovementPlanTacticId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
