@@ -50,10 +50,22 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLLs\evohtmltopdf.dll</HintPath>
     </Reference>
+    <Reference Include="HelperSharp, Version=1.0.5120.16113, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>DLLs\HelperSharp.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLLs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp, Version=104.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>DLLs\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="SalesforceSharp, Version=0.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>DLLs\SalesforceSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -450,6 +462,10 @@
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="DLLs\evohtmltopdf.dll" />
     <Content Include="DLLs\evointernal.dll" />
+    <Content Include="DLLs\HelperSharp.dll" />
+    <Content Include="DLLs\Newtonsoft.Json.dll" />
+    <Content Include="DLLs\RestSharp.dll" />
+    <Content Include="DLLs\SalesforceSharp.dll" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Images\Cancel.jpg" />
