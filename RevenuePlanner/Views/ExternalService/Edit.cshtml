@@ -29,7 +29,7 @@
             <a class="source-sans-probold inputs" href="#" id="aMyProfile"><span></span>MY PROFILE</a>
         </li>
         <li class="item active">
-            <a class="source-sans-probold integrations" href="#"><span></span>INTEGRATIONS</a>
+            <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
         </li>
     </ul>
 }
@@ -47,7 +47,7 @@
 
 <ul class="nav nav-tabs margin-bottom0">
     <li class="source-sans-proregular">
-        <h2 class="title-header">Edit Existing External Integration Service</h2>
+        <h2 class="title-header">Edit External Integration Service</h2>
     </li>
 </ul>
 
@@ -87,20 +87,20 @@
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.Instance)
 
-                @Html.TextBoxFor(model => model.Instance)
+                @Html.TextBoxFor(model => model.Instance, new { maxlength= "255" })
                 @Html.ValidationMessageFor(model => model.Instance)
             </div>
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.Username)
 
-                @Html.TextBoxFor(model => model.Username)
+                @Html.TextBoxFor(model => model.Username, new { maxlength= "255" })
                 <span class="field-validation-error" id="isUsernameExist"></span>
                 @Html.ValidationMessageFor(model => model.Username)
             </div>
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.Password)
 
-                @Html.TextBoxFor(model => model.Password , new { type = "password" })
+                @Html.TextBoxFor(model => model.Password , new { type = "password", maxlength= "255" })
                 <span id="result"></span>
                 @Html.ValidationMessageFor(model => model.Password)
             </div>
@@ -113,7 +113,7 @@
                     @Html.HiddenFor(model => model.IntegrationTypeAttributes[i].IntegrationTypeAttributeId)
                     @if (Model.IntegrationTypeAttributes[i].AttributeType == "textbox")
                     { 
-                        @Html.TextBoxFor(model => model.IntegrationTypeAttributes[i].Value)
+                        @Html.TextBoxFor(model => model.IntegrationTypeAttributes[i].Value, new { maxlength= "255" })
                     }
                     else if (Model.IntegrationTypeAttributes[i].AttributeType == "dropdown")
                     {
@@ -163,7 +163,7 @@
             <div class="cf inputs-aligned-horizontal">
                 <label></label>
                 <div id="divDateOptions" style="margin-left:20px; display:inline-block;">
-                    @Html.TextBoxFor(model => model.SyncFrequency.Day, new { style = "width:235px !important"})
+                    @Html.TextBoxFor(model => model.SyncFrequency.Day, new { style = "width:235px !important", maxlength= "255" })
                 </div>
             </div>
             <div class="cf inputs-aligned-horizontal content">
@@ -232,6 +232,19 @@
             $("html, body").animate({ scrollTop: 0 }, 1000);
         }
 
+        $('#content :input').each(function () {
+            if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
+                if (this.id != 'importActuals' && this.id != 'integrationStatus') {
+                    var input = $(this).val();
+                    if (input == '') {
+                        $(this).addClass("error");
+                    } else {
+                        $(this).removeClass("error");
+                    }
+                }
+            }
+        });
+
         var selectedSpan = $('#ddlSyncFrequency').val();
         if (selectedSpan != "") {
             if (selectedSpan == "Hourly") {
@@ -294,7 +307,6 @@
             $(this).removeClass("icon-check-gray");
         }
         
-
         if ($('#IsImportActuals').val().toString().toLowerCase() == "false") {
             $(this).val("Inactive");
             $('#IsImportActuals').val(false);
@@ -350,31 +362,52 @@
 
     function testIntegration() {
         //alert("Test integration");
-
-        $.ajax({
-            type: 'GET',
-            cache: false,
-            url: 'TestIntegration',
-            data: { instanceName: $('#Instance').val(), userName: $('#Username').val(), password: $('#Password').val() },
-            success: function (data) {
-                if (data != null) {
-                    if (data.status == 1) {
-                        $('#cSuccess').append('<span>' + data.SuccessMessage.toString() + '</span>');
-                        $("#successMessage").slideDown(1200);
-                        $("#successMessage").slideUp(3000);
-                        return true;
-                    }
-                    else {
-                        $('#cError').append('<span>' + data.ErrorMessage.toString() + '</span>');
-                        $("#errorMessage").slideDown(400);
-                        $("html, body").animate({ scrollTop: 0 }, 1000);
-                        return false;
+        $('#content :input').each(function () {
+            if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
+                if (this.id == 'Instance' || this.id == 'Username' || this.id == 'Password') {
+                    var input = $(this).val();
+                    if (input == '') {
+                        $(this).addClass("error");
+                    } else {
+                        $(this).removeClass("error");
                     }
                 }
             }
         });
 
-        return false;
+        if ($('#Instance').val().trim() != "" && $('#Username').val().trim() != "" && $('#Password').val().trim() != "") {
+            $.ajax({
+                type: 'GET',
+                cache: false,
+                url: 'TestIntegration',
+                data: { instanceName: $('#Instance').val(), userName: $('#Username').val(), password: $('#Password').val() },
+                success: function (data) {
+                    if (data != null) {
+                        if (data.status == 1) {
+                            $("#cSuccess").html('');
+                            $('#cSuccess').append('<span>' + data.SuccessMessage.toString() + '</span>');
+                            $("#successMessage").slideDown(1200);
+                            $("#successMessage").slideUp(3000);
+
+                            $('#integrationStatus').val("Active");
+                            $('#IsActive').val(true);
+                            $('#integrationStatus').addClass("icon-check-blue");
+                            $('#integrationStatus').removeClass("icon-check-gray");
+
+                            return true;
+                        }
+                        else {
+                            $('#cError').append('<span>' + data.ErrorMessage.toString() + '</span>');
+                            $("#errorMessage").slideDown(400);
+                            $("html, body").animate({ scrollTop: 0 }, 1000);
+                            return false;
+                        }
+                    }
+                }
+            });
+            
+            return false;
+        }
     }
 
     $('#btnSave').click(function (e) {
@@ -468,5 +501,11 @@
             $(this).removeClass("icon-check-gray");
         }
     });
-
+    
+    // Added by :- Sohel Pathan on 12/5/2014 for PL #430 to setup integration screen
+    $('#aIntegrations').click(function () {
+        var url = '';
+        url = '@Url.Content("~/ExternalService/Index")';
+        window.location.href = url;
+    });
 </script>
