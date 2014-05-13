@@ -115,7 +115,7 @@ namespace RevenuePlanner.Controllers
         {
             ViewBag.integrationTypeId = form.IntegrationTypeId;
 
-            if (TestIntegrationCredentials(form.Instance, form.Username, form.Password))
+            if (TestIntegrationCredentialsWithForm(form))
             {
                 try
                 {
@@ -264,7 +264,7 @@ namespace RevenuePlanner.Controllers
             TempData["lstWeekdays"] = new SelectList(lstWeekdays, "Value", "Text", lstWeekdays.First());
 
             List<SelectListItem> lstDelete = new List<SelectListItem>();
-            
+
             SelectListItem Item1 = new SelectListItem();
             Item1.Text = "No";
             Item1.Value = "false";
@@ -276,8 +276,9 @@ namespace RevenuePlanner.Controllers
             lstDelete.Add(Item2);
 
             TempData["lstDelete"] = new SelectList(lstDelete, "Value", "Text", lstDelete.First());
-            
+
             TempData["DeleteConfirmationMsg"] = Common.objCached.IntegrationDeleteConfirmationMsg;
+            TempData["InActiveConfirmationMsg"] = Common.objCached.IntegrationInActiveConfirmationMsg;
         }
 
         [AcceptVerbs(HttpVerbs.Get)]
@@ -323,6 +324,7 @@ namespace RevenuePlanner.Controllers
             IntegrationTypeModel objIntegrationTypeModel = new IntegrationTypeModel();
             objIntegrationTypeModel.Title = db.IntegrationTypes.Where(a => a.IsDeleted.Equals(false) && a.IntegrationTypeId == form.IntegrationTypeId).Select(a => a.Title).FirstOrDefault();
             form.IntegrationType = objIntegrationTypeModel;
+
             populateSyncFreqData();
 
             return form;
@@ -346,14 +348,14 @@ namespace RevenuePlanner.Controllers
             var IntegrationTypeId = record.IntegrationTypeId;
 
             var recordSync = db.SyncFrequencies
-                                    .Where(s => s.IntegrationInstanceId == id && s.IntegrationInstance.ClientId == Sessions.User.ClientId) 
+                                    .Where(s => s.IntegrationInstanceId == id && s.IntegrationInstance.ClientId == Sessions.User.ClientId)
                                     .Select(s => s).FirstOrDefault();
 
             SyncFrequencyModel objSync = new SyncFrequencyModel();
             if (recordSync.Day != null)
                 objSync.Day = recordSync.Day;
             if (recordSync.DayofWeek != null)
-            objSync.DayofWeek = recordSync.DayofWeek;
+                objSync.DayofWeek = recordSync.DayofWeek;
             objSync.Frequency = recordSync.Frequency;
             if (recordSync.Time.HasValue == true)
             {
@@ -363,7 +365,7 @@ namespace RevenuePlanner.Controllers
                     objSync.Time = recordSync.Time.Value.Hours.ToString().PadLeft(2, '0') + ":00 " + "AM";
             }
             objSync.IntegrationInstanceId = recordSync.IntegrationInstanceId;
-            
+
             objView.SyncFrequency = objSync;
 
             var recordAttribute = db.IntegrationInstance_Attribute
@@ -371,7 +373,7 @@ namespace RevenuePlanner.Controllers
                                 .Select(a => a).ToList();
 
             List<IntegrationTypeAttributeModel> lstObjIntegrationTypeAttributeModel = new List<IntegrationTypeAttributeModel>();
-            
+
             foreach (var item in recordAttribute)
             {
                 IntegrationTypeAttributeModel objIntegrationTypeAttributeModel = new IntegrationTypeAttributeModel();
@@ -390,7 +392,7 @@ namespace RevenuePlanner.Controllers
             objView.IntegrationType = objIntegrationTypeModel;
 
             populateSyncFreqData();
-            
+
             return View(objView);
         }
 
@@ -399,113 +401,128 @@ namespace RevenuePlanner.Controllers
         {
             ViewBag.integrationTypeId = form.IntegrationTypeId;
 
-            try
+            if (TestIntegrationCredentialsWithForm(form))
             {
-                var isDuplicate = db.IntegrationInstances.Where(a => a.Instance == form.Instance && a.ClientId == Sessions.User.ClientId && a.IntegrationType.IntegrationTypeId == form.IntegrationTypeId
-                    && a.IntegrationInstanceId != form.IntegrationInstanceId).Any();
-
-                if (!isDuplicate)
+                try
                 {
-                    // update data
-                    IntegrationInstance objIntegrationInstance = db.IntegrationInstances.Where(a => a.IntegrationInstanceId == form.IntegrationInstanceId && a.IsDeleted.Equals(false) &&
-                        a.ClientId == Sessions.User.ClientId).FirstOrDefault();
+                    var isDuplicate = db.IntegrationInstances.Where(a => a.Instance == form.Instance && a.ClientId == Sessions.User.ClientId && a.IntegrationType.IntegrationTypeId == form.IntegrationTypeId
+                        && a.IntegrationInstanceId != form.IntegrationInstanceId).Any();
 
-                    if (objIntegrationInstance != null)
+                    if (!isDuplicate)
                     {
-                        objIntegrationInstance.ClientId = Sessions.User.ClientId;
-                        objIntegrationInstance.ModifiedBy = Sessions.User.UserId;
-                        objIntegrationInstance.ModifiedDate = DateTime.Now;
-                        objIntegrationInstance.Instance = form.Instance;
-                        if (form.IsDeleted != null)
+                        // update data
+                        IntegrationInstance objIntegrationInstance = db.IntegrationInstances.Where(a => a.IntegrationInstanceId == form.IntegrationInstanceId && a.IsDeleted.Equals(false) &&
+                            a.ClientId == Sessions.User.ClientId).FirstOrDefault();
+
+                        if (objIntegrationInstance != null)
                         {
-                            if (Convert.ToString(form.IsDeleted).ToLower() == "true")
+                            objIntegrationInstance.ClientId = Sessions.User.ClientId;
+                            objIntegrationInstance.ModifiedBy = Sessions.User.UserId;
+                            objIntegrationInstance.ModifiedDate = DateTime.Now;
+                            objIntegrationInstance.Instance = form.Instance;
+                            if (form.IsDeleted != null)
                             {
-                                objIntegrationInstance.IsDeleted = true;
+                                if (Convert.ToString(form.IsDeleted).ToLower() == "true")
+                                {
+                                    objIntegrationInstance.IsDeleted = true;
+                                }
+                                else
+                                {
+                                    objIntegrationInstance.IsDeleted = false;
+                                }
+                            }
+                            objIntegrationInstance.IsImportActuals = form.IsImportActuals;
+                            objIntegrationInstance.IsActive = form.IsActive;
+                            objIntegrationInstance.Password = Common.Encrypt(form.Password);
+                            objIntegrationInstance.Username = form.Username;
+                            db.Entry(objIntegrationInstance).State = System.Data.EntityState.Modified;
+                            int IntegrationInstancesCount = db.SaveChanges();
+
+                            SyncFrequency objSyncFrequency = db.SyncFrequencies.Where(a => a.IntegrationInstanceId == form.IntegrationInstanceId && a.IntegrationInstance.IntegrationInstanceId == form.IntegrationInstanceId).FirstOrDefault();
+
+                            objSyncFrequency.Frequency = form.SyncFrequency.Frequency;
+                            if (form.SyncFrequency.Frequency == "Hourly")
+                            {
+                                objSyncFrequency.Time = null;
+                                objSyncFrequency.DayofWeek = null;
+                                objSyncFrequency.Day = null;
+                            }
+                            else if (form.SyncFrequency.Frequency == "Daily")
+                            {
+                                if (form.SyncFrequency.Time.Length == 8)
+                                {
+                                    int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
+                                    if (form.SyncFrequency.Time.Substring(6, 2) == "PM" && hour != 12)
+                                        hour = hour + 12;
+                                    objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
+                                }
+                                objSyncFrequency.DayofWeek = null;
+                                objSyncFrequency.Day = null;
+                            }
+                            else if (form.SyncFrequency.Frequency == "Weekly")
+                            {
+                                if (form.SyncFrequency.Time.Length == 8)
+                                {
+                                    int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
+                                    if (form.SyncFrequency.Time.Substring(6, 2) == "PM" && hour != 12)
+                                        hour = hour + 12;
+                                    objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
+                                }
+                                objSyncFrequency.Day = null;
+                                objSyncFrequency.DayofWeek = form.SyncFrequency.DayofWeek;
+                            }
+                            else if (form.SyncFrequency.Frequency == "Monthly")
+                            {
+                                if (form.SyncFrequency.Time.Length == 8)
+                                {
+                                    int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
+                                    if (form.SyncFrequency.Time.Substring(6, 2) == "PM" && hour != 12)
+                                        hour = hour + 12;
+                                    objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
+                                }
+                                objSyncFrequency.DayofWeek = null;
+                                objSyncFrequency.Day = form.SyncFrequency.Day;
+                            }
+
+                            db.Entry(objSyncFrequency).State = System.Data.EntityState.Modified;
+                            int SyncFrequenciesCount = db.SaveChanges();
+
+                            if (form.IntegrationTypeAttributes != null)
+                            {
+                                foreach (var item in form.IntegrationTypeAttributes)
+                                {
+                                    IntegrationInstance_Attribute objIntegrationInstance_Attribute = db.IntegrationInstance_Attribute.Where(a => a.IntegrationInstanceId == form.IntegrationInstanceId
+                                            && a.IntegrationTypeAttributeId == item.IntegrationTypeAttributeId && a.IntegrationInstance.IntegrationTypeId == form.IntegrationTypeId).FirstOrDefault();
+
+                                    objIntegrationInstance_Attribute.Value = item.Value;
+                                    db.Entry(objIntegrationInstance_Attribute).State = System.Data.EntityState.Modified;
+                                    db.SaveChanges();
+                                }
+                            }
+
+                            // Status changed from Active to InActive, So remove all the integration dependency with Models.
+                            if (form.IsActiveStatuChanged == true && form.IsActive == false)
+                            {
+
+                            }
+
+                            if (IntegrationInstancesCount > 0 && SyncFrequenciesCount > 0)
+                            {
+                                if (Convert.ToString(form.IsDeleted).ToLower() == "true")
+                                {
+                                    TempData["SuccessMessage"] = Common.objCached.IntegrationDeleted;
+                                    return RedirectToAction("Index");
+                                }
+                                else
+                                {
+                                    TempData["SuccessMessage"] = Common.objCached.IntegrationEdited;
+                                    form = reCreateView(form);
+                                    return View(form);
+                                }
                             }
                             else
                             {
-                                objIntegrationInstance.IsDeleted = false;
-                            }
-                        }
-                        objIntegrationInstance.IsImportActuals = form.IsImportActuals;
-                        objIntegrationInstance.IsActive = form.IsActive;
-                        objIntegrationInstance.Password = Common.Encrypt(form.Password);
-                        objIntegrationInstance.Username = form.Username;
-                        db.Entry(objIntegrationInstance).State = System.Data.EntityState.Modified;
-                        int IntegrationInstancesCount = db.SaveChanges();
-
-                        SyncFrequency objSyncFrequency = db.SyncFrequencies.Where(a => a.IntegrationInstanceId == form.IntegrationInstanceId && a.IntegrationInstance.IntegrationInstanceId == form.IntegrationInstanceId).FirstOrDefault();
-                        
-                        objSyncFrequency.Frequency = form.SyncFrequency.Frequency;
-                        if (form.SyncFrequency.Frequency == "Hourly")
-                        {
-                            objSyncFrequency.Time = null;
-                            objSyncFrequency.DayofWeek = null;
-                            objSyncFrequency.Day = null;
-                        }
-                        else if (form.SyncFrequency.Frequency == "Daily")
-                        {
-                            if (form.SyncFrequency.Time.Length == 8)
-                            {
-                                int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
-                                if (form.SyncFrequency.Time.Substring(6, 2) == "PM" && hour != 12)
-                                    hour = hour + 12;
-                                objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
-                            }
-                            objSyncFrequency.DayofWeek = null;
-                            objSyncFrequency.Day = null;
-                        }
-                        else if (form.SyncFrequency.Frequency == "Weekly")
-                        {
-                            if (form.SyncFrequency.Time.Length == 8)
-                            {
-                                int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
-                                if (form.SyncFrequency.Time.Substring(6, 2) == "PM" && hour != 12)
-                                    hour = hour + 12;
-                                objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
-                            }
-                            objSyncFrequency.Day = null;
-                            objSyncFrequency.DayofWeek = form.SyncFrequency.DayofWeek;
-                        }
-                        else if (form.SyncFrequency.Frequency == "Monthly")
-                        {
-                            if (form.SyncFrequency.Time.Length == 8)
-                            {
-                                int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
-                                if (form.SyncFrequency.Time.Substring(6, 2) == "PM" && hour != 12)
-                                    hour = hour + 12;
-                                objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
-                            }
-                            objSyncFrequency.DayofWeek = null;
-                            objSyncFrequency.Day = form.SyncFrequency.Day;
-                        }
-                        
-                        db.Entry(objSyncFrequency).State = System.Data.EntityState.Modified;
-                        int SyncFrequenciesCount = db.SaveChanges();
-
-                        if (form.IntegrationTypeAttributes != null)
-                        {
-                            foreach (var item in form.IntegrationTypeAttributes)
-                            {
-                                IntegrationInstance_Attribute objIntegrationInstance_Attribute = db.IntegrationInstance_Attribute.Where(a => a.IntegrationInstanceId == form.IntegrationInstanceId
-                                        && a.IntegrationTypeAttributeId == item.IntegrationTypeAttributeId && a.IntegrationInstance.IntegrationTypeId == form.IntegrationTypeId).FirstOrDefault();
-
-                                objIntegrationInstance_Attribute.Value = item.Value;
-                                db.Entry(objIntegrationInstance_Attribute).State = System.Data.EntityState.Modified;
-                                db.SaveChanges();
-                            }
-                        }
-
-                        if (IntegrationInstancesCount > 0 && SyncFrequenciesCount > 0)
-                        {
-                            if (Convert.ToString(form.IsDeleted).ToLower() == "true")
-                            {
-                                TempData["SuccessMessage"] = Common.objCached.IntegrationDeleted;
-                                return RedirectToAction("Index");
-                            }
-                            else
-                            {
-                                TempData["SuccessMessage"] = Common.objCached.IntegrationEdited;
+                                TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
                                 form = reCreateView(form);
                                 return View(form);
                             }
@@ -519,21 +536,21 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                        TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
+                        TempData["ErrorMessage"] = Common.objCached.IntegrationDuplicate;
                         form = reCreateView(form);
                         return View(form);
                     }
                 }
-                else
+                catch
                 {
-                    TempData["ErrorMessage"] = Common.objCached.IntegrationDuplicate;
+                    TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
                     form = reCreateView(form);
                     return View(form);
                 }
             }
-            catch
+            else
             {
-                TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
+                TempData["ErrorMessage"] = Common.objCached.TestIntegrationFail;
                 form = reCreateView(form);
                 return View(form);
             }
@@ -566,9 +583,46 @@ namespace RevenuePlanner.Controllers
             }
         }
 
+        [HttpPost]
+        public JsonResult TestIntegration(IntegrationModel form)
+        {
+            if (TestIntegrationCredentialsWithForm(form))
+            {
+                return Json(new { status = 1, SuccessMessage = Common.objCached.TestIntegrationSuccess }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new { status = 0, ErrorMessage = Common.objCached.TestIntegrationFail }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         public bool TestIntegrationCredentials(string instanceName, string userName, string password)
         {
             return true;
+        }
+
+        public bool TestIntegrationCredentialsWithForm(IntegrationModel form)
+        {
+            // API Integration can be changed, Below is rough code to test functional flow.
+
+            if (form.Instance != "" && form.Username != "" && form.Password != "")
+            {
+                if (form.IntegrationTypeAttributes != null)
+                {
+                    if (form.IntegrationTypeAttributes.Count > 0)
+                    {
+                        foreach (var item in form.IntegrationTypeAttributes)
+                        {
+                            if (item.Value == "" || item.IntegrationTypeAttributeId <= 0)
+                                return false;
+                        }
+                    }
+                    return true;
+                }
+
+                return false;
+            }
+            return false;
         }
 
         #region Map Data Types
@@ -633,7 +687,7 @@ namespace RevenuePlanner.Controllers
                 ErrorSignal.FromCurrentContext().Raise(e);
                 return RedirectToAction("Edit", new { id = id });
             }
-            
+
         }
 
         /// <summary>

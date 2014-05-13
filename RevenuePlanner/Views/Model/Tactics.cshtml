@@ -612,8 +612,8 @@
                 success: function (data) {
                     if (data.errorMessage != undefined) {
                         url = '@Url.Content("~/Model/Tactics")';
-                    window.location.href = url + '?id=' + ModelId;
-                }
+                        window.location.href = url + '?id=' + ModelId;
+                    }
                     else if (data.successMessage != undefined) {
                         var hdnShowModelResultsTab = $("#hdnShowModelResultsTab").val();
                         if (hdnShowModelResultsTab == null || hdnShowModelResultsTab == '' || hdnShowModelResultsTab.toLowerCase() == 'true') {
@@ -622,16 +622,16 @@
                             return;
                         }
                         else {
-                            url = '@Url.Content("~/Model/ModelZero")';
-                            window.location.href = url;
+                            url = '@Url.Content("~/Model/Integration")';
+                            window.location.href = url + '?id=' + ModelId;
                         }
 
                     }
                     else {
-                        url = '@Url.Content("~/Model/ModelZero")';
-                        window.location.href = url;
+                        url = '@Url.Content("~/Model/Integration")';
+                        window.location.href = url + '?id=' + ModelId;
                     }
-            }
+                }
             });
     }
     });

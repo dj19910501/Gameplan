@@ -1442,21 +1442,19 @@ namespace RevenuePlanner.Controllers
             //ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
 
             // added by Dharmraj for ticket #435 MAP/CRM Integration - Tactic Creation
-            bool flag = false; // check for weather the model is integrated to external integration service or not.
             var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
             if (objPlan.Model.IntegrationInstanceId != null)
             {
                 int integrationInstanceId = Convert.ToInt32(objPlan.Model.IntegrationInstanceId);
                 string ExternalIntegrationService = db.IntegrationInstances.SingleOrDefault(varI => varI.IntegrationInstanceId == integrationInstanceId).IntegrationType.Title;
                 ViewBag.ExtIntService = ExternalIntegrationService;
-                flag = true;
             }
             else
             {
                 ViewBag.ExtIntService = string.Empty;
             }
 
-            ViewBag.IsDeployedToIntegration = flag;
+            ViewBag.IsDeployedToIntegration = false;
 
 
             ViewBag.IsCreated = true;
@@ -1808,14 +1806,12 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsCreated = true;
 
             // added by Dharmraj for ticket #435 MAP/CRM Integration - Tactic Creation
-            bool flag = false; // check for weather the model is integrated to external integration service or not.
             var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
             if (objPlan.Model.IntegrationInstanceId != null)
             {
                 int integrationInstanceId = Convert.ToInt32(objPlan.Model.IntegrationInstanceId);
                 string ExternalIntegrationService = db.IntegrationInstances.SingleOrDefault(varI => varI.IntegrationInstanceId == integrationInstanceId).IntegrationType.Title;
                 ViewBag.ExtIntService = ExternalIntegrationService;
-                flag = true;
             }
             else
             {
@@ -1824,7 +1820,7 @@ namespace RevenuePlanner.Controllers
 
             Plan_Campaign_ProgramModel pcpm = new Plan_Campaign_ProgramModel();
             pcpm.PlanCampaignId = id;
-            pcpm.IsDeployedToIntegration = flag;
+            pcpm.IsDeployedToIntegration = false;
             //Plan_Campaign pc = db.Plan_Campaign.Where(pco => pco.PlanCampaignId == id).SingleOrDefault();
             /* changed by Nirav on 11 APR for PL 322*/
             //pcpm.GeographyId = pc.GeographyId;
@@ -1985,7 +1981,7 @@ namespace RevenuePlanner.Controllers
                                         int tacid = Convert.ToInt32(tac);
                                         pcptobj.TacticTypeId = tacid;
                                         TacticType mt = db.TacticTypes.Where(m => m.TacticTypeId == tacid).FirstOrDefault();
-                                        pcptobj.IsDeployedToIntegration = mt.Model.IntegrationInstanceId == null ? false : true;
+                                        pcptobj.IsDeployedToIntegration = mt.IsDeployedToIntegration;//mt.Model.IntegrationInstanceId == null ? false : true;
                                         pcptobj.Title = mt.Title;
                                         /* changed by Nirav on 11 APR for PL 322*/
                                         pcptobj.VerticalId = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId).Select(s => s.VerticalId).FirstOrDefault();
@@ -2640,7 +2636,7 @@ namespace RevenuePlanner.Controllers
         public JsonResult LoadTacticTypeValue(int tacticTypeId)
         {
             TacticType tt = db.TacticTypes.Where(t => t.TacticTypeId == tacticTypeId).FirstOrDefault();
-            return Json(new { inq = tt.ProjectedInquiries == null ? 0 : tt.ProjectedInquiries, mql = tt.ProjectedMQLs == null ? 0 : tt.ProjectedMQLs, revenue = tt.ProjectedRevenue == null ? 0 : tt.ProjectedRevenue }, JsonRequestBehavior.AllowGet);
+            return Json(new { inq = tt.ProjectedInquiries == null ? 0 : tt.ProjectedInquiries, mql = tt.ProjectedMQLs == null ? 0 : tt.ProjectedMQLs, revenue = tt.ProjectedRevenue == null ? 0 : tt.ProjectedRevenue, IsDeployedToIntegration = tt.IsDeployedToIntegration }, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>

@@ -240,6 +240,14 @@
 
                         </span>
                     </button>
+                    @if (tacticReview.IsDeployedToIntegration)
+                    {
+                        @Html.Hidden("hdnSyncStatusValue", "Sync", new { id = "hdnSyncStatusValue" });
+                    }
+                    else
+                    {
+                        @Html.Hidden("hdnSyncStatusValue", "Don't Sync", new { id = "hdnSyncStatusValue" });
+                    }
                         <button data-toggle="dropdown" class="btn dropdown-toggle height25 btn-blue displayinherit">
                             <span class="caret "></span>
                         </button>                
@@ -276,10 +284,11 @@
               $("#hdnStatusValue").val($(this).text());
           });
 
-          $("#uldivSync li a").click(function () {
-              $("#spanSyncStatus").html($(this).text());
+          $("#btnSync").click(function () {
+
               var IsDeployedToIntegration = false;
-              if (this.id == 'aSync') {
+              var spanSyncStatus = $("#hdnSyncStatusValue").val();
+              if (spanSyncStatus == 'Sync') {
                   IsDeployedToIntegration = true;
               }
               var PlanTacticId = $('#hdnPlanTacticId').val();
@@ -310,7 +319,11 @@
                       return false;
                   }
               });
+          });
 
+          $("#uldivSync li a").click(function () {
+              $("#spanSyncStatus").html($(this).text());
+              $("#hdnSyncStatusValue").val($(this).text());
           });
 
           var divheight = $("#divInnerComment").height();

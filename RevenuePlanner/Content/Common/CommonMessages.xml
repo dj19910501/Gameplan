@@ -386,4 +386,8 @@
     <Name>DataTypeMappingNotConfigured</Name>
     <value>Gameplan source data types or Integration instance not configured.</value>
   </Field>
+  <Field>
+    <Name>IntegrationInActiveConfirmationMsg</Name>
+    <value>This will remove Service Integration from Models also. Are you sure to procedd?</value>
+  </Field>
 </Messages>

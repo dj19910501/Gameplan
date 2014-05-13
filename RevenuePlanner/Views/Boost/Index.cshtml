@@ -110,7 +110,7 @@
     });
 
 
-    $(document).on('click', '#table_boost tbody tr td span.circle-check-icon-integration', function (e) {
+    $(document).on('click', '#table_boost tbody tr td span.circle-check-icon-gray-integration', function (e) {
         e.stopPropagation();
         e.preventDefault();
 
@@ -127,7 +127,7 @@
 
     });
 
-    $(document).on('click', '#table_boost tbody tr td span.circle-check-icon', function (e) {
+    $(document).on('click', '#table_boost tbody tr td span.circle-check-icon-gray', function (e) {
         e.stopPropagation();
         e.preventDefault();
 
@@ -256,17 +256,17 @@
         $html += '</td>';
         $html += ' <td class="border-r tipsyclass">$' + FormatCommas(_Cost.toString(), false) + '</td>';
         if (_IsDeployed != true) {
-            $html += '<td class="border-r"><span class="circle-check-icon" id="spnStatus_' + _id + '"></span></td>';
+            $html += '<td class="border-r"><span class="circle-check-icon-gray" id="spnStatus_' + _id + '"></span></td>';
         }
         else {
-            $html += '<td class="border-r"><span class="circle-check-icon circle-check-icon-blue" id="spnStatus_' + _id + '"></span></td>';
+            $html += '<td class="border-r"><span class="circle-check-icon-gray circle-check-icon-blue" id="spnStatus_' + _id + '"></span></td>';
         }
 
         if (_IsDeployedToIntegration != true) {
-            $html += '<td><span class="circle-check-icon-integration" id="spn_' + _id + '"></span></td>';
+            $html += '<td><span class="circle-check-icon-gray-integration" id="spn_' + _id + '"></span></td>';
         }
         else {
-            $html += '<td><span class="circle-check-icon-integration circle-check-icon-integration-blue" id="spn_' + _id + '"></span></td>';
+            $html += '<td><span class="circle-check-icon-gray-integration circle-check-icon-integration-blue" id="spn_' + _id + '"></span></td>';
         }
 
         $html += '</tr>';

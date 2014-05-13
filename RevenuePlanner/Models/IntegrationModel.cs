@@ -60,5 +60,7 @@ namespace RevenuePlanner.Models
         public List<IntegrationInstance_AttributeModel> IntegrationInstance_Attribute { get; set; }
 
         public SyncFrequencyModel SyncFrequency { get; set; }
+
+        public bool IsActiveStatuChanged { get; set; }
     }
 }
