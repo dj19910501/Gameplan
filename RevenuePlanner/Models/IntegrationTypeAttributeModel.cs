@@ -16,6 +16,8 @@ namespace RevenuePlanner.Models
         public string AttributeType { get; set; }
         public bool IsDeleted { get; set; }
 
+        [RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in First Name.")]
+        [Required]
         public string Value { get; set; }
     }
 

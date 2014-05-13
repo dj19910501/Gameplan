@@ -92,7 +92,6 @@
                 @Html.LabelFor(model => model.Username)
 
                 @Html.TextBoxFor(model => model.Username, new { maxlength= "255" })
-                <span class="field-validation-error" id="isUsernameExist"></span>
                 @Html.ValidationMessageFor(model => model.Username)
             </div>
             <div class="cf inputs-aligned-horizontal">
@@ -112,10 +111,12 @@
                     @if (Model.IntegrationTypeAttributes[i].AttributeType == "textbox")
                     { 
                         @Html.TextBoxFor(model => model.IntegrationTypeAttributes[i].Value, new { maxlength= "255" })
+                        @Html.ValidationMessageFor(model => model.IntegrationTypeAttributes[i].Value)
                     }
                     else if (Model.IntegrationTypeAttributes[i].AttributeType == "dropdown")
                     {
                         @Html.DropDownListFor(model => model.IntegrationTypeAttributes[i].Value, new SelectList((System.Collections.IEnumerable)Model.IntegrationTypeAttributes[i].Value, "Value", "Text"))
+                        @Html.ValidationMessageFor(model => model.IntegrationTypeAttributes[i].Value)
                     }
                 </div>
             }
@@ -197,6 +198,30 @@
         $("#divDayOptions").hide();
         $("#divDateOptions").hide();
 
+        var selectedSpan = $('#ddlSyncFrequency').val();
+        if (selectedSpan != "") {
+            if (selectedSpan == "Hourly") {
+                $("#divTimeOptions").hide();
+                $("#divDayOptions").hide();
+                $("#divDateOptions").hide();
+            }
+            else if (selectedSpan == "Daily") {
+                $("#divTimeOptions").show();
+                $("#divDayOptions").hide();
+                $("#divDateOptions").hide();
+            }
+            else if (selectedSpan == "Weekly") {
+                $("#divTimeOptions").show();
+                $("#divDayOptions").show();
+                $("#divDateOptions").hide();
+            }
+            else if (selectedSpan == "Monthly") {
+                $("#divTimeOptions").show();
+                $("#divDayOptions").hide();
+                $("#divDateOptions").show();
+            }
+        }
+
         $("#SyncFrequency_Day").keydown(function (e) {
             var count = $(this).val();
             
@@ -250,16 +275,20 @@
                 $("#divTimeOptions").show();
                 $("#divDayOptions").hide();
                 $("#divDateOptions").hide();
+                populateTimeOptions();
             }
             else if (selectedSpan == "Weekly") {
                 $("#divTimeOptions").show();
                 $("#divDayOptions").show();
                 $("#divDateOptions").hide();
+                populateTimeOptions();
+                populateWeekDayOptions();
             }
             else if (selectedSpan == "Monthly") {
                 $("#divTimeOptions").show();
                 $("#divDayOptions").hide();
                 $("#divDateOptions").show();
+                populateTimeOptions();
             }
         }
     });
@@ -315,21 +344,6 @@
     }
 
     $('#btnSave').click(function () {
-        
-        if ($('#SuccMsg').val() == null || $('#SuccMsg').val() == '') {
-            $("#successMessage").slideUp(400);
-        }
-        else {
-            $("#successMessage").slideDown(1200);
-            $("#successMessage").slideUp(3000);
-        }
-        if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
-            $("#errorMessage").slideUp(400);
-        }
-        else {
-            $("#errorMessage").slideDown(400);
-            $("html, body").animate({ scrollTop: 0 }, 1000);
-        }
 
         $('#content :input').each(function () {
             if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
@@ -357,6 +371,21 @@
         }
     });
 
+    if ($('#SuccMsg').val() == null || $('#SuccMsg').val() == '') {
+        $("#successMessage").slideUp(400);
+    }
+    else {
+        $("#successMessage").slideDown(1200);
+        $("#successMessage").slideUp(3000);
+    }
+    if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
+        $("#errorMessage").slideUp(400);
+    }
+    else {
+        $("#errorMessage").slideDown(400);
+        $("html, body").animate({ scrollTop: 0 }, 1000);
+    }
+
     //function to add or remove class ERROR when inputs text are empty.
     $('input').blur(function () {
         if ($(this).attr('type') == 'text' || $(this).attr('type') == 'password') {
@@ -377,11 +406,7 @@
             $(this).removeClass("error");
         }
     });
-
-    //$('#Username').keyup(function () {
-    //    $('#isUsernameExist').html('');
-    //});
-
+    
     $("#integrationStatus").click(function () {
         if ($(this).hasClass("icon-check-blue")) {
             $(this).val("Inactive");
@@ -417,5 +442,37 @@
             window.location.href = url;
     });
 
-    
+    function populateTimeOptions() {
+        $.getJSON("@Url.Content("~/ExternalService/populateTimeOptions")",
+        function (TimeData) {
+            var select = $("#timeOptions");
+            select.empty();
+            $.each(TimeData, function (index, itemData) {
+                select.append($('<option/>', {
+                    value: itemData.Value,
+                    text: itemData.Text
+                }));
+            });
+            
+            $(".selectBox select").selectbox('detach');
+            $(".selectBox select").selectbox("attach");
+        });
+    }
+
+    function populateWeekDayOptions() {
+        $.getJSON("@Url.Content("~/ExternalService/populateWeekDayOptions")",
+        function (WeekData) {
+            var select = $("#dayOptions");
+            select.empty();
+            $.each(WeekData, function (index, itemData) {
+                select.append($('<option/>', {
+                    value: itemData.Value,
+                    text: itemData.Text
+                }));
+            });
+
+            $(".selectBox select").selectbox('detach');
+            $(".selectBox select").selectbox("attach");
+        });
+    }
 </script>

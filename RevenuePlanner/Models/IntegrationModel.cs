@@ -17,11 +17,12 @@ namespace RevenuePlanner.Models
         [Display(Name = "Instance Name")]
         [Required]
         [MaxLength(250, ErrorMessage = "Instance name cannot be more than 250 characters.")]
+        [RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in Instance Name.")]
         public string Instance { get; set; }
 
         [Display(Name = "Username")]
         [Required]
-        //[RegularExpression("^[A-Za-z0-9_\\+-]+(\\.[A-Za-z0-9_\\+-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*\\.([A-Za-z]{2,4})$", ErrorMessage = "Not a valid Username")]
+        [RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in Username.")]
         [MaxLength(250, ErrorMessage = "Username cannot be more than 250 characters.")]
         public string Username { get; set; }
 

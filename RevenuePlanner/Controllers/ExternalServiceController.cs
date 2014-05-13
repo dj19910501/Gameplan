@@ -280,6 +280,40 @@ namespace RevenuePlanner.Controllers
             TempData["DeleteConfirmationMsg"] = Common.objCached.IntegrationDeleteConfirmationMsg;
         }
 
+        [AcceptVerbs(HttpVerbs.Get)]
+        public JsonResult populateTimeOptions()
+        {
+            List<SelectListItem> lst24Hours = new List<SelectListItem>();
+            DateTime dtToday = DateTime.Today;
+            DateTime dtTomorrow = DateTime.Today.AddDays(1);
+
+            while (dtToday < dtTomorrow)
+            {
+                SelectListItem objTime = new SelectListItem();
+                objTime.Text = dtToday.ToString("hh:00 tt");
+                objTime.Value = dtToday.ToString("hh:00 tt");
+                lst24Hours.Add(objTime);
+                dtToday = dtToday.AddHours(1);
+            }
+
+            return Json(new SelectList(lst24Hours, "Value", "Text", lst24Hours.First()), JsonRequestBehavior.AllowGet);
+        }
+
+        [AcceptVerbs(HttpVerbs.Get)]
+        public JsonResult populateWeekDayOptions()
+        {
+            List<SelectListItem> lstWeekdays = new List<SelectListItem>();
+            foreach (var item in Enum.GetValues(typeof(DayOfWeek)))
+            {
+                SelectListItem objTime = new SelectListItem();
+                objTime.Text = item.ToString();
+                objTime.Value = item.ToString();
+                lstWeekdays.Add(objTime);
+            }
+
+            return Json(new SelectList(lstWeekdays, "Value", "Text", lstWeekdays.First()), JsonRequestBehavior.AllowGet);
+        }
+
         public IntegrationModel reCreateView(IntegrationModel form)
         {
             form.IntegrationTypeAttributes = db.IntegrationTypeAttributes.Where(a => a.IsDeleted.Equals(false) && a.IntegrationType.IntegrationTypeId == form.IntegrationTypeId)

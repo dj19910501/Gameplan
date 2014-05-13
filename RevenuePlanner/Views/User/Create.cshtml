@@ -26,9 +26,6 @@
             <a class="source-sans-probold inputs" href="#"><span></span>MY PROFILE</a>
         </li>
         <li class="item">
-            <a class="source-sans-probold organization" href="#"><span></span>ORGANIZATION</a>
-        </li>
-        <li class="item">
             <a class="source-sans-probold integrations leftnav" id="aIntegration" href="#" style="cursor:default !important;"><span style="cursor:default;"></span>@Html.Raw("INTEGRATION")</a>
         </li>
     </ul>
@@ -548,6 +545,13 @@
             return 'Strong'
         }
     }
+
+    // Added by :- Sohel Pathan on 13/5/2014 for PL #430 to setup integration screen
+    $('#aIntegrations').click(function () {
+        var url = '';
+        url = '@Url.Content("~/ExternalService/Index")';
+        window.location.href = url;
+    });
 </script>
 
 @*@section Scripts {
