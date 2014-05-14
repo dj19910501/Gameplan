@@ -575,8 +575,8 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
-                //ExternalIntegration externalIntegration = new ExternalIntegration(id);
-                //externalIntegration.Sync();
+                ExternalIntegration externalIntegration = new ExternalIntegration(id);
+                externalIntegration.Sync();
                 return Json(new { status = "Active" }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception)
