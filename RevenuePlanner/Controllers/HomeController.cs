@@ -2120,6 +2120,14 @@ namespace RevenuePlanner.Controllers
                     db.SaveChanges();
                     returnValue = true;
                 }
+                else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                {
+                    var objITactic = db.Plan_Improvement_Campaign_Program_Tactic.SingleOrDefault(varT => varT.ImprovementPlanTacticId == id);
+                    objITactic.IsDeployedToIntegration = IsDeployedToIntegration;
+                    db.Entry(objITactic).State = EntityState.Modified;
+                    db.SaveChanges();
+                    returnValue = true;
+                }
             }
             catch (Exception e)
             {
@@ -2332,8 +2340,13 @@ namespace RevenuePlanner.Controllers
                                   OwnerId = pcpt.CreatedBy,
                                   BusinessUnitId = pcpt.BusinessUnitId,
                                   Cost = pcpt.Cost,
-                                  StartDate = pcpt.EffectiveDate
+                                  StartDate = pcpt.EffectiveDate,
+                                  IsDeployedToIntegration = pcpt.IsDeployedToIntegration,
+                                  LastSyncDate = pcpt.LastSyncDate
                               }).SingleOrDefault();
+
+                    imodel.IntegrationType = GetIntegrationTypeTitleByModel(db.Plan_Improvement_Campaign_Program_Tactic.SingleOrDefault(varT => varT.ImprovementPlanTacticId == id).Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model);
+
                 }
 
             }
@@ -2428,7 +2441,7 @@ namespace RevenuePlanner.Controllers
             {
                 TimeZone localZone = TimeZone.CurrentTimeZone;
                 
-                ViewBag.LastSync = "Last synced with " + im.IntegrationType + " " + GetFormatedDate(im.LastSyncDate) + ".";
+                ViewBag.LastSync = "Last synced with " + im.IntegrationType + " " + Common.GetFormatedDate(im.LastSyncDate) + ".";
             }
             else
             {
@@ -2436,19 +2449,6 @@ namespace RevenuePlanner.Controllers
             }
 
             return PartialView("Actual");
-        }
-
-        /// <summary>
-        /// Function to return datetime in formatted pattern.
-        /// </summary>
-        /// <param name="objDate"></param>
-        /// <returns></returns>
-        public string GetFormatedDate(DateTime? objDate)
-        {
-            if (objDate == null)
-                return string.Empty;
-            else
-                return Convert.ToDateTime(objDate).ToString("MMM dd") + " at " + Convert.ToDateTime(objDate).ToString("hh:mm tt");
         }
 
         /// <summary>
@@ -4011,6 +4011,19 @@ namespace RevenuePlanner.Controllers
             ViewBag.ApprovedStatus = true;
             ViewBag.NoOfTacticBoosts = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && t.StartDate >= im.StartDate && t.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId).ToList().Count();
 
+
+            ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
+            if (im.LastSyncDate != null)
+            {
+                TimeZone localZone = TimeZone.CurrentTimeZone;
+
+                ViewBag.LastSync = "Last synced with " + im.IntegrationType + " " + Common.GetFormatedDate(im.LastSyncDate) + ".";
+            }
+            else
+            {
+                ViewBag.LastSync = string.Empty;
+            }
+
             return PartialView("_SetupImprovementTactic", im);
         }
 
@@ -4066,6 +4079,8 @@ namespace RevenuePlanner.Controllers
                 im.Owner = ownername.ToString();
             }
             ViewBag.TacticDetail = im;
+
+            ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
 
             var businessunittitle = (from bun in db.BusinessUnits
                                      where bun.BusinessUnitId == im.BusinessUnitId

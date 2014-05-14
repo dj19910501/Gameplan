@@ -132,10 +132,13 @@
         </tbody>
     </table>
 </div>
+@if (RevenuePlanner.Helpers.Sessions.IsClientAdmin || RevenuePlanner.Helpers.Sessions.IsSystemAdmin)
+{
 <p class="small-content source-sans-prolight">
     Manage integrations in <a href='@Url.Content("~/ExternalService/Index")'>Settings.</a>
 </p>
-
+}
+    
 <script type="text/javascript">
 
     var lastModelId;

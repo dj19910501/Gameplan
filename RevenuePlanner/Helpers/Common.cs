@@ -2701,5 +2701,22 @@ namespace RevenuePlanner.Helpers
         }
 
         #endregion
+
+        #region Datetime
+
+        /// <summary>
+        /// Function to return datetime in formatted pattern.
+        /// </summary>
+        /// <param name="objDate"></param>
+        /// <returns></returns>
+        public static string GetFormatedDate(DateTime? objDate)
+        {
+            if (objDate == null)
+                return string.Empty;
+            else
+                return Convert.ToDateTime(objDate).ToString("MMM dd") + " at " + Convert.ToDateTime(objDate).ToString("hh:mm tt");
+        }
+
+        #endregion
     }
 }

@@ -371,12 +371,18 @@
             var ProjectedRevenue =ReplaceCC($("#hdnProjectedRevenue").val());
             var TacticTypeId = $("#hdnTacticTypeId").val();
             var clientId = $("#hdnClientId").val();
+
+            var isDeployedToIntegration = false;
+            if ($("#t_integration_status").hasClass("icon-check-blue")) {
+                isDeployedToIntegration = true;
+            }
+
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Model/SaveTactic/")',
-                data: 'Title=' + Title + '&Description=' + Description + '&StageId=' + StageId + '&ProjectedMQLs=' + ProjectedMQLs 
+                data: 'Title=' + Title + '&Description=' + Description + '&StageId=' + StageId + '&ProjectedMQLs=' + ProjectedMQLs
                 + '&ProjectedRevenue=' + ProjectedRevenue + '&TacticTypeId=' + 0
-               + '&modelID=' + $("#hdnModelId").val(),
+               + '&modelID=' + $("#hdnModelId").val() + '&isDeployedToIntegration=' + isDeployedToIntegration,
                 success: function (data) {
                     if (data.redirect) {
                         $("#slidepanel").css("display", "none");
