@@ -388,6 +388,6 @@
   </Field>
   <Field>
     <Name>IntegrationInActiveConfirmationMsg</Name>
-    <value>This will remove Service Integration from Models also. Are you sure to procedd?</value>
+    <value>This will remove Service Integration from Models also. Are you sure to proceed?</value>
   </Field>
 </Messages>
