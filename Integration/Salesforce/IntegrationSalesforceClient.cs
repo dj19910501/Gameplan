@@ -14,6 +14,7 @@ using Integration.BDSService;
 using Newtonsoft.Json.Linq;
 using System.Security.Cryptography;
 using System.IO;
+using System.Configuration;
 
 namespace Integration.Salesforce
 {
@@ -35,6 +36,8 @@ namespace Integration.Salesforce
 
     public class IntegrationSalesforceClient
     {
+        static readonly Guid BDSApplicationCode = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
+        
         public string _username { get; set; }
         public string _password { get; set; }
         public string _consumerKey { get; set; }
@@ -363,8 +366,7 @@ namespace Integration.Salesforce
                                 .ToDictionary(g => g.GeographyId, g => g.Title);
 
             BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
-            Guid applicationId = Guid.Parse("1c10d4b9-7931-4a7c-99e9-a158ce158951");
-            _mappingUser = objBDSservice.GetUserListByClientId(clientId, applicationId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + "" + u.LastName);
+            _mappingUser = objBDSservice.GetUserListByClientId(clientId, BDSApplicationCode).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + "" + u.LastName);
 
             IntegrationInstanceTacticIds = new List<string>();
         }
