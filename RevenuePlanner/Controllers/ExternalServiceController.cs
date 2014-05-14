@@ -8,6 +8,7 @@ using System.Data;
 using System.Linq;
 using System.Transactions;
 using System.Web.Mvc;
+using Integration.Salesforce;
 
 namespace RevenuePlanner.Controllers
 {
@@ -617,26 +618,58 @@ namespace RevenuePlanner.Controllers
 
         public bool TestIntegrationCredentialsWithForm(IntegrationModel form)
         {
-            // API Integration can be changed, Below is rough code to test functional flow.
+            bool isAuthenticated = false;
 
             if (form.Instance != "" && form.Username != "" && form.Password != "")
             {
-                if (form.IntegrationTypeAttributes != null)
+                if (form.IntegrationType.Title.Equals(Integration.IntegrationType.Eloqua.ToString()))
+                {
+                    isAuthenticated = false;
+                }
+                else if (form.IntegrationType.Title.Equals(Integration.IntegrationType.Salesforce.ToString()) && form.IntegrationTypeAttributes != null)
                 {
                     if (form.IntegrationTypeAttributes.Count > 0)
                     {
-                        foreach (var item in form.IntegrationTypeAttributes)
+                        List<int> attributeIds = form.IntegrationTypeAttributes.Select(attr => attr.IntegrationTypeAttributeId).ToList();
+                        List<IntegrationTypeAttribute> integrationTypeAttributes = db.IntegrationTypeAttributes.Where(attr => attributeIds.Contains(attr.IntegrationTypeAttributeId)).ToList();
+                        string consumerKey = string.Empty;
+                        string consumerSecret = string.Empty;
+                        string securityToken = string.Empty;
+
+                        foreach (IntegrationTypeAttribute integrationTypeAttribute in integrationTypeAttributes)
                         {
-                            if (item.Value == "" || item.IntegrationTypeAttributeId <= 0)
-                                return false;
+                            if (integrationTypeAttribute.Attribute.Equals("ConsumerKey"))
+                            {
+                                consumerKey = form.IntegrationTypeAttributes.Single(attr => attr.IntegrationTypeAttributeId.Equals(integrationTypeAttribute.IntegrationTypeAttributeId)).Value;
+                            }
+                            else if (integrationTypeAttribute.Attribute.Equals("ConsumerSecret"))
+                            {
+                                consumerSecret = form.IntegrationTypeAttributes.Single(attr => attr.IntegrationTypeAttributeId.Equals(integrationTypeAttribute.IntegrationTypeAttributeId)).Value;
+                            }
+                            else if (integrationTypeAttribute.Attribute.Equals("SecurityToken"))
+                            {
+                                securityToken = form.IntegrationTypeAttributes.Single(attr => attr.IntegrationTypeAttributeId.Equals(integrationTypeAttribute.IntegrationTypeAttributeId)).Value;
+                            }
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(consumerKey) && !string.IsNullOrWhiteSpace(consumerSecret) && !string.IsNullOrWhiteSpace(securityToken))
+                        {
+                            string salesforce = Integration.IntegrationType.Salesforce.ToString();
+                            IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient();
+                            integrationSalesforceClient._username = form.Username;
+                            integrationSalesforceClient._password = form.Password;
+                            integrationSalesforceClient._consumerKey = consumerKey;
+                            integrationSalesforceClient._consumerSecret = consumerSecret;
+                            integrationSalesforceClient._securityToken = securityToken;
+                            integrationSalesforceClient._apiURL = db.IntegrationTypes.Single(intgtype => intgtype.Title.Equals(salesforce)).APIURL;
+                            integrationSalesforceClient.Authenticate();
+                            isAuthenticated = integrationSalesforceClient.IsAuthenticated;
                         }
                     }
-                    return true;
                 }
-
-                return false;
             }
-            return false;
+
+            return isAuthenticated;
         }
 
         #region Map Data Types
