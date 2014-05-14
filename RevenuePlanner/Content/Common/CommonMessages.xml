@@ -351,7 +351,7 @@
     <!--Start - Added by : Sohel Pathan on 09/05/2014 for PL #430-->    
     <Field>
 		<Name>IntegrationAdded</Name>
-		<value>Integration added successfully.</value>
+		<value>New integration successfully added.</value>
 	</Field>
 	<Field>
 		<Name>IntegrationEdited</Name>

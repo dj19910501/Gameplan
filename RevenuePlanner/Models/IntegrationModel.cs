@@ -20,7 +20,7 @@ namespace RevenuePlanner.Models
         [RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in Instance Name.")]
         public string Instance { get; set; }
 
-        [Display(Name = "Username")]
+        [Display(Name = "User ID")]
         [Required]
         [RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in Username.")]
         [MaxLength(250, ErrorMessage = "Username cannot be more than 250 characters.")]

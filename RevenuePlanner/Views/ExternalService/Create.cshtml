@@ -311,13 +311,10 @@
 
         if ($('#Instance').val().trim() != "" && $('#Username').val().trim() != "" && $('#Password').val().trim() != "") {
             $.ajax({
-                //type: 'GET',
                 cache: false,
                 type: 'POST',
                 url: '@Url.Content("~/ExternalService/TestIntegration")',
                 data: $("form").serialize(),
-                //url: 'TestIntegration',
-                //data: { instanceName: $('#Instance').val(), userName: $('#Username').val(), password: $('#Password').val() },
                 success: function (data) {
                     if (data != null) {
                         if (data.status == 1) {
@@ -325,6 +322,7 @@
                             $('#cSuccess').append('<span>' + data.SuccessMessage.toString() + '</span>');
                             $("#successMessage").slideDown(1200);
                             $("#successMessage").slideUp(3000);
+                            $("#errorMessage").slideUp(1);
 
                             $('#integrationStatus').val("Active");
                             $('#IsActive').val(true);
@@ -334,6 +332,7 @@
                             return true;
                         }
                         else {
+                            $('#cError').html('');
                             $('#cError').append('<span>' + data.ErrorMessage.toString() + '</span>');
                             $("#errorMessage").slideDown(400);
                             $("html, body").animate({ scrollTop: 0 }, 1000);

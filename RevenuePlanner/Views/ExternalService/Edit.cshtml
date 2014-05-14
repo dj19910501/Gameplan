@@ -33,11 +33,11 @@
 <!--success message-->
 <div id="successMessage" class="alert hide alert-success message-position">
     <a class="close">×</a>
-    <div id="cSuccess">@Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))</div>
+    <div id="cSuccess"> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))</div>
 </div>
 <div id="errorMessage" class="alert alert-error hide message-position">
     <a class="close">×</a>
-    <div id="cError">@Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))</div>
+    <div id="cError"> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))</div>
 </div>
 <!--success message-->
 
@@ -379,21 +379,19 @@
 
         if ($('#Instance').val().trim() != "" && $('#Username').val().trim() != "" && $('#Password').val().trim() != "") {
             $.ajax({
-                //type: 'GET',
                 cache: false,
                 cache: false,
                 type: 'POST',
                 url: '@Url.Content("~/ExternalService/TestIntegration")',
                 data: $("form").serialize(),
-                //url: 'TestIntegration',
-                //data: { instanceName: $('#Instance').val(), userName: $('#Username').val(), password: $('#Password').val() },
                 success: function (data) {
                     if (data != null) {
                         if (data.status == 1) {
                             $("#cSuccess").html('');
-                            $('#cSuccess').append('<span>' + data.SuccessMessage.toString() + '</span>');
+                            $('#cSuccess').append(data.SuccessMessage.toString());
                             $("#successMessage").slideDown(1200);
                             $("#successMessage").slideUp(3000);
+                            $("#errorMessage").slideUp(1);
 
                             $('#integrationStatus').val("Active");
                             $('#IsActive').val(true);
@@ -403,10 +401,11 @@
                             return true;
                         }
                         else {
-                            $('#cError').append('<span>' + data.ErrorMessage.toString() + '</span>');
+                            $('#cError').html('');
+                            $('#cError').append(data.ErrorMessage.toString());
                             $("#errorMessage").slideDown(400);
                             $("html, body").animate({ scrollTop: 0 }, 1000);
-                            return false;
+                            return true;
                         }
                     }
                 }
