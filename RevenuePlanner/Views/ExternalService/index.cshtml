@@ -215,6 +215,7 @@
             success: function (data) {
                 baselinesModels = data;
                 fillBaselineTable();
+                TruncateTitle();
                 myApp.hidePleaseWait();
             }
         });
@@ -236,7 +237,7 @@
     function addRowIntegration(_index, _integrationInstanceId, _integrationTypeId, _instance, _provider, _lastSyncStatus, _lastSyncData) {
         var $baselineTable = $('#table_baseline > tbody'); //tr:first
         var $html = "";
-        $html += '<tr id="trService_' + _index + '" index="' + _integrationInstanceId + '" ><td><span class="title-baseline-model">' + _instance + '</span><span class="search-icon"></span></td>' +
+        $html += '<tr id="trService_' + _index + '" index="' + _integrationInstanceId + '" ><td><span class="title-baseline-model truncate">' + _instance + '</span><span class="search-icon"></span></td>' +
             '<td>' + _provider + '</td>' +
             '<td>' + _lastSyncStatus + '</td>' +
             '<td>' + _lastSyncData + '</td>' +
@@ -254,4 +255,16 @@
         $("#div_ContactSupportLink").load(url);
      });
 
+    function TruncateTitle() {
+        $("#table_baseline").find('.truncate').each(function () {
+            var title = $(this).text();
+            var mainText = title;
+            @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to solve the issue "The plan name is greater than few characters the UI get distorted". *@
+            if (title.length >= 40) {
+                title = title.substring(0, 40) + "...";
+                $(this).prop('title', mainText);
+            }
+            $(this).text(title);
+        });
+    }
 </script>
