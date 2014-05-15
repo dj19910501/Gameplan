@@ -110,7 +110,6 @@
                     { 
                         @Html.TextBoxFor(model => model.IntegrationTypeAttributes[i].Value, new { maxlength = "255", tabindex = "4" })
                         @Html.ValidationMessageFor(model => model.IntegrationTypeAttributes[i].Value, "" ,new { style="padding-top: 6px; position: absolute;" })
-                        @Html.ValidationMessage(Model.IntegrationTypeAttributes[i].Value.ToString(), "" + Model.IntegrationTypeAttributes[i].Attribute.ToString() + "" , new { style="padding-top: 6px; position: absolute;" })
                     }
                     else if (Model.IntegrationTypeAttributes[i].AttributeType == "dropdown")
                     {
