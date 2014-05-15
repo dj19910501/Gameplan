@@ -165,41 +165,32 @@
         });
 
         $(document).on('click', '.sync_service', function (e) {
+            $(this).attr("disabled", "disabled");
             var syncNow = $(this);
-            syncNow.html('Syncing...');
+            syncNow.siblings("span").show();
+            syncNow.hide();
+            //syncNow.css("style", "display:none");
             //syncNow.css("color", "red");
             var id = $(this).attr("id").replace("syncnow_", "");
-            
+            alert("The synchronization has started and status will be updated on completion.");
             $.ajax({
                 type: 'GET',
                 cache: false,
                 url: 'SyncNow',
+                asyn:true,
                 data: { id: id },
                 success: function (data) {
                     if (data != null)
                     {
-                        //// Test
-                        if (data.status == "Active") {
-                            $("#cSuccess").html('');
-                            $('#cError').html('');
-                            $('#cSuccess').append("<strong>Success. </strong>" + data.msg.toString());
-                            $("#successMessage").slideDown(1200);
-                            $("#successMessage").slideUp(3000);
-                        }
-                        else {
-                            //// Test
-                            $('#cError').html('');
-                            $("#cSuccess").html('');
-                            $('#cError').append("<strong>Error! </strong>" + data.msg.toString());
-                            $("#errorMessage").slideDown(400);
-                            $("html, body").animate({ scrollTop: 0 }, 1000);
-                        }
+                        $('#lastSyncDate' + id).html(data.lastSync);
+                        $('#lastSyncStatus' + id).html(data.status);
                     }
-
-                    syncNow.html('Sync Now');
+                    syncNow.siblings("span").hide();
+                    syncNow.show();
                 }
             });
 
+            myApp.hidePleaseWait();
             return false;
         });
         
@@ -261,17 +252,18 @@
         var $baselineTable = $('#table_baseline > tbody'); //tr:first
         var $html = "";
         $html += '<tr id="trService_' + _index + '" index="' + _integrationInstanceId + '" ><td><span class="title-baseline-model truncate">' + _instance + '</span><span class="search-icon"></span></td>' +
-            '<td>' + _provider + '</td>'
+            '<td>' + _provider + '</td>' +
         if (_lastSyncStatus.toString().toLowerCase() == "error")
         {
-            $html += '<td><span style="color:red;">' + _lastSyncStatus + '</span></td>'
+            $html += '<td id="lastSyncStatus' + _integrationInstanceId + '"><span style="color:red;">' + _lastSyncStatus + '</span></td>'
         }
         else
         {
-            $html += '<td>' + _lastSyncStatus + '</td>'
-        }
-        $html += '<td>' + _lastSyncData + '</td>' +
-            '<td><a id="syncnow_' + _integrationInstanceId + '" href="#" class="sync_service">Sync Now</a></td>' +
+            $html +=      '<td id="lastSyncStatus' + _integrationInstanceId + '">' + _lastSyncStatus + '</td>' +
+        }  
+
+        $html +=   '<td id="lastSyncDate' + _integrationInstanceId + '">' + _lastSyncData + '</td>' +
+            '<td><a id="syncnow_' + _integrationInstanceId + '" href="#" class="sync_service">Sync Now</a><span style="display:none;">Syncing...</span></td>' +
         '</tr>';
         //$baselineTable.append($html);
         //$baselineTable.eq(0).after($html);

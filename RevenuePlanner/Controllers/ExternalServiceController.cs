@@ -586,11 +586,11 @@ namespace RevenuePlanner.Controllers
             {
                 ExternalIntegration externalIntegration = new ExternalIntegration(id);
                 externalIntegration.Sync();
-                return Json(new { status = "Active", msg = Common.objCached.SyncNowSuccMessage }, JsonRequestBehavior.AllowGet);
+                return Json(new { status = "Active", lastSync = DateTime.Now.ToString("MM/dd/yy h:mm tt") }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception)
             {
-                return Json(new { status = "Error", msg = Common.objCached.SyncNowErrorMessage }, JsonRequestBehavior.AllowGet);
+                return Json(new { status = "Error", lastSync = DateTime.Now.ToString("MM/dd/yy h:mm tt") }, JsonRequestBehavior.AllowGet);
                 throw;
             }
         }
