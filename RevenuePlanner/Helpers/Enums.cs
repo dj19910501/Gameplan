@@ -44,6 +44,19 @@ namespace RevenuePlanner.Helpers
         };
 
         /// <summary>
+        /// Data Dictionary to hold tactic status color code.
+        /// Added By: Sohel Pathan
+        /// Date: 12/05/2014
+        /// </summary>
+        public static Dictionary<string, string> TacticStatusColorCodes = new Dictionary<string, string>()
+        {
+            {"Created", "F6D87F"},
+            {"Submitted", "EE8F7A"},
+            {"Approved", "CC91BF"},
+            {"Rejected", "D4D4D4"},
+        };
+
+        /// <summary>
         /// Added By: Maninder Singh Wadhva.
         /// Date: 11/26/2013
         /// Enum for plan status.
@@ -218,6 +231,7 @@ namespace RevenuePlanner.Helpers
             Boost = 3,
             Report = 4,
             Pref = 5,
+            ExternalService,
             None = 999
         }
 
@@ -233,7 +247,8 @@ namespace RevenuePlanner.Helpers
             {ActiveMenu.Plan.ToString().ToLower(), "plan"},
             {ActiveMenu.Boost.ToString().ToLower(), "boost"},
             {ActiveMenu.Report.ToString().ToLower(), "report"},
-            {ActiveMenu.Pref.ToString().ToLower(), "user"}
+            {ActiveMenu.Pref.ToString().ToLower(), "user"},
+            {ActiveMenu.ExternalService.ToString().ToLower(), "externalservice"}
         };
 
         #endregion

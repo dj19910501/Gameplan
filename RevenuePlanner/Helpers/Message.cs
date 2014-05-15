@@ -1132,6 +1132,32 @@ namespace RevenuePlanner.Helpers
                 _IntegrationInActiveConfirmationMsg = value;
             }
         }
+        
+        private string _SyncNowSuccMessage;
+        public string SyncNowSuccMessage
+        {
+            get
+            {
+                return _SyncNowSuccMessage;
+            }
+            set
+            {
+                _SyncNowSuccMessage = value;
+            }
+        }
+
+        private string _SyncNowErrorMessage;
+        public string SyncNowErrorMessage
+        {
+            get
+            {
+                return _SyncNowErrorMessage;
+            }
+            set
+            {
+                _SyncNowErrorMessage = value;
+            }
+        }
         // End - Added by : Sohel Pathan on 09/05/2014 for PL #430 
         private string _DataTypeMappingSaveSuccess;
         public string DataTypeMappingSaveSuccess
@@ -1513,6 +1539,12 @@ namespace RevenuePlanner.Helpers
                                             break;
                                         case "IntegrationInActiveConfirmationMsg":
                                             _IntegrationInActiveConfirmationMsg = strMsgValue;
+                                            break;
+                                        case "SyncNowSuccMessage":
+                                            _SyncNowSuccMessage = strMsgValue;
+                                            break;
+                                        case "SyncNowErrorMessage":
+                                            _SyncNowErrorMessage = strMsgValue;
                                             break;
                                     }
                                 }

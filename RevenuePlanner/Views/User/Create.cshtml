@@ -1,4 +1,5 @@
 ﻿@model RevenuePlanner.Models.UserModel
+@using RevenuePlanner.Helpers
 
 <script src="@Url.Content("~/Scripts/jquery.validate.js")"></script>
 <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")"></script>
@@ -25,9 +26,12 @@
         <li class="item active">
             <a class="source-sans-probold inputs" href="#"><span></span>MY PROFILE</a>
         </li>
-        <li class="item">
-            <a class="source-sans-probold integrations leftnav" id="aIntegration" href="#" style="cursor:default !important;"><span style="cursor:default;"></span>@Html.Raw("INTEGRATION")</a>
-        </li>
+        @if (Sessions.User.RoleCode.Equals(Enums.RoleCodes.SA.ToString(), StringComparison.OrdinalIgnoreCase) || Sessions.User.RoleCode.Equals(Enums.RoleCodes.CA.ToString(), StringComparison.OrdinalIgnoreCase))
+        {
+            <li class="item">
+                <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
+            </li>
+        }
     </ul>
 }
 
@@ -546,7 +550,7 @@
         }
     }
 
-    // Added by :- Sohel Pathan on 13/5/2014 for PL #430 to setup integration screen
+    // Added by :- Sohel Pathan on 15/5/2014 for PL #430 to setup integration screen
     $('#aIntegrations').click(function () {
         var url = '';
         url = '@Url.Content("~/ExternalService/Index")';

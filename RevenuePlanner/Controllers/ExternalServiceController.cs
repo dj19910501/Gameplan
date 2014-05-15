@@ -12,7 +12,7 @@ using Integration.Salesforce;
 
 namespace RevenuePlanner.Controllers
 {
-    public class ExternalServiceController : Controller
+    public class ExternalServiceController : CommonController
     {
         #region Variables
         private MRPEntities db = new MRPEntities();
@@ -586,11 +586,11 @@ namespace RevenuePlanner.Controllers
             {
                 ExternalIntegration externalIntegration = new ExternalIntegration(id);
                 externalIntegration.Sync();
-                return Json(new { status = "Active" }, JsonRequestBehavior.AllowGet);
+                return Json(new { status = "Active", msg = Common.objCached.SyncNowSuccMessage }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception)
             {
-                return Json(new { status = "Error" }, JsonRequestBehavior.AllowGet);
+                return Json(new { status = "Error", msg = Common.objCached.SyncNowErrorMessage }, JsonRequestBehavior.AllowGet);
                 throw;
             }
         }

@@ -13,7 +13,7 @@
 @Html.Hidden("ErrMsg", TempData["ErrorMessage"])
 
 @{
-    ViewBag.Title = "Add Integration";
+    ViewBag.Title = "Add New External Service Integrations";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -35,24 +35,23 @@
 <!--success message-->
 <div id="successMessage" class="alert hide alert-success message-position">
     <a class="close">×</a>
-
-    <div id="cSuccess">@Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))</div>
+    <div id="cSuccess"><strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))</div>
 </div>
 <div id="errorMessage" class="alert alert-error hide message-position">
     <a class="close">×</a>
-    <div id="cError">@Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))</div>
+    <div id="cError"><strong>Error!</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))</div>
 </div>
 <!--success message-->
 
 <ul class="nav nav-tabs margin-bottom0">
     <li class="source-sans-proregular">
-        <h2 class="title-header">Add New External Integration Service</h2>
+        <h2 class="title-header">Add New External Service Integrations</h2>
     </li>
 </ul>
 
 <a class="link-gray" href="@Url.Action("Index", "ExternalService")">« BACK TO LIST</a>
 
-<div class="padding-content cf source-sans-proregular" id="content">
+<div class="padding-content cf source-sans-proregular" id="content" style="padding-bottom:0px !important">
     <div class="row">
         <div class="span2 myaccount-colum">
             <div class="width216">
@@ -67,7 +66,7 @@
             </div>
         </div>
         <div class="span10 content-colum-info-user">
-        @using (Html.BeginForm("Create", "ExternalService", FormMethod.Post))
+        @using (Html.BeginForm("Create", "ExternalService", FormMethod.Post, new { style = "margin-bottom:5px !important;" }))
         {
             @Html.ValidationSummary(true)
             @Html.HiddenFor(model => model.IntegrationTypeId);
@@ -85,21 +84,20 @@
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.Instance)
 
-                @Html.TextBoxFor(model => model.Instance, new { maxlength= "255" })
-                @Html.ValidationMessageFor(model => model.Instance)
+                @Html.TextBoxFor(model => model.Instance, new { maxlength = "255", tabindex = "1" })
+                @Html.ValidationMessageFor(model => model.Instance, "" ,new { style="padding-top: 6px; position: absolute;" })
             </div>
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.Username)
 
-                @Html.TextBoxFor(model => model.Username, new { maxlength= "255" })
-                @Html.ValidationMessageFor(model => model.Username)
+                @Html.TextBoxFor(model => model.Username, new { maxlength = "255", tabindex = "2" })
+                @Html.ValidationMessageFor(model => model.Username, "" ,new { style="padding-top: 6px; position: absolute;" })
             </div>
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.Password)
 
-                @Html.TextBoxFor(model => model.Password, new { type = "password", maxlength= "255" } )
-                <span id="result"></span>
-                @Html.ValidationMessageFor(model => model.Password)
+                @Html.TextBoxFor(model => model.Password, new { type = "password", maxlength = "255", tabindex = "3" })
+                @Html.ValidationMessageFor(model => model.Password, "" ,new { style="padding-top: 6px; position: absolute;" })
             </div>
             
             
@@ -110,58 +108,56 @@
                     @Html.HiddenFor(model => model.IntegrationTypeAttributes[i].IntegrationTypeAttributeId)
                     @if (Model.IntegrationTypeAttributes[i].AttributeType == "textbox")
                     { 
-                        @Html.TextBoxFor(model => model.IntegrationTypeAttributes[i].Value, new { maxlength= "255" })
-                        @Html.ValidationMessageFor(model => model.IntegrationTypeAttributes[i].Value)
+                        @Html.TextBoxFor(model => model.IntegrationTypeAttributes[i].Value, new { maxlength = "255", tabindex = "4" })
+                        @Html.ValidationMessageFor(model => model.IntegrationTypeAttributes[i].Value, "" ,new { style="padding-top: 6px; position: absolute;" })
+                        @Html.ValidationMessage(Model.IntegrationTypeAttributes[i].Value.ToString(), "" + Model.IntegrationTypeAttributes[i].Attribute.ToString() + "" , new { style="padding-top: 6px; position: absolute;" })
                     }
                     else if (Model.IntegrationTypeAttributes[i].AttributeType == "dropdown")
                     {
-                        @Html.DropDownListFor(model => model.IntegrationTypeAttributes[i].Value, new SelectList((System.Collections.IEnumerable)Model.IntegrationTypeAttributes[i].Value, "Value", "Text"))
-                        @Html.ValidationMessageFor(model => model.IntegrationTypeAttributes[i].Value)
+                        @Html.DropDownListFor(model => model.IntegrationTypeAttributes[i].Value, new SelectList((System.Collections.IEnumerable)Model.IntegrationTypeAttributes[i].Value, "Value", "Text"), new { tabindex = "4" })
+                        @Html.ValidationMessageFor(model => model.IntegrationTypeAttributes[i].Value, "" ,new { style="padding-top: 6px; position: absolute;" })
                     }
                 </div>
             }
             
             <div class="cf inputs-aligned-horizontal content dark inline-ellipsis">
                 @Html.Label("Integration Status")
-                <input type="text" readonly="" maxlength="18" placeholder="Inactive" class="icon-check-gray" name="t_status" id="integrationStatus">
+                <input type="text" readonly="" maxlength="18" placeholder="Inactive" class="icon-check-gray" name="t_status" id="integrationStatus" tabindex="5">
                 @Html.HiddenFor(model => model.IsActive)
             </div>
             
             <div class="cf inputs-aligned-horizontal">
                 <div class="Add-Integration">
-                    <span><a id="aTestIntegration" href="#" onclick="return testIntegration();">Click</a> to test integration credentials.</span>
+                    <span><a id="aTestIntegration" href="#" onclick="return testIntegration();" tabindex="-1">Click</a> to test integration credentials.</span>
                 </div>
             </div>
             
             <div class="cf inputs-aligned-horizontal">
-                @Html.Label("Sync Preference")
+                @Html.Label("Sync Preference", new { style = "padding-top: 9px;" })
 
-                <div class="selectBox" id="divSyncFrequency">
-                    @Html.DropDownListFor(model => model.SyncFrequency.Frequency, new SelectList((System.Collections.IEnumerable)TempData["lstSyncFreq"], "Value", "Text"), new { require = "true", Id = "ddlSyncFrequency" })
+                <div class="selectBox shortSelectBox" id="divSyncFrequency">
+                    @Html.DropDownListFor(model => model.SyncFrequency.Frequency, new SelectList((System.Collections.IEnumerable)TempData["lstSyncFreq"], "Value", "Text"), new { require = "true", Id = "ddlSyncFrequency", tabindex = "6" })
                 </div>
-            </div>
-            <div class="cf inputs-aligned-horizontal">
-                <label></label>
-                <div class="selectBox" id="divTimeOptions">
-                    @Html.DropDownListFor(model => model.SyncFrequency.Time, new SelectList((System.Collections.IEnumerable)TempData["lst24Hours"], "Value", "Text"), new { require = "true", Id = "timeOptions" })
+                <div class="selectBox shortSelectBox" id="divTimeOptions">
+                    @Html.DropDownListFor(model => model.SyncFrequency.Time, new SelectList((System.Collections.IEnumerable)TempData["lst24Hours"], "Value", "Text"), new { require = "true", Id = "timeOptions", tabindex = "7" })
                 </div>
             </div>
             <div class="cf inputs-aligned-horizontal">
                 <label></label>
                 <div class="selectBox" id="divDayOptions">
-                    @Html.DropDownListFor(model => model.SyncFrequency.DayofWeek, new SelectList((System.Collections.IEnumerable)TempData["lstWeekdays"], "Value", "Text"), new { Id = "dayOptions" })
+                    @Html.DropDownListFor(model => model.SyncFrequency.DayofWeek, new SelectList((System.Collections.IEnumerable)TempData["lstWeekdays"], "Value", "Text"), new { Id = "dayOptions", tabindex = "8" })
                 </div>
             </div>
             <div class="cf inputs-aligned-horizontal">
                 <label></label>
                 <div id="divDateOptions" style="margin-left:20px; display:inline-block;">
-                    @Html.TextBoxFor(model => model.SyncFrequency.Day, new { style = "width:235px !important", maxlength= "255"})
+                    @Html.TextBoxFor(model => model.SyncFrequency.Day, new { style = "width:235px !important", maxlength = "255", tabindex = "9" })
                 </div>
             </div>
             
             <div class="cf inputs-aligned-horizontal content">
                 @Html.LabelFor(model => model.IsImportActuals)
-                <input id="importActuals" class="icon-check-gray" type="text" readonly="" maxlength="18" placeholder="Inactive" name="importActuals">
+                <input id="importActuals" class="icon-check-gray" type="text" readonly="" maxlength="18" placeholder="Inactive" name="importActuals" tabindex="10">
                 @Html.HiddenFor(model => model.IsImportActuals)
             </div>
             
@@ -171,15 +167,15 @@
                 </div>
             </div>
             
-            <div class="cf inputs-aligned-horizontal">
+            <div class="cf inputs-aligned-horizontal" style="margin-top:20px;">
                 <div class="Add-Integration">
                     <span class="span5">
-                        <input id="btnSave" type="submit" value="Add Integration" title="Add Integration" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" style="margin-left: 0px;" />
+                        <input id="btnSave" type="submit" value="Save" title="Save" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" style="margin-left: 0px;" tabindex="11" />
                     </span>
                 </div>
                 <div class="container-button">
                     <span class="span5">
-                        <button id="btnCancel" class="close-form btn-link source-sans-proregular" type="button" style="margin-left: 90px;">Cancel</button>
+                        <button id="btnCancel" class="close-form btn-link source-sans-proregular" type="button" tabindex="12">Cancel</button>
                     </span>
                 </div>
             </div>
@@ -192,6 +188,7 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
+        $("#Instance").focus();
         $(".selectBox select").selectbox();
 
         $("#divTimeOptions").hide();
@@ -270,12 +267,14 @@
                 $("#divTimeOptions").hide();
                 $("#divDayOptions").hide();
                 $("#divDateOptions").hide();
+                $("#importActuals").focus();
             }
             else if (selectedSpan == "Daily") {
                 $("#divTimeOptions").show();
                 $("#divDayOptions").hide();
                 $("#divDateOptions").hide();
                 populateTimeOptions();
+                $("#divTimeOptions").focus();
             }
             else if (selectedSpan == "Weekly") {
                 $("#divTimeOptions").show();
@@ -283,12 +282,15 @@
                 $("#divDateOptions").hide();
                 populateTimeOptions();
                 populateWeekDayOptions();
+                $("#divTimeOptions").focus();
             }
             else if (selectedSpan == "Monthly") {
                 $("#divTimeOptions").show();
                 $("#divDayOptions").hide();
                 $("#divDateOptions").show();
                 populateTimeOptions();
+                $("#divTimeOptions").focus();
+                $("#SyncFrequency_Day").val('');
             }
         }
     });
@@ -319,7 +321,7 @@
                     if (data != null) {
                         if (data.status == 1) {
                             $("#cSuccess").html('');
-                            $('#cSuccess').append('<span>' + data.SuccessMessage.toString() + '</span>');
+                            $('#cSuccess').append("<strong>Success. </strong>" + data.SuccessMessage.toString());
                             $("#successMessage").slideDown(1200);
                             $("#successMessage").slideUp(3000);
                             $("#errorMessage").slideUp(1);
@@ -333,7 +335,7 @@
                         }
                         else {
                             $('#cError').html('');
-                            $('#cError').append('<span>' + data.ErrorMessage.toString() + '</span>');
+                            $('#cError').append("<strong>Error! </strong>" + data.ErrorMessage.toString());
                             $("#errorMessage").slideDown(400);
                             $("html, body").animate({ scrollTop: 0 }, 1000);
                             return false;
@@ -346,25 +348,31 @@
     }
 
     $('#btnSave').click(function () {
-
+        var isValidate = true;
         $('#content :input').each(function () {
             if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
-                if (this.id != 'importActuals' && this.id != 'integrationStatus') {
+                if (this.id != 'importActuals' && this.id != 'integrationStatus' && this.id != 'SyncFrequency_Day') {
                     var input = $(this).val();
                     if (input == '') {
                         $(this).addClass("error");
+                        isValidate = false;
                     } else {
                         $(this).removeClass("error");
                     }
                 }
             }
         });
-
-        if ($('#result').text() != '' && $('#result').text().toLowerCase() == 'too short') {
-            $('#result').removeClass();
-            $('#result').addClass('check-icon-red')
-            return false;
+        
+        if ($("#ddlSyncFrequency").val() == "Monthly" && $("#SyncFrequency_Day").val() == "") {
+            $('#SyncFrequency_Day').addClass("error");
+            isValidate = false;
         }
+        else {
+            $('#SyncFrequency_Day').removeClass("error");
+        }
+        
+        if (isValidate == false)
+            return false;
 
         if ($('#IsActive').val().toString() != "true")
         {

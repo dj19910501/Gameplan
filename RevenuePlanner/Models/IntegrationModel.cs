@@ -28,6 +28,7 @@ namespace RevenuePlanner.Models
 
         [Display(Name = "Password")]
         [Required]
+        [RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in Password.")]
         [MaxLength(250, ErrorMessage = "Password cannot be more than 250 characters.")]
         public string Password { get; set; }
 

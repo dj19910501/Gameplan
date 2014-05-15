@@ -371,11 +371,11 @@
 	</Field>
 	<Field>
 		<Name>TestIntegrationSuccess</Name>
-		<value>Integration Service Credentials has been verified successfully.</value>
+		<value>Provided integration service credentials are authenticated successfully.</value>
 	</Field>
 	<Field>
 		<Name>TestIntegrationFail</Name>
-		<value>Provided Integration Service Credentials are not verified.</value>
+		<value>Provided integration service credentials are not authenticated.</value>
 	</Field>
 	<!--End - Added by : Sohel Pathan on 09/05/2014 for PL #430-->
   <Field>
@@ -389,5 +389,13 @@
   <Field>
     <Name>IntegrationInActiveConfirmationMsg</Name>
     <value>This will remove Service Integration from Models also. Are you sure to proceed?</value>
+  </Field>
+  <Field>
+    <Name>SyncNowSuccMessage</Name>
+    <value>Sync is successfully done.</value>
+  </Field>
+  <Field>
+    <Name>SyncNowErrorMessage</Name>
+    <value>An error occured in Sync.</value>
   </Field>
 </Messages>
