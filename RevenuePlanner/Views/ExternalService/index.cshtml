@@ -252,14 +252,14 @@
         var $baselineTable = $('#table_baseline > tbody'); //tr:first
         var $html = "";
         $html += '<tr id="trService_' + _index + '" index="' + _integrationInstanceId + '" ><td><span class="title-baseline-model truncate">' + _instance + '</span><span class="search-icon"></span></td>' +
-            '<td>' + _provider + '</td>' +
+            '<td>' + _provider + '</td>'
         if (_lastSyncStatus.toString().toLowerCase() == "error")
         {
             $html += '<td id="lastSyncStatus' + _integrationInstanceId + '"><span style="color:red;">' + _lastSyncStatus + '</span></td>'
         }
         else
         {
-            $html +=      '<td id="lastSyncStatus' + _integrationInstanceId + '">' + _lastSyncStatus + '</td>' +
+            $html +=      '<td id="lastSyncStatus' + _integrationInstanceId + '">' + _lastSyncStatus + '</td>'
         }  
 
         $html +=   '<td id="lastSyncDate' + _integrationInstanceId + '">' + _lastSyncData + '</td>' +
