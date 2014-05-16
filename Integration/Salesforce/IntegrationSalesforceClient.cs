@@ -1237,8 +1237,7 @@ namespace Integration.Salesforce
 
         private void SyncInstanceData()
         {
-            List<int> planIds = new List<int>();//db.Plans.Where(p => p.Model.IntegrationInstanceId == _integrationInstanceId && p.Model.Status.Equals("Published")).Select(p => p.PlanId).ToList();
-            planIds.Add(303);
+            List<int> planIds = db.Plans.Where(p => p.Model.IntegrationInstanceId == _integrationInstanceId && p.Model.Status.Equals("Published")).Select(p => p.PlanId).ToList();
             List<string> statusList = GetStatusListAfterApproved();
 
             try
