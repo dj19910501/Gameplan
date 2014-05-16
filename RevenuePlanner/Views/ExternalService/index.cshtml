@@ -176,7 +176,7 @@
             $.ajax({
                 type: 'GET',
                 cache: false,
-                url: '@Url.Content("ExternalService/SyncNow/")',
+                url: '@Url.Content("~/ExternalService/SyncNow/")',
                 asyn:true,
                 data: { id: id },
                 success: function (data) {
