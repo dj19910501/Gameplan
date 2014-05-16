@@ -247,7 +247,7 @@
                     </button>
                     @Html.Hidden("hdnStatusValue", firstStatus, new { id = "hdnStatusValue" });
                     @if (len >= 2)
-                    {
+                    {   
                         <button data-toggle="dropdown" class="btn dropdown-toggle height25 btn-blue displayinherit">
                             <span class="caret "></span>
                         </button>
@@ -260,6 +260,17 @@
                                 </li>
                             }
                         </ul>
+                        
+                        <script type="text/javascript">
+                            $("#btnApproved").css("width", "100px");
+                        </script>
+                        
+                    }
+                    else
+                    {
+                        <script type="text/javascript">
+                            $("#btnApproved").css("border-radius", "4px");
+                        </script>
                     }
 
                 </div>
@@ -288,13 +299,13 @@
                         </span>
                     </button>
                      @if (campaignReview.IsDeployedToIntegration)
-                    {
+                     {
                         @Html.Hidden("hdnSyncStatusValue", "Sync", new { id = "hdnSyncStatusValue" });
-                    }
-                    else
-                    {
+                     }
+                     else
+                     {
                         @Html.Hidden("hdnSyncStatusValue", "Don't Sync", new { id = "hdnSyncStatusValue" });
-                    }
+                     }
                         <button data-toggle="dropdown" class="btn dropdown-toggle height25 btn-blue displayinherit">
                             <span class="caret "></span>
                         </button>                
