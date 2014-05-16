@@ -587,6 +587,8 @@ namespace RevenuePlanner.Controllers
 
         public JsonResult SyncNow(int id)
         {
+            string dateFormat = "MM/dd/yy h:mm tt";
+
             try
             {
                 ExternalIntegration externalIntegration = new ExternalIntegration(id);
@@ -595,7 +597,7 @@ namespace RevenuePlanner.Controllers
                 string status = integrationInstance.LastSyncStatus;
                 if (integrationInstance.LastSyncDate.HasValue)
                 {
-                    return Json(new { status = "Active", lastSync = Convert.ToDateTime(integrationInstance.LastSyncDate).ToString("MM/dd/yy h:mm tt") }, JsonRequestBehavior.AllowGet);
+                    return Json(new { status = integrationInstance.LastSyncStatus, lastSync = Convert.ToDateTime(integrationInstance.LastSyncDate).ToString(dateFormat) }, JsonRequestBehavior.AllowGet);
                 }
                 else
                 {
@@ -604,7 +606,7 @@ namespace RevenuePlanner.Controllers
             }
             catch (Exception)
             {
-                return Json(new { status = "Error", lastSync = DateTime.Now.ToString("MM/dd/yy h:mm tt") }, JsonRequestBehavior.AllowGet);
+                return Json(new { status = "Error", lastSync = DateTime.Now.ToString(dateFormat) }, JsonRequestBehavior.AllowGet);
                 throw;
             }
         }
