@@ -539,9 +539,9 @@ namespace RevenuePlanner.Controllers
                             }
                             scope.Complete();
                         }
+
                         if (IntegrationInstancesCount > 0 && SyncFrequenciesCount > 0 && IntegrationRemoved != false)
                         {
-
                             if (Convert.ToString(form.IsDeleted).ToLower() == "true")
                             {
                                 TempData["SuccessMessage"] = Common.objCached.IntegrationDeleted;
@@ -569,7 +569,6 @@ namespace RevenuePlanner.Controllers
                         form = reCreateView(form);
                         return View(form);
                     }
-
                 }
                 catch
                 {
@@ -588,15 +587,26 @@ namespace RevenuePlanner.Controllers
 
         public JsonResult SyncNow(int id)
         {
+            string dateFormat = "MM/dd/yy h:mm tt";
+
             try
             {
                 ExternalIntegration externalIntegration = new ExternalIntegration(id);
                 externalIntegration.Sync();
-                return Json(new { status = "Active", lastSync = DateTime.Now.ToString("MM/dd/yy h:mm tt") }, JsonRequestBehavior.AllowGet);
+                IntegrationInstance integrationInstance = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId.Equals(id));
+                string status = integrationInstance.LastSyncStatus;
+                if (integrationInstance.LastSyncDate.HasValue)
+                {
+                    return Json(new { status = integrationInstance.LastSyncStatus, lastSync = Convert.ToDateTime(integrationInstance.LastSyncDate).ToString(dateFormat) }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new { }, JsonRequestBehavior.AllowGet);
+                }
             }
             catch (Exception)
             {
-                return Json(new { status = "Error", lastSync = DateTime.Now.ToString("MM/dd/yy h:mm tt") }, JsonRequestBehavior.AllowGet);
+                return Json(new { status = "Error", lastSync = DateTime.Now.ToString(dateFormat) }, JsonRequestBehavior.AllowGet);
                 throw;
             }
         }
