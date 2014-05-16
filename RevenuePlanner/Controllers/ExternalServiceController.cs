@@ -591,7 +591,16 @@ namespace RevenuePlanner.Controllers
             {
                 ExternalIntegration externalIntegration = new ExternalIntegration(id);
                 externalIntegration.Sync();
-                return Json(new { status = "Active", lastSync = DateTime.Now.ToString("MM/dd/yy h:mm tt") }, JsonRequestBehavior.AllowGet);
+                IntegrationInstance integrationInstance = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId.Equals(id));
+                string status = integrationInstance.LastSyncStatus;
+                if (integrationInstance.LastSyncDate.HasValue)
+                {
+                    return Json(new { status = "Active", lastSync = Convert.ToDateTime(integrationInstance.LastSyncDate).ToString("MM/dd/yy h:mm tt") }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new { }, JsonRequestBehavior.AllowGet);
+                }
             }
             catch (Exception)
             {
