@@ -367,7 +367,7 @@
 	</Field>
 	<Field>
 		<Name>IntegrationDeleteConfirmationMsg</Name>
-		<value>Model data associated with this integration will be deleted. Are you sure to proceed ?</value>
+		<value>Deleting integration instance will reset sync details configured at model and plan level. Are you sure you want to proceed?</value>
 	</Field>
 	<Field>
 		<Name>TestIntegrationSuccess</Name>

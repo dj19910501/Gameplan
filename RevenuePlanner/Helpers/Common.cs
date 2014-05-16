@@ -21,6 +21,7 @@ using System.Threading;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.Mvc;
+using System.Transactions;
 
 namespace RevenuePlanner.Helpers
 {
@@ -48,7 +49,7 @@ namespace RevenuePlanner.Helpers
         public static readonly string SupportMail = System.Configuration.ConfigurationManager.AppSettings.Get("SupportEmail"); // email address of recipient of support mails
         public static readonly string FromAlias = System.Configuration.ConfigurationManager.AppSettings.Get("FromAlias"); //"192.168.100.225"
         public static readonly string EvoKey = System.Configuration.ConfigurationManager.AppSettings.Get("EvoKey");
-        public static readonly string FromSupportMail = System.Configuration.ConfigurationManager.AppSettings.Get("FromSupportMail"); 
+        public static readonly string FromSupportMail = System.Configuration.ConfigurationManager.AppSettings.Get("FromSupportMail");
 
         public const string OptionTextRegex = "^[^<>]+";
         public const string MessageForOptionTextRegex = "<> characters are not allowed";
@@ -1241,7 +1242,7 @@ namespace RevenuePlanner.Helpers
             jsonResult.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
             return jsonResult;
         }
-       
+
         #endregion
 
         #region Change log related functions
@@ -1683,7 +1684,8 @@ namespace RevenuePlanner.Helpers
                 improvementTactic.ImprovementPlanTacticId,
                 isImprovement = true,
                 IsHideDragHandleLeft = improvementTactic.EffectiveDate < calendarStartDate,
-                IsHideDragHandleRight = true
+                IsHideDragHandleRight = true,
+                temp = improvementTactic.Status,
             }).OrderBy(t => t.text);
 
             return taskDataImprovementTactic.ToList<object>();
@@ -1724,7 +1726,8 @@ namespace RevenuePlanner.Helpers
                 ImprovementActivityId = improvementCampaign.ImprovementPlanCampaignId,
                 isImprovement = true,
                 IsHideDragHandleLeft = startDate < calendarStartDate,
-                IsHideDragHandleRight = true
+                IsHideDragHandleRight = true,
+                temp = improvementTactics[0].Status
             };
 
             return taskDataImprovementActivity;
@@ -2447,7 +2450,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="PlanTacticId"></param>
         /// <param name="ModelId"></param>
         /// <returns></returns>
-        public static double CalculateMQLTactic(double INQ, DateTime StartDate ,int PlanTacticId, int ModelId = 0)
+        public static double CalculateMQLTactic(double INQ, DateTime StartDate, int PlanTacticId, int ModelId = 0)
         {
             MRPEntities dbm = new MRPEntities();
             if (ModelId == 0)
@@ -2455,7 +2458,7 @@ namespace RevenuePlanner.Helpers
                 ModelId = dbm.Plan_Campaign_Program_Tactic.Where(p => p.PlanTacticId == PlanTacticId).Select(p => p.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).SingleOrDefault();
             }
 
-            return Math.Round(INQ * GetMQLConversionRate(StartDate,ModelId),0,MidpointRounding.AwayFromZero);
+            return Math.Round(INQ * GetMQLConversionRate(StartDate, ModelId), 0, MidpointRounding.AwayFromZero);
         }
 
         /// <summary>
@@ -2497,8 +2500,8 @@ namespace RevenuePlanner.Helpers
             List<ModelConvertionRateRelation> mlist = GetModelConversionRate(tacticModelList.Select(t => t.ModelId).Distinct().ToList(), Enums.Stage.MQL.ToString());
 
             List<Plan_Tactic_MQL> TacticMQLList = (from tactic in PlanTacticList
-                               join t in tacticModelList on tactic.PlanTacticId equals t.PlanTacticId
-                                                      join ml in mlist on t.ModelId equals ml.ModelId
+                                                   join t in tacticModelList on tactic.PlanTacticId equals t.PlanTacticId
+                                                   join ml in mlist on t.ModelId equals ml.ModelId
                                                    select new Plan_Tactic_MQL
                                                       {
                                                           PlanTacticId = t.PlanTacticId,
@@ -2535,7 +2538,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ModelIds"></param>
         /// <param name="stageCode"></param>
         /// <returns></returns>
-        public static List<ModelConvertionRateRelation> GetModelConversionRate(List<int> ModelIds,string stageCode)
+        public static List<ModelConvertionRateRelation> GetModelConversionRate(List<int> ModelIds, string stageCode)
         {
             MRPEntities dbStage = new MRPEntities();
             List<int> Levelelist = new List<int>();
@@ -2546,7 +2549,7 @@ namespace RevenuePlanner.Helpers
                 for (int i = 1; i < levelINQ; i++)
                 {
                     Levelelist.Add(i);
-                }   
+                }
             }
             else if (stageCode == Enums.Stage.MQL.ToString())
             {
@@ -2586,7 +2589,7 @@ namespace RevenuePlanner.Helpers
 
             List<ModelConvertionRateRelation> modellist = (from m in ModelIds
                                                            join modelFunnel in dbStage.Model_Funnel on m equals modelFunnel.ModelId
-                                                           where modelFunnel.Funnel.Title.Equals(marketing) 
+                                                           where modelFunnel.Funnel.Title.Equals(marketing)
                                                            select new ModelConvertionRateRelation
                                                      {
                                                          ModelId = m,
@@ -2678,7 +2681,7 @@ namespace RevenuePlanner.Helpers
                                                           PlanTacticId = t.PlanTacticId,
                                                           ProjectedRevenue = isCW ? tactic.INQs * ml.ConversionRate : tactic.INQs * ml.ConversionRate * ml.AverageDealSize
                                                       }).ToList();
-            
+
             return tacticList;
         }
 
@@ -2717,6 +2720,66 @@ namespace RevenuePlanner.Helpers
                 return Convert.ToDateTime(objDate).ToString("MMM dd") + " at " + Convert.ToDateTime(objDate).ToString("hh:mm tt");
         }
 
+        #endregion
+
+        #region Delete Integration Instance
+        /// <summary>
+        /// Delete IntegrationInstance its relevant Model and Plan
+        /// </summary>
+        /// <Added By>Sohel Pathan</Added>
+        /// <Date>16/05/2014</Date>
+        /// <param name="integrationInstanceId"></param>
+        /// <param name="deleteIntegrationInstanceModel"></param>
+        /// <returns></returns>
+        public static bool DeleteIntegrationInstance(int integrationInstanceId, bool deleteIntegrationInstanceModel = false)
+        {
+            try
+            {
+                using (MRPEntities db = new MRPEntities())
+                {
+                    using (var scope = new TransactionScope())
+                    {
+                        var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) && 
+                            a.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceTacticId != null).ToList();
+                        Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                        var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign.Plan.Model.IntegrationInstanceId == integrationInstanceId &&
+                            a.IntegrationInstanceProgramId != null).ToList();
+                        Plan_Campaign_ProgramList.ForEach(a => { a.IntegrationInstanceProgramId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                        var Plan_CampaignList = db.Plan_Campaign.Where(a => a.IsDeleted.Equals(false) && a.Plan.Model.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceCampaignId != null).ToList();
+                        Plan_CampaignList.ForEach(a => { a.IntegrationInstanceCampaignId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+
+                        var Plan_Improvement_Campaign_Program_TacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) &&
+                            a.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceTacticId != null).ToList();
+                        Plan_Improvement_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                        var Plan_Improvement_Campaign_ProgramList = db.Plan_Improvement_Campaign_Program.Where(a => a.Plan_Improvement_Campaign.Plan.Model.IntegrationInstanceId == integrationInstanceId &&
+                            a.IntegrationInstanceProgramId != null).ToList();
+                        Plan_Improvement_Campaign_ProgramList.ForEach(a => { a.IntegrationInstanceProgramId = null; a.LastSyncDate = null; });
+
+                        var Plan_Improvement_CampaignList = db.Plan_Improvement_Campaign.Where(a => a.Plan.Model.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceCampaignId != null).ToList();
+                        Plan_Improvement_CampaignList.ForEach(a => { a.IntegrationInstanceCampaignId = null; a.LastSyncDate = null; });
+
+                        if (deleteIntegrationInstanceModel == true)
+                        {
+                            var ModelsList = db.Models.Where(a => a.IsDeleted.Equals(false) && a.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceId != null).ToList();
+                            ModelsList.ForEach(a => { a.IntegrationInstanceId = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                        }
+
+                        db.SaveChanges();
+                        scope.Complete();
+                        
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
         #endregion
     }
 }
