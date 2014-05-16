@@ -539,9 +539,9 @@ namespace RevenuePlanner.Controllers
                             }
                             scope.Complete();
                         }
+
                         if (IntegrationInstancesCount > 0 && SyncFrequenciesCount > 0 && IntegrationRemoved != false)
                         {
-
                             if (Convert.ToString(form.IsDeleted).ToLower() == "true")
                             {
                                 TempData["SuccessMessage"] = Common.objCached.IntegrationDeleted;
@@ -569,7 +569,6 @@ namespace RevenuePlanner.Controllers
                         form = reCreateView(form);
                         return View(form);
                     }
-
                 }
                 catch
                 {
