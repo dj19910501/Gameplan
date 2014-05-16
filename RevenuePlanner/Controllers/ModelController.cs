@@ -3664,6 +3664,8 @@ namespace RevenuePlanner.Controllers
                     db.SaveChanges();    
                 }
 
+                Common.DeleteIntegrationInstance(integrationId, false);
+
                 message = Common.objCached.ModelIntegrationSaveSuccess;
 
                 returnValue = true;

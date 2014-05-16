@@ -458,13 +458,13 @@
         }
 
         $(document).on('click', '#table_integrations tbody tr td span.circle-check-icon-gray', function (e) {
+            if (confirm('Modifying target integration will reset sync details configured at plan level. Are you sure you want to proceed?')) {
+                var id = this.id;
 
-            var id = this.id;
+                var integrationInstanceId = id.split('_')[1];
 
-            var integrationInstanceId = id.split('_')[1];
-
-            SaveAllIntegration(integrationInstanceId);
-
+                SaveAllIntegration(integrationInstanceId);
+            }
         });
 
         function SaveAllIntegration(integrationInstanceId) {

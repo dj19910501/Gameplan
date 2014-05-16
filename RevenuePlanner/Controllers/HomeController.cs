@@ -2243,10 +2243,10 @@ namespace RevenuePlanner.Controllers
                     imodel.EndDate = objPlan_Campaign_Program.EndDate;
                     imodel.INQs = objPlan_Campaign_Program.INQs;
                     
-                    if (objPlan_Campaign_Program.Vertical != null)
-                        imodel.VerticalTitle = objPlan_Campaign_Program.Vertical.Title;
-                    if (objPlan_Campaign_Program.Audience != null)
-                        imodel.AudiencTitle = objPlan_Campaign_Program.Audience.Title;
+                    //if (objPlan_Campaign_Program.Vertical != null)
+                    //    imodel.VerticalTitle = objPlan_Campaign_Program.Vertical.Title;
+                    //if (objPlan_Campaign_Program.Audience != null)
+                    //    imodel.AudiencTitle = objPlan_Campaign_Program.Audience.Title;
 
                     imodel.IsDeployedToIntegration = objPlan_Campaign_Program.IsDeployedToIntegration;
                     imodel.LastSyncDate = objPlan_Campaign_Program.LastSyncDate;
@@ -2311,10 +2311,10 @@ namespace RevenuePlanner.Controllers
                     imodel.EndDate = objPlan_Campaign.EndDate;
                     imodel.INQs = objPlan_Campaign.INQs;
 
-                    if (objPlan_Campaign.Vertical != null)
-                        imodel.VerticalTitle = objPlan_Campaign.Vertical.Title;
-                    if (objPlan_Campaign.Audience != null)
-                        imodel.AudiencTitle = objPlan_Campaign.Audience.Title;
+                    //if (objPlan_Campaign.Vertical != null)
+                    //    imodel.VerticalTitle = objPlan_Campaign.Vertical.Title;
+                    //if (objPlan_Campaign.Audience != null)
+                    //    imodel.AudiencTitle = objPlan_Campaign.Audience.Title;
 
                     imodel.IsDeployedToIntegration = objPlan_Campaign.IsDeployedToIntegration;
                     imodel.IntegrationType = GetIntegrationTypeTitleByModel(objPlan_Campaign.Plan.Model);
