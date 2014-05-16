@@ -124,15 +124,17 @@ function ReplaceCC(text) {
 
 function SetBudget(idName) {
     $(idName).html($(idName).html().replace("$", "").trim());
-    $(idName).html("$ " + number_format($(idName).html(), 0, '.', ','));
+    //$(idName).html("$ " + number_format($(idName).html(), 0, '.', ','));
     var budgetValue = $(idName).html();
-    if (budgetValue.length >= 9) {
-        $(idName).html($(idName).html().substring(0, 7) + "..");
+    if (budgetValue.length >= 5) {
+        $(idName).html(SetFormatForLabel(idName, 5)); //$(idName).html($(idName).html().substring(0, 7) + ".."); change by dharmraj for ticket #479 : to accommodate large number
+        $(idName).html('$ ' + $(idName).html());
         $(idName).prop('title', budgetValue);
         $(idName).addClass('north');
         $('.north').tipsy({ gravity: 'n' });
     }
     else {
+        $(idName).html('$ ' + $(idName).html());
         $(idName).removeAttr('original-title');
         $(idName).removeClass('north');
     }
