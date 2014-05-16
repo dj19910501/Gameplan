@@ -176,14 +176,18 @@
             $.ajax({
                 type: 'GET',
                 cache: false,
-                url: 'SyncNow',
+                url: '@Url.Content("ExternalService/SyncNow/")',
                 asyn:true,
                 data: { id: id },
                 success: function (data) {
                     if (data != null)
                     {
                         $('#lastSyncDate' + id).html(data.lastSync);
-                        $('#lastSyncStatus' + id).html(data.status);
+                        if (data.status.toString().toLowerCase() == "error") {
+                            $('#lastSyncStatus' + id).html('<span style="color:red;">' + data.status + '</span>');
+                        } else {
+                            $('#lastSyncStatus' + id).html('<span>' + data.status + '</span>');
+                        }
                     }
                     syncNow.siblings("span").hide();
                     syncNow.show();
@@ -253,6 +257,7 @@
         var $html = "";
         $html += '<tr id="trService_' + _index + '" index="' + _integrationInstanceId + '" ><td><span class="title-baseline-model truncate">' + _instance + '</span><span class="search-icon"></span></td>' +
             '<td>' + _provider + '</td>'
+        console.log(_lastSyncStatus.toString().toLowerCase());
         if (_lastSyncStatus.toString().toLowerCase() == "error")
         {
             $html += '<td id="lastSyncStatus' + _integrationInstanceId + '"><span style="color:red;">' + _lastSyncStatus + '</span></td>'

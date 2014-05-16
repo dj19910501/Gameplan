@@ -188,16 +188,23 @@ namespace Integration
 
             }
 
+                int integrationinstanceId = Convert.ToInt32(_integrationInstanceId);
+                IntegrationInstance integrationInstance = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == integrationinstanceId);
                 if (_isResultError)
                 {
                     instanceLogEnd.Status = StatusResult.Error.ToString();
+                    integrationInstance.LastSyncStatus = StatusResult.Error.ToString();
                 }
                 else
                 {
                     instanceLogEnd.Status = StatusResult.Success.ToString();
+                    integrationInstance.LastSyncStatus = StatusResult.Success.ToString();
                 }
+
                 instanceLogStart.SyncEnd = DateTime.Now;
+                integrationInstance.LastSyncDate = DateTime.Now;
                 db.Entry(instanceLogStart).State = EntityState.Modified;
+                db.Entry(integrationInstance).State = EntityState.Modified;
                 db.SaveChanges();
             }
         }

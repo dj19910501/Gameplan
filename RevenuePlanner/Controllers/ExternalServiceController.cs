@@ -16,6 +16,7 @@ namespace RevenuePlanner.Controllers
     {
         #region Variables
         private MRPEntities db = new MRPEntities();
+        string DateFormat = "MM/dd/yy h:mm tt";
         #endregion
 
         public ActionResult Index()
@@ -51,8 +52,8 @@ namespace RevenuePlanner.Controllers
                 IntegrationTypeId = a.IntegrationTypeId,
                 Instance = (a.Instance == null || a.Instance.ToString() == "null") ? "" : a.Instance.ToString(),
                 Provider = (a.IntegrationType.Title == null || a.IntegrationType.Title.ToString() == "null") ? "" : a.IntegrationType.Title.ToString(),
-                LastSyncStatus = (a.LastSyncStatus == null || a.LastSyncStatus.ToString() == "null") ? "" : a.LastSyncStatus.ToString(),
-                LastSyncDate = (a.LastSyncDate == null || a.LastSyncDate.ToString() == "null") ? "" : (a.LastSyncDate.Value.Date == DateTime.Now.Date ? "Today at " + a.LastSyncDate.Value.ToString("hh:mm tt") + " CST" : a.LastSyncDate.Value.ToString("MMM") + " at " + a.LastSyncDate.Value.ToString("hh:mm tt") + " CST"),
+                LastSyncStatus = string.IsNullOrWhiteSpace(a.LastSyncStatus) ? "" : a.LastSyncStatus.ToString(),
+                LastSyncDate = (a.LastSyncDate.HasValue ? Convert.ToDateTime(a.LastSyncDate).ToString(DateFormat) : ""),
             }).OrderByDescending(a => a.Instance).ToList();
 
             return Json(returnList, JsonRequestBehavior.AllowGet);
@@ -587,8 +588,6 @@ namespace RevenuePlanner.Controllers
 
         public JsonResult SyncNow(int id)
         {
-            string dateFormat = "MM/dd/yy h:mm tt";
-
             try
             {
                 ExternalIntegration externalIntegration = new ExternalIntegration(id);
@@ -597,7 +596,7 @@ namespace RevenuePlanner.Controllers
                 string status = integrationInstance.LastSyncStatus;
                 if (integrationInstance.LastSyncDate.HasValue)
                 {
-                    return Json(new { status = integrationInstance.LastSyncStatus, lastSync = Convert.ToDateTime(integrationInstance.LastSyncDate).ToString(dateFormat) }, JsonRequestBehavior.AllowGet);
+                    return Json(new { status = integrationInstance.LastSyncStatus, lastSync = Convert.ToDateTime(integrationInstance.LastSyncDate).ToString(DateFormat) }, JsonRequestBehavior.AllowGet);
                 }
                 else
                 {
@@ -606,7 +605,7 @@ namespace RevenuePlanner.Controllers
             }
             catch (Exception)
             {
-                return Json(new { status = "Error", lastSync = DateTime.Now.ToString(dateFormat) }, JsonRequestBehavior.AllowGet);
+                return Json(new { status = "Error", lastSync = DateTime.Now.ToString(DateFormat) }, JsonRequestBehavior.AllowGet);
                 throw;
             }
         }
