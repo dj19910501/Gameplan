@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data;
+using SalesforceSharp;
 
 namespace Integration
 {
@@ -14,7 +16,23 @@ namespace Integration
         Campaign,
         Program,
         Tactic,
-        ImprovementTactic
+        ImprovementTactic,
+        ImprovementCamapign,
+        ImprovementProgram
+    }
+
+    public enum StatusResult
+    {
+        Success,
+        Error
+    }
+
+    public enum Operation
+    {
+        Create,
+        Update,
+        Delete,
+        Import_Actuals
     }
 
     public enum IntegrationType
@@ -43,8 +61,10 @@ namespace Integration
     {
         int? _integrationInstanceId { get; set; }
         int _id { get; set; }
+        Guid _userId { get; set; }
         EntityType _entityType { get; set; }
         string _integrationType { get; set; }
+        bool _isResultError { get; set; }
         MRPEntities db = new MRPEntities();
         /// <summary>
         /// Data Dictionary to hold tactic status values.
@@ -61,9 +81,10 @@ namespace Integration
             {TacticStatus.Complete.ToString(), "Complete"}
         };
 
-        public ExternalIntegration(int id, EntityType entityType = EntityType.IntegrationInstance)
+        public ExternalIntegration(int id, Guid UserId = new Guid(), EntityType entityType = EntityType.IntegrationInstance)
         {
             _id = id;
+            _userId = UserId;
             _entityType = entityType;
         }
 
@@ -132,17 +153,52 @@ namespace Integration
 
         private void IdentifyIntegration()
         {
+            if (_userId == Guid.Empty)
+            {
+                _userId = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).CreatedBy;
+            }
+            _isResultError = false;
+            IntegrationInstanceLog instanceLogStart = new IntegrationInstanceLog();
+            instanceLogStart.IntegrationInstanceId = Convert.ToInt32(_integrationInstanceId);
+            instanceLogStart.SyncStart = DateTime.Now;
+            instanceLogStart.CreatedBy = _userId;
+            instanceLogStart.CreatedDate = DateTime.Now;
+            db.Entry(instanceLogStart).State = EntityState.Added;
+            int resulValue = db.SaveChanges();
+
+            if (resulValue > 0)
+            {
+                int integrationinstanceLogId = instanceLogStart.IntegrationInstanceLogId;
+                IntegrationInstanceLog instanceLogEnd = db.IntegrationInstanceLogs.SingleOrDefault(instance => instance.IntegrationInstanceLogId == integrationinstanceLogId);
             if (_integrationType.Equals(IntegrationType.Salesforce.ToString()))
             {
-                IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType);
+                    IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId);
                 if (integrationSalesforceClient.IsAuthenticated)
                 {
-                    integrationSalesforceClient.SyncData();
+                        _isResultError = integrationSalesforceClient.SyncData();
+                    }
+                    else
+                    {
+                        instanceLogEnd.ErrorDescription = "Authentication Failed :" + integrationSalesforceClient._ErrorMessage;
+                        _isResultError = true;
                 }
             }
             else if (_integrationType.Equals(IntegrationType.Eloqua.ToString()))
             {
 
+            }
+
+                if (_isResultError)
+                {
+                    instanceLogEnd.Status = StatusResult.Error.ToString();
+                }
+                else
+                {
+                    instanceLogEnd.Status = StatusResult.Success.ToString();
+                }
+                instanceLogStart.SyncEnd = DateTime.Now;
+                db.Entry(instanceLogStart).State = EntityState.Modified;
+                db.SaveChanges();
             }
         }
 
@@ -156,7 +212,7 @@ namespace Integration
 
             if (_integrationType.Equals(IntegrationType.Salesforce.ToString()))
             {
-                IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType);
+                IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0);
                 if (integrationSalesforceClient.IsAuthenticated)
                 {
                     return integrationSalesforceClient.GetTargetDataType();

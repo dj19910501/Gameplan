@@ -44,6 +44,7 @@ namespace RevenuePlanner.Models
         public DbSet<IntegrationInstance_Attribute> IntegrationInstance_Attribute { get; set; }
         public DbSet<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
         public DbSet<IntegrationInstanceLog> IntegrationInstanceLogs { get; set; }
+        public DbSet<IntegrationInstancePlanEntityLog> IntegrationInstancePlanEntityLogs { get; set; }
         public DbSet<IntegrationType> IntegrationTypes { get; set; }
         public DbSet<IntegrationTypeAttribute> IntegrationTypeAttributes { get; set; }
         public DbSet<Metric> Metrics { get; set; }
@@ -61,6 +62,9 @@ namespace RevenuePlanner.Models
         public DbSet<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Actual> Plan_Campaign_Program_Tactic_Actual { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Comment> Plan_Campaign_Program_Tactic_Comment { get; set; }
+        public DbSet<Plan_Improvement_Campaign> Plan_Improvement_Campaign { get; set; }
+        public DbSet<Plan_Improvement_Campaign_Program> Plan_Improvement_Campaign_Program { get; set; }
+        public DbSet<Plan_Improvement_Campaign_Program_Tactic> Plan_Improvement_Campaign_Program_Tactic { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program_Tactic_Comment> Plan_Improvement_Campaign_Program_Tactic_Comment { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program_Tactic_Share> Plan_Improvement_Campaign_Program_Tactic_Share { get; set; }
         public DbSet<Plan_Team> Plan_Team { get; set; }
@@ -72,9 +76,6 @@ namespace RevenuePlanner.Models
         public DbSet<User_Filter> User_Filter { get; set; }
         public DbSet<User_Notification> User_Notification { get; set; }
         public DbSet<Vertical> Verticals { get; set; }
-        public DbSet<Plan_Improvement_Campaign> Plan_Improvement_Campaign { get; set; }
-        public DbSet<Plan_Improvement_Campaign_Program> Plan_Improvement_Campaign_Program { get; set; }
-        public DbSet<Plan_Improvement_Campaign_Program_Tactic> Plan_Improvement_Campaign_Program_Tactic { get; set; }
     
         public virtual int Plan_Campaign_Program_Tactic_ActualDelete(Nullable<int> planTacticId, ObjectParameter returnValue)
         {

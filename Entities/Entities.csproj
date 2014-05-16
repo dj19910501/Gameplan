@@ -91,6 +91,9 @@
     <Compile Include="Models\IntegrationInstanceLog.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\IntegrationInstancePlanEntityLog.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\IntegrationInstance_Attribute.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
