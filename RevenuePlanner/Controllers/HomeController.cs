@@ -2242,9 +2242,11 @@ namespace RevenuePlanner.Controllers
                     imodel.StartDate = objPlan_Campaign_Program.StartDate;
                     imodel.EndDate = objPlan_Campaign_Program.EndDate;
                     imodel.INQs = objPlan_Campaign_Program.INQs;
-
-                    imodel.VerticalTitle = objPlan_Campaign_Program.Vertical.Title;
-                    imodel.AudiencTitle = objPlan_Campaign_Program.Audience.Title;
+                    
+                    if (objPlan_Campaign_Program.Vertical != null)
+                        imodel.VerticalTitle = objPlan_Campaign_Program.Vertical.Title;
+                    if (objPlan_Campaign_Program.Audience != null)
+                        imodel.AudiencTitle = objPlan_Campaign_Program.Audience.Title;
 
                     imodel.IsDeployedToIntegration = objPlan_Campaign_Program.IsDeployedToIntegration;
                     imodel.LastSyncDate = objPlan_Campaign_Program.LastSyncDate;
@@ -2370,14 +2372,14 @@ namespace RevenuePlanner.Controllers
                 returnValue = "N/A";
             else
             {
-                var objIntegrationType =db.IntegrationTypes.SingleOrDefault(varI => varI.IntegrationTypeId == objModel.IntegrationInstanceId);
-                if (objIntegrationType == null)
+                var IntegrationInstance = db.IntegrationInstances.SingleOrDefault(varI => varI.IntegrationInstanceId == objModel.IntegrationInstanceId);
+                if (IntegrationInstance == null)
                 {
                     returnValue = "N/A";
                 }
                 else
                 {
-                    returnValue = objIntegrationType.Title;
+                    returnValue = IntegrationInstance.IntegrationType.Title;
                 }
             }
 

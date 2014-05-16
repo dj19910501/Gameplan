@@ -6719,6 +6719,14 @@ h2.title-header {
 .improvementcolor244c0a .gantt_task_drag{background: none repeat scroll 0 0 #244c0a !important;}
 .improvementcolor244c0a .gantt_task_drag:after{border-top-color: #244c0a;}
 
+.improvementcolor27a4e5.gantt_task_line{border-color: #27a4e5;}
+.improvementcolor27a4e5 .gantt_task_drag{background: none repeat scroll 0 0 #27a4e5 !important;}
+.improvementcolor27a4e5 .gantt_task_drag:after{border-top-color: #27a4e5;}
+
+.improvementcolor3e1152.gantt_task_line{border-color: #3e1152;}
+.improvementcolor3e1152 .gantt_task_drag{background: none repeat scroll 0 0 #3e1152 !important;}
+.improvementcolor3e1152 .gantt_task_drag:after{border-top-color: #3e1152;}
+
 /*Added by Dharmraj for ticket#394 on 31/3/2014 */
 .improvementcolor27A4E5 {border-style: solid none none;border-width: 6px medium medium !important;}
 .improvementcolor27A4E5.gantt_task_line{border-color: #27A4E5;}
