@@ -396,6 +396,10 @@
     <Content Include="Content\images\sprite-icons-modal.png" />
     <Content Include="Content\images\sprite-items-menu.png" />
     <Content Include="Content\images\squares.png" />
+    <Content Include="Content\images\status-approved.gif" />
+    <Content Include="Content\images\status-created.gif" />
+    <Content Include="Content\images\status-rejected.gif" />
+    <Content Include="Content\images\status-submitted.gif" />
     <Content Include="Content\images\stripe-chart.png" />
     <Content Include="Content\images\stripe-pattern.gif" />
     <Content Include="Content\images\support-icon-dark.png" />

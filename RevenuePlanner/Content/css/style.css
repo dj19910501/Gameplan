@@ -6643,9 +6643,9 @@ h2.title-header {
 .improvementcolor144D6B .gantt_task_drag{background: none repeat scroll 0 0 #144D6B !important;}
 .improvementcolor144D6B .gantt_task_drag:after{border-top-color: #144D6B;}
 
-.improvementcolor0F3A50.gantt_task_line{border-color: #0F3A50;}
-.improvementcolor0F3A50 .gantt_task_drag{background: none repeat scroll 0 0 #0F3A50 !important;}
-.improvementcolor0F3A50 .gantt_task_drag:after{border-top-color: #0F3A50;}
+.improvementcolor0f3a50.gantt_task_line{border-color: #0F3A50;}
+.improvementcolor0f3a50 .gantt_task_drag{background: none repeat scroll 0 0 #0F3A50 !important;}
+.improvementcolor0f3a50 .gantt_task_drag:after{border-top-color: #0F3A50;}
 
 .improvementcolor407B22.gantt_task_line{border-color: #407B22;}
 .improvementcolor407B22 .gantt_task_drag{background: none repeat scroll 0 0 #407B22 !important;}
