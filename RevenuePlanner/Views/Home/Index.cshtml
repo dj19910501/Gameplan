@@ -78,6 +78,24 @@
             //onClickPlanTitle();
             onClickActivity();
             //  onClickBusinessUnit();//Added by Nirav for Custom Dropdown - 388
+
+            //// Start - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+            $('.toggleStatus').click(function () {
+                $(this).hide();
+                $('.toggle-status div').show();
+                showTacticStatus = true;
+                RefreshCurrentTab();
+                gantt.refreshData();
+            });
+
+            $('.toggleStatusHide').click(function () {
+                $('.toggleStatus').show();
+                $('.toggle-status div').hide();
+                showTacticStatus = false;
+                RefreshCurrentTab();
+                gantt.refreshData();
+            });
+            //// End - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
         });
         function populateNF(items, id) {
             var $dropdown = $("#" + id);
@@ -514,6 +532,18 @@
             <div class="margin-left9 pull-left" id="divCollaborator" style="position: relative;">
                 <!-- position:relative = added by kapil -->
             </div>
+            @* Start - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen *@
+            <div class="pull-right toggle-status source-sans-proregular">
+                <div class="pull-right">
+                    <a href="#" class="toggleStatusHide">Hide Status</a>
+                    <span class="status-created">Created</span>
+                    <span class="status-submitted">Submitted</span>
+                    <span class="status-approved">Approved</span>
+                    <span class="status-rejected">Rejected</span>
+                </div>
+                <a href="#" class="toggleStatus">Show Status</a>
+            </div>
+            @* End - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen *@
             <div>
                 <div class="gantt-padding cf lenght-div" style="min-height:300px;">
                     <div id="gantt_here"></div>
@@ -613,6 +643,7 @@
 
     //// Global variable to hold current tab.
     var type = GanttTabs.Tactic;
+    var showTacticStatus = false;   //// Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
 
     //// Global variable to hold filters
     var filters = {
@@ -1333,7 +1364,6 @@
      var tasks = {
          data: taskData
      };
-
      //var tasks = {
      //    data: [
      //        { id: 1, text: "ERP V10 Product Launch", start_date: new Date(2013, 00, 05), duration: 10, progress: 1, open: true },
@@ -1345,7 +1375,7 @@
      });
 
      gantt.eachTask(function (task) {
-         gantt.deleteTask(task.id)
+        gantt.deleteTask(task.id)
      })
      if (isQuater == "thisquarter") {
          //// Setting scale.
@@ -1648,11 +1678,13 @@
 
  ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
  function getCSSForTask(task) {
+     var isImprovement = false;
      if (typeof task.plantacticid != 'undefined' || (typeof task.isImprovement != 'undefined' && task.isImprovement == true)) {
          var cssClass = task.color + ' cursorPointer' + (task.isSubmitted && (GanttTabs.Request == type) ? ' to-approve' : '');
          if (typeof task.isImprovement != 'undefined' && task.isImprovement == true &&
              typeof task.ImprovementPlanTacticId != 'undefined') {
              cssClass += ' improvement border-top';
+             isImprovement = true;
          }
          else {
              if (!task.$open) {
@@ -1667,6 +1699,20 @@
          cssClass = task.color + ' no_drag ';
      }
 
+     //// Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+     if (showTacticStatus == true) {
+         if (task.Status == "Created")
+             cssClass += " tactic-created";
+         else if (task.Status == "Submitted")
+             cssClass += " tactic-submitted ";
+         else if (task.Status == "Approved" || task.Status == "Complete" || task.Status == "In-Progress")
+             cssClass += " tactic-approved";
+         else if (task.Status == "Rejected" || task.Status == "Declined")
+             cssClass += " tactic-rejected";
+
+         if(isImprovement == true)
+             cssClass += " improvement-border-top-status";
+     }
      return cssClass;
  }
 

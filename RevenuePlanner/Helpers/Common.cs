@@ -1685,7 +1685,7 @@ namespace RevenuePlanner.Helpers
                 isImprovement = true,
                 IsHideDragHandleLeft = improvementTactic.EffectiveDate < calendarStartDate,
                 IsHideDragHandleRight = true,
-                temp = improvementTactic.Status,
+                Status = improvementTactic.Status,      //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home, Plan and ApplyToCalender screen
             }).OrderBy(t => t.text);
 
             return taskDataImprovementTactic.ToList<object>();
@@ -1727,7 +1727,7 @@ namespace RevenuePlanner.Helpers
                 isImprovement = true,
                 IsHideDragHandleLeft = startDate < calendarStartDate,
                 IsHideDragHandleRight = true,
-                temp = improvementTactics[0].Status
+                Status = improvementTactics[0].Status   //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home, Plan and ApplyToCalender screen
             };
 
             return taskDataImprovementActivity;

@@ -40,6 +40,7 @@
     var CurrentBid = 0;
     // Edited to add PlanYear option.
     var Currenttime = "planYear";
+    var showTacticStatus = false;   //// Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
     function populateNF(items, id) {
         var $dropdown = $("#" + id);
         var $html = '';
@@ -142,6 +143,24 @@
         $('#DivloadPlan').load('@Url.Action("PlanList", "Plan")' + '?Bid='+id);
         onClickActivity();
         //onClickBusinessUnit();
+
+        //// Start - Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
+        $('.toggleStatus').click(function () {
+            $(this).hide();
+            $('.toggle-status div').show();
+            showTacticStatus = true;
+            RefreshCalendar();
+            gantt.refreshData();
+        });
+
+        $('.toggleStatusHide').click(function () {
+            $('.toggleStatus').show();
+            $('.toggle-status div').hide();
+            showTacticStatus = false;
+            RefreshCalendar();
+            gantt.refreshData();
+        });
+        //// End - Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
     });
 
     function GetHealderData(intplanid) {
@@ -322,6 +341,18 @@
         <div class=" pl20 cf">
             <div class="margin-left9 pull-left" id="divCollaborator" style="position:relative;"> <!-- position:relative = added by kapil -->
             </div>
+            @* Start - Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen *@
+            <div class="pull-right toggle-status source-sans-proregular">
+                <div class="pull-right">
+                    <a href="#" class="toggleStatusHide">Hide Status</a>
+                    <span class="status-created">Created</span>
+                    <span class="status-submitted">Submitted</span>
+                    <span class="status-approved">Approved</span>
+                    <span class="status-rejected">Rejected</span>
+                </div>
+                <a href="#" class="toggleStatus">Show Status</a>
+            </div>
+            @* End - Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen *@
             <div>
                 <div class="gantt-padding cf all-height lenght-div ">
                     <div id="gantt_here"></div>
@@ -644,7 +675,7 @@
    ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
    function getCSSForTask(task) {
        var cssClass = task.color + ' cursorPointer';
-
+       var isImprovement = false;   //// Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
        ///Modified by Dharmraj PL Ticket#394 - Apply required styling on the Improvement activity in calendar
        //if (typeof task.isImprovement != 'undefined' &&
        //    task.isImprovement == true &&
@@ -655,12 +686,28 @@
        if (typeof task.isImprovement != 'undefined' && task.isImprovement == true) {
            if (typeof task.ImprovementPlanTacticId != 'undefined') {
                cssClass += ' improvement border-top resize';
+               isImprovement = true;    //// Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
            }
            else {
                if (!task.$open) {
                    cssClass = ' improvement improvementcolor27A4E5 colorC6EBF3-with-border cursorPointer resize ';
                }
            }
+       }
+
+       //// Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
+       if (showTacticStatus == true) {
+           if (task.Status == "Created")
+               cssClass += " tactic-created";
+           else if (task.Status == "Submitted")
+               cssClass += " tactic-submitted ";
+           else if (task.Status == "Approved" || task.Status == "Complete" || task.Status == "In-Progress")
+               cssClass += " tactic-approved";
+           else if (task.Status == "Rejected" || task.Status == "Declined")
+               cssClass += " tactic-rejected";
+
+           if (isImprovement == true)
+               cssClass += " improvement-border-top-status";
        }
 
        return cssClass;

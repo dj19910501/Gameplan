@@ -6626,8 +6626,8 @@ h2.title-header {
 .border-top.gantt_task_line
 {
     background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
-    border-style: solid none none;
-    border-width: 6px medium medium;
+    border-style: solid none none !important;       /* Modified by : Sohel on 19/05/2014 for PL #425 to Show status of tactics on Home, Plan and ApplyToCalender screen */
+    border-width: 6px medium medium !important;     /* Modified by : Sohel on 19/05/2014 for PL #425 to Show status of tactics on Home, Plan and ApplyToCalender screen */
     border-radius: 0px;
 }
 
@@ -6731,9 +6731,11 @@ h2.title-header {
 .improvementcolorf6f263 .gantt_task_drag{background: none repeat scroll 0 0 #f6f263 !important;}
 .improvementcolorf6f263 .gantt_task_drag:after{border-top-color: #f6f263;}
 
-.improvementcolor0f3a50.gantt_task_line{border-color: #0f3a50;}
-.improvementcolor0f3a50 .gantt_task_drag{background: none repeat scroll 0 0 #0f3a50 !important;}
-.improvementcolor0f3a50 .gantt_task_drag:after{border-top-color: #0f3a50;}
+/* Start - Added by : Sohel on 19/05/2014 for PL #425 to Show status of tactics on Home, Plan and ApplyToCalender screen */
+.improvementcolor520a10.gantt_task_line{border-color: #520a10;}
+.improvementcolor520a10 .gantt_task_drag{background: none repeat scroll 0 0 #520a10 !important;}
+.improvementcolor520a10 .gantt_task_drag:after{border-top-color: #520a10;}
+/* End - Added by : Sohel on 19/05/2014 for PL #425 to Show status of tactics on Home, Plan and ApplyToCalender screen */
 
 /*Added by Dharmraj for ticket#394 on 31/3/2014 */
 .improvementcolor27A4E5 {border-style: solid none none;border-width: 6px medium medium !important;}
@@ -6988,3 +6990,118 @@ input.icon-check-blue{background-image: url("../images/circle-check-icon-small-b
     color: #999999 !important;
 }
 /* End - Added by Sohel on 12/05/2014 for PL #430 Integration Screen */
+
+
+/* Start - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home, Plan and ApplyToCalender screen */
+.status-main {
+    /*float: left;*/
+    height: 37px;
+    position: relative;
+    width: 100%;
+}
+
+.toggle-status {
+    position:relative;
+    bottom:-12px;
+}
+.toggleStatus, .toggleStatusHide {
+    height:20px;
+    border:1px solid #e5e5e5;
+    background:#f2f2f2;
+    font-size:12px;
+    padding:0 5px;
+    text-decoration:underline;
+    display:inline-block;
+    outline:none;
+}
+.toggleStatus:hover, .toggleStatus:visited, .toggleStatusHide:hover, .toggleStatusHide:visited {
+    text-decoration:none;
+    color:#0088cc;
+}
+.toggle-status div{
+    display:none;
+}
+.toggle-status .pull-right > span {
+    height:20px;
+    border:1px solid #e5e5e5;
+    font-size:12px;
+    color:#BBBBBB;
+    padding:0 5px 0 18px;
+    margin-left:3px !important;
+    margin-right:0 !important;
+    display:inline-block;
+    background-repeat:no-repeat;
+    background-position:5px center;
+}
+.status-created {
+    background-image:url(../images/status-created.gif);
+}
+.status-submitted {
+    background-image:url(../images/status-submitted.gif);
+}
+.status-approved {
+    background-image:url(../images/status-approved.gif);
+}
+.status-rejected {
+    background-image:url(../images/status-rejected.gif);
+}
+
+.tactic-created {
+    background-color: #F6D87F !important;
+    border: 1px solid #F6D87F !important;
+}
+.tactic-submitted {
+    background-color: #EE8F7A !important;
+    border: 1px solid #EE8F7A !important;
+}
+.tactic-approved {
+    background-color: #CC91BF !important;
+    border: 1px solid #CC91BF !important;
+}
+.tactic-rejected {
+    background-color: #D4D4D4 !important;
+    border: 1px solid #D4D4D4 !important;
+}
+
+.improvement-border-top-status {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0) !important;
+    border-radius: 0 !important;
+    border-style: solid none none !important;
+    border-width: 6px medium medium !important;
+}
+
+.tactic-created .gantt_task_progress {
+    background-color: #F6D87F !important;
+    border: 1px solid #F6D87F !important;
+}
+.tactic-submitted .gantt_task_progress {
+    background-color: #EE8F7A !important;
+    /*border: 1px solid #EE8F7A !important;*/
+}
+.tactic-approved .gantt_task_progress {
+    background-color: #CC91BF !important;
+    border: 1px solid #CC91BF !important;
+}
+.tactic-rejected .gantt_task_progress {
+    background-color: #D4D4D4 !important;
+    border: 1px solid #D4D4D4 !important;
+}
+
+.improvement-border-top-status .gantt_task_progress {
+    border: none !important;
+}
+
+.tactic-created .gantt_task_drag{background: none repeat scroll 0 0 #F6D87F !important;}
+.tactic-created .gantt_task_drag:after{border-top-color: #F6D87F;}
+
+.tactic-submitted .gantt_task_drag{background: none repeat scroll 0 0 #EE8F7A !important;}
+.tactic-submitted .gantt_task_drag:after{border-top-color: #EE8F7A;}
+
+.tactic-approved .gantt_task_drag{background: none repeat scroll 0 0 #CC91BF !important;}
+.tactic-approved .gantt_task_drag:after{border-top-color: #CC91BF;}
+
+.tactic-rejected .gantt_task_drag{background: none repeat scroll 0 0 #D4D4D4 !important;}
+.tactic-rejected .gantt_task_drag:after{border-top-color: #D4D4D4;}
+
+
+/* End - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home, Plan and ApplyToCalender screen */

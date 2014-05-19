@@ -3173,7 +3173,7 @@ div.dhx_modal_cover
 
 .colorC6EBF3-with-border
 {
-    border-top: 3px solid #27a4e5;
+    border-top: 3px solid #27a4e5 !important;   /* Modified by : Sohel on 19/05/2014 for PL #425 to Show status of tactics on Home, Plan and ApplyToCalender screen */
     background: #C6EBF3;
     border-bottom: none;
     border-left: none;
@@ -3723,9 +3723,9 @@ div.dhx_modal_cover
     background-image: url(../../images/stripe-chart.png);
     background-repeat: repeat;
     background-position: left top;
-    border-color: #27A4E5 -moz-use-text-color -moz-use-text-color;
-    border-style: solid none none;
-    border-width: 3px medium medium;
+    border-color: #27A4E5 -moz-use-text-color -moz-use-text-color !important;    /* Modified by : Sohel on 19/05/2014 for PL #425 to Show status of tactics on Home, Plan and ApplyToCalender screen */
+    border-style: solid none none !important;       /* Modified by : Sohel on 19/05/2014 for PL #425 to Show status of tactics on Home, Plan and ApplyToCalender screen */
+    border-width: 3px medium medium !important;     /* Modified by : Sohel on 19/05/2014 for PL #425 to Show status of tactics on Home, Plan and ApplyToCalender screen */
     background-color:#C6EBF3;
 }
 

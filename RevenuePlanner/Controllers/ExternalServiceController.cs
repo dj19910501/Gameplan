@@ -19,6 +19,12 @@ namespace RevenuePlanner.Controllers
         string DateFormat = "MM/dd/yy h:mm tt";
         #endregion
 
+        #region Integration Listing
+        
+        /// <summary>
+        /// Integration data listing
+        /// </summary>
+        /// <returns></returns>
         public ActionResult Index()
         {
             ViewBag.CurrentUserRole = Convert.ToString(Sessions.User.RoleCode);
@@ -40,6 +46,10 @@ namespace RevenuePlanner.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Generate IntegrationService Listing.
+        /// </summary>
+        /// <returns></returns>
         public JsonResult GetIntegrationServiceListings()
         {
             var IntegrationInstanceList = db.IntegrationInstances
@@ -59,6 +69,10 @@ namespace RevenuePlanner.Controllers
             return Json(returnList, JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// Get IntegrationType List to fill IntegrationType Combo
+        /// </summary>
+        /// <returns></returns>
         public JsonResult GetIntegrationTypeList()
         {
             IList<SelectListItem> IntegrationList = new List<SelectListItem>();
@@ -85,6 +99,15 @@ namespace RevenuePlanner.Controllers
             return Json(IntegrationList, JsonRequestBehavior.AllowGet);
         }
 
+        #endregion
+
+        #region Add Integration
+        
+        /// <summary>
+        /// Add new Integration Service
+        /// </summary>
+        /// <param name="integrationTypeId"></param>
+        /// <returns></returns>
         public ActionResult create(int integrationTypeId)
         {
             ViewBag.integrationTypeId = integrationTypeId;
@@ -112,6 +135,11 @@ namespace RevenuePlanner.Controllers
             return View(objModelToView);
         }
 
+        /// <summary>
+        /// Save new integration Service
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult create(IntegrationModel form)
         {
@@ -218,6 +246,13 @@ namespace RevenuePlanner.Controllers
             }
         }
 
+        #endregion
+
+        #region Common Functions
+
+        /// <summary>
+        /// Populate sync frequency combos
+        /// </summary>
         public void populateSyncFreqData()
         {
             List<SelectListItem> lstSyncFreq = new List<SelectListItem>();
@@ -287,6 +322,10 @@ namespace RevenuePlanner.Controllers
             TempData["InActiveConfirmationMsg"] = Common.objCached.IntegrationInActiveConfirmationMsg;
         }
 
+        /// <summary>
+        /// Populate Time options combo
+        /// </summary>
+        /// <returns></returns>
         [AcceptVerbs(HttpVerbs.Get)]
         public JsonResult populateTimeOptions()
         {
@@ -306,6 +345,10 @@ namespace RevenuePlanner.Controllers
             return Json(new SelectList(lst24Hours, "Value", "Text", lst24Hours.First()), JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// Populate Weekdays combo
+        /// </summary>
+        /// <returns></returns>
         [AcceptVerbs(HttpVerbs.Get)]
         public JsonResult populateWeekDayOptions()
         {
@@ -321,6 +364,11 @@ namespace RevenuePlanner.Controllers
             return Json(new SelectList(lstWeekdays, "Value", "Text", lstWeekdays.First()), JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// Generate view from passed "form".
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
         public IntegrationModel reCreateView(IntegrationModel form)
         {
             form.IntegrationTypeAttributes = db.IntegrationTypeAttributes.Where(a => a.IsDeleted.Equals(false) && a.IntegrationType.IntegrationTypeId == form.IntegrationTypeId)
@@ -336,6 +384,15 @@ namespace RevenuePlanner.Controllers
             return form;
         }
 
+        #endregion
+
+        #region Update Integration
+
+        /// <summary>
+        /// Populate existing integration service.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult edit(int id)
         {
             var record = db.IntegrationInstances
@@ -402,6 +459,11 @@ namespace RevenuePlanner.Controllers
             return View(objView);
         }
 
+        /// <summary>
+        /// Update existing integration service
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult edit(IntegrationModel form)
         {
@@ -586,6 +648,13 @@ namespace RevenuePlanner.Controllers
             }
         }
 
+        #endregion
+        
+        /// <summary>
+        /// Sync service
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public JsonResult SyncNow(int id)
         {
             try
@@ -610,6 +679,11 @@ namespace RevenuePlanner.Controllers
             }
         }
 
+        /// <summary>
+        /// Authenticate integration credentials for external service.
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult TestIntegration(IntegrationModel form)
         {

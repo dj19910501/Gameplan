@@ -888,7 +888,8 @@ namespace RevenuePlanner.Controllers
                                                         color = Common.COLORC6EBF3_WITH_BORDER,
                                                         PlanCampaignId = c.PlanCampaignId,
                                                         IsHideDragHandleLeft = c.StartDate < CalendarStartDate,
-                                                        IsHideDragHandleRight = c.EndDate > CalendarEndDate
+                                                        IsHideDragHandleRight = c.EndDate > CalendarEndDate,
+                                                        Status = c.Status       //// Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
                                                     }).Select(c => c).OrderBy(c => c.text);
 
             var NewtaskDataCampaign = taskDataCampaign.Select(t => new
@@ -902,7 +903,8 @@ namespace RevenuePlanner.Controllers
                 color = t.color + (t.progress == 1 ? " stripe" : (t.progress > 0 ? "stripe" : "")),
                 PlanCampaignId = t.PlanCampaignId,
                 IsHideDragHandleLeft = t.IsHideDragHandleLeft,
-                IsHideDragHandleRight = t.IsHideDragHandleRight
+                IsHideDragHandleRight = t.IsHideDragHandleRight,
+                Status = t.Status       //// Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
             });
 
             var taskDataProgram = db.Plan_Campaign_Program.Where(p => p.Plan_Campaign.PlanId.Equals(plan.PlanId) &&
@@ -927,7 +929,8 @@ namespace RevenuePlanner.Controllers
                                                               color = Common.COLOR27A4E5,
                                                               PlanProgramId = p.PlanProgramId,
                                                               IsHideDragHandleLeft = p.StartDate < CalendarStartDate,
-                                                              IsHideDragHandleRight = p.EndDate > CalendarEndDate
+                                                              IsHideDragHandleRight = p.EndDate > CalendarEndDate,
+                                                              Status = p.Status     //// Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
                                                           }).Select(p => p).Distinct().OrderBy(p => p.text).ToList();
 
             var NewtaskDataProgram = taskDataProgram.Select(t => new
@@ -942,7 +945,8 @@ namespace RevenuePlanner.Controllers
                 color = t.color + (t.progress == 1 ? " stripe stripe-no-border" : (t.progress > 0 ? "stripe" : "")),
                 PlanProgramId = t.PlanProgramId,
                 IsHideDragHandleLeft = t.IsHideDragHandleLeft,
-                IsHideDragHandleRight = t.IsHideDragHandleRight
+                IsHideDragHandleRight = t.IsHideDragHandleRight,
+                Status = t.Status       //// Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
             });
 
             var taskDataTactic = db.Plan_Campaign_Program_Tactic.Where(p => p.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId) &&
@@ -967,7 +971,8 @@ namespace RevenuePlanner.Controllers
                                                                     color = Common.COLORC6EBF3_WITH_BORDER,
                                                                     plantacticid = t.PlanTacticId,
                                                                     IsHideDragHandleLeft = t.StartDate < CalendarStartDate,
-                                                                    IsHideDragHandleRight = t.EndDate > CalendarEndDate
+                                                                    IsHideDragHandleRight = t.EndDate > CalendarEndDate,
+                                                                    Status = t.Status       //// Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
                                                                 }).OrderBy(t => t.text).ToList();
 
             var NewTaskDataTactic = taskDataTactic.Select(t => new
@@ -982,7 +987,8 @@ namespace RevenuePlanner.Controllers
                 color = t.color + (t.progress == 1 ? " stripe" : ""),
                 plantacticid = t.plantacticid,
                 IsHideDragHandleLeft = t.IsHideDragHandleLeft,
-                IsHideDragHandleRight = t.IsHideDragHandleRight
+                IsHideDragHandleRight = t.IsHideDragHandleRight,
+                Status = t.Status       //// Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
             });
 
             //return taskDataCampaign.Concat<object>(taskDataTactic).Concat<object>(taskDataProgram).ToList<object>();
