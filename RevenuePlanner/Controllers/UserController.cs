@@ -314,7 +314,7 @@ namespace RevenuePlanner.Controllers
             var lstSecurityQuestion = objBDSServiceClient.GetSecurityQuestion();
 
             SecurityQuestionListModel objSecurityQuestionListModel = new SecurityQuestionListModel();
-            objSecurityQuestionListModel.Answer = Sessions.User.Answer;
+            objSecurityQuestionListModel.Answer = Common.Decrypt(Sessions.User.Answer);
             objSecurityQuestionListModel.SecurityQuestionId = Convert.ToInt32(Sessions.User.SecurityQuestionId);
             objSecurityQuestionListModel.SecurityQuestionList = GetQuestionList(lstSecurityQuestion);
 
@@ -335,7 +335,7 @@ namespace RevenuePlanner.Controllers
                 BDSService.User objUser = new BDSService.User();
                 objUser.UserId = Sessions.User.UserId;
                 objUser.SecurityQuestionId = form.SecurityQuestionId;
-                objUser.Answer = form.Answer;
+                objUser.Answer = Common.Encrypt(form.Answer);
                 int retVal = objBDSServiceClient.UpdateUserSecurityQuestion(objUser);
 
                 if (retVal == -1)
@@ -346,7 +346,7 @@ namespace RevenuePlanner.Controllers
                 {
 
                     Sessions.User.SecurityQuestionId = form.SecurityQuestionId;
-                    Sessions.User.Answer = form.Answer;
+                    Sessions.User.Answer = Common.Encrypt(form.Answer);
 
                     TempData["SuccessMessage"] = Common.objCached.SecurityQuestionChangesApplied;
                 }

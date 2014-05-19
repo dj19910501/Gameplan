@@ -315,10 +315,13 @@ namespace RevenuePlanner.Controllers
                 BDSService.User objUser = new BDSService.User();
                 objUser.UserId = Sessions.User.UserId;
                 objUser.SecurityQuestionId = form.SecurityQuestionId;
-                objUser.Answer = form.Answer;
+
+                string encryptedAnswer = Common.Encrypt(form.Answer);
+
+                objUser.Answer = encryptedAnswer;
                 objBDSServiceClient.UpdateUserSecurityQuestion(objUser);
 
-                Sessions.User.Answer = form.Answer;
+                Sessions.User.Answer = encryptedAnswer;
                 Sessions.User.SecurityQuestionId = form.SecurityQuestionId;
 
                 Sessions.RedirectToSetSecurityQuestion = false;
@@ -596,7 +599,7 @@ namespace RevenuePlanner.Controllers
                 if (form.AttemptCount < PossibleAttemptCount)
                 {
                     var objUser = objBDSServiceClient.GetTeamMemberDetails(form.UserId, Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]));
-                    if (form.Answer != objUser.Answer)
+                    if (Common.Encrypt(form.Answer) != objUser.Answer)
                     {
                         form.AttemptCount = form.AttemptCount + 1;
                         objPasswordResetRequest.AttemptCount = form.AttemptCount;
