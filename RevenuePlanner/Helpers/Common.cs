@@ -2731,7 +2731,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="integrationInstanceId"></param>
         /// <param name="deleteIntegrationInstanceModel"></param>
         /// <returns></returns>
-        public static bool DeleteIntegrationInstance(int integrationInstanceId, bool deleteIntegrationInstanceModel = false)
+        public static bool DeleteIntegrationInstance(int integrationInstanceId, bool deleteIntegrationInstanceModel = false, int modelId = 0)
         {
             try
             {
@@ -2739,38 +2739,71 @@ namespace RevenuePlanner.Helpers
                 {
                     using (var scope = new TransactionScope())
                     {
-                        var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) && 
-                            a.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceTacticId != null).ToList();
-                        Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
-
-                        var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign.Plan.Model.IntegrationInstanceId == integrationInstanceId &&
-                            a.IntegrationInstanceProgramId != null).ToList();
-                        Plan_Campaign_ProgramList.ForEach(a => { a.IntegrationInstanceProgramId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
-
-                        var Plan_CampaignList = db.Plan_Campaign.Where(a => a.IsDeleted.Equals(false) && a.Plan.Model.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceCampaignId != null).ToList();
-                        Plan_CampaignList.ForEach(a => { a.IntegrationInstanceCampaignId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
-
-
-                        var Plan_Improvement_Campaign_Program_TacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) &&
-                            a.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceTacticId != null).ToList();
-                        Plan_Improvement_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
-
-                        var Plan_Improvement_Campaign_ProgramList = db.Plan_Improvement_Campaign_Program.Where(a => a.Plan_Improvement_Campaign.Plan.Model.IntegrationInstanceId == integrationInstanceId &&
-                            a.IntegrationInstanceProgramId != null).ToList();
-                        Plan_Improvement_Campaign_ProgramList.ForEach(a => { a.IntegrationInstanceProgramId = null; a.LastSyncDate = null; });
-
-                        var Plan_Improvement_CampaignList = db.Plan_Improvement_Campaign.Where(a => a.Plan.Model.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceCampaignId != null).ToList();
-                        Plan_Improvement_CampaignList.ForEach(a => { a.IntegrationInstanceCampaignId = null; a.LastSyncDate = null; });
-
-                        if (deleteIntegrationInstanceModel == true)
+                        if (modelId == 0)
                         {
-                            var ModelsList = db.Models.Where(a => a.IsDeleted.Equals(false) && a.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceId != null).ToList();
-                            ModelsList.ForEach(a => { a.IntegrationInstanceId = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) &&
+                                a.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceTacticId != null).ToList();
+                            Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                            var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign.Plan.Model.IntegrationInstanceId == integrationInstanceId &&
+                                a.IntegrationInstanceProgramId != null).ToList();
+                            Plan_Campaign_ProgramList.ForEach(a => { a.IntegrationInstanceProgramId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                            var Plan_CampaignList = db.Plan_Campaign.Where(a => a.IsDeleted.Equals(false) && a.Plan.Model.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceCampaignId != null).ToList();
+                            Plan_CampaignList.ForEach(a => { a.IntegrationInstanceCampaignId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+
+                            var Plan_Improvement_Campaign_Program_TacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) &&
+                                a.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceTacticId != null).ToList();
+                            Plan_Improvement_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                            var Plan_Improvement_Campaign_ProgramList = db.Plan_Improvement_Campaign_Program.Where(a => a.Plan_Improvement_Campaign.Plan.Model.IntegrationInstanceId == integrationInstanceId &&
+                                a.IntegrationInstanceProgramId != null).ToList();
+                            Plan_Improvement_Campaign_ProgramList.ForEach(a => { a.IntegrationInstanceProgramId = null; a.LastSyncDate = null; });
+
+                            var Plan_Improvement_CampaignList = db.Plan_Improvement_Campaign.Where(a => a.Plan.Model.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceCampaignId != null).ToList();
+                            Plan_Improvement_CampaignList.ForEach(a => { a.IntegrationInstanceCampaignId = null; a.LastSyncDate = null; });
+
+                            if (deleteIntegrationInstanceModel == true)
+                            {
+                                var ModelsList = db.Models.Where(a => a.IsDeleted.Equals(false) && a.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceId != null).ToList();
+                                ModelsList.ForEach(a => { a.IntegrationInstanceId = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            }
                         }
+                        else
+                        {
+                            var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) &&
+                                                                                                              a.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId == modelId
+                                                                                                        ).ToList();
+                            Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                            var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) &&
+                                                                                                a.Plan_Campaign.Plan.ModelId == modelId
+                                                                                          ).ToList();
+                            Plan_Campaign_ProgramList.ForEach(a => { a.IntegrationInstanceProgramId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                            var Plan_CampaignList = db.Plan_Campaign.Where(a => a.IsDeleted.Equals(false) && a.Plan.ModelId == modelId).ToList();
+                            Plan_CampaignList.ForEach(a => { a.IntegrationInstanceCampaignId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+
+                            var Plan_Improvement_Campaign_Program_TacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) &&
+                                                                                                                                      a.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.ModelId == modelId
+                                                                                                                                ).ToList();
+                            Plan_Improvement_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                            var Plan_Improvement_Campaign_ProgramList = db.Plan_Improvement_Campaign_Program.Where(a => a.Plan_Improvement_Campaign.Plan.ModelId == modelId
+                                                                                                                  ).ToList();
+                            Plan_Improvement_Campaign_ProgramList.ForEach(a => { a.IntegrationInstanceProgramId = null; a.LastSyncDate = null; });
+
+                            var Plan_Improvement_CampaignList = db.Plan_Improvement_Campaign.Where(a => a.Plan.ModelId == modelId).ToList();
+                            Plan_Improvement_CampaignList.ForEach(a => { a.IntegrationInstanceCampaignId = null; a.LastSyncDate = null; });
+                        }
+
+
 
                         db.SaveChanges();
                         scope.Complete();
-                        
+
                         return true;
                     }
                 }

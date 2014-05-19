@@ -6731,6 +6731,10 @@ h2.title-header {
 .improvementcolorf6f263 .gantt_task_drag{background: none repeat scroll 0 0 #f6f263 !important;}
 .improvementcolorf6f263 .gantt_task_drag:after{border-top-color: #f6f263;}
 
+.improvementcolor0f3a50.gantt_task_line{border-color: #0f3a50;}
+.improvementcolor0f3a50 .gantt_task_drag{background: none repeat scroll 0 0 #0f3a50 !important;}
+.improvementcolor0f3a50 .gantt_task_drag:after{border-top-color: #0f3a50;}
+
 /*Added by Dharmraj for ticket#394 on 31/3/2014 */
 .improvementcolor27A4E5 {border-style: solid none none;border-width: 6px medium medium !important;}
 .improvementcolor27A4E5.gantt_task_line{border-color: #27A4E5;}
