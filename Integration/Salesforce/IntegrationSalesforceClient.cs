@@ -1305,11 +1305,7 @@ namespace Integration.Salesforce
 
         private Mode GetMode(bool isDeleted, bool isDeployedToIntegration, string integrationInstanceTacticId, string status)
         {
-            if (status == ExternalIntegration.TacticStatusValues[TacticStatus.Decline.ToString()].ToString() && !string.IsNullOrWhiteSpace(integrationInstanceTacticId))
-            {
-                return Mode.Delete;
-            }
-            else if (!isDeleted && isDeployedToIntegration && string.IsNullOrWhiteSpace(integrationInstanceTacticId))
+            if (!isDeleted && isDeployedToIntegration && string.IsNullOrWhiteSpace(integrationInstanceTacticId))
             {
                 return Mode.Create;
             }
