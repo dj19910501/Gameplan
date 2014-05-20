@@ -279,11 +279,11 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                         <div class="delete-container">
                             @Html.LabelFor(model => model.IsDeleted, new { style = "float:left;padding-left:80px;padding-top:2px;" })
                             @{
-                            var items = new List<System.Web.UI.WebControls.ListItem> { new System.Web.UI.WebControls.ListItem { Text = "No", Value = System.Boolean.FalseString }, new System.Web.UI.WebControls.ListItem { Text = "Yes", Value = System.Boolean.TrueString } };
+                            var items = new List<System.Web.UI.WebControls.ListItem> { new System.Web.UI.WebControls.ListItem { Text = "No", Value = "No" }, new System.Web.UI.WebControls.ListItem { Text = "Yes", Value = "Yes" } };
                             }
                             @*Modified by :- Sohel on 27 March 2014 for ticket #334*@
                             <div class="selectBox" id="ddlIsDeletedSelectBox">
-                                @Html.DropDownListFor(c => c.IsDeleted, new SelectList(items), new { style = "width:54px; height:23px;float:right;margin-top:10px;margin-right:12px;" })
+                                @Html.DropDownListFor(c => c.IsDeleted, new SelectList(items, "Value", "Text" ), new { style = "width:54px; height:23px;float:right;margin-top:10px;margin-right:12px;" })
                             </div>
                         </div>
                         }
