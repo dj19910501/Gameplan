@@ -49,6 +49,7 @@
             @Html.HiddenFor(model => model.TStartDate, new { id = "hdnTStartDate" })
             @Html.HiddenFor(model => model.TEndDate, new { id = "hdnTEndDate" })
             @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
+            @Html.Hidden("hdnFlag",Model.IsDeployedToIntegration)
 
             <label class="t_title">Campaign Title</label>
             @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true", maxlength = "255", id="txtTitle" }) @* Modified by :- Sohel Pathan on 24/04/2014 for internal review point to stop form posting on ENTERKEY press event *@
@@ -196,7 +197,7 @@
                 $("#hdnIsDeployedToIntegration").val(true);
             }
             else {
-                $("#hdnIsDeployedToIntegration").val(true);
+                $("#hdnIsDeployedToIntegration").val(false);
             }
         }
 
