@@ -255,7 +255,6 @@ namespace Integration.Salesforce
             actualTacicList.ForEach(t => db.Entry(t).State = EntityState.Deleted);
             db.SaveChanges();
 
-
             foreach (var resultin in AllRecords)
             {
                 string TacticResult = resultin.ToString();
@@ -329,6 +328,10 @@ namespace Integration.Salesforce
 
                     tactic.LastSyncDate = DateTime.Now;
                     tactic.ModifiedDate = DateTime.Now;
+                    if (tactic.CostActual != null && tactic.CostActual > 0 && tactic.RevenuesActual != null)
+                    {
+                        tactic.ROIActual = tactic.RevenuesActual / tactic.CostActual;
+                    }
                     tactic.ModifiedBy = _userId;
 
                     IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
@@ -1305,7 +1308,11 @@ namespace Integration.Salesforce
 
         private Mode GetMode(bool isDeleted, bool isDeployedToIntegration, string integrationInstanceTacticId, string status)
         {
-            if (!isDeleted && isDeployedToIntegration && string.IsNullOrWhiteSpace(integrationInstanceTacticId))
+            if (status == ExternalIntegration.TacticStatusValues[TacticStatus.Decline.ToString()].ToString() && !string.IsNullOrWhiteSpace(integrationInstanceTacticId))
+            {
+                return Mode.Delete;
+            }
+            else if (!isDeleted && isDeployedToIntegration && string.IsNullOrWhiteSpace(integrationInstanceTacticId))
             {
                 return Mode.Create;
             }
