@@ -3148,6 +3148,7 @@ namespace RevenuePlanner.Controllers
             List<int> impTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(it => it.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && it.IsDeleted == false).Select(it => it.ImprovementTacticTypeId).ToList();
             ViewBag.Tactics = from t in db.ImprovementTacticTypes
                               where t.ClientId == Sessions.User.ClientId && t.IsDeployed == true && !impTacticList.Contains(t.ImprovementTacticTypeId)
+                              && t.IsDeleted == false       //// Added by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
                               orderby t.Title
                               select t;
             ViewBag.IsCreated = true;
@@ -3190,6 +3191,7 @@ namespace RevenuePlanner.Controllers
             List<int> impTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(it => it.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && it.IsDeleted == false && it.ImprovementPlanTacticId != id).Select(it => it.ImprovementTacticTypeId).ToList();
             ViewBag.Tactics = from t in db.ImprovementTacticTypes
                               where t.ClientId == Sessions.User.ClientId && t.IsDeployed == true && !impTacticList.Contains(t.ImprovementTacticTypeId)
+                              && t.IsDeleted == false       //// Added by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
                               orderby t.Title
                               select t;
             ViewBag.IsCreated = false;
@@ -3512,7 +3514,7 @@ namespace RevenuePlanner.Controllers
             int ImprovementTacticTypeId = form.ImprovementTacticTypeId;
             DateTime EffectiveDate = form.EffectiveDate;
 
-            var objImprovementTacticType = db.ImprovementTacticTypes.Where(itt => itt.ImprovementTacticTypeId == ImprovementTacticTypeId).SingleOrDefault();
+            var objImprovementTacticType = db.ImprovementTacticTypes.Where(itt => itt.ImprovementTacticTypeId == ImprovementTacticTypeId && itt.IsDeleted.Equals(false)).SingleOrDefault(); //// Modified by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
             double Cost = objImprovementTacticType == null ? 0 : objImprovementTacticType.Cost;
             bool isDeployedToIntegration = objImprovementTacticType == null ? false : objImprovementTacticType.IsDeployedToIntegration;
 
@@ -3970,7 +3972,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult GetRecommendedImprovementTacticType()
         {
-            var improvementTacticList = db.ImprovementTacticTypes.Where(itt => itt.IsDeployed == true && itt.ClientId == Sessions.User.ClientId).ToList();
+            var improvementTacticList = db.ImprovementTacticTypes.Where(itt => itt.IsDeployed == true && itt.ClientId == Sessions.User.ClientId && itt.IsDeleted.Equals(false)).ToList();       //// Modified by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
             List<Plan_Campaign_Program_Tactic> marketingActivities = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(Sessions.PlanId) && t.IsDeleted == false).Select(t => t).ToList();
             List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && t.IsDeleted == false).Select(t => t).ToList();
             double projectedRevenueWithoutTactic = 0;
@@ -4155,9 +4157,9 @@ namespace RevenuePlanner.Controllers
             {
                 Plan_Improvement_Campaign_Program_Tactic picpt = new Plan_Improvement_Campaign_Program_Tactic();
                 picpt.ImprovementPlanProgramId = improvementPlanProgramId;
-                picpt.Title = db.ImprovementTacticTypes.Where(itactic => itactic.ImprovementTacticTypeId == improvementTacticTypeId).Select(itactic => itactic.Title).SingleOrDefault();
+                picpt.Title = db.ImprovementTacticTypes.Where(itactic => itactic.ImprovementTacticTypeId == improvementTacticTypeId && itactic.IsDeleted.Equals(false)).Select(itactic => itactic.Title).SingleOrDefault();     //// Modified by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
                 picpt.ImprovementTacticTypeId = improvementTacticTypeId;
-                picpt.Cost = db.ImprovementTacticTypes.Where(itactic => itactic.ImprovementTacticTypeId == improvementTacticTypeId).Select(itactic => itactic.Cost).SingleOrDefault();
+                picpt.Cost = db.ImprovementTacticTypes.Where(itactic => itactic.ImprovementTacticTypeId == improvementTacticTypeId && itactic.IsDeleted.Equals(false)).Select(itactic => itactic.Cost).SingleOrDefault();       //// Modified by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
                 picpt.EffectiveDate = DateTime.Now.Date;
                 picpt.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
                 //// Get Businessunit id from model.

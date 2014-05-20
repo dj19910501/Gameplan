@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Transactions;
 using System.Web.Mvc;
 
 namespace RevenuePlanner.Controllers
@@ -211,7 +212,8 @@ namespace RevenuePlanner.Controllers
                 bittobj.IsDeployedToIntegration = ittobj.IsDeployedToIntegration;
 
                 ViewBag.Title = "Tactic Detail";
-
+                ViewBag.CanDelete = true;        //// Added by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
+                ViewBag.IsCreated = false;       //// Added by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
             }
             else
             {
@@ -222,7 +224,10 @@ namespace RevenuePlanner.Controllers
                 bittobj.IsDeployedToIntegration = false;
 
                 ViewBag.Title = "New Tactic";
+                ViewBag.CanDelete = false;     //// Added by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
+                ViewBag.IsCreated = true;      //// Added by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
             }
+            
             /*get the metrics related to improvement Tactic and display in view*/
             List<MetricModel> listMetrics = new List<MetricModel>();
             List<MetricModel> listMetricssize = new List<MetricModel>();
@@ -277,8 +282,8 @@ namespace RevenuePlanner.Controllers
                 /* if id !=0 then its update into db other wise add new record in db*/
                 if (improvementId != 0)
                 {
-                    ImprovementTacticType objIt = db.ImprovementTacticTypes.Where(t => t.ImprovementTacticTypeId == improvementId).FirstOrDefault();
-                    var existTactic = db.ImprovementTacticTypes.Where(t => t.ClientId == Sessions.User.ClientId && t.Title.ToLower() == title.ToLower() && t.ImprovementTacticTypeId != improvementId).ToList();
+                    ImprovementTacticType objIt = db.ImprovementTacticTypes.Where(t => t.ImprovementTacticTypeId == improvementId && t.IsDeleted.Equals(false)).FirstOrDefault();       //// Modified by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
+                    var existTactic = db.ImprovementTacticTypes.Where(t => t.ClientId == Sessions.User.ClientId && t.Title.ToLower() == title.ToLower() && t.ImprovementTacticTypeId != improvementId && t.IsDeleted.Equals(false)).ToList();       //// Modified by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
                     if (existTactic.Count == 0)
                     {
                         /*edit new improvementTactic record*/
@@ -309,7 +314,7 @@ namespace RevenuePlanner.Controllers
                 {
                     /*Add new improvementTactic record*/
                     ImprovementTacticType objIt = new ImprovementTacticType();
-                    var existTactic = db.ImprovementTacticTypes.Where(t => t.ClientId == Sessions.User.ClientId && t.Title.ToLower() == title.ToLower()).ToList();
+                    var existTactic = db.ImprovementTacticTypes.Where(t => t.ClientId == Sessions.User.ClientId && t.Title.ToLower() == title.ToLower() && t.IsDeleted.Equals(false)).ToList(); //// Modified by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
                     if (existTactic.Count == 0)
                     {
                         objIt.Title = title;
@@ -380,7 +385,7 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                var objImprovementTacticType = db.ImprovementTacticTypes.SingleOrDefault(varI => varI.ImprovementTacticTypeId == id);
+                var objImprovementTacticType = db.ImprovementTacticTypes.SingleOrDefault(varI => varI.ImprovementTacticTypeId == id && varI.IsDeleted.Equals(false));   //// Modified by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
 
                 objImprovementTacticType.IsDeployedToIntegration = isDeployedToIntegration;
                 db.Entry(objImprovementTacticType).State = EntityState.Modified;
@@ -412,7 +417,7 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                var objImprovementTacticType = db.ImprovementTacticTypes.SingleOrDefault(varI => varI.ImprovementTacticTypeId == id);
+                var objImprovementTacticType = db.ImprovementTacticTypes.SingleOrDefault(varI => varI.ImprovementTacticTypeId == id && varI.IsDeleted.Equals(false));   //// Modified by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
 
                 objImprovementTacticType.IsDeployed = isDeployed;
                 db.Entry(objImprovementTacticType).State = EntityState.Modified;
@@ -431,6 +436,64 @@ namespace RevenuePlanner.Controllers
             var obj = new { returnValue = returnValue, message = message };
 
             return Json(obj, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Added By: Sohel Pathan
+        /// Action to delete Improvement Tactics from respective tables.
+        /// </summary>
+        /// <param name="improvementId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult deleteImprovementTactic(int improvementId)
+        {
+            string successMessage = string.Empty;
+            string ErrorMessage = string.Empty;
+            try
+            {
+                if (improvementId != 0)
+                {
+                    using (var scope = new TransactionScope())
+                    {
+                        var isDependent = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.IsDeleted.Equals(false) && t.ImprovementTacticTypeId == improvementId).Count();
+
+                        if (isDependent <= 0)
+                        {
+                            ImprovementTacticType objIt = db.ImprovementTacticTypes.Where(t => t.IsDeleted.Equals(false) && t.ImprovementTacticTypeId == improvementId).FirstOrDefault();
+
+                            if (objIt != null)
+                            {
+                                objIt.IsDeleted = true;
+                                objIt.ModifiedBy = Sessions.User.UserId;
+                                objIt.ModifiedDate = DateTime.Now;
+                                db.Entry(objIt).State = EntityState.Modified;
+                                db.SaveChanges();
+                                successMessage = string.Format(Common.objCached.DeleteImprovementTacticSaveSucess, objIt.Title.ToString());
+                                TempData["SuccessMessage"] = successMessage;
+                            }
+
+                            scope.Complete();
+                            return Json(new { status = 0, succMsg = successMessage }, JsonRequestBehavior.AllowGet);
+                        }
+                        else
+                        {
+                            TempData["SuccessMessage"] = string.Empty;
+                            return Json(new { status = 1, errormsg = Common.objCached.ImprovementTacticReferencesPlanError.ToString() }, JsonRequestBehavior.AllowGet);
+                        }
+                    }
+                }
+                else
+                {
+                    TempData["SuccessMessage"] = string.Empty;
+                    return Json(new { status = 1,  errormsg = "No record found for this id." }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+                TempData["SuccessMessage"] = string.Empty;
+                return Json(new { status = 1, errormsg = e.InnerException.Message }, JsonRequestBehavior.AllowGet);
+            }
         }
 
         #endregion

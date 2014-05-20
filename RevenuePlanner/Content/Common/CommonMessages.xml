@@ -274,9 +274,13 @@
 		<value>Improvement Tactic saved successfully.</value>
 	</Field>
 	<Field>
-		<Name>EditImprovementTacticSaveSucess</Name>
-		<value>Improvement Tactic updated successfully.</value>
+		<Name>DeleteImprovementTacticSaveSucess</Name>
+		<value>Improvement Tactic Type {0} deleted successfully.</value>
 	</Field>
+  <Field>
+    <Name>ImprovementTacticReferencesPlanError</Name>
+    <value>Selected improvement tactic type is being used in a plan and hence cannot be deleted.</value>
+  </Field>
 	<Field>
 		<Name>EditImprovementTacticSaveSucess</Name>
 		<value>Improvement Tactic updated successfully.</value>

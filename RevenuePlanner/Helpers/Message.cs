@@ -889,7 +889,32 @@ namespace RevenuePlanner.Helpers
                 _EditImprovementTacticSaveSucess = value;
             }
         }
-
+        //// Start - Added By :- Sohel Pathan on 20/04/2014 for PL #457 to delete a boost tactic
+        private string _DeleteImprovementTacticSaveSucess;
+        public string DeleteImprovementTacticSaveSucess
+        {
+            get
+            {
+                return _DeleteImprovementTacticSaveSucess;
+            }
+            set
+            {
+                _DeleteImprovementTacticSaveSucess = value;
+            }
+        }
+        private string _ImprovementTacticReferencesPlanError;
+        public string ImprovementTacticReferencesPlanError
+        {
+            get
+            {
+                return _ImprovementTacticReferencesPlanError;
+            }
+            set
+            {
+                _ImprovementTacticReferencesPlanError = value;
+            }
+        }
+        //// End - Added By :- Sohel Pathan on 20/04/2014 for PL #457 to delete a boost tactic
         private string _DuplicateImprovementTacticExits;
         public string DuplicateImprovementTacticExits
         {
@@ -1460,6 +1485,14 @@ namespace RevenuePlanner.Helpers
                                         case "EditImprovementTacticSaveSucess":
                                             _EditImprovementTacticSaveSucess = strMsgValue;
                                             break;
+                                        //// Start - Added By :- Sohel Pathan on 20/04/2014 for PL #457 to delete a boost tactic
+                                        case "DeleteImprovementTacticSaveSucess":
+                                            _DeleteImprovementTacticSaveSucess = strMsgValue;
+                                            break;
+                                        case "ImprovementTacticReferencesPlanError":
+                                            _ImprovementTacticReferencesPlanError = strMsgValue;
+                                            break;
+                                        //// End -  Added By :- Sohel Pathan on 20/04/2014 for PL #457 to delete a boost tactic
                                         case "DuplicateImprovementTacticExits":
                                             _DuplicateImprovementTacticExits = strMsgValue;
                                             break;

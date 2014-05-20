@@ -20,7 +20,7 @@ namespace RevenuePlanner.Models
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
     
-        public virtual ImprovementTacticType ImprovementTacticType { get; set; }
         public virtual Metric Metric { get; set; }
+        public virtual ImprovementTacticType ImprovementTacticType { get; set; }
     }
 }

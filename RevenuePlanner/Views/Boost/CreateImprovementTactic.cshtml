@@ -9,6 +9,17 @@
   <span class="close-form source-sans-proregular">» CLOSE MENU</span>
     <div class="cf">
         <h2 class="source-sans-prolight">@ViewBag.Title </h2>
+        @* Start - Added By :- Sohel on 20/05/2014 for PL ticket #457 to delete a improvement tactic *@
+        @if ((bool)ViewBag.IsCreated == false && (bool)ViewBag.CanDelete == true)
+        {
+            <div class="btn-group pull-right gear-dropdown">
+                <span class="gear-sidebar dropdown-toggle" data-toggle="dropdown"></span>
+                <ul class="dropdown-menu">
+                    <li><a id="deleteImprovementTactic">Delete Tactic</a></li>
+                </ul>
+            </div>
+        }
+        @* End - Added By :- Sohel on 20/05/2014 for PL ticket #457 to delete a improvement tactic *@
     </div>
 </div>
 <div id="errorMsg" class="alert alert-error hide message-position-small">
@@ -328,4 +339,39 @@
         });
     }
     
+    @* Added By :- Sohel on 20/05/2014 for PL ticket #457 to delete a improvement tactic *@
+    $("#deleteImprovementTactic").click(function () {
+        if (confirm('Are you sure you want to delete this improvement tactic type?')) {
+            var idTactic = $("#ImprovementTacticTypeId").val();
+            $.ajax({
+                type: 'POST',
+                cache: false,
+                url: '@Url.Content("~/Boost/deleteImprovementTactic")',
+                data: { improvementId: idTactic },
+                success: function (data) {
+                    if (data != null) {
+                        if (typeof data.status != undefined && data.status != 'undefined') {
+                            if (parseInt(data.status) == 0) {
+                                $('.close-form', this.$panel).click();
+                                window.location.reload(true);
+                            }
+                            else {
+                                ShowError(data.errormsg);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        else {
+            return false;
+        }
+    });
+
+    @* Added By :- Sohel on 20/05/2014 for PL ticket #457 to delete a improvement tactic *@
+    function ShowError(value) {
+        $("#errorMsg").slideDown(400);
+        $("#spanMessage").empty();
+        $("#spanMessage").text(value);
+    }
 </script>
