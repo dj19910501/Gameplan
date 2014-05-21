@@ -186,29 +186,25 @@ namespace Integration.Salesforce
 
             if (EntityType.Tactic.Equals(_entityType))
             {
-                List<string> statusList = GetStatusListAfterApproved();
-                Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _id && statusList.Contains(tactic.Status)).SingleOrDefault();
+                Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _id).SingleOrDefault();
                 planTactic = SyncTacticData(planTactic);
                 db.SaveChanges();
             }
             else if (EntityType.Program.Equals(_entityType))
             {
-                List<string> statusList = GetStatusListAfterApproved();
-                Plan_Campaign_Program planProgram = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == _id && statusList.Contains(program.Status)).SingleOrDefault();
+                Plan_Campaign_Program planProgram = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == _id).SingleOrDefault();
                 planProgram = SyncProgramData(planProgram);
                 db.SaveChanges();
             }
             else if (EntityType.Campaign.Equals(_entityType))
             {
-                List<string> statusList = GetStatusListAfterApproved();
-                Plan_Campaign planCampaign = db.Plan_Campaign.Where(campaign => campaign.PlanCampaignId == _id && statusList.Contains(campaign.Status)).SingleOrDefault();
+                Plan_Campaign planCampaign = db.Plan_Campaign.Where(campaign => campaign.PlanCampaignId == _id).SingleOrDefault();
                 planCampaign = SyncCampaingData(planCampaign);
                 db.SaveChanges();
             }
             else if (EntityType.ImprovementTactic.Equals(_entityType))
             {
-                List<string> statusList = GetStatusListAfterApproved();
-                Plan_Improvement_Campaign_Program_Tactic planImprovementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(imptactic => imptactic.ImprovementPlanTacticId == _id && statusList.Contains(imptactic.Status)).SingleOrDefault();
+                Plan_Improvement_Campaign_Program_Tactic planImprovementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(imptactic => imptactic.ImprovementPlanTacticId == _id).SingleOrDefault();
                 planImprovementTactic = SyncImprovementData(planImprovementTactic);
                 db.SaveChanges();
             }
@@ -427,7 +423,6 @@ namespace Integration.Salesforce
 
         private Plan_Campaign SyncCampaingData(Plan_Campaign planCampaign)
         {
-            //// Get campaign based on _id property.
             Mode currentMode = GetMode(planCampaign.IsDeleted, planCampaign.IsDeployedToIntegration, planCampaign.IntegrationInstanceCampaignId, planCampaign.Status);
             if (currentMode.Equals(Mode.Create))
             {
@@ -491,8 +486,12 @@ namespace Integration.Salesforce
             }
             else if (currentMode.Equals(Mode.Delete))
             {
+                var tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.PlanCampaignId == planCampaign.PlanCampaignId).ToList();
+                var programList = db.Plan_Campaign_Program.Where(program => program.PlanCampaignId == planCampaign.PlanCampaignId).ToList();
+                if (tacticList.Where(tactic => tactic.IsDeployedToIntegration && !tactic.IsDeleted).Count() == 0)
+                {
                 // Set null value if delete true to integrationinstance..id
-                var tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.PlanCampaignId == planCampaign.PlanCampaignId && tactic.IntegrationInstanceTacticId != null).ToList();
+                    tacticList = tacticList.Where(tactic => tactic.IntegrationInstanceTacticId != null).ToList();
                 foreach (var t in tacticList)
                 {
                     IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
@@ -529,8 +528,11 @@ namespace Integration.Salesforce
                     db.Entry(instanceLogTactic).State = EntityState.Added;
                 }
 
+
+                    if (programList.Where(program => program.IsDeployedToIntegration && !program.IsDeleted).Count() == 0)
+                    {
                 // Set null value if delete true to integrationinstance..id
-                var programList = db.Plan_Campaign_Program.Where(program => program.PlanCampaignId == planCampaign.PlanCampaignId && program.IntegrationInstanceProgramId != null).ToList();
+                        programList = programList.Where(program => program.IntegrationInstanceProgramId != null).ToList();
                 foreach (var p in programList)
                 {
                     IntegrationInstancePlanEntityLog instanceLogProgram = new IntegrationInstancePlanEntityLog();
@@ -600,7 +602,8 @@ namespace Integration.Salesforce
                 instanceLogCampaign.CreatedBy = this._userId;
                 instanceLogCampaign.CreatedDate = DateTime.Now;
                 db.Entry(instanceLogCampaign).State = EntityState.Added;
-
+                    }
+                }
             }
 
             return planCampaign;
@@ -708,7 +711,10 @@ namespace Integration.Salesforce
             }
             else if (currentMode.Equals(Mode.Delete))
             {
-                var tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanProgramId == planProgram.PlanProgramId && tactic.IntegrationInstanceTacticId != null).ToList();
+                var tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanProgramId == planProgram.PlanProgramId).ToList();
+                if (tacticList.Where(tactic => tactic.IsDeployedToIntegration && !tactic.IsDeleted).Count() == 0)
+                {
+                    tacticList = tacticList.Where(tactic => tactic.IntegrationInstanceTacticId != null).ToList();
                 foreach (var t in tacticList)
                 {
                     IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
@@ -777,6 +783,7 @@ namespace Integration.Salesforce
                 instanceLogProgram.CreatedBy = this._userId;
                 instanceLogProgram.CreatedDate = DateTime.Now;
                 db.Entry(instanceLogProgram).State = EntityState.Added;
+            }
             }
 
             return planProgram;
@@ -1241,13 +1248,11 @@ namespace Integration.Salesforce
         private void SyncInstanceData()
         {
             List<int> planIds = db.Plans.Where(p => p.Model.IntegrationInstanceId == _integrationInstanceId && p.Model.Status.Equals("Published")).Select(p => p.PlanId).ToList();
-            List<string> statusList = GetStatusListAfterApproved();
-
             try
             {
                 using (var scope = new TransactionScope())
                 {
-                    List<Plan_Campaign> campaignList = db.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId) && statusList.Contains(campaign.Status)).ToList();
+                    List<Plan_Campaign> campaignList = db.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId)).ToList();
                     for (int index = 0; index < campaignList.Count; index++)
                     {
                         campaignList[index] = SyncCampaingData(campaignList[index]);
@@ -1258,7 +1263,7 @@ namespace Integration.Salesforce
 
                 using (var scope = new TransactionScope())
                 {
-                    List<Plan_Campaign_Program> programList = db.Plan_Campaign_Program.Where(program => planIds.Contains(program.Plan_Campaign.PlanId) && statusList.Contains(program.Status)).ToList();
+                    List<Plan_Campaign_Program> programList = db.Plan_Campaign_Program.Where(program => planIds.Contains(program.Plan_Campaign.PlanId)).ToList();
                     for (int index = 0; index < programList.Count; index++)
                     {
                         programList[index] = SyncProgramData(programList[index]);
@@ -1269,7 +1274,7 @@ namespace Integration.Salesforce
 
                 using (var scope = new TransactionScope())
                 {
-                    List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && statusList.Contains(tactic.Status)).ToList();
+                    List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).ToList();
                     for (int index = 0; index < tacticList.Count; index++)
                     {
                         tacticList[index] = SyncTacticData(tacticList[index]);
@@ -1291,7 +1296,7 @@ namespace Integration.Salesforce
 
                 using (var scope = new TransactionScope())
                 {
-                    List<Plan_Improvement_Campaign_Program_Tactic> tacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId) && statusList.Contains(tactic.Status)).ToList();
+                    List<Plan_Improvement_Campaign_Program_Tactic> tacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).ToList();
                     for (int index = 0; index < tacticList.Count; index++)
                     {
                         tacticList[index] = SyncImprovementData(tacticList[index]);
@@ -1308,23 +1313,19 @@ namespace Integration.Salesforce
 
         private Mode GetMode(bool isDeleted, bool isDeployedToIntegration, string integrationInstanceTacticId, string status)
         {
-            if (status == ExternalIntegration.TacticStatusValues[TacticStatus.Decline.ToString()].ToString() && !string.IsNullOrWhiteSpace(integrationInstanceTacticId))
-            {
-                return Mode.Delete;
-            }
-            else if (!isDeleted && isDeployedToIntegration && string.IsNullOrWhiteSpace(integrationInstanceTacticId))
+            // delete reject status from list function
+            List<string> statusList = GetStatusListAfterApproved();
+            // Status = After Approve - Is Deploy = true -  integrationInstanceTacticId = null - isDeleted = false
+            if (statusList.Contains(status) && isDeployedToIntegration && string.IsNullOrWhiteSpace(integrationInstanceTacticId) && !isDeleted)
             {
                 return Mode.Create;
             }
-            else if (!isDeleted && isDeployedToIntegration && !string.IsNullOrWhiteSpace(integrationInstanceTacticId))
+            // Status = After Approve - Is Deploy = true -  integrationInstanceTacticId = yes - isDeleted = false
+            else if (statusList.Contains(status) && isDeployedToIntegration && !string.IsNullOrWhiteSpace(integrationInstanceTacticId) && !isDeleted)
             {
                 return Mode.Update;
             }
-            else if (isDeleted && !string.IsNullOrWhiteSpace(integrationInstanceTacticId))
-            {
-                return Mode.Delete;
-            }
-            else if (!isDeleted && !string.IsNullOrWhiteSpace(integrationInstanceTacticId))
+            else if (!string.IsNullOrWhiteSpace(integrationInstanceTacticId))
             {
                 return Mode.Delete;
             }
@@ -1412,7 +1413,6 @@ namespace Integration.Salesforce
             tacticStatus.Add(ExternalIntegration.TacticStatusValues[TacticStatus.Approved.ToString()].ToString());
             tacticStatus.Add(ExternalIntegration.TacticStatusValues[TacticStatus.InProgress.ToString()].ToString());
             tacticStatus.Add(ExternalIntegration.TacticStatusValues[TacticStatus.Complete.ToString()].ToString());
-            tacticStatus.Add(ExternalIntegration.TacticStatusValues[TacticStatus.Decline.ToString()].ToString());
             return tacticStatus;
         }
 

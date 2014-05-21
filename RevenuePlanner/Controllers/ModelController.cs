@@ -3660,6 +3660,9 @@ namespace RevenuePlanner.Controllers
                         objModel.IntegrationInstanceId = integrationId;
                     }
 
+                    objModel.ModifiedBy = Sessions.User.UserId;
+                    objModel.ModifiedDate = DateTime.Now;
+
                     db.Entry(objModel).State = EntityState.Modified;
                     db.SaveChanges();    
                 }
