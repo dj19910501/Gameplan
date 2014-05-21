@@ -22,20 +22,7 @@
           <EntitySet Name="IntegrationInstance_Attribute" EntityType="MRPModel.Store.IntegrationInstance_Attribute" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationInstanceDataTypeMapping" EntityType="MRPModel.Store.IntegrationInstanceDataTypeMapping" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationInstanceLog" EntityType="MRPModel.Store.IntegrationInstanceLog" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="IntegrationInstancePlanEntityLog" EntityType="MRPModel.Store.IntegrationInstancePlanEntityLog" store:Type="Tables" store:Schema="dbo" store:Name="IntegrationInstancePlanEntityLog">
-            <DefiningQuery>SELECT 
-      [IntegrationInstancePlanEntityLog].[IntegrationInstanceLogId] AS [IntegrationInstanceLogId], 
-      [IntegrationInstancePlanEntityLog].[IntegrationInstanceId] AS [IntegrationInstanceId], 
-      [IntegrationInstancePlanEntityLog].[EntityId] AS [EntityId], 
-      [IntegrationInstancePlanEntityLog].[EntityType] AS [EntityType], 
-      [IntegrationInstancePlanEntityLog].[SyncTimeStamp] AS [SyncTimeStamp], 
-      [IntegrationInstancePlanEntityLog].[Operation] AS [Operation], 
-      [IntegrationInstancePlanEntityLog].[Status] AS [Status], 
-      [IntegrationInstancePlanEntityLog].[ErrorDescription] AS [ErrorDescription], 
-      [IntegrationInstancePlanEntityLog].[CreatedDate] AS [CreatedDate], 
-      [IntegrationInstancePlanEntityLog].[CreatedBy] AS [CreatedBy]
-      FROM [dbo].[IntegrationInstancePlanEntityLog] AS [IntegrationInstancePlanEntityLog]</DefiningQuery>
-          </EntitySet>
+          <EntitySet Name="IntegrationInstancePlanEntityLog" EntityType="MRPModel.Store.IntegrationInstancePlanEntityLog" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationType" EntityType="MRPModel.Store.IntegrationType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationTypeAttribute" EntityType="MRPModel.Store.IntegrationTypeAttribute" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Metric" EntityType="MRPModel.Store.Metric" store:Type="Tables" Schema="dbo" />
