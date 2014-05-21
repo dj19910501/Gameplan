@@ -37,6 +37,11 @@
          @Html.TextAreaFor(model => model.Description, new { @class = "span12 text-area-size truncate", style = "background:#F2F2F2;height:92px;", @readonly = "true" })
         <p style="width:110%;">@Html.Raw("Deployed to Integration")</p>
             @Html.TextBox("txtDeployStatus",deployStatus,new {@class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true"})
+        <div style="clear: both; width: 250%;">
+            <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
+            <br />
+            <br />
+        </div>
     </div>
     <div class="span2" id="inspect-modal-left-column2">
         <p>@Html.Raw("Owner")</p>

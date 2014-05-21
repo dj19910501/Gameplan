@@ -3075,6 +3075,18 @@ namespace RevenuePlanner.Controllers
             }
             im.Owner = (userName.FirstName + " " + userName.LastName).ToString();
             ViewBag.ProgramDetail = im;
+
+            if (im.LastSyncDate != null)
+            {
+                TimeZone localZone = TimeZone.CurrentTimeZone;
+
+                ViewBag.LastSync = "Last synced with " + im.IntegrationType + " " + Common.GetFormatedDate(im.LastSyncDate) + ".";
+            }
+            else
+            {
+                ViewBag.LastSync = string.Empty;
+            }
+
             ViewBag.BudinessUnitTitle = db.BusinessUnits.Where(b => b.BusinessUnitId == im.BusinessUnitId).Select(b => b.Title).SingleOrDefault();
             ViewBag.Audience = db.Audiences.Where(a => a.AudienceId == im.AudienceId).Select(a => a.Title).SingleOrDefault();
 
@@ -3191,6 +3203,18 @@ namespace RevenuePlanner.Controllers
                 }
             }
             im.Owner = (userName.FirstName + " " + userName.LastName).ToString();
+
+            if (im.LastSyncDate != null)
+            {
+                TimeZone localZone = TimeZone.CurrentTimeZone;
+
+                ViewBag.LastSync = "Last synced with " + im.IntegrationType + " " + Common.GetFormatedDate(im.LastSyncDate) + ".";
+            }
+            else
+            {
+                ViewBag.LastSync = string.Empty;
+            }
+
             ViewBag.CampaignDetail = im;
             ViewBag.BudinessUnitTitle = db.BusinessUnits.Where(b => b.BusinessUnitId == im.BusinessUnitId).Select(b => b.Title).SingleOrDefault();
             ViewBag.Audience = db.Audiences.Where(a => a.AudienceId == im.AudienceId).Select(a => a.Title).SingleOrDefault();

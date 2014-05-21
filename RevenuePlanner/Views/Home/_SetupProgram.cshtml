@@ -37,6 +37,14 @@
         @Html.TextBox("txtCampaign", program.CampaignTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = program.CampaignTitle })
         <p>@Html.Raw("Description")</p>
         @Html.TextAreaFor(model => model.Description, new { @class = "span12 text-area-size truncate", style = "background:#F2F2F2;", @readonly = "true" })
+        <div style="clear: both; width: 250%;">
+            <br />
+            <br />
+            <br />
+            <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
+            <br />
+            <br />
+        </div>
     </div>
     <div class="span2" id="inspect-modal-left-column2">
         <p>@Html.Raw("Owner")</p>
