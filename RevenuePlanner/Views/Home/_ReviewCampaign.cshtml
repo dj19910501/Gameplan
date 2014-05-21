@@ -7,24 +7,24 @@
     <div class="font-size18">Overview</div>
     <div class="cf source-sans-proregular padding-top32">
         <div class="chart-gray pull-left size65x38 without-padding">
-            <div class="padding-top16"><span id="startDay-id" class="font_size30">@campaignReview.StartDate.ToString("dd")</span></div>
+            <div class="padding-top16"><span id="startDay-id" class="font_size30" style="line-height:24px;">@campaignReview.StartDate.ToString("dd")</span></div>   @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
             <span id="startMonth-id" class="font_size16">@campaignReview.StartDate.ToString("MMM")</span>
-            <div class="margin-top20">Start</div>
+            <div class="margin-top16">Start</div>      @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
         </div>
         <div class="chart-gray pull-left size65x38 without-padding">
-            <div class="padding-top16"><span id="endDay-id" class="font_size30">@campaignReview.EndDate.ToString("dd")</span></div>
+            <div class="padding-top16"><span id="endDay-id" class="font_size30" style="line-height:24px;">@campaignReview.EndDate.ToString("dd")</span></div>   @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
             <span id="endMonth-id" class="font_size16">@campaignReview.EndDate.ToString("MMM")</span>
-            <div class="margin-top20">End</div>
+            <div class="margin-top16">End</div> @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
         </div>
         <div class="chart-gray pull-left size65x38 without-padding">
-            <div class="padding-top16"><span id="inq-id" class="font_size30">@campaignReview.INQs</span></div>
+            <div class="padding-top16"><span id="inq-id" class="font_size30" style="line-height:24px;">@campaignReview.INQs</span></div>    @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
             <span class="font_size16">@Html.LabelForINQ("INQ")</span>
-            <div class="margin-top20">Goal</div>
+            <div class="margin-top16">Goal</div>    @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
         </div>
         <div class="chart-gray pull-left size65x38 without-padding">
-            <div class="padding-top16"><span id="mqls-id" class="font_size30">@campaignReview.MQLs</span></div>
+            <div class="padding-top16"><span id="mqls-id" class="font_size30" style="line-height:24px;">@campaignReview.MQLs</span></div>   @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
             <span class="font_size16">@Html.LabelForMQL("MQL")</span>
-            <div class="margin-top20">Goal</div>
+            <div class="margin-top16">Goal</div>    @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
         </div>
     </div>
     <div class="cf margin-top40 textalign-mozcenter">
