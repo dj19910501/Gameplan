@@ -1606,9 +1606,15 @@
      //// Modified by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
      isRender = true;
      gantt.eachTask(function (task) {
-         gantt.open(task.id);
+         //// Modified by :- Maninder Singh for PL ticket #203 	Performance issue - Home screen taking too long to load.
+         //gantt.open(task.id);
+         gantt.getTask(task.id).$open = true;
          CountTacticForRenderChart(task.id, '');
      })
+
+     //// Modified by :- Maninder Singh for PL ticket #203 	Performance issue - Home screen taking too long to load.
+     gantt.refreshData();
+
      isRender = false;
      ////
 
