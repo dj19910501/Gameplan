@@ -99,6 +99,15 @@ namespace RevenuePlanner.Controllers
             return Json(IntegrationList, JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// Open Contact support pop-up
+        /// </summary>
+        /// <returns></returns>
+        public PartialViewResult LoadSupportPartial()
+        {
+            return PartialView("_SupportPartial");
+        }
+
         #endregion
 
         #region Add Integration
