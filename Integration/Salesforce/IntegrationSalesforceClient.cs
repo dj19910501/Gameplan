@@ -476,8 +476,17 @@ namespace Integration.Salesforce
                 }
                 catch (SalesforceException e)
                 {
+                    if (e.Error.Equals(SalesforceError.EntityIsDeleted))
+                    {
+                        planCampaign.IntegrationInstanceCampaignId = null;
+                        planCampaign = SyncCampaingData(planCampaign);
+                        return planCampaign;
+                    }
+                    else
+                    {
                     instanceLogCampaign.Status = StatusResult.Error.ToString();
                     instanceLogCampaign.ErrorDescription = GetErrorMessage(e);
+                    }
                 }
 
                 instanceLogCampaign.CreatedBy = this._userId;
@@ -519,8 +528,19 @@ namespace Integration.Salesforce
                     }
                     catch (SalesforceException e)
                     {
+                            if (e.Error.Equals(SalesforceError.EntityIsDeleted))
+                            {
+                                t.IntegrationInstanceTacticId = null;
+                                t.LastSyncDate = DateTime.Now;
+                                t.ModifiedDate = DateTime.Now;
+                                t.ModifiedBy = _userId;
+                                instanceLogTactic.Status = StatusResult.Success.ToString();
+                            }
+                            else
+                            {
                         instanceLogTactic.Status = StatusResult.Error.ToString();
                         instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                            }
                     }
 
                     instanceLogTactic.CreatedBy = this._userId;
@@ -560,8 +580,19 @@ namespace Integration.Salesforce
                     }
                     catch (SalesforceException e)
                     {
+                                if (e.Error.Equals(SalesforceError.EntityIsDeleted))
+                                {
+                                    p.IntegrationInstanceProgramId = null;
+                                    p.LastSyncDate = DateTime.Now;
+                                    p.ModifiedDate = DateTime.Now;
+                                    p.ModifiedBy = _userId;
+                                    instanceLogProgram.Status = StatusResult.Success.ToString();
+                                }
+                                else
+                                {
                         instanceLogProgram.Status = StatusResult.Error.ToString();
                         instanceLogProgram.ErrorDescription = GetErrorMessage(e);
+                                }
                     }
 
                     instanceLogProgram.CreatedBy = this._userId;
@@ -595,8 +626,19 @@ namespace Integration.Salesforce
                 }
                 catch (SalesforceException e)
                 {
+                            if (e.Error.Equals(SalesforceError.EntityIsDeleted))
+                            {
+                                planCampaign.IntegrationInstanceCampaignId = null;
+                                planCampaign.LastSyncDate = DateTime.Now;
+                                planCampaign.ModifiedDate = DateTime.Now;
+                                planCampaign.ModifiedBy = _userId;
+                                instanceLogCampaign.Status = StatusResult.Success.ToString();
+                            }
+                            else
+                            {
                     instanceLogCampaign.Status = StatusResult.Error.ToString();
                     instanceLogCampaign.ErrorDescription = GetErrorMessage(e);
+                            }
                 }
 
                 instanceLogCampaign.CreatedBy = this._userId;
@@ -701,8 +743,17 @@ namespace Integration.Salesforce
                 }
                 catch (SalesforceException e)
                 {
+                    if (e.Error.Equals(SalesforceError.EntityIsDeleted))
+                    {
+                        planProgram.IntegrationInstanceProgramId = null;
+                        planProgram = SyncProgramData(planProgram);
+                        return planProgram;
+                    }
+                    else
+                    {
                     instanceLogProgram.Status = StatusResult.Error.ToString();
                     instanceLogProgram.ErrorDescription = GetErrorMessage(e);
+                    }
                 }
 
                 instanceLogProgram.CreatedBy = this._userId;
@@ -742,8 +793,19 @@ namespace Integration.Salesforce
                     }
                     catch (SalesforceException e)
                     {
+                            if (e.Error.Equals(SalesforceError.EntityIsDeleted))
+                            {
+                                t.IntegrationInstanceTacticId = null;
+                                t.LastSyncDate = DateTime.Now;
+                                t.ModifiedDate = DateTime.Now;
+                                t.ModifiedBy = _userId;
+                                instanceLogTactic.Status = StatusResult.Success.ToString();
+                            }
+                            else
+                            {
                         instanceLogTactic.Status = StatusResult.Error.ToString();
                         instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                            }
                     }
 
                     instanceLogTactic.CreatedBy = this._userId;
@@ -776,8 +838,19 @@ namespace Integration.Salesforce
                 }
                 catch (SalesforceException e)
                 {
+                        if (e.Error.Equals(SalesforceError.EntityIsDeleted))
+                        {
+                            planProgram.IntegrationInstanceProgramId = null;
+                            planProgram.LastSyncDate = DateTime.Now;
+                            planProgram.ModifiedDate = DateTime.Now;
+                            planProgram.ModifiedBy = _userId;
+                            instanceLogProgram.Status = StatusResult.Success.ToString();
+                        }
+                        else
+                        {
                     instanceLogProgram.Status = StatusResult.Error.ToString();
                     instanceLogProgram.ErrorDescription = GetErrorMessage(e);
+                        }
                 }
 
                 instanceLogProgram.CreatedBy = this._userId;
@@ -912,8 +985,17 @@ namespace Integration.Salesforce
                 }
                 catch (SalesforceException e)
                 {
+                    if (e.Error.Equals(SalesforceError.EntityIsDeleted))
+                    {
+                        planTactic.IntegrationInstanceTacticId = null;
+                        planTactic = SyncTacticData(planTactic);
+                        return planTactic;
+                    }
+                    else
+                    {
                     instanceLogTactic.Status = StatusResult.Error.ToString();
                     instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                    }
                 }
 
                 instanceLogTactic.CreatedBy = this._userId;
@@ -947,8 +1029,19 @@ namespace Integration.Salesforce
                 }
                 catch (SalesforceException e)
                 {
+                    if (e.Error.Equals(SalesforceError.EntityIsDeleted))
+                    {
+                        planTactic.IntegrationInstanceTacticId = null;
+                        planTactic.LastSyncDate = DateTime.Now;
+                        planTactic.ModifiedDate = DateTime.Now;
+                        planTactic.ModifiedBy = _userId;
+                        instanceLogTactic.Status = StatusResult.Success.ToString();
+                    }
+                    else
+                    {
                     instanceLogTactic.Status = StatusResult.Error.ToString();
                     instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                    }
                 }
 
                 instanceLogTactic.CreatedBy = this._userId;
@@ -994,8 +1087,20 @@ namespace Integration.Salesforce
                         }
                         catch (SalesforceException e)
                         {
+                            if (e.Error.Equals(SalesforceError.EntityIsDeleted))
+                            {
+                                t.IntegrationInstanceTacticId = null;
+                                t.LastSyncDate = DateTime.Now;
+                                t.ModifiedDate = DateTime.Now;
+                                t.ModifiedBy = _userId;
+                                instanceLogTactic.Status = StatusResult.Success.ToString();
+                            }
+                            else
+                            {
                             instanceLogTactic.Status = StatusResult.Error.ToString();
                             instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                            }
+                            
                         }
 
                         instanceLogTactic.CreatedBy = this._userId;
@@ -1030,8 +1135,17 @@ namespace Integration.Salesforce
                         }
                         catch (SalesforceException e)
                         {
+                            if (e.Error.Equals(SalesforceError.EntityIsDeleted))
+                            {
+                                p.IntegrationInstanceProgramId = null;
+                                p.LastSyncDate = DateTime.Now;
+                                instanceLogProgram.Status = StatusResult.Success.ToString();
+                            }
+                            else
+                            {
                             instanceLogProgram.Status = StatusResult.Error.ToString();
                             instanceLogProgram.ErrorDescription = GetErrorMessage(e);
+                            }
                         }
 
                         instanceLogProgram.CreatedBy = this._userId;
@@ -1064,8 +1178,17 @@ namespace Integration.Salesforce
                     }
                     catch (SalesforceException e)
                     {
+                        if (e.Error.Equals(SalesforceError.EntityIsDeleted))
+                        {
+                            planIMPCampaign.IntegrationInstanceCampaignId = null;
+                            planIMPCampaign.LastSyncDate = DateTime.Now;
+                            instanceLogCampaign.Status = StatusResult.Success.ToString();
+                        }
+                        else
+                        {
                         instanceLogCampaign.Status = StatusResult.Error.ToString();
                         instanceLogCampaign.ErrorDescription = GetErrorMessage(e);
+                        }
                     }
 
                     instanceLogCampaign.CreatedBy = this._userId;
@@ -1198,8 +1321,17 @@ namespace Integration.Salesforce
                 }
                 catch (SalesforceException e)
                 {
+                    if (e.Error.Equals(SalesforceError.EntityIsDeleted))
+                    {
+                        planIMPTactic.IntegrationInstanceTacticId = null;
+                        planIMPTactic = SyncImprovementData(planIMPTactic);
+                        return planIMPTactic;
+                    }
+                    else
+                    {
                     instanceLogTactic.Status = StatusResult.Error.ToString();
                     instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                    }
                 }
 
                 instanceLogTactic.CreatedBy = this._userId;
@@ -1233,8 +1365,19 @@ namespace Integration.Salesforce
                 }
                 catch (SalesforceException e)
                 {
+                    if (e.Error.Equals(SalesforceError.EntityIsDeleted))
+                    {
+                        planIMPTactic.IntegrationInstanceTacticId = null;
+                        planIMPTactic.LastSyncDate = DateTime.Now;
+                        planIMPTactic.ModifiedDate = DateTime.Now;
+                        planIMPTactic.ModifiedBy = _userId;
+                        instanceLogTactic.Status = StatusResult.Success.ToString();
+                    }
+                    else
+                    {
                     instanceLogTactic.Status = StatusResult.Error.ToString();
                     instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                    }
                 }
 
                 instanceLogTactic.CreatedBy = this._userId;
