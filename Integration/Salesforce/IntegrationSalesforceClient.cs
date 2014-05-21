@@ -416,7 +416,7 @@ namespace Integration.Salesforce
                                 .ToDictionary(g => g.GeographyId, g => g.Title);
 
             BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
-            _mappingUser = objBDSservice.GetUserListByClientId(clientId, BDSApplicationCode).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + "" + u.LastName);
+            _mappingUser = objBDSservice.GetUserListByClientId(clientId, BDSApplicationCode).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
 
             IntegrationInstanceTacticIds = new List<string>();
         }
