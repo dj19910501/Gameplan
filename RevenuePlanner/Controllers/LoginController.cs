@@ -63,6 +63,11 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.ReturnUrl = returnUrl;
 
+            //// Start - Added by :- Sohel Pathan on 22/05/2014 for PL ticket #469 to display release version from database
+            string applicationReleaseVersion = Common.GetCurrentApplicationReleaseVersion();
+            ViewBag.ApplicationReleaseVersion = applicationReleaseVersion;
+            //// End - Added by :- Sohel Pathan on 22/05/2014 for PL ticket #469 to display release version from database
+
             return View();
         }
 
@@ -201,6 +206,12 @@ namespace RevenuePlanner.Controllers
 
                 /* Bug 25:Unavailability of BDSService leads to no error shown to user */
             }
+            
+            //// Start - Added by :- Sohel Pathan on 22/05/2014 for PL ticket #469 to display release version from database
+            string applicationReleaseVersion = Common.GetCurrentApplicationReleaseVersion();
+            ViewBag.ApplicationReleaseVersion = applicationReleaseVersion;
+            //// End - Added by :- Sohel Pathan on 22/05/2014 for PL ticket #469 to display release version from database
+            
             ViewBag.ReturnUrl = returnUrl;
             return View(form);
         }

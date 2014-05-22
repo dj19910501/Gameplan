@@ -30,6 +30,7 @@ namespace BDSService
         public Nullable<System.Guid> CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
+        public string ReleaseVersion { get; set; }
     
         public virtual ICollection<Application_Role> Application_Role { get; set; }
         public virtual ICollection<Menu_Application> Menu_Application { get; set; }

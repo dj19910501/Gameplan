@@ -959,5 +959,29 @@ namespace BDSService
         }
 
         #endregion
+
+        #region Get Application Release Version
+
+        /// <summary>
+        /// Get Application Release Version using ApplicationId
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy>
+        /// <CreatedDate>21/05/2014</CreatedDate>
+        /// <Description>To address PL ticket #469.</Description>
+        /// <param name="applicationId"></param>
+        /// <returns></returns>
+        public string GetApplicationReleaseVersion(Guid applicationId)
+        {
+            string appReleaseVersion = string.Empty;
+            if (applicationId != null)
+            {
+                appReleaseVersion = (from a in db.Applications
+                                     where a.ApplicationId == applicationId
+                                     select (a.ReleaseVersion)).FirstOrDefault();
+            }
+            return appReleaseVersion;
+        }
+
+        #endregion
     }
 }

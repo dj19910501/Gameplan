@@ -1465,6 +1465,18 @@ namespace RevenuePlanner.BDSService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/UpdateUserSecurityQuestion", ReplyAction="http://tempuri.org/IBDSService/UpdateUserSecurityQuestionResponse")]
         System.Threading.Tasks.Task<int> UpdateUserSecurityQuestionAsync(RevenuePlanner.BDSService.User user);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetUserListByClientId", ReplyAction="http://tempuri.org/IBDSService/GetUserListByClientIdResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetUserListByClientId(System.Guid clientId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetUserListByClientId", ReplyAction="http://tempuri.org/IBDSService/GetUserListByClientIdResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetUserListByClientIdAsync(System.Guid clientId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetApplicationReleaseVersion", ReplyAction="http://tempuri.org/IBDSService/GetApplicationReleaseVersionResponse")]
+        string GetApplicationReleaseVersion(System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetApplicationReleaseVersion", ReplyAction="http://tempuri.org/IBDSService/GetApplicationReleaseVersionResponse")]
+        System.Threading.Tasks.Task<string> GetApplicationReleaseVersionAsync(System.Guid applicationId);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -1724,6 +1736,22 @@ namespace RevenuePlanner.BDSService {
         
         public System.Threading.Tasks.Task<int> UpdateUserSecurityQuestionAsync(RevenuePlanner.BDSService.User user) {
             return base.Channel.UpdateUserSecurityQuestionAsync(user);
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetUserListByClientId(System.Guid clientId, System.Guid applicationId) {
+            return base.Channel.GetUserListByClientId(clientId, applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetUserListByClientIdAsync(System.Guid clientId, System.Guid applicationId) {
+            return base.Channel.GetUserListByClientIdAsync(clientId, applicationId);
+        }
+        
+        public string GetApplicationReleaseVersion(System.Guid applicationId) {
+            return base.Channel.GetApplicationReleaseVersion(applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<string> GetApplicationReleaseVersionAsync(System.Guid applicationId) {
+            return base.Channel.GetApplicationReleaseVersionAsync(applicationId);
         }
     }
 }

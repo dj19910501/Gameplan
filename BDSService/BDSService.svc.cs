@@ -188,5 +188,11 @@ namespace BDSService
             BDSUserRepository obj = new BDSUserRepository();
             return obj.GetUserListByClientId(clientId, applicationId);
         }
+
+        public string GetApplicationReleaseVersion(Guid applicationId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetApplicationReleaseVersion(applicationId);
+        }
     }
 }

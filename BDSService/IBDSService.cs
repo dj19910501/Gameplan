@@ -100,5 +100,8 @@ namespace BDSService
 
         [OperationContract]
         List<BDSEntities.User> GetUserListByClientId(Guid clientId, Guid applicationId);
+
+        [OperationContract]
+        string GetApplicationReleaseVersion(Guid applicationId);
     }
 }

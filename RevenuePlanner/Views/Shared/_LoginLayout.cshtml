@@ -37,6 +37,13 @@
 
 </head>
 <body class="gradient">
+    @* Start - Added by :- Sohel Pathan on 22/05/2014 for PL #469 *@
+    <style type="text/css">
+        .icon-info-support {
+            width:300px;
+        }
+    </style>
+    @* End - Added by :- Sohel Pathan on 22/05/2014 for PL #469 *@
     <div class="container-fluid all-height">
 
         <div class="row-fluid">
@@ -64,7 +71,7 @@
                         <a href="#" id="ContactSupport">
                             <div class="support-icon"></div>
                             Contact Support</a><br />
-                        @Sessions.ApplicationName @Html.Raw("Release [")@DateTime.Now.Year @Html.Raw(".")@DateTime.Now.ToString("MMMM")@Html.Raw("]")
+                        @Sessions.ApplicationName @Html.Raw("Release [")@ViewBag.ApplicationReleaseVersion@Html.Raw("]")    @* Modified by :- Sohel Pathan on 22/05/2014 for PL #469 to display release version from database *@
                     </div>
                 </div>
             </div>

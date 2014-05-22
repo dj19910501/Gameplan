@@ -126,13 +126,13 @@
     <Compile Include="PasswordResetRequest.cs">
       <DependentUpon>BDSAuth.tt</DependentUpon>
     </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Role.cs">
       <DependentUpon>BDSAuth.tt</DependentUpon>
     </Compile>
     <Compile Include="Role_Permission.cs">
       <DependentUpon>BDSAuth.tt</DependentUpon>
     </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SecurityQuestion.cs">
       <DependentUpon>BDSAuth.tt</DependentUpon>
     </Compile>
@@ -147,6 +147,7 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="packages.config" />
     <EntityDeploy Include="BDSAuth.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>BDSAuth.Designer.cs</LastGenOutput>
@@ -164,7 +165,6 @@
       <DependentUpon>BDSAuth.edmx</DependentUpon>
       <LastGenOutput>BDSAuth.cs</LastGenOutput>
     </Content>
-    <Content Include="packages.config" />
     <None Include="Properties\PublishProfiles\BDSServiceDevLocal.pubxml" />
     <None Include="Properties\PublishProfiles\BulldogProduction.pubxml" />
     <None Include="Properties\PublishProfiles\BulldogStaging.pubxml" />

@@ -2814,5 +2814,28 @@ namespace RevenuePlanner.Helpers
             }
         }
         #endregion
+
+        #region Get Current Application Release Version
+        /// <summary>
+        /// Get release version detail of the current application from database.
+        /// </summary>
+        /// <CreartedBy>Sohel Pathan</CreartedBy>
+        /// <CreatedDate>22/05/2014</CreatedDate>
+        /// <returns></returns>
+        public static string GetCurrentApplicationReleaseVersion()
+        {
+            try
+            {
+                Guid applicationId = Guid.Parse(ConfigurationManager.AppSettings["BDSApplicationCode"]);
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                return objBDSServiceClient.GetApplicationReleaseVersion(applicationId);
+            }
+            catch(Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+                return string.Empty;
+            }
+        }
+        #endregion
     }
 }
