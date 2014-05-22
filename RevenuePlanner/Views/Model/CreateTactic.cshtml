@@ -322,6 +322,20 @@
             });
         });
 
+        $('form').find(".sbSelector").each(function () {
+            $(this).next().find('li').click(function () {
+                if ($(this).parent().parent().prev().attr('require') == 'true') {
+                    if ($(this).parent().prev().text() == 'Please Select') {
+                        $(this).parent().prev().addClass("error");
+                        iserror = true;
+                    }
+                    else {
+                        $(this).parent().prev().removeClass("error");
+                    }
+                }
+            });
+        });
+
         $("#CreateTactic").click(function () {
             var iserror = false;
             $('form').find('input[type=text], select, textarea').each(function () {
@@ -357,6 +371,20 @@
                     }
                 }
             });
+
+            //sbSelector
+            $('form').find('.sbSelector').each(function () {
+                if ($(this).parent().prev().attr('require') == 'true') {
+                    if ($(this).text() == 'Please Select') {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                }
+            });
+
             if (iserror) {
                 ShowError("Make sure all fields are filled and try again.");
                 return false;
