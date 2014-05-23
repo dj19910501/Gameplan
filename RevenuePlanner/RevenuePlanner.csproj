@@ -54,10 +54,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLLs\HelperSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Integration, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Integration.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -779,6 +775,10 @@
     <ProjectReference Include="..\Entities\Entities.csproj">
       <Project>{c7aa3463-8e84-4280-a893-c6e7d38ea8d2}</Project>
       <Name>Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Integration\Integration.csproj">
+      <Project>{b312ef9a-c33a-4e44-8bd6-b141080302e0}</Project>
+      <Name>Integration</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
