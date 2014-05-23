@@ -546,13 +546,6 @@
     <Content Include="Content\fonts\sourcesanspro-semibold-webfont.woff" />
     <Content Include="Scripts\jquery.selectbox-0.2.js" />
     <Content Include="Scripts\js\jquery-migrate-1.2.1.min.js" />
-    <Content Include="Integration.BDSService.Client4.datasource" />
-    <Content Include="Integration.BDSService.Menu4.datasource" />
-    <Content Include="Integration.BDSService.PasswordResetRequest4.datasource" />
-    <Content Include="Integration.BDSService.Permission4.datasource" />
-    <Content Include="Integration.BDSService.Role4.datasource" />
-    <Content Include="Integration.BDSService.SecurityQuestion4.datasource" />
-    <Content Include="Integration.BDSService.User4.datasource" />
     <None Include="Service References\BDSService\BDSService.disco" />
     <None Include="Service References\BDSService\configuration91.svcinfo" />
     <None Include="Service References\BDSService\configuration.svcinfo" />
