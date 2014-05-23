@@ -4,6 +4,9 @@
 }
 <div id="panel-656352" class="content-panel-tab">
     <div class="cf" id="divActualInner">
+        <div>
+            <span>Note that imported values override user-generated values.</span>
+        </div>
         <div id="months_container" class="container-table" style="float: left;">
             <table class="table table-striped mystats table-style " id="tblActual">
                 <thead>
@@ -25,45 +28,45 @@
                 </thead>
                 <tbody>
                     @foreach (string s in @ViewBag.StageTitle)
-            {
-                string idtr = "tr" + @s;
+                    {
+                        string idtr = "tr" + @s;
                         <tr class="height42" id="@idtr">
                             @{
-                                string stageLable = s;
-                                if (!string.IsNullOrEmpty(s))
-                                {
-                                    if (s.ToLower() == Common.StageCodeINQ)
-                                    {
-                                        stageLable = Html.LabelForINQ(s);
-                                    }
-                                    else if (s.ToLower() == Common.StageCodeMQL)
-                                    {
-                                        stageLable = Html.LabelForMQL(s);
-                                    }
-                                    else if (s.ToLower() == Common.StageCodeCW)
-                                    {
-                                        stageLable = Html.LabelForCW(s);
-                                    }
-                                }
+                        string stageLable = s;
+                        if (!string.IsNullOrEmpty(s))
+                        {
+                            if (s.ToLower() == Common.StageCodeINQ)
+                            {
+                                stageLable = Html.LabelForINQ(s);
+                            }
+                            else if (s.ToLower() == Common.StageCodeMQL)
+                            {
+                                stageLable = Html.LabelForMQL(s);
+                            }
+                            else if (s.ToLower() == Common.StageCodeCW)
+                            {
+                                stageLable = Html.LabelForCW(s);
+                            }
+                        }
                             }
                             <th class="font3F3F3F actual-popup-tile" title="@stageLable">@stageLable</th>
                             @for (int j = 1; j <= 12; j++)
-                    {
-                        string ids = s + "-Y" + j;
-                        string maxL = RevenuePlanner.Helpers.Common.maxLengthPriceValue;
-                        string classes = "backgroundC6EBF3 text-align-right width75px input-table priceValue";
-                        if (s == "Revenue")
-                        {
-                            classes = "backgroundC6EBF3 text-align-right width75px currency_dollar input-table";
-                            maxL = RevenuePlanner.Helpers.Common.maxLengthDollar;
-                        }
+                            {
+                                string ids = s + "-Y" + j;
+                                string maxL = RevenuePlanner.Helpers.Common.maxLengthPriceValue;
+                                string classes = "backgroundC6EBF3 text-align-right width75px input-table priceValue";
+                                if (s == "Revenue")
+                                {
+                                    classes = "backgroundC6EBF3 text-align-right width75px currency_dollar input-table";
+                                    maxL = RevenuePlanner.Helpers.Common.maxLengthDollar;
+                                }
                                 <th class="border-r font3F3F3F ">
                                     <input id="@ids" class="@classes" placeholder="- - -" maxlength="@maxL"></th>
 @* @Html.TextBox(s + "-Y" + j, null, new { @class = "backgroundC6EBF3 width75px input-table error" })
                      </th>*@
-                    }
+                            }
                         </tr>
-            }
+                    }
                     <tr class="height42">
                         <th class="font3F3F3F actual-popup-tile">Cost</th>
                         <th class="border-r font3F3F3F"></th>
@@ -98,7 +101,7 @@
 
             </table>
         </div>
-        <div class="pull-left" style="float: left; width:270px;">
+        <div class="pull-left" style="float: left; width: 270px;">
             <table class="table table-striped mystats table-style table-up shadow-table">
                 <thead>
                     <tr class="height42">
@@ -305,7 +308,7 @@
         }
         $('#cT').bind('change', calculateRIO);
         $('#cT').bind('keyup', calculateRIO);
-        
+
         function calculateRIO() {
             var pcost = parseFloat(ReplaceCC($("#cp").text()));
             if (pcost != 0 && !isNaN(pcost)) {
@@ -361,7 +364,7 @@
                             TotalCostActual: totalCostActual,
                             ROI: totalROI,
                             ROIActual: totalROIActual,
-							IsActual: true
+                            IsActual: true
                         });
                         isData = true;
                     }
@@ -389,19 +392,19 @@
             }
             if (!isData) {
                 _tactic.push({
-                            PlanTacticId: planTacticId,
-                            StageTitle: 0,
-                            Period: 0,
-                            ActualValue: 0,
-                            TotalINQActual: totalINQActual,
-                            TotalMQLActual: totalMQLActual,
-                            TotalCWActual: totalCWActual,
-                            TotalRevenueActual: totalRevenueActual,
-                            TotalCostActual: totalCostActual,
-                            ROI: totalROI,
-                            ROIActual: totalROIActual,
-							IsActual: false
-                        });
+                    PlanTacticId: planTacticId,
+                    StageTitle: 0,
+                    Period: 0,
+                    ActualValue: 0,
+                    TotalINQActual: totalINQActual,
+                    TotalMQLActual: totalMQLActual,
+                    TotalCWActual: totalCWActual,
+                    TotalRevenueActual: totalRevenueActual,
+                    TotalCostActual: totalCostActual,
+                    ROI: totalROI,
+                    ROIActual: totalROIActual,
+                    IsActual: false
+                });
             }
             $("#errorMessage").css("display", "none");
             _tactic = JSON.stringify({ 'tacticactual': _tactic });

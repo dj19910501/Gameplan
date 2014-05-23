@@ -3809,10 +3809,9 @@ namespace RevenuePlanner.Controllers
                     actualValue = pcpt.Actualvalue,
                     UpdateBy = string.Format("{0} {1} by {2} {3}", "Last updated", pcpt.CreatedDate.ToString("MMM dd"), userName.Where(u => u.UserId == pcpt.CreatedBy).Select(u => u.FirstName).FirstOrDefault(), userName.Where(u => u.UserId == pcpt.CreatedBy).Select(u => u.LastName).FirstOrDefault()),
                     IsUpdate = status
-                }).Select(pcp => pcp).Distinct()
+                }).Select(pcp => pcp).Distinct(),
+                LastSync = t.LastSyncDate == null ? string.Empty : ("Last synced with " + GetIntegrationTypeTitleByModel(t.TacticType.Model) + " " + Common.GetFormatedDate(t.LastSyncDate) + ".")
             }).Select(t => t).Distinct().OrderBy(t => t.id);
-
-
 
             var opens = tacticObj.Where(x => x.actualData.ToList().Count == 0).OrderBy(t => t.title);
             var all = tacticObj.Where(x => x.actualData.ToList().Count != 0);

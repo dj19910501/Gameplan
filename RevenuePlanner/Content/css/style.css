@@ -5107,7 +5107,7 @@ input::-moz-placeholder {
 
 .last-updated {
     margin-right: calc(100% - 333px);
-    margin-top: 20px;
+    margin-top: 5px;
     width: 300px;
 }
 
@@ -7107,3 +7107,6 @@ input.icon-check-blue{background-image: url("../images/circle-check-icon-small-b
 
 
 /* End - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home, Plan and ApplyToCalender screen */
+
+.div-user-Note {padding:15px 20px 15px 20px;font-size:13px;}
+.margin-top6 {margin-top:6px;}
