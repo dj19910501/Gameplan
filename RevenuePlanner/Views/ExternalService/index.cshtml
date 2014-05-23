@@ -278,7 +278,7 @@
 
     $('#ContactSupportLink').click(function () {
         $("#div_ContactSupportLink").empty();
-        var url = '@Url.Content("~/ExternalService/LoadSupportPartial/")';
+        var url = '@Url.Content("~/Common/LoadSupportPartial/")';   //// Modified by Sohel Pathan on 23/05/2014 for internal review points.
         $("#div_ContactSupportLink").load(url);
      });
 

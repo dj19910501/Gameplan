@@ -95,5 +95,16 @@ namespace RevenuePlanner.Controllers
 
             base.OnActionExecuting(filterContext);//Call the method of base class
         }
+
+        /// <summary>
+        /// Open Contact support pop-up
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy>
+        /// <CreatedDate>22/05/2014</CreatedDate>
+        /// <returns></returns>
+        public PartialViewResult LoadSupportPartial()
+        {
+            return PartialView("_SupportPartial");
+        }
     }
 }

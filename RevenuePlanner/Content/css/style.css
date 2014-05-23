@@ -6651,9 +6651,11 @@ h2.title-header {
 .improvementcolor407B22 .gantt_task_drag{background: none repeat scroll 0 0 #407B22 !important;}
 .improvementcolor407B22 .gantt_task_drag:after{border-top-color: #407B22;}
 
-.improvementcolor5BAE30.gantt_task_line{border-color: #5BAE30;}
-.improvementcolor5BAE30 .gantt_task_drag{background: none repeat scroll 0 0 #5BAE30 !important;}
-.improvementcolor5BAE30 .gantt_task_drag:after{border-top-color: #5BAE30;}
+/* Start - Modified by Sohel Pathan on 23/05/2014 for internal review points. */
+.improvementcolor5bae30.gantt_task_line{border-color: #5BAE30;}
+.improvementcolor5bae30 .gantt_task_drag{background: none repeat scroll 0 0 #5BAE30 !important;}
+.improvementcolor5bae30 .gantt_task_drag:after{border-top-color: #5BAE30;}
+/* End - Modified by Sohel Pathan on 23/05/2014 for internal review points. */
 
 .improvementcolor09AF8F.gantt_task_line{border-color: #09AF8F;}
 .improvementcolor09AF8F .gantt_task_drag{background: none repeat scroll 0 0 #09AF8F !important;}

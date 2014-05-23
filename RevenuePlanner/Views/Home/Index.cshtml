@@ -1373,10 +1373,20 @@
      $.each(tasks.data, function (index, objData) {
          objData.start_date = new Date(objData.start_date);
      });
+     
+     //// Start -- Modified by Sohel Pathan on 22/05/2014 for Internal Review Points
+     //// Instead of iterating each task and delete then it, there is a better way to use .clearAll() method that removes all the task from gantt.
 
-     gantt.eachTask(function (task) {
-        gantt.deleteTask(task.id)
-     })
+     //gantt.eachTask(function (task) {
+     //   gantt.deleteTask(task.id)
+     //})
+
+     if ($('.gantt_task_row').length > 0)
+     {
+         gantt.clearAll();
+     }
+     //// End -- Modified by Sohel Pathan on 22/05/2014 for Internal Review Points
+
      if (isQuater == "thisquarter") {
          //// Setting scale.
          gantt.config.scale_unit = "month";

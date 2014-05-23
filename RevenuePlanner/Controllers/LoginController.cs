@@ -410,7 +410,7 @@ namespace RevenuePlanner.Controllers
                 return Json(false, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult LoadSupportPartial()
+        public ActionResult LoadSupportPartialOnLogin()     //// Method Signature Modified by Sohel Pathan on 23/05/2014 for internal review points.
         {
             return PartialView("_SupportPartial");
         }

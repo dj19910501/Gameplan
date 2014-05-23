@@ -219,7 +219,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                TempData["ErrorMessage"] = "No plan available, please create a plan";
+                TempData["ErrorMessage"] = "No published plan available to shown on home, please publish a plan.";  //// Error Message modified by Sohel Pathan on 22/05/2014 to address internal review points
                 return RedirectToAction("PlanSelector", "Plan");
             }
 
@@ -510,7 +510,7 @@ namespace RevenuePlanner.Controllers
                         TacticTypeId = pcpt.TacticTypeId,
                         Title = pcpt.Title,
                         TaskId = string.Format("C{0}_P{1}_T{2}_Y{3}", pcpt.Plan_Campaign_Program.PlanCampaignId, pcpt.PlanProgramId, pcpt.PlanTacticId, pcpt.TacticTypeId),
-                        Status = pcpt.Status    //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+                        //Status = pcpt.Status    //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
                     });
 
                     var tacticType = (tactic.Select(pcpt => pcpt.TacticType)).Select(pcpt => new
@@ -544,7 +544,7 @@ namespace RevenuePlanner.Controllers
                                 VerticalId = pcpt.VerticalId,
                                 Title = pcpt.Title,
                                 TaskId = string.Format("V{0}_C{1}_P{2}_T{3}", pcpt.VerticalId, pcpt.Plan_Campaign_Program.PlanCampaignId, pcpt.PlanProgramId, pcpt.PlanTacticId),
-                                Status = pcpt.Status    //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+                                //Status = pcpt.Status    //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
                             });
 
                     var verticals = (tactic.Select(vertical => vertical.Vertical)).Select(vertical => new
@@ -576,7 +576,7 @@ namespace RevenuePlanner.Controllers
                         t.TacticType.StageId,
                         t.TacticType.Stage.Title,
                         t.TacticType.Stage.ColorCode,
-                        Status = t.Status   //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+                        //Status = t.Status   //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
                     }).Distinct();
 
                     var queryStageTacticType = tactic.Select(t => new
@@ -585,7 +585,7 @@ namespace RevenuePlanner.Controllers
                         t.Title,
                         t.TacticType.StageId,
                         TaskId = string.Format("S{0}_C{1}_P{2}_T{3}", t.TacticType.StageId, t.Plan_Campaign_Program.PlanCampaignId, t.PlanProgramId, t.PlanTacticId),
-                        Status = t.Status   //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+                        //Status = t.Status   //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
                     });
 
                     //// Modified By Maninder Singh Wadhva PL Ticket#47
@@ -617,7 +617,7 @@ namespace RevenuePlanner.Controllers
                                AudienceId = pcpt.AudienceId,
                                Title = pcpt.Title,
                                TaskId = string.Format("A{0}_C{1}_P{2}_T{3}", pcpt.AudienceId, pcpt.Plan_Campaign_Program.PlanCampaignId, pcpt.PlanProgramId, pcpt.PlanTacticId),
-                               Status = pcpt.Status     //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+                               //Status = pcpt.Status     //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
                            });
 
                     var audiences = (tactic.Select(audience => audience.Audience)).Select(audience => new
@@ -656,7 +656,7 @@ namespace RevenuePlanner.Controllers
                         pt.Title,
                         businessUnit.BusinessUnitId,
                         TaskId = string.Format("B{0}_C{1}_P{2}_T{3}", businessUnit.BusinessUnitId, pt.Plan_Campaign_Program.PlanCampaignId, pt.PlanProgramId, pt.PlanTacticId),
-                        Status = pt.Status      //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+                        //Status = pt.Status      //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
                     });
 
                     //// Modified By Maninder Singh Wadhva PL Ticket#47
@@ -955,7 +955,7 @@ namespace RevenuePlanner.Controllers
                                                          GetMaxEndDate(GanttTabs.Audience, t.AudienceId, campaign, program, tactic)), tactic, improvementTactic),//progress = 0,
                 open = false,
                 color = string.Concat(GANTT_BAR_CSS_CLASS_PREFIX, t.Audience.ColorCode.ToLower()),
-                Status = t.Status       //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+                //Status = t.Status       //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
             }).Select(a => a).Distinct().OrderBy(t => t.text);
 
             var newTaskDataAudience = taskDataAudience.Select(t => new
@@ -967,7 +967,7 @@ namespace RevenuePlanner.Controllers
                 progress = t.progress,
                 open = t.open,
                 color = t.color + ((t.progress > 0) ? "stripe" : ""),
-                Status = t.Status       //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+                //Status = t.Status       //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
             });
 
             var taskDataCampaign = tactic.Select(t => new
@@ -1099,7 +1099,7 @@ namespace RevenuePlanner.Controllers
                                                           tactic, improvementTactic),//progress = 0,
                 open = false,
                 color = string.Concat(GANTT_BAR_CSS_CLASS_PREFIX, t.TacticType.Stage.ColorCode.ToLower()),
-                Status = t.Status       //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+                //Status = t.Status       //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
             }).Distinct();
 
             var newTaskStages = taskStages.Select(s => new
@@ -1111,7 +1111,7 @@ namespace RevenuePlanner.Controllers
                 progress = s.progress,
                 open = s.open,
                 color = s.color + ((s.progress > 0) ? "stripe" : ""),
-                Status = s.Status       //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+                //Status = s.Status       //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
             });
 
             //// Tactic
@@ -1244,7 +1244,7 @@ namespace RevenuePlanner.Controllers
                                                tactic, improvementTactic),//progress = 0,
                 open = false,
                 color = string.Concat(GANTT_BAR_CSS_CLASS_PREFIX, t.Vertical.ColorCode.ToLower()),
-                Status = t.Status       //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+                //Status = t.Status       //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
             }).Select(v => v).Distinct().OrderBy(t => t.text);
 
             var newTaskDataVertical = taskDataVertical.Select(v => new
@@ -1256,7 +1256,7 @@ namespace RevenuePlanner.Controllers
                 progress = v.progress,
                 open = v.open,
                 color = v.color + ((v.progress > 0) ? "stripe" : ""),
-                Status = v.Status       //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+                //Status = v.Status       //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
             });
 
             var taskDataCampaign = tactic.Select(t => new
