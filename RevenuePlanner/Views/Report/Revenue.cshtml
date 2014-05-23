@@ -1238,7 +1238,7 @@
         totalRevSpendRevenue = 0;
         totalRevSpendCost = 0;
         if (typeof reportTableInfo4 != 'undefined') {
-            if (reportTableInfo4.length) {
+            if (reportTableInfo4 != null && reportTableInfo4.length) {
                 for (i in reportTableInfo4) {
                     addRowReport4(reportTableInfo4[i].Title, reportTableInfo4[i].PlanRevenue, reportTableInfo4[i].ActualRevenue, reportTableInfo4[i].TrendRevenue, reportTableInfo4[i].PlanCost, reportTableInfo4[i].ActualCost, reportTableInfo4[i].TrendCost, reportTableInfo4[i].RunRate, reportTableInfo4[i].PipelineCoverage, reportTableInfo4[i].RevSpend, reportTableInfo4[i].RevenueTotal, reportTableInfo4[i].CostTotal);
                 }

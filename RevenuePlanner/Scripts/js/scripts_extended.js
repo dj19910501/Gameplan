@@ -278,137 +278,104 @@ function FormatNumber(value, isPercentage) {
 //// Changed By Nirav Shah
 //// Date 4/10/2014
 //// PL 343 : Revenue Report - Limit all numbers to 3 digits
+
+//// Changed By Bhavesh Dobariya
+//// Date 5/23/2014
+//// PL 491 : Report Rouding Errors - Qualified
+//// Change logic previous logic not correct.
 function GetAbberiviatedValue(value) {
-    var absValue = Math.abs(value);
+    var absValue = Math.abs(parseFloat(value));
     absValue = absValue.toFixed();
     var isNegative = value < 0;
+    var postfix = ['k', 'M', 'B', 'T', 'Q'];
+    var indexvalue = 0;
+    var actualvalue;
+
     if (absValue < 1000) {
-        absValue = (Math.round(parseFloat(absValue) * 100) / 100);
-        value = numberWithCommas(absValue);
-    }
-    else if (absValue < 1000000) {
-        if (absValue >= 1000 && absValue < 10000) {
-            value = (Math.round(parseFloat(absValue / 1000)));
-            if (value == 10) {
-                value = Number(value).toFixed(0);
-            }
-            else {
-                value = Number(value).toFixed(2);
-            }
-        }
-        else if (absValue >= 10000 && absValue < 100000) {
-            value = (Math.round(parseFloat(absValue / 1000)));
-            if (value == 100) {
-                value = Number(value).toFixed(0);
-            }
-            else {
-                value = Number(value).toFixed(1);
-            }
-        }
-        else if (absValue >= 100000 && absValue < 1000000) {
-            value = (Math.round(parseFloat(absValue / 1000)));
-            value = Number(value).toFixed(0);
-        }
-        if (value == 1000) {
-            value = 1 + 'M';
-        }
-        else {
-            value = value.toString() + 'k';
-        }
-    }
-    else if (absValue < 1000000000) {
-        if (absValue >= 1000000 && absValue < 10000000) {
-            value = (Math.round(parseFloat(absValue / 1000000)));
-            if (value == 10) {
-                value = Number(value).toFixed(0);
-            }
-            else {
-                value = Number(value).toFixed(2);
-            }
-        }
-        else if (absValue >= 10000000 && absValue < 100000000) {
-            value = (Math.round(parseFloat(absValue / 1000000)));
-            if (value == 100) {
-                value = Number(value).toFixed(0);
-            }
-            else {
-                value = Number(value).toFixed(1);
-            }
-        }
-        else if (absValue >= 100000000 && absValue < 1000000000) {
-            value = (Math.round(parseFloat(absValue / 1000000)));
-            value = Number(value).toFixed(0);
-        }
-        if (value == 1000) {
-            value = 1 + 'B';
-        }
-        else {
-            value = value.toString() + 'M';
-        }
-    }
-    else if (absValue < 1000000000000) {
-        if (absValue >= 1000000000 && absValue < 10000000000) {
-            value = (Math.round(parseFloat(absValue / 1000000000)));
-            if (value == 10) {
-                value = Number(value).toFixed(0);
-            }
-            else {
-                value = Number(value).toFixed(2);
-            }
-        }
-        else if (absValue >= 10000000000 && absValue < 100000000000) {
-            value = (Math.round(parseFloat(absValue / 1000000000)));
-            if (value == 100) {
-                value = Number(value).toFixed(0);
-            }
-            else {
-                value = Number(value).toFixed(1);
-            }
-        }
-        else if (absValue >= 100000000000 && absValue < 1000000000000) {
-            value = (Math.round(parseFloat(absValue / 1000000000)));
-            value = Number(value).toFixed(0);
-        }
-        if (value == 1000) {
-            value = 1 + 'T';
-        }
-        else {
-            value = value.toString() + 'B';
-        }
+        actualvalue = (Math.round(absValue * 100) / 100);
     }
     else {
-        if (absValue >= 1000000000000 && absValue < 10000000000000) {
-            value = (Math.round(parseFloat(absValue / 1000000000000)));
-            if (value == 10) {
-                value = Number(value).toFixed(0);
+        if (absValue < 1000000) {
+            indexvalue = 0;
+            if (absValue >= 1000 && absValue < 10000) {
+                value = Math.round((absValue / 1000) * 100) / 100;
             }
-            else {
-                value = Number(value).toFixed(2);
+            else if (absValue >= 10000 && absValue < 100000) {
+                value = Math.round((absValue / 1000) * 10) / 10;
             }
+            else if (absValue >= 100000 && absValue < 1000000) {
+                value = Math.round((absValue / 1000));
+            }
+
         }
-        else if (absValue >= 10000000000000 && absValue < 100000000000000) {
-            value = (Math.round(parseFloat(absValue / 1000000000000)));
-            if (value == 100) {
-                value = Number(value).toFixed(0);
+        else if (absValue < 1000000000) {
+            indexvalue = 1;
+            if (absValue >= 1000000 && absValue < 10000000) {
+                value = Math.round((absValue / 1000000) * 100) / 100;
             }
-            else {
-                value = Number(value).toFixed(1);
+            else if (absValue >= 10000000 && absValue < 100000000) {
+                value = Math.round((absValue / 1000000) * 10) / 10;
             }
+            else if (absValue >= 100000000 && absValue < 1000000000) {
+                value = Math.round((absValue / 1000000));
+            }
+
         }
-        else if (absValue >= 100000000000000 && absValue < 1000000000000000) {
-            value = (Math.round(parseFloat(absValue / 1000000000000)));
-            value = Number(value).toFixed(0);
+        else if (absValue < 1000000000000) {
+            indexvalue = 2;
+            if (absValue >= 1000000000 && absValue < 10000000000) {
+                value = Math.round((absValue / 1000000000) * 100) / 100;
+            }
+            else if (absValue >= 10000000000 && absValue < 100000000000) {
+                value = Math.round((absValue / 1000000000) * 10) / 10;
+            }
+            else if (absValue >= 100000000000 && absValue < 1000000000000) {
+                value = Math.round((absValue / 1000000000));
+            }
+
         }
-        if (value == 1000) {
-            value = 1 + 'Q';
+        else if (absValue < 1000000000000000) {
+            indexvalue = 3;
+            if (absValue >= 1000000000000 && absValue < 10000000000000) {
+                value = Math.round((absValue / 1000000000000) * 100) / 100;
+            }
+            else if (absValue >= 10000000000000 && absValue < 100000000000000) {
+                value = Math.round((absValue / 1000000000000) * 10) / 10;
+            }
+            else if (absValue >= 100000000000000 && absValue < 1000000000000000) {
+                value = Math.round((absValue / 1000000000000));
+            }
+
+        }
+        else if (absValue < 1000000000000000000) {
+            indexvalue = 4;
+            if (absValue >= 1000000000000000 && absValue < 10000000000000000) {
+                value = Math.round((absValue / 1000000000000000) * 100) / 100;
+            }
+            else if (absValue >= 10000000000000000 && absValue < 100000000000000000) {
+                value = Math.round((absValue / 1000000000000000) * 10) / 10;
+            }
+            else if (absValue >= 100000000000000000 && absValue < 1000000000000000000) {
+                value = Math.round((absValue / 1000000000000000));
+            }
+
+        }
+
+        if (value >= 1000) {
+            actualvalue = (value / 1000).toFixed(2) + postfix[indexvalue + 1];
+        }
+        else if (value >= 100) {
+            actualvalue = value.toFixed() + postfix[indexvalue];
+        }
+        else if (value >= 10) {
+            actualvalue = value.toFixed(1) + postfix[indexvalue];
         }
         else {
-            //value = (Math.round(parseFloat(absValue / 1000000000000) * 100) / 100);
-            value = value.toString() + 'T';
+            actualvalue = value.toFixed(2) + postfix[indexvalue];
         }
     }
-
-    return (isNegative ? '-' + value : value);
+     
+    return (isNegative ? '-' + actualvalue.toString() : actualvalue.toString());
 }
 
 //// Added By Maninder Singh 
