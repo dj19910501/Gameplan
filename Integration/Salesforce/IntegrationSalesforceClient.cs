@@ -273,7 +273,7 @@ namespace Integration.Salesforce
                             int index = tacticList.IndexOf(tactic);
                             if (index >= 0)
                             {
-                                tactic.CostActual = Convert.ToInt32(jobj[mapping.Value]);
+                                tactic.CostActual = Convert.ToDouble(jobj[mapping.Value]);
                                 tacticList[index] = tactic;
                             }
                         }
@@ -298,13 +298,13 @@ namespace Integration.Salesforce
                                 actualTactic.StageTitle = mapping.Key;
                                 //change date & created by
                                 actualTactic.CreatedDate = DateTime.Now;
-                                    actualTactic.CreatedBy = _userId;
+                                actualTactic.CreatedBy = _userId;
                                 db.Entry(actualTactic).State = EntityState.Added;
                             }
 
                             if (mapping.Key == StageValue.INQ.ToString())
                             {
-                                tactic.INQsActual = Convert.ToInt32(actualValue);
+                                tactic.INQsActual = Convert.ToInt64(actualValue);
                             }
                             else if (mapping.Key == StageValue.MQL.ToString())
                             {

@@ -1397,7 +1397,7 @@ namespace RevenuePlanner.Controllers
                     .Select(pcp => new { PlanCampaignId = pcp.PlanCampaignId, Title = pcp.Title })
                     .OrderBy(pcp => pcp.Title);
                 if (campaignList == null)
-                    return Json(null);
+                    return Json(new { });
                 return Json(campaignList, JsonRequestBehavior.AllowGet);
             }
             else
@@ -1406,7 +1406,7 @@ namespace RevenuePlanner.Controllers
                     .Select(pcp => new { PlanCampaignId = pcp.PlanCampaignId, Title = pcp.Title })
                     .OrderBy(pcp => pcp.Title);
                 if (campaignList == null)
-                    return Json(null);
+                    return Json(new { });
                 return Json(campaignList, JsonRequestBehavior.AllowGet);
             }
 
@@ -1428,7 +1428,7 @@ namespace RevenuePlanner.Controllers
                     .Select(c => new { PlanProgramId = c.PlanProgramId, Title = c.Title })
                     .OrderBy(pcp => pcp.Title);
                 if (programList == null)
-                    return Json(null);
+                    return Json(new { });
               
                 return Json(programList, JsonRequestBehavior.AllowGet);
             }
@@ -1437,7 +1437,7 @@ namespace RevenuePlanner.Controllers
                  .Select(c => new { PlanProgramId = c.PlanProgramId, Title = c.Title })
                  .OrderBy(pcp => pcp.Title);
             if (programoutList == null)
-                return Json(null);
+                return Json(new { });
             return Json(programoutList, JsonRequestBehavior.AllowGet);
         }
 
@@ -1458,7 +1458,7 @@ namespace RevenuePlanner.Controllers
                     .Select(t => new { PlanTacticId = t.PlanTacticId, Title = t.Title})
                     .OrderBy(pcp => pcp.Title);
                 if (tacticList == null)
-                    return Json(null);
+                    return Json(new { });
                 return Json(tacticList, JsonRequestBehavior.AllowGet);
             }
             else if (type == Common.RevenueCampaign)
@@ -1468,7 +1468,7 @@ namespace RevenuePlanner.Controllers
                     .Select(t => new { PlanTacticId = t.PlanTacticId, Title = t.Title })
                     .OrderBy(pcp => pcp.Title);
                 if (tacticList == null)
-                    return Json(null);
+                    return Json(new { });
                 return Json(tacticList, JsonRequestBehavior.AllowGet);
             }
 
@@ -1477,7 +1477,7 @@ namespace RevenuePlanner.Controllers
                 .Select(t => new { PlanTacticId = t.PlanTacticId, Title = t.Title})
                 .OrderBy(pcp => pcp.Title);
             if (tacticoutList == null)
-                return Json(null);
+                return Json(new { });
             return Json(tacticoutList, JsonRequestBehavior.AllowGet);
 
         }
@@ -1732,7 +1732,7 @@ namespace RevenuePlanner.Controllers
 
             return Json(campaignListFinal, JsonRequestBehavior.AllowGet);
         }
-            return Json(null);
+            return Json(new { });
         }
 
         /// <summary>
