@@ -128,7 +128,7 @@
         <a href="#">All Tactics</a>
     </li>
 </ul>
-<div class="div-user-Note">
+<div class="div-user-Note" id="div-user-Note" style="display:none;">
     <span>Note that imported values override user-generated values.</span>
 </div>
 <div class="padding-content cf source-sans-proregular">
@@ -161,6 +161,7 @@
             $("#liAll").removeClass('active').addClass('disabled');
             $("#errorMessage").css("display", "none");
             $("#successMessage").css("display", "none");
+            $("#div-user-Note").hide();
             CallAjax();
 
         });
@@ -171,6 +172,7 @@
             $("#liAll").addClass('active').removeClass('disabled');
             $("#errorMessage").css("display", "none");
             $("#successMessage").css("display", "none");
+            $("#div-user-Note").show();
             CallAjax();
         });
 
