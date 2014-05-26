@@ -1056,7 +1056,7 @@ namespace RevenuePlanner.Helpers
                 _DeployedToIntegrationStatusSaveSuccess = value;
             }
         }
-	   // Start - Added by : Sohel Pathan on 09/05/2014 for PL #430 
+        // Start - Added by : Sohel Pathan on 09/05/2014 for PL #430 
         private string _IntegrationAdded;
         public string IntegrationAdded
         {
@@ -1092,7 +1092,7 @@ namespace RevenuePlanner.Helpers
                 _IntegrationDeleted = value;
             }
         }
-        
+
         private string _IntegrationDeleteConfirmationMsg;
         public string IntegrationDeleteConfirmationMsg
         {
@@ -1157,7 +1157,7 @@ namespace RevenuePlanner.Helpers
                 _IntegrationInActiveConfirmationMsg = value;
             }
         }
-        
+
         private string _SyncNowSuccMessage;
         public string SyncNowSuccMessage
         {
@@ -1208,6 +1208,33 @@ namespace RevenuePlanner.Helpers
                 _DataTypeMappingNotConfigured = value;
             }
         }
+
+        //Start Manoj Limbachiya PL # 486
+        private string _TacticReqForPublishedModel;
+        public string TacticReqForPublishedModel
+        {
+            get
+            {
+                return _TacticReqForPublishedModel;
+            }
+            set
+            {
+                _TacticReqForPublishedModel = value;
+            }
+        }
+        private string _TacticCanNotDeployed;
+        public string TacticCanNotDeployed
+        {
+            get
+            {
+                return _TacticCanNotDeployed;
+            }
+            set
+            {
+                _TacticCanNotDeployed = value;
+            }
+        }
+        //End Manoj Limbachiya PL # 486
         #endregion
 
 
@@ -1532,7 +1559,7 @@ namespace RevenuePlanner.Helpers
                                         case "SameImprovementTypeExits":
                                             _SameImprovementTypeExits = strMsgValue;
                                             break;
-                                            //Start Manoj Limbachiya 05May2014 PL#458
+                                        //Start Manoj Limbachiya 05May2014 PL#458
                                         case "ModelTacticDeleted":
                                             _ModelTacticDeleted = strMsgValue;
                                             break;
@@ -1579,6 +1606,14 @@ namespace RevenuePlanner.Helpers
                                         case "SyncNowErrorMessage":
                                             _SyncNowErrorMessage = strMsgValue;
                                             break;
+                                        //Start Manoj Limbachiya PL # 486
+                                        case "TacticReqForPublishedModel":
+                                            _TacticReqForPublishedModel = strMsgValue;
+                                            break;
+                                        case "TacticCanNotDeployed":
+                                            _TacticCanNotDeployed = strMsgValue;
+                                            break;
+                                        //End Manoj Limbachiya PL # 486
                                     }
                                 }
                                 i = i + 1;

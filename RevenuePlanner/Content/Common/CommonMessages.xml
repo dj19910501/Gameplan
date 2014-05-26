@@ -402,4 +402,14 @@
     <Name>SyncNowErrorMessage</Name>
     <value>An error occured in Sync.</value>
   </Field>
+  <!--Start Manoj Limbachiya PL # 486-->
+  <Field>
+    <Name>TacticReqForPublishedModel</Name>
+    <value>Model is published hence at least one tactic required as deployed.</value>
+  </Field>
+  <Field>
+    <Name>TacticCanNotDeployed</Name>
+    <value>{0} tactic type is being used in a plan and hence cannot be marked as Not Deployed.</value>
+  </Field>
+  <!--End Manoj Limbachiya PL # 486-->
 </Messages>

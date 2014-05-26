@@ -3,6 +3,9 @@
 @using RevenuePlanner.Helpers
 @{
     bool IsModelIntegrated = ViewBag.IsModelIntegrated;
+    //Start Manoj Limbachiya PL # 486
+    bool IsDeplyed = ViewBag.IsDeployed;
+    //End Manoj Limbachiya PL # 486
 }
     <div class="head">
         <span class="close-form source-sans-proregular">» CLOSE MENU</span>
@@ -49,24 +52,28 @@
 
                 <label class="margin-top10">Status</label>
                 @{
-        if (Model.ClientId != null)
+        //Start Manoj Limbachiya PL # 486
+        if (IsDeplyed)
         {
-@*<input id="t_status" class="icon-check-gray icon-check-blue" type="text" readonly="" maxlength="18" placeholder="Deployed" name="t_status">
-                <label><span id="t_status" class="icon-check-gray icon-check-blue setbackground">Deployed </span></label>*@
-                    <span id="t_status" class="setbackground">@Html.Raw("Deployed")</span>
-                
+            <input id="t_model_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Deployed to Model" maxlength="18" readonly />
         }
         else
         {
-@*  <input class="icon-check-gray " type="text" readonly="" maxlength="18" placeholder="Deployed">
-                <label><span id="t_status" class="icon-check-gray setbackground" >Not Deployed </span></label>*@
-                
-                    <span id="t_status" class="setbackground">@Html.Raw("Not Deployed")</span>
+            <input id="t_model_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Deployed to Model" maxlength="18" readonly />
         }
+                    @*if (Model.ClientId != null)
+                    {
+                        <span id="t_status" class="setbackground">@Html.Raw("Deployed")</span>
+                    }
+                    else
+                    {
+                        <span id="t_status" class="setbackground">@Html.Raw("Not Deployed")</span>
+                    }*@
+        //End Manoj Limbachiya PL # 486
 
         if (IsModelIntegrated)
         {
-            if(Model.IsDeployedToIntegration)
+            if (Model.IsDeployedToIntegration)
             {
                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Deployed to Integration" maxlength="18" readonly />
             }
@@ -87,10 +94,10 @@
                 @Html.TextBoxFor(model => model.ProjectedInquiries, new {  require = "true", id = "hdnProjectedInquiries", @class="priceValue", maxlength=@RevenuePlanner.Helpers.Common.maxLengthPriceValue })*@
 
                 <label id="projectStage">Projected [Stage]</label>
-                @Html.TextBoxFor(model => model.ProjectedMQLs, new {  require = "true", id = "hdnProjectedMQLs" , @class="priceValue", maxlength=@RevenuePlanner.Helpers.Common.maxLengthPriceValue})
+                @Html.TextBoxFor(model => model.ProjectedMQLs, new { require = "true", id = "hdnProjectedMQLs", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
 
                 <label>Projected Cost</label>
-                @Html.TextBoxFor(model => model.ProjectedRevenue, new { require = "true", id = "hdnProjectedRevenue" ,@class="currency_dollar", maxlength=@RevenuePlanner.Helpers.Common.maxLengthDollar})
+                @Html.TextBoxFor(model => model.ProjectedRevenue, new { require = "true", id = "hdnProjectedRevenue", @class = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
 
             </div>
             <!--end content dark-->
@@ -190,7 +197,20 @@
             $("#slidepanel").css("display", "none");
             $("#slidepanel-container").empty();
         });
-
+        //Start Manoj Limbachiya PL # 486
+        $("#frm_tactics #t_model_status").click(function () {
+            if ($(this).hasClass("icon-check-blue")) {
+                $(this).val("Not Deployed to Model");
+                $(this).addClass("icon-check-gray");
+                $(this).removeClass("icon-check-blue");
+            }
+            else {
+                $(this).val("Deployed to Model");
+                $(this).addClass("icon-check-blue");
+                $(this).removeClass("icon-check-gray");
+            }
+        });
+        //End Manoj Limbachiya PL # 486
         $("#frm_tactics #t_integration_status").click(function () {
             if ($(this).hasClass("icon-check-blue")) {
                 $(this).val("Not Deployed to Integration");
@@ -300,12 +320,19 @@
                 isDeployedToIntegration = true;
             }
 
+            var isDeployedToModel = false;
+
+            if ($("#t_model_status").hasClass("icon-check-blue")) {
+                isDeployedToModel = true;
+            }
+
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Model/SaveTactic/")',
                 data: 'Title=' + Title + '&Description=' + Description + '&StageId=' + StageId + '&ProjectedMQLs=' + ProjectedMQLs + 
                  '&ProjectedRevenue=' + ProjectedRevenue + '&TacticTypeId=' + TacticTypeId
-               + '&modelID=' + modelID + '&isDeployedToIntegration=' + isDeployedToIntegration,
+               + '&modelID=' + modelID + '&isDeployedToIntegration=' + isDeployedToIntegration
+                + '&isDeployedToModel=' + isDeployedToModel,
                 success: function (data) {
                     if (data.redirect) {
                         $("#slidepanel").css("display", "none");
@@ -404,13 +431,19 @@
             if ($("#t_integration_status").hasClass("icon-check-blue")) {
                 isDeployedToIntegration = true;
             }
-
+            //Start Manoj Limbachiya PL # 486
+            var isDeployedToModel = false;
+            if ($("#t_model_status").hasClass("icon-check-blue")) {
+                isDeployedToModel = true;
+            }
+            //End Manoj Limbachiya PL # 486
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Model/SaveTactic/")',
                 data: 'Title=' + Title + '&Description=' + Description + '&StageId=' + StageId + '&ProjectedMQLs=' + ProjectedMQLs
                 + '&ProjectedRevenue=' + ProjectedRevenue + '&TacticTypeId=' + 0
-               + '&modelID=' + $("#hdnModelId").val() + '&isDeployedToIntegration=' + isDeployedToIntegration,
+               + '&modelID=' + $("#hdnModelId").val() + '&isDeployedToIntegration=' + isDeployedToIntegration
+                + '&isDeployedToModel=' + isDeployedToModel,
                 success: function (data) {
                     if (data.redirect) {
                         $("#slidepanel").css("display", "none");

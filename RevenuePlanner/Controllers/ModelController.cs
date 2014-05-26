@@ -2963,6 +2963,9 @@ namespace RevenuePlanner.Controllers
             //Start Manoj Limbachiya 05May2014 PL#458
             ViewBag.CanDelete = false;
             //End Manoj Limbachiya 05May2014 PL#458
+            //Start Manoj Limbachiya PL # 486
+            ViewBag.IsDeployed = true;
+            //End Manoj Limbachiya PL # 486
             return PartialView("CreateTactic", tm);
         }
         /// <summary>
@@ -3043,7 +3046,7 @@ namespace RevenuePlanner.Controllers
         /// Action to Save Tactic data .
         /// </summary>
         [HttpPost]
-        public ActionResult SaveTactic(string Title, string Description, int? StageId, int ProjectedMQLs, /*int ProjectedInquiries, */int ProjectedRevenue, int TacticTypeId, string modelID, bool isDeployedToIntegration)
+        public ActionResult SaveTactic(string Title, string Description, int? StageId, int ProjectedMQLs, /*int ProjectedInquiries, */int ProjectedRevenue, int TacticTypeId, string modelID, bool isDeployedToIntegration, bool isDeployedToModel)
         {
             try
             {
@@ -3062,8 +3065,36 @@ namespace RevenuePlanner.Controllers
                 objtactic.CreatedDate = System.DateTime.Now;
                 objtactic.ClientId = Sessions.User.ClientId;
                 objtactic.CreatedBy = Sessions.User.UserId;
-                objtactic.ModelId = ModelId;
-
+                //Start Manoj Limbachiya PL # 486
+                //objtactic.ModelId = ModelId;
+                if (isDeployedToModel)
+                {
+                    objtactic.ModelId = ModelId;
+                }
+                else
+                {
+                    Model objModel = db.Models.Where(m => m.ModelId == ModelId).SingleOrDefault();
+                    if (objModel != null)
+                    {
+                        if (objModel.Status.ToLower() == ModelPublished)
+                        {
+                            List<TacticType> lstTactictTypes = db.TacticTypes.Where(t => t.ModelId == ModelId && (t.IsDeleted == null || t.IsDeleted == false)).ToList();
+                            if (lstTactictTypes.Count == 1)
+                            {
+                                return Json(new { errormsg = Common.objCached.TacticReqForPublishedModel });
+                            }
+                        }
+                    }
+                    if (TacticTypeId != 0)
+                    {
+                        Plan_Campaign_Program_Tactic pt = db.Plan_Campaign_Program_Tactic.Where(p => p.TacticTypeId == TacticTypeId).FirstOrDefault();
+                        if (pt != null)
+                        {
+                            return Json(new { errormsg = string.Format(Common.objCached.TacticCanNotDeployed, Title) });
+                        }
+                    }
+                }
+                //End Manoj Limbachiya PL # 486
                 // Added by Dharmraj for ticket #433 Integration - Model Screen Tactic List
                 objtactic.IsDeployedToIntegration = isDeployedToIntegration;
 
@@ -3274,9 +3305,9 @@ namespace RevenuePlanner.Controllers
                         int tacticId;
                         string[] strArr = id[i].Replace("rej", "").Split('_');
                         int.TryParse(strArr[0], out tacticId);
-                        bool IsDeployToIntegration = Convert.ToBoolean(strArr[1]);
                         if (tacticId != 0)
                         {
+                            bool IsDeployToIntegration = Convert.ToBoolean(strArr[1]);
                             int tid = Convert.ToInt32(Convert.ToString(strArr[0]));
                             var obj = db.TacticTypes.Where(t => t.TacticTypeId == tid).FirstOrDefault();
                             objtactic.Title = obj.Title;
