@@ -190,6 +190,34 @@ namespace RevenuePlanner.Controllers
                                     objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
                                 }
                             }
+
+                            if (form.SyncFrequency.Frequency == "Hourly")
+                            {
+                                objSyncFrequency.NextSyncDate = DateTime.Now.AddHours(1);
+                            }
+                            else if (form.SyncFrequency.Frequency == "Daily")
+                            {
+                                DateTime currentDateTime = DateTime.Now.AddDays(1);
+                                TimeSpan time = (TimeSpan)objSyncFrequency.Time;
+                                objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, time.Hours, time.Minutes, time.Seconds);
+                            }
+                            else if (form.SyncFrequency.Frequency == "Weekly")
+                            {
+                                DateTime nextDate = GetNextDateForDay(DateTime.Now,(DayOfWeek)Enum.Parse(typeof(DayOfWeek),objSyncFrequency.DayofWeek));
+                                TimeSpan time = (TimeSpan)objSyncFrequency.Time;
+                                objSyncFrequency.NextSyncDate = new DateTime(nextDate.Year, nextDate.Month, nextDate.Day, time.Hours, time.Minutes, time.Seconds);
+                            }
+                            else if (form.SyncFrequency.Frequency == "Monthly")
+                            {
+                                DateTime currentDateTime = DateTime.Now;
+                                if (Convert.ToInt32(objSyncFrequency.Day) <= currentDateTime.Day)
+                                {
+                                    currentDateTime.AddMonths(1);
+                                }
+                                TimeSpan time = (TimeSpan)objSyncFrequency.Time;
+                                objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, Convert.ToInt32(objSyncFrequency.Day), time.Hours, time.Minutes, time.Seconds);
+                            }
+
                             db.Entry(objSyncFrequency).State = System.Data.EntityState.Added;
                             db.SyncFrequencies.Add(objSyncFrequency);
                             int SyncFrequenciesCount = db.SaveChanges();
@@ -244,6 +272,18 @@ namespace RevenuePlanner.Controllers
                 form = reCreateView(form);
                 return View(form);
             }
+        }
+
+
+        public static DateTime GetNextDateForDay(DateTime startDate, DayOfWeek desiredDay)
+        {
+            // (There has to be a better way to do this, perhaps mathematically.)
+            // Traverse this week
+            DateTime nextDate = startDate;
+            while (nextDate.DayOfWeek != desiredDay)
+                nextDate = nextDate.AddDays(1D);
+
+            return nextDate;
         }
 
         #endregion
@@ -554,6 +594,33 @@ namespace RevenuePlanner.Controllers
                                         }
                                         objSyncFrequency.DayofWeek = null;
                                         objSyncFrequency.Day = form.SyncFrequency.Day;
+                                    }
+
+                                    if (form.SyncFrequency.Frequency == "Hourly")
+                                    {
+                                        objSyncFrequency.NextSyncDate = DateTime.Now.AddHours(1);
+                                    }
+                                    else if (form.SyncFrequency.Frequency == "Daily")
+                                    {
+                                        DateTime currentDateTime = DateTime.Now.AddDays(1);
+                                        TimeSpan time = (TimeSpan)objSyncFrequency.Time;
+                                        objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, time.Hours, time.Minutes, time.Seconds);
+                                    }
+                                    else if (form.SyncFrequency.Frequency == "Weekly")
+                                    {
+                                        DateTime nextDate = GetNextDateForDay(DateTime.Now, (DayOfWeek)Enum.Parse(typeof(DayOfWeek), objSyncFrequency.DayofWeek));
+                                        TimeSpan time = (TimeSpan)objSyncFrequency.Time;
+                                        objSyncFrequency.NextSyncDate = new DateTime(nextDate.Year, nextDate.Month, nextDate.Day, time.Hours, time.Minutes, time.Seconds);
+                                    }
+                                    else if (form.SyncFrequency.Frequency == "Monthly")
+                                    {
+                                        DateTime currentDateTime = DateTime.Now;
+                                        if (Convert.ToInt32(objSyncFrequency.Day) <= currentDateTime.Day)
+                                        {
+                                            currentDateTime = currentDateTime.AddMonths(1);
+                                        }
+                                        TimeSpan time = (TimeSpan)objSyncFrequency.Time;
+                                        objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, Convert.ToInt32(objSyncFrequency.Day), time.Hours, time.Minutes, time.Seconds);
                                     }
 
                                     db.Entry(objSyncFrequency).State = System.Data.EntityState.Modified;

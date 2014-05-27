@@ -21,6 +21,7 @@ namespace RevenuePlanner.Models
         public string Day { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
+        public Nullable<System.DateTime> NextSyncDate { get; set; }
     
         public virtual IntegrationInstance IntegrationInstance { get; set; }
     }

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entities", "Entities\Entiti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Integration", "Integration\Integration.csproj", "{B312EF9A-C33A-4E44-8BD6-B141080302E0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationWinService", "IntegrationWinService\IntegrationWinService.csproj", "{3BEA15D8-55A9-40A6-A5DA-0FD6C4BBBF47}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		BulldogProduction|Any CPU = BulldogProduction|Any CPU
@@ -79,6 +81,22 @@ Global
 		{B312EF9A-C33A-4E44-8BD6-B141080302E0}.Staging|Any CPU.Build.0 = Release|Any CPU
 		{B312EF9A-C33A-4E44-8BD6-B141080302E0}.Test|Any CPU.ActiveCfg = Release|Any CPU
 		{B312EF9A-C33A-4E44-8BD6-B141080302E0}.Test|Any CPU.Build.0 = Release|Any CPU
+		{3BEA15D8-55A9-40A6-A5DA-0FD6C4BBBF47}.BulldogProduction|Any CPU.ActiveCfg = Release|Any CPU
+		{3BEA15D8-55A9-40A6-A5DA-0FD6C4BBBF47}.BulldogProduction|Any CPU.Build.0 = Release|Any CPU
+		{3BEA15D8-55A9-40A6-A5DA-0FD6C4BBBF47}.BulldogStaging|Any CPU.ActiveCfg = Release|Any CPU
+		{3BEA15D8-55A9-40A6-A5DA-0FD6C4BBBF47}.BulldogStaging|Any CPU.Build.0 = Release|Any CPU
+		{3BEA15D8-55A9-40A6-A5DA-0FD6C4BBBF47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BEA15D8-55A9-40A6-A5DA-0FD6C4BBBF47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BEA15D8-55A9-40A6-A5DA-0FD6C4BBBF47}.Dev|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BEA15D8-55A9-40A6-A5DA-0FD6C4BBBF47}.Dev|Any CPU.Build.0 = Debug|Any CPU
+		{3BEA15D8-55A9-40A6-A5DA-0FD6C4BBBF47}.Prod|Any CPU.ActiveCfg = Release|Any CPU
+		{3BEA15D8-55A9-40A6-A5DA-0FD6C4BBBF47}.Prod|Any CPU.Build.0 = Release|Any CPU
+		{3BEA15D8-55A9-40A6-A5DA-0FD6C4BBBF47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BEA15D8-55A9-40A6-A5DA-0FD6C4BBBF47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BEA15D8-55A9-40A6-A5DA-0FD6C4BBBF47}.Staging|Any CPU.ActiveCfg = Release|Any CPU
+		{3BEA15D8-55A9-40A6-A5DA-0FD6C4BBBF47}.Staging|Any CPU.Build.0 = Release|Any CPU
+		{3BEA15D8-55A9-40A6-A5DA-0FD6C4BBBF47}.Test|Any CPU.ActiveCfg = Release|Any CPU
+		{3BEA15D8-55A9-40A6-A5DA-0FD6C4BBBF47}.Test|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

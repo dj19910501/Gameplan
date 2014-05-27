@@ -22,7 +22,7 @@
           <EntitySet Name="IntegrationInstance_Attribute" EntityType="MRPModel.Store.IntegrationInstance_Attribute" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationInstanceDataTypeMapping" EntityType="MRPModel.Store.IntegrationInstanceDataTypeMapping" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationInstanceLog" EntityType="MRPModel.Store.IntegrationInstanceLog" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="IntegrationInstancePlanEntityLog" EntityType="MRPModel.Store.IntegrationInstancePlanEntityLog" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="IntegrationInstancePlanEntityLog" EntityType="MRPModel.Store.IntegrationInstancePlanEntityLog" store:Type="Tables" Schema="dbo"/>
           <EntitySet Name="IntegrationType" EntityType="MRPModel.Store.IntegrationType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationTypeAttribute" EntityType="MRPModel.Store.IntegrationTypeAttribute" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Metric" EntityType="MRPModel.Store.Metric" store:Type="Tables" Schema="dbo" />
@@ -989,6 +989,7 @@
           <Property Name="Day" Type="nvarchar" MaxLength="255" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="NextSyncDate" Type="datetime" />
         </EntityType>
         <EntityType Name="Tactic_Share">
           <Key>
@@ -1925,7 +1926,6 @@
           <EntitySet Name="Plan_Team" EntityType="MRPModel.Plan_Team" />
           <EntitySet Name="Report_Share" EntityType="MRPModel.Report_Share" />
           <EntitySet Name="Stages" EntityType="MRPModel.Stage" />
-          <EntitySet Name="SyncFrequencies" EntityType="MRPModel.SyncFrequency" />
           <EntitySet Name="Tactic_Share" EntityType="MRPModel.Tactic_Share" />
           <EntitySet Name="TacticTypes" EntityType="MRPModel.TacticType" />
           <EntitySet Name="User_Filter" EntityType="MRPModel.User_Filter" />
@@ -2022,10 +2022,6 @@
           <AssociationSet Name="FK_IntegrationInstancePlanEntityLog_IntegrationInstance" Association="MRPModel.FK_IntegrationInstancePlanEntityLog_IntegrationInstance">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
             <End Role="IntegrationInstancePlanEntityLog" EntitySet="IntegrationInstancePlanEntityLogs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_SyncFrequency_IntegrationInstance" Association="MRPModel.FK_SyncFrequency_IntegrationInstance">
-            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
-            <End Role="SyncFrequency" EntitySet="SyncFrequencies" />
           </AssociationSet>
           <AssociationSet Name="FK_IntegrationInstance_Attribute_IntegrationTypeAttribute" Association="MRPModel.FK_IntegrationInstance_Attribute_IntegrationTypeAttribute">
             <End Role="IntegrationTypeAttribute" EntitySet="IntegrationTypeAttributes" />
@@ -2183,6 +2179,11 @@
           <AssociationSet Name="FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType" Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType">
             <End Role="ImprovementTacticType" EntitySet="ImprovementTacticTypes" />
             <End Role="Plan_Improvement_Campaign_Program_Tactic" EntitySet="Plan_Improvement_Campaign_Program_Tactic" />
+          </AssociationSet>
+          <EntitySet Name="SyncFrequencies" EntityType="MRPModel.SyncFrequency" />
+          <AssociationSet Name="FK_SyncFrequency_IntegrationInstance" Association="MRPModel.FK_SyncFrequency_IntegrationInstance">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
+            <End Role="SyncFrequency" EntitySet="SyncFrequencies" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Audience">
@@ -2947,19 +2948,6 @@
           <NavigationProperty Name="Model_Funnel_Stage" Relationship="MRPModel.FK_Model_Category_Stage_Stage" FromRole="Stage" ToRole="Model_Funnel_Stage" />
           <NavigationProperty Name="TacticTypes" Relationship="MRPModel.fk_TacticType_Stage" FromRole="Stage" ToRole="TacticType" />
         </EntityType>
-        <EntityType Name="SyncFrequency">
-          <Key>
-            <PropertyRef Name="IntegrationInstanceId" />
-          </Key>
-          <Property Type="Int32" Name="IntegrationInstanceId" Nullable="false" />
-          <Property Type="String" Name="Frequency" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Type="Time" Name="Time" Precision="7" />
-          <Property Type="String" Name="DayofWeek" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Type="String" Name="Day" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
-          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
-          <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_SyncFrequency_IntegrationInstance" FromRole="SyncFrequency" ToRole="IntegrationInstance" />
-        </EntityType>
         <EntityType Name="Tactic_Share">
           <Key>
             <PropertyRef Name="TacticShareId" />
@@ -3313,18 +3301,6 @@
               <PropertyRef Name="IntegrationInstanceId" />
             </Principal>
             <Dependent Role="IntegrationInstancePlanEntityLog">
-              <PropertyRef Name="IntegrationInstanceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_SyncFrequency_IntegrationInstance">
-          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="1" />
-          <End Type="MRPModel.SyncFrequency" Role="SyncFrequency" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="IntegrationInstance">
-              <PropertyRef Name="IntegrationInstanceId" />
-            </Principal>
-            <Dependent Role="SyncFrequency">
               <PropertyRef Name="IntegrationInstanceId" />
             </Dependent>
           </ReferentialConstraint>
@@ -3815,6 +3791,32 @@
             </Principal>
             <Dependent Role="Plan_Improvement_Campaign_Program_Tactic">
               <PropertyRef Name="ImprovementTacticTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="SyncFrequency">
+          <Key>
+            <PropertyRef Name="IntegrationInstanceId" />
+          </Key>
+          <Property Type="Int32" Name="IntegrationInstanceId" Nullable="false" />
+          <Property Type="String" Name="Frequency" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="Time" Name="Time" Precision="7" />
+          <Property Type="String" Name="DayofWeek" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Day" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <Property Type="DateTime" Name="NextSyncDate" Precision="3" />
+          <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_SyncFrequency_IntegrationInstance" FromRole="SyncFrequency" ToRole="IntegrationInstance" />
+        </EntityType>
+        <Association Name="FK_SyncFrequency_IntegrationInstance">
+          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="1" />
+          <End Type="MRPModel.SyncFrequency" Role="SyncFrequency" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="SyncFrequency">
+              <PropertyRef Name="IntegrationInstanceId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4510,19 +4512,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="SyncFrequencies">
-            <EntityTypeMapping TypeName="MRPModel.SyncFrequency">
-              <MappingFragment StoreEntitySet="SyncFrequency">
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="Day" ColumnName="Day" />
-                <ScalarProperty Name="DayofWeek" ColumnName="DayofWeek" />
-                <ScalarProperty Name="Time" ColumnName="Time" />
-                <ScalarProperty Name="Frequency" ColumnName="Frequency" />
-                <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Tactic_Share">
             <EntityTypeMapping TypeName="MRPModel.Tactic_Share">
               <MappingFragment StoreEntitySet="Tactic_Share">
@@ -4614,6 +4603,20 @@
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="ImprovementTacticTypeId" ColumnName="ImprovementTacticTypeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SyncFrequencies">
+            <EntityTypeMapping TypeName="MRPModel.SyncFrequency">
+              <MappingFragment StoreEntitySet="SyncFrequency">
+                <ScalarProperty Name="NextSyncDate" ColumnName="NextSyncDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Day" ColumnName="Day" />
+                <ScalarProperty Name="DayofWeek" ColumnName="DayofWeek" />
+                <ScalarProperty Name="Time" ColumnName="Time" />
+                <ScalarProperty Name="Frequency" ColumnName="Frequency" />
+                <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -69,13 +69,13 @@ namespace RevenuePlanner.Models
         public DbSet<Plan_Team> Plan_Team { get; set; }
         public DbSet<Report_Share> Report_Share { get; set; }
         public DbSet<Stage> Stages { get; set; }
-        public DbSet<SyncFrequency> SyncFrequencies { get; set; }
         public DbSet<Tactic_Share> Tactic_Share { get; set; }
         public DbSet<TacticType> TacticTypes { get; set; }
         public DbSet<User_Filter> User_Filter { get; set; }
         public DbSet<User_Notification> User_Notification { get; set; }
         public DbSet<Vertical> Verticals { get; set; }
         public DbSet<ImprovementTacticType> ImprovementTacticTypes { get; set; }
+        public DbSet<SyncFrequency> SyncFrequencies { get; set; }
     
         public virtual int Plan_Campaign_Program_Tactic_ActualDelete(Nullable<int> planTacticId, ObjectParameter returnValue)
         {

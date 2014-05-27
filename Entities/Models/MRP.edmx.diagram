@@ -46,7 +46,6 @@
         <EntityTypeShape EntityType="MRPModel.Plan_Team" Width="1.5" PointX="4.6614761430125107" PointY="8.2390280255298265" />
         <EntityTypeShape EntityType="MRPModel.Report_Share" Width="1.5" PointX="3.8598557169827892" PointY="16.3962822185812" />
         <EntityTypeShape EntityType="MRPModel.Stage" Width="1.5" PointX="0.35454271936535031" PointY="31.510862007509388" />
-        <EntityTypeShape EntityType="MRPModel.SyncFrequency" Width="1.5" PointX="8.5155755712257584" PointY="2.56246578812714" />
         <EntityTypeShape EntityType="MRPModel.Tactic_Share" Width="1.5" PointX="2.7108184577481906" PointY="14.862007282144393" />
         <EntityTypeShape EntityType="MRPModel.TacticType" Width="1.5" PointX="2.6197427877316919" PointY="3.2152203336428946" />
         <EntityTypeShape EntityType="MRPModel.User_Filter" Width="1.5" PointX="8.0222275406225716" PointY="30.931034966805502" />
@@ -75,7 +74,6 @@
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceDataTypeMapping_IntegrationInstance" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceLog_IntegrationInstance" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstancePlanEntityLog_IntegrationInstance" />
-        <AssociationConnector Association="MRPModel.FK_SyncFrequency_IntegrationInstance" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstance_Attribute_IntegrationTypeAttribute" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstancePlanEntityLog_IntegrationInstanceLog" />
         <AssociationConnector Association="MRPModel.FK_IntegrationTypeAttribute_IntegrationType" />
@@ -116,6 +114,8 @@
         <AssociationConnector Association="MRPModel.FK_ImprovementTacticType_Metric_ImprovementTacticType" />
         <AssociationConnector Association="MRPModel.FK_ImprovementTacticType_Touches_ImprovementTacticType" />
         <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType" />
+        <EntityTypeShape EntityType="MRPModel.SyncFrequency" Width="1.5" PointX="11.25" PointY="1.75" />
+        <AssociationConnector Association="MRPModel.FK_SyncFrequency_IntegrationInstance" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B312EF9A-C33A-4E44-8BD6-B141080302E0}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{3BEA15D8-55A9-40A6-A5DA-0FD6C4BBBF47}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Integration</RootNamespace>
-    <AssemblyName>Integration</AssemblyName>
+    <RootNamespace>IntegrationWinService</RootNamespace>
+    <AssemblyName>IntegrationWinService</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -42,73 +44,56 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLL\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="RestSharp, Version=104.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="RestSharp, Version=104.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RestSharp.104.1\lib\net4\RestSharp.dll</HintPath>
+      <HintPath>DLL\RestSharp.dll</HintPath>
     </Reference>
-    <Reference Include="SalesforceSharp">
-      <HintPath>..\packages\SalesforceSharp.0.6.8\lib\net40\SalesforceSharp.dll</HintPath>
+    <Reference Include="SalesforceSharp, Version=0.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>DLL\SalesforceSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExternalIntegration.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Salesforce\IntegrationSalesforceClient.cs" />
-    <Compile Include="ScheduledExternalIntegration.cs" />
+    <Compile Include="Helpers\Common.cs" />
+    <Compile Include="ProjectInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProjectInstaller.Designer.cs">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </Compile>
     <Compile Include="Service References\BDSService\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
+    <Compile Include="Service1.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Service1.Designer.cs">
+      <DependentUpon>Service1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Readme\Elmah.txt" />
-    <Content Include="DLL\EntityFramework.dll" />
-    <Content Include="DLL\HelperSharp.dll" />
-    <Content Include="DLL\Newtonsoft.Json.dll" />
-    <Content Include="DLL\RestSharp.dll" />
-    <Content Include="DLL\SalesforceSharp.dll" />
-    <None Include="Service References\BDSService\Integration.BDSService.Client.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\BDSService\Integration.BDSService.Menu.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\Integration.BDSService.PasswordResetRequest.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\Integration.BDSService.Permission.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\Integration.BDSService.Role.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\Integration.BDSService.SecurityQuestion.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\Integration.BDSService.User.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\BDSService\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
-    <None Include="Service References\BDSService\configuration.svcinfo" />
-    <None Include="Service References\BDSService\configuration91.svcinfo" />
-    <None Include="Service References\BDSService\BDSService.disco" />
     <None Include="Service References\BDSService\BDSService.wsdl" />
     <None Include="Service References\BDSService\BDSService.xsd">
       <SubType>Designer</SubType>
@@ -122,10 +107,27 @@
     <None Include="Service References\BDSService\BDSService3.xsd">
       <SubType>Designer</SubType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
+    <None Include="Service References\BDSService\IntegrationWinService.BDSService.Client.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\BDSService\IntegrationWinService.BDSService.Menu.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\BDSService\IntegrationWinService.BDSService.PasswordResetRequest.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\BDSService\IntegrationWinService.BDSService.Permission.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\BDSService\IntegrationWinService.BDSService.Role.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\BDSService\IntegrationWinService.BDSService.SecurityQuestion.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\BDSService\IntegrationWinService.BDSService.User.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
@@ -134,9 +136,40 @@
     <WCFMetadataStorage Include="Service References\BDSService\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Service References\BDSService\BDSService.disco" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\BDSService\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\BDSService\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\BDSService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ProjectInstaller.resx">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DLL\EntityFramework.dll" />
+    <Content Include="DLL\HelperSharp.dll" />
+    <Content Include="DLL\Newtonsoft.Json.dll" />
+    <Content Include="DLL\RestSharp.dll" />
+    <Content Include="DLL\SalesforceSharp.dll" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Entities\Entities.csproj">
       <Project>{c7aa3463-8e84-4280-a893-c6e7d38ea8d2}</Project>
       <Name>Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Integration\Integration.csproj">
+      <Project>{b312ef9a-c33a-4e44-8bd6-b141080302e0}</Project>
+      <Name>Integration</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
