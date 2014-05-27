@@ -2845,4 +2845,70 @@ namespace RevenuePlanner.Helpers
         }
         #endregion
     }
+
+    //Start Manoj PL #490 Date:27May2014
+    /// <summary>
+    /// Class to maintain the session
+    /// </summary>
+    public class LoginSession
+    {
+        public string SessionId { get; set; }
+        public string UserId { get; set; }
+
+        /// <summary>
+        /// Add current session details
+        /// </summary>
+        /// <param name="SessionId"></param>
+        /// <param name="UserId"></param>
+        /// <returns></returns>
+        public bool AddSession(string SessionId, string UserId)
+        {
+            bool isSessionExist = false;
+            List<LoginSession> a = (List<LoginSession>)HttpContext.Current.Application["CurrentSession"];
+            if (a == null || a.Count <= 0)
+            {
+                a = new List<LoginSession>();
+            }
+            LoginSession l = new LoginSession();
+            l.SessionId = SessionId;
+            l.UserId = UserId;
+            if (a.Count > 0)
+            {
+                if (a.Find(l1 => l1.SessionId == SessionId) == null)
+                {
+                    a.Add(l);
+                }
+                else
+                {
+                    isSessionExist = true;
+                }
+            }
+            else
+            {
+                a.Add(l);
+            }
+            HttpContext.Current.Application["CurrentSession"] = a;
+            return isSessionExist;
+        }
+
+        /// <summary>
+        /// Remove session details
+        /// </summary>
+        /// <param name="SessionId"></param>
+        /// <param name="UserId"></param>
+        public void RemoveSession(string SessionId, string UserId)
+        {
+            List<LoginSession> a = (List<LoginSession>)HttpContext.Current.Application["CurrentSession"];
+            if (a != null)
+            {
+                if (a.Find(l1 => l1.SessionId == SessionId) != null)
+                {
+                    a.Remove(a.Find(l1 => l1.SessionId == SessionId));
+                    HttpContext.Current.Application["CurrentSession"] = a;
+                }
+            }
+
+        }
+    }
+    //End Manoj PL #490 Date:27May2014
 }
