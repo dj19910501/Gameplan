@@ -97,7 +97,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
         @if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myteam")
         {
             <div class="span2 content-colum-left content-img-user">
-                <img src="@Url.Action("LoadUserImage", "User", new { id = Model.UserId })" class="img-user" style="height:140px; width:140px;">
+                <img src="@Url.Action("LoadUserImage", "User", new { id = Model.UserId, width= 60, height=60 })" class="img-user" style="height:140px; width:140px;">
             </div>
         }
         else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
@@ -185,7 +185,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.ProfilePhoto)
                     <div class="container-img">
-                        <img id="userImage" src="@Url.Action("LoadUserImage", "User", new { id = Model.UserId })" class="pull-left">
+                        <img id="userImage" src="@Url.Action("LoadUserImage", "User", new { id = Model.UserId, width= 60, height=60 })" class="pull-left">
                         <div class="pull-left">
                             <div class="btn-group">
                                 <input name="file" id="filePrev" type="file" style="display: inline-block; width: 200px;" />

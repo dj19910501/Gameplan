@@ -216,9 +216,12 @@ namespace RevenuePlanner.Helpers
         /// <returns></returns>
         public static byte[] ImageToByteArray(System.Drawing.Image imageIn)
         {
-            MemoryStream ms = new MemoryStream();
-            imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-            return ms.ToArray();
+            using (MemoryStream ms = new MemoryStream())
+            {
+                imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                return ms.ToArray();
+            }
+
         }
 
         /// <summary>
@@ -228,13 +231,15 @@ namespace RevenuePlanner.Helpers
         /// <returns></returns>
         public static string ImageToString(Stream filestream)
         {
-            MemoryStream ms = new MemoryStream();
-            System.Drawing.Image image = System.Drawing.Image.FromStream(filestream);
-            image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-            byte[] imageBytes = ms.ToArray();
-            string ImageString = Convert.ToBase64String(imageBytes);
-            ms.Flush();
-            return ImageString;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                System.Drawing.Image image = System.Drawing.Image.FromStream(filestream);
+                image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                byte[] imageBytes = ms.ToArray();
+                string ImageString = Convert.ToBase64String(imageBytes);
+                ms.Flush();
+                return ImageString;
+            }
         }
 
         /// <summary>
@@ -1223,11 +1228,13 @@ namespace RevenuePlanner.Helpers
 
                 if (imageBytes != null)
                 {
-                    MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length);
-                    ms.Write(imageBytes, 0, imageBytes.Length);
-                    System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
-                    image = Common.ImageResize(image, 30, 30, true, false);
-                    imageBytes = Common.ImageToByteArray(image);
+                    using (MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
+                    {
+                        ms.Write(imageBytes, 0, imageBytes.Length);
+                        System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
+                        image = Common.ImageResize(image, 30, 30, true, false);
+                        imageBytes = Common.ImageToByteArray(image);
+                    }
                 }
 
                 string imageBytesBase64String = Convert.ToBase64String(imageBytes);
@@ -2830,7 +2837,7 @@ namespace RevenuePlanner.Helpers
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                 return objBDSServiceClient.GetApplicationReleaseVersion(applicationId);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ErrorSignal.FromCurrentContext().Raise(ex);
                 return string.Empty;

@@ -54,7 +54,7 @@
             {
                 <div class="post-div" style="clear: both; width: 100%; border-bottom: solid 1px #A8A8A8;">
                     <div style="float: left; width: 10%;">
-                        <img class="avatar-user" src="@Url.Action("LoadUserImage", "Home", new { id = item.CreatedBy })" alt="User avatar" /></div>
+                        <img class="avatar-user" src="@Url.Action("LoadUserImage", "User", new { id = item.CreatedBy })" alt="User avatar" /></div>
                     <div style="float: left; width: 90%;">
                         <span class="bold">@item.CommentedBy</span>
                         <span>@item.Comment</span><br />
@@ -69,7 +69,7 @@
     </div>
     <div class="padding-top10 border-bottom-div">
 
-        <img class="avatar-user vertical-aligntop" src="@Url.Action("LoadUserImage", "Home", new { id = RevenuePlanner.Helpers.Sessions.User.UserId })" alt="User avatar" />
+        <img class="avatar-user vertical-aligntop" src="@Url.Action("LoadUserImage", "User", new { id = RevenuePlanner.Helpers.Sessions.User.UserId })" alt="User avatar" />
         @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment" })
         <button id="btnComment" class="btn btn-blue text-shadow-blue source-sans-proregular new-comment-buttom " type="button">Comment</button>
     </div>

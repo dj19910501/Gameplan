@@ -3,7 +3,7 @@
 -- Please set value for parameter @NewValue
 
 DECLARE @NewValue NVARCHAR(25)
-SET @NewValue = '2014 .May'		-- Please change the new value here.
+SET @NewValue = '2014.May'		-- Please change the new value here.
 
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' AND  TABLE_NAME = 'Application')
 BEGIN

@@ -346,12 +346,15 @@ namespace RevenuePlanner.Controllers
             {
                 imageBytes = Sessions.User.ProfilePhoto;
             }
-            MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length);
-            ms.Write(imageBytes, 0, imageBytes.Length);
-            System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
-            image = Common.ImageResize(image, 36, 36, true, false);
-            imageBytes = Common.ImageToByteArray(image);
-            return File(imageBytes, "image/jpg");
+
+            using (MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
+            {
+                ms.Write(imageBytes, 0, imageBytes.Length);
+                System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
+                image = Common.ImageResize(image, 36, 36, true, false);
+                imageBytes = Common.ImageToByteArray(image);
+                return File(imageBytes, "image/jpg");
+            }
         }
         #endregion
 
@@ -2682,65 +2685,6 @@ namespace RevenuePlanner.Controllers
                                }
                                ).ToList();
             return Json(programList, JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
-        /// Added By: Bhavesh Dobariya.
-        /// Action to Load User Image.
-        /// </summary>
-        /// <param name="id">User Id.</param>
-        /// <returns>Returns View of Image.</returns>
-        public ActionResult LoadUserImage(string id = null)
-        {
-            Guid userId = new Guid();
-            byte[] imageBytes = Common.ReadFile(Server.MapPath("~") + "/content/images/user_image_not_found.png");
-            try
-            {
-                if (id != null)
-                {
-                    userId = Guid.Parse(id);
-                    User objUser = new User();
-
-                    objUser = objBDSUserRepository.GetTeamMemberDetails(userId, Sessions.ApplicationId);
-                    if (objUser != null)
-                    {
-                        if (objUser.ProfilePhoto != null)
-                        {
-                            imageBytes = objUser.ProfilePhoto;
-                        }
-                    }
-                }
-                if (imageBytes != null)
-                {
-                    MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length);
-                    ms.Write(imageBytes, 0, imageBytes.Length);
-                    System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
-                    image = Common.ImageResize(image, 35, 35, true, false);
-                    imageBytes = Common.ImageToByteArray(image);
-                    return File(imageBytes, "image/jpg");
-                }
-            }
-            catch (Exception e)
-            {
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
-                }
-                else
-                {
-                    ErrorSignal.FromCurrentContext().Raise(e);
-                    imageBytes = Common.ReadFile(Server.MapPath("~") + "/content/images/user_image_not_found.png");
-                    MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length);
-                    ms.Write(imageBytes, 0, imageBytes.Length);
-                    System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
-                    image = Common.ImageResize(image, 35, 35, true, false);
-                    imageBytes = Common.ImageToByteArray(image);
-                    return File(imageBytes, "image/jpg");
-                }
-            }
-            return View();
         }
 
         /// <summary>

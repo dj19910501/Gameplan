@@ -603,10 +603,12 @@ namespace RevenuePlanner.Controllers
                     objUser.RoleId = form.RoleId;
                     if (file != null)
                     {
-                        MemoryStream target = new MemoryStream();
-                        file.InputStream.CopyTo(target);
-                        byte[] data = target.ToArray();
-                        objUser.ProfilePhoto = data;
+                        using (MemoryStream target = new MemoryStream())
+                        {
+                            file.InputStream.CopyTo(target);
+                            byte[] data = target.ToArray();
+                            objUser.ProfilePhoto = data;
+                        }
                     }
                     objUser.BusinessUnitId = form.BusinessUnitId;
                     objUser.GeographyId = form.GeographyId;
@@ -848,13 +850,15 @@ namespace RevenuePlanner.Controllers
                     byte[] imageBytes = Common.ReadFile(Server.MapPath("~") + "/content/images/user_image_not_found.png");
                     if (imageBytes != null)
                     {
-                        MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length);
-                        ms.Write(imageBytes, 0, imageBytes.Length);
-                        System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
-                        image = Common.ImageResize(image, 60, 60, true, false);
-                        imageBytes = Common.ImageToByteArray(image);
-                        string imageBytesBase64String = Convert.ToBase64String(imageBytes);
-                        ViewBag.DefaultImage = imageBytesBase64String;
+                        using (MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
+                        {
+                            ms.Write(imageBytes, 0, imageBytes.Length);
+                            System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
+                            image = Common.ImageResize(image, 60, 60, true, false);
+                            imageBytes = Common.ImageToByteArray(image);
+                            string imageBytesBase64String = Convert.ToBase64String(imageBytes);
+                            ViewBag.DefaultImage = imageBytesBase64String;
+                        }
                     }
                 }
             }
@@ -925,10 +929,12 @@ namespace RevenuePlanner.Controllers
                     }
                     if (file != null)
                     {
-                        MemoryStream target = new MemoryStream();
-                        file.InputStream.CopyTo(target);
-                        byte[] data = target.ToArray();
-                        objUser.ProfilePhoto = data;
+                        using (MemoryStream target = new MemoryStream())
+                        {
+                            file.InputStream.CopyTo(target);
+                            byte[] data = target.ToArray();
+                            objUser.ProfilePhoto = data;
+                        }
                     }
                     else
                     {
@@ -1128,7 +1134,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="width">width of photo</param>
         /// <param name="height">height of photo</param>
         /// <returns></returns>
-        public ActionResult LoadUserImage(string id = null, int width = 60, int height = 60)
+        public ActionResult LoadUserImage(string id = null, int width = 35, int height = 35)
         {
             Guid userId = new Guid();
             byte[] imageBytes = Common.ReadFile(Server.MapPath("~") + "/content/images/user_image_not_found.png");
@@ -1149,12 +1155,14 @@ namespace RevenuePlanner.Controllers
                 }
                 if (imageBytes != null)
                 {
-                    MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length);
-                    ms.Write(imageBytes, 0, imageBytes.Length);
-                    System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
-                    image = Common.ImageResize(image, width, height, true, false);
-                    imageBytes = Common.ImageToByteArray(image);
-                    return File(imageBytes, "image/jpg");
+                    using (MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
+                    {
+                        ms.Write(imageBytes, 0, imageBytes.Length);
+                        System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
+                        image = Common.ImageResize(image, width, height, true, false);
+                        imageBytes = Common.ImageToByteArray(image);
+                        return File(imageBytes, "image/jpg");
+                    }
                 }
             }
             catch (Exception e)
@@ -1169,12 +1177,14 @@ namespace RevenuePlanner.Controllers
                 {
                     ErrorSignal.FromCurrentContext().Raise(e);
                     imageBytes = Common.ReadFile(Server.MapPath("~") + "/content/images/user_image_not_found.png");
-                    MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length);
-                    ms.Write(imageBytes, 0, imageBytes.Length);
-                    System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
-                    image = Common.ImageResize(image, width, height, true, false);
-                    imageBytes = Common.ImageToByteArray(image);
-                    return File(imageBytes, "image/jpg");
+                    using (MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
+                    {
+                        ms.Write(imageBytes, 0, imageBytes.Length);
+                        System.Drawing.Image image = System.Drawing.Image.FromStream(ms, true);
+                        image = Common.ImageResize(image, width, height, true, false);
+                        imageBytes = Common.ImageToByteArray(image);
+                        return File(imageBytes, "image/jpg");
+                    }
                 }
             }
             return View();
