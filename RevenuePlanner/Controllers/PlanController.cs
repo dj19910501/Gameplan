@@ -1244,6 +1244,7 @@ namespace RevenuePlanner.Controllers
 
                 //// Saving changes.
                 returnValue = db.SaveChanges();
+
                 if (isApproved)
                 {
                     Common.InsertChangeLog(Sessions.PlanId, 0, planProgram.PlanProgramId, planProgram.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
@@ -1284,6 +1285,7 @@ namespace RevenuePlanner.Controllers
                         {
                             planTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
                         }
+
                     }
                 }
                 //End Manoj Limbachiya  Ticket #363 Tactic Creation - Do not automatically submit a tactic
@@ -1300,6 +1302,13 @@ namespace RevenuePlanner.Controllers
 
                 //// Saving changes.
                 returnValue = db.SaveChanges();
+
+                //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+                //-- Update Camapign and Program according to tactic status
+                Common.ChangeProgramStatus(planTactic.PlanProgramId);
+                var PlanCampaignId = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == planTactic.PlanProgramId).Select(a => a.PlanCampaignId).Single();
+                Common.ChangeCampaignStatus(PlanCampaignId);
+                //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
 
                 if (isApproved)
                 {
@@ -2016,6 +2025,7 @@ namespace RevenuePlanner.Controllers
                                     }
                                 }
                                 result = TacticValueCalculate(pcpobj.PlanProgramId);
+                                Common.ChangeCampaignStatus(pcpobj.PlanCampaignId);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 scope.Complete();
                                 return Json(new { redirect = Url.Action("Assortment", new { campaignId = form.PlanCampaignId }) });
                             }
@@ -2074,6 +2084,7 @@ namespace RevenuePlanner.Controllers
                                 result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
                                 if (result >= 1)
                                 {
+                                    Common.ChangeCampaignStatus(pcpobj.PlanCampaignId);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                     scope.Complete();
                                     if (RedirectType)
                                     {
@@ -2135,9 +2146,11 @@ namespace RevenuePlanner.Controllers
                             if (returnValue >= 1)
                             {
                                 TacticValueCalculate(pc.PlanCampaignId, false);
+                                Common.ChangeCampaignStatus(pc.PlanCampaignId);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 scope.Complete();
                                 /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
                                 TempData["SuccessMessageDeletedPlan"] = "Program " + Title + " Deleted Successfully.";
+                                
                                 //return Json(new { redirect = Url.Action("Assortment", new { campaignId = pc.PlanCampaignId }) });
                                 if (RedirectType)
                                 {
@@ -2370,7 +2383,14 @@ namespace RevenuePlanner.Controllers
                                 result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                                 if (result >= 1)
                                 {
+                                    //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+                                    Common.ChangeProgramStatus(pcpobj.PlanProgramId);
+                                    var PlanCampaignId = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == pcpobj.PlanProgramId).Select(a => a.PlanCampaignId).Single();
+                                    Common.ChangeCampaignStatus(PlanCampaignId);
+                                    //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+
                                     scope.Complete();
+
                                     return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
                                 }
                             }
@@ -2514,7 +2534,14 @@ namespace RevenuePlanner.Controllers
                                 result = TacticValueCalculate(pcpobj.PlanProgramId);
                                 if (result >= 1)
                                 {
+                                    //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+                                    Common.ChangeProgramStatus(pcpobj.PlanProgramId);
+                                    var PlanCampaignId = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == pcpobj.PlanProgramId).Select(a => a.PlanCampaignId).Single();
+                                    Common.ChangeCampaignStatus(PlanCampaignId);
+                                    //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+
                                     scope.Complete();
+
                                     if (RedirectType)
                                     {
                                         return Json(new { redirect = Url.Action("ApplyToCalendar") });
@@ -2573,8 +2600,17 @@ namespace RevenuePlanner.Controllers
                             if (returnValue >= 1)
                             {
                                 TacticValueCalculate(pcpt.PlanProgramId);
+
+                                //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+                                Common.ChangeProgramStatus(pcpt.PlanProgramId);
+                                var PlanCampaignId = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == pcpt.PlanProgramId).Select(a => a.PlanCampaignId).Single();
+                                Common.ChangeCampaignStatus(PlanCampaignId);
+                                //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+
                                 scope.Complete();
                                 TempData["SuccessMessageDeletedPlan"] = "Tactic " + Title + " Deleted Successfully.";
+                                                               
+
                                 if (RedirectType)
                                 {
                                     return Json(new { redirect = Url.Action("ApplyToCalendar") });

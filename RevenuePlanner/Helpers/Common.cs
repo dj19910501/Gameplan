@@ -22,6 +22,7 @@ using System.Web;
 using System.Web.Configuration;
 using System.Web.Mvc;
 using System.Transactions;
+using System.Data;
 
 namespace RevenuePlanner.Helpers
 {
@@ -2844,5 +2845,299 @@ namespace RevenuePlanner.Helpers
             }
         }
         #endregion
+
+        #region Status Changes Logic for Campaign and Program
+
+        /// <summary>
+        /// Change Program status according to status of its tactics.
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy>
+        /// <CreatedDate>26/05/201</CreatedDate>
+        /// <param name="PlanProgramId"></param>
+        public static void ChangeProgramStatus(int PlanProgramId)
+        {
+            using (MRPEntities db = new MRPEntities())
+            {
+                var objPlan_Campaign_Program = db.Plan_Campaign_Program.Where(pcp => pcp.PlanProgramId == PlanProgramId && pcp.IsDeleted.Equals(false)).FirstOrDefault();
+
+                if (objPlan_Campaign_Program != null)
+                {
+                    string newProgramStatus = Common.GetProgramStatus(objPlan_Campaign_Program);
+                    if (newProgramStatus != string.Empty)
+                    {
+                        objPlan_Campaign_Program.Status = newProgramStatus;
+                        objPlan_Campaign_Program.ModifiedDate = DateTime.Now;
+                        objPlan_Campaign_Program.ModifiedBy = Sessions.User.UserId;
+                        db.Entry(objPlan_Campaign_Program).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Change status of campaign according status of its program(s) and tactic(s)
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy>
+        /// <CreatedDate>26/05/201</CreatedDate>
+        /// <param name="PlanCampaignId"></param>
+        public static void ChangeCampaignStatus(int PlanCampaignId)
+        {
+            using (MRPEntities db = new MRPEntities())
+            {
+                var objPlan_Campaign = db.Plan_Campaign.Where(pcp => pcp.PlanCampaignId == PlanCampaignId && pcp.IsDeleted.Equals(false)).FirstOrDefault();
+
+                if (objPlan_Campaign != null)
+                {
+                    string newCampaignStatus = Common.GetCampaignStatus(objPlan_Campaign);
+                    if (newCampaignStatus != string.Empty)
+                    {
+                        objPlan_Campaign.Status = newCampaignStatus;
+                        objPlan_Campaign.ModifiedDate = DateTime.Now;
+                        objPlan_Campaign.ModifiedBy = Sessions.User.UserId;
+                        db.Entry(objPlan_Campaign).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function to Get program status.
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy>
+        /// <CreatedDate>26/05/201</CreatedDate>
+        /// <param name="objPlan_Campaign_Program"></param>
+        /// <returns></returns>
+        public static string GetProgramStatus(Plan_Campaign_Program objPlan_Campaign_Program)
+        {
+            string status = string.Empty;
+            string statusapproved = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString();
+            string statusinprogress = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString();
+            string statuscomplete = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString();
+            string statusdecline = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString();
+            string statussubmit = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString();
+
+            try
+            {
+                using (MRPEntities db = new MRPEntities())
+                {
+                    var lstTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == objPlan_Campaign_Program.PlanProgramId && pcpt.IsDeleted == false).ToList();
+
+                    int cntAllSumbitTacticStatus = lstTactic.Where(pcpt => !pcpt.Status.Equals(statussubmit)).Count();
+                    int cntAllApproveTacticStatus = lstTactic.Where(pcpt => (!pcpt.Status.Equals(statusapproved) && !pcpt.Status.Equals(statusinprogress) && !pcpt.Status.Equals(statuscomplete))).Count();
+                    int cntAllDeclineTacticStatus = lstTactic.Where(pcpt => !pcpt.Status.Equals(statusdecline)).Count();
+
+                    int cntSubmitTacticStatus = lstTactic.Where(pcpt => pcpt.Status.Equals(statussubmit)).Count();
+                    int cntApproveTacticStatus = lstTactic.Where(pcpt => pcpt.Status.Equals(statusapproved)).Count();
+                    int cntDeclineTacticStatus = lstTactic.Where(pcpt => pcpt.Status.Equals(statusdecline)).Count();
+
+                    bool flag = false;
+                    foreach (var item in lstTactic)
+                    {
+                        if (item.Status == objPlan_Campaign_Program.Status)
+                        {
+                            flag = true;
+                            break;
+                        }
+                    }
+
+                    if (cntAllSumbitTacticStatus == 0)
+                    {
+                        status = statussubmit;
+                    }
+                    else if (cntAllApproveTacticStatus == 0)
+                    {
+                        status = statusapproved;
+                    }
+                    else if (cntAllDeclineTacticStatus == 0)
+                    {
+                        status = statusdecline;
+                    }
+                    else if (!flag)
+                    {
+                        if (cntSubmitTacticStatus > 0)
+                        {
+                            status = statussubmit;
+                        }
+                        else if (cntApproveTacticStatus > 0)
+                        {
+                            status = statusapproved;
+                        }
+                        else if (cntDeclineTacticStatus > 0)
+                        {
+                            status = statusdecline;
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+
+            return status;
+        }
+
+        /// <summary>
+        /// Function to Get campaign status.
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy>
+        /// <CreatedDate>26/05/201</CreatedDate>
+        /// <param name="objPlan_Campaign"></param>
+        /// <returns></returns>
+        public static string GetCampaignStatus(Plan_Campaign objPlan_Campaign)
+        {
+            string status = string.Empty;
+            string statusapproved = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString();
+            string statusinprogress = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString();
+            string statuscomplete = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString();
+            string statusdecline = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString();
+            string statussubmit = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString();
+
+            try
+            {
+                using (MRPEntities db = new MRPEntities())
+                {
+                    var lstProgram = db.Plan_Campaign_Program.Where(pcpt => pcpt.PlanCampaignId == objPlan_Campaign.PlanCampaignId && pcpt.IsDeleted.Equals(false)).ToList();
+
+                    // Number of program with status is not 'Submitted' 
+                    int cntSumbitProgramStatus = lstProgram.Where(pcpt => !pcpt.Status.Equals(statussubmit)).Count();
+                    // Number of tactic with status is not 'Submitted'
+                    int cntSumbitTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.Plan_Campaign_Program.PlanCampaignId == objPlan_Campaign.PlanCampaignId && pcpt.IsDeleted == false && !pcpt.Status.Equals(statussubmit)).Count();
+
+                    // Number of program with status is not 'Approved', 'in-progress', 'complete'
+                    int cntApproveProgramStatus = lstProgram.Where(pcpt => (!pcpt.Status.Equals(statusapproved) && !pcpt.Status.Equals(statusinprogress) && !pcpt.Status.Equals(statuscomplete))).Count();
+                    // Number of tactic with status is not 'Approved', 'in-progress', 'complete'
+                    int cntApproveTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.Plan_Campaign_Program.PlanCampaignId == objPlan_Campaign.PlanCampaignId && pcpt.IsDeleted == false && (!pcpt.Status.Equals(statusapproved) && !pcpt.Status.Equals(statusinprogress) && !pcpt.Status.Equals(statuscomplete))).Count();
+
+                    // Number of program with status is not 'Declained'
+                    int cntDeclineProgramStatus = lstProgram.Where(pcpt => !pcpt.Status.Equals(statusdecline)).Count();
+                    // Number of tactic with status is not 'Declained'
+                    int cntDeclineTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.Plan_Campaign_Program.PlanCampaignId == objPlan_Campaign.PlanCampaignId && pcpt.IsDeleted == false && !pcpt.Status.Equals(statusdecline)).Count();
+
+                    List<string> lstPStatus = new List<string>();
+
+                    foreach (var p in lstProgram)
+                    {
+                        string tmpStatus = GetProgramStatus(p);
+                        if (tmpStatus != string.Empty)
+                            lstPStatus.Add(tmpStatus);
+                    }
+
+                    bool flag = false;
+                    foreach (var item in lstPStatus)
+                    {
+                        if (item == objPlan_Campaign.Status)
+                        {
+                            flag = true;
+                            break;
+                        }
+                    }
+
+                    if (cntSumbitProgramStatus == 0 && cntSumbitTacticStatus == 0)
+                    {
+                        status = statussubmit;
+                    }
+                    else if (cntApproveProgramStatus == 0 && cntApproveTacticStatus == 0)
+                    {
+                        status = statusapproved;
+                    }
+                    else if (cntDeclineProgramStatus == 0 && cntDeclineTacticStatus == 0)
+                    {
+                        status = statusdecline;
+                    }
+                    else if (!flag)
+                    {
+                        if (lstPStatus.Contains(statussubmit))
+                        {
+                            status = statussubmit;
+                        }
+                        else if (lstPStatus.Contains(statusapproved))
+                        {
+                            status = statusapproved;
+                        }
+                        else if (lstPStatus.Contains(statusdecline))
+                        {
+                            status = statusdecline;
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+
+            return status;
+        }
+
+        #endregion
     }
+
+    //Start Manoj PL #490 Date:27May2014
+    /// <summary>
+    /// Class to maintain the session
+    /// </summary>
+    public class LoginSession
+    {
+        public string SessionId { get; set; }
+        public string UserId { get; set; }
+
+        /// <summary>
+        /// Add current session details
+        /// </summary>
+        /// <param name="SessionId"></param>
+        /// <param name="UserId"></param>
+        /// <returns></returns>
+        public bool AddSession(string SessionId, string UserId)
+        {
+            bool isSessionExist = false;
+            List<LoginSession> a = (List<LoginSession>)HttpContext.Current.Application["CurrentSession"];
+            if (a == null || a.Count <= 0)
+            {
+                a = new List<LoginSession>();
+            }
+            LoginSession l = new LoginSession();
+            l.SessionId = SessionId;
+            l.UserId = UserId;
+            if (a.Count > 0)
+            {
+                if (a.Find(l1 => l1.SessionId == SessionId) == null)
+                {
+                    a.Add(l);
+                }
+                else
+                {
+                    isSessionExist = true;
+                }
+            }
+            else
+            {
+                a.Add(l);
+            }
+            HttpContext.Current.Application["CurrentSession"] = a;
+            return isSessionExist;
+        }
+
+        /// <summary>
+        /// Remove session details
+        /// </summary>
+        /// <param name="SessionId"></param>
+        /// <param name="UserId"></param>
+        public void RemoveSession(string SessionId, string UserId)
+        {
+            List<LoginSession> a = (List<LoginSession>)HttpContext.Current.Application["CurrentSession"];
+            if (a != null)
+            {
+                if (a.Find(l1 => l1.SessionId == SessionId) != null)
+                {
+                    a.Remove(a.Find(l1 => l1.SessionId == SessionId));
+                    HttpContext.Current.Application["CurrentSession"] = a;
+                }
+            }
+
+        }
+    }
+    //End Manoj PL #490 Date:27May2014
 }
