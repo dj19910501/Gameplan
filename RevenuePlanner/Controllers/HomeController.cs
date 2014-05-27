@@ -2000,7 +2000,7 @@ namespace RevenuePlanner.Controllers
                 ErrorSignal.FromCurrentContext().Raise(e);
             }
 
-            InspectModel im = GetInspectModel(id, section);
+            InspectModel im = GetInspectModel(id, section, false);      //// Modified by :- Sohel Pathan on 27/05/2014 for PL ticket #425
             ViewBag.TacticDetail = im;
             ViewBag.InspectPopup = TabValue;
             if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
@@ -2029,7 +2029,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Setup Tab.</returns>
         public ActionResult LoadSetup(int id)
         {
-            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower());
+            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower(), false);     //// Modified by :- Sohel Pathan on 27/05/2014 for PL ticket #425
             List<Guid> userListId = new List<Guid>();
             userListId.Add(im.OwnerId);
             User userName = new User();
@@ -2065,7 +2065,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Review Tab.</returns>
         public ActionResult LoadReview(int id)
         {
-            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower());
+            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower(), false);     //// Modified by :- Sohel Pathan on 27/05/2014 for PL ticket #425
             var tacticComment = (from tc in db.Plan_Campaign_Program_Tactic_Comment
                                  where tc.PlanTacticId == id
                                  select tc).ToArray();
@@ -2186,10 +2186,11 @@ namespace RevenuePlanner.Controllers
         /// Added By: Bhavesh Dobariya.
         /// Action to Get InspectModel.
         /// </summary>
+        /// Modifled by :- Sohel Pathan on 27/05/2014 for PL ticket #425, Default parameter added named isStatusChange
         /// <param name="id">Plan Tactic Id.</param>
         /// <param section="id">.Decide which section to open for Inspect Popup (tactic,program or campaign)</param>
         /// <returns>Returns InspectModel.</returns>
-        private InspectModel GetInspectModel(int id, string section)
+        private InspectModel GetInspectModel(int id, string section, bool isStatusChange = true)
         {
 
             InspectModel imodel = new InspectModel();
@@ -2248,29 +2249,30 @@ namespace RevenuePlanner.Controllers
                 {
                     var objPlan_Campaign_Program = db.Plan_Campaign_Program.Where(pcp => pcp.PlanProgramId == id && pcp.IsDeleted == false).FirstOrDefault();
 
-
-                    int cntSumbitTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statussubmit)).Count();
-                    int cntApproveTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == id && pcpt.IsDeleted == false && (!pcpt.Status.Equals(statusapproved) && !pcpt.Status.Equals(statusinprogress) && !pcpt.Status.Equals(statuscomplete))).Count();
-                    int cntDeclineTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statusdecline)).Count();
-                    if (cntSumbitTacticStatus == 0)
+                    if (isStatusChange)     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                     {
-                        objPlan_Campaign_Program.Status = statussubmit;
-                        db.Entry(objPlan_Campaign_Program).State = EntityState.Modified;
-                        db.SaveChanges();
+                        int cntSumbitTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statussubmit)).Count();
+                        int cntApproveTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == id && pcpt.IsDeleted == false && (!pcpt.Status.Equals(statusapproved) && !pcpt.Status.Equals(statusinprogress) && !pcpt.Status.Equals(statuscomplete))).Count();
+                        int cntDeclineTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statusdecline)).Count();
+                        if (cntSumbitTacticStatus == 0)
+                        {
+                            objPlan_Campaign_Program.Status = statussubmit;
+                            db.Entry(objPlan_Campaign_Program).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                        else if (cntApproveTacticStatus == 0)
+                        {
+                            objPlan_Campaign_Program.Status = statusapproved;
+                            db.Entry(objPlan_Campaign_Program).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                        else if (cntDeclineTacticStatus == 0)
+                        {
+                            objPlan_Campaign_Program.Status = statusdecline;
+                            db.Entry(objPlan_Campaign_Program).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
                     }
-                    else if (cntApproveTacticStatus == 0)
-                    {
-                        objPlan_Campaign_Program.Status = statusapproved;
-                        db.Entry(objPlan_Campaign_Program).State = EntityState.Modified;
-                        db.SaveChanges();
-                    }
-                    else if (cntDeclineTacticStatus == 0)
-                    {
-                        objPlan_Campaign_Program.Status = statusdecline;
-                        db.Entry(objPlan_Campaign_Program).State = EntityState.Modified;
-                        db.SaveChanges();
-                    }
-
 
                     imodel.ProgramTitle = objPlan_Campaign_Program.Title;
                     imodel.CampaignTitle = objPlan_Campaign_Program.Plan_Campaign.Title;
@@ -2287,7 +2289,7 @@ namespace RevenuePlanner.Controllers
                     imodel.StartDate = objPlan_Campaign_Program.StartDate;
                     imodel.EndDate = objPlan_Campaign_Program.EndDate;
                     imodel.INQs = objPlan_Campaign_Program.INQs;
-                    
+
                     //if (objPlan_Campaign_Program.Vertical != null)
                     //    imodel.VerticalTitle = objPlan_Campaign_Program.Vertical.Title;
                     //if (objPlan_Campaign_Program.Audience != null)
@@ -2304,41 +2306,43 @@ namespace RevenuePlanner.Controllers
 
                     var objPlan_Campaign = db.Plan_Campaign.Where(pcp => pcp.PlanCampaignId == id && pcp.IsDeleted == false).FirstOrDefault();
 
-                    // Number of program with status is not 'Submitted' 
-                    int cntSumbitProgramStatus = db.Plan_Campaign_Program.Where(pcpt => pcpt.PlanCampaignId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statussubmit)).Count();
-                    // Number of tactic with status is not 'Submitted'
-                    int cntSumbitTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.Plan_Campaign_Program.PlanCampaignId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statussubmit)).Count();
-
-                    // Number of program with status is not 'Approved', 'in-progress', 'complete'
-                    int cntApproveProgramStatus = db.Plan_Campaign_Program.Where(pcpt => pcpt.PlanCampaignId == id && pcpt.IsDeleted == false && (!pcpt.Status.Equals(statusapproved) && !pcpt.Status.Equals(statusinprogress) && !pcpt.Status.Equals(statuscomplete))).Count();
-                    // Number of tactic with status is not 'Approved', 'in-progress', 'complete'
-                    int cntApproveTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.Plan_Campaign_Program.PlanCampaignId == id && pcpt.IsDeleted == false && (!pcpt.Status.Equals(statusapproved) && !pcpt.Status.Equals(statusinprogress) && !pcpt.Status.Equals(statuscomplete))).Count();
-
-                    // Number of program with status is not 'Declained'
-                    int cntDeclineProgramStatus = db.Plan_Campaign_Program.Where(pcpt => pcpt.PlanCampaignId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statusdecline)).Count();
-                    // Number of tactic with status is not 'Declained'
-                    int cntDeclineTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.Plan_Campaign_Program.PlanCampaignId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statusdecline)).Count();
-
-
-                    if (cntSumbitProgramStatus == 0 && cntSumbitTacticStatus == 0)
+                    if (isStatusChange)     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                     {
-                        objPlan_Campaign.Status = statussubmit;
-                        db.Entry(objPlan_Campaign).State = EntityState.Modified;
-                        db.SaveChanges();
-                    }
-                    else if (cntApproveProgramStatus == 0 && cntApproveTacticStatus == 0)
-                    {
-                        objPlan_Campaign.Status = statusapproved;
-                        db.Entry(objPlan_Campaign).State = EntityState.Modified;
-                        db.SaveChanges();
-                    }
-                    else if (cntDeclineProgramStatus == 0 && cntDeclineTacticStatus == 0)
-                    {
-                        objPlan_Campaign.Status = statusdecline;
-                        db.Entry(objPlan_Campaign).State = EntityState.Modified;
-                        db.SaveChanges();
-                    }
+                        // Number of program with status is not 'Submitted' 
+                        int cntSumbitProgramStatus = db.Plan_Campaign_Program.Where(pcpt => pcpt.PlanCampaignId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statussubmit)).Count();
+                        // Number of tactic with status is not 'Submitted'
+                        int cntSumbitTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.Plan_Campaign_Program.PlanCampaignId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statussubmit)).Count();
 
+                        // Number of program with status is not 'Approved', 'in-progress', 'complete'
+                        int cntApproveProgramStatus = db.Plan_Campaign_Program.Where(pcpt => pcpt.PlanCampaignId == id && pcpt.IsDeleted == false && (!pcpt.Status.Equals(statusapproved) && !pcpt.Status.Equals(statusinprogress) && !pcpt.Status.Equals(statuscomplete))).Count();
+                        // Number of tactic with status is not 'Approved', 'in-progress', 'complete'
+                        int cntApproveTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.Plan_Campaign_Program.PlanCampaignId == id && pcpt.IsDeleted == false && (!pcpt.Status.Equals(statusapproved) && !pcpt.Status.Equals(statusinprogress) && !pcpt.Status.Equals(statuscomplete))).Count();
+
+                        // Number of program with status is not 'Declained'
+                        int cntDeclineProgramStatus = db.Plan_Campaign_Program.Where(pcpt => pcpt.PlanCampaignId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statusdecline)).Count();
+                        // Number of tactic with status is not 'Declained'
+                        int cntDeclineTacticStatus = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.Plan_Campaign_Program.PlanCampaignId == id && pcpt.IsDeleted == false && !pcpt.Status.Equals(statusdecline)).Count();
+
+
+                        if (cntSumbitProgramStatus == 0 && cntSumbitTacticStatus == 0)
+                        {
+                            objPlan_Campaign.Status = statussubmit;
+                            db.Entry(objPlan_Campaign).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                        else if (cntApproveProgramStatus == 0 && cntApproveTacticStatus == 0)
+                        {
+                            objPlan_Campaign.Status = statusapproved;
+                            db.Entry(objPlan_Campaign).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                        else if (cntDeclineProgramStatus == 0 && cntDeclineTacticStatus == 0)
+                        {
+                            objPlan_Campaign.Status = statusdecline;
+                            db.Entry(objPlan_Campaign).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                    }
 
                     imodel.CampaignTitle = objPlan_Campaign.Title;
                     imodel.Status = objPlan_Campaign.Status;
@@ -2441,7 +2445,7 @@ namespace RevenuePlanner.Controllers
         {
             string[] aryStageTitle = new string[] { Enums.InspectStageValues[Enums.InspectStage.INQ.ToString()].ToString(), Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString(), Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString(), Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString() };
             ViewBag.StageTitle = aryStageTitle;
-            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower());
+            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower(), false);     //// Modified by :- Sohel Pathan on 27/05/2014 for PL ticket #425
             List<Plan_Campaign_Program_Tactic> tid = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == id).ToList();
             List<ProjectedRevenueClass> tacticList = Common.ProjectedRevenueCalculateList(tid);
             im.Revenues = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 1);
@@ -2487,7 +2491,7 @@ namespace RevenuePlanner.Controllers
             if (im.LastSyncDate != null)
             {
                 TimeZone localZone = TimeZone.CurrentTimeZone;
-                
+
                 ViewBag.LastSync = "Last synced with " + im.IntegrationType + " " + Common.GetFormatedDate(im.LastSyncDate) + ".";
             }
             else
@@ -2867,6 +2871,15 @@ namespace RevenuePlanner.Controllers
                                         Common.mailSendForTactic(planTacticId, status, tactic.Title, false, "", Convert.ToString(Enums.Section.Tactic).ToLower());
                                     }
                                     strmessage = Common.objCached.TacticStatusSuccessfully.Replace("{0}", status);
+
+                                    //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+                                    //-- Update Program status according to the tactic status
+                                    Common.ChangeProgramStatus(tactic.PlanProgramId);
+
+                                    //-- Update Campaign status according to the tactic and program status
+                                    var PlanCampaignId = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == tactic.PlanProgramId).Select(a => a.PlanCampaignId).Single();
+                                    Common.ChangeCampaignStatus(PlanCampaignId);
+                                    //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 }
                                 else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                                 {
@@ -2926,6 +2939,10 @@ namespace RevenuePlanner.Controllers
                                             Common.InsertChangeLog(program.Plan_Campaign.PlanId, 0, program.PlanProgramId, program.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined);
 
                                         }
+
+                                        //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+                                        //-- Update Campaign status according to the tactic and program status
+                                        Common.ChangeCampaignStatus(program.PlanCampaignId);
                                     }
                                     if (result >= 1)
                                     {
@@ -2998,7 +3015,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Setup Tab.</returns>
         public ActionResult LoadSetupProgram(int id)
         {
-            InspectModel im = GetInspectModel(id, "program");
+            InspectModel im = GetInspectModel(id, "program", false);        //// Modified by :- Sohel Pathan on 27/05/2014 for PL ticket #425
             List<Guid> userListId = new List<Guid>();
             userListId.Add(im.OwnerId);
             User userName = new User();
@@ -3045,7 +3062,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Review Tab.</returns>
         public ActionResult LoadReviewProgram(int id)
         {
-            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Program).ToLower());
+            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Program).ToLower(), false);    //// Modified by :- Sohel Pathan on 27/05/2014 for PL ticket #425
             var tacticComment = (from tc in db.Plan_Campaign_Program_Tactic_Comment
                                  where tc.PlanProgramId == id && tc.PlanProgramId.HasValue
                                  select tc).ToArray();
@@ -3127,7 +3144,7 @@ namespace RevenuePlanner.Controllers
         public ActionResult LoadSetupCampaign(int id)
         {
 
-            InspectModel im = GetInspectModel(id, "campaign");
+            InspectModel im = GetInspectModel(id, "campaign", false);       //// Modified by :- Sohel Pathan on 27/05/2014 for PL ticket #425
             List<Guid> userListId = new List<Guid>();
             userListId.Add(im.OwnerId);
             User userName = new User();
@@ -3174,7 +3191,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Review Tab.</returns>
         public ActionResult LoadReviewCampaign(int id)
         {
-            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Campaign).ToLower());
+            InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Campaign).ToLower(), false);       //// Modified by :- Sohel Pathan on 27/05/2014 for PL ticket #425
             var tacticComment = (from tc in db.Plan_Campaign_Program_Tactic_Comment
                                  where tc.PlanCampaignId == id && tc.PlanCampaignId.HasValue
                                  select tc).ToArray();
