@@ -19,6 +19,8 @@ namespace IntegrationWinService
         public Service1()
         {
             InitializeComponent();
+
+            this.ServiceName = System.Configuration.ConfigurationManager.AppSettings.Get("ServiceName");
         }
 
         MRPEntities db = new MRPEntities();
@@ -31,7 +33,7 @@ namespace IntegrationWinService
         protected override void OnStart(string[] args)
         {
             objTimer = new Timer();
-            objTimer.Interval =  60 * 1000; // 1 hour
+            objTimer.Interval = 60 * 60 * 1000; // 1 hour
             objTimer.Elapsed += objTimer_Elapsed;
             objTimer.Enabled = true;
 
