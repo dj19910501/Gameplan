@@ -417,8 +417,24 @@
                 }
             });
 
+            /*changed for TFS bug #495 	Add/Edit Tactic under Model: Deploy to Integration is activated without Deploy to Model Activation by Maninder Singh Wadhva on 27 May 2014*/
+            var isDeployedToIntegration = false;
+
+            if ($("#t_integration_status").hasClass("icon-check-blue")) {
+                isDeployedToIntegration = true;
+            }
+
+            var isDeployedToModel = false;
+
+            if ($("#t_model_status").hasClass("icon-check-blue")) {
+                isDeployedToModel = true;
+            }
+
             if (iserror) {
                 ShowError("Make sure all fields are filled and try again.");
+                return false;
+            } else if (isDeployedToModel == false && isDeployedToIntegration == true) {
+                ShowError("For Deploy to Integration, The tactic must be Deployed to Model.")
                 return false;
             }
 
@@ -432,16 +448,6 @@
             var TacticTypeId = $("#hdnTacticTypeId").val();
             var clientId = $("#hdnClientId").val();
 
-            var isDeployedToIntegration = false;
-            if ($("#t_integration_status").hasClass("icon-check-blue")) {
-                isDeployedToIntegration = true;
-            }
-            //Start Manoj Limbachiya PL # 486
-            var isDeployedToModel = false;
-            if ($("#t_model_status").hasClass("icon-check-blue")) {
-                isDeployedToModel = true;
-            }
-            //End Manoj Limbachiya PL # 486
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Model/SaveTactic/")',
