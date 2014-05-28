@@ -67,16 +67,22 @@ namespace IntegrationWinService
         {
             objTimer.Enabled = false;
             WriteLog("Gameplan integration service has stoped working");
-            string notificationShare = "";
-            string emailBody = "";
-            string SupportEmail = System.Configuration.ConfigurationManager.AppSettings["SupportEmail"].ToString();
-            string FromSupportMail = System.Configuration.ConfigurationManager.AppSettings["FromSupportMail"].ToString();
 
-            Notification notification = new Notification();
-            notificationShare = Custom_Notification.IntegrationWindowsService.ToString();
-            notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationShare));
-            emailBody = notification.EmailContent.Replace("[time]", DateTime.Now.ToString());
-            Common.sendMail(SupportEmail, FromSupportMail, emailBody, notification.Subject);
+            try
+            {
+                string notificationShare = "";
+                string emailBody = "";
+                string SupportEmail = System.Configuration.ConfigurationManager.AppSettings["SupportEmail"].ToString();
+                string FromSupportMail = System.Configuration.ConfigurationManager.AppSettings["FromSupportMail"].ToString();
+
+                Notification notification = new Notification();
+                notificationShare = Custom_Notification.IntegrationWindowsService.ToString();
+                notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationShare));
+                emailBody = notification.EmailContent.Replace("[time]", DateTime.Now.ToString());
+                Common.sendMail(SupportEmail, FromSupportMail, emailBody, notification.Subject);
+            }
+            catch (Exception ex)
+            { WriteLog("Exception occurs while sending email at: " + DateTime.Now.ToString() + " " + ex.Message); }
         }
 
         /// <summary>
