@@ -93,14 +93,14 @@ namespace RevenuePlanner.Controllers
                     //var obj = db.Users.Where(u => u.Email.Trim().ToLower() == form.UserEmail.Trim().ToLower() && u.Password.Trim().ToLower() == form.Password.Trim().ToLower() &&  u.IsDeleted == false).FirstOrDefault();
                     if (obj != null)
                     {
-                        //Start Manoj PL #490 Date:27May2014
-                        LoginSession l = new LoginSession();
-                        if (l.AddSession(Session.SessionID, obj.UserId.ToString()))
-                        {
-                            TempData["ErrorMessage"] = "Another user already logged-in with the same session";
-                            return RedirectToAction("Index", "Login");
-                        }
-                        //End Manoj PL #490 Date:27May2014
+                        ////Start Manoj PL #490 Date:27May2014
+                        //LoginSession l = new LoginSession();
+                        //if (l.AddSession(Session.SessionID, obj.UserId.ToString()))
+                        //{
+                        //    TempData["ErrorMessage"] = "Another user already logged-in with the same session";
+                        //    return RedirectToAction("Index", "Login");
+                        //}
+                        ////End Manoj PL #490 Date:27May2014
                         //Start  Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
                         System.Web.Security.FormsAuthentication.SetAuthCookie(obj.UserId.ToString(), false);
                         //End  Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
@@ -396,8 +396,8 @@ namespace RevenuePlanner.Controllers
         //[ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
-            LoginSession l = new LoginSession();
-            l.RemoveSession(Session.SessionID, Sessions.User.UserId.ToString());
+            //LoginSession l = new LoginSession();
+            //l.RemoveSession(Session.SessionID, Sessions.User.UserId.ToString());
             Sessions.Clear();
             //Start Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
             System.Web.Security.FormsAuthentication.SignOut();
