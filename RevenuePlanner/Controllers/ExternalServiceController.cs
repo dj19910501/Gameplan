@@ -900,11 +900,13 @@ namespace RevenuePlanner.Controllers
                 
                 if (listGameplanDataTypeStageZero != null && listGameplanDataTypeStageZero.Count > 0)
                 {
+                    TempData["TargetFieldInvalidMsg"] = Common.objCached.TargetFieldInvalidMsg;
                     return View(listGameplanDataTypeStageZero.OrderBy(map => map.DisplayFieldName).ToList());
                 }
                 //// End - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id
                 else
                 {
+                    TempData["TargetFieldInvalidMsg"] = "";
                     TempData["ErrorMessage"] = Common.objCached.DataTypeMappingNotConfigured;
                     return RedirectToAction("Edit", new { id = id });
                 }

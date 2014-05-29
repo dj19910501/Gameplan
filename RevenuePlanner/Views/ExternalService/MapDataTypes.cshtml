@@ -39,7 +39,7 @@
         <strong>Error!</strong> <span id="spanMessageError">@TempData["ErrorMessage"]</span>
     </div>
     <!--error message-->
-
+    @Html.Hidden("TargetFieldInvalidMsg", TempData["TargetFieldInvalidMsg"])    //// Added by :- Sohel Pathan on 28/05/2014 for PL #494 to Validate that a target field should be mapped to an entity only once. 
     <ul class="nav nav-tabs margin-bottom0">
         <li class="source-sans-proregular">
             <h2 class="title-header">Edit External Service Integrations</h2>
@@ -143,7 +143,7 @@
             var currentTargetValue = $(this).val();
             var currentTableName = $('#hdnTableName_' + currentDdl.id);
             if (currentTargetValue != null) {
-                if (currentTargetValue.toLowerCase() != 'select') {
+                if (currentTargetValue.toLowerCase() != 'select' || currentTargetValue.toLowerCase() != '') {
                     $('.ddlStyle').each(function () {
 
                         var SourceTableName = $('#hdnTableName_' + this.id);
@@ -162,6 +162,9 @@
                         }
                     });
                 }
+                else {
+                    $(currentDdl).next('.sbHolder').removeClass("error");
+                }
             }
             else {
                 $(currentDdl).next('.sbHolder').removeClass("error");
@@ -179,6 +182,9 @@
             }
         });
         if (isError) {
+            $('#spanMessageError').html($('#TargetFieldInvalidMsg').val());
+            $("#errorMessage").slideDown(400);
+            $("html, body").animate({ scrollTop: 0 }, 1000);
             e.preventDefault();
             return false;
         }

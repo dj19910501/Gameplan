@@ -1209,6 +1209,21 @@ namespace RevenuePlanner.Helpers
             }
         }
 
+        //// Start - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id 
+        private string _TargetFieldInvalidMsg;
+        public string TargetFieldInvalidMsg
+        {
+            get
+            {
+                return _TargetFieldInvalidMsg;
+            }
+            set
+            {
+                _TargetFieldInvalidMsg = value;
+            }
+        }
+        //// End - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id 
+
         //Start Manoj Limbachiya PL # 486
         private string _TacticReqForPublishedModel;
         public string TacticReqForPublishedModel
@@ -1597,6 +1612,11 @@ namespace RevenuePlanner.Helpers
                                         case "DataTypeMappingNotConfigured":
                                             _DataTypeMappingNotConfigured = strMsgValue;
                                             break;
+                                        //// Start - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id 
+                                        case "TargetFieldInvalidMsg":
+                                            _TargetFieldInvalidMsg = strMsgValue;
+                                            break;
+                                        //// End - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id 
                                         case "IntegrationInActiveConfirmationMsg":
                                             _IntegrationInActiveConfirmationMsg = strMsgValue;
                                             break;
