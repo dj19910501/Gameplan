@@ -847,29 +847,60 @@ namespace RevenuePlanner.Controllers
                                               select t.Title).SingleOrDefault();
                 if (string.IsNullOrEmpty(integrationTypeName)) ViewBag.IntegrationTypeName = ""; else ViewBag.IntegrationTypeName = integrationTypeName;
 
-                List<GameplanDataTypeModel> listGameplanDataTypeModel = new List<GameplanDataTypeModel>();
-                listGameplanDataTypeModel = (from i in db.IntegrationInstances
-                                             join d in db.GameplanDataTypes on i.IntegrationTypeId equals d.IntegrationTypeId
-                                             join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
-                                             from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
-                                             where i.IntegrationInstanceId == id && d.IsDeleted == false
-                                             select new GameplanDataTypeModel
-                                             {
-                                                 GameplanDataTypeId = d.GameplanDataTypeId,
-                                                 IntegrationTypeId = d.IntegrationTypeId,
-                                                 TableName = d.TableName,
-                                                 ActualFieldName = d.ActualFieldName,
-                                                 DisplayFieldName = d.DisplayFieldName,
-                                                 IsGet = d.IsGet,
-                                                 IntegrationInstanceDataTypeMappingId = m.IntegrationInstanceDataTypeMappingId,
-                                                 IntegrationInstanceId = i.IntegrationInstanceId,
-                                                 TargetDataType = m.TargetDataType
-                                             }
-                                             ).ToList();
-                if (listGameplanDataTypeModel != null && listGameplanDataTypeModel.Count > 0)
+                //// Start - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id 
+                var lstStages = db.Stages.Where(a => a.IsDeleted == false && a.ClientId == Sessions.User.ClientId).Select(a => new { Code = a.Code, Title = a.Title }).ToList();
+                var listStageCode = lstStages.Select(s => s.Code).ToList();
+
+                List<GameplanDataTypeModel> listGameplanDataTypeStageZero = new List<GameplanDataTypeModel>();
+                listGameplanDataTypeStageZero = (from i in db.IntegrationInstances
+                                                 join d in db.GameplanDataTypes on i.IntegrationTypeId equals d.IntegrationTypeId
+                                                 join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
+                                                 from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
+                                                 where i.IntegrationInstanceId == id && d.IsDeleted == false && d.IsStage == false
+                                                 select new GameplanDataTypeModel
+                                                 {
+                                                     GameplanDataTypeId = d.GameplanDataTypeId,
+                                                     IntegrationTypeId = d.IntegrationTypeId,
+                                                     TableName = d.TableName,
+                                                     ActualFieldName = d.ActualFieldName,
+                                                     DisplayFieldName = d.DisplayFieldName,
+                                                     IsGet = d.IsGet,
+                                                     IntegrationInstanceDataTypeMappingId = m.IntegrationInstanceDataTypeMappingId,
+                                                     IntegrationInstanceId = i.IntegrationInstanceId,
+                                                     TargetDataType = m.TargetDataType
+                                                 }).ToList();
+
+                List<GameplanDataTypeModel> listGameplanDataTypeStageOne = new List<GameplanDataTypeModel>();
+                listGameplanDataTypeStageOne = (from i in db.IntegrationInstances
+                                                 join d in db.GameplanDataTypes on i.IntegrationTypeId equals d.IntegrationTypeId
+                                                 join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
+                                                 from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
+                                                where i.IntegrationInstanceId == id && d.IsDeleted == false && d.IsStage == true && listStageCode.Contains(d.ActualFieldName)
+                                                 select new GameplanDataTypeModel
+                                                 {
+                                                     GameplanDataTypeId = d.GameplanDataTypeId,
+                                                     IntegrationTypeId = d.IntegrationTypeId,
+                                                     TableName = d.TableName,
+                                                     ActualFieldName = d.ActualFieldName,
+                                                     DisplayFieldName = d.DisplayFieldName,
+                                                     IsGet = d.IsGet,
+                                                     IntegrationInstanceDataTypeMappingId = m.IntegrationInstanceDataTypeMappingId,
+                                                     IntegrationInstanceId = i.IntegrationInstanceId,
+                                                     TargetDataType = m.TargetDataType
+                                                 }).ToList();
+
+                foreach (var item in listGameplanDataTypeStageOne)
                 {
-                    return View(listGameplanDataTypeModel.OrderBy(map => map.DisplayFieldName).ToList());
+                    item.DisplayFieldName = item.DisplayFieldName + "[" + lstStages.Where(a => a.Code == item.ActualFieldName).Select(a => a.Title).FirstOrDefault() + "]";
                 }
+
+                listGameplanDataTypeStageZero.AddRange(listGameplanDataTypeStageOne);
+                
+                if (listGameplanDataTypeStageZero != null && listGameplanDataTypeStageZero.Count > 0)
+                {
+                    return View(listGameplanDataTypeStageZero.OrderBy(map => map.DisplayFieldName).ToList());
+                }
+                //// End - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id
                 else
                 {
                     TempData["ErrorMessage"] = Common.objCached.DataTypeMappingNotConfigured;
