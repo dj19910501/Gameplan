@@ -78,21 +78,39 @@
             $('#Notabcontent').show();
         }
     });
-    $('#ATactics').click(GetTactics)
+    $('#ATactics').click(function () {
+        GetTactics();
+        arrClosedTask = [];
+    });
 
     //// Get tactic on click of vertical tab.
-    $('#AVertical').click(GetVertical)
+    $('#AVertical').click(function () {
+        GetVertical();
+        arrClosedTask = [];
+    });
 
     //// Get tactic on click of audience tab.
-    $('#AAudience').click(GetAudience)
+    $('#AAudience').click(function () {
+        GetAudience();
+        arrClosedTask = [];
+    });
 
     //// Get tactic on click of business unit tab.
-    $('#ABusinessUnit').click(GetBusinessUnit)
+    $('#ABusinessUnit').click(function () {
+        GetBusinessUnit();
+        arrClosedTask = [];
+    });
 
     //// Get tactic on click of stage tab.
-    $('#AStage').click(GetStage)
+    $('#AStage').click(function () {
+        GetStage();
+        arrClosedTask = [];
+    });
 
     //// Get tactic on click of request tab.
-    $('#ARequest').click(GetRequest)
+    $('#ARequest').click(function () {
+        GetRequest();
+        arrClosedTask = [];
+    });
 </script>
 

@@ -1358,6 +1358,8 @@
      gantt.config.drag_progress = false;
  }
 
+ var arrClosedTask = [];
+
  //// Modified By Maninder Singh Wadhva PL Ticket#47
  //// Function to render gantt i.e. for this year or this quarter.
  function renderGantt(taskData) {
@@ -1618,7 +1620,15 @@
      gantt.eachTask(function (task) {
          //// Modified by :- Maninder Singh for PL ticket #203 	Performance issue - Home screen taking too long to load.
          //gantt.open(task.id);
-         gantt.getTask(task.id).$open = true;
+
+         // Modified by dharmraj for #485 Planning Window doesnt remember previous view
+         if (arrClosedTask.indexOf(task.id) > -1) {
+             gantt.getTask(task.id).$open = false;
+         }
+         else {
+             gantt.getTask(task.id).$open = true;
+         }
+
          CountTacticForRenderChart(task.id, '');
      })
 
@@ -2266,6 +2276,10 @@ gantt.attachEvent("onTaskOpened", function (id) {
         OnTaskExapnd(id);
     }
 
+    arrClosedTask = jQuery.grep(arrClosedTask, function (value) {
+        return value != id;
+    });
+
     // added by dharmraj to display tooltip on camp., prog., tactic name in calendar.
     $(".gantt_container .gantt_tree_content").each(function (index, element) {
         $(element).attr("title", element.innerHTML);
@@ -2405,6 +2419,9 @@ gantt.attachEvent("onTaskClosed", function (id) {
     //// Modified by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
     OnTaskCollapse(id)
 
+    if (arrClosedTask.indexOf(id) == -1) {
+        arrClosedTask.push(id);
+    }
 
     // added by dharmraj to display tooltip on camp., prog., tactic name in calendar.
     $(".gantt_container .gantt_tree_content").each(function (index, element) {
