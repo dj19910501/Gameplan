@@ -5,63 +5,63 @@
     bool IsModelIntegrated = ViewBag.IsModelIntegrated;
     //Start Manoj Limbachiya PL # 486
     bool IsDeplyed = ViewBag.IsDeployed;
-    //End Manoj Limbachiya PL # 486
+            //End Manoj Limbachiya PL # 486
 }
-    <div class="head">
-        <span class="close-form source-sans-proregular">» CLOSE MENU</span>
-        <div class="cf">
-            <h2 class="source-sans-prolight">Tactic Detail</h2>
-            @if ((bool)ViewBag.IsCreated == false && (bool)ViewBag.CanDelete == true)
-            {
+<div class="head">
+    <span class="close-form source-sans-proregular">» CLOSE MENU</span>
+    <div class="cf">
+        <h2 class="source-sans-prolight">Tactic Detail</h2>
+        @if ((bool)ViewBag.IsCreated == false && (bool)ViewBag.CanDelete == true)
+        {
             <div class="btn-group pull-right gear-dropdown">
                 <span class="gear-sidebar dropdown-toggle" data-toggle="dropdown"></span>
                 <ul class="dropdown-menu">
                     <li><a id="deleteTactic">Delete Tactic</a></li>
                 </ul>
             </div>
-            }
-        </div>
+        }
     </div>
-    <div id="errorMsg" class="alert alert-error hide message-position-small">
-        <a class="close">×</a>
-        <strong>Error!</strong> <span id="spanMessage"></span>
-    </div>
+</div>
+<div id="errorMsg" class="alert alert-error hide message-position-small">
+    <a class="close">×</a>
+    <strong>Error!</strong> <span id="spanMessage"></span>
+</div>
 
-    @using (Html.BeginForm(new { @id = "frmSaveTactic" }))
+@using (Html.BeginForm(new { @id = "frmSaveTactic" }))
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".verticalIdSelectBox select").selectbox();
+        });
+    </script>
+    <div id="frm_tactics" name="frm_tactics">
+        <div class="content">
+            @Html.HiddenFor(model => model.TacticTypeId, new { id = "hdnTacticTypeId" })
+
+            @Html.HiddenFor(model => model.ModelId, new { id = "hdnModelId" })
+            @Html.HiddenFor(model => model.ClientId, new { id = "hdnClientId" })
+
+            <label>Title</label>
+            @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true" })
+
+            <label>Description</label>
+            @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional" })
+
+            <label>Target Stage</label>
+            <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.StageId, new SelectList((System.Collections.IEnumerable)ViewBag.Stages, "StageId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
+
+            <label class="margin-top10">Status</label>
+            @{
+    //Start Manoj Limbachiya PL # 486
+    if (IsDeplyed)
     {
-         <script type="text/javascript">
-             $(document).ready(function () {
-                 $(".verticalIdSelectBox select").selectbox();
-             });
-		</script>
-        <div id="frm_tactics" name="frm_tactics">
-            <div class="content">
-                @Html.HiddenFor(model => model.TacticTypeId, new { id = "hdnTacticTypeId" })
-
-                @Html.HiddenFor(model => model.ModelId, new { id = "hdnModelId" })
-                @Html.HiddenFor(model => model.ClientId, new { id = "hdnClientId" })
-
-                <label>Title</label>
-                @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true" })
-
-                <label>Description</label>
-                @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional" })
-
-                <label>Target Stage</label>
-                <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.StageId, new SelectList((System.Collections.IEnumerable)ViewBag.Stages, "StageId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
-
-                <label class="margin-top10">Status</label>
-                @{
-        //Start Manoj Limbachiya PL # 486
-        if (IsDeplyed)
-        {
-            <input id="t_model_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Deployed to Model" maxlength="18" readonly />
-        }
-        else
-        {
-            <input id="t_model_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Deployed to Model" maxlength="18" readonly />
-        }
-                    @*if (Model.ClientId != null)
+                <input id="t_model_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Deployed to Model" maxlength="18" readonly />
+    }
+    else
+    {
+                <input id="t_model_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Deployed to Model" maxlength="18" readonly />
+    }
+@*if (Model.ClientId != null)
                     {
                         <span id="t_status" class="setbackground">@Html.Raw("Deployed")</span>
                     }
@@ -69,57 +69,57 @@
                     {
                         <span id="t_status" class="setbackground">@Html.Raw("Not Deployed")</span>
                     }*@
-        //End Manoj Limbachiya PL # 486
+    //End Manoj Limbachiya PL # 486
 
-        if (IsModelIntegrated)
+    if (IsModelIntegrated)
+    {
+        if (Model.IsDeployedToIntegration)
         {
-            if (Model.IsDeployedToIntegration)
-            {
                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Deployed to Integration" maxlength="18" readonly />
-            }
-            else
-            {
-                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Deployed to Integration" maxlength="18" readonly />
-            }
-        }
-        
-                }
-            </div>
-            <!--End content-->
-
-            <div class="content dark">
-                <p>Add two or more projected or historical values for projection purposes.</p>
-
-                @*<label>Projected @Html.LabelForINQ("INQ")</label>
-                @Html.TextBoxFor(model => model.ProjectedInquiries, new {  require = "true", id = "hdnProjectedInquiries", @class="priceValue", maxlength=@RevenuePlanner.Helpers.Common.maxLengthPriceValue })*@
-
-                <label id="projectStage">Projected [Stage]</label>
-                @Html.TextBoxFor(model => model.ProjectedMQLs, new { require = "true", id = "hdnProjectedMQLs", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
-
-                <label>Projected Cost</label>
-                @Html.TextBoxFor(model => model.ProjectedRevenue, new { require = "true", id = "hdnProjectedRevenue", @class = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
-
-            </div>
-            <!--end content dark-->
-            <div class="wraper-btns cf">
-                <div class="span6">
-                    @{
-        if ((bool)ViewBag.IsCreated == true)
-        {
-                        <button id="CreateTactic" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
         }
         else
         {
-                        <button id="save_tactic" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Deployed to Integration" maxlength="18" readonly />
         }
-                    }
-                </div>
-                <div class="span6">
-                    <button class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
-                </div>
+    }
+        
+            }
+        </div>
+        <!--End content-->
+
+        <div class="content dark">
+            <p>Add two or more projected or historical values for projection purposes.</p>
+
+            @*<label>Projected @Html.LabelForINQ("INQ")</label>
+                @Html.TextBoxFor(model => model.ProjectedInquiries, new {  require = "true", id = "hdnProjectedInquiries", @class="priceValue", maxlength=@RevenuePlanner.Helpers.Common.maxLengthPriceValue })*@
+
+            <label id="projectStage">Projected [Stage]</label>
+            @Html.TextBoxFor(model => model.ProjectedMQLs, new { require = "true", id = "hdnProjectedMQLs", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
+
+            <label>Projected Cost</label>
+            @Html.TextBoxFor(model => model.ProjectedRevenue, new { require = "true", id = "hdnProjectedRevenue", @class = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+
+        </div>
+        <!--end content dark-->
+        <div class="wraper-btns cf">
+            <div class="span6">
+                @{
+    if ((bool)ViewBag.IsCreated == true)
+    {
+                    <button id="CreateTactic" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
+    }
+    else
+    {
+                    <button id="save_tactic" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
+    }
+                }
+            </div>
+            <div class="span6">
+                <button class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
             </div>
         </div>
-    }
+    </div>
+}
 
 <script type="text/javascript">
 
@@ -197,12 +197,21 @@
             $("#slidepanel").css("display", "none");
             $("#slidepanel-container").empty();
         });
+
         //Start Manoj Limbachiya PL # 486
         $("#frm_tactics #t_model_status").click(function () {
             if ($(this).hasClass("icon-check-blue")) {
                 $(this).val("Not Deployed to Model");
                 $(this).addClass("icon-check-gray");
                 $(this).removeClass("icon-check-blue");
+
+                /*changed for TFS bug #495 	Add/Edit Tactic under Model: Deploy to Integration is activated without Deploy to Model Activation by Maninder Singh Wadhva on 27 May 2014*/
+                t_integration_status = $("#frm_tactics #t_integration_status");
+                if (t_integration_status.hasClass("icon-check-blue")) {
+                    t_integration_status.val("Not Deployed to Integration");
+                    t_integration_status.addClass("icon-check-gray");
+                    t_integration_status.removeClass("icon-check-blue");
+                }
             }
             else {
                 $(this).val("Deployed to Model");
@@ -210,12 +219,17 @@
                 $(this).removeClass("icon-check-gray");
             }
         });
+
         //End Manoj Limbachiya PL # 486
         $("#frm_tactics #t_integration_status").click(function () {
             if ($(this).hasClass("icon-check-blue")) {
                 $(this).val("Not Deployed to Integration");
                 $(this).addClass("icon-check-gray");
                 $(this).removeClass("icon-check-blue");
+            }
+            else if ($("#frm_tactics #t_model_status").hasClass("icon-check-gray")) {
+                /*changed for TFS bug #495 	Add/Edit Tactic under Model: Deploy to Integration is activated without Deploy to Model Activation by Maninder Singh Wadhva on 27 May 2014*/
+                alert("For Deploy to Integration, The tactic must be Deployed to Model.");
             }
             else {
                 $(this).val("Deployed to Integration");
@@ -224,7 +238,7 @@
             }
         });
 
-   
+
         $('form').find('input[type=text], select, textarea').each(function () {
             $(this).change(function () {
                 if ($(this).attr('require') == 'true') {
@@ -243,14 +257,14 @@
                     }
                 }
                 if ($(this).attr('id') == 'hdnProjectedMQLs') {
-                    var tValue = ReplaceCC($("#hdnProjectedMQLs").val()); 
+                    var tValue = ReplaceCC($("#hdnProjectedMQLs").val());
                     if (isNaN(tValue)) {
                         $(this).addClass("error");
                         iserror = true;
                     }
                 }
                 if ($(this).attr('id') == 'hdnProjectedRevenue') {
-                    var tValue = ReplaceCC($("#hdnProjectedRevenue").val()); 
+                    var tValue = ReplaceCC($("#hdnProjectedRevenue").val());
                     if (isNaN(tValue)) {
                         $(this).addClass("error");
                         iserror = true;
@@ -310,18 +324,15 @@
             if (iserror) {
                 ShowError("Make sure all fields are filled and try again.");
                 return false;
-            } else if (isDeployedToModel == false && isDeployedToIntegration == true) {
-                ShowError("For Deploy to Integration, The tactic must be Deployed to Model.")
-                return false;
             }
 
             var Title = $("#Title").val();
             var Description = $("#Description").val();
             var StageId = $("#StageId").val();
             /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
-            var ProjectedMQLs =ReplaceCC($("#hdnProjectedMQLs").val());
+            var ProjectedMQLs = ReplaceCC($("#hdnProjectedMQLs").val());
             //var ProjectedInquiries =ReplaceCC($("#hdnProjectedInquiries").val());
-            var ProjectedRevenue =ReplaceCC($("#hdnProjectedRevenue").val());
+            var ProjectedRevenue = ReplaceCC($("#hdnProjectedRevenue").val());
             var TacticTypeId = $("#hdnTacticTypeId").val();
             //var clientId = $("#hdnClientId").val();
             var modelID = $("#hdnModelId").val();
@@ -334,7 +345,7 @@
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Model/SaveTactic/")',
-                data: 'Title=' + Title + '&Description=' + Description + '&StageId=' + StageId + '&ProjectedMQLs=' + ProjectedMQLs + 
+                data: 'Title=' + Title + '&Description=' + Description + '&StageId=' + StageId + '&ProjectedMQLs=' + ProjectedMQLs +
                  '&ProjectedRevenue=' + ProjectedRevenue + '&TacticTypeId=' + TacticTypeId
                + '&modelID=' + modelID + '&isDeployedToIntegration=' + isDeployedToIntegration
                 + '&isDeployedToModel=' + isDeployedToModel,
@@ -389,14 +400,14 @@
                 //    }
                 //}
                 if ($(this).attr('id') == 'hdnProjectedMQLs') {
-                    var tValue = ReplaceCC($("#hdnProjectedMQLs").val()); 
+                    var tValue = ReplaceCC($("#hdnProjectedMQLs").val());
                     if (isNaN(tValue)) {
                         $(this).addClass("error");
                         iserror = true;
                     }
                 }
                 if ($(this).attr('id') == 'hdnProjectedRevenue') {
-                    var tValue = ReplaceCC($("#hdnProjectedRevenue").val()); 
+                    var tValue = ReplaceCC($("#hdnProjectedRevenue").val());
                     if (isNaN(tValue)) {
                         $(this).addClass("error");
                         iserror = true;
@@ -433,18 +444,15 @@
             if (iserror) {
                 ShowError("Make sure all fields are filled and try again.");
                 return false;
-            } else if (isDeployedToModel == false && isDeployedToIntegration == true) {
-                ShowError("For Deploy to Integration, The tactic must be Deployed to Model.")
-                return false;
             }
 
             var Title = $("#Title").val();
             var Description = $("#Description").val();
             var StageId = $("#StageId").val();
             /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
-            var ProjectedMQLs =ReplaceCC($("#hdnProjectedMQLs").val());
+            var ProjectedMQLs = ReplaceCC($("#hdnProjectedMQLs").val());
             //var ProjectedInquiries =ReplaceCC($("#hdnProjectedInquiries").val());
-            var ProjectedRevenue =ReplaceCC($("#hdnProjectedRevenue").val());
+            var ProjectedRevenue = ReplaceCC($("#hdnProjectedRevenue").val());
             var TacticTypeId = $("#hdnTacticTypeId").val();
             var clientId = $("#hdnClientId").val();
 
