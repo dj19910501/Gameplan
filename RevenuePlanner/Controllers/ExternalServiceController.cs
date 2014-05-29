@@ -193,7 +193,8 @@ namespace RevenuePlanner.Controllers
 
                             if (form.SyncFrequency.Frequency == "Hourly")
                             {
-                                objSyncFrequency.NextSyncDate = DateTime.Now.AddHours(1);
+                                DateTime currentDateTime = DateTime.Now.AddHours(1);
+                                objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, currentDateTime.Hour, 0, 0);
                             }
                             else if (form.SyncFrequency.Frequency == "Daily")
                             {
@@ -598,7 +599,8 @@ namespace RevenuePlanner.Controllers
 
                                     if (form.SyncFrequency.Frequency == "Hourly")
                                     {
-                                        objSyncFrequency.NextSyncDate = DateTime.Now.AddHours(1);
+                                        DateTime currentDateTime = DateTime.Now.AddHours(1);
+                                        objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, currentDateTime.Hour, 0, 0);
                                     }
                                     else if (form.SyncFrequency.Frequency == "Daily")
                                     {

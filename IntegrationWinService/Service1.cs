@@ -32,13 +32,17 @@ namespace IntegrationWinService
         /// <param name="args"></param>
         protected override void OnStart(string[] args)
         {
+
+            int TimeGap = 60 - DateTime.Now.Minute; // Minutes gap between current time and next full o'clocks
+
             objTimer = new Timer();
-            objTimer.Interval = 60 * 60 * 1000; // 1 hour
+            objTimer.Interval = TimeGap * 60 * 1000; // 1 hour
             objTimer.Elapsed += objTimer_Elapsed;
             objTimer.Enabled = true;
 
             WriteLog("Integration service started");
-            
+
+            Sync();
         }
 
         /// <summary>
@@ -47,16 +51,8 @@ namespace IntegrationWinService
         /// <param name="args"></param>
         void objTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            try
-            {
-                //WriteLog("On elapse");
-                ScheduledExternalIntegration obj = new ScheduledExternalIntegration();
-                obj.ScheduledSync();
-            }
-            catch (Exception ex)
-            {
-                WriteLog("Exception occured : \n Message : " + ex.Message + "\n Detail : \n" + ex.StackTrace);
-            }
+            objTimer.Interval = 60 * 60 * 1000;
+            Sync();
         }
 
         /// <summary>
@@ -86,19 +82,49 @@ namespace IntegrationWinService
         }
 
         /// <summary>
+        /// Function for scheduled synchronization
+        /// </summary>
+        public void Sync()
+        {
+            try
+            {
+                ScheduledExternalIntegration obj = new ScheduledExternalIntegration();
+                obj.ScheduledSync();
+            }
+            catch (Exception ex)
+            {
+                WriteLog("Exception occured : \n Message : " + ex.Message + "\n Details : \n" + ex.StackTrace);
+            }
+        }
+
+        /// <summary>
         /// Function to write log message
         /// </summary>
         /// <param name="message"></param>
         public void WriteLog(string message)
         {
-            string LogFilePath = System.Configuration.ConfigurationManager.AppSettings["LogFilePath"].ToString();
-            if (LogFilePath != string.Empty)
+            //string LogFilePath = System.Configuration.ConfigurationManager.AppSettings["LogFilePath"].ToString();
+            //if (LogFilePath != string.Empty)
+            //{
+            //    StreamWriter write = File.AppendText(@"" + LogFilePath);
+            //    write.WriteLine(DateTime.Now.ToString() + " : " + message + "\n");
+            //    write.Flush();
+            //    write.Close();
+            //}
+            try
             {
-                StreamWriter write = File.AppendText(@"" + LogFilePath);
+                var location = System.Reflection.Assembly.GetEntryAssembly().Location;
+                //if (!File.Exists(Path.GetDirectoryName(location) + "\\Log.txt"))
+                //{
+                //    File.Create(Path.GetDirectoryName(location) + "\\Log.txt");
+                //}
+                StreamWriter write = new StreamWriter(Path.GetDirectoryName(location) + "\\Log.txt", true);
+                //StreamWriter write = File.AppendText(Path.GetDirectoryName(location) + "\\Log.txt");
                 write.WriteLine(DateTime.Now.ToString() + " : " + message + "\n");
                 write.Flush();
                 write.Close();
             }
+            catch (Exception ex) { }
         }
     }
 }
