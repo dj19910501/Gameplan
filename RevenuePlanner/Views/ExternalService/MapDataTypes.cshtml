@@ -70,7 +70,7 @@
                         {
                             @Html.HiddenFor(x => x[i].GameplanDataTypeId)   
                             @Html.HiddenFor(x => x[i].IntegrationTypeId)   
-                            @Html.HiddenFor(x => x[i].TableName)   
+                            @Html.HiddenFor(x => x[i].TableName, new { id = "hdnTableName_" + i })      //// Modified by :- Sohel Pathan on 28/05/2014 for PL #494 to Validate that a target field should be mapped to an entity only once. 
                             @Html.HiddenFor(x => x[i].ActualFieldName)   
                             @Html.HiddenFor(x => x[i].DisplayFieldName)   
                             @Html.HiddenFor(x => x[i].IsGet)   
@@ -82,7 +82,7 @@
                                 </td>
                                 <td style="text-align: left;">
                                     @*<div class="nl-form">*@
-                                  <span class="verticalIdSelectBox" style="  margin-left: -2px;">  @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)ViewData["ExternalFieldList"], Model[i].TargetDataType), "Select", new { @class = "ddlStyle" })</span>
+                                  <span class="verticalIdSelectBox" style="  margin-left: -2px;">  @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)ViewData["ExternalFieldList"], Model[i].TargetDataType), "Select", new { @class = "ddlStyle", id =i.ToString() })</span>  @* Modified by :- Sohel Pathan on 28/05/2014 for PL #494 to Validate that a target field should be mapped to an entity only once. *@
                                     @*</div>*@
                                 </td>
                             </tr>
@@ -125,5 +125,63 @@
         else {
             $("#errorMessage").slideDown(400);
         }
+
+        //// Start - Added by :- Sohel Pathan on 28/05/2014 for PL #494 to Validate that a target field should be mapped to an entity only once.
+        $('.ddlStyle').each(function () {
+            if ($(this).next('.sbHolder').hasClass("error")) {
+                $(this).next('.sbHolder').removeClass("error");
+            }
+        });
+        //// End - Added by :- Sohel Pathan on 28/05/2014 for PL #494 to Validate that a target field should be mapped to an entity only once.
     });
+
+    //// Start - Added by :- Sohel Pathan on 28/05/2014 for PL #494 to Validate that a target field should be mapped to an entity only once.
+    $('.ddlStyle').change(function (e) {
+        $('.ddlStyle').each(function () {
+            var isError = false;
+            var currentDdl = this;
+            var currentTargetValue = $(this).val();
+            var currentTableName = $('#hdnTableName_' + currentDdl.id);
+            if (currentTargetValue != null) {
+                if (currentTargetValue.toLowerCase() != 'select') {
+                    $('.ddlStyle').each(function () {
+
+                        var SourceTableName = $('#hdnTableName_' + this.id);
+                        var SourceTargetValue = $(this).val();
+
+                        if (currentDdl.id != this.id) {
+                            if (currentTargetValue == SourceTargetValue && currentTableName.val() == SourceTableName.val() && SourceTargetValue.toLowerCase() != 'select' && SourceTargetValue != '') {
+
+                                $(currentDdl).next('.sbHolder').addClass("error");
+                                $(this).next('.sbHolder').addClass("error");
+                                isError = true;
+                            }
+                        }
+                        if (!isError) {
+                            $(currentDdl).next('.sbHolder').removeClass("error");
+                        }
+                    });
+                }
+            }
+            else {
+                $(currentDdl).next('.sbHolder').removeClass("error");
+            }
+        });
+    });
+
+    $("form").submit(function (e) {
+        var isError = false;
+        $('.ddlStyle').each(function (e) {
+            if ($(this).next('.sbHolder').hasClass("error"))
+            {
+                isError = true;
+                return false;
+            }
+        });
+        if (isError) {
+            e.preventDefault();
+            return false;
+        }
+    });
+    //// End - Added by :- Sohel Pathan on 28/05/2014 for PL #494 to Validate that a target field should be mapped to an entity only once.
 </script>
