@@ -6,7 +6,7 @@
     string MetricType_Size = Enums.MetricType.Size.ToString();
 }
 <div class="head" id="improvementTacticCloseMenu">
-  <span class="close-form source-sans-proregular">» CLOSE MENU</span>
+    <span class="close-form source-sans-proregular">» CLOSE MENU</span>
     <div class="cf">
         <h2 class="source-sans-prolight">@ViewBag.Title </h2>
         @* Start - Added By :- Sohel on 20/05/2014 for PL ticket #457 to delete a improvement tactic *@
@@ -19,128 +19,132 @@
                 </ul>
             </div>
         }
-        @* End - Added By :- Sohel on 20/05/2014 for PL ticket #457 to delete a improvement tactic *@
+@* End - Added By :- Sohel on 20/05/2014 for PL ticket #457 to delete a improvement tactic *@
     </div>
 </div>
 <div id="errorMsg" class="alert alert-error hide message-position-small">
     <a class="close">×</a>
     <strong>Error!</strong> <span id="spanMessage"></span>
 </div>
- @using (Html.BeginForm(new { @id = "frmSaveTactic" }))
- {
-<div id="frm_tactics" name="frm_tactics">
-    <div class="content">
-        @Html.HiddenFor(model => model.ImprovementTacticTypeId, new { id = "ImprovementTacticTypeId" })
-        <label>Improvement Tactic Type</label>
-        @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", id = "hdntitle", require = "true", maxlength = "100" })
-        <label>Description</label>
-        @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", id = "hdndesc" })
-        <table>
-            <tr>
-                <td class="mid-input">
-                    <label>Cost</label>
-                    @Html.TextBoxFor(model => model.Cost, new { require = "true", id = "hdnCost", @class = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
-                </td>
-                <td style="width: 15px;"></td>
-                <td class="mid-input">
-                    <label>Status</label>
-                    @Html.TextBoxFor(model => model.IsDeployed, new { @readonly = true, id = "t_status" })
-                </td>
-            </tr>
-            <tr>
-                <td colspan="3">
-                    @if(Model.IsDeployedToIntegration)
-                    {
-                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Deployed to Integration" maxlength="18" readonly />
-                    }
-                    else
-                    {
-                        <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Deployed to Integration" maxlength="18" readonly />
-                    }
-                </td>
-            </tr>
-        </table>
-        <label>Improvement Weight(1-5)</label>
-        <div class="accordion sidebar-accordion" id="accordion-1">
-            <table id="tblCR_SV">
-                <thead>
-                    <tr>
-                        <th></th>
-                         <th style="width:24px;"></th>
-                        <th title="Conversion" style="font-weight: normal;">Conversion
-                        </th>
-                        <th style="width: 15px;"></th>
-                        <th title="Velocity" style="font-weight: normal;">Velocity</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.listMetrics.Where(m => m.MetricType == MetricType_CR || m.MetricType == MetricType_SV))
-                    {
-                        <tr>
-                            @* Start -- Modified By :- Sohel on 21/04/2014 for PL ticket #160 to display unwrapped text. *@
-                            <td title="@item.MetricName" style="width:82px;">   
-                                <span class="truncate" title="@item.MetricName">
-                                    @Html.DisplayFor(model => item.MetricName)
-                                </span>
-                            </td>
-                            <td style="width:10px;"></td>   
-                            @* End -- Modified By :- Sohel on 21/04/2014 for PL ticket #160 to display unwrapped text. *@
-                            <td class="small-input">
-                                @Html.TextBoxFor(model => item.ConversionValue, new { placeholder = "Required", require = "true",@class = "priceValue", maxlength = "1", id = @item.MetricID_CR})
-                            </td>
-                             <td style="width:15px;"></td>
-                            <td class="small-input">
-                                @Html.TextBoxFor(model => item.VelocityValue, new { placeholder = "Required",@class = "priceValue", require = "true", maxlength = "1", id = @item.MetricID_SV })
-
-                            </td>
-                        </tr>
-                    }
-                </tbody>
+@using (Html.BeginForm(new { @id = "frmSaveTactic" }))
+{
+    <div id="frm_tactics" name="frm_tactics">
+        <div class="content">
+            @Html.HiddenFor(model => model.ImprovementTacticTypeId, new { id = "ImprovementTacticTypeId" })
+            <label>Improvement Tactic Type</label>
+            @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", id = "hdntitle", require = "true", maxlength = "100" })
+            <label>Description</label>
+            @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", id = "hdndesc" })
+            <table>
+                <tr>
+                    <td class="mid-input">
+                        <label>Cost</label>
+                        @Html.TextBoxFor(model => model.Cost, new { require = "true", id = "hdnCost", @class = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                    </td>
+                    <td style="width: 15px;"></td>
+                    <td class="mid-input">
+                        <label>Status</label>
+                        @Html.TextBoxFor(model => model.IsDeployed, new { @readonly = true, id = "t_status" })
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        @if (Model.IsDeployedToIntegration)
+                        {
+                            <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Deployed to Integration" maxlength="18" readonly />
+                        }
+                        else
+                        {
+                            <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Deployed to Integration" maxlength="18" readonly />
+                        }
+                    </td>
+                </tr>
             </table>
-            <table id="tblSize">
-                <thead>
-                    <tr>
-                        <th title=""></th>
-                          <th title="Improvement" style="font-weight:normal; width:150px;">Improvement
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.listMetricssize.Where(m => m.MetricType == MetricType_Size))
-                    {
+            <label>Improvement Weight(1-5)</label>
+            <div class="accordion sidebar-accordion" id="accordion-1">
+                <table id="tblCR_SV">
+                    <thead>
                         <tr>
-                            <td title="@item.MetricName" style="width:92px;">   @* Modified By :- Sohel Pathan on 28/04/2014 for Internal Review Points #9 *@
+                            <th></th>
+                            <th style="width: 24px;"></th>
+                            <th title="Conversion" style="font-weight: normal;">Conversion
+                            </th>
+                            <th style="width: 15px;"></th>
+                            <th title="Velocity" style="font-weight: normal;">Velocity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.listMetrics.Where(m => m.MetricType == MetricType_CR || m.MetricType == MetricType_SV))
+                        {
+                            <tr>
                                 @* Start -- Modified By :- Sohel on 21/04/2014 for PL ticket #160 to display unwrapped text. *@
-                                <span class="truncate" title="@item.MetricName">
-                                    @Html.DisplayFor(model => item.MetricName)
-                                </span>
+                                <td title="@item.MetricName" style="width:82px;">
+                                    <span class="truncate" title="@item.MetricName">
+                                        @Html.DisplayFor(model => item.MetricName)
+                                    </span>
+                                </td>
+                                <td style="width: 10px;"></td>
                                 @* End -- Modified By :- Sohel on 21/04/2014 for PL ticket #160 to display unwrapped text. *@
-                            </td>
-                            <td style="width:150px;">
-                                @Html.TextBoxFor(model => item.ConversionValue, new {placeholder = "Required",@class = "priceValue", require = "true", maxlength = "1", id = @item.MetricID_Size})
-                            </td>
+                                <td class="small-input">
+                                    @Html.TextBoxFor(model => item.ConversionValue, new { placeholder = "Required", require = "true", @class = "priceValue", maxlength = "1", id = @item.MetricID_CR })
+                                </td>
+                                <td style="width: 15px;"></td>
+                                <td class="small-input">
+                                    @Html.TextBoxFor(model => item.VelocityValue, new { placeholder = "Required", @class = "priceValue", require = "true", maxlength = "1", id = @item.MetricID_SV })
+
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <table id="tblSize">
+                    <thead>
+                        <tr>
+                            <th title=""></th>
+                            <th title="Improvement" style="font-weight: normal; width: 150px;">Improvement
+                            </th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.listMetricssize.Where(m => m.MetricType == MetricType_Size))
+                        {
+                            <tr>
+                                <td title="@item.MetricName" style="width:92px;">@* Modified By :- Sohel Pathan on 28/04/2014 for Internal Review Points #9 *@
+                                    @* Start -- Modified By :- Sohel on 21/04/2014 for PL ticket #160 to display unwrapped text. *@
+                                    <span class="truncate" title="@item.MetricName">
+                                        @Html.DisplayFor(model => item.MetricName)
+                                    </span>
+                                    @* End -- Modified By :- Sohel on 21/04/2014 for PL ticket #160 to display unwrapped text. *@
+                                </td>
+                                <td style="width: 150px;">
+                                    @Html.TextBoxFor(model => item.ConversionValue, new { placeholder = "Required", @class = "priceValue", require = "true", maxlength = "1", id = @item.MetricID_Size })
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="wraper-btns cf">
+            <div class="span6">
+                <button id="save_tactic" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
+            </div>
+            <div class="span6">
+                <button class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
+            </div>
         </div>
     </div>
-    <div class="wraper-btns cf">
-        <div class="span6">
-            <button id="save_tactic" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
-        </div>
-        <div class="span6">
-            <button class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
-        </div>
-    </div>
-</div>
- }
+}
 <script type="text/javascript">
     $(document).ready(function () {
+        /* Added By :- Mitesh Vaishnav on 30/05/2014 for ticket #492 Difficulty entering weight values when creating an improvement tactic*/
+        $(".priceValue").keydown(function (e) { priceFormatKeydown(e); });
+        $(".priceValue").change(function (e) { priceFormatChange(e) });
+        /*End By :- Mitesh Vaishnav on 30/05/2014 for ticket #492 Difficulty entering weight values when creating an improvement tactic*/
+
         //$('#hdntitle').focus();
         $('#slidepanel-container').slimScroll({ scrollTo: '0px' });
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-        $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
         $('.close-form', this.$panel).click(function (e) {
             $("#slidepanel").css("display", "none");
@@ -183,7 +187,7 @@
                 $(this).removeClass("icon-check-gray");
             }
         });
-     
+
         $('form').find('input[type=text], select, textarea').each(function () {
             var iserror = false;
             $(this).change(function () {
@@ -234,10 +238,10 @@
                 return false;
             }
             var id = $("#ImprovementTacticTypeId").val();
-             val = 0;
-             cntFill = 0;
-             cntNotFill = 0;
-             wrongval = 0
+            val = 0;
+            cntFill = 0;
+            cntNotFill = 0;
+            wrongval = 0
             $('#accordion-1 input[type=text]').each(function () {
                 var val = $(this).val();
                 if (val > 0) {
@@ -312,7 +316,7 @@
             $("#spanMessage").text(value);
             return false;
         }
-        
+
         TruncateMetricName();    @* Added By :- Sohel on 21/04/2014 for PL ticket #160 to display unwrapped text. *@
     });
 
@@ -338,7 +342,7 @@
             $(this).text(title);
         });
     }
-    
+
     @* Added By :- Sohel on 20/05/2014 for PL ticket #457 to delete a improvement tactic *@
     $("#deleteImprovementTactic").click(function () {
         if (confirm('Are you sure you want to delete this improvement tactic type?')) {
