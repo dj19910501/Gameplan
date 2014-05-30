@@ -407,11 +407,15 @@
                 arProgram[l] = ptitle;
             }
             var isAssortment = $("#hdnRedirectType").val();
+            var arrClosedTaskString = null;
+            if (typeof arrClosedTask != 'undefined') {
+                arrClosedTaskString = arrClosedTask.toString();
+            }
 
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/SaveCampaign")',
-                data: $("form").serialize() + '&programs=' + arProgram + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTask,
+                data: $("form").serialize() + '&programs=' + arProgram + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString,
                 success: function (data) {
                     if (data.redirect) {
                         window.location.href = data.redirect;

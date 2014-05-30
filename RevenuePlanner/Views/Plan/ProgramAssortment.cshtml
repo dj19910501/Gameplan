@@ -404,10 +404,15 @@
             //$("#txtmql").val(ReplaceCC($("#txtmql").val()));
             //$("#txtCost").val(ReplaceCC($("#txtCost").val()));
 
+            var arrClosedTaskString = null;
+            if (typeof arrClosedTask != 'undefined') {
+                arrClosedTaskString = arrClosedTask.toString();
+            }
+
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/SaveProgram")',
-                data: $("form").serialize() + '&tactics=' + arTactic + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTask,
+                data: $("form").serialize() + '&tactics=' + arTactic + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString,
                 success: function (data) {
                     if (data.redirect) {
                         window.location.href = data.redirect;
