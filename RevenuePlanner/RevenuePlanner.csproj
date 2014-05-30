@@ -255,6 +255,7 @@
     <Content Include="Content\css\DHTMLX\dhtmlxchart.css" />
     <Content Include="Content\css\DHTMLX\dhtmlxchart_debug.css" />
     <Content Include="Content\css\DHTMLX\dhtmlxgantt.css" />
+    <Content Include="Content\css\font-awesome.min.css" />
     <Content Include="Content\css\font.css" />
     <Content Include="Content\css\jquery.slidepanel.css" />
     <Content Include="Content\css\NaturalLanguageForm\component.css" />
@@ -262,7 +263,9 @@
     <Content Include="Content\css\Select2\select2.css" />
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\style_extended.css" />
+    <Content Include="Content\css\summernote.css" />
     <Content Include="Content\css\tipsy.css" />
+    <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\HelveticaLTStd-Light.svg" />
     <Content Include="Content\fonts\NaturalLanguageForm\codropsicons\codropsicons.svg" />
     <Content Include="Content\fonts\NaturalLanguageForm\codropsicons\license.txt" />
@@ -542,6 +545,9 @@
     <Content Include="Content\fonts\sourcesanspro-semibold-webfont.woff" />
     <Content Include="Scripts\jquery.selectbox-0.2.js" />
     <Content Include="Scripts\js\jquery-migrate-1.2.1.min.js" />
+    <Content Include="Content\fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\fonts\fontawesome-webfont.woff" />
     <None Include="Service References\BDSService\BDSService.disco" />
     <None Include="Service References\BDSService\configuration91.svcinfo" />
     <None Include="Service References\BDSService\configuration.svcinfo" />
@@ -552,6 +558,7 @@
     <Content Include="Scripts\js\ReportConversion.js" />
     <Content Include="Scripts\js\ReportRevenue.js" />
     <Content Include="Scripts\js\ReportSummary.js" />
+    <Content Include="Scripts\summernote.min.js" />
     <Content Include="Views\Plan\PlanSelector.cshtml">
       <SubType>Code</SubType>
     </Content>

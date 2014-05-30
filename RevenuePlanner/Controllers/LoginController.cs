@@ -410,6 +410,8 @@ namespace RevenuePlanner.Controllers
             string notificationContactSupport = Enums.Custom_Notification.ContactSupport.ToString();
             string emailSubject = Sessions.ApplicationName + "/" + CompanyName;
             Notification notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationContactSupport));
+            //this is to decode the html content which we have encoded into text on client side.added by uday on 28-5-2014 for editor in contact support.
+            Issue = HttpUtility.UrlDecode(Issue, System.Text.Encoding.Default);
             string emailBody = notification.EmailContent.Replace("[EmailToBeReplaced]", emailId).Replace("[IssueToBeReplaced]", Issue);
             var success = Common.sendMail(Common.SupportMail, Common.FromSupportMail, emailBody, emailSubject, string.Empty, Common.FromAlias, string.Empty, true); //email will be sent to Support email Id defined in web.config
             if (success == 1)

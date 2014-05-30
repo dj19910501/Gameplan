@@ -5,6 +5,7 @@
     {
         IsDisable = true;
     } 
+    
 @*<div class="container-fluid all-height" id="DivShareTacticPopupMain">
     <div class="row-fluid calc-height">
         <div class="span12">*@
@@ -31,8 +32,9 @@
                     <input id="email_id" name="email" type="email" class="input-block-level-contact-support source-sans-prolight inputs-login" value="@Sessions.User.Email" disabled="@IsDisable" required/>
                     <input id="company_name" name="password" type="text" class="input-block-level-contact-support source-sans-prolight inputs-login" value="@Sessions.User.Client" disabled="@IsDisable" required/>
                 }
-                <input id="issue" name="issue" type="text" class="input-block-level-contact-support source-sans-prolight inputs-login" placeholder="Issue" required />
-
+                @*  <input id="issue" name="issue" type="text" class="input-block-level-contact-support source-sans-prolight inputs-login" placeholder="Issue" required />*@
+                @*above line commented by uday and added below div for pl #453*@
+                <div id="summernote"></div>
                 @*<textarea id="issue" name="issue" class="input-block-level source-sans-prolight inputs-login" required />*@
 
                 <button class="button-contact-support btn btn-large" id="submit_issue" type="submit" value="Submit">Submit</button>
@@ -76,7 +78,7 @@
                     flag = 1;
                 }
             });
-          
+
             if (flag == 1) {
                 var msgspan = "Please enter values in all field.";
                 $("#errorMessageContactSupportPopup").css("display", "block");
@@ -91,7 +93,9 @@
                 close_messages();
                 var emailId = $('#email_id').val();
                 var company = $('#company_name').val();
-                var issue = $('#issue').val();
+                //var issue = $('#issue').val();//  line commented by uday on 27/05/2014 for PL #453 
+                var issue = $('#summernote').code();
+                issue = encodeURIComponent(issue);//this is to encode the html content into text on client side.added by uday on 28-5-2014 for editor in contact support.
                 if (!validateCompanyName(company)) {
                     flage = false;
                     $('#company_name').addClass("error");
@@ -99,13 +103,13 @@
                     $("#errorMessageContactSupportPopup").css("display", "block");
                     $("#spanErrorMessageContactSupportPopup").text(msgspan);
                 }
-                if (!validateIssue(issue)) {
-                    flage = false;
-                    $('#issue').addClass("error");
-                    var msgspan = "Please enter valid characters in issue.";
-                    $("#errorMessageContactSupportPopup").css("display", "block");
-                    $("#spanErrorMessageContactSupportPopup").text(msgspan);
-                }
+                //if (!validateIssue(issue)) {
+                //    flage = false;
+                //    $('#issue').addClass("error");
+                //    var msgspan = "Please enter valid characters in issue.";
+                //    $("#errorMessageContactSupportPopup").css("display", "block");
+                //    $("#spanErrorMessageContactSupportPopup").text(msgspan);
+                //}
                 if (!validateEmail(emailId)) {
                     flage = false;
                     $('#email_id').addClass("error");
@@ -115,29 +119,36 @@
                 }
                 if (flage == true) {
                     $.ajax({
-                        url: '@Url.Content("~/Login/ContactSupport/")' + '?emailId=' + emailId + '&companyName=' + company + '&issue=' + issue,
-                       type: 'POST',
-                       cache: false,
-                       success: function (result) {
-                           if (result == true) {
-                               var msgspan = "Contact support request submitted successfully";
-                               $("#spanSuccessMessageContactSupportPopup").text(msgspan);
-                               $("#SuccessMessageContactSupportPopup").slideDown(1200);
-                               $("#SuccessMessageContactSupportPopup").slideUp(2500).promise().always(function () {
-                                   close_popup();
-                               });
-                           }
-                           else {
-                               var msgspan = "Error occured in sending mail, Please try again";
-                               $(".input-block-level-contact-support").addClass("error");
-                               $("#errorMessageContactSupportPopup").css("display", "block");
-                               $("#spanErrorMessageContactSupportPopup").text(msgspan);
-                           }
-                       }
-                   });
-               }
-               return false;
-           }
+                        //url: '@Url.Content("~/Login/ContactSupport/")' + '?emailId=' + emailId + '&companyName=' + company + '&issue=' + issue,
+                        // above line commented by uday on 27/05/2014 for PL #453 
+                        url: '@Url.Content("~/Login/ContactSupport/")',
+                        data: {
+                            emailId: emailId,
+                            CompanyName: company,
+                            Issue: issue
+                        },
+                        type: 'POST',
+                        cache: false,
+                        success: function (result) {
+                            if (result == true) {
+                                var msgspan = "Contact support request submitted successfully";
+                                $("#spanSuccessMessageContactSupportPopup").text(msgspan);
+                                $("#SuccessMessageContactSupportPopup").slideDown(1200);
+                                $("#SuccessMessageContactSupportPopup").slideUp(2500).promise().always(function () {
+                                    close_popup();
+                                });
+                            }
+                            else {
+                                var msgspan = "Error occured in sending mail, Please try again";
+                                $(".input-block-level-contact-support").addClass("error");
+                                $("#errorMessageContactSupportPopup").css("display", "block");
+                                $("#spanErrorMessageContactSupportPopup").text(msgspan);
+                            }
+                        }
+                    });
+                }
+                return false;
+            }
             return false;
         });
 
@@ -182,3 +193,28 @@
 
     });
 </script>
+<script>
+    //$(document).ready(function () {
+    //$('#summernote').summernote();
+    @* Start - Added by :- uday on 27/05/2014 for PL #453 *@
+    $('#summernote').summernote({
+        height: 150,                 // set editor height
+
+        minHeight: null,             // set minimum height of editor
+        maxHeight: null,             // set maximum height of editor
+
+        focus: true,                 // set focus to editable area after initializing summernote
+        toolbar: [
+//[groupname, [button list]]
+
+['style', ['bold', 'italic', 'underline', 'clear', 'fontname']],
+['color', ['color']],
+['insert', ['link', 'picture']],
+        ]
+
+    });
+    @* Start - Added by :- uday on 27/05/2014 for PL #453 *@
+    //});
+</script>
+
+
