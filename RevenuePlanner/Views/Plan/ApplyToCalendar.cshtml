@@ -713,6 +713,12 @@
        return cssClass;
    }
 
+   var arrClosedTask = [];
+   var AllClosedTask = '@TempData["ClosedTask"]';
+    if (AllClosedTask != "") {
+        arrClosedTask = AllClosedTask.split(',');
+    }
+
    //// Function to render gantt i.e. for this year or this quarter.
    function renderGantt(taskData) {
        var tasks = {
@@ -836,6 +842,19 @@
            gantt.parse(tasks);
        }
 
+       gantt.eachTask(function (task) {
+
+           // Added by dharmraj for #485 Planning Window doesnt remember previous view
+           if (arrClosedTask.indexOf(task.id) > -1) {
+               gantt.getTask(task.id).$open = false;
+           }
+           else {
+               gantt.getTask(task.id).$open = true;
+           }
+       });
+
+       gantt.refreshData();
+
        AttachEventToTactic();
        HideDragHandleOfTask();
 
@@ -887,6 +906,10 @@
    gantt.attachEvent("onTaskOpened", function (id) {
        HideDragHandleOfTask();
 
+       arrClosedTask = jQuery.grep(arrClosedTask, function (value) {
+           return value != id;
+       });
+
        // added by dharmraj to display tooltip on camp., prog., tactic name in calendar.
        $(".gantt_container .gantt_tree_content").each(function (index, element) {
            $(element).attr("title", element.innerHTML);
@@ -896,6 +919,10 @@
 
    gantt.attachEvent("onTaskClosed", function (id) {
        HideDragHandleOfTask();
+
+       if (arrClosedTask.indexOf(id) == -1) {
+           arrClosedTask.push(id);
+       }
 
        // added by dharmraj to display tooltip on camp., prog., tactic name in calendar.
        $(".gantt_container .gantt_tree_content").each(function (index, element) {

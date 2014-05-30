@@ -197,6 +197,11 @@ if ((bool)ViewBag.IsOwner)
         $("#spanDuplicate").click(function () {
             var hdnPlanTacticId = $("#hdnPlanTacticId").val();
             var isAssortment = $("#hdnRedirectType").val();
+            var arrClosedTaskString = null;
+            if (typeof arrClosedTask != 'undefined') {
+                arrClosedTaskString = arrClosedTask.toString();
+            }
+
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/DuplicateCopyClone")',
@@ -204,7 +209,8 @@ if ((bool)ViewBag.IsOwner)
                     {
                         id: hdnPlanTacticId,
                         RedirectType: isAssortment,
-                        CopyClone: 'Tactic'
+                        CopyClone: 'Tactic',
+                        closedTask: arrClosedTaskString
                     },
                 success: function (data) {
                     if (data.redirect) {
@@ -374,7 +380,7 @@ if ((bool)ViewBag.IsOwner)
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/SaveTactic")',
-                data: $("form").serialize() + '&RedirectType=' + isAssortment,
+                data: $("form").serialize() + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTask,
                 success: function (data) {
                     if (data.redirect) {
                         window.location.href = data.redirect;
@@ -445,12 +451,18 @@ if ((bool)ViewBag.IsOwner)
             if (confirm('Are you sure you want to delete this tactic?')) {
                 var idTactic = $("#hdnPlanTacticId").val();
                 var isAssortment = $("#hdnRedirectType").val();
+                var arrClosedTaskString = null;
+                if (typeof arrClosedTask != 'undefined') {
+                    arrClosedTaskString = arrClosedTask.toString();
+                }
+
                 $.ajax({
                     type: 'POST',
                     url: '@Url.Content("~/Plan/DeleteTactic")',
                     data: {
                         ID: idTactic,
-                        RedirectType: isAssortment
+                        RedirectType: isAssortment,
+                        closedTask: arrClosedTaskString
                     },
                     success: function (data) {
                         if (data.redirect) {

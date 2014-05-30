@@ -238,6 +238,11 @@
         $("#spanDuplicate").click(function () {
             var hdnPlanCampaignId = $("#hdnPlanCampaignId").val();
             var isAssortment = $("#hdnRedirectType").val();
+            var arrClosedTaskString = null;
+            if (typeof arrClosedTask != 'undefined') {
+                arrClosedTaskString = arrClosedTask.toString();
+            }
+
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/DuplicateCopyClone")',
@@ -245,7 +250,8 @@
                     {
                         id: hdnPlanCampaignId,
                         RedirectType: isAssortment,
-                        CopyClone: 'Campaign'
+                        CopyClone: 'Campaign',
+                        closedTask: arrClosedTaskString
                     },
                 success: function (data) {
                     if (data.redirect) {
@@ -405,7 +411,7 @@
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/SaveCampaign")',
-                data: $("form").serialize() + '&programs=' + arProgram + '&RedirectType=' + isAssortment,
+                data: $("form").serialize() + '&programs=' + arProgram + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTask,
                 success: function (data) {
                     if (data.redirect) {
                         window.location.href = data.redirect;
@@ -429,12 +435,18 @@
             if (confirm('Are you sure you want to delete this campaign?')) {
                 var campaignId = $("#hdnPlanCampaignId").val();
                 var isAssortment = $("#hdnRedirectType").val();
+                var arrClosedTaskString = null;
+                if (typeof arrClosedTask != 'undefined') {
+                    arrClosedTaskString = arrClosedTask.toString();
+                }
+
                 $.ajax({
                     type: 'POST',
                     url: '@Url.Content("~/Plan/DeleteCampaign")',
                     data: {
                         ID: campaignId,
-                        RedirectType: isAssortment
+                        RedirectType: isAssortment,
+                        closedTask: arrClosedTaskString
                     },
                     success: function (data) {
                         if (data.redirect) {
