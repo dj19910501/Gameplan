@@ -1598,7 +1598,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveCampaign(Plan_CampaignModel form, string programs, bool RedirectType)
+        public ActionResult SaveCampaign(Plan_CampaignModel form, string programs, bool RedirectType,string closedTask)
         {
             try
             {
@@ -1715,6 +1715,7 @@ namespace RevenuePlanner.Controllers
                                     scope.Complete();
                                     if (RedirectType)
                                     {
+                                        TempData["ClosedTask"] = closedTask;
                                         return Json(new { redirect = Url.Action("ApplyToCalendar") });
                                     }
                                     else
@@ -1746,7 +1747,7 @@ namespace RevenuePlanner.Controllers
             changed by : Nirav Shah on 13 feb 2014
             Changed : add new Parameter  RedirectType
          */
-        public ActionResult DeleteCampaign(int id = 0, bool RedirectType = false)
+        public ActionResult DeleteCampaign(int id = 0, bool RedirectType = false, string closedTask = null)
         {
             try
             {
@@ -1784,6 +1785,10 @@ namespace RevenuePlanner.Controllers
                                 //return Json(new { redirect = Url.Action("Assortment") });
                                 if (RedirectType)
                                 {
+                                    if (closedTask != null)
+                                    {
+                                        TempData["ClosedTask"] = closedTask;
+                                    }
                                     return Json(new { redirect = Url.Action("ApplyToCalendar") });
                                 }
                                 else
@@ -1945,7 +1950,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveProgram(Plan_Campaign_ProgramModel form, string tactics, bool RedirectType)
+        public ActionResult SaveProgram(Plan_Campaign_ProgramModel form, string tactics, bool RedirectType, string closedTask)
         {
             try
             {
@@ -2088,6 +2093,7 @@ namespace RevenuePlanner.Controllers
                                     scope.Complete();
                                     if (RedirectType)
                                     {
+                                        TempData["ClosedTask"] = closedTask;
                                         return Json(new { redirect = Url.Action("ApplyToCalendar") });
                                     }
                                     else
@@ -2116,7 +2122,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
         /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
-        public ActionResult DeleteProgram(int id = 0, bool RedirectType = false)
+        public ActionResult DeleteProgram(int id = 0, bool RedirectType = false, string closedTask = null)
         {
             try
             {
@@ -2154,6 +2160,10 @@ namespace RevenuePlanner.Controllers
                                 //return Json(new { redirect = Url.Action("Assortment", new { campaignId = pc.PlanCampaignId }) });
                                 if (RedirectType)
                                 {
+                                    if (closedTask != null)
+                                    {
+                                        TempData["ClosedTask"] = closedTask;
+                                    }
                                     return Json(new { redirect = Url.Action("ApplyToCalendar") });
                                 }
                                 else
@@ -2332,7 +2342,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveTactic(Plan_Campaign_Program_TacticModel form, bool RedirectType)
+        public ActionResult SaveTactic(Plan_Campaign_Program_TacticModel form, bool RedirectType, string closedTask)
         {
             try
             {
@@ -2544,6 +2554,7 @@ namespace RevenuePlanner.Controllers
 
                                     if (RedirectType)
                                     {
+                                        TempData["ClosedTask"] = closedTask;
                                         return Json(new { redirect = Url.Action("ApplyToCalendar") });
                                     }
                                     else
@@ -2569,7 +2580,7 @@ namespace RevenuePlanner.Controllers
            Add delete tactic feature
          */
         [HttpPost]
-        public ActionResult DeleteTactic(int id = 0, bool RedirectType = false)
+        public ActionResult DeleteTactic(int id = 0, bool RedirectType = false, string closedTask = null)
         {
             try
             {
@@ -2613,6 +2624,10 @@ namespace RevenuePlanner.Controllers
 
                                 if (RedirectType)
                                 {
+                                    if (closedTask != null)
+                                    {
+                                        TempData["ClosedTask"] = closedTask;
+                                    }
                                     return Json(new { redirect = Url.Action("ApplyToCalendar") });
                                 }
                                 else
@@ -2756,7 +2771,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="CopyClone">copy of .</param>
         /// <returns>Returns action result.</returns>
         [HttpPost]
-        public ActionResult DuplicateCopyClone(int id, bool RedirectType, string CopyClone)
+        public ActionResult DuplicateCopyClone(int id, bool RedirectType, string CopyClone, string closedTask)
         {
             try
             {
@@ -2796,6 +2811,7 @@ namespace RevenuePlanner.Controllers
                             scope.Complete();
                             if (RedirectType)
                             {
+                                TempData["ClosedTask"] = closedTask;
                                 return Json(new { redirect = Url.Action("ApplyToCalendar") });
                             }
                             else
