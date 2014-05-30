@@ -240,6 +240,11 @@
         $("#spanDuplicate").click(function () {
             var hdnPlanProgramId = $("#hdnPlanProgramId").val();
             var isAssortment = $("#hdnRedirectType").val();
+            var arrClosedTaskString = null;
+            if (typeof arrClosedTask != 'undefined') {
+                arrClosedTaskString = arrClosedTask.toString();
+            }
+
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/DuplicateCopyClone")',
@@ -247,7 +252,8 @@
                     {
                         id: hdnPlanProgramId,
                         RedirectType: isAssortment,
-                        CopyClone: 'Program'
+                        CopyClone: 'Program',
+                        closedTask: arrClosedTaskString
                     },
                 success: function (data) {
                     if (data.redirect) {
@@ -398,10 +404,15 @@
             //$("#txtmql").val(ReplaceCC($("#txtmql").val()));
             //$("#txtCost").val(ReplaceCC($("#txtCost").val()));
 
+            var arrClosedTaskString = null;
+            if (typeof arrClosedTask != 'undefined') {
+                arrClosedTaskString = arrClosedTask.toString();
+            }
+
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/SaveProgram")',
-                data: $("form").serialize() + '&tactics=' + arTactic + '&RedirectType=' + isAssortment,
+                data: $("form").serialize() + '&tactics=' + arTactic + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString,
                 success: function (data) {
                     if (data.redirect) {
                         window.location.href = data.redirect;
@@ -426,12 +437,19 @@
             if (confirm('Are you sure you want to delete this program?')) {
                 var idProgram = $("#hdnPlanProgramId").val();
                 var isAssortment = $("#hdnRedirectType").val();
+
+                var arrClosedTaskString = null;
+                if(typeof arrClosedTask != 'undefined') {
+                    arrClosedTaskString = arrClosedTask.toString();
+                }
+
                 $.ajax({
                     type: 'POST',
                     url: '@Url.Content("~/Plan/DeleteProgram")',
                     data: {
                         ID: idProgram,
-                        RedirectType: isAssortment
+                        RedirectType: isAssortment,
+                        closedTask: arrClosedTaskString
                     },
                     success: function (data) {
                         if (data.redirect) {
