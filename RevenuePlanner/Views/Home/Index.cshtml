@@ -134,6 +134,7 @@
                 GetHealderData(CurrentPlanId);
                 GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
                 //GetIndividualsForFilter(parseInt(CurrentPlanId));   //// Added By :- Sohel Pathan on 14/04/2014 for PL ticket #428 to fill filteredIndividuals list according to plan selected.
+                arrClosedTask = []; // addded by dharmraj for ticket #485 to clear closed task veriable on plan change.
             });
         }
 
@@ -1358,6 +1359,7 @@
      gantt.config.drag_progress = false;
  }
 
+ // Variable to maintein closed task in calendar.
  var arrClosedTask = [];
 
  //// Modified By Maninder Singh Wadhva PL Ticket#47

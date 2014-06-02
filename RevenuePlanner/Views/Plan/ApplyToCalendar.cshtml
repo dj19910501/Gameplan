@@ -75,6 +75,7 @@
             RefreshCalendar();
             GetHealderData(CurrentPlanId);
             GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
+            arrClosedTask = []; // addded by dharmraj for ticket #485 to clear closed task veriable when plan change.
         });
     }
     function populateNFActivity(items, id) {
@@ -713,6 +714,7 @@
        return cssClass;
    }
 
+    // Variable to maintein closed task in calendar.
    var arrClosedTask = [];
    var AllClosedTask = '@TempData["ClosedTask"]';
     if (AllClosedTask != "") {
