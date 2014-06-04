@@ -174,7 +174,8 @@
 
                             $('#individualFilterdiv').find("a").attr("href", "#accordion-filterIndividuals");
                             $.each(data.individualsList, function (index, obj) {
-                                $('#accordion-filterIndividuals').append('<a href="#" class="accordion-inner" filterId=' + obj.UserId + '>' + obj.FirstName + ', ' + obj.LastName + '<span class="pull-right"></span></a>');
+                                //here lastname and firstname are interchanged as per ticket PL #505 by uday 4-6-2014 i.e last name is displayed first and first name at last
+                                $('#accordion-filterIndividuals').append('<a href="#" class="accordion-inner" filterId=' + obj.UserId + '>' + obj.LastName + ', ' + obj.FirstName + '<span class="pull-right"></span></a>');
                             });
                             $("#accordion-filterIndividuals").find("a").click(ApplyOrRemoveFilter);
                         }
