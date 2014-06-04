@@ -175,6 +175,10 @@
     }
 
     $("#btnSaveAndContinue").click(function () {
+        CheckUserSession("#btnSaveAndContinue", true);
+        if (reason == 'user') {
+            return false;
+        }
         if (isApply) {
             $('#cErrorDuplicatePlan').html('<strong>Error! </strong> Please add at least one campaign.');
             $("#errorMessageDuplicatePlan").slideDown(3000);
@@ -258,7 +262,13 @@
 
         $('#BtnGroup').click(function (e) {
             if ($(this).html().toLowerCase() == "duplicate") {
-                DuplicatePlan();
+                CheckUserSession("#BtnGroup", true);
+                if (reason == 'user') {
+                    return false;
+                }
+                else {
+                    DuplicatePlan();
+                }
             }
             else {
                 var url = '@Url.Content("~/Plan/Create/0")';
@@ -448,6 +458,7 @@
           changed by : Nirav Shah on 13 feb 2014
         */
         $(document).on('click', '#delCampaign', function (e) {
+            var uId = $(window).attr('name');
             if (confirm('Are you sure you want to delete this campaign?')) {
                 var idCampaing = $(this).parent().attr('id');
                 $.ajax({
@@ -455,16 +466,22 @@
                     url: '@Url.Content("~/Plan/DeleteCampaign")',
                     data: {
                         ID: idCampaing,
-                        RedirectType: false
+                        RedirectType: false,
+                        UserId: uId 
                     },
                     success: function (data) {
-                        if (data.redirect) {
-                            window.location.href = data.redirect;
-                            return;
+                        if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                            window.location = '@Url.Content("~/Login/Index")';
                         }
-                        if (data.errormsg) {
-                            ShowError(data.errormsg);
-                            return;
+                        else {
+                            if (data.redirect) {
+                                window.location.href = data.redirect;
+                                return;
+                            }
+                            if (data.errormsg) {
+                                ShowError(data.errormsg);
+                                return;
+                            }
                         }
                     }
                 });
@@ -474,6 +491,11 @@
             }
         });
         $(document).on('click', '.program-level a.accordion-toggle .delete-program', function (e) {
+            //CheckUserSession(".program-level a.accordion-toggle .delete-program", true);
+            //if (reason == 'user') {
+            //    return false;
+            //}
+            var uId = $(window).attr('name');
             if (confirm('Are you sure you want to delete this program?')) {
                 e.stopPropagation();
                 var idProgram = $(this).parent().attr('id');
@@ -481,18 +503,22 @@
                     type: 'POST',
                     url: '@Url.Content("~/Plan/DeleteProgram")',
                     data: {
-                        ID: idProgram
+                        ID: idProgram, UserId: uId
                     },
                     success: function (data) {
-                        if (data.redirect) {
-                            window.location.href = data.redirect;
-                            return;
+                        if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                            window.location = '@Url.Content("~/Login/Index")';
                         }
-                        if (data.errormsg) {
-                            alert(data.errormsg);
-                            return;
+                        else {
+                            if (data.redirect) {
+                                window.location.href = data.redirect;
+                                return;
+                            }
+                            if (data.errormsg) {
+                                alert(data.errormsg);
+                                return;
+                            }
                         }
-
                     }
                 });
             }
@@ -504,6 +530,11 @@
           changed by : Nirav Shah on 13 feb 2014
         */
         $(document).on('click', '.tactic-level #divTactic .delete-program', function (e) {
+            //CheckUserSession(".tactic-level #divTactic .delete-program", true);
+            //if (reason == 'user') {
+            //    return false;
+            //}
+            var uId = $(window).attr('name');
             if (confirm('Are you sure you want to delete this tactic?')) {
                 e.stopPropagation();
                 var idTactic = $(this).parent().attr('index');
@@ -512,18 +543,22 @@
                     url: '@Url.Content("~/Plan/DeleteTactic")',
                     data: {
                         ID: idTactic,
-                        RedirectType: false
+                        RedirectType: false, UserId: uId
                     },
                     success: function (data) {
-                        if (data.redirect) {
-                            window.location.href = data.redirect;
-                            return;
+                        if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                            window.location = '@Url.Content("~/Login/Index")';
                         }
-                        if (data.errormsg) {
-                            alert(data.errormsg);
-                            return;
+                        else {
+                            if (data.redirect) {
+                                window.location.href = data.redirect;
+                                return;
+                            }
+                            if (data.errormsg) {
+                                alert(data.errormsg);
+                                return;
+                            }
                         }
-
                     }
                 });
                 $("#slidepanel").css("display", "none");
@@ -537,6 +572,10 @@
       
         // Added By Bhavesh for Delete Improvement Tactic: Date 13-March-2014
         $(document).on('click', '#divimpTactic #delimpTactic', function (e) {
+            //CheckUserSession("#divimpTactic #delimpTactic", true);
+            //if (reason == 'user') {
+            //    return false;
+            //}
             var idTactic = $(this).parent().attr('index');
             var AssortmentType = true;
             $("#DivPartialViewForDeleteImpTactic").empty();

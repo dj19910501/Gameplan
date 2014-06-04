@@ -208,6 +208,10 @@
         });
 
         $("#save_tactic").click(function () {
+            CheckUserSession("#save_tactic", true);
+            if (reason == 'user') {
+                return false;
+            }
             var iserror = false;
             var val = 0;
             var cntFill = 0;

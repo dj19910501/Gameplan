@@ -145,32 +145,37 @@
     });
 
     function SaveDeployedToIntegrationStatus(ImpTacticTypeId, flag) {
+        var uId = $(window).attr('name');
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Boost/SaveDeployedToIntegrationStatus/")',
             data: {
                 id: ImpTacticTypeId,
-                isDeployedToIntegration: flag
+                isDeployedToIntegration: flag,
+                UserId: uId
             },
             dataType: "json",
             success: function (r) {
-
-                if (r.returnValue) {
-
-                    $('#successMessage').css("display", "block");
-                    $('#cSuccess').html('<strong>Success.</strong> ' + r.message)
-                    $("#successMessage").slideDown(1200); // Show the Alert
-                    $("#successMessage").slideUp(3000);
-                    $('#errorMessage').css("display", "none");
-
+                if (r.returnURL != 'undefined' && r.returnURL == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
                 }
                 else {
-                    $('#errorMessage').css("display", "block");
-                    $('#cError').html('<strong>Error.</strong> ' + r.message)
-                    $("#errorMessage").slideDown(1200); // Show the Alert
-                    $('#successMessage').css("display", "none");
-                }
+                    if (r.returnValue) {
 
+                        $('#successMessage').css("display", "block");
+                        $('#cSuccess').html('<strong>Success.</strong> ' + r.message)
+                        $("#successMessage").slideDown(1200); // Show the Alert
+                        $("#successMessage").slideUp(3000);
+                        $('#errorMessage').css("display", "none");
+
+                    }
+                    else {
+                        $('#errorMessage').css("display", "block");
+                        $('#cError').html('<strong>Error.</strong> ' + r.message)
+                        $("#errorMessage").slideDown(1200); // Show the Alert
+                        $('#successMessage').css("display", "none");
+                    }
+                }
                 myApp.hidePleaseWait();
             }
         });
@@ -178,32 +183,37 @@
     }
 
     function SaveDeployeStatus(ImpTacticTypeId, flag) {
+        var uId = $(window).attr('name');
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Boost/SaveDeployeStatus/")',
             data: {
                 id: ImpTacticTypeId,
-                isDeployed: flag
+                isDeployed: flag,
+                UserId: uId
             },
             dataType: "json",
             success: function (r) {
-
-                if (r.returnValue) {
-
-                    $('#successMessage').css("display", "block");
-                    $('#cSuccess').html('<strong>Success.</strong> ' + r.message)
-                    $("#successMessage").slideDown(1200); // Show the Alert
-                    $("#successMessage").slideUp(3000);
-                    $('#errorMessage').css("display", "none");
-
+                if (r.returnURL != 'undefined' && r.returnURL == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
                 }
                 else {
-                    $('#errorMessage').css("display", "block");
-                    $('#cError').html('<strong>Error.</strong> ' + r.message)
-                    $("#errorMessage").slideDown(1200); // Show the Alert
-                    $('#successMessage').css("display", "none");
-                }
+                    if (r.returnValue) {
 
+                        $('#successMessage').css("display", "block");
+                        $('#cSuccess').html('<strong>Success.</strong> ' + r.message)
+                        $("#successMessage").slideDown(1200); // Show the Alert
+                        $("#successMessage").slideUp(3000);
+                        $('#errorMessage').css("display", "none");
+
+                    }
+                    else {
+                        $('#errorMessage').css("display", "block");
+                        $('#cError').html('<strong>Error.</strong> ' + r.message)
+                        $("#errorMessage").slideDown(1200); // Show the Alert
+                        $('#successMessage').css("display", "none");
+                    }
+                }
                 myApp.hidePleaseWait();
             }
         });

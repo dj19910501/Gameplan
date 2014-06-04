@@ -421,6 +421,10 @@
     }
 
     $('#btnSave').click(function (e) {
+        CheckUserSession("#btnSave", true);
+        if (reason == 'user') {
+            return false;
+        }
         var isValidate = true;
         $('#content :input').each(function () {
             if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {

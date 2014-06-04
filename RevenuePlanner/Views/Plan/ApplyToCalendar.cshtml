@@ -367,6 +367,14 @@
                         using (Html.BeginForm("ApplyToCalendar", "Plan", FormMethod.Post, new { @id = "frmPublishPlan" }))
                         {
                         <input id="BtnPublishPlan" class="btn btn-blue text-shadow-blue source-sans-proregular padding-side20 pull-right margin-top20" type="submit" value="Publish Plan">
+                        <script type="text/javascript">
+                            $('#BtnPublishPlan').click(function () {
+                                CheckUserSession("#BtnPublishPlan", true);
+                                if (reason == 'user') {
+                                    return false;
+                                }
+                            });
+                        </script>
                         }
                     }
                 </div>
@@ -461,6 +469,10 @@
        function () {
            $('#BtnGroup').click(function (e) {
                if ($(this).html().toLowerCase() == "duplicate") {
+                   CheckUserSession("#BtnGroup", true);
+                   if (reason == 'user') {
+                       return false;
+                   }
                    DuplicatePlan();
                }
                else {

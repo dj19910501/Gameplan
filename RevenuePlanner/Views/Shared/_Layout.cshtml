@@ -114,7 +114,7 @@
     </div>
     <!--End sidebar-->
     <div id="div_contactSupport"></div>
-
+    <span class="functioncallselector"></span>
 </body>
 </html>
 @RenderSection("Scripts", false)
@@ -124,7 +124,7 @@
     });
     var isAlerted = false;
     $(document).ready(function () {
-
+        $(window).attr('name', '@RevenuePlanner.Helpers.Sessions.User.UserId');
         $('#ContactSupport').click(function () {
             $("#div_contactSupport").empty();
             var url = '@Url.Content("~/Common/LoadSupportPartial/")';   //// Modified by Sohel Pathan on 23/05/2014 for internal review points.
@@ -205,6 +205,28 @@
     $(document).ajaxStop(function () { //Called after every ajax request completed
         myApp.hidePleaseWait();
     });
+    var reason = 'user';
+    function CheckUserSession(Sender, isSender) {
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Content("~/Home/CheckUserId/")?UserId=' + $(window).attr('name'),
+            success: function (data) {
+                reason = 'callback';
+                if (data.returnURL == '#') {
+                    if (isSender) {
+                        $(Sender).click();
+                    }
+                    else {
+                        
+                    }
+                }
+                else {
+                    window.location = data.returnURL;
+                }
+            }
+        });
+    }
+    
     var myApp;
     myApp = myApp || (function () {
         var pleaseWaitDiv = $('<div style="z-index:99999" class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header">Please wait...</div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');

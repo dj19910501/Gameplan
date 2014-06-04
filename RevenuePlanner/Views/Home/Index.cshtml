@@ -738,6 +738,10 @@
     function SetPlanButtons() {
         $('#BtnGroup').click(function (e) {
             if ($(this).html().toLowerCase() == "duplicate") {
+                CheckUserSession("#BtnGroup", true);
+                if (reason == 'user') {
+                    return false;
+                }
                 DuplicatePlan();
             }
             else {

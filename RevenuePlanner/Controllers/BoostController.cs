@@ -378,8 +378,16 @@ namespace RevenuePlanner.Controllers
         /// Added By: Dharmraj mangukiya
         /// Action to save deploy to integration flag for improvement tactic type
         /// </summary>
-        public JsonResult SaveDeployedToIntegrationStatus(int id, bool isDeployedToIntegration)
+        public JsonResult SaveDeployedToIntegrationStatus(int id, bool isDeployedToIntegration, string UserId = "")
         {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = "Another user is logged in with the same sesssion";
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
             bool returnValue = false;
             string message = string.Empty;
 
@@ -410,8 +418,16 @@ namespace RevenuePlanner.Controllers
         /// Added By: Dharmraj mangukiya
         /// Action to save deploy status for improvement tactic type
         /// </summary>
-        public JsonResult SaveDeployeStatus(int id, bool isDeployed)
+        public JsonResult SaveDeployeStatus(int id, bool isDeployed, string UserId = "")
         {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = "Another user is logged in with the same sesssion";
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
             bool returnValue = false;
             string message = string.Empty;
 

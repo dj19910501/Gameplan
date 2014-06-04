@@ -458,6 +458,7 @@
         }
 
         $(document).on('click', '#table_integrations tbody tr td span.circle-check-icon-gray', function (e) {
+
             if (confirm('Modifying target integration will reset sync details configured at plan level. Are you sure you want to proceed?')) {
                 var id = this.id;
 
@@ -468,6 +469,10 @@
         });
 
         function SaveAllIntegration(integrationInstanceId) {
+            CheckUserSession("#table_integrations tbody tr td span.circle-check-icon-gray", true);
+            if (reason == 'user') {
+                return false;
+            }
             var ModelId = lastModelId;
             $.ajax({
                 type: 'POST',

@@ -724,8 +724,16 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public JsonResult SyncNow(int id)
+        public JsonResult SyncNow(int id, string UserId = "")
         {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = "Another user is logged in with the same sesssion";
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
             try
             {
                 ExternalIntegration externalIntegration = new ExternalIntegration(id);

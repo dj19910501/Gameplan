@@ -176,6 +176,10 @@
     });
 
     $('#saveNotifications').click(function () {
+        CheckUserSession("#saveNotifications", true);
+        if (reason == 'user') {
+            return false;
+        }
         var checkedList = '';
         $('input[type=checkbox]').each(function () {
             if (this.checked) {

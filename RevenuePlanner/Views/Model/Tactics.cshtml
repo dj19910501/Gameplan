@@ -518,6 +518,10 @@
             $('#dp_end').datepicker('hide');
         })
         $("#Save-publish").click(function () {
+            CheckUserSession("#Save-publish", true);
+            if (reason == 'user') {
+                return false;
+            }
             var date = $("#t_startdate").val();
             $("#EffectiveDate").val(date);
             SaveAllTactic(true);
@@ -567,9 +571,13 @@
 
 
         $("#continue").click(function () {
+            CheckUserSession("#continue", true);
+            if (reason == 'user') {
+                return false;
+            }
             SaveAllTactic(false);
         });
-
+        
         function SaveAllTactic(isPublishToo) {
             var ids = [];
             var rejid = [];

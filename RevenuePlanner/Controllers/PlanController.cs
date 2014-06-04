@@ -1747,8 +1747,16 @@ namespace RevenuePlanner.Controllers
             changed by : Nirav Shah on 13 feb 2014
             Changed : add new Parameter  RedirectType
          */
-        public ActionResult DeleteCampaign(int id = 0, bool RedirectType = false, string closedTask = null)
+        public ActionResult DeleteCampaign(int id = 0, bool RedirectType = false, string closedTask = null, string UserId = "")
         {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = "Another user is logged in with the same sesssion";
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
             try
             {
                 using (MRPEntities mrp = new MRPEntities())
@@ -2122,8 +2130,16 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
         /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
-        public ActionResult DeleteProgram(int id = 0, bool RedirectType = false, string closedTask = null)
+        public ActionResult DeleteProgram(int id = 0, bool RedirectType = false, string closedTask = null, string UserId = "")
         {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = "Another user is logged in with the same sesssion";
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
             try
             {
                 using (MRPEntities mrp = new MRPEntities())
@@ -2580,8 +2596,16 @@ namespace RevenuePlanner.Controllers
            Add delete tactic feature
          */
         [HttpPost]
-        public ActionResult DeleteTactic(int id = 0, bool RedirectType = false, string closedTask = null)
+        public ActionResult DeleteTactic(int id = 0, bool RedirectType = false, string closedTask = null, string UserId = "")
         {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = "Another user is logged in with the same sesssion";
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
             try
             {
                 using (MRPEntities mrp = new MRPEntities())

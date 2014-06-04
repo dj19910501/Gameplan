@@ -2536,8 +2536,16 @@ namespace RevenuePlanner.Controllers
         /// <param name="tacticactual">List of InspectActual.</param>
         /// <returns>Returns JsonResult.</returns>
         [HttpPost]
-        public JsonResult UploadResult(List<InspectActual> tacticactual)
+        public JsonResult UploadResult(List<InspectActual> tacticactual, string UserId = "")
         {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = "Another user is logged in with the same sesssion";
+                    return Json(new { returnURL = Url.Content("#") }, JsonRequestBehavior.AllowGet);
+                }
+            }
             try
             {
                 if (tacticactual != null)
@@ -4229,6 +4237,20 @@ namespace RevenuePlanner.Controllers
         }
 
         #endregion
+
+        //[HttpPost]
+        public ActionResult CheckUserId(string UserId)
+        {
+            if (Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+            {
+                return Json(new { returnURL = "#"}, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Another user is logged in with the same sesssion";
+                return Json(new { returnURL = Url.Content("~/Login/Index") }, JsonRequestBehavior.AllowGet);
+            }
+        }
     }
 }
 

@@ -358,7 +358,10 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
             else {
                 $("#ddlRoleIdSelectBox .sbHolder").removeClass("selectBoxError");
             }
-
+            CheckUserSession("#btnSubmit", true);
+            if (reason == 'user') {
+                return false;
+            }
             return isValid;
         });
         //
@@ -375,6 +378,10 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
         });
 
         $('#btnSubmit').click(function () {
+            CheckUserSession("#btnSubmit", true);
+            if (reason == 'user') {
+                return false;
+            }
             $('#content :input').each(function () {
                 if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select') {
                     var input = $(this).val();

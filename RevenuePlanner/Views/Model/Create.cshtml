@@ -732,8 +732,12 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
  }).on('changeDate', function (ev) {
      $(this).datepicker('hide');
  });;
-     $(".savebtn").click(function () {
-         if ($('#IsBenchmarked').val().toLowerCase() == 'false') {
+    $(".savebtn").click(function (e) {
+        CheckUserSession(".savebtn",true);
+        if (reason == 'user') {
+            return false;
+        }
+        if ($('#IsBenchmarked').val().toLowerCase() == 'false') {
              var val = 0;
              var cntFill = 0;
              var cntNotFill = 0;
@@ -952,31 +956,6 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
              $("#errorMessage").slideDown(400);
              return false;
          }
-         @*if ($("#CurrentModelId").val() == '' || $("#CurrentModelId").val() == '0') {
-             $.ajax(
-            {
-                type: "GET",
-                cache: false,
-                url: '@Url.Content("~/Model/CheckDuplicateModelTitle")',
-               data: { Title: encodeURIComponent($("#Title").val()), BusinessUnitId: $("#BusinessUnitId").val() },
-               dataType: "json",
-               success: function (data) {
-                   if (data == 'exist') {
-                       $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> Model with same Title already exist.')
-                       $("#errorMessage").slideDown(400);
-                       return false;
-                   }
-                   else {
-                       return true;
-                   }
-               },
-               error: function () {
-                   $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> ' + $("#ErrorOccured").val())
-                   $("#errorMessage").slideDown(400);
-                   return false;
-               }
-           });
-       }*@
      });
 
     $(".doubleText").keyup(function (event) {

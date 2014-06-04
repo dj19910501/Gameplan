@@ -124,7 +124,10 @@
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
 
         $("#btnSubmit").click(function () {
-
+            CheckUserSession("#btnSubmit", true);
+            if (reason == 'user') {
+                return false;
+            }
             var _BIC = [];
 
             $("#errorMessage").css("display", "none");

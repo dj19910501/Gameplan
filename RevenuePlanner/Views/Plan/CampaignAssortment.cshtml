@@ -242,7 +242,7 @@
             if (typeof arrClosedTask != 'undefined') {
                 arrClosedTaskString = arrClosedTask.toString();
             }
-
+            var uId = $(window).attr('name');
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/DuplicateCopyClone")',
@@ -251,18 +251,23 @@
                         id: hdnPlanCampaignId,
                         RedirectType: isAssortment,
                         CopyClone: 'Campaign',
-                        closedTask: arrClosedTaskString
+                        closedTask: arrClosedTaskString,
+                        UserId: uId
                     },
                 success: function (data) {
-                    if (data.redirect) {
-                        window.location.href = data.redirect;
-                        return;
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
                     }
-                    if (data.errormsg) {
-                        ShowError(data.errormsg);
-                        return;
+                    else {
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                            return;
+                        }
+                        if (data.errormsg) {
+                            ShowError(data.errormsg);
+                            return;
+                        }
                     }
-
                 }
             });
         });
@@ -411,7 +416,10 @@
             if (typeof arrClosedTask != 'undefined') {
                 arrClosedTaskString = arrClosedTask.toString();
             }
-
+            CheckUserSession("#save_campaign", true);
+            if (reason == 'user') {
+                return false;
+            }
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/SaveCampaign")',
@@ -436,6 +444,10 @@
     Added by Nirav Shah on 17 feb 2014
  *@
         $("#deleteCampaign").click(function () {
+            CheckUserSession("#deleteCampaign", true);
+            if (reason == 'user') {
+                return false;
+            }
             if (confirm('Are you sure you want to delete this campaign?')) {
                 var campaignId = $("#hdnPlanCampaignId").val();
                 var isAssortment = $("#hdnRedirectType").val();

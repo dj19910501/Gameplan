@@ -166,6 +166,7 @@
 
         $(document).on('click', '.sync_service', function (e) {
             $(this).attr("disabled", "disabled");
+            var uId = $(window).attr('name');
             var syncNow = $(this);
             syncNow.siblings("span").show();
             syncNow.hide();
@@ -178,19 +179,23 @@
                 cache: false,
                 url: '@Url.Content("~/ExternalService/SyncNow/")',
                 asyn:true,
-                data: { id: id },
+                data: { id: id, UserId: uId },
                 success: function (data) {
-                    if (data != null)
-                    {
-                        $('#lastSyncDate' + id).html(data.lastSync);
-                        if (data.status.toString().toLowerCase() == "error") {
-                            $('#lastSyncStatus' + id).html('<span style="color:red;">' + data.status + '</span>');
-                        } else {
-                            $('#lastSyncStatus' + id).html('<span>' + data.status + '</span>');
-                        }
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
                     }
-                    syncNow.siblings("span").hide();
-                    syncNow.show();
+                    else {
+                        if (data != null) {
+                            $('#lastSyncDate' + id).html(data.lastSync);
+                            if (data.status.toString().toLowerCase() == "error") {
+                                $('#lastSyncStatus' + id).html('<span style="color:red;">' + data.status + '</span>');
+                            } else {
+                                $('#lastSyncStatus' + id).html('<span>' + data.status + '</span>');
+                            }
+                        }
+                        syncNow.siblings("span").hide();
+                        syncNow.show();
+                    }
                 }
             });
 

@@ -97,6 +97,12 @@
     </div>
 }
 <script type="text/javascript">
+    $('#button-save').click(function () {
+        CheckUserSession("#button-save", true);
+        if (reason == 'user') {
+            return false;
+        }
+    });
     $('#aMyProfile').click(function () {
         var url = '';
         url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';

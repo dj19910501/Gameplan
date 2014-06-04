@@ -1187,8 +1187,16 @@ namespace RevenuePlanner.Controllers
         /// Added By: Nirav Shah
         /// Action to delete Model from Model listing screen.
         /// </summary>
-        public JsonResult deleteModel(int id)
+        public JsonResult deleteModel(int id, string UserId = "")
         {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = "Another user is logged in with the same sesssion";
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
             try
             {
                 Model objModel = db.Models.Where(model => model.ModelId == id).FirstOrDefault();

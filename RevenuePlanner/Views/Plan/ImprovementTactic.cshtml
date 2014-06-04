@@ -270,7 +270,10 @@
             }
             if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
             $("#txtCost").val(ReplaceCC($("#txtCost").val()));
-
+            CheckUserSession("#save_campaign_tactic", true);
+            if (reason == 'user') {
+                return false;
+            }
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/SaveImprovementTactic")',

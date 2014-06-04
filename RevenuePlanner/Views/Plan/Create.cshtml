@@ -189,6 +189,7 @@
           });
 
           $("#button-save").click(function () {
+
               var isError = false;
               $('.nl-field').each(function () {
                   if ($(this).next().attr('datadefault') == "Title") {
@@ -248,6 +249,10 @@
                   $("#errorMessage").css("display", "none");
               }
 
+              CheckUserSession("#button-save", true);
+              if (reason == 'user') {
+                  return false;
+              }
               if (!isError) {
                   $("#txtMQL").val(ReplaceCC($("#txtMQL").val()));
                   $("#txtBudget").val(ReplaceCC($("#txtBudget").val()));

@@ -195,6 +195,10 @@ if ((bool)ViewBag.IsOwner)
         });
 
         $("#spanDuplicate").click(function () {
+            CheckUserSession("#spanDuplicate", true);
+            if (reason == 'user') {
+                return false;
+            }
             var hdnPlanTacticId = $("#hdnPlanTacticId").val();
             var isAssortment = $("#hdnRedirectType").val();
             var arrClosedTaskString = null;
@@ -310,9 +314,17 @@ if ((bool)ViewBag.IsOwner)
         
 
         $("#save_campaign_tactic").mousedown(function () {
+            CheckUserSession("#save_campaign_tactic", true);
+            if (reason == 'user') {
+                return false;
+            }
             saveTactic();
         });
         $("#save_campaign_tactic").click(function () {
+            CheckUserSession("#save_campaign_tactic", true);
+            if (reason == 'user') {
+                return false;
+            }
             saveTactic();
         });
       
@@ -454,6 +466,11 @@ if ((bool)ViewBag.IsOwner)
     Added by Nirav Shah on 17 feb 2014
  *@
         $("#deleteTactic").click(function () {
+            //CheckUserSession("#deleteTactic", true);
+            //if (reason == 'user') {
+            //    return false;
+            //}
+            var uId = $(window).attr('name');
             if (confirm('Are you sure you want to delete this tactic?')) {
                 var idTactic = $("#hdnPlanTacticId").val();
                 var isAssortment = $("#hdnRedirectType").val();
@@ -468,16 +485,22 @@ if ((bool)ViewBag.IsOwner)
                     data: {
                         ID: idTactic,
                         RedirectType: isAssortment,
-                        closedTask: arrClosedTaskString
+                        closedTask: arrClosedTaskString,
+                        UserId: uId 
                     },
                     success: function (data) {
-                        if (data.redirect) {
-                            window.location.href = data.redirect;
-                            return;
+                        if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                            window.location = '@Url.Content("~/Login/Index")';
                         }
-                        if (data.errormsg) {
-                            alert(data.errormsg);
-                            return;
+                        else {
+                            if (data.redirect) {
+                                window.location.href = data.redirect;
+                                return;
+                            }
+                            if (data.errormsg) {
+                                alert(data.errormsg);
+                                return;
+                            }
                         }
 
                     }
