@@ -75,19 +75,22 @@
             <div class="accordion-group">
                 @if (Model.objIndividuals.Count > 0)
                 {
+                    //here individuals heading is replaced with authors as per ticket PL #445 by uday 5-6-2014
                     <div class="accordion-heading">
-                        <a class="accordion-toggle collapsed chevron-right" data-toggle="collapse" data-parent="#accordion-Filter" href="#accordion-filterIndividuals">Individuals</a>
+                        <a class="accordion-toggle collapsed chevron-right" data-toggle="collapse" data-parent="#accordion-Filter" href="#accordion-filterIndividuals">Authors</a>
                     </div>
                     <div id="accordion-filterIndividuals" class="accordion-body collapse">
                         @foreach (var individual in Model.objIndividuals)
                         {
-                            <a href="#" class="accordion-inner" filterId="@individual.UserId">@string.Format("{0} {1}", individual.FirstName, individual.LastName)<span class="pull-right"></span></a>                        
+                            //here lastname and firstname are interchanged as per ticket PL #505 by uday 4-6-2014 i.e last name is displayed first and first name at last
+                            <a href="#" class="accordion-inner" filterId="@individual.UserId">@string.Format("{0} {1}", individual.LastName, individual.FirstName)<span class="pull-right"></span></a>                        
                         }
                     </div>
                 }
                 else
                 {
-                    <div class="accordion-heading"><a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-Filter" href="#">Individuals</a></div>
+                    //here individuals heading is replaced with authors as per ticket PL #445 by uday 5-6-2014
+                    <div class="accordion-heading"><a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-Filter" href="#">Authors</a></div>
                 }
 
             </div>
