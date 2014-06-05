@@ -418,4 +418,9 @@
     <value>{0} tactic type is being used in a plan and hence cannot be marked as Not Deployed.</value>
   </Field>
   <!--End Manoj Limbachiya PL # 486-->
+  <Field>
+    <Name>LoginWithSameSession</Name>
+    <value>Another user is logged in with the same session.</value>
+  </Field>
+  
 </Messages>

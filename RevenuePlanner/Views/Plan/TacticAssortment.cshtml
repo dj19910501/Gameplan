@@ -314,17 +314,17 @@ if ((bool)ViewBag.IsOwner)
         
 
         $("#save_campaign_tactic").mousedown(function () {
-            CheckUserSession("#save_campaign_tactic", true);
-            if (reason == 'user') {
-                return false;
-            }
+            //CheckUserSession("#save_campaign_tactic", true);
+            //if (reason == 'user') {
+            //    return false;
+            //}
             saveTactic();
         });
         $("#save_campaign_tactic").click(function () {
-            CheckUserSession("#save_campaign_tactic", true);
-            if (reason == 'user') {
-                return false;
-            }
+            //CheckUserSession("#save_campaign_tactic", true);
+            //if (reason == 'user') {
+            //    return false;
+            //}
             saveTactic();
         });
       
@@ -394,21 +394,25 @@ if ((bool)ViewBag.IsOwner)
                 arrClosedTaskString = arrClosedTask.toString();
             }
 
-
+            var uId = $(window).attr('name');
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/SaveTactic")',
-                data: $("form").serialize() + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString,
+                data: $("form").serialize() + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId,
                 success: function (data) {
-                    if (data.redirect) {
-                        window.location.href = data.redirect;
-                        return;
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
                     }
-                    if (data.errormsg) {
-                        ShowError(data.errormsg);
-                        return;
+                    else {
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                            return;
+                        }
+                        if (data.errormsg) {
+                            ShowError(data.errormsg);
+                            return;
+                        }
                     }
-
                 }
             });
         }

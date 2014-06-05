@@ -1250,6 +1250,18 @@ namespace RevenuePlanner.Helpers
             }
         }
         //End Manoj Limbachiya PL # 486
+        private string _LoginWithSameSession;
+        public string LoginWithSameSession
+        {
+            get
+            {
+                return _LoginWithSameSession;
+            }
+            set
+            {
+                _LoginWithSameSession = value;
+            }
+        }
         #endregion
 
 
@@ -1634,6 +1646,9 @@ namespace RevenuePlanner.Helpers
                                             _TacticCanNotDeployed = strMsgValue;
                                             break;
                                         //End Manoj Limbachiya PL # 486
+                                        case "LoginWithSameSession":
+                                            _LoginWithSameSession = strMsgValue;
+                                            break;
                                     }
                                 }
                                 i = i + 1;
