@@ -272,7 +272,7 @@ namespace RevenuePlanner.Controllers
         /// Added By: Nirav Shah.
         /// Action to save Improvement Tactics Details in respective tables.
         /// </summary>
-        public ActionResult saveImprovementTacticData(int improvementId, string improvementDetails, bool status, double cost, string desc, string title, bool deployToIntegrationStatus)
+        public ActionResult saveImprovementTacticData(int improvementId, string improvementDetails, bool status, double cost, string desc, string title, bool deployToIntegrationStatus, string UserId = "")
         {
             string successMessage = string.Empty;
             string ErrorMessage = string.Empty;

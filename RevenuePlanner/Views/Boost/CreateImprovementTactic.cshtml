@@ -208,10 +208,10 @@
         });
 
         $("#save_tactic").click(function () {
-            CheckUserSession("#save_tactic", true);
-            if (reason == 'user') {
-                return false;
-            }
+            //CheckUserSession("#save_tactic", true);
+            //if (reason == 'user') {
+            //    return false;
+            //}
             var iserror = false;
             var val = 0;
             var cntFill = 0;
@@ -293,24 +293,28 @@
             if ($("#t_integration_status").hasClass("icon-check-blue")) {
                 isDeployedToIntegration = true;
             }
-
+            var uId = $(window).attr('name');
             $.ajax({
                 type: 'post',
                 url: '@Url.Content("~/Boost/saveImprovementTacticData")',
                 data: 'improvementId=' + $("#ImprovementTacticTypeId").val() + '&improvementDetails=' + ids + '&status=' + status + '&cost=' + ReplaceCC($("#hdnCost").val()) + '&desc=' + $("#hdndesc").val()
-                       + '&title=' + $("#hdntitle").val() + '&deployToIntegrationStatus=' + isDeployedToIntegration,
+                       + '&title=' + $("#hdntitle").val() + '&deployToIntegrationStatus=' + isDeployedToIntegration + '&UserId=' + uId,
                 success: function (data) {
-                    if (data.redirect) {
-                        $("#slidepanel").css("display", "none");
-                        $("#slidepanel-container").empty();
-                        window.location.href = data.redirect;
-                        return;
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
                     }
-                    if (data.errormsg) {
-                        ShowError(data.errormsg);
-                        return false;
+                    else {
+                        if (data.redirect) {
+                            $("#slidepanel").css("display", "none");
+                            $("#slidepanel-container").empty();
+                            window.location.href = data.redirect;
+                            return;
+                        }
+                        if (data.errormsg) {
+                            ShowError(data.errormsg);
+                            return false;
+                        }
                     }
-
                 }
             });
         });

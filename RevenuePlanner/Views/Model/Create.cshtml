@@ -733,10 +733,10 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
      $(this).datepicker('hide');
  });;
     $(".savebtn").click(function (e) {
-        CheckUserSession(".savebtn",true);
-        if (reason == 'user') {
-            return false;
-        }
+        //CheckUserSession(".savebtn",true);
+        //if (reason == 'user') {
+        //    return false;
+        //}
         if ($('#IsBenchmarked').val().toLowerCase() == 'false') {
              var val = 0;
              var cntFill = 0;

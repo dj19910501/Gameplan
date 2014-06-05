@@ -123,10 +123,13 @@
              });
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
 
+        var callit = true;
         $("#btnSubmit").click(function () {
-            CheckUserSession("#btnSubmit", true);
-            if (reason == 'user') {
-                return false;
+            if (callit) {
+                CheckUserSession("#btnSubmit", true);
+                if (reason == 'user') {
+                    return false;
+                }
             }
             var _BIC = [];
 
@@ -193,6 +196,7 @@
                 url: '@Url.Content("~/Boost/SaveBIC/")',
                 data: _BIC,
                 success: function (data) {
+                    callit = false;
                     if (data != 'undefined') {
                         if (data.msg != '') {
                             $("#successMessage").css("display", "block");
@@ -216,6 +220,7 @@
                     }
                 },
                 error: function () {
+                    callit = false;
                     $("#errorMessage").css("display", "block");
                     var topsize = $(document).scrollTop() + 41;
                     $("#modal-container-186470").css("top", topsize + "px");
