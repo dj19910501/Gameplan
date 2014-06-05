@@ -3335,7 +3335,7 @@ namespace RevenuePlanner.Controllers
                                 errorMessage = string.Format(Common.objCached.StageNotExist);
                                 return Json(new { errorMessage }, JsonRequestBehavior.AllowGet);
                             }
-                            //objtactic.StageId = (obj.StageId == null) ? db.Model_Funnel_Stage.Where(s => s.StageType == StageType && s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true).OrderBy(s => s.Stage.Level).Distinct().Select(s => s.StageId).FirstOrDefault() : obj.StageId;
+                            objtactic.StageId = (obj.StageId == null) ? db.Model_Funnel_Stage.Where(s => s.StageType == StageType && s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true).OrderBy(s => s.Stage.Level).Distinct().Select(s => s.StageId).FirstOrDefault() : obj.StageId;//Modified by Mitesh Vaishnav on 05/06/2014 for internal review :	Edit a model tactic from master list set its target stage to Response and then save from side pane. Now, click Save & Continue at the bottom of listing. This will change Response to SUS.
                             int intRandomColorNumber = rnd.Next(colorcodeList.Count);
                             objtactic.ColorCode = Convert.ToString(colorcodeList[intRandomColorNumber]);
                             objtactic.CreatedDate = DateTime.Now;
