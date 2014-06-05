@@ -1,0 +1,23 @@
+EPIC: Gameplan User Permissions
+
+Stories:
+
+1. As a Planner, I want to see who my supervisors are so that I can request additional permissions to do my job.
+
+2. As a Director, I want to see who my planners are so that I know who to give/take away permissions.
+
+3. As a Director, I want to see my planners’ permissions so that I can view/edit accordingly.
+
+4. As an Admin, I want to be able to edit/customize individual permissions for everyone so that I can enable them to perform their tasks.
+
+5. As an Director, I want to be able to edit/customize individual permissions for my planners so that I can enable them to perform their tasks.
+
+
+
+Features:
+
+1. Permission list (View/Edit) (Admin/Director)
+2. Organization Hierarchy/Tree (View/Edit Roles) (Admin/Planner/Director)
+	- Only local tree
+3. Requesting Permissions (Planner) - Email
+4. Editing Permissions (Director)
