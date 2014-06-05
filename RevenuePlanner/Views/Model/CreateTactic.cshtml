@@ -103,16 +103,9 @@
         <!--end content dark-->
         <div class="wraper-btns cf">
             <div class="span6">
-                @{
-    if ((bool)ViewBag.IsCreated == true)
-    {
-                    <button id="CreateTactic" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
-    }
-    else
-    {
-                    <button id="save_tactic" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
-    }
-                }
+
+                <button id="CreateTactic" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
+
             </div>
             <div class="span6">
                 <button class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
@@ -181,12 +174,12 @@
         });
         if ($("#latestModelId").val() == $("#mode").val()) {
             $("#CreateTactic").show();
-            $("#save_tactic").show();
+           // $("#save_tactic").show();
             MakeEditable();
         }
         else {
             $("#CreateTactic").hide();
-            $("#save_tactic").hide();
+           // $("#save_tactic").hide();
             MakeViewOnly();//Bug 17:Should not be able to edit a published model
         }
         $("span.tool-tip").tooltip();
@@ -277,7 +270,7 @@
             });
         });
 
-        $("#save_tactic").click(function () {
+        @*$("#save_tactic").click(function () {
             var iserror = false;
             $('form').find('input[type=text], select, textarea').each(function () {
                 if ($(this).attr('require') == 'true') {
@@ -379,8 +372,8 @@
                 }
             });
 
-            
-        });
+
+        });*@
 
         $('form').find(".sbSelector").each(function () {
             $(this).next().find('li').click(function () {
@@ -396,8 +389,10 @@
             });
         });
 
+        /*Modified by Mitesh Vaishnav on 05/06/2014 for remove two buttons of save tactics */
         $("#CreateTactic").click(function () {
             var iserror = false;
+            var isCreated = '@ViewBag.IsCreated';
             $('form').find('input[type=text], select, textarea').each(function () {
                 if ($(this).attr('require') == 'true') {
                     if ($(this).val() == '') {
@@ -433,17 +428,21 @@
             });
 
             //sbSelector
-            $('form').find('.sbSelector').each(function () {
-                if ($(this).parent().prev().attr('require') == 'true') {
-                    if ($(this).text() == 'Please Select') {
-                        $(this).addClass("error");
-                        iserror = true;
+            if (isCreated == 'true') {
+
+                $('form').find('.sbSelector').each(function () {
+                    if ($(this).parent().prev().attr('require') == 'true') {
+                        if ($(this).text() == 'Please Select') {
+                            $(this).addClass("error");
+                            iserror = true;
+                        }
+                        else {
+                            $(this).removeClass("error");
+                        }
                     }
-                    else {
-                        $(this).removeClass("error");
-                    }
-                }
-            });
+                });
+            }
+
 
             /*changed for TFS bug #495 	Add/Edit Tactic under Model: Deploy to Integration is activated without Deploy to Model Activation by Maninder Singh Wadhva on 27 May 2014*/
             var isDeployedToIntegration = false;
@@ -466,12 +465,19 @@
             var Title = $("#Title").val();
             var Description = $("#Description").val();
             var StageId = $("#StageId").val();
+            if (StageId == '' || StageId == 'Undefined') {
+                StageId = 'null';
+            }
             /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
             var ProjectedMQLs = ReplaceCC($("#hdnProjectedMQLs").val());
             //var ProjectedInquiries =ReplaceCC($("#hdnProjectedInquiries").val());
             var ProjectedRevenue = ReplaceCC($("#hdnProjectedRevenue").val());
             var TacticTypeId = $("#hdnTacticTypeId").val();
+            if (isCreated == 'true') {
+                TacticTypeId = 0;
+            }
             var clientId = $("#hdnClientId").val();
+            var modelID = $("#hdnModelId").val();
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Home/CheckUserId/")?UserId=' + $(window).attr('name'),
@@ -481,8 +487,8 @@
                             type: 'POST',
                             url: '@Url.Content("~/Model/SaveTactic/")',
                             data: 'Title=' + Title + '&Description=' + Description + '&StageId=' + StageId + '&ProjectedMQLs=' + ProjectedMQLs
-                            + '&ProjectedRevenue=' + ProjectedRevenue + '&TacticTypeId=' + 0
-                           + '&modelID=' + $("#hdnModelId").val() + '&isDeployedToIntegration=' + isDeployedToIntegration
+                            + '&ProjectedRevenue=' + ProjectedRevenue + '&TacticTypeId=' + TacticTypeId
+                           + '&modelID=' + modelID + '&isDeployedToIntegration=' + isDeployedToIntegration
                             + '&isDeployedToModel=' + isDeployedToModel,
                             success: function (data) {
                                 if (data.redirect) {
@@ -504,8 +510,9 @@
                     }
                 }
             });
-            
+
         });
+        /*End: Modified by Mitesh Vaishnav on 05/06/2014 for remove two buttons of save tactics */
         function ShowError(value) {
             $("#errorMsg").slideDown(400);
             $("#spanMessage").empty();
