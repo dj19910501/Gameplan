@@ -6746,6 +6746,81 @@ h2.title-header {
 .improvementcolor27A4E5 .gantt_task_drag:after{border-top-color: #27A4E5;}
 /*End by Dharmraj for ticket#394 on 31/3/2014 */
 
+/*Added by Mitesh Vaishnav for ticket #511 Inappropriate Arrow for Improvement Tactic*/
+.improvementcolor472519.gantt_task_line{border-color: #472519;}
+.improvementcolor472519 .gantt_task_drag{background: none repeat scroll 0 0 #472519 !important;}
+.improvementcolor472519 .gantt_task_drag:after{border-top-color: #472519;}
+
+.improvementcolor09AF8F.gantt_task_line{border-color: #09AF8F;}
+.improvementcolor09AF8F .gantt_task_drag{background: none repeat scroll 0 0 #09AF8F !important;}
+.improvementcolor09AF8F .gantt_task_drag:after{border-top-color: #09AF8F;}
+
+.improvementcolor144D6B.gantt_task_line{border-color: #144D6B;}
+.improvementcolor144D6B .gantt_task_drag{background: none repeat scroll 0 0 #144D6B !important;}
+.improvementcolor144D6B .gantt_task_drag:after{border-top-color: #144D6B;}
+
+.improvementcolor1472a3.gantt_task_line{border-color: #1472a3;}
+.improvementcolor1472a3 .gantt_task_drag{background: none repeat scroll 0 0 #1472a3 !important;}
+.improvementcolor1472a3 .gantt_task_drag:after{border-top-color: #1472a3;}
+
+.improvementcolor2384B8.gantt_task_line{border-color: #2384B8;}
+.improvementcolor2384B8 .gantt_task_drag{background: none repeat scroll 0 0 #2384B8 !important;}
+.improvementcolor2384B8 .gantt_task_drag:after{border-top-color: #2384B8;}
+
+.improvementcolor414018.gantt_task_line{border-color: #414018;}
+.improvementcolor414018 .gantt_task_drag{background: none repeat scroll 0 0 #414018 !important;}
+.improvementcolor414018 .gantt_task_drag:after{border-top-color: #414018;}
+
+.improvementcolor452f14.gantt_task_line{border-color: #452f14;}
+.improvementcolor452f14 .gantt_task_drag{background: none repeat scroll 0 0 #452f14 !important;}
+.improvementcolor452f14 .gantt_task_drag:after{border-top-color: #452f14;}
+
+.improvementcolor555305.gantt_task_line{border-color: #555305;}
+.improvementcolor555305 .gantt_task_drag{background: none repeat scroll 0 0 #555305 !important;}
+.improvementcolor555305 .gantt_task_drag:after{border-top-color: #555305;}
+
+.improvementcolor73c4ee.gantt_task_line{border-color: #73c4ee;}
+.improvementcolor73c4ee .gantt_task_drag{background: none repeat scroll 0 0 #73c4ee !important;}
+.improvementcolor73c4ee .gantt_task_drag:after{border-top-color: #73c4ee;}
+
+.improvementcolor83DB45.gantt_task_line{border-color: #83DB45;}
+.improvementcolor83DB45 .gantt_task_drag{background: none repeat scroll 0 0 #83DB45 !important;}
+.improvementcolor83DB45 .gantt_task_drag:after{border-top-color: #83DB45;}
+
+.improvementcolor875c26.gantt_task_line{border-color: #875c26;}
+.improvementcolor875c26 .gantt_task_drag{background: none repeat scroll 0 0 #875c26 !important;}
+.improvementcolor875c26 .gantt_task_drag:after{border-top-color: #875c26;}
+
+.improvementcolor9ceb6a.gantt_task_line{border-color: #9ceb6a;}
+.improvementcolor9ceb6a .gantt_task_drag{background: none repeat scroll 0 0 #9ceb6a !important;}
+.improvementcolor9ceb6a .gantt_task_drag:after{border-top-color: #9ceb6a;}
+
+.improvementcolordc80df.gantt_task_line{border-color: #dc80df;}
+.improvementcolordc80df .gantt_task_drag{background: none repeat scroll 0 0 #dc80df !important;}
+.improvementcolordc80df .gantt_task_drag:after{border-top-color: #dc80df;}
+
+.improvementcolor2c1947.gantt_task_line{border-color: #2c1947;}
+.improvementcolor2c1947 .gantt_task_drag{background: none repeat scroll 0 0 #2c1947 !important;}
+.improvementcolor2c1947 .gantt_task_drag:after{border-top-color: #2c1947;}
+
+.improvementcolor407B22.gantt_task_line{border-color: #407B22;}
+.improvementcolor407B22 .gantt_task_drag{background: none repeat scroll 0 0 #407B22 !important;}
+.improvementcolor407B22 .gantt_task_drag:after{border-top-color: #407B22;}
+
+.improvementcolor6bf7dc.gantt_task_line{border-color: #6bf7dc;}
+.improvementcolor6bf7dc .gantt_task_drag{background: none repeat scroll 0 0 #6bf7dc !important;}
+.improvementcolor6bf7dc .gantt_task_drag:after{border-top-color: #6bf7dc;}
+
+.improvementcolor7f7c2f.gantt_task_line{border-color: #7f7c2f;}
+.improvementcolor7f7c2f .gantt_task_drag{background: none repeat scroll 0 0 #7f7c2f !important;}
+.improvementcolor7f7c2f .gantt_task_drag:after{border-top-color: #7f7c2f;}
+
+.improvementcolorc57de4.gantt_task_line{border-color: #c57de4;}
+.improvementcolorc57de4 .gantt_task_drag{background: none repeat scroll 0 0 #c57de4 !important;}
+.improvementcolorc57de4 .gantt_task_drag:after{border-top-color: #c57de4;}
+/*End - Added by Mitesh Vaishnav for ticket #511 Inappropriate Arrow for Improvement Tactic*/
+
+
 /*Added By Maninder for DHTMLX gantt improvement task PL Ticket#47, 337*/
 .no_drag .gantt_task_drag.task_left
 {
