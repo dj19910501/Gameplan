@@ -1598,8 +1598,16 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveCampaign(Plan_CampaignModel form, string programs, bool RedirectType,string closedTask)
+        public ActionResult SaveCampaign(Plan_CampaignModel form, string programs, bool RedirectType, string closedTask, string UserId = "")
         {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
             try
             {
                 if (form.PlanCampaignId == 0)
@@ -1753,7 +1761,7 @@ namespace RevenuePlanner.Controllers
             {
                 if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
                 {
-                    TempData["ErrorMessage"] = "Another user is logged in with the same sesssion";
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -1958,8 +1966,16 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveProgram(Plan_Campaign_ProgramModel form, string tactics, bool RedirectType, string closedTask)
+        public ActionResult SaveProgram(Plan_Campaign_ProgramModel form, string tactics, bool RedirectType, string closedTask, string UserId = "")
         {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
             try
             {
                 if (form.PlanProgramId == 0)
@@ -2136,7 +2152,7 @@ namespace RevenuePlanner.Controllers
             {
                 if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
                 {
-                    TempData["ErrorMessage"] = "Another user is logged in with the same sesssion";
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -2358,8 +2374,16 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveTactic(Plan_Campaign_Program_TacticModel form, bool RedirectType, string closedTask)
+        public ActionResult SaveTactic(Plan_Campaign_Program_TacticModel form, bool RedirectType, string closedTask, string UserId = "")
         {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
             try
             {
                 int cid = db.Plan_Campaign_Program.Where(p => p.PlanProgramId == form.PlanProgramId).Select(p => p.PlanCampaignId).FirstOrDefault();
@@ -2602,7 +2626,7 @@ namespace RevenuePlanner.Controllers
             {
                 if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
                 {
-                    TempData["ErrorMessage"] = "Another user is logged in with the same sesssion";
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
                 }
             }

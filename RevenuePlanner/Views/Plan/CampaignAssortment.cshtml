@@ -416,24 +416,29 @@
             if (typeof arrClosedTask != 'undefined') {
                 arrClosedTaskString = arrClosedTask.toString();
             }
-            CheckUserSession("#save_campaign", true);
-            if (reason == 'user') {
-                return false;
-            }
+            //CheckUserSession("#save_campaign", true);
+            //if (reason == 'user') {
+            //    return false;
+            //}
+            var uId = $(window).attr('name');
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/SaveCampaign")',
-                data: $("form").serialize() + '&programs=' + arProgram + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString,
+                data: $("form").serialize() + '&programs=' + arProgram + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId,
                 success: function (data) {
-                    if (data.redirect) {
-                        window.location.href = data.redirect;
-                        return;
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
                     }
-                    if (data.errormsg) {
-                        ShowError(data.errormsg);
-                        return;
+                    else {
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                            return;
+                        }
+                        if (data.errormsg) {
+                            ShowError(data.errormsg);
+                            return false;
+                        }
                     }
-
                 }
             });
         });

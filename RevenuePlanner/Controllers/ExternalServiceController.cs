@@ -730,7 +730,7 @@ namespace RevenuePlanner.Controllers
             {
                 if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
                 {
-                    TempData["ErrorMessage"] = "Another user is logged in with the same sesssion";
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
                 }
             }
