@@ -309,8 +309,8 @@ namespace RevenuePlanner.Controllers
                         objModel.Title = Convert.ToString(collection["Title"]);
                         if (mode == "version")
                         {
-
-                            var version = db.Models.Where(m => m.IsDeleted == false && m.BusinessUnitId == tempBU).OrderByDescending(t => t.CreatedDate).Select(s => s.Version).FirstOrDefault();
+                            //title condition added by uday for review point on 5-6-2014 bcoz version clashes when two users are creating version of same buisiness unit.
+                            var version = db.Models.Where(m => m.IsDeleted == false && m.BusinessUnitId == tempBU && m.Title == objModel.Title).OrderByDescending(t => t.CreatedDate).Select(s => s.Version).FirstOrDefault();
                             if (version != null && version != "")
                             {
                                 objModel.Version = Convert.ToString((Convert.ToDouble(version) + 0.1));

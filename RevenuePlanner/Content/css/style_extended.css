@@ -1059,7 +1059,8 @@ a {
     max-width: 300px;
     text-decoration: none;
     z-index: 1998;
-    background: url(dropdown-left.gif) left top no-repeat;
+    /*commented by uday on 5-6-2014 bcoz its not used anywhere in the solution*/
+    /*background: url(dropdown-left.gif) left top no-repeat;*/
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;

@@ -428,8 +428,6 @@
             });
 
             //sbSelector
-            if (isCreated == 'True') {
-
                 $('form').find('.sbSelector').each(function () {
                     if ($(this).parent().prev().attr('require') == 'true') {
                         if ($(this).text() == 'Please Select') {
@@ -441,7 +439,7 @@
                         }
                     }
                 });
-            }
+            
 
 
             /*changed for TFS bug #495 	Add/Edit Tactic under Model: Deploy to Integration is activated without Deploy to Model Activation by Maninder Singh Wadhva on 27 May 2014*/
