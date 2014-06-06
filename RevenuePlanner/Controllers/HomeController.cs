@@ -166,6 +166,12 @@ namespace RevenuePlanner.Controllers
                         else
                         {
                             currentPlan = activePlan.Where(p => p.PlanId.Equals(Sessions.PublishedPlanId)).OrderBy(p => p.Title).FirstOrDefault();
+                            //when old published plan id (session) is from different business unit then it retunr null
+                            if (currentPlan == null)
+                            {
+                                currentPlan = activePlan.OrderBy(p => p.Title).FirstOrDefault();
+                            }
+                            //when old published plan id (session) is from different business unit then it retunr null
                         }
                     }
                     else
