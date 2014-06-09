@@ -736,7 +736,7 @@ namespace RevenuePlanner.Controllers
             }
             try
             {
-                ExternalIntegration externalIntegration = new ExternalIntegration(id);
+                ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.User.UserId);
                 externalIntegration.Sync();
                 IntegrationInstance integrationInstance = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId.Equals(id));
                 string status = integrationInstance.LastSyncStatus;

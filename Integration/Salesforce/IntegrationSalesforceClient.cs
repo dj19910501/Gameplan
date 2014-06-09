@@ -229,6 +229,10 @@ namespace Integration.Salesforce
         private void GetDataForTacticandUpdate()
         {
             string actualCost = "CostActual";
+            string Stage_CW = "CW";
+            string Stage_Revenue = "Revenue";
+            string Stage_MQL = "MQL";
+            string Stage_ProjectedStageValue = "ProjectedStageValue";
             List<IntegrationInstanceDataTypeMapping> dataTypeMapping = db.IntegrationInstanceDataTypeMappings.Where(mapping => mapping.IntegrationInstanceId.Equals(_integrationInstanceId)).ToList();
             Dictionary<string, string> mappingGetTactic = dataTypeMapping.Where(gameplandata => gameplandata.GameplanDataType.TableName == "Plan_Campaign_Program_Tactic" &&
                                                                    gameplandata.GameplanDataType.IsGet)
@@ -257,11 +261,12 @@ namespace Integration.Salesforce
                 JObject jobj = JObject.Parse(TacticResult);
                 string idvalue = Convert.ToString(jobj[ColumnId]);
                 Plan_Campaign_Program_Tactic tactic = tacticList.Where(t => t.IntegrationInstanceTacticId == idvalue).Single();
+                    int tacticStageLevel = Convert.ToInt32(tactic.Stage.Level);
+                    string tacticStageCode = tactic.Stage.Code;
+                    Guid ClientId = (Guid)tactic.TacticType.ClientId;
+                    int MQLStageLevel = Convert.ToInt32(db.Stages.FirstOrDefault(s => s.ClientId == ClientId && s.Code == Stage_MQL).Level);
+
                 tactic.CostActual = 0;
-                tactic.INQsActual = 0;
-                tactic.MQLsActual = 0;
-                tactic.CWsActual = 0;
-                tactic.RevenuesActual = 0;
 
                 foreach (var mapping in mappingGetTactic)
                 {
@@ -289,6 +294,9 @@ namespace Integration.Salesforce
                             {
                                 totalMonth = tactic.EndDate.Month - tactic.StartDate.Month + 1;
                             }
+
+                                if (mapping.Key == Stage_CW || mapping.Key == Stage_Revenue)
+                                {
                             for (int iMonth = tactic.StartDate.Month; iMonth <= tactic.EndDate.Month; iMonth++)
                             {
                                 Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
@@ -301,22 +309,55 @@ namespace Integration.Salesforce
                                 actualTactic.CreatedBy = _userId;
                                 db.Entry(actualTactic).State = EntityState.Added;
                             }
+                                }
+                                else if (mapping.Key == tacticStageCode)
+                                {
+                                    for (int iMonth = tactic.StartDate.Month; iMonth <= tactic.EndDate.Month; iMonth++)
+                                    {
+                                        Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
+                                        actualTactic.Actualvalue = Math.Round(actualValue / totalMonth);
+                                        actualTactic.PlanTacticId = tactic.PlanTacticId;
+                                        actualTactic.Period = "Y" + iMonth;
+                                        actualTactic.StageTitle = Stage_ProjectedStageValue;
+                                        //change date & created by
+                                        actualTactic.CreatedDate = DateTime.Now;
+                                        actualTactic.CreatedBy = _userId;
+                                        db.Entry(actualTactic).State = EntityState.Added;
+                                    }
 
-                            if (mapping.Key == StageValue.INQ.ToString())
-                            {
-                                tactic.INQsActual = Convert.ToInt64(actualValue);
-                            }
-                            else if (mapping.Key == StageValue.MQL.ToString())
-                            {
-                                tactic.MQLsActual = actualValue;
-                            }
-                            else if (mapping.Key == StageValue.CW.ToString())
-                            {
-                                tactic.CWsActual = actualValue;
-                            }
-                            else if (mapping.Key == StageValue.Revenue.ToString())
-                            {
-                                tactic.RevenuesActual = actualValue;
+                                    if (tacticStageLevel == MQLStageLevel)
+                                    {
+                                        for (int iMonth = tactic.StartDate.Month; iMonth <= tactic.EndDate.Month; iMonth++)
+                                        {
+                                            Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
+                                            actualTactic.Actualvalue = Math.Round(actualValue / totalMonth);
+                                            actualTactic.PlanTacticId = tactic.PlanTacticId;
+                                            actualTactic.Period = "Y" + iMonth;
+                                            actualTactic.StageTitle = Stage_MQL;
+                                            //change date & created by
+                                            actualTactic.CreatedDate = DateTime.Now;
+                                            actualTactic.CreatedBy = _userId;
+                                            db.Entry(actualTactic).State = EntityState.Added;
+                                        }
+                                    }
+                                }
+                                else if (mapping.Key == Stage_MQL)
+                                {
+                                    if (tacticStageLevel < MQLStageLevel)
+                                    {
+                                        for (int iMonth = tactic.StartDate.Month; iMonth <= tactic.EndDate.Month; iMonth++)
+                                        {
+                                            Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
+                                            actualTactic.Actualvalue = Math.Round(actualValue / totalMonth);
+                                            actualTactic.PlanTacticId = tactic.PlanTacticId;
+                                            actualTactic.Period = "Y" + iMonth;
+                                            actualTactic.StageTitle = Stage_MQL;
+                                            //change date & created by
+                                            actualTactic.CreatedDate = DateTime.Now;
+                                            actualTactic.CreatedBy = _userId;
+                                            db.Entry(actualTactic).State = EntityState.Added;
+                                        }
+                                    }
                             }
                         }
                     }
@@ -324,10 +365,6 @@ namespace Integration.Salesforce
 
                     tactic.LastSyncDate = DateTime.Now;
                     tactic.ModifiedDate = DateTime.Now;
-                    if (tactic.CostActual != null && tactic.CostActual > 0 && tactic.RevenuesActual != null)
-                    {
-                        tactic.ROIActual = tactic.RevenuesActual / tactic.CostActual;
-                    }
                     tactic.ModifiedBy = _userId;
 
                     IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();

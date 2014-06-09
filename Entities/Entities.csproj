@@ -103,9 +103,6 @@
     <Compile Include="Models\IntegrationTypeAttribute.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Metric.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\Model.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>

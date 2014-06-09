@@ -22,10 +22,22 @@
           <EntitySet Name="IntegrationInstance_Attribute" EntityType="MRPModel.Store.IntegrationInstance_Attribute" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationInstanceDataTypeMapping" EntityType="MRPModel.Store.IntegrationInstanceDataTypeMapping" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationInstanceLog" EntityType="MRPModel.Store.IntegrationInstanceLog" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="IntegrationInstancePlanEntityLog" EntityType="MRPModel.Store.IntegrationInstancePlanEntityLog" store:Type="Tables" Schema="dbo"/>
+          <EntitySet Name="IntegrationInstancePlanEntityLog" EntityType="MRPModel.Store.IntegrationInstancePlanEntityLog" store:Type="Tables" store:Schema="dbo" store:Name="IntegrationInstancePlanEntityLog">
+            <DefiningQuery>SELECT 
+      [IntegrationInstancePlanEntityLog].[IntegrationInstanceLogId] AS [IntegrationInstanceLogId], 
+      [IntegrationInstancePlanEntityLog].[IntegrationInstanceId] AS [IntegrationInstanceId], 
+      [IntegrationInstancePlanEntityLog].[EntityId] AS [EntityId], 
+      [IntegrationInstancePlanEntityLog].[EntityType] AS [EntityType], 
+      [IntegrationInstancePlanEntityLog].[SyncTimeStamp] AS [SyncTimeStamp], 
+      [IntegrationInstancePlanEntityLog].[Operation] AS [Operation], 
+      [IntegrationInstancePlanEntityLog].[Status] AS [Status], 
+      [IntegrationInstancePlanEntityLog].[ErrorDescription] AS [ErrorDescription], 
+      [IntegrationInstancePlanEntityLog].[CreatedDate] AS [CreatedDate], 
+      [IntegrationInstancePlanEntityLog].[CreatedBy] AS [CreatedBy]
+      FROM [dbo].[IntegrationInstancePlanEntityLog] AS [IntegrationInstancePlanEntityLog]</DefiningQuery>
+          </EntitySet>
           <EntitySet Name="IntegrationType" EntityType="MRPModel.Store.IntegrationType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationTypeAttribute" EntityType="MRPModel.Store.IntegrationTypeAttribute" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="Metric" EntityType="MRPModel.Store.Metric" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Model" EntityType="MRPModel.Store.Model" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Model_Audience_Event" EntityType="MRPModel.Store.Model_Audience_Event" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Model_Audience_Inbound" EntityType="MRPModel.Store.Model_Audience_Inbound" store:Type="Tables" Schema="dbo" />
@@ -70,8 +82,8 @@
             <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
           </AssociationSet>
-          <AssociationSet Name="FK_BestInClass_Metric" Association="MRPModel.Store.FK_BestInClass_Metric">
-            <End Role="Metric" EntitySet="Metric" />
+          <AssociationSet Name="FK_BestInClass_Stage" Association="MRPModel.Store.FK_BestInClass_Stage">
+            <End Role="Stage" EntitySet="Stage" />
             <End Role="BestInClass" EntitySet="BestInClass" />
           </AssociationSet>
           <AssociationSet Name="FK_Funnel_Field_Field" Association="MRPModel.Store.FK_Funnel_Field_Field">
@@ -90,16 +102,16 @@
             <End Role="ImprovementTacticType" EntitySet="ImprovementTacticType" />
             <End Role="ImprovementTacticType_Metric" EntitySet="ImprovementTacticType_Metric" />
           </AssociationSet>
-          <AssociationSet Name="FK_ImprovementTacticType_Metric_Metric" Association="MRPModel.Store.FK_ImprovementTacticType_Metric_Metric">
-            <End Role="Metric" EntitySet="Metric" />
+          <AssociationSet Name="FK_ImprovementTacticType_Metric_Stage" Association="MRPModel.Store.FK_ImprovementTacticType_Metric_Stage">
+            <End Role="Stage" EntitySet="Stage" />
             <End Role="ImprovementTacticType_Metric" EntitySet="ImprovementTacticType_Metric" />
           </AssociationSet>
           <AssociationSet Name="FK_ImprovementTacticType_Touches_ImprovementTacticType" Association="MRPModel.Store.FK_ImprovementTacticType_Touches_ImprovementTacticType">
             <End Role="ImprovementTacticType" EntitySet="ImprovementTacticType" />
             <End Role="ImprovementTacticType_Touches" EntitySet="ImprovementTacticType_Touches" />
           </AssociationSet>
-          <AssociationSet Name="FK_ImprovementTacticType_Touches_Metric" Association="MRPModel.Store.FK_ImprovementTacticType_Touches_Metric">
-            <End Role="Metric" EntitySet="Metric" />
+          <AssociationSet Name="FK_ImprovementTacticType_Touches_Stage" Association="MRPModel.Store.FK_ImprovementTacticType_Touches_Stage">
+            <End Role="Stage" EntitySet="Stage" />
             <End Role="ImprovementTacticType_Touches" EntitySet="ImprovementTacticType_Touches" />
           </AssociationSet>
           <AssociationSet Name="FK_IntegrationInstance_Attribute_IntegrationInstance" Association="MRPModel.Store.FK_IntegrationInstance_Attribute_IntegrationInstance">
@@ -170,6 +182,10 @@
             <End Role="Model_Funnel" EntitySet="Model_Funnel" />
             <End Role="Model_Funnel_Stage" EntitySet="Model_Funnel_Stage" />
           </AssociationSet>
+          <AssociationSet Name="FK_Model_IntegrationInstance" Association="MRPModel.Store.FK_Model_IntegrationInstance">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
+            <End Role="Model" EntitySet="Model" />
+          </AssociationSet>
           <AssociationSet Name="FK_Model_Model" Association="MRPModel.Store.FK_Model_Model">
             <End Role="Model" EntitySet="Model" />
             <End Role="Model1" EntitySet="Model" />
@@ -233,6 +249,10 @@
           <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program_Tactic" Association="MRPModel.Store.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program_Tactic">
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
             <End Role="Plan_Campaign_Program_Tactic1" EntitySet="Plan_Campaign_Program_Tactic" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_Stage" Association="MRPModel.Store.FK_Plan_Campaign_Program_Tactic_Stage">
+            <End Role="Stage" EntitySet="Stage" />
+            <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
           </AssociationSet>
           <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_TacticType" Association="MRPModel.Store.FK_Plan_Campaign_Program_Tactic_TacticType">
             <End Role="TacticType" EntitySet="TacticType" />
@@ -327,13 +347,14 @@
             <PropertyRef Name="BestInClassId" />
           </Key>
           <Property Name="BestInClassId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="MetricId" Type="int" Nullable="false" />
           <Property Name="Value" Type="float" Nullable="false" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
+          <Property Name="StageId" Type="int" Nullable="false" />
+          <Property Name="StageType" Type="nvarchar" Nullable="false" MaxLength="10" />
         </EntityType>
         <EntityType Name="BusinessUnit">
           <Key>
@@ -452,23 +473,25 @@
         <EntityType Name="ImprovementTacticType_Metric">
           <Key>
             <PropertyRef Name="ImprovementTacticTypeId" />
-            <PropertyRef Name="MetricId" />
+            <PropertyRef Name="StageId" />
+            <PropertyRef Name="StageType" />
           </Key>
           <Property Name="ImprovementTacticTypeId" Type="int" Nullable="false" />
-          <Property Name="MetricId" Type="int" Nullable="false" />
           <Property Name="Weight" Type="float" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="StageId" Type="int" Nullable="false" />
+          <Property Name="StageType" Type="nvarchar" Nullable="false" MaxLength="10" />
         </EntityType>
         <EntityType Name="ImprovementTacticType_Touches">
           <Key>
             <PropertyRef Name="ImprovementTacticTypeId" />
-            <PropertyRef Name="MetricId" />
+            <PropertyRef Name="StageId" />
           </Key>
           <Property Name="ImprovementTacticTypeId" Type="int" Nullable="false" />
-          <Property Name="MetricId" Type="int" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="StageId" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="IntegrationInstance">
           <Key>
@@ -526,7 +549,7 @@
           <Property Name="CreatedBy" Type="uniqueidentifier" />
         </EntityType>
         <!--Errors Found During Generation:
-      warning 6002: The table/view 'MRPDev.dbo.IntegrationInstancePlanEntityLog' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      warning 6002: The table/view 'MRPDev_June.dbo.IntegrationInstancePlanEntityLog' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
       -->
         <EntityType Name="IntegrationInstancePlanEntityLog">
           <Key>
@@ -566,22 +589,6 @@
           <Property Name="Attribute" Type="nvarchar" Nullable="false" MaxLength="255" />
           <Property Name="AttributeType" Type="nvarchar" Nullable="false" MaxLength="255" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Metric">
-          <Key>
-            <PropertyRef Name="MetricId" />
-          </Key>
-          <Property Name="MetricId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="MetricType" Type="nvarchar" Nullable="false" MaxLength="10" />
-          <Property Name="MetricName" Type="nvarchar" Nullable="false" MaxLength="255" />
-          <Property Name="MetricCode" Type="nvarchar" Nullable="false" MaxLength="50" />
-          <Property Name="ClientId" Type="uniqueidentifier" />
-          <Property Name="Level" Type="int" />
-          <Property Name="IsDeleted" Type="bit" Nullable="false" />
-          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
-          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="ModifiedDate" Type="datetime" />
-          <Property Name="ModifiedBy" Type="uniqueidentifier" />
         </EntityType>
         <EntityType Name="Model">
           <Key>
@@ -772,8 +779,6 @@
           <Property Name="GeographyId" Type="uniqueidentifier" />
           <Property Name="StartDate" Type="datetime" Nullable="false" />
           <Property Name="EndDate" Type="datetime" Nullable="false" />
-          <Property Name="INQs" Type="bigint" />
-          <Property Name="Cost" Type="float" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
@@ -797,8 +802,6 @@
           <Property Name="GeographyId" Type="uniqueidentifier" />
           <Property Name="StartDate" Type="datetime" Nullable="false" />
           <Property Name="EndDate" Type="datetime" Nullable="false" />
-          <Property Name="INQs" Type="bigint" />
-          <Property Name="Cost" Type="float" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
@@ -824,9 +827,6 @@
           <Property Name="BusinessUnitId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="StartDate" Type="datetime" Nullable="false" />
           <Property Name="EndDate" Type="datetime" Nullable="false" />
-          <Property Name="INQs" Type="bigint" Nullable="false" />
-          <Property Name="INQsActual" Type="bigint" />
-          <Property Name="MQLsActual" Type="float" />
           <Property Name="Cost" Type="float" Nullable="false" />
           <Property Name="CostActual" Type="float" />
           <Property Name="Status" Type="nvarchar" Nullable="false" MaxLength="50" />
@@ -834,16 +834,12 @@
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
-          <Property Name="CWs" Type="float" />
-          <Property Name="CWsActual" Type="float" />
-          <Property Name="Revenues" Type="float" />
-          <Property Name="RevenuesActual" Type="float" />
-          <Property Name="ROI" Type="float" />
-          <Property Name="ROIActual" Type="float" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
           <Property Name="IsDeployedToIntegration" Type="bit" Nullable="false" />
           <Property Name="IntegrationInstanceTacticId" Type="nvarchar" MaxLength="50" />
           <Property Name="LastSyncDate" Type="datetime" />
+          <Property Name="ProjectedStageValue" Type="float" />
+          <Property Name="StageId" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_Actual">
           <Key>
@@ -977,6 +973,7 @@
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
           <Property Name="Code" Type="nvarchar" MaxLength="255" />
           <Property Name="Funnel" Type="nvarchar" MaxLength="10" />
+          <Property Name="ConversionTitle" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="SyncFrequency">
           <Key>
@@ -1015,8 +1012,6 @@
           <Property Name="ColorCode" Type="nvarchar" Nullable="false" MaxLength="10" />
           <Property Name="ModelId" Type="int" />
           <Property Name="StageId" Type="int" />
-          <Property Name="ProjectedInquiries" Type="bigint" />
-          <Property Name="ProjectedMQLs" Type="float" />
           <Property Name="ProjectedRevenue" Type="float" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
@@ -1025,6 +1020,7 @@
           <Property Name="PreviousTacticTypeId" Type="int" />
           <Property Name="IsDeleted" Type="bit" />
           <Property Name="IsDeployedToIntegration" Type="bit" Nullable="false" />
+          <Property Name="ProjectedStageValue" Type="float" />
         </EntityType>
         <EntityType Name="User_Filter">
           <Key>
@@ -1110,15 +1106,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_BestInClass_Metric">
-          <End Role="Metric" Type="MRPModel.Store.Metric" Multiplicity="1" />
+        <Association Name="FK_BestInClass_Stage">
+          <End Role="Stage" Type="MRPModel.Store.Stage" Multiplicity="1" />
           <End Role="BestInClass" Type="MRPModel.Store.BestInClass" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Metric">
-              <PropertyRef Name="MetricId" />
+            <Principal Role="Stage">
+              <PropertyRef Name="StageId" />
             </Principal>
             <Dependent Role="BestInClass">
-              <PropertyRef Name="MetricId" />
+              <PropertyRef Name="StageId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1170,15 +1166,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_ImprovementTacticType_Metric_Metric">
-          <End Role="Metric" Type="MRPModel.Store.Metric" Multiplicity="1" />
+        <Association Name="FK_ImprovementTacticType_Metric_Stage">
+          <End Role="Stage" Type="MRPModel.Store.Stage" Multiplicity="1" />
           <End Role="ImprovementTacticType_Metric" Type="MRPModel.Store.ImprovementTacticType_Metric" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Metric">
-              <PropertyRef Name="MetricId" />
+            <Principal Role="Stage">
+              <PropertyRef Name="StageId" />
             </Principal>
             <Dependent Role="ImprovementTacticType_Metric">
-              <PropertyRef Name="MetricId" />
+              <PropertyRef Name="StageId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1194,15 +1190,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_ImprovementTacticType_Touches_Metric">
-          <End Role="Metric" Type="MRPModel.Store.Metric" Multiplicity="1" />
+        <Association Name="FK_ImprovementTacticType_Touches_Stage">
+          <End Role="Stage" Type="MRPModel.Store.Stage" Multiplicity="1" />
           <End Role="ImprovementTacticType_Touches" Type="MRPModel.Store.ImprovementTacticType_Touches" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Metric">
-              <PropertyRef Name="MetricId" />
+            <Principal Role="Stage">
+              <PropertyRef Name="StageId" />
             </Principal>
             <Dependent Role="ImprovementTacticType_Touches">
-              <PropertyRef Name="MetricId" />
+              <PropertyRef Name="StageId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1410,6 +1406,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Model_IntegrationInstance">
+          <End Role="IntegrationInstance" Type="MRPModel.Store.IntegrationInstance" Multiplicity="0..1" />
+          <End Role="Model" Type="MRPModel.Store.Model" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="Model">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Model_Model">
           <End Role="Model" Type="MRPModel.Store.Model" Multiplicity="0..1" />
           <End Role="Model1" Type="MRPModel.Store.Model" Multiplicity="*" />
@@ -1599,6 +1607,18 @@
             </Principal>
             <Dependent Role="Plan_Campaign_Program_Tactic1">
               <PropertyRef Name="PlanTacticId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Campaign_Program_Tactic_Stage">
+          <End Role="Stage" Type="MRPModel.Store.Stage" Multiplicity="1" />
+          <End Role="Plan_Campaign_Program_Tactic" Type="MRPModel.Store.Plan_Campaign_Program_Tactic" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stage">
+              <PropertyRef Name="StageId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Program_Tactic">
+              <PropertyRef Name="StageId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1894,6 +1914,7 @@
           <EntitySet Name="Funnel_Field" EntityType="MRPModel.Funnel_Field" />
           <EntitySet Name="GameplanDataTypes" EntityType="MRPModel.GameplanDataType" />
           <EntitySet Name="Geographies" EntityType="MRPModel.Geography" />
+          <EntitySet Name="ImprovementTacticTypes" EntityType="MRPModel.ImprovementTacticType" />
           <EntitySet Name="ImprovementTacticType_Metric" EntityType="MRPModel.ImprovementTacticType_Metric" />
           <EntitySet Name="ImprovementTacticType_Touches" EntityType="MRPModel.ImprovementTacticType_Touches" />
           <EntitySet Name="IntegrationInstances" EntityType="MRPModel.IntegrationInstance" />
@@ -1903,7 +1924,6 @@
           <EntitySet Name="IntegrationInstancePlanEntityLogs" EntityType="MRPModel.IntegrationInstancePlanEntityLog" />
           <EntitySet Name="IntegrationTypes" EntityType="MRPModel.IntegrationType" />
           <EntitySet Name="IntegrationTypeAttributes" EntityType="MRPModel.IntegrationTypeAttribute" />
-          <EntitySet Name="Metrics" EntityType="MRPModel.Metric" />
           <EntitySet Name="Models" EntityType="MRPModel.Model" />
           <EntitySet Name="Model_Audience_Event" EntityType="MRPModel.Model_Audience_Event" />
           <EntitySet Name="Model_Audience_Inbound" EntityType="MRPModel.Model_Audience_Inbound" />
@@ -1926,6 +1946,7 @@
           <EntitySet Name="Plan_Team" EntityType="MRPModel.Plan_Team" />
           <EntitySet Name="Report_Share" EntityType="MRPModel.Report_Share" />
           <EntitySet Name="Stages" EntityType="MRPModel.Stage" />
+          <EntitySet Name="SyncFrequencies" EntityType="MRPModel.SyncFrequency" />
           <EntitySet Name="Tactic_Share" EntityType="MRPModel.Tactic_Share" />
           <EntitySet Name="TacticTypes" EntityType="MRPModel.TacticType" />
           <EntitySet Name="User_Filter" EntityType="MRPModel.User_Filter" />
@@ -1943,8 +1964,8 @@
             <End Role="Audience" EntitySet="Audiences" />
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
           </AssociationSet>
-          <AssociationSet Name="FK_BestInClass_Metric" Association="MRPModel.FK_BestInClass_Metric">
-            <End Role="Metric" EntitySet="Metrics" />
+          <AssociationSet Name="FK_BestInClass_Stage" Association="MRPModel.FK_BestInClass_Stage">
+            <End Role="Stage" EntitySet="Stages" />
             <End Role="BestInClass" EntitySet="BestInClasses" />
           </AssociationSet>
           <AssociationSet Name="FK_Model_BusinessUnit" Association="MRPModel.FK_Model_BusinessUnit">
@@ -1995,12 +2016,24 @@
             <End Role="Geography" EntitySet="Geographies" />
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
           </AssociationSet>
-          <AssociationSet Name="FK_ImprovementTacticType_Metric_Metric" Association="MRPModel.FK_ImprovementTacticType_Metric_Metric">
-            <End Role="Metric" EntitySet="Metrics" />
+          <AssociationSet Name="FK_ImprovementTacticType_Metric_ImprovementTacticType" Association="MRPModel.FK_ImprovementTacticType_Metric_ImprovementTacticType">
+            <End Role="ImprovementTacticType" EntitySet="ImprovementTacticTypes" />
             <End Role="ImprovementTacticType_Metric" EntitySet="ImprovementTacticType_Metric" />
           </AssociationSet>
-          <AssociationSet Name="FK_ImprovementTacticType_Touches_Metric" Association="MRPModel.FK_ImprovementTacticType_Touches_Metric">
-            <End Role="Metric" EntitySet="Metrics" />
+          <AssociationSet Name="FK_ImprovementTacticType_Touches_ImprovementTacticType" Association="MRPModel.FK_ImprovementTacticType_Touches_ImprovementTacticType">
+            <End Role="ImprovementTacticType" EntitySet="ImprovementTacticTypes" />
+            <End Role="ImprovementTacticType_Touches" EntitySet="ImprovementTacticType_Touches" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType" Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType">
+            <End Role="ImprovementTacticType" EntitySet="ImprovementTacticTypes" />
+            <End Role="Plan_Improvement_Campaign_Program_Tactic" EntitySet="Plan_Improvement_Campaign_Program_Tactic" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ImprovementTacticType_Metric_Stage" Association="MRPModel.FK_ImprovementTacticType_Metric_Stage">
+            <End Role="Stage" EntitySet="Stages" />
+            <End Role="ImprovementTacticType_Metric" EntitySet="ImprovementTacticType_Metric" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ImprovementTacticType_Touches_Stage" Association="MRPModel.FK_ImprovementTacticType_Touches_Stage">
+            <End Role="Stage" EntitySet="Stages" />
             <End Role="ImprovementTacticType_Touches" EntitySet="ImprovementTacticType_Touches" />
           </AssociationSet>
           <AssociationSet Name="FK_IntegrationInstance_Attribute_IntegrationInstance" Association="MRPModel.FK_IntegrationInstance_Attribute_IntegrationInstance">
@@ -2022,6 +2055,14 @@
           <AssociationSet Name="FK_IntegrationInstancePlanEntityLog_IntegrationInstance" Association="MRPModel.FK_IntegrationInstancePlanEntityLog_IntegrationInstance">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
             <End Role="IntegrationInstancePlanEntityLog" EntitySet="IntegrationInstancePlanEntityLogs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Model_IntegrationInstance" Association="MRPModel.FK_Model_IntegrationInstance">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
+            <End Role="Model" EntitySet="Models" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SyncFrequency_IntegrationInstance" Association="MRPModel.FK_SyncFrequency_IntegrationInstance">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
+            <End Role="SyncFrequency" EntitySet="SyncFrequencies" />
           </AssociationSet>
           <AssociationSet Name="FK_IntegrationInstance_Attribute_IntegrationTypeAttribute" Association="MRPModel.FK_IntegrationInstance_Attribute_IntegrationTypeAttribute">
             <End Role="IntegrationTypeAttribute" EntitySet="IntegrationTypeAttributes" />
@@ -2135,6 +2176,10 @@
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
             <End Role="Plan_Campaign_Program_Tactic1" EntitySet="Plan_Campaign_Program_Tactic" />
           </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_Stage" Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Stage">
+            <End Role="Stage" EntitySet="Stages" />
+            <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
+          </AssociationSet>
           <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_TacticType" Association="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType">
             <End Role="TacticType" EntitySet="TacticTypes" />
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
@@ -2167,24 +2212,6 @@
             <End Role="Stage" EntitySet="Stages" />
             <End Role="TacticType" EntitySet="TacticTypes" />
           </AssociationSet>
-          <EntitySet Name="ImprovementTacticTypes" EntityType="MRPModel.ImprovementTacticType" />
-          <AssociationSet Name="FK_ImprovementTacticType_Metric_ImprovementTacticType" Association="MRPModel.FK_ImprovementTacticType_Metric_ImprovementTacticType">
-            <End Role="ImprovementTacticType" EntitySet="ImprovementTacticTypes" />
-            <End Role="ImprovementTacticType_Metric" EntitySet="ImprovementTacticType_Metric" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ImprovementTacticType_Touches_ImprovementTacticType" Association="MRPModel.FK_ImprovementTacticType_Touches_ImprovementTacticType">
-            <End Role="ImprovementTacticType" EntitySet="ImprovementTacticTypes" />
-            <End Role="ImprovementTacticType_Touches" EntitySet="ImprovementTacticType_Touches" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType" Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType">
-            <End Role="ImprovementTacticType" EntitySet="ImprovementTacticTypes" />
-            <End Role="Plan_Improvement_Campaign_Program_Tactic" EntitySet="Plan_Improvement_Campaign_Program_Tactic" />
-          </AssociationSet>
-          <EntitySet Name="SyncFrequencies" EntityType="MRPModel.SyncFrequency" />
-          <AssociationSet Name="FK_SyncFrequency_IntegrationInstance" Association="MRPModel.FK_SyncFrequency_IntegrationInstance">
-            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
-            <End Role="SyncFrequency" EntitySet="SyncFrequencies" />
-          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Audience">
           <Key>
@@ -2209,14 +2236,15 @@
             <PropertyRef Name="BestInClassId" />
           </Key>
           <Property Type="Int32" Name="BestInClassId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="MetricId" Nullable="false" />
           <Property Type="Double" Name="Value" Nullable="false" />
           <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
           <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
           <Property Type="Guid" Name="CreatedBy" Nullable="false" />
           <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
           <Property Type="Guid" Name="ModifiedBy" />
-          <NavigationProperty Name="Metric" Relationship="MRPModel.FK_BestInClass_Metric" FromRole="BestInClass" ToRole="Metric" />
+          <Property Type="Int32" Name="StageId" Nullable="false" />
+          <Property Type="String" Name="StageType" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Stage" Relationship="MRPModel.FK_BestInClass_Stage" FromRole="BestInClass" ToRole="Stage" />
         </EntityType>
         <EntityType Name="BusinessUnit">
           <Key>
@@ -2328,30 +2356,53 @@
           <NavigationProperty Name="Plan_Campaign_Program" Relationship="MRPModel.FK_Plan_Campaign_Program_Geography" FromRole="Geography" ToRole="Plan_Campaign_Program" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Geography" FromRole="Geography" ToRole="Plan_Campaign_Program_Tactic" />
         </EntityType>
+        <EntityType Name="ImprovementTacticType">
+          <Key>
+            <PropertyRef Name="ImprovementTacticTypeId" />
+          </Key>
+          <Property Type="Int32" Name="ImprovementTacticTypeId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="Title" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Description" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Type="Double" Name="Cost" Nullable="false" />
+          <Property Type="String" Name="ColorCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Type="Guid" Name="ClientId" Nullable="false" />
+          <Property Type="Boolean" Name="IsDeployed" Nullable="false" />
+          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <Property Type="Boolean" Name="IsDeployedToIntegration" Nullable="false" />
+          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
+          <Property Type="Guid" Name="ModifiedBy" />
+          <NavigationProperty Name="ImprovementTacticType_Metric" Relationship="MRPModel.FK_ImprovementTacticType_Metric_ImprovementTacticType" FromRole="ImprovementTacticType" ToRole="ImprovementTacticType_Metric" />
+          <NavigationProperty Name="ImprovementTacticType_Touches" Relationship="MRPModel.FK_ImprovementTacticType_Touches_ImprovementTacticType" FromRole="ImprovementTacticType" ToRole="ImprovementTacticType_Touches" />
+          <NavigationProperty Name="Plan_Improvement_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType" FromRole="ImprovementTacticType" ToRole="Plan_Improvement_Campaign_Program_Tactic" />
+        </EntityType>
         <EntityType Name="ImprovementTacticType_Metric">
           <Key>
             <PropertyRef Name="ImprovementTacticTypeId" />
-            <PropertyRef Name="MetricId" />
+            <PropertyRef Name="StageId" />
+            <PropertyRef Name="StageType" />
           </Key>
           <Property Type="Int32" Name="ImprovementTacticTypeId" Nullable="false" />
-          <Property Type="Int32" Name="MetricId" Nullable="false" />
           <Property Type="Double" Name="Weight" Nullable="false" />
           <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
           <Property Type="Guid" Name="CreatedBy" Nullable="false" />
-          <NavigationProperty Name="Metric" Relationship="MRPModel.FK_ImprovementTacticType_Metric_Metric" FromRole="ImprovementTacticType_Metric" ToRole="Metric" />
+          <Property Type="Int32" Name="StageId" Nullable="false" />
+          <Property Type="String" Name="StageType" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="ImprovementTacticType" Relationship="MRPModel.FK_ImprovementTacticType_Metric_ImprovementTacticType" FromRole="ImprovementTacticType_Metric" ToRole="ImprovementTacticType" />
+          <NavigationProperty Name="Stage" Relationship="MRPModel.FK_ImprovementTacticType_Metric_Stage" FromRole="ImprovementTacticType_Metric" ToRole="Stage" />
         </EntityType>
         <EntityType Name="ImprovementTacticType_Touches">
           <Key>
             <PropertyRef Name="ImprovementTacticTypeId" />
-            <PropertyRef Name="MetricId" />
+            <PropertyRef Name="StageId" />
           </Key>
           <Property Type="Int32" Name="ImprovementTacticTypeId" Nullable="false" />
-          <Property Type="Int32" Name="MetricId" Nullable="false" />
           <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
           <Property Type="Guid" Name="CreatedBy" Nullable="false" />
-          <NavigationProperty Name="Metric" Relationship="MRPModel.FK_ImprovementTacticType_Touches_Metric" FromRole="ImprovementTacticType_Touches" ToRole="Metric" />
+          <Property Type="Int32" Name="StageId" Nullable="false" />
           <NavigationProperty Name="ImprovementTacticType" Relationship="MRPModel.FK_ImprovementTacticType_Touches_ImprovementTacticType" FromRole="ImprovementTacticType_Touches" ToRole="ImprovementTacticType" />
+          <NavigationProperty Name="Stage" Relationship="MRPModel.FK_ImprovementTacticType_Touches_Stage" FromRole="ImprovementTacticType_Touches" ToRole="Stage" />
         </EntityType>
         <EntityType Name="IntegrationInstance">
           <Key>
@@ -2377,6 +2428,7 @@
           <NavigationProperty Name="IntegrationInstanceDataTypeMappings" Relationship="MRPModel.FK_IntegrationInstanceDataTypeMapping_IntegrationInstance" FromRole="IntegrationInstance" ToRole="IntegrationInstanceDataTypeMapping" />
           <NavigationProperty Name="IntegrationInstanceLogs" Relationship="MRPModel.FK_IntegrationInstanceLog_IntegrationInstance" FromRole="IntegrationInstance" ToRole="IntegrationInstanceLog" />
           <NavigationProperty Name="IntegrationInstancePlanEntityLogs" Relationship="MRPModel.FK_IntegrationInstancePlanEntityLog_IntegrationInstance" FromRole="IntegrationInstance" ToRole="IntegrationInstancePlanEntityLog" />
+          <NavigationProperty Name="Models" Relationship="MRPModel.FK_Model_IntegrationInstance" FromRole="IntegrationInstance" ToRole="Model" />
           <NavigationProperty Name="SyncFrequency" Relationship="MRPModel.FK_SyncFrequency_IntegrationInstance" FromRole="IntegrationInstance" ToRole="SyncFrequency" />
         </EntityType>
         <EntityType Name="IntegrationInstance_Attribute">
@@ -2466,25 +2518,6 @@
           <NavigationProperty Name="IntegrationInstance_Attribute" Relationship="MRPModel.FK_IntegrationInstance_Attribute_IntegrationTypeAttribute" FromRole="IntegrationTypeAttribute" ToRole="IntegrationInstance_Attribute" />
           <NavigationProperty Name="IntegrationType" Relationship="MRPModel.FK_IntegrationTypeAttribute_IntegrationType" FromRole="IntegrationTypeAttribute" ToRole="IntegrationType" />
         </EntityType>
-        <EntityType Name="Metric">
-          <Key>
-            <PropertyRef Name="MetricId" />
-          </Key>
-          <Property Type="Int32" Name="MetricId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="String" Name="MetricType" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Type="String" Name="MetricName" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Type="String" Name="MetricCode" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Type="Guid" Name="ClientId" />
-          <Property Type="Int32" Name="Level" />
-          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
-          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
-          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
-          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
-          <Property Type="Guid" Name="ModifiedBy" />
-          <NavigationProperty Name="BestInClasses" Relationship="MRPModel.FK_BestInClass_Metric" FromRole="Metric" ToRole="BestInClass" />
-          <NavigationProperty Name="ImprovementTacticType_Metric" Relationship="MRPModel.FK_ImprovementTacticType_Metric_Metric" FromRole="Metric" ToRole="ImprovementTacticType_Metric" />
-          <NavigationProperty Name="ImprovementTacticType_Touches" Relationship="MRPModel.FK_ImprovementTacticType_Touches_Metric" FromRole="Metric" ToRole="ImprovementTacticType_Touches" />
-        </EntityType>
         <EntityType Name="Model">
           <Key>
             <PropertyRef Name="ModelId" />
@@ -2507,6 +2540,7 @@
           <Property Type="DateTime" Name="EffectiveDate" Precision="3" />
           <Property Type="Int32" Name="IntegrationInstanceId" />
           <NavigationProperty Name="BusinessUnit" Relationship="MRPModel.FK_Model_BusinessUnit" FromRole="Model" ToRole="BusinessUnit" />
+          <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_Model_IntegrationInstance" FromRole="Model" ToRole="IntegrationInstance" />
           <NavigationProperty Name="Model_Audience_Event" Relationship="MRPModel.FK_Model_Audience_Event_Model_Audience_Event" FromRole="Model" ToRole="Model_Audience_Event" />
           <NavigationProperty Name="Model_Audience_Inbound" Relationship="MRPModel.FK_Model_Audience_Inbound_Model" FromRole="Model" ToRole="Model_Audience_Inbound" />
           <NavigationProperty Name="Model_Audience_Outbound" Relationship="MRPModel.FK_Model_Audience_Outbound_Model" FromRole="Model" ToRole="Model_Audience_Outbound" />
@@ -2699,8 +2733,6 @@
           <Property Type="Guid" Name="GeographyId" />
           <Property Type="DateTime" Name="StartDate" Nullable="false" Precision="3" />
           <Property Type="DateTime" Name="EndDate" Nullable="false" Precision="3" />
-          <Property Type="Int64" Name="INQs" />
-          <Property Type="Double" Name="Cost" />
           <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
           <Property Type="Guid" Name="CreatedBy" Nullable="false" />
           <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
@@ -2731,8 +2763,6 @@
           <Property Type="Guid" Name="GeographyId" />
           <Property Type="DateTime" Name="StartDate" Nullable="false" Precision="3" />
           <Property Type="DateTime" Name="EndDate" Nullable="false" Precision="3" />
-          <Property Type="Int64" Name="INQs" />
-          <Property Type="Double" Name="Cost" />
           <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
           <Property Type="Guid" Name="CreatedBy" Nullable="false" />
           <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
@@ -2765,9 +2795,6 @@
           <Property Type="Guid" Name="BusinessUnitId" Nullable="false" />
           <Property Type="DateTime" Name="StartDate" Nullable="false" Precision="3" />
           <Property Type="DateTime" Name="EndDate" Nullable="false" Precision="3" />
-          <Property Type="Int64" Name="INQs" Nullable="false" />
-          <Property Type="Int64" Name="INQsActual" />
-          <Property Type="Double" Name="MQLsActual" />
           <Property Type="Double" Name="Cost" Nullable="false" />
           <Property Type="Double" Name="CostActual" />
           <Property Type="String" Name="Status" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
@@ -2775,16 +2802,12 @@
           <Property Type="Guid" Name="CreatedBy" Nullable="false" />
           <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
           <Property Type="Guid" Name="ModifiedBy" />
-          <Property Type="Double" Name="CWs" />
-          <Property Type="Double" Name="CWsActual" />
-          <Property Type="Double" Name="Revenues" />
-          <Property Type="Double" Name="RevenuesActual" />
-          <Property Type="Double" Name="ROI" />
-          <Property Type="Double" Name="ROIActual" />
           <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
           <Property Type="Boolean" Name="IsDeployedToIntegration" Nullable="false" />
           <Property Type="String" Name="IntegrationInstanceTacticId" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Type="DateTime" Name="LastSyncDate" Precision="3" />
+          <Property Type="Double" Name="ProjectedStageValue" />
+          <Property Type="Int32" Name="StageId" Nullable="false" />
           <NavigationProperty Name="Audience" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Audience" FromRole="Plan_Campaign_Program_Tactic" ToRole="Audience" />
           <NavigationProperty Name="BusinessUnit" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_BusinessUnit" FromRole="Plan_Campaign_Program_Tactic" ToRole="BusinessUnit" />
           <NavigationProperty Name="Geography" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Geography" FromRole="Plan_Campaign_Program_Tactic" ToRole="Geography" />
@@ -2793,6 +2816,7 @@
           <NavigationProperty Name="Plan_Campaign_Program_Tactic_Comment" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Comment_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic" ToRole="Plan_Campaign_Program_Tactic_Comment" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic1" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic" ToRole="Plan_Campaign_Program_Tactic1" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic2" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic1" ToRole="Plan_Campaign_Program_Tactic" />
+          <NavigationProperty Name="Stage" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Stage" FromRole="Plan_Campaign_Program_Tactic" ToRole="Stage" />
           <NavigationProperty Name="TacticType" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" FromRole="Plan_Campaign_Program_Tactic" ToRole="TacticType" />
           <NavigationProperty Name="Vertical" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Vertical" FromRole="Plan_Campaign_Program_Tactic" ToRole="Vertical" />
           <NavigationProperty Name="Tactic_Share" Relationship="MRPModel.FK_Tactic_Share_Plan_Campaign_Program_Tactic1" FromRole="Plan_Campaign_Program_Tactic" ToRole="Tactic_Share" />
@@ -2878,10 +2902,10 @@
           <Property Type="String" Name="IntegrationInstanceTacticId" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Type="DateTime" Name="LastSyncDate" Precision="3" />
           <NavigationProperty Name="BusinessUnit" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_BusinessUnit" FromRole="Plan_Improvement_Campaign_Program_Tactic" ToRole="BusinessUnit" />
+          <NavigationProperty Name="ImprovementTacticType" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType" FromRole="Plan_Improvement_Campaign_Program_Tactic" ToRole="ImprovementTacticType" />
           <NavigationProperty Name="Plan_Improvement_Campaign_Program" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Plan_Improvement_Campaign_Program" FromRole="Plan_Improvement_Campaign_Program_Tactic" ToRole="Plan_Improvement_Campaign_Program" />
           <NavigationProperty Name="Plan_Improvement_Campaign_Program_Tactic_Comment" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Comment_Plan_Improvement_Campaign_Program_Tactic" FromRole="Plan_Improvement_Campaign_Program_Tactic" ToRole="Plan_Improvement_Campaign_Program_Tactic_Comment" />
           <NavigationProperty Name="Plan_Improvement_Campaign_Program_Tactic_Share" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Share_Plan_Improvement_Campaign_Program_Tactic" FromRole="Plan_Improvement_Campaign_Program_Tactic" ToRole="Plan_Improvement_Campaign_Program_Tactic_Share" />
-          <NavigationProperty Name="ImprovementTacticType" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType" FromRole="Plan_Improvement_Campaign_Program_Tactic" ToRole="ImprovementTacticType" />
         </EntityType>
         <EntityType Name="Plan_Improvement_Campaign_Program_Tactic_Comment">
           <Key>
@@ -2945,8 +2969,27 @@
           <Property Type="Guid" Name="ModifiedBy" />
           <Property Type="String" Name="Code" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="Funnel" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="ConversionTitle" MaxLength="255" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="BestInClasses" Relationship="MRPModel.FK_BestInClass_Stage" FromRole="Stage" ToRole="BestInClass" />
+          <NavigationProperty Name="ImprovementTacticType_Metric" Relationship="MRPModel.FK_ImprovementTacticType_Metric_Stage" FromRole="Stage" ToRole="ImprovementTacticType_Metric" />
+          <NavigationProperty Name="ImprovementTacticType_Touches" Relationship="MRPModel.FK_ImprovementTacticType_Touches_Stage" FromRole="Stage" ToRole="ImprovementTacticType_Touches" />
           <NavigationProperty Name="Model_Funnel_Stage" Relationship="MRPModel.FK_Model_Category_Stage_Stage" FromRole="Stage" ToRole="Model_Funnel_Stage" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Stage" FromRole="Stage" ToRole="Plan_Campaign_Program_Tactic" />
           <NavigationProperty Name="TacticTypes" Relationship="MRPModel.fk_TacticType_Stage" FromRole="Stage" ToRole="TacticType" />
+        </EntityType>
+        <EntityType Name="SyncFrequency">
+          <Key>
+            <PropertyRef Name="IntegrationInstanceId" />
+          </Key>
+          <Property Type="Int32" Name="IntegrationInstanceId" Nullable="false" />
+          <Property Type="String" Name="Frequency" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="Time" Name="Time" Precision="7" />
+          <Property Type="String" Name="DayofWeek" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Day" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <Property Type="DateTime" Name="NextSyncDate" Precision="3" />
+          <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_SyncFrequency_IntegrationInstance" FromRole="SyncFrequency" ToRole="IntegrationInstance" />
         </EntityType>
         <EntityType Name="Tactic_Share">
           <Key>
@@ -2975,8 +3018,6 @@
           <Property Type="String" Name="ColorCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Type="Int32" Name="ModelId" />
           <Property Type="Int32" Name="StageId" />
-          <Property Type="Int64" Name="ProjectedInquiries" />
-          <Property Type="Double" Name="ProjectedMQLs" />
           <Property Type="Double" Name="ProjectedRevenue" />
           <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
           <Property Type="Guid" Name="CreatedBy" Nullable="false" />
@@ -2985,6 +3026,7 @@
           <Property Type="Int32" Name="PreviousTacticTypeId" />
           <Property Type="Boolean" Name="IsDeleted" />
           <Property Type="Boolean" Name="IsDeployedToIntegration" Nullable="false" />
+          <Property Type="Double" Name="ProjectedStageValue" />
           <NavigationProperty Name="Model" Relationship="MRPModel.fk_TacticType_Model" FromRole="TacticType" ToRole="Model" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" FromRole="TacticType" ToRole="Plan_Campaign_Program_Tactic" />
           <NavigationProperty Name="Stage" Relationship="MRPModel.fk_TacticType_Stage" FromRole="TacticType" ToRole="Stage" />
@@ -3065,15 +3107,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_BestInClass_Metric">
-          <End Type="MRPModel.Metric" Role="Metric" Multiplicity="1" />
+        <Association Name="FK_BestInClass_Stage">
+          <End Type="MRPModel.Stage" Role="Stage" Multiplicity="1" />
           <End Type="MRPModel.BestInClass" Role="BestInClass" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Metric">
-              <PropertyRef Name="MetricId" />
+            <Principal Role="Stage">
+              <PropertyRef Name="StageId" />
             </Principal>
             <Dependent Role="BestInClass">
-              <PropertyRef Name="MetricId" />
+              <PropertyRef Name="StageId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3221,27 +3263,63 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_ImprovementTacticType_Metric_Metric">
-          <End Type="MRPModel.Metric" Role="Metric" Multiplicity="1" />
+        <Association Name="FK_ImprovementTacticType_Metric_ImprovementTacticType">
+          <End Type="MRPModel.ImprovementTacticType" Role="ImprovementTacticType" Multiplicity="1" />
           <End Type="MRPModel.ImprovementTacticType_Metric" Role="ImprovementTacticType_Metric" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Metric">
-              <PropertyRef Name="MetricId" />
+            <Principal Role="ImprovementTacticType">
+              <PropertyRef Name="ImprovementTacticTypeId" />
             </Principal>
             <Dependent Role="ImprovementTacticType_Metric">
-              <PropertyRef Name="MetricId" />
+              <PropertyRef Name="ImprovementTacticTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_ImprovementTacticType_Touches_Metric">
-          <End Type="MRPModel.Metric" Role="Metric" Multiplicity="1" />
+        <Association Name="FK_ImprovementTacticType_Touches_ImprovementTacticType">
+          <End Type="MRPModel.ImprovementTacticType" Role="ImprovementTacticType" Multiplicity="1" />
           <End Type="MRPModel.ImprovementTacticType_Touches" Role="ImprovementTacticType_Touches" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Metric">
-              <PropertyRef Name="MetricId" />
+            <Principal Role="ImprovementTacticType">
+              <PropertyRef Name="ImprovementTacticTypeId" />
             </Principal>
             <Dependent Role="ImprovementTacticType_Touches">
-              <PropertyRef Name="MetricId" />
+              <PropertyRef Name="ImprovementTacticTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType">
+          <End Type="MRPModel.ImprovementTacticType" Role="ImprovementTacticType" Multiplicity="1" />
+          <End Type="MRPModel.Plan_Improvement_Campaign_Program_Tactic" Role="Plan_Improvement_Campaign_Program_Tactic" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ImprovementTacticType">
+              <PropertyRef Name="ImprovementTacticTypeId" />
+            </Principal>
+            <Dependent Role="Plan_Improvement_Campaign_Program_Tactic">
+              <PropertyRef Name="ImprovementTacticTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ImprovementTacticType_Metric_Stage">
+          <End Type="MRPModel.Stage" Role="Stage" Multiplicity="1" />
+          <End Type="MRPModel.ImprovementTacticType_Metric" Role="ImprovementTacticType_Metric" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stage">
+              <PropertyRef Name="StageId" />
+            </Principal>
+            <Dependent Role="ImprovementTacticType_Metric">
+              <PropertyRef Name="StageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ImprovementTacticType_Touches_Stage">
+          <End Type="MRPModel.Stage" Role="Stage" Multiplicity="1" />
+          <End Type="MRPModel.ImprovementTacticType_Touches" Role="ImprovementTacticType_Touches" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stage">
+              <PropertyRef Name="StageId" />
+            </Principal>
+            <Dependent Role="ImprovementTacticType_Touches">
+              <PropertyRef Name="StageId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3301,6 +3379,30 @@
               <PropertyRef Name="IntegrationInstanceId" />
             </Principal>
             <Dependent Role="IntegrationInstancePlanEntityLog">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Model_IntegrationInstance">
+          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="0..1" />
+          <End Type="MRPModel.Model" Role="Model" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="Model">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SyncFrequency_IntegrationInstance">
+          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="1" />
+          <End Type="MRPModel.SyncFrequency" Role="SyncFrequency" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="SyncFrequency">
               <PropertyRef Name="IntegrationInstanceId" />
             </Dependent>
           </ReferentialConstraint>
@@ -3641,6 +3743,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Plan_Campaign_Program_Tactic_Stage">
+          <End Type="MRPModel.Stage" Role="Stage" Multiplicity="1" />
+          <End Type="MRPModel.Plan_Campaign_Program_Tactic" Role="Plan_Campaign_Program_Tactic" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stage">
+              <PropertyRef Name="StageId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Program_Tactic">
+              <PropertyRef Name="StageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Plan_Campaign_Program_Tactic_TacticType">
           <End Type="MRPModel.TacticType" Role="TacticType" Multiplicity="1" />
           <End Type="MRPModel.Plan_Campaign_Program_Tactic" Role="Plan_Campaign_Program_Tactic" Multiplicity="*" />
@@ -3737,89 +3851,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="ImprovementTacticType">
-          <Key>
-            <PropertyRef Name="ImprovementTacticTypeId" />
-          </Key>
-          <Property Type="Int32" Name="ImprovementTacticTypeId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="String" Name="Title" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Type="String" Name="Description" MaxLength="4000" FixedLength="false" Unicode="true" />
-          <Property Type="Double" Name="Cost" Nullable="false" />
-          <Property Type="String" Name="ColorCode" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Type="Guid" Name="ClientId" Nullable="false" />
-          <Property Type="Boolean" Name="IsDeployed" Nullable="false" />
-          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
-          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
-          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
-          <Property Type="Boolean" Name="IsDeployedToIntegration" Nullable="false" />
-          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
-          <Property Type="Guid" Name="ModifiedBy" />
-          <NavigationProperty Name="ImprovementTacticType_Metric" Relationship="MRPModel.FK_ImprovementTacticType_Metric_ImprovementTacticType" FromRole="ImprovementTacticType" ToRole="ImprovementTacticType_Metric" />
-          <NavigationProperty Name="ImprovementTacticType_Touches" Relationship="MRPModel.FK_ImprovementTacticType_Touches_ImprovementTacticType" FromRole="ImprovementTacticType" ToRole="ImprovementTacticType_Touches" />
-          <NavigationProperty Name="Plan_Improvement_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType" FromRole="ImprovementTacticType" ToRole="Plan_Improvement_Campaign_Program_Tactic" />
-        </EntityType>
-        <Association Name="FK_ImprovementTacticType_Metric_ImprovementTacticType">
-          <End Type="MRPModel.ImprovementTacticType" Role="ImprovementTacticType" Multiplicity="1" />
-          <End Type="MRPModel.ImprovementTacticType_Metric" Role="ImprovementTacticType_Metric" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ImprovementTacticType">
-              <PropertyRef Name="ImprovementTacticTypeId" />
-            </Principal>
-            <Dependent Role="ImprovementTacticType_Metric">
-              <PropertyRef Name="ImprovementTacticTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ImprovementTacticType_Touches_ImprovementTacticType">
-          <End Type="MRPModel.ImprovementTacticType" Role="ImprovementTacticType" Multiplicity="1" />
-          <End Type="MRPModel.ImprovementTacticType_Touches" Role="ImprovementTacticType_Touches" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ImprovementTacticType">
-              <PropertyRef Name="ImprovementTacticTypeId" />
-            </Principal>
-            <Dependent Role="ImprovementTacticType_Touches">
-              <PropertyRef Name="ImprovementTacticTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Plan_Improvement_Campaign_Program_Tactic_ImprovementTacticType">
-          <End Type="MRPModel.ImprovementTacticType" Role="ImprovementTacticType" Multiplicity="1" />
-          <End Type="MRPModel.Plan_Improvement_Campaign_Program_Tactic" Role="Plan_Improvement_Campaign_Program_Tactic" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ImprovementTacticType">
-              <PropertyRef Name="ImprovementTacticTypeId" />
-            </Principal>
-            <Dependent Role="Plan_Improvement_Campaign_Program_Tactic">
-              <PropertyRef Name="ImprovementTacticTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="SyncFrequency">
-          <Key>
-            <PropertyRef Name="IntegrationInstanceId" />
-          </Key>
-          <Property Type="Int32" Name="IntegrationInstanceId" Nullable="false" />
-          <Property Type="String" Name="Frequency" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Type="Time" Name="Time" Precision="7" />
-          <Property Type="String" Name="DayofWeek" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Type="String" Name="Day" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
-          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
-          <Property Type="DateTime" Name="NextSyncDate" Precision="3" />
-          <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_SyncFrequency_IntegrationInstance" FromRole="SyncFrequency" ToRole="IntegrationInstance" />
-        </EntityType>
-        <Association Name="FK_SyncFrequency_IntegrationInstance">
-          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="1" />
-          <End Type="MRPModel.SyncFrequency" Role="SyncFrequency" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="IntegrationInstance">
-              <PropertyRef Name="IntegrationInstanceId" />
-            </Principal>
-            <Dependent Role="SyncFrequency">
-              <PropertyRef Name="IntegrationInstanceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -3849,13 +3880,14 @@
           <EntitySetMapping Name="BestInClasses">
             <EntityTypeMapping TypeName="MRPModel.BestInClass">
               <MappingFragment StoreEntitySet="BestInClass">
+                <ScalarProperty Name="StageType" ColumnName="StageType" />
+                <ScalarProperty Name="StageId" ColumnName="StageId" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
                 <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="Value" ColumnName="Value" />
-                <ScalarProperty Name="MetricId" ColumnName="MetricId" />
                 <ScalarProperty Name="BestInClassId" ColumnName="BestInClassId" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -3963,13 +3995,33 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="ImprovementTacticTypes">
+            <EntityTypeMapping TypeName="MRPModel.ImprovementTacticType">
+              <MappingFragment StoreEntitySet="ImprovementTacticType">
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="IsDeployedToIntegration" ColumnName="IsDeployedToIntegration" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="IsDeployed" ColumnName="IsDeployed" />
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
+                <ScalarProperty Name="ColorCode" ColumnName="ColorCode" />
+                <ScalarProperty Name="Cost" ColumnName="Cost" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="ImprovementTacticTypeId" ColumnName="ImprovementTacticTypeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="ImprovementTacticType_Metric">
             <EntityTypeMapping TypeName="MRPModel.ImprovementTacticType_Metric">
               <MappingFragment StoreEntitySet="ImprovementTacticType_Metric">
+                <ScalarProperty Name="StageType" ColumnName="StageType" />
+                <ScalarProperty Name="StageId" ColumnName="StageId" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
                 <ScalarProperty Name="Weight" ColumnName="Weight" />
-                <ScalarProperty Name="MetricId" ColumnName="MetricId" />
                 <ScalarProperty Name="ImprovementTacticTypeId" ColumnName="ImprovementTacticTypeId" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -3977,9 +4029,9 @@
           <EntitySetMapping Name="ImprovementTacticType_Touches">
             <EntityTypeMapping TypeName="MRPModel.ImprovementTacticType_Touches">
               <MappingFragment StoreEntitySet="ImprovementTacticType_Touches">
+                <ScalarProperty Name="StageId" ColumnName="StageId" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="MetricId" ColumnName="MetricId" />
                 <ScalarProperty Name="ImprovementTacticTypeId" ColumnName="ImprovementTacticTypeId" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -4078,23 +4130,6 @@
                 <ScalarProperty Name="Attribute" ColumnName="Attribute" />
                 <ScalarProperty Name="IntegrationTypeId" ColumnName="IntegrationTypeId" />
                 <ScalarProperty Name="IntegrationTypeAttributeId" ColumnName="IntegrationTypeAttributeId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Metrics">
-            <EntityTypeMapping TypeName="MRPModel.Metric">
-              <MappingFragment StoreEntitySet="Metric">
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
-                <ScalarProperty Name="Level" ColumnName="Level" />
-                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
-                <ScalarProperty Name="MetricCode" ColumnName="MetricCode" />
-                <ScalarProperty Name="MetricName" ColumnName="MetricName" />
-                <ScalarProperty Name="MetricType" ColumnName="MetricType" />
-                <ScalarProperty Name="MetricId" ColumnName="MetricId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -4295,8 +4330,6 @@
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="Cost" ColumnName="Cost" />
-                <ScalarProperty Name="INQs" ColumnName="INQs" />
                 <ScalarProperty Name="EndDate" ColumnName="EndDate" />
                 <ScalarProperty Name="StartDate" ColumnName="StartDate" />
                 <ScalarProperty Name="GeographyId" ColumnName="GeographyId" />
@@ -4321,8 +4354,6 @@
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="Cost" ColumnName="Cost" />
-                <ScalarProperty Name="INQs" ColumnName="INQs" />
                 <ScalarProperty Name="EndDate" ColumnName="EndDate" />
                 <ScalarProperty Name="StartDate" ColumnName="StartDate" />
                 <ScalarProperty Name="GeographyId" ColumnName="GeographyId" />
@@ -4338,16 +4369,12 @@
           <EntitySetMapping Name="Plan_Campaign_Program_Tactic">
             <EntityTypeMapping TypeName="MRPModel.Plan_Campaign_Program_Tactic">
               <MappingFragment StoreEntitySet="Plan_Campaign_Program_Tactic">
+                <ScalarProperty Name="StageId" ColumnName="StageId" />
+                <ScalarProperty Name="ProjectedStageValue" ColumnName="ProjectedStageValue" />
                 <ScalarProperty Name="LastSyncDate" ColumnName="LastSyncDate" />
                 <ScalarProperty Name="IntegrationInstanceTacticId" ColumnName="IntegrationInstanceTacticId" />
                 <ScalarProperty Name="IsDeployedToIntegration" ColumnName="IsDeployedToIntegration" />
                 <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
-                <ScalarProperty Name="ROIActual" ColumnName="ROIActual" />
-                <ScalarProperty Name="ROI" ColumnName="ROI" />
-                <ScalarProperty Name="RevenuesActual" ColumnName="RevenuesActual" />
-                <ScalarProperty Name="Revenues" ColumnName="Revenues" />
-                <ScalarProperty Name="CWsActual" ColumnName="CWsActual" />
-                <ScalarProperty Name="CWs" ColumnName="CWs" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
@@ -4355,9 +4382,6 @@
                 <ScalarProperty Name="Status" ColumnName="Status" />
                 <ScalarProperty Name="CostActual" ColumnName="CostActual" />
                 <ScalarProperty Name="Cost" ColumnName="Cost" />
-                <ScalarProperty Name="MQLsActual" ColumnName="MQLsActual" />
-                <ScalarProperty Name="INQsActual" ColumnName="INQsActual" />
-                <ScalarProperty Name="INQs" ColumnName="INQs" />
                 <ScalarProperty Name="EndDate" ColumnName="EndDate" />
                 <ScalarProperty Name="StartDate" ColumnName="StartDate" />
                 <ScalarProperty Name="BusinessUnitId" ColumnName="BusinessUnitId" />
@@ -4496,6 +4520,7 @@
           <EntitySetMapping Name="Stages">
             <EntityTypeMapping TypeName="MRPModel.Stage">
               <MappingFragment StoreEntitySet="Stage">
+                <ScalarProperty Name="ConversionTitle" ColumnName="ConversionTitle" />
                 <ScalarProperty Name="Funnel" ColumnName="Funnel" />
                 <ScalarProperty Name="Code" ColumnName="Code" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
@@ -4509,6 +4534,20 @@
                 <ScalarProperty Name="ClientId" ColumnName="ClientId" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="StageId" ColumnName="StageId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SyncFrequencies">
+            <EntityTypeMapping TypeName="MRPModel.SyncFrequency">
+              <MappingFragment StoreEntitySet="SyncFrequency">
+                <ScalarProperty Name="NextSyncDate" ColumnName="NextSyncDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Day" ColumnName="Day" />
+                <ScalarProperty Name="DayofWeek" ColumnName="DayofWeek" />
+                <ScalarProperty Name="Time" ColumnName="Time" />
+                <ScalarProperty Name="Frequency" ColumnName="Frequency" />
+                <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -4529,6 +4568,7 @@
           <EntitySetMapping Name="TacticTypes">
             <EntityTypeMapping TypeName="MRPModel.TacticType">
               <MappingFragment StoreEntitySet="TacticType">
+                <ScalarProperty Name="ProjectedStageValue" ColumnName="ProjectedStageValue" />
                 <ScalarProperty Name="IsDeployedToIntegration" ColumnName="IsDeployedToIntegration" />
                 <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="PreviousTacticTypeId" ColumnName="PreviousTacticTypeId" />
@@ -4537,8 +4577,6 @@
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
                 <ScalarProperty Name="ProjectedRevenue" ColumnName="ProjectedRevenue" />
-                <ScalarProperty Name="ProjectedMQLs" ColumnName="ProjectedMQLs" />
-                <ScalarProperty Name="ProjectedInquiries" ColumnName="ProjectedInquiries" />
                 <ScalarProperty Name="StageId" ColumnName="StageId" />
                 <ScalarProperty Name="ModelId" ColumnName="ModelId" />
                 <ScalarProperty Name="ColorCode" ColumnName="ColorCode" />
@@ -4584,39 +4622,6 @@
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="VerticalId" ColumnName="VerticalId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="ImprovementTacticTypes">
-            <EntityTypeMapping TypeName="MRPModel.ImprovementTacticType">
-              <MappingFragment StoreEntitySet="ImprovementTacticType">
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="IsDeployedToIntegration" ColumnName="IsDeployedToIntegration" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
-                <ScalarProperty Name="IsDeployed" ColumnName="IsDeployed" />
-                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
-                <ScalarProperty Name="ColorCode" ColumnName="ColorCode" />
-                <ScalarProperty Name="Cost" ColumnName="Cost" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="ImprovementTacticTypeId" ColumnName="ImprovementTacticTypeId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="SyncFrequencies">
-            <EntityTypeMapping TypeName="MRPModel.SyncFrequency">
-              <MappingFragment StoreEntitySet="SyncFrequency">
-                <ScalarProperty Name="NextSyncDate" ColumnName="NextSyncDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="Day" ColumnName="Day" />
-                <ScalarProperty Name="DayofWeek" ColumnName="DayofWeek" />
-                <ScalarProperty Name="Time" ColumnName="Time" />
-                <ScalarProperty Name="Frequency" ColumnName="Frequency" />
-                <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

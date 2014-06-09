@@ -32,9 +32,6 @@ namespace RevenuePlanner.Models
         public System.Guid BusinessUnitId { get; set; }
         public System.DateTime StartDate { get; set; }
         public System.DateTime EndDate { get; set; }
-        public long INQs { get; set; }
-        public Nullable<long> INQsActual { get; set; }
-        public Nullable<double> MQLsActual { get; set; }
         public double Cost { get; set; }
         public Nullable<double> CostActual { get; set; }
         public string Status { get; set; }
@@ -42,16 +39,12 @@ namespace RevenuePlanner.Models
         public System.Guid CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
-        public Nullable<double> CWs { get; set; }
-        public Nullable<double> CWsActual { get; set; }
-        public Nullable<double> Revenues { get; set; }
-        public Nullable<double> RevenuesActual { get; set; }
-        public Nullable<double> ROI { get; set; }
-        public Nullable<double> ROIActual { get; set; }
         public bool IsDeleted { get; set; }
         public bool IsDeployedToIntegration { get; set; }
         public string IntegrationInstanceTacticId { get; set; }
         public Nullable<System.DateTime> LastSyncDate { get; set; }
+        public Nullable<double> ProjectedStageValue { get; set; }
+        public int StageId { get; set; }
     
         public virtual Audience Audience { get; set; }
         public virtual BusinessUnit BusinessUnit { get; set; }
@@ -61,6 +54,7 @@ namespace RevenuePlanner.Models
         public virtual ICollection<Plan_Campaign_Program_Tactic_Comment> Plan_Campaign_Program_Tactic_Comment { get; set; }
         public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic1 { get; set; }
         public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic2 { get; set; }
+        public virtual Stage Stage { get; set; }
         public virtual TacticType TacticType { get; set; }
         public virtual Vertical Vertical { get; set; }
         public virtual ICollection<Tactic_Share> Tactic_Share { get; set; }

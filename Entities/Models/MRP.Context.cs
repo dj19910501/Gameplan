@@ -37,6 +37,7 @@ namespace RevenuePlanner.Models
         public DbSet<Funnel_Field> Funnel_Field { get; set; }
         public DbSet<GameplanDataType> GameplanDataTypes { get; set; }
         public DbSet<Geography> Geographies { get; set; }
+        public DbSet<ImprovementTacticType> ImprovementTacticTypes { get; set; }
         public DbSet<ImprovementTacticType_Metric> ImprovementTacticType_Metric { get; set; }
         public DbSet<ImprovementTacticType_Touches> ImprovementTacticType_Touches { get; set; }
         public DbSet<IntegrationInstance> IntegrationInstances { get; set; }
@@ -46,7 +47,6 @@ namespace RevenuePlanner.Models
         public DbSet<IntegrationInstancePlanEntityLog> IntegrationInstancePlanEntityLogs { get; set; }
         public DbSet<IntegrationType> IntegrationTypes { get; set; }
         public DbSet<IntegrationTypeAttribute> IntegrationTypeAttributes { get; set; }
-        public DbSet<Metric> Metrics { get; set; }
         public DbSet<Model> Models { get; set; }
         public DbSet<Model_Audience_Event> Model_Audience_Event { get; set; }
         public DbSet<Model_Audience_Inbound> Model_Audience_Inbound { get; set; }
@@ -69,13 +69,12 @@ namespace RevenuePlanner.Models
         public DbSet<Plan_Team> Plan_Team { get; set; }
         public DbSet<Report_Share> Report_Share { get; set; }
         public DbSet<Stage> Stages { get; set; }
+        public DbSet<SyncFrequency> SyncFrequencies { get; set; }
         public DbSet<Tactic_Share> Tactic_Share { get; set; }
         public DbSet<TacticType> TacticTypes { get; set; }
         public DbSet<User_Filter> User_Filter { get; set; }
         public DbSet<User_Notification> User_Notification { get; set; }
         public DbSet<Vertical> Verticals { get; set; }
-        public DbSet<ImprovementTacticType> ImprovementTacticTypes { get; set; }
-        public DbSet<SyncFrequency> SyncFrequencies { get; set; }
     
         public virtual int Plan_Campaign_Program_Tactic_ActualDelete(Nullable<int> planTacticId, ObjectParameter returnValue)
         {

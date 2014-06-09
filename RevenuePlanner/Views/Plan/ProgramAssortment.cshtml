@@ -120,10 +120,10 @@
             @if (!(bool)ViewBag.IsCreated)
             {
                 <div class="cf width100">
-                    <div class="width65px margin-right20 pull-left">
+                    @*<div class="width65px margin-right20 pull-left">
                         <label title="@Html.LabelForINQ("INQ")">@Html.LabelForINQ("INQ")</label>
                         @Html.TextBoxFor(model => model.INQs, new { placeholder = "0", id = "txtinq", @class = "priceValue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
-                    </div>
+                    </div>*@
 
                     <div class="width65px margin-right20 pull-left">
                         <label title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</label>

@@ -49,6 +49,7 @@
             @Html.HiddenFor(model => model.CStartDate, new { id = "hdnCStartDate" })
             @Html.HiddenFor(model => model.CEndDate, new { id = "hdnCEndDate" })
             @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
+            @Html.HiddenFor(model => model.StageId, new { id = "hdnStageId" })
 
 
             <label class="t_title">Tactic Title</label>
@@ -122,8 +123,11 @@
         <div class="content dark inline-ellipsis">
             <div class="cf width100">
                 <div class="width65px margin-right20 pull-left">
-                    <label title="@Html.LabelForINQ("INQ")">@Html.LabelForINQ("INQ")</label>
-                    @Html.TextBoxFor(model => model.INQs, new { placeholder = "0", id = "txtinq", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
+                    @*<label title="@Html.LabelForINQ("INQ")">@Html.LabelForINQ("INQ")</label>*@
+                    <label id="lblStageTitle" title="@Model.StageTitle">@Model.StageTitle</label>
+                    @*@Html.TextBoxFor(model => model.INQs, new { placeholder = "0", id = "txtinq", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })*@
+                    @Html.TextBoxFor(model => model.ProjectedStageValue, new { placeholder = "0", id = "txtProjectedStageValue", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
+
                 </div>
 
                 <div class="width65px margin-right20 pull-left">
@@ -169,6 +173,13 @@ if ((bool)ViewBag.IsOwner)
         var isAssortment = $("#hdnRedirectType").val();
         var hdnYear = @ViewBag.Year
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+
+        if ('@TempData["TacticMQL"]' == "N/A")
+        {
+            $("#txtmql").removeClass("priceValue");
+            $("#txtmql").val("N/A");
+        }
+
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
         if (isredirect == 'True') {
@@ -263,20 +274,25 @@ if ((bool)ViewBag.IsOwner)
             });
             return false;
         }
-        $("#txtinq").focusout(function () {
-            var inqValue = ReplaceCC($("#txtinq").val());
-            GetConversionRate(inqValue);
+        $("#txtProjectedStageValue").focusout(function () {
+            var projectedStageValue = ReplaceCC($("#txtProjectedStageValue").val());
+            GetConversionRate(projectedStageValue, false);
         });
 
         var mqlConversion = 0;
-        function GetConversionRate(inqValue) {
+        function GetConversionRate(projectedStageValue, isTacticTypeChange) {
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/CalculateMQL")',
-                data: $("form").serialize() + '&INQValue=' + inqValue + '&RedirectType=' + isAssortment,
+                data: $("form").serialize() + '&projectedStageValue=' + projectedStageValue + '&RedirectType=' + isAssortment + '&isTacticTypeChange=' + isTacticTypeChange,
                 success: function (data) {
+                    if (data.mql == 'N/A') {
+                        $("#txtmql").val(data.mql);
+                    }
+                    else {
                     mqlConversion = data.mql;
                     $("#txtmql").val(FormatCommas(mqlConversion.toString(), false));
+                }
                 }
             });
     }
@@ -386,8 +402,13 @@ if ((bool)ViewBag.IsOwner)
 
             }
 
-            $("#txtinq").val(ReplaceCC($("#txtinq").val()));
+            $("#txtProjectedStageValue").val(ReplaceCC($("#txtProjectedStageValue").val()));
+            if ($("#txtmql").val() == 'N/A') {
+                $("#txtmql").val(0);
+            }
+            else {
             $("#txtmql").val(ReplaceCC($("#txtmql").val()));
+            }
             $("#txtCost").val(ReplaceCC($("#txtCost").val()));
             var arrClosedTaskString = null;
             if (typeof arrClosedTask != 'undefined') {
@@ -419,9 +440,10 @@ if ((bool)ViewBag.IsOwner)
 
         $('#ddlTacticType').change(function () {
             var tacticTypeId = $(this).val();
-            var pinq = 0;
+            //var pinq = 0;
             var pmql = 0;
             var pcost = 0;
+            var projectedStageValue = 0;
             //alert(tacticTypeId);
             if (tacticTypeId != '') {
                 $.ajax({
@@ -429,11 +451,14 @@ if ((bool)ViewBag.IsOwner)
                     url: '@Url.Content("~/Plan/LoadTacticTypeValue")',
                     data: { tacticTypeId: tacticTypeId },
                     success: function (data) {
-                        pinq = data.inq;
-                        pmql = data.mql;
+                        //pinq = data.inq;
+                        //pmql = data.mql;
                         pcost = data.revenue;
-                        $("#txtinq").val(pinq);
-                        GetConversionRate(pinq);
+                        projectedStageValue = data.projectedStageValue;
+                        $("#lblStageTitle").text(data.stageTitle);
+                        $("#hdnStageId").val(data.stageId);
+                        $("#txtProjectedStageValue").val(projectedStageValue);
+                        GetConversionRate(projectedStageValue, true); //GetConversionRate(pinq);
                         // $("#txtmql").val(FormatCommas(Math.round(mqlConversion * pinq).toString(), false));
                         $("#txtCost").val(pcost);
                         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
@@ -451,15 +476,19 @@ if ((bool)ViewBag.IsOwner)
                             $("#t_integration_status").removeClass("icon-check-blue");
                             $("#hdnIsDeployedToIntegration").val(false);
                         }
+
                     }
                 });
             }
             else {
-                $("#txtinq").val(pinq);
+                $("#txtProjectedStageValue").val(projectedStageValue);
                 $("#txtmql").val(pmql);
                 $("#txtCost").val(pcost);
                 $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
                 $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+                $("#lblStageTitle").text("Stage");
+                $("#hdnStageId").val("0");
+
             }
 
 
@@ -524,8 +553,8 @@ if ((bool)ViewBag.IsOwner)
             format: "@RevenuePlanner.Helpers.Common.dateFormat",
             autoclose: true,
         }).on('changeDate', function (ev) {
-            var inqValue = ReplaceCC($("#txtinq").val());
-            GetConversionRate(inqValue);
+            var projectedStageValue = ReplaceCC($("#txtProjectedStageValue").val());
+            GetConversionRate(projectedStageValue, false);
             $(this).datepicker('hide');
         });;
 

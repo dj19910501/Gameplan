@@ -1999,7 +1999,7 @@ function FillTacticsTable() {
     if (typeof activities != 'undefined') {
         if (activities.data.length) {
             for (i in activities.data) {
-                addRowTactic(i, activities.data[i].id, activities.data[i].text, activities.data[i].inqs,
+                addRowTactic(i, activities.data[i].id, activities.data[i].text, activities.data[i].projectedStageValue,
                     activities.data[i].mqls, activities.data[i].cws, activities.data[i].cost, activities.data[i].isDeclined, activities.data[i].isSubmitted, activities.data[i].isImprovement);
             }
         }
@@ -2008,12 +2008,12 @@ function FillTacticsTable() {
 
 //// Modified By Maninder Singh Wadhva PL Ticket#47
 //add row in tactics table
-function addRowTactic(index, id, text, inqs, mqls, cws, cost, isDeclined, isSubmitted, isImprovement) {
+function addRowTactic(index, id, text, projectedStageValue, mqls, cws, cost, isDeclined, isSubmitted, isImprovement) {
     var $activitiesTable = $('#table_activities > tbody');
     var $html = "";
     if (isImprovement) {
         var valueForImprovement = '---';
-        inqs = valueForImprovement;
+        projectedStageValue = valueForImprovement;
         mqls = valueForImprovement;
         cws = valueForImprovement;
     }
@@ -2026,7 +2026,7 @@ function addRowTactic(index, id, text, inqs, mqls, cws, cost, isDeclined, isSubm
         }
 
         $html += '<span class="title-baseline-model">' + text + '</span><span class="search-icon"></span></td>' +
-                    '<td class="sm">' + inqs + '</td>' +
+                    '<td class="sm">' + projectedStageValue + '</td>' +
                     '<td class="sm">' + mqls + '</td>' +
                     '<td class="sm">' + FormatCurrency(cws, false) + '</td>' +
                     '<td class="border-r sm">' + FormatCurrency(cost, false) + '</td>' +
@@ -2041,7 +2041,7 @@ function addRowTactic(index, id, text, inqs, mqls, cws, cost, isDeclined, isSubm
         }
 
         $html += '<span class="title-baseline-model">' + text + '</span><span class="search-icon"></span></td>' +
-                    '<td class="sm">' + inqs + '</td>' +
+                    '<td class="sm">' + projectedStageValue + '</td>' +
                     '<td class="sm">' + mqls + '</td>' +
                     '<td class="sm">' + FormatCurrency(cws, false) + '</td>' +
                     '<td class="border-r sm">' + FormatCurrency(cost, false) + '</td>' +

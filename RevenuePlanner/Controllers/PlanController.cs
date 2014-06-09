@@ -1409,8 +1409,8 @@ namespace RevenuePlanner.Controllers
                 id = p.PlanCampaignId,
                 title = p.Title,
                 description = p.Description,
-                cost = p.Cost.HasValue ? p.Cost : 0,
-                inqs = p.INQs.HasValue ? p.INQs : 0,
+                cost = Common.CalculateCampaignCost(p.PlanCampaignId), //cost = p.Cost.HasValue ? p.Cost : 0, // Modified for PL#440 by Dharmraj
+                //inqs = p.INQs.HasValue ? p.INQs : 0,
                 mqls = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == p.PlanCampaignId && t.IsDeleted == false).ToList(), true).Sum(tm => tm.MQL),
                 /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
         changed by : Nirav Shah on 13 feb 2014*/
@@ -1420,8 +1420,8 @@ namespace RevenuePlanner.Controllers
                     id = pcpj.PlanProgramId,
                     title = pcpj.Title,
                     description = pcpj.Description,
-                    cost = pcpj.Cost.HasValue ? pcpj.Cost : 0,
-                    inqs = pcpj.INQs.HasValue ? pcpj.INQs : 0,
+                    cost = Common.CalculateProgramCost(pcpj.PlanProgramId), //cost = pcpj.Cost.HasValue ? pcpj.Cost : 0, // Modified for PL#440 by Dharmraj
+                    //inqs = pcpj.INQs.HasValue ? pcpj.INQs : 0,
                     mqls = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcpj.PlanProgramId && t.IsDeleted == false).ToList(), true).Sum(tm => tm.MQL),
                     isOwner = Sessions.User.UserId == pcpj.CreatedBy ? 0 : 1,
                     tactics = (db.Plan_Campaign_Program_Tactic.ToList().Where(pcpt => pcpt.PlanProgramId.Equals(pcpj.PlanProgramId) && pcpt.IsDeleted.Equals(false)).Select(pcpt => pcpt).ToList()).Select(pcptj => new
@@ -1430,8 +1430,8 @@ namespace RevenuePlanner.Controllers
                         title = pcptj.Title,
                         description = pcptj.Description,
                         cost = pcptj.Cost,
-                        inqs = pcptj.INQs,
-                        mqls = Common.CalculateMQLTactic(pcptj.INQs, pcptj.StartDate, pcptj.PlanTacticId, pcptj.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId),
+                        //inqs = pcptj.INQs,
+                        mqls = Common.CalculateMQLTactic(Convert.ToDouble(pcptj.ProjectedStageValue), pcptj.StartDate, pcptj.PlanTacticId, pcptj.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId),
                         /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
                          changed by : Nirav Shah on 13 feb 2014*/
                         isOwner = Sessions.User.UserId == pcptj.CreatedBy ? 0 : 1,
@@ -1559,9 +1559,9 @@ namespace RevenuePlanner.Controllers
                     pcm.TEndDate = (from oted in ted select oted.EndDate).Max();
                 }
             }
-            pcm.INQs = pc.INQs;
+            //pcm.INQs = pc.INQs;
             pcm.MQLs = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == pc.PlanCampaignId && t.IsDeleted == false).ToList()).Sum(tm => tm.MQL);
-            pcm.Cost = pc.Cost;
+            pcm.Cost = Common.CalculateCampaignCost(pc.PlanCampaignId); //pc.Cost; // Modified for PL#440 by Dharmraj
             if (Sessions.User.UserId == pc.CreatedBy)
             {
                 ViewBag.IsOwner = true;
@@ -1634,8 +1634,8 @@ namespace RevenuePlanner.Controllers
                                 //pcobj.VerticalId = form.VerticalId;
                                 //pcobj.AudienceId = form.AudienceId;
                                 //pcobj.GeographyId = form.GeographyId;
-                                pcobj.INQs = 0;
-                                pcobj.Cost = 0;
+                                //pcobj.INQs = 0;
+                                //pcobj.Cost = 0;
                                 pcobj.StartDate = GetCurrentDateBasedOnPlan();
                                 pcobj.EndDate = GetCurrentDateBasedOnPlan(true);
                                 pcobj.CreatedBy = Sessions.User.UserId;
@@ -1662,8 +1662,8 @@ namespace RevenuePlanner.Controllers
                                             //pcpobj.VerticalId = form.VerticalId;
                                             //pcpobj.AudienceId = form.AudienceId;
                                             //pcpobj.GeographyId = form.GeographyId;
-                                            pcpobj.INQs = 0;
-                                            pcpobj.Cost = 0;
+                                            //pcpobj.INQs = 0;
+                                            //pcpobj.Cost = 0;
                                             pcpobj.StartDate = GetCurrentDateBasedOnPlan();
                                             pcpobj.EndDate = GetCurrentDateBasedOnPlan(true);
                                             pcpobj.CreatedBy = Sessions.User.UserId;
@@ -1937,9 +1937,9 @@ namespace RevenuePlanner.Controllers
                     pcpm.TEndDate = (from oted in ted select oted.EndDate).Max();
                 }
             }
-            pcpm.INQs = pcp.INQs;
+            //pcpm.INQs = pcp.INQs;
             pcpm.MQLs = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcp.PlanProgramId && t.IsDeleted == false).ToList()).Sum(tm => tm.MQL);
-            pcpm.Cost = pcp.Cost;
+            pcpm.Cost = Common.CalculateProgramCost(pcp.PlanProgramId); //pcp.Cost; modified for PL #440 by dharmraj 
             /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
 
             pcpm.IsDeployedToIntegration = pcp.IsDeployedToIntegration;
@@ -2036,7 +2036,7 @@ namespace RevenuePlanner.Controllers
                                         //pcptobj.VerticalId = form.VerticalId;
                                         //pcptobj.AudienceId = form.AudienceId;
                                         //pcptobj.GeographyId = form.GeographyId;
-                                        pcptobj.INQs = mt.ProjectedInquiries == null ? 0 : Convert.ToInt32(mt.ProjectedInquiries);
+                                        //pcptobj.INQs = mt.ProjectedInquiries == null ? 0 : Convert.ToInt32(mt.ProjectedInquiries);
                                         pcptobj.Cost = mt.ProjectedRevenue == null ? 0 : Convert.ToDouble(mt.ProjectedRevenue);
                                         pcptobj.StartDate = GetCurrentDateBasedOnPlan();
                                         pcptobj.EndDate = GetCurrentDateBasedOnPlan(true);
@@ -2045,6 +2045,10 @@ namespace RevenuePlanner.Controllers
                                                                   join p in db.Plans on m.ModelId equals p.ModelId
                                                                   where p.PlanId == Sessions.PlanId
                                                                   select m.BusinessUnitId).FirstOrDefault();
+
+                                        pcptobj.StageId = Convert.ToInt32(mt.StageId);
+                                        pcptobj.ProjectedStageValue = mt.ProjectedStageValue;
+
                                         pcptobj.CreatedBy = Sessions.User.UserId;
                                         pcptobj.CreatedDate = DateTime.Now;
                                         db.Entry(pcptobj).State = EntityState.Added;
@@ -2053,7 +2057,7 @@ namespace RevenuePlanner.Controllers
                                         result = Common.InsertChangeLog(Sessions.PlanId, null, tid, pcptobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                                     }
                                 }
-                                result = TacticValueCalculate(pcpobj.PlanProgramId);
+                                //result = TacticValueCalculate(pcpobj.PlanProgramId); // Modified by dharmraj for PL #440
                                 Common.ChangeCampaignStatus(pcpobj.PlanCampaignId);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 scope.Complete();
                                 return Json(new { redirect = Url.Action("Assortment", new { campaignId = form.PlanCampaignId }) });
@@ -2183,7 +2187,7 @@ namespace RevenuePlanner.Controllers
                             returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pc.PlanProgramId, pc.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
                             if (returnValue >= 1)
                             {
-                                TacticValueCalculate(pc.PlanCampaignId, false);
+                                //TacticValueCalculate(pc.PlanCampaignId, false); modofied for PL #440 by dharmraj
                                 Common.ChangeCampaignStatus(pc.PlanCampaignId);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 scope.Complete();
                                 /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
@@ -2253,6 +2257,8 @@ namespace RevenuePlanner.Controllers
             Plan_Campaign_Program_TacticModel pcptm = new Plan_Campaign_Program_TacticModel();
             pcptm.PlanProgramId = id;
             pcptm.IsDeployedToIntegration = false;
+            pcptm.StageId = 0;
+            pcptm.StageTitle = "Stage";
             //Plan_Campaign_Program pcp = db.Plan_Campaign_Program.Where(pcpo => pcpo.PlanProgramId == id).SingleOrDefault();
             //pcptm.GeographyId = pcp.GeographyId;
             //pcptm.VerticalId = pcp.VerticalId;
@@ -2331,11 +2337,34 @@ namespace RevenuePlanner.Controllers
                 pcptm.CStartDate = pcpt.Plan_Campaign_Program.Plan_Campaign.StartDate;
                 pcptm.CEndDate = pcpt.Plan_Campaign_Program.Plan_Campaign.EndDate;
             }
-            pcptm.INQs = pcpt.INQs;
-            pcptm.MQLs = Common.CalculateMQLTactic(pcpt.INQs, pcpt.StartDate, pcpt.PlanTacticId, pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId);
+
+            //pcptm.INQs = pcpt.INQs;
+
+            string stageMQL = Enums.Stage.MQL.ToString();
+            int levelMQL = db.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageMQL)).Level.Value;
+            int tacticStageLevel = Convert.ToInt32(db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == pcpt.PlanTacticId).Stage.Level);
+            if (tacticStageLevel < levelMQL)
+            {
+                pcptm.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(pcpt.ProjectedStageValue), pcpt.StartDate, pcpt.PlanTacticId, pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId);
+            }
+            else if (tacticStageLevel == levelMQL)
+            {
+                pcptm.MQLs = Convert.ToDouble(pcpt.ProjectedStageValue);
+            }
+            else if (tacticStageLevel > levelMQL)
+            {
+                pcptm.MQLs = 0;
+                TempData["TacticMQL"] = "N/A";
+            }
+
+            
             pcptm.Cost = pcpt.Cost;
 
             pcptm.IsDeployedToIntegration = pcpt.IsDeployedToIntegration;
+
+            pcptm.StageId = Convert.ToInt32(pcpt.StageId);
+            pcptm.StageTitle = db.Stages.FirstOrDefault(varS => varS.StageId == pcpt.StageId).Title;
+            pcptm.ProjectedStageValue = Convert.ToDouble(pcpt.ProjectedStageValue);
 
             /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
             if (Sessions.User.UserId == pcpt.CreatedBy)
@@ -2415,7 +2444,7 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.VerticalId = form.VerticalId;
                                 pcpobj.AudienceId = form.AudienceId;
                                 pcpobj.GeographyId = form.GeographyId;
-                                pcpobj.INQs = form.INQs;
+                                //pcpobj.INQs = form.INQs;
                                 pcpobj.Cost = form.Cost;
                                 pcpobj.StartDate = GetCurrentDateBasedOnPlan();
                                 pcpobj.EndDate = GetCurrentDateBasedOnPlan(true);
@@ -2425,11 +2454,13 @@ namespace RevenuePlanner.Controllers
                                                          where p.PlanId == Sessions.PlanId
                                                          select m.BusinessUnitId).FirstOrDefault();
                                 pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
+                                pcpobj.StageId = form.StageId;
+                                pcpobj.ProjectedStageValue = form.ProjectedStageValue;
                                 pcpobj.CreatedBy = Sessions.User.UserId;
                                 pcpobj.CreatedDate = DateTime.Now;
                                 db.Entry(pcpobj).State = EntityState.Added;
                                 int result = db.SaveChanges();
-                                result = TacticValueCalculate(pcpobj.PlanProgramId);
+                                //result = TacticValueCalculate(pcpobj.PlanProgramId); // Commented by Dharmraj for PL #440
                                 result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                                 if (result >= 1)
                                 {
@@ -2549,9 +2580,9 @@ namespace RevenuePlanner.Controllers
                                     }
 
                                 }
-                                if (pcpobj.INQs != form.INQs)
+                                if (pcpobj.ProjectedStageValue != form.ProjectedStageValue)
                                 {
-                                    pcpobj.INQs = form.INQs;
+                                    pcpobj.ProjectedStageValue = form.ProjectedStageValue;
                                     if (!isDirectorLevelUser) isReSubmission = true;
                                 }
                                 /* TFS Bug 207 : Cant override the Cost from the defaults coming out of the model
@@ -2566,6 +2597,8 @@ namespace RevenuePlanner.Controllers
                                 // pcpobj.Cost = form.Cost; 
 
                                 pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
+                                pcpobj.StageId = form.StageId;
+                                pcpobj.ProjectedStageValue = form.ProjectedStageValue;
 
                                 pcpobj.ModifiedBy = Sessions.User.UserId;
                                 pcpobj.ModifiedDate = DateTime.Now;
@@ -2581,7 +2614,7 @@ namespace RevenuePlanner.Controllers
                                     Common.mailSendForTactic(pcpobj.PlanTacticId, pcpobj.Status, pcpobj.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
                                 }
                                 result = db.SaveChanges();
-                                result = TacticValueCalculate(pcpobj.PlanProgramId);
+                                //result = TacticValueCalculate(pcpobj.PlanProgramId); // Modified by Dharmraj for PL #440
                                 if (result >= 1)
                                 {
                                     //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
@@ -2658,7 +2691,7 @@ namespace RevenuePlanner.Controllers
                             returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcpt.PlanTacticId, pcpt.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
                             if (returnValue >= 1)
                             {
-                                TacticValueCalculate(pcpt.PlanProgramId);
+                                //TacticValueCalculate(pcpt.PlanProgramId); // Modified by Dharmraj for PL #440
 
                                 //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 Common.ChangeProgramStatus(pcpt.PlanProgramId);
@@ -2697,47 +2730,48 @@ namespace RevenuePlanner.Controllers
 
         /// <summary>
         /// Total Stage Value Calculated & Update.
+        /// Modified for PL #440 by dharmraj
         /// </summary>
         /// <param name="id">id.</param>
         /// <returns>return int.</returns>
-        public int TacticValueCalculate(int id, bool isProgram = true)
-        {
-            try
-            {
-                if (isProgram)
-                {
-                    Plan_Campaign_Program pcp = new Plan_Campaign_Program();
-                    pcp = db.Plan_Campaign_Program.Where(p => p.PlanProgramId == id).SingleOrDefault();
-                    var totalProgram = (from t in db.Plan_Campaign_Program_Tactic
-                                        where t.PlanProgramId == id && t.IsDeleted.Equals(false)
-                                        select new { t.INQs, t.Cost }).ToList();
-                    pcp.INQs = totalProgram.Sum(tp => tp.INQs);
-                    pcp.Cost = totalProgram.Sum(tp => tp.Cost);
-                    db.Entry(pcp).State = EntityState.Modified;
-                    id = pcp.PlanCampaignId;
-                }
+        //public int TacticValueCalculate(int id, bool isProgram = true)
+        //{
+        //    try
+        //    {
+        //        if (isProgram)
+        //        {
+        //            Plan_Campaign_Program pcp = new Plan_Campaign_Program();
+        //            pcp = db.Plan_Campaign_Program.Where(p => p.PlanProgramId == id).SingleOrDefault();
+        //            var totalProgram = (from t in db.Plan_Campaign_Program_Tactic
+        //                                where t.PlanProgramId == id && t.IsDeleted.Equals(false)
+        //                                select new { t.INQs, t.Cost }).ToList();
+        //            pcp.INQs = totalProgram.Sum(tp => tp.INQs);
+        //            pcp.Cost = totalProgram.Sum(tp => tp.Cost);
+        //            db.Entry(pcp).State = EntityState.Modified;
+        //            id = pcp.PlanCampaignId;
+        //        }
 
-                Plan_Campaign pc = new Plan_Campaign();
-                pc = db.Plan_Campaign.Where(p => p.PlanCampaignId == id).SingleOrDefault();
-                var totalCampaign = (from t in db.Plan_Campaign_Program_Tactic
-                                     where t.Plan_Campaign_Program.PlanCampaignId == id && t.IsDeleted.Equals(false)
-                                     select new { t.INQs, t.Cost }).ToList();
-                pc.INQs = totalCampaign.Sum(tp => tp.INQs);
-                pc.Cost = totalCampaign.Sum(tp => tp.Cost);
+        //        Plan_Campaign pc = new Plan_Campaign();
+        //        pc = db.Plan_Campaign.Where(p => p.PlanCampaignId == id).SingleOrDefault();
+        //        var totalCampaign = (from t in db.Plan_Campaign_Program_Tactic
+        //                             where t.Plan_Campaign_Program.PlanCampaignId == id && t.IsDeleted.Equals(false)
+        //                             select new { t.INQs, t.Cost }).ToList();
+        //        pc.INQs = totalCampaign.Sum(tp => tp.INQs);
+        //        pc.Cost = totalCampaign.Sum(tp => tp.Cost);
 
-                db.Entry(pc).State = EntityState.Modified;
-                return db.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-            }
-            return 0;
-        }
+        //        db.Entry(pc).State = EntityState.Modified;
+        //        return db.SaveChanges();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        ErrorSignal.FromCurrentContext().Raise(e);
+        //    }
+        //    return 0;
+        //}
 
         /// <summary>
         /// Added By: Bhavesh Dobariya.
-        /// Action to Get Tactic Type INQ,MQL,Cost Value.
+        /// Action to Get Tactic Type INQ,MQL,Cost,Stage Value.
         /// </summary>
         /// <param name="tacticTypeId">Tactic Type Id</param>
         /// <returns>Returns Json Result of Tactic Type. </returns>
@@ -2745,8 +2779,14 @@ namespace RevenuePlanner.Controllers
         public JsonResult LoadTacticTypeValue(int tacticTypeId)
         {
             TacticType tt = db.TacticTypes.Where(t => t.TacticTypeId == tacticTypeId).FirstOrDefault();
-            //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
-            return Json(new { inq = tt.ProjectedInquiries == null ? 0 : tt.ProjectedInquiries, projectedstagevalue = tt.ProjectedStageValue == null ? 0 : tt.ProjectedStageValue, revenue = tt.ProjectedRevenue == null ? 0 : tt.ProjectedRevenue, IsDeployedToIntegration = tt.IsDeployedToIntegration }, JsonRequestBehavior.AllowGet);
+            return Json(new
+            {
+                revenue = tt.ProjectedRevenue == null ? 0 : tt.ProjectedRevenue,
+                IsDeployedToIntegration = tt.IsDeployedToIntegration,
+                stageId = tt.StageId,
+                stageTitle = tt.Stage.Title,
+                projectedStageValue = tt.ProjectedStageValue == null ? 0 : tt.ProjectedStageValue
+            }, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -2756,26 +2796,99 @@ namespace RevenuePlanner.Controllers
         /// Modified By: Maninder Singh Wadhva 1-March-2014 to address TFS Bug#322 : Changes made to INQ, MQL and Projected Revenue Calculation.
         /// </summary>
         /// <returns>JsonResult MQl Rate.</returns>
-        public JsonResult CalculateMQL(Plan_Campaign_Program_TacticModel form, int INQValue, bool RedirectType)
+        public JsonResult CalculateMQL(Plan_Campaign_Program_TacticModel form, int projectedStageValue, bool RedirectType, bool isTacticTypeChange)
         {
             DateTime StartDate = new DateTime();
+            string stageMQL = Enums.Stage.MQL.ToString();
+            int tacticStageLevel = 0;
+            int levelMQL = db.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageMQL)).Level.Value;
             if (form.PlanTacticId != 0)
             {
-                if (RedirectType)
+                if (isTacticTypeChange)
                 {
-                    StartDate = form.StartDate;
+                    if (form.TacticTypeId != 0)
+                    {
+                        tacticStageLevel = Convert.ToInt32(db.TacticTypes.FirstOrDefault(t => t.TacticTypeId == form.TacticTypeId).Stage.Level);
                 }
                 else
                 {
-                    StartDate = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == form.PlanTacticId).Select(t => t.StartDate).SingleOrDefault();
+                        if (RedirectType)
+                        {
+                            StartDate = form.StartDate;
+            }
+            else
+            {
+                            StartDate = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == form.PlanTacticId).Select(t => t.StartDate).SingleOrDefault();
+                        }
+
+            int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
+                        return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId, modelId) });
+                    }
+                }
+                else
+                {
+                    tacticStageLevel = Convert.ToInt32(db.Stages.FirstOrDefault(t => t.StageId == form.StageId).Level);
+                }
+
+                if (tacticStageLevel < levelMQL)
+                {
+                    if (RedirectType)
+                    {
+                        StartDate = form.StartDate;
+                    }
+                    else
+                    {
+                        StartDate = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == form.PlanTacticId).Select(t => t.StartDate).SingleOrDefault();
+                    }
+
+                    int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
+                    return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId, modelId) });
+                }
+                else if (tacticStageLevel == levelMQL)
+                {
+                    return Json(new { mql = projectedStageValue });
+                }
+                else if (tacticStageLevel > levelMQL)
+                {
+                    return Json(new { mql = "N/A" });
+                }
+                else
+                {
+                    return Json(new { mql = 0 });
                 }
             }
             else
             {
-                StartDate = DateTime.Now;
+                if (form.TacticTypeId != 0)
+                {
+                    tacticStageLevel = Convert.ToInt32(db.TacticTypes.FirstOrDefault(t => t.TacticTypeId == form.TacticTypeId).Stage.Level);
+                }
+                else
+                {
+                    StartDate = DateTime.Now;
+                    int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
+                    return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId, modelId) });
+                }
+
+                if (tacticStageLevel < levelMQL)
+                {
+                    StartDate = DateTime.Now;
+                    int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
+                    return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId, modelId) });
+                }
+                else if (tacticStageLevel == levelMQL)
+                {
+                    return Json(new { mql = projectedStageValue });
+                }
+                else if (tacticStageLevel > levelMQL)
+                {
+                    return Json(new { mql = "N/A" });
+                }
+                else
+                {
+                    return Json(new { mql = 0 });
+                }
             }
-            int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-            return Json(new { mql = Common.CalculateMQLTactic(INQValue, StartDate, form.PlanTacticId, modelId) });
         }
 
         #endregion
@@ -2838,14 +2951,14 @@ namespace RevenuePlanner.Controllers
                                 Plan_Campaign_Program_Tactic opcpt = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(returnValue)).SingleOrDefault();
                                 cid = opcpt.Plan_Campaign_Program.PlanCampaignId;
                                 pid = opcpt.PlanProgramId;
-                                TacticValueCalculate(opcpt.PlanProgramId); /*Added by Nirav Shah on 17 feb 2013  for Duplicate Tactic */
+                                //TacticValueCalculate(opcpt.PlanProgramId); /*Added by Nirav Shah on 17 feb 2013  for Duplicate Tactic */ // Modified by Dharmraj for PL #440
                                 returnValue = Common.InsertChangeLog(Sessions.PlanId, null, opcpt.PlanProgramId, opcpt.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                             }
                             else if (CopyClone == "Program")
                             {
                                 Plan_Campaign_Program opcp = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(returnValue)).SingleOrDefault();
                                 cid = opcp.PlanCampaignId;
-                                TacticValueCalculate(opcp.PlanCampaignId, false); /*Added by Nirav Shah on 17 feb 2013  for Duplicate Program */
+                                //TacticValueCalculate(opcp.PlanCampaignId, false); /*Added by Nirav Shah on 17 feb 2013  for Duplicate Program */ // Modified by Dharmraj for PL #440
                                 returnValue = Common.InsertChangeLog(Sessions.PlanId, null, opcp.PlanProgramId, opcp.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                             }
                             else if (CopyClone == "Campaign")

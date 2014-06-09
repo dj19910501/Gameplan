@@ -100,7 +100,7 @@ namespace RevenuePlanner.Models
 
         public DateTime EndDate { get; set; }
 
-        public long? INQs { get; set; }
+        //public long? INQs { get; set; }
 
         public long? INQsActual { get; set; }
 
@@ -133,6 +133,16 @@ namespace RevenuePlanner.Models
         public bool IsDeployedToIntegration { get; set; }
 
         public DateTime? LastSyncDate { get; set; }
+
+        public int? StageId { get; set; }
+
+        public string StageTitle { get; set; }
+
+        public int? StageLevel { get; set; } 
+
+        public double? ProjectedStageValue { get; set; }
+
+        public double? ProjectedStageValueActual { get; set; }
     }
 
     public class InspectReviewModel
@@ -163,7 +173,7 @@ namespace RevenuePlanner.Models
 
         public long ActualValue { get; set; }
 
-        public long TotalINQActual { get; set; }
+        public long TotalProjectedStageValueActual { get; set; }
 
         public long TotalMQLActual { get; set; }
 
@@ -178,6 +188,8 @@ namespace RevenuePlanner.Models
         public double ROIActual { get; set; }
 
 		public bool IsActual { get; set; }
+
+        public int StageId { get; set; }
 		
     }
 

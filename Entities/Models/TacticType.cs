@@ -26,8 +26,6 @@ namespace RevenuePlanner.Models
         public string ColorCode { get; set; }
         public Nullable<int> ModelId { get; set; }
         public Nullable<int> StageId { get; set; }
-        public Nullable<long> ProjectedInquiries { get; set; }
-        public Nullable<double> ProjectedMQLs { get; set; }
         public Nullable<double> ProjectedRevenue { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
@@ -36,6 +34,7 @@ namespace RevenuePlanner.Models
         public Nullable<int> PreviousTacticTypeId { get; set; }
         public Nullable<bool> IsDeleted { get; set; }
         public bool IsDeployedToIntegration { get; set; }
+        public Nullable<double> ProjectedStageValue { get; set; }
     
         public virtual Model Model { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }

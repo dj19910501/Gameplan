@@ -2867,7 +2867,7 @@ namespace RevenuePlanner.Helpers
         }
         #endregion
 
-        #region Status Change Logic for Campaign and Program
+        #region Status Changes Logic for Campaign and Program
 
         /// <summary>
         /// Change Program status according to status of its tactics.
@@ -3110,6 +3110,97 @@ namespace RevenuePlanner.Helpers
         }
 
         #endregion
+
+        #region Cost Calculation
+
+        /// <summary>
+        /// Calculate cost for Campaign
+        /// Ticcket #440
+        /// </summary>
+        /// <param name="planCampaignId"></param>
+        /// <returns></returns>
+        public static double CalculateCampaignCost(int planCampaignId)
+        {
+            using (MRPEntities db = new MRPEntities())
+            {
+                var lstProgram = db.Plan_Campaign.FirstOrDefault(varC => varC.PlanCampaignId == planCampaignId)
+                                                 .Plan_Campaign_Program
+                                                 .Where(varP => varP.IsDeleted == false)
+                                                 .ToList();
+
+                double cost = 0;
+
+                lstProgram.ForEach(varP => cost = cost + varP.Plan_Campaign_Program_Tactic.Where(varT => varT.IsDeleted == false).Sum(varT => varT.Cost));
+
+                return cost;
+
+            }
+        }
+
+        /// <summary>
+        /// Calculate cost for Program
+        /// Ticcket #440
+        /// </summary>
+        /// <param name="planProgramId"></param>
+        /// <returns></returns>
+        public static double CalculateProgramCost(int planProgramId)
+        {
+            using (MRPEntities db = new MRPEntities())
+            {
+                var lstTactic = db.Plan_Campaign_Program.FirstOrDefault(varC => varC.PlanProgramId == planProgramId)
+                                                 .Plan_Campaign_Program_Tactic
+                                                 .Where(varP => varP.IsDeleted == false)
+                                                 .ToList();
+
+                double cost = 0;
+
+                cost = lstTactic.Sum(varT => varT.Cost);
+
+                return cost;
+
+            }
+        }
+
+        #endregion
+
+        #region TacticStageTitle
+
+        /// <summary>
+        /// Function to get dynamic stage titles.
+        /// added by Dharmraj Ticket #440
+        /// </summary>
+        /// <param name="tacticId"></param>
+        /// <returns></returns>
+        public static List<string> GetTacticStageTitle(int tacticId)
+        {
+            MRPEntities db = new MRPEntities();
+            List<string> lstStageTitle = new List<string>();
+            string stageMQL = Enums.Stage.MQL.ToString();
+            int tacticStageLevel = Convert.ToInt32(db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == tacticId).Stage.Level);
+            int levelMQL = db.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageMQL)).Level.Value;
+
+            if (tacticStageLevel < levelMQL)
+            {
+                lstStageTitle.Add(Enums.ProjectedStageValue.ProjectedStageValue.ToString());
+                lstStageTitle.Add(Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString());
+            }
+            else if (tacticStageLevel == levelMQL)
+            {
+                lstStageTitle.Add(Enums.ProjectedStageValue.ProjectedStageValue.ToString());
+            }
+            else if (tacticStageLevel > levelMQL)
+            {
+                lstStageTitle.Add(Enums.ProjectedStageValue.ProjectedStageValue.ToString());
+            }
+
+            lstStageTitle.Add(Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString());
+            lstStageTitle.Add(Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString());
+
+            return lstStageTitle;
+        }
+
+        #endregion
+        
     }
 
     ////Start Manoj PL #490 Date:27May2014

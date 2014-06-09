@@ -15,14 +15,15 @@ namespace RevenuePlanner.Models
     public partial class BestInClass
     {
         public int BestInClassId { get; set; }
-        public int MetricId { get; set; }
         public double Value { get; set; }
         public bool IsDeleted { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
+        public int StageId { get; set; }
+        public string StageType { get; set; }
     
-        public virtual Metric Metric { get; set; }
+        public virtual Stage Stage { get; set; }
     }
 }

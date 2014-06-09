@@ -15,11 +15,11 @@ namespace RevenuePlanner.Models
     public partial class ImprovementTacticType_Touches
     {
         public int ImprovementTacticTypeId { get; set; }
-        public int MetricId { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
+        public int StageId { get; set; }
     
-        public virtual Metric Metric { get; set; }
         public virtual ImprovementTacticType ImprovementTacticType { get; set; }
+        public virtual Stage Stage { get; set; }
     }
 }

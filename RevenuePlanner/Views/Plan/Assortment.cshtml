@@ -735,7 +735,7 @@
                          changed by : Nirav Shah on 13 feb 2014
                          before changed : 
                         */
-                        addRowCampaign(i, campaign[i].id, campaign[i].title, campaign[i].description, campaign[i].cost, campaign[i].inqs, campaign[i].mqls, campaign[i].isOwner, campaign[i].programs, campaign[i].programs.length);
+                        addRowCampaign(i, campaign[i].id, campaign[i].title, campaign[i].description, campaign[i].cost, campaign[i].mqls, campaign[i].isOwner, campaign[i].programs, campaign[i].programs.length);
                     }
                 } else {
 
@@ -773,7 +773,7 @@
                      changed by : Nirav Shah on 13 feb 2014
                      before changed :        function addRowCampaign(_index, _id, _title, _description, _cost, _inqs, _mqls, _programs, _programCount) {
                     */
-        function addRowCampaign(_index, _id, _title, _description, _cost, _inqs, _mqls, _isOwner, _programs, _programCount) {
+        function addRowCampaign(_index, _id, _title, _description, _cost, _mqls, _isOwner, _programs, _programCount) {
             var $tableCampaigns = $('.accordion-campaign > #campaignAccordion');
             var num = parseInt(_index) + 1;
             var $html = '<div class="accordion-header">' +

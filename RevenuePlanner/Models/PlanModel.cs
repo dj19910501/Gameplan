@@ -47,7 +47,7 @@ namespace RevenuePlanner.Models
         public Guid GeographyId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public long? INQs { get; set; }
+        //public long? INQs { get; set; }
         public double? MQLs { get; set; }
         public double? Cost { get; set; }
         public DateTime? PStartDate { get; set; }
@@ -69,7 +69,7 @@ namespace RevenuePlanner.Models
         public Guid GeographyId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public long? INQs { get; set; }
+        //public long? INQs { get; set; }
         public double? MQLs { get; set; }
         public double? Cost { get; set; }
 
@@ -94,7 +94,7 @@ namespace RevenuePlanner.Models
 
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public long INQs { get; set; }
+        //public long INQs { get; set; }
         public double MQLs { get; set; }
         public double Cost { get; set; }
 
@@ -104,6 +104,10 @@ namespace RevenuePlanner.Models
         public DateTime CEndDate { get; set; }
 
         public bool IsDeployedToIntegration { get; set; }
+
+        public int StageId { get; set; }
+        public string StageTitle { get; set; }
+        public double ProjectedStageValue { get; set; }
     }
 
     public class Plan_Selector

@@ -39,9 +39,9 @@ namespace RevenuePlanner.Models
         public Nullable<System.DateTime> LastSyncDate { get; set; }
     
         public virtual BusinessUnit BusinessUnit { get; set; }
+        public virtual ImprovementTacticType ImprovementTacticType { get; set; }
         public virtual Plan_Improvement_Campaign_Program Plan_Improvement_Campaign_Program { get; set; }
         public virtual ICollection<Plan_Improvement_Campaign_Program_Tactic_Comment> Plan_Improvement_Campaign_Program_Tactic_Comment { get; set; }
         public virtual ICollection<Plan_Improvement_Campaign_Program_Tactic_Share> Plan_Improvement_Campaign_Program_Tactic_Share { get; set; }
-        public virtual ImprovementTacticType ImprovementTacticType { get; set; }
     }
 }

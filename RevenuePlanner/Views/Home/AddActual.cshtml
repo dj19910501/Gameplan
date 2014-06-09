@@ -532,9 +532,10 @@
 
                 var _tactic = []
                 var tacticId = $(this).attr('tacticId');
+                var stageId = $(this).attr('stageId');
                 var isError = false;
                 var isData = false;
-                var totalINQActual = ReplaceCC($("#ActuallblPINQ" + tacticId).text());
+                var totalProjectedStageValueActual = ReplaceCC($("#lblProjectedStageValue" + tacticId).text());
                 var totalMQLActual = ReplaceCC($("#ActuallblPMQL" + tacticId).text());
                 var totalCWActual = ReplaceCC($("#ActuallblPCW" + tacticId).text());
                 var totalRevenueActual = ReplaceCC($("#ActuallblCRevenue" + tacticId).text());
@@ -560,14 +561,15 @@
                                 StageTitle: arr[1],
                                 Period: arr[2],
                                 ActualValue: thisValue,
-                                TotalINQActual: totalINQActual,
+                                TotalProjectedStageValueActual: totalProjectedStageValueActual,
                                 TotalMQLActual: totalMQLActual,
                                 TotalCWActual: totalCWActual,
                                 TotalRevenueActual: totalRevenueActual,
                                 TotalCostActual: totalCostActual,
                                 ROI: totalROI,
                                 ROIActual: totalROIActual,
-                                IsActual: true
+                                IsActual: true,
+                                StageId: stageId
                             });
                             isData = true;
                         }
@@ -581,9 +583,9 @@
                     $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.ValidateForValidField");
                     return false;
                 }
-                if (parseFloat(totalMQLActual) > parseFloat(totalINQActual)) {
+                if (parseFloat(totalMQLActual) > parseFloat(totalProjectedStageValueActual)) {
                     var msg = "@RevenuePlanner.Helpers.Common.objCached.ValidationForMqlGreaterThanINQ"
-                    var msgdisplay = msg.replace('{0}', totalMQLActual).replace('{1}', totalINQActual);
+                    var msgdisplay = msg.replace('{0}', totalMQLActual).replace('{1}', totalProjectedStageValueActual);
                     $("#spanMessageError").text(msgdisplay);
                     $("#errorMessage").css("display", "block");
                     return false;
@@ -594,14 +596,15 @@
                         StageTitle: 0,
                         Period: 0,
                         ActualValue: 0,
-                        TotalINQActual: totalINQActual,
+                        TotalProjectedStageValueActual: totalProjectedStageValueActual,
                         TotalMQLActual: totalMQLActual,
                         TotalCWActual: totalCWActual,
                         TotalRevenueActual: totalRevenueActual,
                         TotalCostActual: totalCostActual,
                         ROI: totalROI,
                         ROIActual: totalROIActual,
-                        IsActual: false
+                        IsActual: false,
+                        StageId: stageId
                     });
                 }
                 $("#errorMessage").css("display", "none");
@@ -666,7 +669,7 @@
                         if (isShow) {
                             indexValue = indexValue + 1;
                             isFilterFound = true;
-                            addRowActual(indexValue, actuals[i].id, actuals[i].title, actuals[i].inqProjected, actuals[i].inqActual, actuals[i].mqlProjected, actuals[i].mqlActual, actuals[i].cwProjected, actuals[i].cwActual, actuals[i].revenueProjected, actuals[i].revenueActual, actuals[i].costProjected, actuals[i].costActual, actuals[i].roiProjected, actuals[i].roiActual, actuals[i].actualData, actuals[i].modifiedBy, actuals[i].LastSync);
+                            addRowActual(indexValue, actuals[i].id, actuals[i].title, actuals[i].projectedStageValue, actuals[i].projectedStageValueActual, actuals[i].mqlProjected, actuals[i].mqlActual, actuals[i].cwProjected, actuals[i].cwActual, actuals[i].revenueProjected, actuals[i].revenueActual, actuals[i].costProjected, actuals[i].costActual, actuals[i].roiProjected, actuals[i].roiActual, actuals[i].actualData, actuals[i].modifiedBy, actuals[i].LastSync, actuals[i].stageTitle, actuals[i].tacticStageId, actuals[i].tacticStageTitle);
                         }
                     }
                     if (!isFilterFound) {
@@ -691,7 +694,7 @@
         }
 
         //add row in actuals table
-        function addRowActual(_index, _id, _title, _inqProjected, _inqActual, _mqlProjected, _mqlActual, _cwProjected, _cwActual, _revenueProjected, _revenueActual, _costProjected, _costActual, _roiProjected, _roiActual, _actualData, _modifiedBy, _LastSync) {
+        function addRowActual(_index, _id, _title, _projectedStageValue, _projectedStageValueActual, _mqlProjected, _mqlActual, _cwProjected, _cwActual, _revenueProjected, _revenueActual, _costProjected, _costActual, _roiProjected, _roiActual, _actualData, _modifiedBy, _LastSync, stageTitle, tacticStageId, tacticStageTitle) {
             var $tableActuals = $('.accordion-actuals');
             var num = parseInt(_index);
             var updateBy = '', stat;
@@ -734,7 +737,7 @@
                     '</tr>' +
                 '</thead>' +
                 '<tbody>';
-            var arrStage = ['INQ', 'MQL', 'CW', 'Revenue'];
+            var arrStage = stageTitle; //var arrStage = ['INQ', 'MQL', 'CW', 'Revenue'];
             for (var p = 0; p < arrStage.length; p = p + 1) {
                 var idtr = "tr" + _id + arrStage[p];
                 $html += '<tr id=' + idtr + '>';
@@ -780,16 +783,19 @@
         '<div id="collapse' + _id + '" class="accordion-body collapse">' +
           '<div class="accordion-inner">';
 
-            $html += '<div class="body-toogle-actual">@Html.LabelForINQ("INQ")<div class="table-info-actual-left-wraper">' +
-                                                                  '<div class="table-info-actual-left truncate" id="ProjectedlblPINQ' + _id + '">' +
-                                                _inqProjected +
+            for (var i = 0; i < arrStage.length; i++) {
+                if (arrStage[i] == '@Enums.ProjectedStageValue.ProjectedStageValue.ToString()') {
+                    $html += '<div class="body-toogle-actual">' + tacticStageTitle + '<div class="table-info-actual-left-wraper">' +
+                                                                      '<div class="table-info-actual-left truncate" id="lblProjectedStageValue' + _id + '">' +
+                                                    _projectedStageValue +
                                             '</div>' +
-                                            '<div class="table-info-actual-left table-info-actual-width truncate" id="ActuallblPINQ' + _id + '">' +
-                                                _inqActual +
+                                                '<div class="table-info-actual-left table-info-actual-width truncate" id="ActuallblPProjectedStageValue' + _id + '">' +
+                                                    _projectedStageValueActual +
                                             '</div>' +
                                         '</div>' +
                                     '</div>';
-
+                }
+                else if (arrStage[i].toLowerCase() == '@Common.StageCodeMQL') {
             $html += '<div class="body-toogle-actual">@Html.LabelForMQL("MQL")<div class="table-info-actual-left-wraper">' +
                                             '<div class="table-info-actual-left truncate" id="ProjectedlblPMQL' + _id + '">' +
                                                 _mqlProjected +
@@ -799,6 +805,8 @@
                                             '</div>' +
                                         '</div>' +
                                     '</div>';
+                }
+            }
 
             $html += '<div class="body-toogle-actual">@Html.LabelForCW("CW")<div class="table-info-actual-left-wraper">' +
                                             '<div class="table-info-actual-left truncate" id="ProjectedlblValueCW' + _id + '">' +
@@ -858,7 +866,7 @@
                             '<label id="last-synced" class="pull-left margin-top6 margin-bottom0" style="line-height:10px;">' + _LastSync + '</label>' +
                             '<label id="last-updated" class="pull-left margin-bottom0">' + updateBy + '</label></div>' +
                                 '<button id="BtnShareTactic' + _id + '" tacticId="' + _id + '" class="btn btn-blue text-shadow-blue source-sans-proregular share-tactic-icon button-inspect-result-modal pull-right" type="button"><span class="flag-icon"></span>Share Tactic</button>' +
-                                '<button id="UpdateResult" tacticId="' + _id + '" class="btn btn-blue text-shadow-blue source-sans-proregular button-inspect-result-modal pull-right margin-right20" type="button"><span class="flag-icon"></span>Update Actuals</button>' +
+                                '<button id="UpdateResult" stageId="' + tacticStageId + '" tacticId="' + _id + '" class="btn btn-blue text-shadow-blue source-sans-proregular button-inspect-result-modal pull-right margin-right20" type="button"><span class="flag-icon"></span>Update Actuals</button>' +
                             '</div>' +
                         '</div>' +
                         '</div>' +

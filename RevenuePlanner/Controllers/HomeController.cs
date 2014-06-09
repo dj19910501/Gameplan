@@ -1400,7 +1400,7 @@ namespace RevenuePlanner.Controllers
                 color = string.Concat(GANTT_BAR_CSS_CLASS_PREFIX, t.TacticType.ColorCode.ToLower()),
                 isSubmitted = t.Status.Equals(tacticStatusSubmitted),
                 isDeclined = t.Status.Equals(tacticStatusDeclined),
-                inqs = t.INQs,
+                projectedStageValue = t.ProjectedStageValue, //inqs = t.INQs,
                 mqls = MQLTacticList.Where(tm => tm.PlanTacticId == t.PlanTacticId).Select(tm => tm.MQL),
                 cost = t.Cost,
                 cws = t.Status.Equals(tacticStatusSubmitted) || t.Status.Equals(tacticStatusDeclined) ? Math.Round(tacticList.Where(tl => tl.PlanTacticId == t.PlanTacticId).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 1) : 0,
@@ -1420,7 +1420,7 @@ namespace RevenuePlanner.Controllers
                 color = t.color + (t.progress == 1 ? " stripe" : ""),
                 isSubmitted = t.isSubmitted,
                 isDeclined = t.isDeclined,
-                inqs = t.inqs,
+                projectedStageValue = t.projectedStageValue,
                 mqls = t.mqls,
                 cost = t.cost,
                 cws = t.cws,
@@ -2118,7 +2118,7 @@ namespace RevenuePlanner.Controllers
             {
                 im.Owner = ownername.ToString();
             }
-            im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.INQs), im.StartDate, im.PlanTacticId);
+            im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.ProjectedStageValue), im.StartDate, im.PlanTacticId);
             ViewBag.TacticDetail = im;
             ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
 
@@ -2232,24 +2232,28 @@ namespace RevenuePlanner.Controllers
                                   Cost = pcpt.Cost,
                                   StartDate = pcpt.StartDate,
                                   EndDate = pcpt.EndDate,
-                                  INQs = pcpt.INQs,
+                                  //INQs = pcpt.INQs,
                                   VerticalTitle = pcpt.Vertical.Title,
                                   AudiencTitle = pcpt.Audience.Title,
-                                  INQsActual = pcpt.INQsActual == null ? 0 : pcpt.INQsActual,
-                                  MQLsActual = pcpt.MQLsActual == null ? 0 : pcpt.MQLsActual,
+                                  //INQsActual = pcpt.INQsActual == null ? 0 : pcpt.INQsActual,
+                                  //MQLsActual = pcpt.MQLsActual == null ? 0 : pcpt.MQLsActual,
                                   CostActual = pcpt.CostActual == null ? 0 : pcpt.CostActual,
-                                  CWs = pcpt.CWs == null ? 0 : pcpt.CWs,
-                                  CWsActual = pcpt.CWsActual == null ? 0 : pcpt.CWsActual,
-                                  Revenues = pcpt.Revenues == null ? 0 : pcpt.Revenues,
-                                  RevenuesActual = pcpt.RevenuesActual == null ? 0 : pcpt.RevenuesActual,
-                                  ROI = pcpt.ROI == null ? 0 : pcpt.ROI,
-                                  ROIActual = pcpt.ROIActual == null ? 0 : pcpt.ROIActual,
+                                  //CWs = pcpt.CWs == null ? 0 : pcpt.CWs,
+                                  //CWsActual = pcpt.CWsActual == null ? 0 : pcpt.CWsActual,
+                                  //Revenues = pcpt.Revenues == null ? 0 : pcpt.Revenues,
+                                  //RevenuesActual = pcpt.RevenuesActual == null ? 0 : pcpt.RevenuesActual,
+                                  //ROI = pcpt.ROI == null ? 0 : pcpt.ROI,
+                                  //ROIActual = pcpt.ROIActual == null ? 0 : pcpt.ROIActual,
                                   IsDeployedToIntegration = pcpt.IsDeployedToIntegration,
-                                  LastSyncDate = pcpt.LastSyncDate
+                                  LastSyncDate = pcpt.LastSyncDate,
+                                  StageId = pcpt.StageId,
+                                  StageTitle = pcpt.Stage.Title,
+                                  StageLevel = pcpt.Stage.Level,
+                                  ProjectedStageValue = pcpt.ProjectedStageValue
+
                               }).SingleOrDefault();
 
                     imodel.IntegrationType = GetIntegrationTypeTitleByModel(db.Plan_Campaign_Program_Tactic.SingleOrDefault(varT => varT.PlanTacticId == id).TacticType.Model);
-
                 }
                 if (section == Convert.ToString(Enums.Section.Program).ToLower())
                 {
@@ -2291,10 +2295,10 @@ namespace RevenuePlanner.Controllers
                     imodel.PlanProgramId = objPlan_Campaign_Program.PlanProgramId;
                     imodel.OwnerId = objPlan_Campaign_Program.CreatedBy;
                     imodel.BusinessUnitId = objPlan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnitId;
-                    imodel.Cost = objPlan_Campaign_Program.Cost;
+                    imodel.Cost = Common.CalculateProgramCost(objPlan_Campaign_Program.PlanProgramId); //objPlan_Campaign_Program.Cost; // Modified for PL#440 by Dharmraj
                     imodel.StartDate = objPlan_Campaign_Program.StartDate;
                     imodel.EndDate = objPlan_Campaign_Program.EndDate;
-                    imodel.INQs = objPlan_Campaign_Program.INQs;
+                    //imodel.INQs = objPlan_Campaign_Program.INQs;
 
                     //if (objPlan_Campaign_Program.Vertical != null)
                     //    imodel.VerticalTitle = objPlan_Campaign_Program.Vertical.Title;
@@ -2361,10 +2365,10 @@ namespace RevenuePlanner.Controllers
                     imodel.PlanCampaignId = objPlan_Campaign.PlanCampaignId;
                     imodel.OwnerId = objPlan_Campaign.CreatedBy;
                     imodel.BusinessUnitId = objPlan_Campaign.Plan.Model.BusinessUnitId;
-                    imodel.Cost = objPlan_Campaign.Cost;
+                    imodel.Cost = Common.CalculateCampaignCost(objPlan_Campaign.PlanCampaignId); //objPlan_Campaign.Cost; // Modified for PL#440 by Dharmraj
                     imodel.StartDate = objPlan_Campaign.StartDate;
                     imodel.EndDate = objPlan_Campaign.EndDate;
-                    imodel.INQs = objPlan_Campaign.INQs;
+                    //imodel.INQs = objPlan_Campaign.INQs;
 
                     //if (objPlan_Campaign.Vertical != null)
                     //    imodel.VerticalTitle = objPlan_Campaign.Vertical.Title;
@@ -2449,13 +2453,35 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Actuals Tab.</returns>
         public ActionResult LoadActuals(int id)
         {
-            string[] aryStageTitle = new string[] { Enums.InspectStageValues[Enums.InspectStage.INQ.ToString()].ToString(), Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString(), Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString(), Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString() };
-            ViewBag.StageTitle = aryStageTitle;
             InspectModel im = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower(), false);     //// Modified by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+            ViewBag.TacticStageId = im.StageId;
+            ViewBag.TacticStageTitle = im.StageTitle;
+
+            List<string> lstStageTitle = new List<string>();
+            lstStageTitle = Common.GetTacticStageTitle(id);
+
+            //string[] aryStageTitle = new string[] { Enums.InspectStageValues[Enums.InspectStage.INQ.ToString()].ToString(), Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString(), Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString(), Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString() };
+            //ViewBag.StageTitle = aryStageTitle;
+
+            ViewBag.StageTitle = lstStageTitle;
+
+
             List<Plan_Campaign_Program_Tactic> tid = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == id).ToList();
             List<ProjectedRevenueClass> tacticList = Common.ProjectedRevenueCalculateList(tid);
             im.Revenues = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 1);
             tacticList = Common.ProjectedRevenueCalculateList(tid, true);
+
+            string TitleProjectedStageValue = Enums.ProjectedStageValue.ProjectedStageValue.ToString();
+            string TitleCW = Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString();
+            string TitleMQL = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
+            string TitleRevenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
+
+            im.ProjectedStageValueActual = db.Plan_Campaign_Program_Tactic_Actual.Where(varA => varA.PlanTacticId == id && varA.StageTitle == TitleProjectedStageValue).ToList().Sum(a => a.Actualvalue);
+            im.CWsActual = db.Plan_Campaign_Program_Tactic_Actual.Where(varA => varA.PlanTacticId == id && varA.StageTitle == TitleCW).ToList().Sum(a => a.Actualvalue);
+            im.RevenuesActual = db.Plan_Campaign_Program_Tactic_Actual.Where(varA => varA.PlanTacticId == id && varA.StageTitle == TitleRevenue).ToList().Sum(a => a.Actualvalue);
+            im.MQLsActual = db.Plan_Campaign_Program_Tactic_Actual.Where(varA => varA.PlanTacticId == id && varA.StageTitle == TitleMQL).ToList().Sum(a => a.Actualvalue);
+
+
             im.CWs = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 1);
             string modifiedBy = string.Empty;
             string createdBy = string.Empty;
@@ -2484,7 +2510,7 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.UpdatedBy = null;
             }
-            im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.INQs), im.StartDate, im.PlanTacticId);
+            im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.ProjectedStageValue), im.StartDate, im.PlanTacticId);
             ViewBag.TacticDetail = im;
             bool isValidUser = true;
             if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
@@ -2493,11 +2519,24 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.IsValidUser = isValidUser;
 
+            if (im.Cost > 0)
+            {
+                im.ROI = im.Revenues / im.Cost;
+            }
+            else
+                im.ROI = 0;
+
+            if (im.CostActual > 0)
+            {
+                im.ROIActual = im.RevenuesActual / im.CostActual;
+            }
+            else
+            {
+                im.ROIActual = 0;
+            }
             ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
             if (im.LastSyncDate != null)
             {
-                TimeZone localZone = TimeZone.CurrentTimeZone;
-
                 ViewBag.LastSync = "Last synced with " + im.IntegrationType + " " + Common.GetFormatedDate(im.LastSyncDate) + ".";
             }
             else
@@ -2556,8 +2595,16 @@ namespace RevenuePlanner.Controllers
             {
                 if (tacticactual != null)
                 {
+                    bool isMQL = false; // Tactic stage is MQL or not
+                    string inspectStageMQL = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
+                    int stageId = tacticactual[0].StageId;
+                    var objStage = db.Stages.FirstOrDefault(s => s.StageId == stageId);
+                    if (objStage.Code == inspectStageMQL)
+                    {
+                        isMQL = true;
+                    }
                     var actualResult = (from t in tacticactual
-                                        select new { t.PlanTacticId, t.TotalINQActual, t.TotalMQLActual, t.TotalCWActual, t.TotalRevenueActual, t.TotalCostActual, t.ROI, t.ROIActual, t.IsActual }).FirstOrDefault();
+                                        select new { t.PlanTacticId, t.TotalProjectedStageValueActual, t.TotalMQLActual, t.TotalCWActual, t.TotalRevenueActual, t.TotalCostActual, t.ROI, t.ROIActual, t.IsActual }).FirstOrDefault();
                     using (MRPEntities mrp = new MRPEntities())
                     {
                         using (var scope = new TransactionScope())
@@ -2565,19 +2612,43 @@ namespace RevenuePlanner.Controllers
                             ObjectParameter ReturnValue = new ObjectParameter("ReturnValue", typeof(Int64));
                             db.Plan_Campaign_Program_Tactic_ActualDelete(actualResult.PlanTacticId, ReturnValue);
                             Int64 returnValue;
-                            Int64 inq = 0, mql = 0, cw = 0;
+                            Int64 projectedStageValue = 0, mql = 0, cw = 0;
                             double revenue = 0;
                             Int64.TryParse(ReturnValue.Value.ToString(), out returnValue);
                             if (returnValue == 0)
                             {
                                 if (actualResult.IsActual)
                                 {
+                                    if (isMQL)
+                                    {
+                                        foreach (var t in tacticactual)
+                                        {
+                                            if (t.StageTitle == Enums.ProjectedStageValue.ProjectedStageValue.ToString())
+                                            {
+                                                Plan_Campaign_Program_Tactic_Actual objpcpta = new Plan_Campaign_Program_Tactic_Actual();
+                                                objpcpta.PlanTacticId = t.PlanTacticId;
+                                                objpcpta.StageTitle = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
+                                                //if (t.StageTitle == Enums.ProjectedStageValue.ProjectedStageValue.ToString()) projectedStageValue += t.ActualValue;
+                                                //if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString()) mql += t.ActualValue;
+                                                //if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString()) cw += t.ActualValue;
+                                                //if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString()) revenue += t.ActualValue;
+                                                objpcpta.Period = t.Period;
+                                                objpcpta.Actualvalue = t.ActualValue;
+                                                objpcpta.CreatedDate = DateTime.Now;
+                                                objpcpta.CreatedBy = Sessions.User.UserId;
+                                                db.Entry(objpcpta).State = EntityState.Added;
+                                                db.Plan_Campaign_Program_Tactic_Actual.Add(objpcpta);
+                                                db.SaveChanges();
+                                            }
+                                        }
+                                    }
+
                                     foreach (var t in tacticactual)
                                     {
                                         Plan_Campaign_Program_Tactic_Actual objpcpta = new Plan_Campaign_Program_Tactic_Actual();
                                         objpcpta.PlanTacticId = t.PlanTacticId;
                                         objpcpta.StageTitle = t.StageTitle;
-                                        if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.INQ.ToString()].ToString()) inq += t.ActualValue;
+                                        if (t.StageTitle == Enums.ProjectedStageValue.ProjectedStageValue.ToString()) projectedStageValue += t.ActualValue;
                                         if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString()) mql += t.ActualValue;
                                         if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString()) cw += t.ActualValue;
                                         if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString()) revenue += t.ActualValue;
@@ -2593,13 +2664,13 @@ namespace RevenuePlanner.Controllers
                             }
 
                             Plan_Campaign_Program_Tactic objPCPT = db.Plan_Campaign_Program_Tactic.Where(pt => pt.PlanTacticId == actualResult.PlanTacticId).SingleOrDefault();
-                            objPCPT.INQsActual = inq;
-                            objPCPT.MQLsActual = mql;
-                            objPCPT.CWsActual = cw;
-                            objPCPT.RevenuesActual = revenue;
+                            //objPCPT.INQsActual = projectedStageValue;
+                            //objPCPT.MQLsActual = mql;
+                            //objPCPT.CWsActual = cw;
+                            //objPCPT.RevenuesActual = revenue;
                             objPCPT.CostActual = actualResult.TotalCostActual;
-                            objPCPT.ROI = actualResult.ROI;
-                            objPCPT.ROIActual = actualResult.ROIActual;
+                            //objPCPT.ROI = actualResult.ROI;
+                            //objPCPT.ROIActual = actualResult.ROIActual;
                             //objPCPT.Status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
                             objPCPT.ModifiedBy = Sessions.User.UserId;
                             objPCPT.ModifiedDate = DateTime.Now;
@@ -3757,22 +3828,29 @@ namespace RevenuePlanner.Controllers
             }
             string userList = string.Join(",", userListId.Select(s => s.ToString()).ToArray());
             List<User> userName = objBDSUserRepository.GetMultipleTeamMemberDetails(userList, Sessions.ApplicationId);
+
+            string TitleProjectedStageValue = Enums.ProjectedStageValue.ProjectedStageValue.ToString();
+            string TitleCW = Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString();
+            string TitleMQL = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
+            string TitleRevenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
+            List<Plan_Campaign_Program_Tactic_Actual> lstTacticActual = db.Plan_Campaign_Program_Tactic_Actual.Where(a => TacticIds.Contains(a.PlanTacticId)).ToList();
+
             var tacticObj = TacticList.Select(t => new
             {
                 id = t.PlanTacticId,
                 title = t.Title,
-                inqProjected = t.INQs,
-                inqActual = t.INQsActual == null ? 0 : t.INQsActual,
+                //inqProjected = t.INQs,
+                //inqActual = t.INQsActual == null ? 0 : t.INQsActual,
                 mqlProjected = MQLTacticList.Where(tm => tm.PlanTacticId == t.PlanTacticId).Select(tm => tm.MQL),
-                mqlActual = t.MQLsActual == null ? 0 : t.MQLsActual,
+                mqlActual = lstTacticActual.Where(a => a.PlanTacticId == t.PlanTacticId && a.StageTitle == TitleMQL).Sum(a => a.Actualvalue),//t.MQLsActual == null ? 0 : t.MQLsActual,
                 cwProjected = Math.Round(tacticListCW.Where(tl => tl.PlanTacticId == t.PlanTacticId).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 1),
-                cwActual = t.CWsActual == null ? 0 : t.CWsActual,
+                cwActual = lstTacticActual.Where(a => a.PlanTacticId == t.PlanTacticId && a.StageTitle == TitleCW).Sum(a => a.Actualvalue),//t.CWsActual == null ? 0 : t.CWsActual,
                 revenueProjected = Math.Round(tacticList.Where(tl => tl.PlanTacticId == t.PlanTacticId).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 1),
-                revenueActual = t.RevenuesActual == null ? 0 : t.RevenuesActual,
+                revenueActual = lstTacticActual.Where(a => a.PlanTacticId == t.PlanTacticId && a.StageTitle == TitleRevenue).Sum(a => a.Actualvalue),//t.RevenuesActual == null ? 0 : t.RevenuesActual,
                 costProjected = t.Cost,
                 costActual = t.CostActual == null ? 0 : t.CostActual,
-                roiProjected = t.ROI == null ? 0 : t.ROI,
-                roiActual = t.ROIActual == null ? 0 : t.ROIActual,
+                roiProjected = 0,//t.ROI == null ? 0 : t.ROI,
+                roiActual = 0,//t.ROIActual == null ? 0 : t.ROIActual,
                 geographyId = t.GeographyId,
                 individualId = t.CreatedBy,
                 tacticTypeId = t.TacticTypeId,
@@ -3785,11 +3863,45 @@ namespace RevenuePlanner.Controllers
                     UpdateBy = string.Format("{0} {1} by {2} {3}", "Last updated", pcpt.CreatedDate.ToString("MMM dd"), userName.Where(u => u.UserId == pcpt.CreatedBy).Select(u => u.FirstName).FirstOrDefault(), userName.Where(u => u.UserId == pcpt.CreatedBy).Select(u => u.LastName).FirstOrDefault()),
                     IsUpdate = status
                 }).Select(pcp => pcp).Distinct(),
-                LastSync = t.LastSyncDate == null ? string.Empty : ("Last synced with " + GetIntegrationTypeTitleByModel(t.TacticType.Model) + " " + Common.GetFormatedDate(t.LastSyncDate) + ".")
+                LastSync = t.LastSyncDate == null ? string.Empty : ("Last synced with " + GetIntegrationTypeTitleByModel(t.TacticType.Model) + " " + Common.GetFormatedDate(t.LastSyncDate) + "."),
+                stageTitle = Common.GetTacticStageTitle(t.PlanTacticId),
+                tacticStageId = t.Stage.StageId,
+                tacticStageTitle = t.Stage.Title,
+                projectedStageValue = t.ProjectedStageValue,
+                projectedStageValueActual = lstTacticActual.Where(a => a.PlanTacticId == t.PlanTacticId && a.StageTitle == TitleProjectedStageValue).Sum(a => a.Actualvalue)
             }).Select(t => t).Distinct().OrderBy(t => t.id);
 
-            var opens = tacticObj.Where(x => x.actualData.ToList().Count == 0).OrderBy(t => t.title);
-            var all = tacticObj.Where(x => x.actualData.ToList().Count != 0);
+            var lstTactic = tacticObj.Select(t => new
+            {
+                id = t.id,
+                title = t.title,
+                //inqProjected = t.INQs,
+                //inqActual = t.INQsActual == null ? 0 : t.INQsActual,
+                mqlProjected = t.mqlProjected,
+                mqlActual = t.mqlActual,
+                cwProjected = t.cwProjected,
+                cwActual = t.cwActual,
+                revenueProjected = t.revenueProjected,
+                revenueActual = t.revenueActual,
+                costProjected = t.costProjected,
+                costActual = t.costActual,
+                roiProjected = t.costProjected == 0 ? 0 : (t.revenueProjected / t.costProjected),
+                roiActual = t.costActual == 0 ? 0 : (t.revenueActual / t.costActual),
+                geographyId = t.geographyId,
+                individualId = t.individualId,
+                tacticTypeId = t.tacticTypeId,
+                modifiedBy = t.modifiedBy,
+                actualData = t.actualData,
+                LastSync = t.LastSync,
+                stageTitle = t.stageTitle,
+                tacticStageId = t.tacticStageId,
+                tacticStageTitle = t.tacticStageTitle,
+                projectedStageValue = t.projectedStageValue,
+                projectedStageValueActual = t.projectedStageValueActual
+            });
+
+            var opens = lstTactic.Where(x => x.actualData.ToList().Count == 0).OrderBy(t => t.title);
+            var all = lstTactic.Where(x => x.actualData.ToList().Count != 0);
 
             var result = opens.Concat(all);
 

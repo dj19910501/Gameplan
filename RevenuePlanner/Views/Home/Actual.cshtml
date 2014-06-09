@@ -47,6 +47,10 @@
                             {
                                 stageLable = Html.LabelForCW(s);
                             }
+                            else if (s == Enums.ProjectedStageValue.ProjectedStageValue.ToString())
+                            {
+                                stageLable = ViewBag.TacticStageTitle;
+                            }
                         }
                             }
                             <th class="font3F3F3F actual-popup-tile" title="@stageLable">@stageLable</th>
@@ -102,7 +106,7 @@
             </table>
         </div>
         <div class="pull-left" style="float: left; width: 270px;">
-            <table class="table table-striped mystats table-style table-up shadow-table">
+            <table class="table table-striped mystats table-style shadow-table">
                 <thead>
                     <tr class="height42">
                         <th class="font908D88 padding-left55">Projected</th>
@@ -110,14 +114,24 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @foreach (var s in ViewBag.StageTitle)
+                    {
+                            if (s == Enums.ProjectedStageValue.ProjectedStageValue.ToString())
+                            {
                     <tr class="height42">
-                        <th id="inqP" class="text-align-right  projected font908D88">@tacticActual.INQs</th>
-                        <th id="lblTotalINQ" class="border-r font3F3F3F text-align-right">@tacticActual.INQsActual</th>
+                                    <th id="inqP" class="text-align-right  projected font908D88">@tacticActual.ProjectedStageValue</th>
+                                    <th id="lblTotalProjectedStageValue" class="border-r font3F3F3F text-align-right">@tacticActual.ProjectedStageValueActual</th>
                     </tr>
+                            }
+                            else if (s.ToLower() == Common.StageCodeMQL)
+                            {
                     <tr class="height42">
                         <th id="mqlP" class="text-align-right  projected font908D88">@tacticActual.MQLs</th>
                         <th id="lblTotalMQL" class="border-r font3F3F3F text-align-right ">@tacticActual.MQLsActual</th>
                     </tr>
+                            }
+                    }
+
                     <tr class="height42">
                         <th id="cwP" class="text-align-right  projected font908D88">@tacticActual.CWs</th>
                         <th id="lblTotalCW" class="border-r font3F3F3F text-align-right">@tacticActual.CWsActual</th>
@@ -211,9 +225,12 @@
             $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
             document.getElementById('inqP').innerHTML = FormatCommas(document.getElementById('inqP').innerHTML, false);
-            document.getElementById('lblTotalINQ').innerHTML = FormatCommas(document.getElementById('lblTotalINQ').innerHTML, false);
+            document.getElementById('lblTotalProjectedStageValue').innerHTML = FormatCommas(document.getElementById('lblTotalProjectedStageValue').innerHTML, false);
 
+            if (document.getElementById('mqlP') != null)
             document.getElementById('mqlP').innerHTML = FormatCommas(document.getElementById('mqlP').innerHTML, false);
+
+            if (document.getElementById('lblTotalMQL') != null)
             document.getElementById('lblTotalMQL').innerHTML = FormatCommas(document.getElementById('lblTotalMQL').innerHTML, false);
 
             document.getElementById('cwP').innerHTML = FormatCommas(document.getElementById('cwP').innerHTML, true);
@@ -328,8 +345,13 @@
             var _tactic = []
             var isError = false;
             var isData = false;
-            var totalINQActual = (document.getElementById('lblTotalINQ').innerHTML).trim().replace(/,/g, '').replace('$', '');
-            var totalMQLActual = (document.getElementById('lblTotalMQL').innerHTML).trim().replace(/,/g, '').replace('$', '');
+            //var totalINQActual = (document.getElementById('lblTotalINQ').innerHTML).trim().replace(/,/g, '').replace('$', '');
+            var totalProjectedStageValueActual = (document.getElementById('lblTotalProjectedStageValue').innerHTML).trim().replace(/,/g, '').replace('$', '');
+
+            var totalMQLActual;
+            if (document.getElementById('lblTotalMQL') != null)
+                totalMQLActual = (document.getElementById('lblTotalMQL').innerHTML).trim().replace(/,/g, '').replace('$', '');
+
             var totalCWActual = (document.getElementById('lblTotalCW').innerHTML).trim().replace(/,/g, '').replace('$', '');
             var totalRevenueActual = (document.getElementById('lblTotalRevenue').innerHTML).trim().replace(/,/g, '').replace('$', '');
             var totalCostActual = $('#cT').val().trim().replace(/,/g, '').replace('$', '');
@@ -357,14 +379,15 @@
                             StageTitle: arr[0],
                             Period: arr[1],
                             ActualValue: thisValue,
-                            TotalINQActual: totalINQActual,
+                            TotalProjectedStageValueActual: totalProjectedStageValueActual,
                             TotalMQLActual: totalMQLActual,
                             TotalCWActual: totalCWActual,
                             TotalRevenueActual: totalRevenueActual,
                             TotalCostActual: totalCostActual,
                             ROI: totalROI,
                             ROIActual: totalROIActual,
-                            IsActual: true
+                            IsActual: true,
+                            StageId: parseInt('@ViewBag.TacticStageId')
                         });
                         isData = true;
                     }
@@ -381,9 +404,9 @@
                 $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.ValidateForValidField");
                 return false;
             }
-            if (parseFloat(totalMQLActual) > parseFloat(totalINQActual)) {
+            if (parseFloat(totalMQLActual) > parseFloat(totalProjectedStageValueActual)) {
                 var msg = "@RevenuePlanner.Helpers.Common.objCached.ValidationForMqlGreaterThanINQ"
-                var msgdisplay = msg.replace('{0}', totalMQLActual).replace('{1}', totalINQActual);
+                var msgdisplay = msg.replace('{0}', totalMQLActual).replace('{1}', totalProjectedStageValueActual);
                 $("#spanMessageError").text(msgdisplay);
                 $("#errorMessage").css("display", "block");
                 var topsize = $(document).scrollTop() + 41;
@@ -396,14 +419,15 @@
                     StageTitle: 0,
                     Period: 0,
                     ActualValue: 0,
-                    TotalINQActual: totalINQActual,
+                    TotalProjectedStageValueActual: totalProjectedStageValueActual,
                     TotalMQLActual: totalMQLActual,
                     TotalCWActual: totalCWActual,
                     TotalRevenueActual: totalRevenueActual,
                     TotalCostActual: totalCostActual,
                     ROI: totalROI,
                     ROIActual: totalROIActual,
-                    IsActual: false
+                    IsActual: false,
+                    StageId: parseInt('@ViewBag.TacticStageId')
                 });
             }
             $("#errorMessage").css("display", "none");
