@@ -117,7 +117,7 @@
                                     @* End -- Modified By :- Sohel on 21/04/2014 for PL ticket #160 to display unwrapped text. *@
                                 </td>
                                 <td style="width: 150px;">
-                                    @Html.TextBoxFor(model => item.ConversionValue, new { placeholder = "Required", @class = "priceValue", require = "true", maxlength = "1", id = @item.MetricID_Size })
+                                    @Html.TextBoxFor(model => item.ConversionValue, new { placeholder = "Required", @class = "priceValue", require = "true", maxlength = "1", id = @item.MetricID_Size, @value = "0" })
                                 </td>
                             </tr>
                         }
@@ -279,26 +279,41 @@
             if (iserror) {
                 return false;
             }
-            var ids = [];
-            $('#accordion-1 input[type=text]').each(function () {
+            /*Modified by Mitesh Vaishnav on 03/06/2014 for ticket #500 Customized Target stage - Boost Improvement Tactic  */
+            var ids = '[';
+            $('#tblCR_SV input[type=text]').each(function () {
                 var val = $(this).val();
                 var id = $(this).attr('id');
+                var name = $(this).attr('name');
+                console.log(name);
+                var Stagetype = '';
+                if (name == "item.ConversionValue") {
+                    Stagetype = '@MetricType_CR';
+                } else if (name == "item.VelocityValue") {
+                    Stagetype = '@MetricType_SV';
+                }
                 if (val > 0) {
-                    var value = id + "," + val;
-                    ids.push(value);
+                    ids += '{"StageId":"' + id + '","StageType":"' + Stagetype + '","Value":"' + val + '"},';
                 }
             });
-
+            $('#tblSize input[type=text]').each(function () {
+                var val = $(this).val();
+                var id = $(this).attr('id');
+                var Stagetype = '@MetricType_Size';
+                if (val > 0) {
+                    ids += '{"StageId":"' + id + '","StageType":"' + Stagetype + '","Value":"' + val + '"},';
+                }
+            });
             var isDeployedToIntegration = false;
             if ($("#t_integration_status").hasClass("icon-check-blue")) {
                 isDeployedToIntegration = true;
             }
-            var uId = $(window).attr('name');
+
             $.ajax({
                 type: 'post',
                 url: '@Url.Content("~/Boost/saveImprovementTacticData")',
-                data: 'improvementId=' + $("#ImprovementTacticTypeId").val() + '&improvementDetails=' + ids + '&status=' + status + '&cost=' + ReplaceCC($("#hdnCost").val()) + '&desc=' + $("#hdndesc").val()
-                       + '&title=' + $("#hdntitle").val() + '&deployToIntegrationStatus=' + isDeployedToIntegration + '&UserId=' + uId,
+                data: 'improvementId=' + $("#ImprovementTacticTypeId").val() + '&improvementDetails=' + ids.substr(0, ids.length - 1) + ']' + '&status=' + status + '&cost=' + ReplaceCC($("#hdnCost").val()) + '&desc=' + $("#hdndesc").val()
+                       + '&title=' + $("#hdntitle").val() + '&deployToIntegrationStatus=' + isDeployedToIntegration,
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
                         window.location = '@Url.Content("~/Login/Index")';

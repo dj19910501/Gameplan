@@ -161,9 +161,8 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         public JsonResult ImprovementTacticList()
         {
-
-            string MetricTypeSV = Enums.MetricType.SV.ToString();
-            string MetricTypeSize = Enums.MetricType.Size.ToString();
+            //Modified By : Mitesh Vaishnav on 03/06/2014 for Customized Target stage - Boost Improvement Tactic
+            string StageTypeCW = Enums.Stage.CW.ToString();
 
             var objImprovementTactic = db.ImprovementTacticTypes.Where(s => s.IsDeleted == false && s.ClientId == Sessions.User.ClientId).Select(s => s).ToList();
             var ImprovementTacticList = objImprovementTactic.Select(itt => new
@@ -172,13 +171,12 @@ namespace RevenuePlanner.Controllers
                 Title = itt.Title,
                 Cost = itt.Cost,
                 IsDeployed = itt.IsDeployed,
-                TargetStage = (db.Metrics.Where(metrics => metrics.IsDeleted == false && metrics.ClientId == Sessions.User.ClientId && (metrics.MetricType == MetricTypeSV || metrics.MetricType == MetricTypeSize))
-                                         .Select(metrics => metrics)
-                                         .OrderBy(metrics => metrics.Level).ToList())
+                TargetStage = (db.Stages.Where(stages => stages.IsDeleted == false && stages.ClientId == Sessions.User.ClientId && stages.Code != StageTypeCW)//Add M
+                                        .OrderBy(stages => stages.Level).ToList())
                                          .Select(ittmobj => new
                                          {
-                                             Stages = ittmobj.MetricName,
-                                             Active = TargetStage(itt.ImprovementTacticTypeId, ittmobj.MetricCode)
+                                            Stages = ittmobj.Title,
+                                            Active = TargetStage(itt.ImprovementTacticTypeId, ittmobj.StageId)
                                          }).Select(ittmobj => ittmobj),
                 IsDeployedToIntegration = itt.IsDeployedToIntegration
             }).Select(itt => itt);
@@ -192,9 +190,11 @@ namespace RevenuePlanner.Controllers
         public PartialViewResult DetailImprovementTacticData(int id = 0)
         {
             BoostImprovementTacticModel bittobj = new BoostImprovementTacticModel();
-            string MetricType_CR = Enums.MetricType.CR.ToString();
-            string MetricType_SV = Enums.MetricType.SV.ToString();
-            string MetricType_Size = Enums.MetricType.Size.ToString();
+
+            string StageType_CR = Enums.StageType.CR.ToString();
+            string StageType_SV = Enums.StageType.SV.ToString();
+            string StageType_Size = Enums.MetricType.Size.ToString();
+            string StageTypeCW = Enums.Stage.CW.ToString();
             double weight = 0;
             /* check the mode if id has value 0 then its create mode other wise edit mode */
             if (id != 0)
@@ -228,38 +228,41 @@ namespace RevenuePlanner.Controllers
             /*get the metrics related to improvement Tactic and display in view*/
             List<MetricModel> listMetrics = new List<MetricModel>();
             List<MetricModel> listMetricssize = new List<MetricModel>();
-            foreach (var itemCR in db.Metrics.Where(n => n.IsDeleted == false && n.MetricType == MetricType_CR && n.ClientId == Sessions.User.ClientId).Distinct().OrderBy(o => o.Level).ToList())
+            // Modified by Mitesh Vaishnav on 03/06/2014 for Customized Target stage - Boost Improvement Tactic
+            var stageFilterCR = db.Stages.Where(n => n.IsDeleted == false && n.ClientId == Sessions.User.ClientId && n.ImprovementTacticType_Metric.Where(ittm => ittm.StageId == n.StageId && ittm.StageType == StageType_CR).FirstOrDefault().StageType == StageType_CR).ToList();
+            var stageFilterSV = db.Stages.Where(n => n.IsDeleted == false && n.ClientId == Sessions.User.ClientId && n.ImprovementTacticType_Metric.Where(ittm => ittm.StageId == n.StageId && ittm.StageType == StageType_SV).FirstOrDefault().StageType == StageType_SV).ToList();
+            foreach (var itemCR in stageFilterCR.Where(m => m.Level != null && m.Code != StageTypeCW).OrderBy(o => o.Level).ToList())
             {
-                foreach (var itemSV in db.Metrics.Where(n => n.IsDeleted == false && n.MetricType == MetricType_SV && n.ClientId == Sessions.User.ClientId).Distinct().OrderBy(o => o.Level).ToList())
+                foreach (var itemSV in stageFilterSV.Where(m => m.Level != null && m.Code != StageTypeCW).OrderBy(o => o.Level).ToList())
                 {
                     if (itemCR.Level == itemSV.Level)
                     {
                         MetricModel Metricsobj = new MetricModel();
-                        Metricsobj.MetricType = itemCR.MetricType;
-                        Metricsobj.MetricName = itemCR.MetricName;
-                        weight = db.ImprovementTacticType_Metric.Where(itm => itm.MetricId == itemCR.MetricId && itm.ImprovementTacticTypeId == id).Select(v => v.Weight).FirstOrDefault();
+                        Metricsobj.MetricType = StageType_CR;
+                        Metricsobj.MetricName = itemCR.ConversionTitle;
+                        weight = db.ImprovementTacticType_Metric.Where(itm => itm.StageId == itemCR.StageId && itm.ImprovementTacticTypeId == id && itm.StageType == StageType_CR).Select(v => v.Weight).FirstOrDefault();
                         Metricsobj.ConversionValue = weight;
-
-                        weight = db.ImprovementTacticType_Metric.Where(itm => itm.MetricId == itemSV.MetricId && itm.ImprovementTacticTypeId == id).Select(v => v.Weight).FirstOrDefault();
+                        weight = db.ImprovementTacticType_Metric.Where(itm => itm.StageId == itemSV.StageId && itm.ImprovementTacticTypeId == id && itm.StageType == StageType_SV).Select(v => v.Weight).FirstOrDefault();
                         Metricsobj.VelocityValue = weight;
-                        Metricsobj.MetricID_CR = itemCR.MetricId;
-                        Metricsobj.MetricID_SV = itemSV.MetricId;
+                        Metricsobj.MetricID_CR = itemCR.StageId;
+                        Metricsobj.MetricID_SV = itemSV.StageId;
                         listMetrics.Add(Metricsobj);
-                        break;
-                    };
+                    }
                 }
-            }
 
-            foreach (var itemSize in db.Metrics.Where(n => n.IsDeleted == false && n.MetricType == MetricType_Size && n.ClientId == Sessions.User.ClientId).Distinct().ToList())
+
+            }
+            foreach (var item in db.Stages.Where(n => n.IsDeleted == false && n.ClientId == Sessions.User.ClientId && n.Level == null))
             {
                 MetricModel Metricsobj = new MetricModel();
-                Metricsobj.MetricID_Size = itemSize.MetricId;
-                Metricsobj.MetricType = itemSize.MetricType;
-                Metricsobj.MetricName = itemSize.MetricName;
-                weight = db.ImprovementTacticType_Metric.Where(itm => itm.MetricId == itemSize.MetricId && itm.ImprovementTacticTypeId == id).Select(v => v.Weight).FirstOrDefault();
+                Metricsobj.MetricID_Size = item.StageId;
+                Metricsobj.MetricType = item.ImprovementTacticType_Metric.Where(ittm => ittm.StageId == item.StageId).FirstOrDefault().StageType;
+                Metricsobj.MetricName = item.Title;
+                weight = db.ImprovementTacticType_Metric.Where(itm => itm.StageId == item.StageId && itm.ImprovementTacticTypeId == id).Select(v => v.Weight).FirstOrDefault();
                 Metricsobj.ConversionValue = weight;
                 listMetricssize.Add(Metricsobj);
             }
+
             bittobj.listMetrics = listMetrics;
             bittobj.listMetricssize = listMetricssize;
             return PartialView("CreateImprovementTactic", bittobj);
@@ -339,25 +342,29 @@ namespace RevenuePlanner.Controllers
                         return Json(new { errormsg = ErrorMessage }, JsonRequestBehavior.AllowGet);
                     }
                 }
+                //Modified by Mitesh Vaishnav on 03/06/2014 for Customized Target stage - Boost Improvement Tactic
                 /*add into improvementType_metric table based on improvementId*/
-                for (int i = 0; i < value.Length; i++)
+                improvementDetails = improvementDetails.Replace(@"\", "");
+                var stageValueList = JsonConvert.DeserializeObject<List<StageDetails>>(improvementDetails);
+                foreach (var item in stageValueList)
                 {
                     ImprovementTacticType_Metric objItm = new ImprovementTacticType_Metric();
                     int MetricId = 0;
-                    int.TryParse(value[i], out MetricId);
-                    objItm.MetricId = MetricId;
+                    int.TryParse(item.StageId, out MetricId);
+                    objItm.StageId = MetricId;
                     double Weight = 0.0;
-                    double.TryParse(value[i + 1], out Weight);
+                    double.TryParse(item.Value, out Weight);
                     objItm.Weight = Weight;
                     objItm.ImprovementTacticTypeId = improvementId;
                     objItm.CreatedDate = System.DateTime.Now;
                     objItm.CreatedBy = Sessions.User.UserId;
+                    objItm.StageType = item.StageType;
                     MRPEntities dbAdd = new MRPEntities();
                     dbAdd.ImprovementTacticType_Metric.Attach(objItm);
                     dbAdd.Entry(objItm).State = EntityState.Added;
                     int result = dbAdd.SaveChanges();
                     dbAdd.Dispose();
-                    i = i + 1;
+
                 }
                 TempData["SuccessMessage"] = successMessage;
             }
@@ -514,10 +521,10 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Other
-        public bool TargetStage(int id, string stagecode)
+        public bool TargetStage(int id, int stageId)
         {
             bool active = true;
-            var chkStage = db.ImprovementTacticType_Metric.Where(ittm => ittm.ImprovementTacticTypeId == id && ittm.Metric.MetricCode == stagecode).ToList();
+            var chkStage = db.ImprovementTacticType_Metric.Where(ittm => ittm.ImprovementTacticTypeId == id && ittm.StageId == stageId).ToList();
             if (chkStage.Count == 0)
             {
                 active = false;
@@ -525,6 +532,12 @@ namespace RevenuePlanner.Controllers
             return active;
         }
         List<string> colorcodeList = new List<string> { "27a4e5", "6ae11f", "bbb748", "bf6a4b", "ca3cce", "7c4bbf", "1af3c9", "f1eb13", "c7893b", "e42233", "a636d6", "2940e2", "0b3d58", "244c0a", "414018", "472519", "4b134d", "2c1947", "055e4d", "555305", "452f14", "520a10", "3e1152", "0c1556", "73c4ee", "9ceb6a", "d2cf86", "d59e89", "dc80df", "a989d5", "6bf7dc", "f6f263", "dab17d", "eb6e7a", "c57de4", "7483ec", "1472a3", "479714", "7f7c2f", "86472f", "8e2590", "542f86", "09af8f", "a6a10a", "875c26", "9e1320", "741f98", "1627a0" };
+        public class StageDetails
+        {
+            public string StageId { get; set; }
+            public string StageType { get; set; }
+            public string Value { get; set; }
+        }
         #endregion
 
     }
