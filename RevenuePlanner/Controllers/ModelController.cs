@@ -190,57 +190,18 @@ namespace RevenuePlanner.Controllers
 
             BaselineModel objBaselineModel = new BaselineModel();
             objBaselineModel.Versions = GetVersions(id, BusinessUnitId);
-            //Start Model versioning change 02-Jan-2014
-            //List<ModelVersion> lstVersions = (from m in db.Models
-            //                                  where m.IsDeleted == false && m.BusinessUnitId == BusinessUnitId
-            //                                  orderby m.CreatedDate descending
-            //                                  select new ModelVersion
-            //                                  {
-            //                                      ModelId = m.ModelId,
-            //                                      BusinessUnitId = m.BusinessUnitId,
-            //                                      Title = m.Title,
-            //                                      Version = m.Version,
-            //                                      Status = m.Status,
-            //                                      IsLatest = false
-            //                                  }).ToList();
-            //if (lstVersions != null && lstVersions.Count > 0)
-            //{
-            //    lstVersions.FirstOrDefault().IsLatest = true;
-            //    objBaselineModel.Versions = lstVersions.Take(20).ToList();
-            //}
-            //End Model versioning change 02-Jan-2014
-
+            //changes done by uday for #497
             List<ModelStage> listmodelstage = new List<ModelStage>();
-
-            var StageList = db.Stages.Where(d => d.IsDeleted == false && d.ClientId == Sessions.User.ClientId).OrderBy(c => c.Level).ToList();
+            string CW = Enums.Stage.CW.ToString();
+            var StageList = db.Stages.Where(d => d.IsDeleted == false && d.ClientId == Sessions.User.ClientId && d.Level != null && d.Code != CW).OrderBy(c => c.Level).ToList();
             if (StageList != null && StageList.Count > 0)
             {
-                var maxlevel = StageList.Max(t => t.Level);
                 foreach (var s in StageList)
                 {
                     ModelStage objModelStage = new ModelStage();
                     objModelStage.StageId = s.StageId;
-                    if (s.Level < maxlevel)
-                    {
-                        int NextLevel = Convert.ToInt32(s.Level) + 1;
-                        /*changed by Nirav Shah on 2 APR 2013*/
-                        string stage1 = s.Title;
-                        string stage2 = StageList.Where(stg => stg.Level == NextLevel).Select(stg => stg.Title).FirstOrDefault();
-                        objModelStage.ConversionTitle = stage1 + " → " + stage2;
-                        //Start Manoj 03Feb2014 - Bug 115:Model Creation - Velocity Labels same as Conversion Labels
-                        objModelStage.VelocityTitle = stage1 + " → " + stage2;
-                        //End Manoj 03Feb2014 - Bug 115:Model Creation - Velocity Labels same as Conversion Labels
-                    }
-                    else
-                    {
-                        objModelStage.ConversionTitle = s.Title;
-                        //Start Manoj 03Feb2014 - Bug 115:Model Creation - Velocity Labels same as Conversion Labels
-                        objModelStage.VelocityTitle = s.Title;
-                        //End Manoj 03Feb2014 - Bug 115:Model Creation - Velocity Labels same as Conversion Labels
-                    }
-                    //Start Manoj 03Feb2014 - Bug 115:Model Creation - Velocity Labels same as Conversion Labels
-                    //objModelStage.VelocityTitle = s.Title;
-                    //End Manoj 03Feb2014 - Bug 115:Model Creation - Velocity Labels same as Conversion Labels
+                    objModelStage.ConversionTitle = Common.GetReplacedString(s.ConversionTitle);
+                    objModelStage.VelocityTitle = Common.GetReplacedString(s.ConversionTitle);
                     objModelStage.Description = s.Description;
                     objModelStage.StageId = s.StageId;
                     objModelStage.Level = Convert.ToInt32(s.Level);
@@ -2873,7 +2834,8 @@ namespace RevenuePlanner.Controllers
                 Stage = (p.StageId == null) ? "-" : p.Stage.Title, // Modified by dharmraj for ticket #475, Old line : Stage = (p.StageId == null) ? "-" : p.Stage.Code
                 /*changed by Nirav Shah on 2 APR 2013*/
                 // inquiries = (p.ProjectedInquiries == null) ? 0 : p.ProjectedInquiries,
-                mqls = (p.ProjectedMQLs == null) ? 0 : p.ProjectedMQLs,
+                //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
+                ProjectedStageValue = (p.ProjectedStageValue == null) ? 0 : p.ProjectedStageValue,
                 revenue = (p.ProjectedRevenue == null) ? 0 : p.ProjectedRevenue,
                 IsDeployedToIntegration = p.IsDeployedToIntegration
             }).Select(p => p).Distinct().OrderBy(p => p.title);
@@ -2914,8 +2876,8 @@ namespace RevenuePlanner.Controllers
                 tm.Description = mtp.Description;
                 /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
                 /*changed by Nirav Shah on 2 APR 2013*/
-                // tm.ProjectedInquiries = (mtp.ProjectedInquiries != null) ? mtp.ProjectedInquiries : 0;
-                tm.ProjectedMQLs = (mtp.ProjectedMQLs != null) ? mtp.ProjectedMQLs : 0;
+                //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
+                tm.ProjectedStageValue = (mtp.ProjectedStageValue != null) ? mtp.ProjectedStageValue : 0;
                 tm.ProjectedRevenue = (mtp.ProjectedRevenue != null) ? mtp.ProjectedRevenue : 0;
                 /*end changes*/
 
@@ -2966,7 +2928,7 @@ namespace RevenuePlanner.Controllers
             Tactic_TypeModel tm = new Tactic_TypeModel();
             /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
             //tm.ProjectedInquiries = 0;
-            tm.ProjectedMQLs = 0;
+            tm.ProjectedStageValue = 0;
             tm.ProjectedRevenue = 0;   /*end changes*/
             //Start Manoj Limbachiya 05May2014 PL#458
             ViewBag.CanDelete = false;
@@ -3053,8 +3015,9 @@ namespace RevenuePlanner.Controllers
         /// Added By: Nirav Shah.
         /// Action to Save Tactic data .
         /// </summary>
+        ///   //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
         [HttpPost]
-        public ActionResult SaveTactic(string Title, string Description, int? StageId, int ProjectedMQLs, /*int ProjectedInquiries, */int ProjectedRevenue, int TacticTypeId, string modelID, bool isDeployedToIntegration, bool isDeployedToModel)
+        public ActionResult SaveTactic(string Title, string Description, int? StageId, int ProjectedStageValue, int ProjectedRevenue, int TacticTypeId, string modelID, bool isDeployedToIntegration, bool isDeployedToModel)
         {
             try
             {
@@ -3063,10 +3026,10 @@ namespace RevenuePlanner.Controllers
                 int.TryParse(modelID, out ModelId);
                 objtactic.Title = Title;
                 objtactic.Description = Description;
-                objtactic.ProjectedMQLs = ProjectedMQLs;
+                //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
+                objtactic.ProjectedStageValue = ProjectedStageValue;
                 objtactic.ProjectedRevenue = ProjectedRevenue;
                 /*changed by Nirav Shah on 2 APR 2013*/
-                // objtactic.ProjectedInquiries = ProjectedInquiries;
                 objtactic.StageId = StageId;
                 int intRandomColorNumber = rnd.Next(colorcodeList.Count);
                 objtactic.ColorCode = Convert.ToString(colorcodeList[intRandomColorNumber]);
@@ -3320,7 +3283,8 @@ namespace RevenuePlanner.Controllers
                             var obj = db.TacticTypes.Where(t => t.TacticTypeId == tid).FirstOrDefault();
                             objtactic.Title = obj.Title;
                             objtactic.Description = obj.Description;
-                            objtactic.ProjectedMQLs = obj.ProjectedMQLs;
+                            //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
+                            objtactic.ProjectedStageValue = obj.ProjectedStageValue;
                             objtactic.ProjectedRevenue = obj.ProjectedRevenue;
                             //objtactic.ProjectedInquiries = obj.ProjectedInquiries;
                             string StageType = Enums.StageType.CR.ToString();
@@ -3335,7 +3299,7 @@ namespace RevenuePlanner.Controllers
                                 errorMessage = string.Format(Common.objCached.StageNotExist);
                                 return Json(new { errorMessage }, JsonRequestBehavior.AllowGet);
                             }
-                            objtactic.StageId = (obj.StageId == null) ? db.Model_Funnel_Stage.Where(s => s.StageType == StageType && s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true).OrderBy(s => s.Stage.Level).Distinct().Select(s => s.StageId).FirstOrDefault() : obj.StageId;//Modified by Mitesh Vaishnav on 05/06/2014 for internal review :	Edit a model tactic from master list set its target stage to Response and then save from side pane. Now, click Save & Continue at the bottom of listing. This will change Response to SUS.
+                            //objtactic.StageId = (obj.StageId == null) ? db.Model_Funnel_Stage.Where(s => s.StageType == StageType && s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true).OrderBy(s => s.Stage.Level).Distinct().Select(s => s.StageId).FirstOrDefault() : obj.StageId;
                             int intRandomColorNumber = rnd.Next(colorcodeList.Count);
                             objtactic.ColorCode = Convert.ToString(colorcodeList[intRandomColorNumber]);
                             objtactic.CreatedDate = DateTime.Now;

@@ -33,38 +33,35 @@ namespace RevenuePlanner.Controllers
             }
 
             List<BestInClassModel> listBestInClassModel = new List<BestInClassModel>();
+            //added by uday for ticket #501 deleted old code and added new parameters like stagetype_cr etc.
             try
             {
-                string MetricType_CR = Enums.MetricType.CR.ToString();
-                string MetricType_SV = Enums.MetricType.SV.ToString();
-                string MetricType_Size = Enums.MetricType.Size.ToString();
-
-                foreach (var itemCR in db.Metrics.Where(n => n.IsDeleted == false && n.MetricType == MetricType_CR && n.ClientId == Sessions.User.ClientId).OrderBy(o => o.Level).ToList())
-                {
-                    foreach (var itemSV in db.Metrics.Where(n => n.IsDeleted == false && n.MetricType == MetricType_SV && n.ClientId == Sessions.User.ClientId).OrderBy(o => o.Level).ToList())
+                string StageType_CR = Enums.StageType.CR.ToString();
+                string StageType_SV = Enums.StageType.SV.ToString();
+                string StageType_Size = Enums.StageType.Size.ToString();
+                string CW = Enums.Stage.CW.ToString();
+                var bicfilter = db.BestInClasses.Where(b => b.Stage.ClientId == Sessions.User.ClientId).OrderBy(o => o.StageId).ToList();
+                var stagefilter = db.Stages.Where(n => n.IsDeleted == false && n.ClientId == Sessions.User.ClientId).ToList();
+                foreach (var item in stagefilter.Where(m => m.Level != null && m.Code != CW).OrderBy(o => o.Level).ToList())
                     {
                         BestInClassModel objBestInClassModel = new BestInClassModel();
-                        if (itemCR.Level == itemSV.Level)
-                        {
-                            objBestInClassModel.MetricType = itemCR.MetricType;
-                            objBestInClassModel.MetricName = itemCR.MetricName;
-                            objBestInClassModel.ConversionValue = itemCR.BestInClasses.Where(bic => bic.MetricId == itemCR.MetricId).Select(v => v.Value).FirstOrDefault();
-                            objBestInClassModel.VelocityValue = itemSV.BestInClasses.Where(bic => bic.MetricId == itemSV.MetricId).Select(v => v.Value).FirstOrDefault();
-                            objBestInClassModel.MetricID_CR = itemCR.MetricId;
-                            objBestInClassModel.MetricID_SV = itemSV.MetricId;
+                        objBestInClassModel.StageName = Common.GetReplacedString(item.ConversionTitle);
+                        objBestInClassModel.ConversionValue = bicfilter.Where(b => b.StageId == item.StageId && b.StageType == StageType_CR).Select(v => v.Value).FirstOrDefault();
+                        objBestInClassModel.VelocityValue = bicfilter.Where(b => b.StageId == item.StageId && b.StageType == StageType_SV).Select(v => v.Value).FirstOrDefault();
+                        objBestInClassModel.StageID_CR = item.StageId;
+                        objBestInClassModel.StageID_SV = item.StageId;
+                        objBestInClassModel.StageType = StageType_CR;
 
                             listBestInClassModel.Add(objBestInClassModel);
-                            break;
-                        };
-                    }
                 }
-                foreach (var itemSize in db.Metrics.Where(n => n.IsDeleted == false && n.MetricType == MetricType_Size && n.ClientId == Sessions.User.ClientId).ToList())
+               
+                foreach (var itemSize in db.Stages.Where(n => n.IsDeleted == false && n.ClientId == Sessions.User.ClientId && n.Level == null).ToList())
                 {
                     BestInClassModel objBestInClassModel = new BestInClassModel();
-                    objBestInClassModel.MetricID_Size = itemSize.MetricId;
-                    objBestInClassModel.MetricType = itemSize.MetricType;
-                    objBestInClassModel.MetricName = itemSize.MetricName;
-                    objBestInClassModel.ConversionValue = itemSize.BestInClasses.Where(bic => bic.MetricId == itemSize.MetricId).Select(v => v.Value).FirstOrDefault();
+                        objBestInClassModel.StageID_Size = itemSize.StageId;
+                        objBestInClassModel.StageName = itemSize.Title;
+                        objBestInClassModel.StageType = StageType_Size;
+                        objBestInClassModel.ConversionValue = bicfilter.Where(b => b.StageId == itemSize.StageId && b.StageType == StageType_Size).Select(v => v.Value).FirstOrDefault();
                     listBestInClassModel.Add(objBestInClassModel);
                 }
             }
@@ -83,47 +80,46 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public JsonResult SaveBIC(List<BestInClassModel> bic)
         {
+            //added by uday for PL ticket #501 added an extra line to save stage type in 
             try
             {
                 if (bic != null)
                 {
-                    string MetricType_CR = Enums.MetricType.CR.ToString();
-                    string MetricType_SV = Enums.MetricType.SV.ToString();
-                    string MetricType_Size = Enums.MetricType.Size.ToString();
+                    string StageType_CR = Enums.StageType.CR.ToString();
+                    string StageType_SV = Enums.StageType.SV.ToString();
+                    string StageType_Size = Enums.StageType.Size.ToString();
 
                     // Reset existing BIC values for specific Client
-                    foreach (var item in db.Metrics.Where(n => n.IsDeleted == false && n.ClientId == Sessions.User.ClientId).OrderBy(o => o.Level).ToList())
+                    foreach (var item in db.BestInClasses.Where(n => n.Stage.ClientId == Sessions.User.ClientId).ToList())
                     {
-                        var BIC = db.BestInClasses.Where(b => b.MetricId == item.MetricId && b.IsDeleted == false).FirstOrDefault();
-                        if (BIC != null)
-                        {
-                            db.Entry(BIC).State = EntityState.Modified;
-                            db.BestInClasses.Remove(BIC);
+                        db.Entry(item).State = EntityState.Modified;
+                        db.BestInClasses.Remove(item);
                             db.SaveChanges();
                         }
-                    }
 
-                    var bicEntries = (from t in bic
-                                      select new { t.MetricID_CR, t.MetricID_SV, t.MetricID_Size, t.MetricName, t.MetricType, t.ConversionValue, t.VelocityValue }).FirstOrDefault();
+                  
 
                     foreach (var t in bic)
                     {
                         BestInClass objBestInClass = new BestInClass();
-                        if (t.MetricType != null)
+                        if (t.StageType != null)
                         {
-                            if (t.MetricType == MetricType_CR)
+                            if (t.StageType == StageType_CR)
                             {
-                                objBestInClass.MetricId = t.MetricID_CR;
+                                objBestInClass.StageId = t.StageID_CR;
+                                objBestInClass.StageType = t.StageType;
                                 objBestInClass.Value = t.ConversionValue;
                             }
-                            else if (t.MetricType == MetricType_SV)
+                            else if (t.StageType == StageType_SV)
                             {
-                                objBestInClass.MetricId = t.MetricID_SV;
+                                objBestInClass.StageId = t.StageID_SV;
+                                objBestInClass.StageType = t.StageType;
                                 objBestInClass.Value = t.VelocityValue;
                             }
-                            else if (t.MetricType == MetricType_Size)
+                            else if (t.StageType == StageType_Size)
                             {
-                                objBestInClass.MetricId = t.MetricID_Size;
+                                objBestInClass.StageId = t.StageID_Size;
+                                objBestInClass.StageType = t.StageType;
                                 objBestInClass.Value = t.ConversionValue;
                             }
                         }
@@ -140,6 +136,7 @@ namespace RevenuePlanner.Controllers
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
             }
+           
             return Json(new { id = 0 });
         }
 

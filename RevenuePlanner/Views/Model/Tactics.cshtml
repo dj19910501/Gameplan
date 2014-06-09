@@ -402,15 +402,15 @@
                             Changed By : Nirav shah on 6 Feb 2014
                             Change : pass new parameter modelid
                         */
-                        addRowTactic(i, tactic[i].id, tactic[i].clientid, tactic[i].modelId, tactic[i].title, tactic[i].Stage,/* tactic[i].inquiries,*/ tactic[i].mqls, tactic[i].revenue, tactic[i].IsDeployedToIntegration);
+                        addRowTactic(i, tactic[i].id, tactic[i].clientid, tactic[i].modelId, tactic[i].title, tactic[i].Stage,/* tactic[i].inquiries,*/ tactic[i].ProjectedStageValue, tactic[i].revenue, tactic[i].IsDeployedToIntegration);
                     }
                 } else {
                     $('#table_tactics > tbody').append('<tr><td colspan="9" class="gray">No saved tactics to display.</td></tr>');
                 }
             }
         }
-        //add row in tactics table
-        function addRowTactic(_index, _id, _Clientid, _modelId, _title, Stage,/* _inquiries,*/ _mqls, _revenue, _IsDeployedToIntegration) {
+        //add row in tactics table //changes done by uday for PL #497 changed mlqs to projectedstagevalue
+        function addRowTactic(_index, _id, _Clientid, _modelId, _title, Stage,/* _inquiries,*/ _ProjectedStageValue, _revenue, _IsDeployedToIntegration) {
             var $tableTactics = $('#table_tactics > tbody');
             var $table_activities = $('#table_activities > tbody');
             var $html = "";
@@ -427,7 +427,8 @@
                           '<td  class="border-r sm" id="' + _id + '"><span class="title-baseline-model">' + _title + '</span><span class="search-icon"></span></td>' +
                           '<td   class="sm border-r" id="' + _id + '">' + Stage + '</td>' +
                           //'<td   class="sm" id="' + _id + '">' + FormatCommas(_inquiries.toString(), false) + '</td>' +
-                          '<td   class="sm" id="' + _id + '">' + FormatCommas(_mqls.toString(), false) + '</td>' +
+                           //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
+                          '<td   class="sm" id="' + _id + '">' + FormatCommas(_ProjectedStageValue.toString(), false) + '</td>' +
                           '<td  class="border-r sm" id="' + _id + '">$' + FormatCommas(_revenue.toString(), false) + '</td>' +
                           '<td class="border-r"><span class="circle-check-icon-gray circle-check-icon-blue"  id = "' + "rej" + _id + '"></span></td>';
 
@@ -442,7 +443,8 @@
                             '<td id="' + _id + '" class="border-r sm"><span class="title-baseline-model">' + _title + '</span><span class="search-icon"></span></td>' +
                             '<td id="' + _id + '"  class="sm border-r">' + Stage + '</td>' +
                             //'<td  id="' + _id + '" class="sm">' + FormatCommas(_inquiries.toString(), false) + '</td>' +
-                            '<td  id="' + _id + '" class="sm">' + FormatCommas(_mqls.toString(), false) + '</td>' +
+                             //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
+                            '<td  id="' + _id + '" class="sm">' + FormatCommas(_ProjectedStageValue.toString(), false) + '</td>' +
                             '<td id="' + _id + '" class="border-r sm">$' + FormatCommas(_revenue.toString(), false) + '</td>' +
                             '<td class="border-r"><span class="circle-check-icon-gray"  id = "' + "rej" + _id + '"></span></td>';
 

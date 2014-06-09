@@ -241,7 +241,7 @@
         foreach (var item in Model.lstmodelstage)
         {
             cnti = cnti + 1;
-            if (cnti < Model.lstmodelstage.Count())
+            if (cnti <= Model.lstmodelstage.Count())
             {
                 if (@item.Funnel != "" && @item.Funnel != null)
                 {

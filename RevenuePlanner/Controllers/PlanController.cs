@@ -2745,7 +2745,8 @@ namespace RevenuePlanner.Controllers
         public JsonResult LoadTacticTypeValue(int tacticTypeId)
         {
             TacticType tt = db.TacticTypes.Where(t => t.TacticTypeId == tacticTypeId).FirstOrDefault();
-            return Json(new { inq = tt.ProjectedInquiries == null ? 0 : tt.ProjectedInquiries, mql = tt.ProjectedMQLs == null ? 0 : tt.ProjectedMQLs, revenue = tt.ProjectedRevenue == null ? 0 : tt.ProjectedRevenue, IsDeployedToIntegration = tt.IsDeployedToIntegration }, JsonRequestBehavior.AllowGet);
+            //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
+            return Json(new { inq = tt.ProjectedInquiries == null ? 0 : tt.ProjectedInquiries, projectedstagevalue = tt.ProjectedStageValue == null ? 0 : tt.ProjectedStageValue, revenue = tt.ProjectedRevenue == null ? 0 : tt.ProjectedRevenue, IsDeployedToIntegration = tt.IsDeployedToIntegration }, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>

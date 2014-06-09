@@ -12,8 +12,8 @@ namespace RevenuePlanner.Models
         public Guid? ClientId { get; set; }
         public int? ModelId { get; set; }
         public int? StageId { get; set; }
-        public Nullable<long> ProjectedInquiries { get; set; }
-        public Nullable<double> ProjectedMQLs { get; set; }
+        //changes done by uday for #497
+        public Nullable<double> ProjectedStageValue { get; set; }
         public Nullable<double> ProjectedRevenue { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }

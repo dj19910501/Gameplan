@@ -375,7 +375,8 @@ namespace RevenuePlanner.Helpers
         public enum StageType
         {
             CR,
-            SV
+            SV,
+            Size //added by uday for PL #501
         }
         #endregion
 

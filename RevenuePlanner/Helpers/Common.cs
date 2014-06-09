@@ -2730,6 +2730,27 @@ namespace RevenuePlanner.Helpers
 
         #endregion
 
+        #region replace ->
+
+        /// <summary>
+        /// function added by uday for replacing -> with other character ON 3-6-2014..
+        /// </summary>
+        /// <param name="objDate"></param>
+        /// <returns></returns>
+        public static string GetReplacedString(string obj)
+        {
+            if (obj == null)
+                return string.Empty;
+            else if(obj.Contains("->"))
+            {
+                return obj.Replace("->", " → ");
+            }
+            else
+                return obj;
+        }
+
+        #endregion
+
         #region Delete Integration Instance
         /// <summary>
         /// Delete IntegrationInstance its relevant Model and Plan

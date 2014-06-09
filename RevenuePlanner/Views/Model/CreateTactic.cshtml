@@ -94,7 +94,8 @@
                 @Html.TextBoxFor(model => model.ProjectedInquiries, new {  require = "true", id = "hdnProjectedInquiries", @class="priceValue", maxlength=@RevenuePlanner.Helpers.Common.maxLengthPriceValue })*@
 
             <label id="projectStage">Projected [Stage]</label>
-            @Html.TextBoxFor(model => model.ProjectedMQLs, new { require = "true", id = "hdnProjectedMQLs", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
+            @*//changes done by uday for #497*@
+            @Html.TextBoxFor(model => model.ProjectedStageValue, new { require = "true", id = "hdnProjectedStageValue", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
 
             <label>Projected Cost</label>
             @Html.TextBoxFor(model => model.ProjectedRevenue, new { require = "true", id = "hdnProjectedRevenue", @class = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
@@ -253,8 +254,9 @@
                         iserror = true;
                     }
                 }
-                if ($(this).attr('id') == 'hdnProjectedMQLs') {
-                    var tValue = ReplaceCC($("#hdnProjectedMQLs").val());
+                //changes done by uday for PL #497
+                if ($(this).attr('id') == 'hdnProjectedStageValue') {
+                    var tValue = ReplaceCC($("#hdnProjectedStageValue").val());
                     if (isNaN(tValue)) {
                         $(this).addClass("error");
                         iserror = true;
@@ -288,9 +290,9 @@
                 //        $(this).addClass("error");
                 //        iserror = true;
                 //    }
-                //}
-                if ($(this).attr('id') == 'hdnProjectedMQLs') {
-                    var tValue = ReplaceCC($("#hdnProjectedMQLs").val());
+                //} //changes done by uday for PL #497
+                if ($(this).attr('id') == 'hdnProjectedStageValue') {
+                    var tValue = ReplaceCC($("#hdnProjectedStageValue").val());
                     if (isNaN(tValue)) {
                         $(this).addClass("error");
                         iserror = true;
@@ -327,8 +329,9 @@
             var Description = $("#Description").val();
             var StageId = $("#StageId").val();
             /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
-            var ProjectedMQLs = ReplaceCC($("#hdnProjectedMQLs").val());
-            //var ProjectedInquiries =ReplaceCC($("#hdnProjectedInquiries").val());
+            //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
+            var ProjectedStageValue = ReplaceCC($("#hdnProjectedStageValue").val()); 
+   
             var ProjectedRevenue = ReplaceCC($("#hdnProjectedRevenue").val());
             var TacticTypeId = $("#hdnTacticTypeId").val();
             //var clientId = $("#hdnClientId").val();
@@ -347,7 +350,8 @@
                         $.ajax({
                             type: 'POST',
                             url: '@Url.Content("~/Model/SaveTactic/")',
-                            data: 'Title=' + Title + '&Description=' + Description + '&StageId=' + StageId + '&ProjectedMQLs=' + ProjectedMQLs +
+                //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
+                data: 'Title=' + Title + '&Description=' + Description + '&StageId=' + StageId + '&ProjectedStageValue=' + ProjectedStageValue +
                                 '&ProjectedRevenue=' + ProjectedRevenue + '&TacticTypeId=' + TacticTypeId
                             + '&modelID=' + modelID + '&isDeployedToIntegration=' + isDeployedToIntegration
                             + '&isDeployedToModel=' + isDeployedToModel,
@@ -404,15 +408,10 @@
                     }
                 }
                 /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
-                //if ($(this).attr('id') == 'hdnProjectedInquiries') {
-                //    var tValue = ReplaceCC($("#hdnProjectedInquiries").val());
-                //    if (isNaN(tValue)) {
-                //        $(this).addClass("error");
-                //        iserror = true;
-                //    }
-                //}
-                if ($(this).attr('id') == 'hdnProjectedMQLs') {
-                    var tValue = ReplaceCC($("#hdnProjectedMQLs").val());
+              
+                //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
+                if ($(this).attr('id') == 'hdnProjectedStageValue') {
+                    var tValue = ReplaceCC($("#hdnProjectedStageValue").val());
                     if (isNaN(tValue)) {
                         $(this).addClass("error");
                         iserror = true;
@@ -467,8 +466,9 @@
                 StageId = 'null';
             }
             /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
-            var ProjectedMQLs = ReplaceCC($("#hdnProjectedMQLs").val());
-            //var ProjectedInquiries =ReplaceCC($("#hdnProjectedInquiries").val());
+            //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
+            var ProjectedStageValue = ReplaceCC($("#hdnProjectedStageValue").val());
+ 
             var ProjectedRevenue = ReplaceCC($("#hdnProjectedRevenue").val());
             var TacticTypeId = $("#hdnTacticTypeId").val();
             if (isCreated == 'True') {
@@ -484,7 +484,7 @@
                         $.ajax({
                             type: 'POST',
                             url: '@Url.Content("~/Model/SaveTactic/")',
-                            data: 'Title=' + Title + '&Description=' + Description + '&StageId=' + StageId + '&ProjectedMQLs=' + ProjectedMQLs
+                            data: 'Title=' + Title + '&Description=' + Description + '&StageId=' + StageId + '&ProjectedStageValue=' + ProjectedStageValue
                             + '&ProjectedRevenue=' + ProjectedRevenue + '&TacticTypeId=' + TacticTypeId
                            + '&modelID=' + modelID + '&isDeployedToIntegration=' + isDeployedToIntegration
                             + '&isDeployedToModel=' + isDeployedToModel,

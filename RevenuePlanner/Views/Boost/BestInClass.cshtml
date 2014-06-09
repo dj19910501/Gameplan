@@ -8,9 +8,11 @@
     ViewBag.Title = "Best In Class Metrics";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Boost;
     Layout = "~/Views/Shared/_Layout.cshtml";
-    string MetricType_CR = Enums.MetricType.CR.ToString();
-    string MetricType_SV = Enums.MetricType.SV.ToString();
-    string MetricType_Size = Enums.MetricType.Size.ToString();
+
+    //added by uday for PL #501 removed old variables and added below new ones
+    string StageType_CR = Enums.StageType.CR.ToString();
+    string StageType_SV = Enums.StageType.SV.ToString();
+    string StageType_Size = Enums.StageType.Size.ToString();
 }
 
 @section Sidebar {
@@ -66,17 +68,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Where(m => m.MetricType == MetricType_CR || m.MetricType == MetricType_SV))
+                    @foreach (var item in Model.Where(m => m.StageType != StageType_Size))
                     {
                         <tr class="bestInClassRow">
-                            <td title="@item.MetricName" class="title1">
-                                @Html.DisplayFor(model => item.MetricName)
+                            <td title="@item.StageName" class="title1">
+                                @Html.DisplayFor(model => item.StageName)
                             </td>
                             <td>
-                                <input id="@item.MetricID_CR" class="backgroundC6EBF3 text-align-right width88px input-table priceValue inputCR" maxlength="@RevenuePlanner.Helpers.Common.maxLengthPercentageValue" value="@item.ConversionValue" />
+                                <input id="@item.StageID_CR" class="backgroundC6EBF3 text-align-right width88px input-table priceValue inputCR" maxlength="@RevenuePlanner.Helpers.Common.maxLengthPercentageValue" value="@item.ConversionValue" />
                             </td>
                             <td>
-                                <input id="@item.MetricID_SV" class="backgroundC6EBF3 text-align-right width88px input-table priceValue inputSV" maxlength="@RevenuePlanner.Helpers.Common.maxLengthPercentageValue" value="@item.VelocityValue"/>
+                                <input id="@item.StageID_SV" class="backgroundC6EBF3 text-align-right width88px input-table priceValue inputSV" maxlength="@RevenuePlanner.Helpers.Common.maxLengthPercentageValue" value="@item.VelocityValue"/>
                             </td>
                         </tr>
                     }
@@ -92,14 +94,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Where(m => m.MetricType == MetricType_Size))
+                    @foreach (var item in Model.Where(m => m.StageType == StageType_Size))
                     {
                         <tr class="bestInClassRow">
-                            <td title="@item.MetricName" class="title1">
-                                @Html.DisplayFor(model => item.MetricName)
+                            <td title="@item.StageName" class="title1">
+                                @Html.DisplayFor(model => item.StageName)
                             </td>
                             <td>
-                                <input id="@item.MetricID_Size" class="backgroundC6EBF3 text-align-right width88px input-table priceValue inputSize" maxlength="@RevenuePlanner.Helpers.Common.maxLengthPercentageValue" value="@item.ConversionValue" />
+                                <input id="@item.StageID_Size" class="backgroundC6EBF3 text-align-right width88px input-table priceValue inputSize" maxlength="@RevenuePlanner.Helpers.Common.maxLengthPercentageValue" value="@item.ConversionValue" />
                             </td>
                         </tr>
                     }
@@ -136,31 +138,32 @@
             $("#errorMessage").css("display", "none");
             $("#successMessage").css("display", "none");
 
+            //region added by uday for PL ticket #501
             $('#tblCR_SV').find('input').each(function () {
                 var thisValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
-                var metricType = null;
+                var stageType = null;
                 var thisId = $(this).attr('id');
 
                 if ($(this).hasClass('inputCR')) {
-                    metricType = 'CR';
+                    stageType = 'CR';
                     _BIC.push({
-                        MetricID_CR: thisId,
-                        MetricID_SV: null,
-                        MetricID_Size: null,
-                        MetricName: null,
-                        MetricType: metricType,
+                        StageID_CR: thisId,
+                        StageID_SV: null,
+                        StageID_Size: null,
+                        StageName: null,
+                        StageType: stageType,
                         ConversionValue: thisValue,
                         VelocityValue: null
                     });
                 }
                 else if ($(this).hasClass('inputSV')) {
-                    metricType = 'SV';
+                    stageType = 'SV';
                     _BIC.push({
-                        MetricID_CR: null,
-                        MetricID_SV: thisId,
-                        MetricID_Size: null,
-                        MetricName: null,
-                        MetricType: metricType,
+                        StageID_CR: null,
+                        StageID_SV: thisId,
+                        StageID_Size: null,
+                        StageName: null,
+                        StageType: stageType,
                         ConversionValue: null,
                         VelocityValue: thisValue
                     });
@@ -170,23 +173,22 @@
             $('#tblSize').find('input').each(function () {
                 var thisValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
                 var thisId = $(this).attr('id');
-                var metricType = null;
+                var stageType = null;
 
                 if ($(this).hasClass('inputSize')) {
-                    metricType = 'Size';
+                    stageType = 'Size';
 
                     _BIC.push({
-                        MetricID_CR: null,
-                        MetricID_SV: null,
-                        MetricID_Size: thisId,
-                        MetricName: null,
-                        MetricType: metricType,
+                        StageID_CR: null,
+                        StageID_SV: null,
+                        StageID_Size: thisId,
+                        StageName: null,
+                        StageType: stageType,
                         ConversionValue: thisValue,
                         VelocityValue: null
                     });
                 }
             });
-
             _BIC = JSON.stringify({ 'bic': _BIC });
 
             $.ajax({
