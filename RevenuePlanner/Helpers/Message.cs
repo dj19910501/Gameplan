@@ -752,6 +752,21 @@ namespace RevenuePlanner.Helpers
             }
         }
 
+        // Start - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #219 to clone a model.
+        private string _ModelDuplicated;
+        public string ModelDuplicated
+        {
+            get
+            {
+                return _ModelDuplicated;
+            }
+            set
+            {
+                _ModelDuplicated = value;
+            }
+        }
+        // End - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #219 to clone a model.
+
         private string _PlanDeleteSuccessful;
         public string PlanDeleteSuccessful
         {
@@ -1496,6 +1511,11 @@ namespace RevenuePlanner.Helpers
                                         case "ModelDeleteConfirmMessage":
                                             _ModelDeleteConfirmMessage = strMsgValue;
                                             break;
+                                        // Start - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #219 to clone a model.
+                                        case "ModelDuplicated":
+                                            _ModelDuplicated = strMsgValue;
+                                            break;
+                                        // End - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #219 to clone a model.
 
                                         /* 
                                          * Changed by : Juned Katariya on 18th Feb 2014

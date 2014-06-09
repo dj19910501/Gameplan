@@ -15,7 +15,6 @@
                                                   var currentdate = System.DateTime.Today.ToShortDateString();
                                                   bool IsModelIntegrated = ViewBag.IsModelIntegrated;
     @Html.Hidden("IsModelIntegrated", IsModelIntegrated);
- 
 }
 @section nlFormContent{
     <link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.slidepanel.css")" type="text/css" />
@@ -27,7 +26,26 @@
         <h4 class="text-shadow-black source-sans-prolight">Model Summary</h4>
         <div class="wraper-btns cf">
             <div class="span6">
-                <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" id="NewModel">@Html.Raw("New Model")</button>
+                <div class="btn-group">
+                    <button id="BtnGroup" class="btn btn-blue text-shadow-blue source-sans-proregular buttom-width resize-drop-button without-border-buttom displayinherit source-sans-prolight width90px">
+                        New Model
+                    </button>
+                    <button data-toggle="dropdown" class="btn btn-blue dropdown-toggle height25 displayinherit width19px">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu source-sans-prolight">
+                        <li>
+                            <a href="#">Create New</a>
+                        </li>
+                        @* Show Duplicate option only in Edit mode and only for latest version of model. *@
+                        @if (Convert.ToString(Model.ModelId) != "" && Convert.ToString(Model.ModelId) != "0" && isViewOnly != "true")
+                        {
+                            <li id="liDuplicate">
+                                <a href="#">Duplicate</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
             </div>
             <div class="span6">
                 <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button" id="publish">@Html.Raw("Publish")</button>
@@ -221,12 +239,12 @@
                 modelId = $('#hdnModelId').val();
                 $("#create_new_tactic").hide();
                 $("#continue").hide();
-
+                $("#liDuplicate").hide();           //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219 to show Duplicate option only in Edit mode and only for latest version of model.
             }
             else {
                 $("#create_new_tactic").show();
                 $("#continue").show();
-
+                $("#liDuplicate").show();           //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219 to show Duplicate option only in Edit mode and only for latest version of model.
             }
 
             $('#ver_' + modelId).removeClass('disabled pull-right');
@@ -282,6 +300,8 @@
                     $("#publish").removeClass('btn-blue');
                     $("#publish").addClass('btn-blue-disable');
                 }
+                $('#BtnGroup').html('New Model');   //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219
+                $("#liDuplicate").show();           //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219 to show Duplicate option only in Edit mode and only for latest version of model.
             }
             else {
                 $("#create_new_tactic").hide();
@@ -291,7 +311,8 @@
                 $("#mode").val(id);
                 $("#publish").removeClass('btn-blue');
                 $("#publish").addClass('btn-blue-disable');
-
+                $('#BtnGroup').html('New Model');   //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219
+                $("#liDuplicate").hide();           //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219 to show Duplicate option only in Edit mode and only for latest version of model.
             }
             $('#ver_' + id).removeClass('disabled pull-right');
             $('#ver_' + id).addClass('active pull-right');
@@ -645,6 +666,38 @@
             });
     }
     });
+
+    //// Start - Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219 to clone a model.
+    $('#BtnGroup').click(function (e) {
+        if ($(this).html().toLowerCase() == "duplicate") {
+            DuplicateModel();
+        }
+        else {
+            var url = '@Url.Content("~/Model/Create")';
+            window.location.href = url;
+        }
+    });
+
+    function DuplicateModel() {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Model/DuplicateModel/")',
+            data: { modelId: $('#hdnModelId').val() },
+            dataType: "json",
+            success: function (data) {
+                if (data.status == 1) {
+                    var url = '@Url.Content("~/Model/ModelZero")';
+                    window.location.href = url;
+                }
+                else {
+                    $("#cError").html('<strong>Error! </strong>' + data.msg)
+                    $("#errorMessage").slideDown(400);
+                    $("html, body").animate({ scrollTop: 0 }, 1000);
+                }
+            }
+        });
+    }
+    //// End - Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219 to clone a model.
 </script>
 
 

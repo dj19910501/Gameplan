@@ -233,6 +233,12 @@
 		<Name>ModelDeleteConfirmMessage</Name>
 		<value>Are you sure you want to delete selected model (all versions related to it also deleted)?</value>
 	</Field>
+	<!-- Start - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #219 to clone a model. -->
+	<Field>
+		<Name>ModelDuplicated</Name>
+		<value>Model duplicated.</value>
+	</Field>
+	<!-- End - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #219 to clone a model. -->
 	<Field>
 		<Name>PlanDeleteSuccessful</Name>
 		<value>Plan {0} deleted successfully.</value>
@@ -277,10 +283,10 @@
 		<Name>DeleteImprovementTacticSaveSucess</Name>
 		<value>Improvement Tactic Type {0} deleted successfully.</value>
 	</Field>
-  <Field>
-    <Name>ImprovementTacticReferencesPlanError</Name>
-    <value>Selected improvement tactic type is being used in a plan and hence cannot be deleted.</value>
-  </Field>
+	<Field>
+		<Name>ImprovementTacticReferencesPlanError</Name>
+		<value>Selected improvement tactic type is being used in a plan and hence cannot be deleted.</value>
+	</Field>
 	<Field>
 		<Name>EditImprovementTacticSaveSucess</Name>
 		<value>Improvement Tactic updated successfully.</value>
@@ -347,13 +353,12 @@
 		<Name>ModelIntegrationSaveSuccess</Name>
 		<value>Model integration saved successfully.</value>
 	</Field>
-	
 	<Field>
 		<Name>DeployedToIntegrationStatusSaveSuccess</Name>
 		<value>Deployed to Integration status saved successfully.</value>
-	</Field>   
-    <!--Start - Added by : Sohel Pathan on 09/05/2014 for PL #430-->    
-    <Field>
+	</Field>
+	<!--Start - Added by : Sohel Pathan on 09/05/2014 for PL #430-->
+	<Field>
 		<Name>IntegrationAdded</Name>
 		<value>New integration successfully added.</value>
 	</Field>
@@ -382,45 +387,44 @@
 		<value>Provided integration service credentials are not authenticated.</value>
 	</Field>
 	<!--End - Added by : Sohel Pathan on 09/05/2014 for PL #430-->
-  <Field>
-    <Name>DataTypeMappingSaveSuccess</Name>
-    <value>External service integration data mapping saved successfully.</value>
-  </Field>
-  <Field>
-    <Name>DataTypeMappingNotConfigured</Name>
-    <value>Gameplan source data types or Integration instance not configured.</value>
-  </Field>
-  <!--Start - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id-->
-  <Field>
-    <Name>TargetFieldInvalidMsg</Name>
-    <value>Please ensure that a target field is not mapped to more than one Gameplan data type under same plan entity.</value>
-  </Field>
-  <!--End - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id-->
-  <Field>
-    <Name>IntegrationInActiveConfirmationMsg</Name>
-    <value>This will remove Service Integration from Models also. Are you sure to proceed?</value>
-  </Field>
-  <Field>
-    <Name>SyncNowSuccMessage</Name>
-    <value>Sync is successfully done.</value>
-  </Field>
-  <Field>
-    <Name>SyncNowErrorMessage</Name>
-    <value>An error occured in Sync.</value>
-  </Field>
-  <!--Start Manoj Limbachiya PL # 486-->
-  <Field>
-    <Name>TacticReqForPublishedModel</Name>
-    <value>Model is published hence at least one tactic required as deployed.</value>
-  </Field>
-  <Field>
-    <Name>TacticCanNotDeployed</Name>
-    <value>{0} tactic type is being used in a plan and hence cannot be marked as Not Deployed.</value>
-  </Field>
-  <!--End Manoj Limbachiya PL # 486-->
-  <Field>
-    <Name>LoginWithSameSession</Name>
-    <value>Another user is logged in with the same session.</value>
-  </Field>
-  
+	<Field>
+		<Name>DataTypeMappingSaveSuccess</Name>
+		<value>External service integration data mapping saved successfully.</value>
+	</Field>
+	<Field>
+		<Name>DataTypeMappingNotConfigured</Name>
+		<value>Gameplan source data types or Integration instance not configured.</value>
+	</Field>
+	<!--Start - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id-->
+	<Field>
+		<Name>TargetFieldInvalidMsg</Name>
+		<value>Please ensure that a target field is not mapped to more than one Gameplan data type under same plan entity.</value>
+	</Field>
+	<!--End - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id-->
+	<Field>
+		<Name>IntegrationInActiveConfirmationMsg</Name>
+		<value>This will remove Service Integration from Models also. Are you sure to proceed?</value>
+	</Field>
+	<Field>
+		<Name>SyncNowSuccMessage</Name>
+		<value>Sync is successfully done.</value>
+	</Field>
+	<Field>
+		<Name>SyncNowErrorMessage</Name>
+		<value>An error occured in Sync.</value>
+	</Field>
+	<!--Start Manoj Limbachiya PL # 486-->
+	<Field>
+		<Name>TacticReqForPublishedModel</Name>
+		<value>Model is published hence at least one tactic required as deployed.</value>
+	</Field>
+	<Field>
+		<Name>TacticCanNotDeployed</Name>
+		<value>{0} tactic type is being used in a plan and hence cannot be marked as Not Deployed.</value>
+	</Field>
+	<!--End Manoj Limbachiya PL # 486-->
+	<Field>
+		<Name>LoginWithSameSession</Name>
+		<value>Another user is logged in with the same session.</value>
+	</Field>
 </Messages>

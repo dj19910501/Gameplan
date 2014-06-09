@@ -42,7 +42,26 @@
         <h4 class="text-shadow-black source-sans-prolight">@Html.Raw("Model Summary")</h4>
         <div class="wraper-btns cf">
             <div class="span6">
-                <button id="newModel" class="btn btn-blue text-shadow-blue source-sans-proregular" href="@Url.Content("~/Model/Create")" type="button">@Html.Raw("New Model")</button>
+                <div class="btn-group">
+                    <button id="BtnGroup" class="btn btn-blue text-shadow-blue source-sans-proregular buttom-width resize-drop-button without-border-buttom displayinherit source-sans-prolight width90px">
+                        New Model
+                    </button>
+                    <button data-toggle="dropdown" class="btn btn-blue dropdown-toggle height25 displayinherit width19px">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu source-sans-prolight">
+                        <li>
+                            <a href="#">Create New</a>
+                        </li>
+                        @* Show Duplicate option only in Edit mode and only for latest version of model. *@
+                        @if(Convert.ToString(ViewBag.ModelId) != "" && Convert.ToString(ViewBag.ModelId) != "0" && isViewOnly != "true" && Model.lstmodelstage.Count() > 0)
+                        {
+                            <li id="liDuplicate">
+                                <a href="#">Duplicate</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
             </div>
             <div class="span6">
                 <button id="publishModelDisabled" class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button">@Html.Raw("Publish")</button>
@@ -431,9 +450,7 @@
         }
     }
     });
-$("#newModel").click(function () {
-    window.location.href = $(this).attr('href');
-});
+
 $(".leftnav").click(function () {
     var url = '';
     var isResults = '';
@@ -549,11 +566,16 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
         $("#button-save").show();
         $("#btnsave").show();
         MakeEditable();
+        $('#BtnGroup').html('New Model');   //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219
+        $('#liDuplicate').show();           //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219 to show Duplicate option only in Edit mode and only for latest version of model. 
+
     }
     else {
         $("#button-save").hide();
         $("#btnsave").hide();
         MakeViewOnly();//Bug 17:Should not be able to edit a published model
+        $('#BtnGroup').html('New Model');   //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219
+        $('#liDuplicate').hide();           //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219 to show Duplicate option only in Edit mode and only for latest version of model. 
     }
     if (modelId == 0) {
         $("#btnsave").show();
@@ -1065,5 +1087,37 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
         });
 
     }
+
+    //// Start - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #219 to clone a model.
+    $('#BtnGroup').click(function (e) {
+        if ($(this).html().toLowerCase() == "duplicate") {
+            DuplicateModel();
+        }
+        else {
+            var url = '@Url.Content("~/Model/Create")';
+                window.location.href = url;
+            }
+    });
+
+    function DuplicateModel() {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Model/DuplicateModel/")',
+            data: { modelId: $('#ModelId').val() },
+            dataType: "json",
+            success: function (data) {
+                if (data.status == 1) {
+                    var url = '@Url.Content("~/Model/ModelZero")';
+                    window.location.href = url;
+                }
+                else {
+                    $("#cError").html('<strong>Error! </strong>' + data.msg)
+                    $("#errorMessage").slideDown(400);
+                    $("html, body").animate({ scrollTop: 0 }, 1000);
+                }
+            }
+        });
+    }
+    //// End - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #219 to clone a model.
 </script>
 
