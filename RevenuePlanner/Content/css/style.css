@@ -6963,6 +6963,7 @@ span.circle-check-icon-gray{margin-left: auto;margin-right: auto;background: url
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size:12px; /* Added by kapil - 100614 - #509 */
 }
 
 /* Start - Added by Sohel Pathan on 29/04/2014 for Internal Review Points #7 to set styling for Show on my tactic link */
@@ -7186,3 +7187,16 @@ input.icon-check-blue{background-image: url("../images/circle-check-icon-small-b
 
 .div-user-Note {padding:15px 20px 15px 20px;font-size:13px;}
 .margin-top6 {margin-top:6px;}
+
+
+/* Added by Kapil for Status - 100614 - #509 */
+.pending {
+    color: #ff931e;
+}
+.rejected {
+    color:#ff2c34;
+}
+.approved {
+    color:#7ac943;
+}
+/* */
