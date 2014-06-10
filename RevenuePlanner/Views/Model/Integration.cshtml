@@ -488,51 +488,56 @@
         });
 
         function SaveAllIntegration(integrationInstanceId) {
-            CheckUserSession("#table_integrations tbody tr td span.circle-check-icon-gray", true);
-            if (reason == 'user') {
-                return false;
-            }
+            //CheckUserSession("#table_integrations tbody tr td span.circle-check-icon-gray", true);
+            //if (reason == 'user') {
+            //    return false;
+            //}
+            var uId = $(window).attr('name');
             var ModelId = lastModelId;
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Model/SaveAllIntegration/")',
                 data: {
                     modelId: ModelId,
-                    integrationId: integrationInstanceId
+                    integrationId: integrationInstanceId,
+                    UserId: uId 
                 },
                 dataType: "json",
                 success: function (r) {
-
-                    if (r.returnValue) {
-
-                        $('#successMessage').css("display", "block");
-                        $('#cSuccess').html('<strong>Success.</strong> ' + r.message)
-                        $("#successMessage").slideDown(1200); // Show the Alert
-                        $("#successMessage").slideUp(3000);
-                        $('#errorMessage').css("display", "none");
-
-                        $.ajax({
-                            type: 'POST',
-                            url: '@Url.Content("~/Model/GetIntegrationDatabyid/")',
-                            data: {
-                                id: ModelId
-                            },
-                            dataType: "json",
-                            success: function (r) {
-                                integration = r;
-                                fillIntegrationTable();
-                                myApp.hidePleaseWait();
-                            }
-                        });
+                    if (r.returnURL != 'undefined' && r.returnURL == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
                     }
                     else {
-                        $('#errorMessage').css("display", "block");
-                        $('#cError').html('<strong>Error.</strong> ' + r.message)
-                        $("#errorMessage").slideDown(1200); // Show the Alert
-                        $('#successMessage').css("display", "none");
+                        if (r.returnValue) {
+
+                            $('#successMessage').css("display", "block");
+                            $('#cSuccess').html('<strong>Success.</strong> ' + r.message)
+                            $("#successMessage").slideDown(1200); // Show the Alert
+                            $("#successMessage").slideUp(3000);
+                            $('#errorMessage').css("display", "none");
+
+                            $.ajax({
+                                type: 'POST',
+                                url: '@Url.Content("~/Model/GetIntegrationDatabyid/")',
+                                data: {
+                                    id: ModelId
+                                },
+                                dataType: "json",
+                                success: function (r) {
+                                    integration = r;
+                                    fillIntegrationTable();
+                                    myApp.hidePleaseWait();
+                                }
+                            });
+                        }
+                        else {
+                            $('#errorMessage').css("display", "block");
+                            $('#cError').html('<strong>Error.</strong> ' + r.message)
+                            $("#errorMessage").slideDown(1200); // Show the Alert
+                            $('#successMessage').css("display", "none");
+                        }
+
                     }
-
-
                     myApp.hidePleaseWait();
                 }
             });

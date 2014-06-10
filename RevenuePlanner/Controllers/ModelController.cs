@@ -3639,8 +3639,16 @@ namespace RevenuePlanner.Controllers
         /// Added By: Dharmraj mangukiya
         /// Action to save integration for model by integrationInstanceId and modelId.
         /// </summary>
-        public JsonResult SaveAllIntegration(int modelId, int integrationId)
+        public JsonResult SaveAllIntegration(int modelId, int integrationId, string UserId = "")
         {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
             bool returnValue = false;
             string message = string.Empty;
 
