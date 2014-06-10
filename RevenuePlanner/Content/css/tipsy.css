@@ -1,5 +1,5 @@
-.tipsy { font-size: 30px; position: absolute; padding: 5px; z-index: 100000; }
-  .tipsy-inner { background-color: #000; color: #FFF; max-width: 300px; padding: 5px 8px 4px 8px; text-align: center; }
+.tipsy { font-size: 18px; position: absolute; padding: 5px; z-index: 100000; } /* modified font size by kapil - 100614 - #508 */
+  .tipsy-inner { background-color: #000; color: #FFF; max-width: 300px; padding: 9px 19px 8px; text-align: center; font-family: 'source_sans_prolight', Arial, "sans-serif";} /* modified padding and added font family by kapil - 100614 - #508 */
 
   /* Rounded corners */
   .tipsy-inner { border-radius: 3px; -moz-border-radius: 3px; -webkit-border-radius: 3px; }

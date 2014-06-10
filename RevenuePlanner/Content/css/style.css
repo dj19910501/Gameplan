@@ -256,17 +256,18 @@ ul.drop-down-menu {
         margin-bottom: 0 !important;
     }
 
+    /* Modified by kapil - 100614 - #508 */
     .white-chart .value {
         min-width: 100px;
         max-width: 150px;
-        padding: 0 10px;
+        /*padding: 0 10px;*/
         display: inline-block;
         margin: 15px auto 0 auto;
-        font-size: 30px;
+        font-size: 24px;
         -webkit-border-radius: 20px;
         -moz-border-radius: 20px;
-        border-radius: 20px;
-        background: #f2f2f2;
+        /*border-radius: 20px;
+        background: #f2f2f2;*/
         height: 35px;
         line-height: 35px;
     }

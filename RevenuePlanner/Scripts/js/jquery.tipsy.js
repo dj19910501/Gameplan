@@ -194,7 +194,7 @@
         html: false,
         live: false,
         offset: 0,
-        opacity: 0.8,
+        //opacity: 0.8, //remove by kapil - 100614 - #508
         title: 'title',
         trigger: 'hover'
     };
