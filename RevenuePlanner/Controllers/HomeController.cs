@@ -289,6 +289,10 @@ namespace RevenuePlanner.Controllers
                         planList.FirstOrDefault().Selected = true;
                     }
                 }
+                else
+                {
+                    Sessions.BusinessUnitId = Guid.Empty;
+                }
 
             }
             objHomePlan.plans = planList;
