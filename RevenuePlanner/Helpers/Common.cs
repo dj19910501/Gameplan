@@ -1857,31 +1857,6 @@ namespace RevenuePlanner.Helpers
         }
 
         /// <summary>
-        /// Function to calculate improved velocity.
-        /// </summary>
-        /// <param name="planId">Current plan id.</param>
-        /// <returns>Returns improved velocity.</returns>
-        public static double? CalculateImprovedVelocity(int planId)
-        {
-            MRPEntities db = new MRPEntities();
-
-            //// Getting list of improvement activites.
-            List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(planId) && t.IsDeleted == false).Select(t => t).ToList();
-
-            double? velocity = null;
-
-            //// Checking whether improvement activities exist.
-            if (improvementActivities.Count() > 0)
-            {
-                //// Getting velocity improved based on improvement activities.
-                velocity = Common.GetImprovedVelocity(planId, improvementActivities);
-                return Convert.ToDouble(velocity);
-            }
-
-            return velocity;
-        }
-
-        /// <summary>
         /// Function to get Improved MQL based on marketing activites and improvement activities.
         /// Added By: Maninder Singh Wadhva
         /// Addressed PL Ticket: 37,38,47,49
@@ -1944,8 +1919,8 @@ namespace RevenuePlanner.Helpers
                     //// Getting metric to calculate MQL and calculating the same i.e. Stage >= INQ and Stages < MQL .
                     string mqlMetricCode = Enums.Stage.MQL.ToString();
                     string inqMetricCode = Enums.Stage.INQ.ToString();
-                    int? levelMQL = db.Metrics.Single(metric => metric.MetricType == metricTypeCR && metric.MetricCode == mqlMetricCode && metric.ClientId == effectiveModel.BusinessUnit.ClientId).Level;
-                    int? levelINQ = db.Metrics.Single(metric => metric.MetricType == metricTypeCR && metric.MetricCode == inqMetricCode && metric.ClientId == effectiveModel.BusinessUnit.ClientId).Level;
+                    int? levelMQL = 3;//db.Metrics.Single(metric => metric.MetricType == metricTypeCR && metric.MetricCode == mqlMetricCode && metric.ClientId == effectiveModel.BusinessUnit.ClientId).Level;
+                    int? levelINQ = 1;//db.Metrics.Single(metric => metric.MetricType == metricTypeCR && metric.MetricCode == inqMetricCode && metric.ClientId == effectiveModel.BusinessUnit.ClientId).Level;
                     var mqlConversionQuery = hypotheticalModel.ImprovedMetrics.Where(mqlConversion => mqlConversion.Level >= levelINQ && mqlConversion.Level < levelMQL)
                                                                               .OrderBy(mqlConversion => mqlConversion.Level);
                     double mqlConversionRate = 0;
@@ -1956,7 +1931,7 @@ namespace RevenuePlanner.Helpers
 
                     //// Adding to improved MQL 
                     //// Modified By: Maninder Singh Wadhva to Address 408.
-                    improvedMQL += affectedMarketingActivities.Select(affectedTactic => Math.Round(affectedTactic.INQs * mqlConversionRate)).Sum();
+                    improvedMQL += affectedMarketingActivities.Select(affectedTactic => Math.Round(Convert.ToDouble(affectedTactic.ProjectedStageValue* mqlConversionRate))).Sum();
                 }
 
 
@@ -2054,7 +2029,7 @@ namespace RevenuePlanner.Helpers
 
                     //// Getting metric to calculate CW and calculating the same i.e. Stage >= INQ.
                     string inqMetricCode = Enums.Stage.INQ.ToString();
-                    int? levelINQ = db.Metrics.Single(metric => metric.MetricType == metricTypeCR && metric.MetricCode == inqMetricCode && metric.ClientId == effectiveModel.BusinessUnit.ClientId).Level;
+                    int? levelINQ = 1;// db.Metrics.Single(metric => metric.MetricType == metricTypeCR && metric.MetricCode == inqMetricCode && metric.ClientId == effectiveModel.BusinessUnit.ClientId).Level;
                     var cwConversionQuery = hypotheticalModel.ImprovedMetrics.Where(cwConversion => cwConversion.Level >= levelINQ)
                                                                               .OrderBy(cwConversion => cwConversion.Level);
                     double cwConversionRate = 0;
@@ -2066,11 +2041,11 @@ namespace RevenuePlanner.Helpers
                     //// Adding to improved value 
                     if (isProjectedRevenue)
                     {
-                        improvedValue += affectedMarketingActivities.Select(affectedTactic => affectedTactic.INQs * cwConversionRate * averageDealSize).Sum();
+                        improvedValue += affectedMarketingActivities.Select(affectedTactic => Convert.ToDouble(affectedTactic.ProjectedStageValue * cwConversionRate * averageDealSize)).Sum();
                     }
                     else
                     {
-                        improvedValue += affectedMarketingActivities.Select(affectedTactic => affectedTactic.INQs * cwConversionRate).Sum();
+                        improvedValue += affectedMarketingActivities.Select(affectedTactic => Convert.ToDouble(affectedTactic.ProjectedStageValue * cwConversionRate)).Sum();
                     }
                 }
             }
@@ -2171,103 +2146,103 @@ namespace RevenuePlanner.Helpers
         /// <returns>Returns hypothetical model.</returns>
         public static HypotheticalModel GetHypotheticalModel(string metricType, Model model, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivitiesForHypotheticalModel)
         {
-            MRPEntities db = new MRPEntities();
-            //// Get List of metric associated with selected client of current model.
-            List<ImprovedMetric> improvedMetrics = db.Metrics.Where(metric => metric.ClientId == model.BusinessUnit.ClientId &&
-                                                 metric.MetricType == metricType)
-                                          .OrderBy(metric => metric.Level)
-                                          .Select(metric => new ImprovedMetric
-                                          {
-                                              MetricId = metric.MetricId,
-                                              MetricType = metric.MetricType,
-                                              MetricCode = metric.MetricCode,
-                                              Level = metric.Level,
-                                              Value = 0
-                                          })
-                                          .ToList();
+            //MRPEntities db = new MRPEntities();
+            ////// Get List of metric associated with selected client of current model.
+            //List<ImprovedMetric> improvedMetrics = db.Metrics.Where(metric => metric.ClientId == model.BusinessUnit.ClientId &&
+            //                                     metric.MetricType == metricType)
+            //                              .OrderBy(metric => metric.Level)
+            //                              .Select(metric => new ImprovedMetric
+            //                              {
+            //                                  MetricId = metric.MetricId,
+            //                                  MetricType = metric.MetricType,
+            //                                  MetricCode = metric.MetricCode,
+            //                                  Level = metric.Level,
+            //                                  Value = 0
+            //                              })
+            //                              .ToList();
 
-            //// Getting best in class BIC value based on metric id.
-            List<int> metricIds = improvedMetrics.Select(metric => metric.MetricId).ToList();
-            List<BestInClass> bestInClassValues = db.BestInClasses.Where(bic => metricIds.Contains(bic.MetricId)).ToList();
+            ////// Getting best in class BIC value based on metric id.
+            //List<int> metricIds = improvedMetrics.Select(metric => metric.MetricId).ToList();
+            //List<BestInClass> bestInClassValues = db.BestInClasses.Where(bic => metricIds.Contains(bic.MetricId)).ToList();
 
-            string funnelMarketing = Enums.Funnel.Marketing.ToString();
-            List<Model_Funnel_Stage> modelFunnelStage = null;
-            if (!metricType.Equals(Enums.MetricType.Size.ToString()))
-            {
-                //// Getting stage value for marketing funnel.
-                int funnelId = db.Funnels.Single(f => f.Title.Equals(funnelMarketing)).FunnelId;
-                modelFunnelStage = db.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId.Equals(model.ModelId) &&
-                                                                         mfs.Model_Funnel.FunnelId.Equals(funnelId))
-                                                         .ToList();
-            }
+            //string funnelMarketing = Enums.Funnel.Marketing.ToString();
+            //List<Model_Funnel_Stage> modelFunnelStage = null;
+            //if (!metricType.Equals(Enums.MetricType.Size.ToString()))
+            //{
+            //    //// Getting stage value for marketing funnel.
+            //    int funnelId = db.Funnels.Single(f => f.Title.Equals(funnelMarketing)).FunnelId;
+            //    modelFunnelStage = db.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId.Equals(model.ModelId) &&
+            //                                                             mfs.Model_Funnel.FunnelId.Equals(funnelId))
+            //                                             .ToList();
+            //}
 
 
-            //// Iterating over each improved metrics.
-            foreach (ImprovedMetric improvedMetric in improvedMetrics)
-            {
-                //// Getting baseline value for current metric.
-                double modelvalue = 0;
+            ////// Iterating over each improved metrics.
+            //foreach (ImprovedMetric improvedMetric in improvedMetrics)
+            //{
+            //    //// Getting baseline value for current metric.
+            //    double modelvalue = 0;
 
-                if (metricType.Equals(Enums.MetricType.CR.ToString()) || metricType.Equals(Enums.MetricType.SV.ToString()))
-                {
-                    //// Getting baseline value for current metric.
-                    modelvalue = modelFunnelStage.Where(mfs => mfs.Stage.Code.Equals(improvedMetric.MetricCode) &&
-                                                                    mfs.StageType.Equals(improvedMetric.MetricType))
-                                                      .Select(mfs => mfs.Value).SingleOrDefault();
-                    if (metricType.Equals(Enums.MetricType.CR.ToString()))
-                    {
-                        modelvalue = modelvalue / 100;
-                    }
-                }
-                else if (metricType.Equals(Enums.MetricType.Size.ToString()))
-                {
-                    modelvalue = db.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == model.ModelId &&
-                                                                      modelFunnel.Funnel.Title.Equals(funnelMarketing))
-                                                .Select(mf => mf.AverageDealSize)
-                                                .SingleOrDefault();
-                }
+            //    if (metricType.Equals(Enums.MetricType.CR.ToString()) || metricType.Equals(Enums.MetricType.SV.ToString()))
+            //    {
+            //        //// Getting baseline value for current metric.
+            //        modelvalue = modelFunnelStage.Where(mfs => mfs.Stage.Code.Equals(improvedMetric.MetricCode) &&
+            //                                                        mfs.StageType.Equals(improvedMetric.MetricType))
+            //                                          .Select(mfs => mfs.Value).SingleOrDefault();
+            //        if (metricType.Equals(Enums.MetricType.CR.ToString()))
+            //        {
+            //            modelvalue = modelvalue / 100;
+            //        }
+            //    }
+            //    else if (metricType.Equals(Enums.MetricType.Size.ToString()))
+            //    {
+            //        modelvalue = db.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == model.ModelId &&
+            //                                                          modelFunnel.Funnel.Title.Equals(funnelMarketing))
+            //                                    .Select(mf => mf.AverageDealSize)
+            //                                    .SingleOrDefault();
+            //    }
 
-                //// Get BestInClass BIC value for current metric id.
-                double bestInClassValue = bestInClassValues.Where(bic => bic.MetricId.Equals(improvedMetric.MetricId))
-                                                           .Select(bic => bic.Value)
-                                                           .SingleOrDefault();
+            //    //// Get BestInClass BIC value for current metric id.
+            //    double bestInClassValue = bestInClassValues.Where(bic => bic.MetricId.Equals(improvedMetric.MetricId))
+            //                                               .Select(bic => bic.Value)
+            //                                               .SingleOrDefault();
 
-                //// Modified by Maninder singh wadhva for Ticket#159
-                if (metricType.Equals(Enums.MetricType.CR.ToString()) && bestInClassValue != 0)
-                {
-                    bestInClassValue = bestInClassValue / 100;
-                }
-                //// Get ImprovementTactic & its Weight for current metric.
-                var improvementActivitiesAndWeight = (from planImprovementTactic in improvementActivitiesForHypotheticalModel
-                                                      join improvementTacticTypeMetric in db.ImprovementTacticType_Metric on planImprovementTactic.ImprovementTacticTypeId equals improvementTacticTypeMetric.ImprovementTacticTypeId
-                                                      where improvementTacticTypeMetric.ImprovementTacticType.IsDeployed.Equals(true) &&
-                                                            improvementTacticTypeMetric.MetricId.Equals(improvedMetric.MetricId) &&
-                                                            improvementTacticTypeMetric.Weight > 0
-                                                      select new
-                                                      {
-                                                          ImprovemetPlanTacticId = planImprovementTactic.ImprovementPlanTacticId,
-                                                          Weight = improvementTacticTypeMetric.Weight
-                                                      }).ToList();
+            //    //// Modified by Maninder singh wadhva for Ticket#159
+            //    if (metricType.Equals(Enums.MetricType.CR.ToString()) && bestInClassValue != 0)
+            //    {
+            //        bestInClassValue = bestInClassValue / 100;
+            //    }
+            //    //// Get ImprovementTactic & its Weight for current metric.
+            //    var improvementActivitiesAndWeight = (from planImprovementTactic in improvementActivitiesForHypotheticalModel
+            //                                          join improvementTacticTypeMetric in db.ImprovementTacticType_Metric on planImprovementTactic.ImprovementTacticTypeId equals improvementTacticTypeMetric.ImprovementTacticTypeId
+            //                                          where improvementTacticTypeMetric.ImprovementTacticType.IsDeployed.Equals(true) &&
+            //                                                improvementTacticTypeMetric.MetricId.Equals(improvedMetric.MetricId) &&
+            //                                                improvementTacticTypeMetric.Weight > 0
+            //                                          select new
+            //                                          {
+            //                                              ImprovemetPlanTacticId = planImprovementTactic.ImprovementPlanTacticId,
+            //                                              Weight = improvementTacticTypeMetric.Weight
+            //                                          }).ToList();
 
-                //// Calculate Total ImprovementCount 
-                int totalCount = improvementActivitiesAndWeight.Count();
+            //    //// Calculate Total ImprovementCount 
+            //    int totalCount = improvementActivitiesAndWeight.Count();
 
-                //// Calculate Total ImprovementWeight
-                double totalWeight = improvementActivitiesAndWeight.Sum(improvementActivity => improvementActivity.Weight);
+            //    //// Calculate Total ImprovementWeight
+            //    double totalWeight = improvementActivitiesAndWeight.Sum(improvementActivity => improvementActivity.Weight);
 
-                //// Getting improved value for metric
-                if (metricType.Equals(Enums.MetricType.CR.ToString()))
-                {
-                    improvedMetric.Value = GetImprovedMetricValue(improvedMetric, bestInClassValue, modelvalue, totalCount, totalWeight) * 100;
-                }
-                else
-                {
-                    improvedMetric.Value = GetImprovedMetricValue(improvedMetric, bestInClassValue, modelvalue, totalCount, totalWeight);
-                }
-            }
+            //    //// Getting improved value for metric
+            //    if (metricType.Equals(Enums.MetricType.CR.ToString()))
+            //    {
+            //        improvedMetric.Value = GetImprovedMetricValue(improvedMetric, bestInClassValue, modelvalue, totalCount, totalWeight) * 100;
+            //    }
+            //    else
+            //    {
+            //        improvedMetric.Value = GetImprovedMetricValue(improvedMetric, bestInClassValue, modelvalue, totalCount, totalWeight);
+            //    }
+            //}
 
             HypotheticalModel hypotheticalModel = new HypotheticalModel();
-            hypotheticalModel.ImprovedMetrics = improvedMetrics;
+            //hypotheticalModel.ImprovedMetrics = improvedMetrics;
             return hypotheticalModel;
         }
 
@@ -2465,7 +2440,7 @@ namespace RevenuePlanner.Helpers
             {
                 ModelId = dbm.Plan_Campaign_Program_Tactic.Where(p => p.PlanTacticId == PlanTacticId).Select(p => p.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).SingleOrDefault();
             }
-
+            
             return Math.Round(INQ * GetMQLConversionRate(StartDate, ModelId), 0, MidpointRounding.AwayFromZero);
         }
 
@@ -2513,7 +2488,7 @@ namespace RevenuePlanner.Helpers
                                                    select new Plan_Tactic_MQL
                                                       {
                                                           PlanTacticId = t.PlanTacticId,
-                                                          MQL = isRound ? Math.Round(tactic.INQs * ml.ConversionRate, 0, MidpointRounding.AwayFromZero) : tactic.INQs * ml.ConversionRate
+                                                          MQL = isRound ? Math.Round(Convert.ToDouble(tactic.ProjectedStageValue * ml.ConversionRate), 0, MidpointRounding.AwayFromZero) : Convert.ToDouble(tactic.ProjectedStageValue * ml.ConversionRate)
                                                       }).ToList();
             return TacticMQLList;
         }
@@ -2678,17 +2653,13 @@ namespace RevenuePlanner.Helpers
         /// <returns></returns>
         public static List<ProjectedRevenueClass> ProjectedRevenueCalculateList(List<Plan_Campaign_Program_Tactic> tlist, bool isCW = false)
         {
-            MRPEntities mdb = new MRPEntities();
-            List<TacticModelRelation> tacticModelList = GetTacticModelRelationList(tlist);
-            List<ModelConvertionRateRelation> mlist = GetModelConversionRate(tacticModelList.Select(t => t.ModelId).Distinct().ToList(), Enums.Stage.CW.ToString());
-            List<ProjectedRevenueClass> tacticList = (from tactic in tlist
-                                                      join t in tacticModelList on tactic.PlanTacticId equals t.PlanTacticId
-                                                      join ml in mlist on t.ModelId equals ml.ModelId
-                                                      select new ProjectedRevenueClass
-                                                      {
-                                                          PlanTacticId = t.PlanTacticId,
-                                                          ProjectedRevenue = isCW ? tactic.INQs * ml.ConversionRate : tactic.INQs * ml.ConversionRate * ml.AverageDealSize
-                                                      }).ToList();
+
+            List<TacticStageValue> tacticlValueList =  GetTacticStageRelation(tlist, false);
+            List<ProjectedRevenueClass> tacticList = tacticlValueList.Select(t => new ProjectedRevenueClass
+                {
+                    PlanTacticId = t.TacticObj.PlanTacticId,
+                    ProjectedRevenue = isCW ? t.CWValue : t.RevenueValue
+                }).ToList();
 
             return tacticList;
         }
@@ -3200,6 +3171,412 @@ namespace RevenuePlanner.Helpers
         }
 
         #endregion
+
+        #region CustomizedStage
+
+        public static List<TacticStageValue> GetTacticStageRelation(List<Plan_Campaign_Program_Tactic> tlist, bool isIncludeImprovement = true)
+        {
+            MRPEntities dbStage = new MRPEntities();
+            List<TacticStageValueRelation> tacticValueRelationList = GetCalculation(tlist, isIncludeImprovement);
+            List<Stage> stageList = dbStage.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId).Select(stage => stage).ToList();
+            List<TacticStageValue> tacticStageList = new List<TacticStageValue>();
+            string stageINQ = Enums.Stage.INQ.ToString();
+            int levelINQ = stageList.Single(s => s.Code.Equals(stageINQ)).Level.Value;
+            string stageMQL = Enums.Stage.MQL.ToString();
+            int levelMQL = stageList.Single(s => s.Code.Equals(stageMQL)).Level.Value;
+            string stageCW = Enums.Stage.CW.ToString();
+            int levelCW = stageList.Single(s => s.Code.Equals(stageCW)).Level.Value;
+            List<int> inqStagelist = new List<int>();
+            List<int> mqlStagelist = new List<int>();
+            List<int> cwStagelist = new List<int>();
+            List<int> revenueStagelist = new List<int>();
+
+            List<int> inqVelocityStagelist = stageList.Where(s => s.Level >= 1 && s.Level < levelINQ).Select(s => s.StageId).ToList();
+            List<int> mqlVelocityStagelist = stageList.Where(s => s.Level >= levelINQ && s.Level < levelMQL).Select(s => s.StageId).ToList();
+            List<int> cwVelocityStagelist = stageList.Where(s => s.Level >= levelMQL && s.Level <= levelCW).Select(s => s.StageId).ToList();
+
+            string CR = Enums.StageType.CR.ToString();
+            string SV = Enums.StageType.SV.ToString();
+            string Size = Enums.StageType.Size.ToString();
+            List<int> TacticIds = tlist.Select(t => t.PlanTacticId).ToList();
+            List<Plan_Campaign_Program_Tactic_Actual> actualTacticList = dbStage.Plan_Campaign_Program_Tactic_Actual.Where(a => TacticIds.Contains(a.PlanTacticId)).ToList();
+            foreach (Plan_Campaign_Program_Tactic tactic in tlist)
+            {
+                List<StageRelation> stageRelation = tacticValueRelationList.Single(t => t.TacticObj.PlanTacticId == tactic.PlanTacticId).StageValueList;
+                int projectedStageLevel = stageList.Single(s => s.StageId == tactic.StageId).Level.Value;
+                inqStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelINQ).Select(s => s.StageId).ToList();
+                mqlStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelMQL).Select(s => s.StageId).ToList();
+                cwStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level <= levelCW).Select(s => s.StageId).ToList();
+                revenueStagelist = stageList.Where(s => (s.Level >= projectedStageLevel && s.Level <= levelCW) || s.Level == null).Select(s => s.StageId).ToList();
+
+                TacticStageValue tacticStageValueObj = new TacticStageValue();
+                tacticStageValueObj.TacticObj = tactic;
+                tacticStageValueObj.INQValue = projectedStageLevel <= levelINQ ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => inqStagelist.Contains(sr.StageId) && sr.StageType == CR).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
+                tacticStageValueObj.MQLValue = projectedStageLevel <= levelMQL ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => mqlStagelist.Contains(sr.StageId) && sr.StageType == CR).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
+                tacticStageValueObj.CWValue = projectedStageLevel < levelCW ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => cwStagelist.Contains(sr.StageId) && sr.StageType == CR).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
+                tacticStageValueObj.RevenueValue = projectedStageLevel < levelCW ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => revenueStagelist.Contains(sr.StageId) && (sr.StageType == CR || sr.StageType == Size)).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
+                tacticStageValueObj.INQVelocity = stageRelation.Where(sr => inqVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
+                tacticStageValueObj.MQLVelocity = stageRelation.Where(sr => mqlVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
+                tacticStageValueObj.CWVelocity = stageRelation.Where(sr => cwVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
+                tacticStageValueObj.ActualTacticList = actualTacticList.Where(a => a.PlanTacticId == tactic.PlanTacticId).ToList();
+                tacticStageValueObj.TacticYear = tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
+
+                tacticStageList.Add(tacticStageValueObj);
+            }
+            return tacticStageList;
+        }
+
+        public static List<TacticStageValueRelation> GetCalculation(List<Plan_Campaign_Program_Tactic> tlist, bool isIncludeImprovement = true)
+        {
+            List<TacticPlanRelation> tacticPlanList = GetTacticPlanRelationList(tlist);
+            List<TacticModelRelation> tacticModelList = GetTacticModelRelationList(tlist);
+            List<PlanIMPTacticListRelation> planIMPTacticList = GetPlanImprovementTacticList(tacticPlanList.Select(p => p.PlanId).Distinct().ToList());
+            List<StageRelation> bestInClassStageRelation = GetBestInClassValue();
+            List<ModelStageRelationList> modleStageRelationList = GetModelStageRelation(tacticModelList.Select(m => m.ModelId).Distinct().ToList());
+            List<int> impids = new List<int>();
+            planIMPTacticList.ForEach(t => t.ImprovementTacticList.ForEach(imp => impids.Add(imp.ImprovementTacticTypeId)));
+            List<ImprovementTypeWeightList> improvementTypeWeightList = GetImprovementTacticWeightList(impids);
+            List<StageList> stageList = GetStageList();
+            List<TacticStageValueRelation> TacticSatgeValueList = new List<TacticStageValueRelation>();
+            foreach (Plan_Campaign_Program_Tactic tactic in tlist)
+            {
+                int planId = tacticPlanList.Single(t => t.PlanTacticId == tactic.PlanTacticId).PlanId;
+                int modelId = tacticModelList.Single(t => t.PlanTacticId == tactic.PlanTacticId).ModelId;
+                List<StageRelation> stageModelRelation = modleStageRelationList.Single(m => m.ModelId == modelId).StageList;
+                List<Plan_Improvement_Campaign_Program_Tactic> improvementList = (planIMPTacticList.Single(p => p.PlanId == planId).ImprovementTacticList).Where(it => it.EffectiveDate <= tactic.EndDate).ToList();
+                if (improvementList.Count() > 0 && isIncludeImprovement)
+                {
+                    TacticStageValueRelation tacticStageObj = new TacticStageValueRelation();
+                    tacticStageObj.TacticObj = tactic;
+
+                    var improvementTypeList = improvementList.Select(imptactic => imptactic.ImprovementTacticTypeId).ToList();
+                    var improvementIdsWeighList = improvementTypeWeightList.Where(imptype => improvementTypeList.Contains(imptype.ImprovementTypeId) && imptype.isDeploy).Select(imptype => imptype).ToList();
+                    List<StageRelation> stageRelationList = new List<StageRelation>();
+                    foreach (StageList stage in stageList)
+                    {
+                        StageRelation stageRelationObj = new StageRelation();
+                        var stageimplist = improvementIdsWeighList.Where(impweight => impweight.StageId == stage.StageId && impweight.StageType == stage.StageType && impweight.Value > 0).ToList();
+                        double impcount = stageimplist.Count();
+                        double impWeight = impcount <= 0 ? 0 : stageimplist.Sum(s => s.Value);
+                        double improvementValue = GetImprovement(stage.StageType, bestInClassStageRelation.Single(b => b.StageId == stage.StageId && b.StageType == stage.StageType).Value, stageModelRelation.Single(s => s.StageId == stage.StageId && s.StageType == stage.StageType).Value, impcount, impWeight);
+                        stageRelationObj.StageId = stage.StageId;
+                        stageRelationObj.StageType = stage.StageType;
+                        stageRelationObj.Value = improvementValue;
+                        stageRelationList.Add(stageRelationObj);
+                    }
+
+                    tacticStageObj.StageValueList = stageRelationList;
+                    TacticSatgeValueList.Add(tacticStageObj);
+                }
+                else
+                {
+                    TacticStageValueRelation tacticStageObj = new TacticStageValueRelation();
+                    tacticStageObj.TacticObj = tactic;
+                    tacticStageObj.StageValueList = stageModelRelation;
+                    TacticSatgeValueList.Add(tacticStageObj);
+                }
+            }
+            return TacticSatgeValueList;
+        }
+
+        public static List<TacticPlanRelation> GetTacticPlanRelationList(List<Plan_Campaign_Program_Tactic> tlist)
+        {
+            List<TacticPlanRelation> tacticPlanlist = (from t in tlist
+                                                       select new TacticPlanRelation
+                                                       {
+                                                           PlanTacticId = t.PlanTacticId,
+                                                           PlanId = t.Plan_Campaign_Program.Plan_Campaign.PlanId
+                                                       }).ToList();
+            return tacticPlanlist;
+        }
+
+        public static List<PlanIMPTacticListRelation> GetPlanImprovementTacticList(List<int> planIds)
+        {
+            MRPEntities dbStage = new MRPEntities();
+
+            List<PlanIMPTacticListRelation> planIMPTacticList = new List<PlanIMPTacticListRelation>();
+            foreach (int planId in planIds)
+            {
+                PlanIMPTacticListRelation planTacticIMP = new PlanIMPTacticListRelation();
+                planTacticIMP.PlanId = planId;
+                planTacticIMP.ImprovementTacticList = dbStage.Plan_Improvement_Campaign_Program_Tactic.Where(imptactic => imptactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == planId && !imptactic.IsDeleted).ToList();
+                planIMPTacticList.Add(planTacticIMP);
+            }
+
+            return planIMPTacticList;
+        }
+
+        public static List<StageRelation> GetBestInClassValue()
+        {
+            MRPEntities dbStage = new MRPEntities();
+            string size = Enums.StageType.Size.ToString();
+            string CR = Enums.StageType.CR.ToString();
+
+            return dbStage.BestInClasses.Where(best => best.Stage.ClientId == Sessions.User.ClientId).Select(best =>
+                new StageRelation
+                {
+                    StageId = best.StageId,
+                    StageType = best.StageType,
+                    Value = best.StageType == CR ? best.Value / 100 : best.Value
+                }
+                ).ToList();
+        }
+
+        public static List<ModelStageRelationList> GetModelStageRelation(List<int> modleIds)
+        {
+            MRPEntities dbStage = new MRPEntities();
+            string marketing = Enums.Funnel.Marketing.ToString();
+            string size = Enums.StageType.Size.ToString();
+            string CR = Enums.StageType.CR.ToString();
+            string ADS = "ADS";
+            int adsStageId = dbStage.Stages.Single(stage => stage.Code.Equals(ADS) && stage.ClientId == Sessions.User.ClientId).StageId;
+            List<ModelStageRelationList> modleStageRelationist = new List<ModelStageRelationList>();
+            foreach (int modelId in modleIds)
+            {
+                ModelStageRelationList modelStageObj = new ModelStageRelationList();
+                modelStageObj.ModelId = modelId;
+                modelStageObj.StageList = dbStage.Model_Funnel_Stage.Where(m => m.Model_Funnel.Funnel.Title.Equals(marketing) && m.Model_Funnel.ModelId == modelId).Select(m => new StageRelation
+                {
+                    StageId = m.StageId,
+                    StageType = m.StageType,
+                    Value = m.StageType == CR ? m.Value / 100 : m.Value
+                }
+                    ).ToList();
+
+                double ads = dbStage.Model_Funnel.Single(m => m.Funnel.Title.Equals(marketing) && m.ModelId == modelId).AverageDealSize;
+                modelStageObj.StageList.Add(new StageRelation { StageId = adsStageId, StageType = size, Value = ads });
+                modleStageRelationist.Add(modelStageObj);
+            }
+
+            return modleStageRelationist;
+        }
+
+        public static List<ImprovementTypeWeightList> GetImprovementTacticWeightList(List<int> improvementTacticTypeIds)
+        {
+            MRPEntities dbStage = new MRPEntities();
+            List<ImprovementTypeWeightList> improvementTypeWeightList = new List<ImprovementTypeWeightList>();
+            var improvementTacticTypeList = dbStage.ImprovementTacticTypes.Where(imp => improvementTacticTypeIds.Contains(imp.ImprovementTacticTypeId)).ToList();
+            var improvementTacticTypeWeightList = dbStage.ImprovementTacticType_Metric.Where(imp => improvementTacticTypeIds.Contains(imp.ImprovementTacticTypeId)).ToList();
+            foreach (int improvementTacticTypeId in improvementTacticTypeIds)
+            {
+                bool isDeployed = improvementTacticTypeList.Single(imp => imp.ImprovementTacticTypeId == improvementTacticTypeId).IsDeployed;
+                var innerList = improvementTacticTypeWeightList.Where(imp => imp.ImprovementTacticTypeId == improvementTacticTypeId).Select(imp => imp).ToList();
+                innerList.ForEach(innerl => improvementTypeWeightList.Add(new ImprovementTypeWeightList { ImprovementTypeId = improvementTacticTypeId, isDeploy = isDeployed, StageId = innerl.StageId, StageType = innerl.StageType, Value = innerl.Weight }));
+            }
+
+            return improvementTypeWeightList;
+        }
+
+        public static List<StageList> GetStageList()
+        {
+            MRPEntities dbStage = new MRPEntities();
+            List<StageList> stageList = new List<StageList>();
+            var Stage = dbStage.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId).ToList();
+            string CW = Enums.Stage.CW.ToString();
+            string CR = Enums.StageType.CR.ToString();
+            foreach (var s in Stage.Where(st => st.Level != null && st.Code != CW))
+            {
+                StageList sl = new StageList();
+                sl.StageId = s.StageId;
+                sl.StageType = CR;
+                sl.Level = s.Level;
+                stageList.Add(sl);
+            }
+            string SV = Enums.StageType.SV.ToString();
+            foreach (var s in Stage.Where(st => st.Level != null && st.Code != CW))
+            {
+                StageList sl = new StageList();
+                sl.StageId = s.StageId;
+                sl.StageType = SV;
+                sl.Level = s.Level;
+                stageList.Add(sl);
+            }
+            string Size = Enums.StageType.Size.ToString();
+            foreach (var s in Stage.Where(st => st.Level == null))
+            {
+                StageList sl = new StageList();
+                sl.StageId = s.StageId;
+                sl.StageType = Size;
+                sl.Level = s.Level;
+                stageList.Add(sl);
+            }
+
+            return stageList;
+        }
+
+        public static double GetImprovement(string stageType, double bestInClassValue, double modelvalue, double TotalCount, double TotalWeight)
+        {
+            //// Declate CFactor & rFactor Variable
+            double cFactor = 0;
+            double rFactor = 0;
+
+
+            #region rFactor
+
+            //// Calculate rFactor if TotalCount = 0 then 0
+            //// Else if TotalWeight/TotalCount < 2 then 0.25
+            //// Else if TotalWeight/TotalCount < 3 then 0.5
+            //// Else if TotalWeight/TotalCount < 4 then 0.75
+            //// Else  0.9
+            if (TotalCount == 0)
+            {
+                rFactor = 0;
+            }
+            else
+            {
+                double wcValue = TotalWeight / TotalCount;
+                if (wcValue < 2)
+                {
+                    rFactor = 0.25;
+                }
+                else if (wcValue >= 2 && wcValue < 3)
+                {
+                    rFactor = 0.5;
+                }
+                else if (wcValue >= 3 && wcValue < 4)
+                {
+                    rFactor = 0.75;
+                }
+                else
+                {
+                    rFactor = 0.9;
+                }
+            }
+
+            #endregion
+
+            #region cFactor
+
+            //// Calculate cFactor if TotalCount < 3 then 0.4
+            //// Else if TotalCount >= 3 AND TotalCount < 5 then 0.6
+            //// Else if TotalCount >= 5 AND TotalCount < 8 then 0.8
+            //// Else  1
+
+            if (TotalCount < 3)
+            {
+                cFactor = 0.4;
+            }
+            else if (TotalCount >= 3 && TotalCount < 5)
+            {
+                cFactor = 0.6;
+            }
+            else if (TotalCount >= 5 && TotalCount < 8)
+            {
+                cFactor = 0.8;
+            }
+            else
+            {
+                cFactor = 1;
+            }
+
+            #endregion
+
+            //// Calculate BoostFactor
+            double boostFactor = cFactor * rFactor;
+            double boostGap = 0;
+            //// Calculate boostGap
+            if (stageType == Enums.MetricType.CR.ToString())
+            {
+                boostGap = bestInClassValue - modelvalue;
+            }
+            else if (stageType == Enums.MetricType.SV.ToString())
+            {
+                boostGap = modelvalue - bestInClassValue;
+            }
+            else if (stageType == Enums.MetricType.Size.ToString())
+            {
+                // Divide by 100 because it percentage value
+                boostGap = bestInClassValue / 100;
+            }
+
+            //// Calculate Improvement
+            double improvement = boostGap * boostFactor;
+            if (improvement < 0)
+            {
+                improvement = 0;
+            }
+
+            double improvementValue = 0;
+            if (stageType == Enums.MetricType.CR.ToString())
+            {
+                improvementValue = modelvalue + improvement;
+            }
+            else if (stageType == Enums.MetricType.SV.ToString())
+            {
+                improvementValue = modelvalue - improvement;
+            }
+            else if (stageType == Enums.MetricType.Size.ToString())
+            {
+                improvementValue = (1 + improvement) * modelvalue;
+            }
+
+            return improvementValue;
+        }
+
+        #endregion
+
+        #region ""
+
+        public static double GetCalculatedValueImproved(int planId, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities, string code, bool isIncludeImprovement = true)
+        {
+            List<StageRelation> stagevalueList = CalculateStageValue(planId, improvementActivities, isIncludeImprovement);
+            double returnValue = 0;
+            if (stagevalueList.Count > 0)
+            {
+                returnValue = stagevalueList.Where(s => s.StageType == code).Sum(s => s.Value);
+            }
+            return returnValue;
+        }
+
+        /// <summary>
+        /// Function to calculate improved velocity.
+        /// </summary>
+        /// <param name="planId">Current plan id.</param>
+        /// <returns>Returns improved velocity.</returns>
+        public static List<StageRelation> CalculateStageValue(int planId, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities, bool isIncludeImprovement = true)
+        {
+            MRPEntities db = new MRPEntities();
+
+            List<StageRelation> bestInClassStageRelation = GetBestInClassValue();
+            List<StageList> stageList = GetStageList();
+            //// Getting model based on plan id.
+            int ModelId = db.Plans.Where(p => p.PlanId == planId).Select(p => p.ModelId).SingleOrDefault();
+            //// Get Model id based on effective date From.
+            ModelId = GetModelId(improvementActivities.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), ModelId);
+            List<int> modelids = new List<int>();
+            modelids.Add(ModelId);
+            List<ModelStageRelationList> modleStageRelationList = GetModelStageRelation(modelids);
+            List<StageRelation> stageModelRelation = modleStageRelationList.Single(m => m.ModelId == ModelId).StageList;
+            List<StageRelation> finalStageResult = new List<StageRelation>();
+            //// Checking whether improvement activities exist.
+            if (improvementActivities.Count() > 0 && isIncludeImprovement)
+            {
+                var improvementTypeList = improvementActivities.Select(imptactic => imptactic.ImprovementTacticTypeId).ToList();
+                var improvementIdsWeighList = db.ImprovementTacticType_Metric.Where(imptype => improvementTypeList.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
+
+                foreach (StageList stage in stageList)
+                {
+                    StageRelation stageRelationObj = new StageRelation();
+                    var stageimplist = improvementIdsWeighList.Where(impweight => impweight.StageId == stage.StageId && impweight.StageType == stage.StageType && impweight.Weight > 0).ToList();
+                    double impcount = stageimplist.Count();
+                    double impWeight = impcount <= 0 ? 0 : stageimplist.Sum(s => s.Weight);
+                    double improvementValue = GetImprovement(stage.StageType, bestInClassStageRelation.Single(b => b.StageId == stage.StageId && b.StageType == stage.StageType).Value, stageModelRelation.Single(s => s.StageId == stage.StageId && s.StageType == stage.StageType).Value, impcount, impWeight);
+                    stageRelationObj.StageId = stage.StageId;
+                    stageRelationObj.StageType = stage.StageType;
+                    stageRelationObj.Value = improvementValue;
+                    finalStageResult.Add(stageRelationObj);
+                }
+            }
+            else
+            {
+                finalStageResult = stageModelRelation;
+            }
+
+            return finalStageResult;
+        }
+
+        #endregion
+
         
     }
 

@@ -3741,10 +3741,10 @@ namespace RevenuePlanner.Controllers
 
             var tacticobj = ImprovementMetric.Select(p => new
             {
-                MetricId = p.MetricId,
-                MetricCode = p.MetricCode,
-                MetricName = p.MetricName,
-                MetricType = p.MetricType,
+                MetricId = p.StageId,
+                MetricCode = p.StageCode,
+                MetricName = p.StageName,
+                MetricType = p.StageType,
                 BaseLineRate = p.BaseLineRate,
                 PlanWithoutTactic = p.PlanWithoutTactic,
                 PlanWithTactic = p.PlanWithTactic,
@@ -3763,20 +3763,20 @@ namespace RevenuePlanner.Controllers
         public List<ImprovementStage> GetImprovementStages(int ImprovementPlanTacticId, int ImprovementTacticTypeId, DateTime EffectiveDate)
         {
             List<ImprovementStage> ImprovementMetric = new List<ImprovementStage>();
-
+            string CR = Enums.StageType.CR.ToString();
             //// Get List of Stages Associated with selected Improvement Tactic Type.
             ImprovementMetric = (from im in db.ImprovementTacticType_Metric
                                  where im.ImprovementTacticTypeId == ImprovementTacticTypeId
                                  select new ImprovementStage
                                  {
-                                     MetricId = im.MetricId,
-                                     MetricCode = im.Metric.MetricCode,
-                                     MetricName = im.Metric.MetricName,
-                                     MetricType = im.Metric.MetricType,
+                                     StageId = im.StageId,
+                                     StageCode = im.Stage.Code,
+                                     StageName = im.StageType == CR ? im.Stage.ConversionTitle : im.Stage.Title,
+                                     StageType = im.StageType,
                                      BaseLineRate = 0,
                                      PlanWithoutTactic = 0,
                                      PlanWithTactic = 0,
-                                     ClientId = im.Metric.ClientId,
+                                     ClientId = im.Stage.ClientId,
                                  }).ToList();
 
             //// Get Model Id.
@@ -3785,9 +3785,6 @@ namespace RevenuePlanner.Controllers
             //// Get Model id based on effective Date.
             ModelId = Common.GetModelId(EffectiveDate, ModelId);
 
-            //// Get Effective Date of Model.
-            DateTime? ModelEffectiveDate = db.Models.Where(m => m.ModelId == ModelId).Select(m => m.EffectiveDate).SingleOrDefault();
-
             //// Get Funnelid for Marketing Funnel.
             string Marketing = Enums.Funnel.Marketing.ToString();
             int funnelId = db.Funnels.Where(f => f.Title == Marketing).Select(f => f.FunnelId).SingleOrDefault();
@@ -3795,37 +3792,31 @@ namespace RevenuePlanner.Controllers
             //// Loop Execute for Each Stage/Metric.
             foreach (var im in ImprovementMetric)
             {
-                //// Get Baseline value based on MetricType.
+                //// Get Baseline value based on SatgeType.
                 double modelvalue = 0;
-                if (im.MetricType == Enums.MetricType.Size.ToString())
+                if (im.StageType == Enums.StageType.Size.ToString())
                 {
                     modelvalue = db.Model_Funnel.Where(mf => mf.ModelId == ModelId && mf.FunnelId == funnelId).Select(mf => mf.AverageDealSize).SingleOrDefault();
                 }
                 else
                 {
-                    modelvalue = db.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == ModelId && mfs.Model_Funnel.FunnelId == funnelId && mfs.Stage.Code == im.MetricCode && mfs.StageType == im.MetricType && mfs.Stage.ClientId == im.ClientId).Select(mfs => mfs.Value).SingleOrDefault();
-                    if (im.MetricType == Enums.MetricType.CR.ToString())
+                    modelvalue = db.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == ModelId && mfs.Model_Funnel.FunnelId == funnelId && mfs.StageId == im.StageId && mfs.StageType == im.StageType).Select(mfs => mfs.Value).SingleOrDefault();
+                    if (im.StageType == Enums.StageType.CR.ToString())
                     {
                         modelvalue = modelvalue / 100;
                     }
                 }
 
                 //// Get BestInClas value for MetricId.
-                double bestInClassValue = db.BestInClasses.Where(bic => bic.MetricId == im.MetricId).Select(bic => bic.Value).SingleOrDefault();
+                double bestInClassValue = db.BestInClasses.
+                    Where(bic => bic.StageId == im.StageId && bic.StageType == im.StageType).
+                    Select(bic => bic.Value).SingleOrDefault();
 
                 //// Modified by Maninder singh wadhva for Ticket#159
-                if (im.MetricType == Enums.MetricType.CR.ToString() && bestInClassValue != 0)
+                if (im.StageType == Enums.StageType.CR.ToString() && bestInClassValue != 0)
                 {
                     bestInClassValue = bestInClassValue / 100;
                 }
-
-
-                //// Get Level of Metric.
-                int? CurrentMetricLevel = db.Metrics.Where(m => m.MetricId == im.MetricId).Select(m => m.Level).SingleOrDefault();
-
-                //// Get Parent MetricId based on Improvement Tactic Type & Metric Relation.
-                var maxLevelList = db.ImprovementTacticType_Metric.Where(m => m.Metric.MetricType == im.MetricType && m.ImprovementTacticTypeId == ImprovementTacticTypeId && m.Metric.Level < CurrentMetricLevel).Select(m => m.Metric).ToList();
-                int ParentMetricId = maxLevelList.Where(m => m.Level == (maxLevelList.Max(mt => mt.Level))).Select(m => m.MetricId).SingleOrDefault();
 
                 //// Declare variable.
                 int TotalCountWithTactic = 0;
@@ -3840,7 +3831,10 @@ namespace RevenuePlanner.Controllers
                     //// Get ImprovementTactic & its Weight based on filter criteria for MetricId.
                     var improveTacticList = (from pit in db.Plan_Improvement_Campaign_Program_Tactic
                                              join itm in db.ImprovementTacticType_Metric on pit.ImprovementTacticTypeId equals itm.ImprovementTacticTypeId
-                                             where pit.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == im.MetricId && itm.Weight > 0 && pit.IsDeleted == false
+                                             where pit.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && itm.ImprovementTacticType.IsDeployed == true 
+                                             && itm.StageId == im.StageId
+                                             && itm.StageType == im.StageType
+                                             && itm.Weight > 0 && pit.IsDeleted == false
                                              select new { ImprovemetPlanTacticId = pit.ImprovementPlanTacticId, Weight = itm.Weight }).ToList();
 
                     //// Calculate Total ImprovementCount for PlanWithoutTactic
@@ -3852,7 +3846,10 @@ namespace RevenuePlanner.Controllers
 
                     //// Get ImprovementTacticType & its Weight based on filter criteria for MetricId & current ImprovementTacticType.
                     var improvementCountWithTacticList = (from itt in db.ImprovementTacticType_Metric
-                                                          where itt.ImprovementTacticType.IsDeployed == true && itt.MetricId == im.MetricId && itt.Weight > 0 && itt.ImprovementTacticTypeId == ImprovementTacticTypeId
+                                                          where itt.ImprovementTacticType.IsDeployed == true
+                                                          && itt.StageId == im.StageId
+                                                            && itt.StageType == im.StageType
+                                                          && itt.Weight > 0 && itt.ImprovementTacticTypeId == ImprovementTacticTypeId
                                                           select new { ImprovementTacticTypeId = itt.ImprovementTacticTypeId, Weight = itt.Weight }).ToList();
 
                     //// Calculate Total ImprovementCount for PlanWithTactic
@@ -3869,7 +3866,10 @@ namespace RevenuePlanner.Controllers
                     //// Get ImprovementTactic & its Weight based on filter criteria for MetricId & without current improvement tactic.
                     var improveTacticList = (from pit in db.Plan_Improvement_Campaign_Program_Tactic
                                              join itm in db.ImprovementTacticType_Metric on pit.ImprovementTacticTypeId equals itm.ImprovementTacticTypeId
-                                             where pit.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == im.MetricId && itm.Weight > 0 && pit.ImprovementPlanTacticId != ImprovementPlanTacticId && pit.IsDeleted == false
+                                             where pit.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && itm.ImprovementTacticType.IsDeployed == true 
+                                             && itm.StageId == im.StageId
+                                             && itm.StageType == im.StageType
+                                             && itm.Weight > 0 && pit.ImprovementPlanTacticId != ImprovementPlanTacticId && pit.IsDeleted == false
                                              select new { ImprovemetPlanTacticId = pit.ImprovementPlanTacticId, Weight = itm.Weight }).ToList();
 
                     //// Calculate Total ImprovementCount for PlanWithoutTactic
@@ -3882,7 +3882,10 @@ namespace RevenuePlanner.Controllers
                     //// Get ImprovementTactic & its Weight based on filter criteria for MetricId with current tactic.
                     var improvementCountWithTacticList = (from pit in db.Plan_Improvement_Campaign_Program_Tactic
                                                           join itm in db.ImprovementTacticType_Metric on pit.ImprovementTacticTypeId equals itm.ImprovementTacticTypeId
-                                                          where pit.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && itm.ImprovementTacticType.IsDeployed == true && itm.MetricId == im.MetricId && itm.Weight > 0 && pit.IsDeleted == false
+                                                          where pit.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && itm.ImprovementTacticType.IsDeployed == true
+                                                           && itm.StageId == im.StageId
+                                                            && itm.StageType == im.StageType
+                                                          && itm.Weight > 0 && pit.IsDeleted == false
                                                           select new { ImprovemetPlanTacticId = pit.ImprovementPlanTacticId, Weight = itm.Weight }).ToList();
 
                     //// Calculate Total ImprovementCount for PlanWithTactic
@@ -3893,7 +3896,7 @@ namespace RevenuePlanner.Controllers
                 }
 
                 //// Calculate value based on Metric type.
-                if (im.MetricType == Enums.MetricType.CR.ToString())
+                if (im.StageType == Enums.StageType.CR.ToString())
                 {
                     im.BaseLineRate = modelvalue * 100;
                     im.PlanWithoutTactic = GetImprovement(im, bestInClassValue, modelvalue, TotalCountWithoutTactic, TotalWeightWithoutTactic) * 100;
@@ -3990,15 +3993,15 @@ namespace RevenuePlanner.Controllers
             double boostFactor = cFactor * rFactor;
             double boostGap = 0;
             //// Calculate boostGap
-            if (im.MetricType == Enums.MetricType.CR.ToString())
+            if (im.StageType == Enums.StageType.CR.ToString())
             {
                 boostGap = bestInClassValue - modelvalue;
             }
-            else if (im.MetricType == Enums.MetricType.SV.ToString())
+            else if (im.StageType == Enums.StageType.SV.ToString())
             {
                 boostGap = modelvalue - bestInClassValue;
             }
-            else if (im.MetricType == Enums.MetricType.Size.ToString())
+            else if (im.StageType == Enums.StageType.Size.ToString())
             {
                 // Divide by 100 because it percentage value
                 boostGap = bestInClassValue / 100;
@@ -4012,15 +4015,15 @@ namespace RevenuePlanner.Controllers
             }
 
             double improvementValue = 0;
-            if (im.MetricType == Enums.MetricType.CR.ToString())
+            if (im.StageType == Enums.StageType.CR.ToString())
             {
                 improvementValue = modelvalue + improvement;
             }
-            else if (im.MetricType == Enums.MetricType.SV.ToString())
+            else if (im.StageType == Enums.StageType.SV.ToString())
             {
                 improvementValue = modelvalue - improvement;
             }
-            else if (im.MetricType == Enums.MetricType.Size.ToString())
+            else if (im.StageType == Enums.StageType.Size.ToString())
             {
                 improvementValue = (1 + improvement) * modelvalue;
             }
@@ -4041,13 +4044,13 @@ namespace RevenuePlanner.Controllers
             int ImprovementTacticTypeId = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.ImprovementPlanTacticId == id).Select(t => t.ImprovementTacticTypeId).SingleOrDefault();
             DateTime EffectiveDate = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.ImprovementPlanTacticId == id).Select(t => t.EffectiveDate).SingleOrDefault();
             List<ImprovementStage> ImprovementMetric = GetImprovementStages(id, ImprovementTacticTypeId, EffectiveDate);
-            string CR = Enums.MetricType.CR.ToString();
-            string SV = Enums.MetricType.SV.ToString();
-            double conversionRateHigher = ImprovementMetric.Where(im => im.MetricType == CR).Select(im => im.PlanWithTactic).Sum();
-            double conversionRateLower = ImprovementMetric.Where(im => im.MetricType == CR).Select(im => im.PlanWithoutTactic).Sum();
+            string CR = Enums.StageType.CR.ToString();
+            string SV = Enums.StageType.SV.ToString();
+            double conversionRateHigher = ImprovementMetric.Where(im => im.StageType== CR).Select(im => im.PlanWithTactic).Sum();
+            double conversionRateLower = ImprovementMetric.Where(im => im.StageType == CR).Select(im => im.PlanWithoutTactic).Sum();
 
-            double stageVelocityHigher = ImprovementMetric.Where(im => im.MetricType == SV).Select(im => im.PlanWithTactic).Sum();
-            double stageVelocityLower = ImprovementMetric.Where(im => im.MetricType == SV).Select(im => im.PlanWithoutTactic).Sum();
+            double stageVelocityHigher = ImprovementMetric.Where(im => im.StageType == SV).Select(im => im.PlanWithTactic).Sum();
+            double stageVelocityLower = ImprovementMetric.Where(im => im.StageType == SV).Select(im => im.PlanWithoutTactic).Sum();
 
             string conversionUpDownString = string.Empty;
             string velocityUpDownString = string.Empty;
@@ -4110,64 +4113,41 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult GetImprovementContainerValue()
         {
-            /// Added By: Maninder Singh Wadhva
-            /// Addressed PL Ticket: 37,38,47,49
-            List<Plan_Campaign_Program_Tactic> tacticIds = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(Sessions.PlanId) &&
+            List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(Sessions.PlanId) &&
                                                                              tactic.IsDeleted == false)
                                                                  .ToList();
-
-            //// Calculating MQL difference.
-            double? improvedMQL = Common.CalculateImprovedMQL(Sessions.PlanId, false);
-            double planMQL = 0;
-            if (tacticIds.Count > 0)
-            {
-                planMQL = Common.GetMQLValueTacticList(tacticIds).Sum(tm => tm.MQL);
-            }
-            double differenceMQL = Convert.ToDouble(improvedMQL) - planMQL;
-
-
-
-            //// Calculating CW difference.
-            double? improvedCW = Common.CalculateImprovedProjectedRevenueOrCW(Sessions.PlanId, false, 0);
-            double planCW = Common.ProjectedRevenueCalculateList(tacticIds, true).Sum(cw => cw.ProjectedRevenue);
-            double differenceCW = Convert.ToDouble(improvedCW) - planCW;
-
-
-
-            //// Calcualting Deal size.
-            double? improvedDealSize = Common.CalculateImprovedDealSize(Sessions.PlanId);
             //// Getting list of improvement activites.
             List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && t.IsDeleted == false).Select(t => t).ToList();
-            //// Getting model based on plan id.
-            int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-            //// Get Model id based on effective date From.
-            modelId = Common.GetModelId(improvementActivities.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), modelId);
-            //// Getting model.
-            Model effectiveModel = db.Models.Single(model => model.ModelId.Equals(modelId));
-            string funnelMarketing = Enums.Funnel.Marketing.ToString();
-            double averageDealSize = db.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == modelId &&
-                                                                      modelFunnel.Funnel.Title.Equals(funnelMarketing))
-                                                .Select(mf => mf.AverageDealSize)
-                                                .SingleOrDefault();
-            double differenceDealSize = Convert.ToDouble(improvedDealSize) - averageDealSize;
+           
+            List<TacticStageValue> TacticDataWithoutImprovement = Common.GetTacticStageRelation(tacticList, false);
+            List<TacticStageValue> TacticDataWithImprovement = Common.GetTacticStageRelation(tacticList, true);
 
+            //// Calculating MQL difference.
+            double? improvedMQL = TacticDataWithImprovement.Sum(t => t.MQLValue);
+            double planMQL = TacticDataWithoutImprovement.Sum(t => t.MQLValue);
+            double differenceMQL = Convert.ToDouble(improvedMQL) - planMQL;
+
+            //// Calculating CW difference.
+            double? improvedCW = TacticDataWithImprovement.Sum(t => t.CWValue);
+            double planCW = TacticDataWithoutImprovement.Sum(t => t.CWValue);
+            double differenceCW = Convert.ToDouble(improvedCW) - planCW;
 
             string stageTypeSV = Enums.StageType.SV.ToString();
-            double? improvedSV = Common.CalculateImprovedVelocity(Sessions.PlanId);
-            double sv = db.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId.Equals(modelId) &&
-                                                            mfs.Model_Funnel.Funnel.Title.Equals(funnelMarketing) &&
-                                                            mfs.StageType.Equals(stageTypeSV))
-                                               .Sum(stage => stage.Value);
+            double improvedSV = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivities, stageTypeSV);
+            double sv = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivities, stageTypeSV, false);
             double differenceSV = Convert.ToDouble(improvedSV) - sv;
 
-            // Modified By:Maninder Singh Wadhva, Ticket#404 Revenue increase should be a multiple of ADS
-            double improvedAverageDealSizeForProjectedRevenue = averageDealSize;
-            if (improvedDealSize != null)
-            {
-                improvedAverageDealSizeForProjectedRevenue = Convert.ToDouble(improvedDealSize);
-            }
-            double? improvedProjectedRevenue = Common.CalculateImprovedProjectedRevenueOrCW(Sessions.PlanId, true, improvedAverageDealSizeForProjectedRevenue);
-            double projectedRevenue = Common.ProjectedRevenueCalculateList(tacticIds).Sum(cw => cw.ProjectedRevenue);
+            //// Calcualting Deal size.
+            string stageTypeSize = Enums.StageType.Size.ToString();
+            double improvedDealSize = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivities, stageTypeSize);
+            double averageDealSize = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivities, stageTypeSize, false);
+            double differenceDealSize = improvedDealSize - averageDealSize;
+
+            //// Calculation of Revenue
+            List<double> revenueList = new List<double>();
+            TacticDataWithImprovement.ForEach(t => revenueList.Add(t.CWValue * improvedDealSize));
+            double? improvedProjectedRevenue = revenueList.Sum();
+            double projectedRevenue = TacticDataWithoutImprovement.Sum(t => t.RevenueValue);
             double differenceProjectedRevenue = Convert.ToDouble(improvedProjectedRevenue) - projectedRevenue;
 
             double improvedCost = improvementActivities.Sum(improvementActivity => improvementActivity.Cost);
@@ -4194,43 +4174,23 @@ namespace RevenuePlanner.Controllers
             List<Plan_Campaign_Program_Tactic> marketingActivities = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(Sessions.PlanId) && t.IsDeleted == false).Select(t => t).ToList();
             List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && t.IsDeleted == false).Select(t => t).ToList();
             double projectedRevenueWithoutTactic = 0;
+            string stageTypeSize = Enums.StageType.Size.ToString();
+            List<TacticStageValue> TacticDataWithoutImprovement = Common.GetTacticStageRelation(marketingActivities, false);
+            List<TacticStageValue> TacticDataWithImprovement = Common.GetTacticStageRelation(marketingActivities, true);
+
             //// Checking whether improvement activities exist.
             if (improvementActivities.Count() > 0)
             {
-                double? dealSize = null;
-                double improvedAverageDealSizeForProjectedRevenue = 0;
-                //// Getting deal size improved based on improvement activities.
-                dealSize = Common.GetImprovedDealSize(Sessions.PlanId, improvementActivities);
-                if (dealSize != null)
-                {
-                    improvedAverageDealSizeForProjectedRevenue = Convert.ToDouble(dealSize);
+                
+                double improvedDealSize = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivities, stageTypeSize);
+
+                List<double> revenueList = new List<double>();
+                TacticDataWithImprovement.ForEach(t => revenueList.Add(t.CWValue * improvedDealSize));
+                projectedRevenueWithoutTactic = revenueList.Sum();
                 }
                 else
                 {
-
-                    int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-                    //// Get Model id based on effective date From.
-                    modelId = Common.GetModelId(improvementActivities.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), modelId);
-                    //// Getting model.
-                    Model effectiveModel = db.Models.Single(model => model.ModelId.Equals(modelId));
-                    string funnelMarketing = Enums.Funnel.Marketing.ToString();
-                    double averageDealSize = db.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == modelId &&
-                                                                              modelFunnel.Funnel.Title.Equals(funnelMarketing))
-                                                        .Select(mf => mf.AverageDealSize)
-                                                        .SingleOrDefault();
-                    improvedAverageDealSizeForProjectedRevenue = averageDealSize;
-                }
-
-                //// Checking whether marketing and improvement activities exist.
-                if (marketingActivities.Count() > 0)
-                {
-                    //// Getting Projected Reveneue or Closed Won improved based on marketing and improvement activities.
-                    projectedRevenueWithoutTactic = Common.GetImprovedProjectedRevenueOrCW(Sessions.PlanId, marketingActivities, improvementActivities, true, improvedAverageDealSizeForProjectedRevenue);
-                }
-            }
-            else
-            {
-                projectedRevenueWithoutTactic = Common.ProjectedRevenueCalculateList(marketingActivities).Sum(p => p.ProjectedRevenue);
+                projectedRevenueWithoutTactic = TacticDataWithoutImprovement.Sum(t => t.RevenueValue);
             }
 
             List<SuggestedImprovementActivities> suggestedImproveentActivities = new List<SuggestedImprovementActivities>();
@@ -4265,49 +4225,16 @@ namespace RevenuePlanner.Controllers
                     }
                 }
 
-                double? dealSize = null;
-                double improvedAverageDealSizeForProjectedRevenue = 0;
-                //// Checking whether improvement activities exist.
-                if (improvementActivitiesWithType.Count() > 0)
-                {
-                    //// Getting deal size improved based on improvement activities.
-                    dealSize = Common.GetImprovedDealSize(Sessions.PlanId, improvementActivitiesWithType);
-                }
-                if (dealSize != null)
-                {
-                    improvedAverageDealSizeForProjectedRevenue = Convert.ToDouble(dealSize);
-                }
-                else
-                {
-
-                    int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-                    //// Get Model id based on effective date From.
-                    if (improvementActivitiesWithType.Count() > 0)
-                    {
-                        modelId = Common.GetModelId(improvementActivitiesWithType.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), modelId);
-                    }
-                    else
-                    {
-                        modelId = Common.GetModelId(DateTime.Now, modelId);
-                    }
-
-                    //// Getting model.
-                    Model effectiveModel = db.Models.Single(model => model.ModelId.Equals(modelId));
-                    string funnelMarketing = Enums.Funnel.Marketing.ToString();
-                    double averageDealSize = db.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == modelId &&
-                                                                              modelFunnel.Funnel.Title.Equals(funnelMarketing))
-                                                        .Select(mf => mf.AverageDealSize)
-                                                        .SingleOrDefault();
-                    improvedAverageDealSizeForProjectedRevenue = averageDealSize;
-                }
+                double improvedAverageDealSizeForProjectedRevenue = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivitiesWithType, stageTypeSize); ;
 
                 double improvedValue = 0;
 
                 //// Checking whether marketing and improvement activities exist.
                 if (marketingActivities.Count() > 0)
                 {
-                    //// Getting Projected Reveneue or Closed Won improved based on marketing and improvement activities.
-                    improvedValue = Common.GetImprovedProjectedRevenueOrCW(Sessions.PlanId, marketingActivities, improvementActivitiesWithType, true, improvedAverageDealSizeForProjectedRevenue);
+                    List<double> revenueList = new List<double>();
+                    TacticDataWithImprovement.ForEach(t => revenueList.Add(t.CWValue * improvedAverageDealSizeForProjectedRevenue));
+                    improvedValue = revenueList.Sum();
                 }
                 double projectedRevenueWithoutTacticTemp = projectedRevenueWithoutTactic;
                 if (suggestedImprovement.isExits)
@@ -4418,6 +4345,10 @@ namespace RevenuePlanner.Controllers
             List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && t.IsDeleted == false).OrderBy(t => t.ImprovementPlanTacticId).Select(t => t).ToList();
             List<Plan_Improvement_Campaign_Program_Tactic> improvementActivitiesWithIncluded = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && t.IsDeleted == false && !plantacticids.Contains(t.ImprovementPlanTacticId)).OrderBy(t => t.ImprovementPlanTacticId).Select(t => t).ToList();
 
+            string stageTypeSize = Enums.StageType.Size.ToString();
+            List<TacticStageValue> TacticDataWithoutImprovement = Common.GetTacticStageRelation(marketingActivities, false);
+            List<TacticStageValue> TacticDataWithImprovement = Common.GetTacticStageRelation(marketingActivities, true);
+
             double improvedValue = 0;
             double adsWithTactic = 0;
             double? dealSize = null;
@@ -4427,41 +4358,26 @@ namespace RevenuePlanner.Controllers
             if (improvementActivitiesWithIncluded.Count() > 0)
             {
                 //// Getting deal size improved based on improvement activities.
-                dealSize = Common.GetImprovedDealSize(Sessions.PlanId, improvementActivitiesWithIncluded);
+                dealSize = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivitiesWithIncluded, stageTypeSize);
             }
             if (dealSize != null)
             {
                 improvedAverageDealSizeForProjectedRevenue = Convert.ToDouble(dealSize);
             }
-            else
-            {
 
-                int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-                if (improvementActivitiesWithIncluded.Count() > 0)
-                {
-                    //// Get Model id based on effective date From.
-                    modelId = Common.GetModelId(improvementActivitiesWithIncluded.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), modelId);
-                }
-                //// Getting model.
-                Model effectiveModel = db.Models.Single(model => model.ModelId.Equals(modelId));
-                string funnelMarketing = Enums.Funnel.Marketing.ToString();
-                double averageDealSize = db.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == modelId &&
-                                                                          modelFunnel.Funnel.Title.Equals(funnelMarketing))
-                                                    .Select(mf => mf.AverageDealSize)
-                                                    .SingleOrDefault();
-                improvedAverageDealSizeForProjectedRevenue = averageDealSize;
-            }
             adsWithTactic = improvedAverageDealSizeForProjectedRevenue;
 
             //// Checking whether marketing and improvement activities exist.
             if (marketingActivities.Count() > 0 && improvementActivitiesWithIncluded.Count() > 0)
             {
                 //// Getting Projected Reveneue or Closed Won improved based on marketing and improvement activities.
-                improvedValue = Common.GetImprovedProjectedRevenueOrCW(Sessions.PlanId, marketingActivities, improvementActivitiesWithIncluded, true, improvedAverageDealSizeForProjectedRevenue);
+                List<double> revenueList = new List<double>();
+                TacticDataWithImprovement.ForEach(t => revenueList.Add(t.CWValue * improvedAverageDealSizeForProjectedRevenue));
+                improvedValue = revenueList.Sum();
             }
             else
             {
-                improvedValue = Common.ProjectedRevenueCalculateList(marketingActivities).Sum(p => p.ProjectedRevenue);
+                improvedValue = TacticDataWithoutImprovement.Sum(p => p.RevenueValue);
             }
 
             List<SuggestedImprovementActivities> suggestedImprovementActivities = new List<SuggestedImprovementActivities>();
@@ -4495,34 +4411,11 @@ namespace RevenuePlanner.Controllers
                 if (improvementActivitiesWithType.Count() > 0)
                 {
                     //// Getting deal size improved based on improvement activities.
-                    dealSizeInner = Common.GetImprovedDealSize(Sessions.PlanId, improvementActivitiesWithType);
+                    dealSizeInner = Common.GetCalculatedValueImproved(Sessions.PlanId, improvementActivitiesWithType, stageTypeSize);
                 }
                 if (dealSizeInner != null)
                 {
                     improvedAverageDealSizeForProjectedRevenueInner = Convert.ToDouble(dealSizeInner);
-                }
-                else
-                {
-
-                    int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-                    //// Get Model id based on effective date From.
-                    if (improvementActivitiesWithType.Count() > 0)
-                    {
-                        modelId = Common.GetModelId(improvementActivitiesWithType.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), modelId);
-                    }
-                    else
-                    {
-                        modelId = Common.GetModelId(DateTime.Now, modelId);
-                    }
-
-                    //// Getting model.
-                    Model effectiveModel = db.Models.Single(model => model.ModelId.Equals(modelId));
-                    string funnelMarketing = Enums.Funnel.Marketing.ToString();
-                    double averageDealSize = db.Model_Funnel.Where(modelFunnel => modelFunnel.ModelId == modelId &&
-                                                                              modelFunnel.Funnel.Title.Equals(funnelMarketing))
-                                                        .Select(mf => mf.AverageDealSize)
-                                                        .SingleOrDefault();
-                    improvedAverageDealSizeForProjectedRevenueInner = averageDealSize;
                 }
 
                 double projectedRevenueWithoutTactic = 0;
@@ -4691,12 +4584,16 @@ namespace RevenuePlanner.Controllers
 
             List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && t.IsDeleted == false).OrderBy(t => t.ImprovementPlanTacticId).Select(t => t).ToList();
             List<Plan_Improvement_Campaign_Program_Tactic> improvementActivitiesWithIncluded = db.Plan_Improvement_Campaign_Program_Tactic.Where(t => t.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && t.IsDeleted == false && !plantacticids.Contains(t.ImprovementPlanTacticId)).OrderBy(t => t.ImprovementPlanTacticId).Select(t => t).ToList();
-            string MetricType = Enums.MetricType.CR.ToString();
+            string stageCR = Enums.MetricType.CR.ToString();
+            string StageType = stageCR;
             if (!isConversion)
             {
-                MetricType = Enums.MetricType.SV.ToString();
+                StageType = Enums.MetricType.SV.ToString();
             }
-            List<Metric> metricList = db.Metrics.Where(m => m.ClientId == Sessions.User.ClientId && m.MetricType == MetricType).OrderBy(m => m.Level).ToList();
+
+            string CW = Enums.Stage.CW.ToString();
+            List<Stage> stageList = db.Stages.Where(s => s.ClientId == Sessions.User.ClientId && s.Level != null && s.Code != CW).ToList();
+            //List<Metric> metricList = db.Metrics.Where(m => m.ClientId == Sessions.User.ClientId && m.MetricType == MetricType).OrderBy(m => m.Level).ToList();
             List<int> impTacticTypeIds = improvementActivities.Select(ia => ia.ImprovementTacticTypeId).Distinct().ToList();
             List<ImprovementTacticType_Metric> improvedMetrcList = db.ImprovementTacticType_Metric.Where(im => impTacticTypeIds.Contains(im.ImprovementTacticTypeId)).ToList();
 
@@ -4709,12 +4606,15 @@ namespace RevenuePlanner.Controllers
                 sIconversion.ImprovementTacticTypeTitle = imptactic.ImprovementTacticType.Title;
                 sIconversion.Cost = imptactic.Cost;
                 List<ImprovedMetricWeight> imList = new List<ImprovedMetricWeight>();
-                foreach (var m in metricList)
+                foreach (var m in stageList)
                 {
                     ImprovedMetricWeight im = new ImprovedMetricWeight();
-                    im.MetricId = m.MetricId;
+                    im.MetricId = m.StageId;
                     im.Level = m.Level;
-                    var weightValue = improvedMetrcList.Where(iml => iml.ImprovementTacticTypeId == imptactic.ImprovementTacticTypeId && iml.MetricId == m.MetricId).Select(iml => iml.Weight).SingleOrDefault();
+                    var weightValue = improvedMetrcList.Where(iml => iml.ImprovementTacticTypeId == imptactic.ImprovementTacticTypeId 
+                        && iml.StageId == m.StageId
+                        && iml.StageType == StageType
+                        ).Select(iml => iml.Weight).SingleOrDefault();
                     if (weightValue != null)
                     {
                         im.Value = weightValue;
@@ -4752,8 +4652,8 @@ namespace RevenuePlanner.Controllers
             Model effectiveModel = db.Models.Single(model => model.ModelId.Equals(ModelId));
 
             //// Getting hypothetical model - conversion rate.
-            HypotheticalModel hypotheticalModel = Common.GetHypotheticalModel(MetricType, effectiveModel, improvementActivitiesWithIncluded);
-            List<int> finalMetricList = metricList.Select(m => m.MetricId).ToList();
+            HypotheticalModel hypotheticalModel = Common.GetHypotheticalModel(StageType, effectiveModel, improvementActivitiesWithIncluded);
+            List<int> finalMetricList = stageList.Select(m => m.StageId).ToList();
 
             var datalist = suggestedImprovementActivitiesConversion.Select(si => new
             {
@@ -4766,10 +4666,10 @@ namespace RevenuePlanner.Controllers
             }).Select(si => si).OrderBy(si => si.ImprovementPlanTacticId);
 
 
-            var dataMetricList = metricList.Select(ml => new
+            var dataMetricList = stageList.Select(ml => new
             {
-                MetricId = ml.MetricId,
-                Title = ml.MetricName,
+                MetricId = ml.StageId,
+                Title = StageType == stageCR ? ml.ConversionTitle : ml.Title,
                 Level = ml.Level
             }).OrderBy(ml => ml.Level);
 

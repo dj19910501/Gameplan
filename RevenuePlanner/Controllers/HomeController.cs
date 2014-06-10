@@ -4273,10 +4273,10 @@ namespace RevenuePlanner.Controllers
 
             var tacticobj = ImprovementMetric.Select(p => new
             {
-                MetricId = p.MetricId,
-                MetricCode = p.MetricCode,
-                MetricName = p.MetricName,
-                MetricType = p.MetricType,
+                MetricId = p.StageId,
+                MetricCode = p.StageCode,
+                MetricName = p.StageName,
+                MetricType = p.StageType,
                 BaseLineRate = p.BaseLineRate,
                 PlanWithoutTactic = p.PlanWithoutTactic,
                 PlanWithTactic = p.PlanWithTactic,

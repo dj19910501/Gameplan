@@ -7,6 +7,7 @@
 <script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
 
 @Html.Hidden("hdnIsPlanExistToShowReport", isPlanExistToShowReport)
+<div id="htmlContent" class="padding-content cf source-sans-proregular">
 <div class="report-gray-container" id="DivSummaryRevenue" style="display: none; margin-top: 0px !important;">
     <a class="CursorHand" onclick="window.location.href='@Url.Action("Revenue", "Report")'">
         <div class="report-chart">
@@ -44,7 +45,7 @@
         <p>
             You are <strong>@Model.PlanStatus</strong> plan to close <strong>$@Model.ProjectedRevenue</strong> this year.
         </p>
-        <a id="AViewDetailReportRevenue" class="CursorHand" onclick="window.location.href='@Url.Action("Revenue", "Report")'">View Details<span></span></a>
+        <a id="AViewDetailReportRevenue" class="CursorHand">View Details<span></span></a>
     </div>
 </div>
 
@@ -65,13 +66,25 @@
             @Html.LabelForMQL("MQL") : <strong>@Model.MQLsStatus.</strong><br />
           @*  @Html.LabelForCW("CW") : <strong>@Model.CWsStatus.</strong><br />*@
         </p>
-        <a id="AViewDetailReportConversion" class="CursorHand" onclick="window.location.href='@Url.Action("Conversion", "Report")'">View Details<span></span></a>
+        <a id="AViewDetailReportConversion" class="CursorHand" >View Details<span></span></a>
     </div>
 
 </div>
+    </div>
 <script type="text/javascript">
     
     $(document).ready(function () {
+
+        $('#AViewDetailReportRevenue').click(function()
+        {
+            $("#liRevenue").focus().click();
+        });
+
+        $('#AViewDetailReportConversion').click(function()
+        {
+            $("#liConversion").focus().click();
+        });
+
         ShowHideReport();
         var data = @Html.Raw(Json.Encode(Model.chartData));
 

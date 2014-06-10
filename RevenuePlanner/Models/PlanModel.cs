@@ -210,4 +210,70 @@ namespace RevenuePlanner.Models
         public double Value { get; set; }
     }
 
+
+    /// <summary>
+    /// Class of TacticId & Model Id Relation.
+    /// </summary>
+    public class TacticPlanRelation
+    {
+        public int PlanTacticId { get; set; }
+        public int PlanId { get; set; }
+    }
+
+
+    public class PlanIMPTacticListRelation
+    {
+        public int PlanId { get; set; }
+        public List<Plan_Improvement_Campaign_Program_Tactic> ImprovementTacticList { get; set; }
+    }
+
+    public class StageRelation
+    {
+        public int StageId { get; set; }
+        public string StageType { get; set; }
+        public double Value { get; set; }
+    }
+
+    public class ModelStageRelationList
+    {
+        public int ModelId { get; set; }
+        public List<StageRelation> StageList { get; set; }
+    }
+
+    public class ImprovementTypeWeightList
+    {
+        public int ImprovementTypeId { get; set; }
+        public bool isDeploy { get; set; }
+        public int StageId { get; set; }
+        public string StageType { get; set; }
+        public double Value { get; set; }
+    }
+
+    public class StageList
+    {
+        public int StageId { get; set; }
+        public int? Level { get; set; }
+        public string StageType { get; set; }
+    }
+
+    public class TacticStageValueRelation
+    {
+        public Plan_Campaign_Program_Tactic TacticObj { get; set; }
+        public List<StageRelation> StageValueList { get; set; }
+    }
+
+    public class TacticStageValue
+    {
+        public Plan_Campaign_Program_Tactic TacticObj { get; set; }
+        public double INQValue { get; set; }
+        public double MQLValue { get; set; }
+        public double CWValue { get; set; }
+        public double RevenueValue { get; set; }
+        public double ADSValue { get; set; }
+        public double INQVelocity { get; set; }
+        public double MQLVelocity { get; set; }
+        public double CWVelocity { get; set; }
+        public List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList { get; set; }
+        public string TacticYear { get; set; }
+    }
 }

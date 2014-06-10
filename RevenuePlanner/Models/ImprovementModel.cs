@@ -38,10 +38,10 @@ namespace RevenuePlanner.Models
 
     public class ImprovementStage
     {
-        public int MetricId { get; set; }
-        public string MetricCode { get; set; }
-        public string MetricName { get; set; }
-        public string MetricType { get; set; }
+        public int StageId { get; set; }
+        public string StageCode { get; set; }
+        public string StageName { get; set; }
+        public string StageType { get; set; }
         public double BaseLineRate { get; set; }
         public double PlanWithoutTactic { get; set; }
         public double PlanWithTactic { get; set; }

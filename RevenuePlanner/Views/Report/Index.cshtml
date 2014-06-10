@@ -1,25 +1,24 @@
 ﻿@model RevenuePlanner.Models.FilterDropdownValues
-
+@using RevenuePlanner.Helpers
 @{
-    ViewBag.Title = "Report Summaries";
-    ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Report;
+    ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-<!-- Nl form JS files -->
-<link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
-<link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
-<script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
-<script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
-
-@*Reason: To remove chart canvas border and unwanted icon Refered to original css of dhtmlxchart Added By: Maninder Singh on 1/28/2014*@
+<script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
 <link href="@Url.Content("~/Content/css/dhtmlxchart.css")" rel="stylesheet" type="text/css" />
-
+@section nlFormContent{
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
+}
 @section Sidebar
 {
     <div class="padding-content padding-bottom0">
         <h4 class="text-shadow-black source-sans-prolight">Reports</h4>
-        <form id="nl-formAct" class="nl-form-plan-title without-margin report-summry">
+
+        @*To resolve Bug 312: Report plan selector needs to be moved*@
+        <form class="nl-form-plan-title without-margin report-summry">
             <span class="report-summry-select" id="nl-ReportSummry">
                 <select id="reportSummry" data-default="0%" class="">
                 </select>
@@ -31,60 +30,81 @@
                 </select>
                 <div class="nl-overlay"></div>
             </span>
-        </form> 
+        </form>
+        @*To resolve Bug 312: Report plan selector needs to be moved*@
+
         <div class="wraper-btns cf">
             <div class="span6">
-                @if (RevenuePlanner.Helpers.Sessions.PlanId != 0)
-                {
                     <button id="BtnAddActual" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("AddActual", "Home")'">Add Actuals</button>    
-                }
-                else
-                {
-                    <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" disabled="disabled" type="button">Add Actuals</button>
-                }
+                 @*   <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" disabled="disabled" type="button">Add Actuals</button>*@
             </div>
             <div class="span6">
                 <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" id="BtnShareReport">Share Report</button>
             </div>
         </div>
     </div>
-    <ul class="nav nav-list nav-gray-reports">
-        <li class="item active">
-            <a class="source-sans-probold summary" href="#"><span></span>SUMMARY</a>
+    <ul class="nav nav-list nav-gray-reports" id="ulLeftPane">
+        <li class="item active" id="liSummary">
+            <a class="source-sans-probold summary"><span></span>SUMMARY</a>
         </li>
-        <li class="item">
-            <a class="source-sans-probold revenue" onclick="window.location.href='@Url.Action("Revenue", "Report")'"><span></span>REVENUE</a>
+        <li class="item" id="liRevenue">
+            <a class="source-sans-probold revenue"><span></span>REVENUE</a>
         </li>
-        <li class="item">
-            <a class="source-sans-probold conversion" onclick="window.location.href='@Url.Action("Conversion", "Report")'"><span></span>CONVERSION</a>
+        <li class="item" id="liConversion">
+            <a class="source-sans-probold conversion"><span></span>CONVERSION</a>
         </li>
     </ul>
 }
+
+<div class="light-blue-chart cf" id="reportHeader" style="display: none;">
+    <div class="white-chart" id="mqlActualDiv">
+        <p class="source-sans-probold">Actual</p>
+        <p class="value source-sans-prolight" id="mqlActual"></p>
+        <h5 id="mqlActualPercentage"></h5>
+    </div>
+    <div class="white-chart" id="mqlProjectedDiv">
+        <p class="source-sans-probold">Projected</p>
+        <p class="value source-sans-prolight" id="mqlProjected"></p>
+        <a class="ellipsis-block">@Html.LabelForMQL("MQL")</a>
+    </div>
+    <div class="white-chart" id="RevenueActualDiv">
+        <p class="source-sans-probold">Actual</p>
+        <p class="value source-sans-prolight" id="revenueActual"></p>
+        <h5 id="revenueActualPercentage"></h5>
+    </div>
+    <div class="white-chart" id="RevenueProjectedDiv">
+        <p class="source-sans-probold">Projected</p>
+        <p class="value source-sans-prolight" id="revenueProjected"></p>
+        <a class="ellipsis-block">Revenue</a>
+    </div>
+    <div class="wraper-title">
+        <h3 class="source-sans-prolight timeframe "><span id="HeaderTitle">Marketing Revenue</span>
+        <br /></h3>
+    <form id="nl-formAct" class="nl-form-plan-title without-margin">
+        <select id="drpthisyear" data-default="0%" class="">
+        </select>
+        <div class="nl-overlay"></div>
+    </form>
+    </div>
+</div>
 
 <ul class="nav nav-tabs" style="border-bottom: 0px;">
     <li class="source-sans-proregular">
         <h2 class="title-header plan" id="h2PlanTitle">@ViewBag.PlanTitle</h2>
     </li>
 </ul>
-
-<ul id="ulNav" class="nav nav-tabs">
-    <li class="source-sans-proregular">
-        <h2 class="title-header">Report Summaries</h2>
-    </li>
-</ul>
-
-<div id="htmlContent" class="padding-content cf source-sans-proregular">
-  
-    <div id="DivSummary"></div>
-    <div id="DivNoPlanToShowReport" style="display: none;">
-        <span class="pull-left margin_t30 bold">No saved plans to display report summary.</span>
-    </div>
+<div id="divMainReportPart">
 </div>
 <div id="DivShareReport">
 </div>
-
 <script type="text/javascript">
     $(document).ready(function () {
+        var SelectedBUId, SelectedPlanId;
+        var isBusinessUnit = false;
+        var OptionMain;
+
+
+        var leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
         ///// Filters logic /////
         var BU = @Html.Raw(Json.Encode(Model.lstBusinessUnit))
         populateBU(BU, "reportSummry");
@@ -92,12 +112,14 @@
             var $dropdown = $("#" + id);
             var $html = '';
             $html += '<option value=' + 0 + ' selected>' + "All Business Units" + '</option>';
+            SelectedBUId = 0;
             if (items.length > 0) {
                 $.each(items, function (index, BU) {
 
                     if (BU.Selected) {
                         $html += '<option value="' + BU.Value + '" selected>' + BU.Text + '</option>';
                         CurrentBU = BU.Value;
+                        SelectedBUId = CurrentBU;
                     } else {
                         $html += '<option value="' + BU.Value + '">' + BU.Text + '</option>';
                     }
@@ -105,11 +127,10 @@
             }
             $dropdown.append($html);
             nlform = new NLForm(document.getElementById('nl-ReportSummry'));
-            LoadSummaryDataForPlan("@RevenuePlanner.Helpers.Sessions.BusinessUnitId", "@RevenuePlanner.Helpers.Sessions.ReportPlanId" ); // Load data for all Business Unit for the first time
         }
 
-       var plans = @Html.Raw(Json.Encode(Model.lstAllPlans))
-       populateNF(plans, "reportSummry2");
+        var plans = @Html.Raw(Json.Encode(Model.lstAllPlans))
+        populateNF(plans, "reportSummry2");
 
         function populateNF(items, id) {
             var $dropdown = $("#" + id);
@@ -117,12 +138,16 @@
             $('#reportSummry2').empty();
             var $html = '';
             $html += '<option value=' + 0 + ' selected>' + "All Plans" + '</option>';
+            $('#h2PlanTitle').html("All Plans");
+            SelectedPlanId = 0;
             if (items.length > 0) {
                 $.each(items, function (index, Plan) {
 
                     if (Plan.Selected) {
                         $html += '<option value="' + Plan.Value + '" selected>' + Plan.Text + '</option>';
                         CurrentBU = Plan.Value;
+                        SelectedPlanId = Plan.Value;
+                        $('#h2PlanTitle').html(Plan.Text);
                     } else {
                         $html += '<option value="' + Plan.Value + '">' + Plan.Text + '</option>';
                     }
@@ -130,6 +155,7 @@
             }
             $dropdown.append($html);
             nlform = new NLForm(document.getElementById('nl-ReportSummry2'));
+            loadBasedOnPlan();
         }
 
         onClickActivity();
@@ -139,20 +165,7 @@
                 var Title = $(this).text();
                 var option = $.grep($('#reportSummry option'), function (value) { return $(value).text() == Title; })
                 SelectedBUId = $(option[0]).val();
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Content("~/Report/GetPlansListFromBusinessUnitId/")',
-                    data: {
-                        BusinessUnitId: SelectedBUId,
-                    },
-                    success: function (r) {
-                        populateNF(r.lstPlan, "reportSummry2");
-                        LoadSummaryDataForBU(SelectedBUId);
-                        $('#h2PlanTitle').html("All Plans");
-                        $('#nl-ReportSummry2 > .nl-field:not(:last)').remove(); // code to remove extra blocks for Plan dropdown
-                    }
-                });
-
+                loadTimeframeAndPlan();
             });
 
             $('#nl-ReportSummry2').on('click', 'div[class="nl-field nl-dd"] li', function (e) {
@@ -164,22 +177,227 @@
                 var PlanOption = $.grep($('#reportSummry2 option'), function (value) { return $(value).text() == PlanTitle; });
                 SelectedPlanId = $(PlanOption[0]).val();
                 $('#h2PlanTitle').html(PlanTitle);
-                LoadSummaryDataForPlan(SelectedBUId, SelectedPlanId);
+                loadBasedOnPlan();
+                // LoadSummaryDataForPlan(SelectedBUId, SelectedPlanId);
             });
         }
 
-        // This function will load the data for Business Unit
-        function LoadSummaryDataForPlan(SelectedBUId, SelectedPlanId) {
-            var url = '@Url.Content("~/Report/GetSummaryData/")';
-            $('#DivSummary').load(url + '?BusinessUnitId=' + SelectedBUId + '&PlanId=' + SelectedPlanId);
-            myApp.hidePleaseWait();
+        function loadPlanFromBusinessUnit() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Report/GetPlansListFromBusinessUnitId/")',
+                data: {
+                    BusinessUnitId: SelectedBUId,
+                },
+                success: function (r) {
+                    populateNF(r.lstPlan, "reportSummry2");
+                    $('#h2PlanTitle').html("All Plans");
+                    $('#nl-ReportSummry2 > .nl-field:not(:last)').remove(); // code to remove extra blocks for Plan dropdown
+                }
+            });
         }
 
-        // This function will load the data for Plan
-        function LoadSummaryDataForBU(SelectedBUId) {
+        function loadTimeframeAndPlan() {
+            isBusinessUnit = false;
+            if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()') {
+                loadPlanFromBusinessUnit();
+            }
+            else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()') {
+                isBusinessUnit = true;
+                FillTimeFrameDropDown();
+            }
+            else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()') {
+                isBusinessUnit = true;
+                FillTimeFrameDropDown();
+            }
+    }
+
+        function populateNFActivity(items, id) {
+            var $dropdown = $("#" + id);
+            $('#nl-formAct .nl-field').empty();
+            $dropdown.empty();
+            var $html = '';
+            if (items.length > 0) {
+                $.each(items, function (index, time) {
+                    if (time.Selected) {
+                        $html += '<option value="' + time.Value + '" selected>' + time.Text + '</option>';
+                        OptionMain = time.Value;
+                    } else {
+                        $html += '<option value="' + time.Value + '">' + time.Text + '</option>';
+                    }
+                });
+            }
+            $dropdown.append($html);
+            nlform = new NLForm(document.getElementById('nl-formAct'));
+            // onClickActivity();
+            // LoadHeaderData();
+            if (isBusinessUnit) {
+                GetPlanBasedOnTimeFilter();
+            }
+            else {
+                LoadRespectiveData();
+            }
+        }
+
+        function RemoveAllActiveItem() {
+            $('#ulLeftPane li').each(function () {
+                if ($(this).hasClass('active')) {
+                    $(this).removeClass('active');
+                }
+            });
+        }
+        var isAllowClick = true;
+        $('#liSummary').click(function () {
+            if (isAllowClick) {
+                isAllowClick = false;
+                leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
+                RemoveAllActiveItem();
+                $(this).addClass('active');
+                isBusinessUnit = false;
+                if (SelectedPlanId == 0) {
+                    loadPlanFromBusinessUnit();
+                }
+                else {
+                    LoadSummary();
+                }
+            }
+        });
+
+        $('#liRevenue').click(function () {
+            if (isAllowClick) {
+                isAllowClick = false;
+                leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()';
+                RemoveAllActiveItem();
+                $(this).addClass('active');
+                isBusinessUnit = false;
+                LoadRevenueView();
+                FillTimeFrameDropDown();
+            }
+        });
+
+        $('#liConversion').click(function () {
+            if (isAllowClick) {
+                isAllowClick = false;
+                leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()';
+                RemoveAllActiveItem();
+                $(this).addClass('active');
+                isBusinessUnit = false;
+                LoadConversionView();
+                FillTimeFrameDropDown();
+            }
+        });
+
+        function LoadRespectiveData() {
+            if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()') {
+                LoadRevenueData();
+            }
+            else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()') {
+                LoadConversionData();
+            }
+        }
+
+        function LoadSummary() {
+            $('#divMainReportPart').empty();
+            //  $('#BtnAddActual').enabled = true;
+            $('#reportHeader').css('display', 'none');
+
             var url = '@Url.Content("~/Report/GetSummaryData/")';
-            $('#DivSummary').load(url + '?BusinessUnitId=' + SelectedBUId);
-            myApp.hidePleaseWait();
+            $('#divMainReportPart').load(url + '?BusinessUnitId=' + SelectedBUId + '&PlanId=' + SelectedPlanId, function () {
+                isAllowClick = true;
+                myApp.hidePleaseWait();
+            });
+
+        }
+
+        function LoadRevenueView() {
+            $('#reportHeader').css('display', 'block');
+            $('#RevenueProjectedDiv').css('display', 'block');
+            $('#RevenueActualDiv').css('display', 'block');
+            $('#mqlActualDiv').css('display', 'none');
+            $('#mqlProjectedDiv').css('display', 'none');
+            $('#HeaderTitle').html('Marketing Revenue');
+            // $('#BtnAddActual').disabled = true;
+        }
+
+        function LoadConversionView() {
+            $('#reportHeader').css('display', 'block');
+            $('#RevenueProjectedDiv').css('display', 'none');
+            $('#RevenueActualDiv').css('display', 'none');
+            $('#mqlActualDiv').css('display', 'block');
+            $('#mqlProjectedDiv').css('display', 'block');
+            $('#HeaderTitle').html('Waterfall Conversion ');
+            //  $('#BtnAddActual').enabled = true;
+        }
+
+        function FillTimeFrameDropDown() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Report/GetTimeFrameValues/")',
+                data: {
+                    BusinessUnitId: SelectedBUId,
+                    isBusinessUnit: isBusinessUnit
+                },
+                success: function (r) {
+                    populateNFActivity(r, "drpthisyear");
+                    onClickActivityForTimeFrame();
+                }
+            });
+        }
+
+
+        function onClickActivityForTimeFrame() {
+            $('#nl-formAct > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+                var Title = $(this).text();
+                var option = $.grep($('#drpthisyear option'), function (value) { return $(value).text() == Title; })
+                Currenttime = $(option[0]).val();
+                OptionMain = Currenttime;
+                GetPlanBasedOnTimeFilter();
+            });
+        }
+
+        function GetPlanBasedOnTimeFilter() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Report/GetPlansListFromTimeFrame/")',
+                data: {
+                    timeFrameOption: OptionMain,
+                },
+                success: function (r) {
+                    populateNF(r.lstPlan, "reportSummry2");
+                    $('#nl-ReportSummry2 > .nl-field:not(:last)').remove(); // code to remove extra blocks for Plan dropdown
+                }
+            });
+        }
+
+        function loadBasedOnPlan() {
+            if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()') {
+                LoadSummary();
+            }
+            else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()') {
+                LoadRevenueData();
+            }
+            else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()') {
+                LoadConversionData();
+            }
+    }
+
+        function LoadRevenueData() {
+            $('#divMainReportPart').empty();
+
+            var url = '@Url.Content("~/Report/GetRevenueData/")';
+            $('#divMainReportPart').load(url + '?BusinessUnitId=' + SelectedBUId + '&PlanId=' + SelectedPlanId + '&timeFrameOption=' + OptionMain, function () {
+                isAllowClick = true;
+                myApp.hidePleaseWait();
+            });
+        }
+
+        function LoadConversionData() {
+            $('#divMainReportPart').empty();
+            var url = '@Url.Content("~/Report/GetConversionData/")';
+            $('#divMainReportPart').load(url + '?BusinessUnitId=' + SelectedBUId + '&PlanId=' + SelectedPlanId + '&timeFrameOption=' + OptionMain, function () {
+                isAllowClick = true;
+                myApp.hidePleaseWait();
+            });
         }
 
         $("#DivShareReport").hide();
@@ -191,7 +409,7 @@
         function ShowShareReport() {
             var url = '@Url.Content("~/Report/ShowShareReport/")';
             $("#DivShareReport").empty()
-                                       .load(url.concat('?reportType=') + '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()')
+                                       .load(url.concat('?reportType=') + leftPaneOption)
                                        .show();
         }
 

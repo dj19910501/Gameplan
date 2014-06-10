@@ -88,7 +88,8 @@ namespace RevenuePlanner.Helpers
             INQ = 0,
             MQL = 1,
             CW = 2,
-            Revenue = 3
+            Revenue = 3,
+            ProjectedStageValue = 4
         }
 
         /// <summary>
@@ -101,7 +102,8 @@ namespace RevenuePlanner.Helpers
             {InspectStage.INQ.ToString(), "INQ"},
             {InspectStage.MQL.ToString(), "MQL"},
             {InspectStage.CW.ToString(), "CW"},
-            {InspectStage.Revenue.ToString(), "Revenue"}
+            {InspectStage.Revenue.ToString(), "Revenue"},
+            {InspectStage.ProjectedStageValue.ToString(), "ProjectedStageValue"}
         };
 
         /// <summary>
@@ -116,7 +118,8 @@ namespace RevenuePlanner.Helpers
             thismonth = 2,
             nextyear = 3,
             planYear = 4,
-            previousyear = 5
+            previousyear = 5,
+            lastyear = 6
         }
         /// <summary>
         /// Data Dictionary to hold Upcoming Activity values.
@@ -130,7 +133,8 @@ namespace RevenuePlanner.Helpers
             {UpcomingActivities.thismonth.ToString(), "this month"},
             {UpcomingActivities.nextyear.ToString(), "next year"},
             {UpcomingActivities.planYear.ToString(), "plan year"},
-            {UpcomingActivities.previousyear.ToString(), "previous year"}
+            {UpcomingActivities.previousyear.ToString(), "previous year"},
+            {UpcomingActivities.lastyear.ToString(), "last year"}
         };
         #endregion
 

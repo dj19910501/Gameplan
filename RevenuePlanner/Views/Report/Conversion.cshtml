@@ -1,81 +1,4 @@
-﻿@model RevenuePlanner.Models.SummaryReportModel
-@using RevenuePlanner.Helpers
-@{
-    ViewBag.Title = "Conversion Report";
-    ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Report;
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
-
-<script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
-<link href="@Url.Content("~/Content/css/dhtmlxchart.css")" rel="stylesheet" type="text/css" />
-
-@{
-    var revenueSummary = (RevenuePlanner.Models.SummaryReportModel)ViewBag.SummaryReport;
-}
-@section nlFormContent{
-    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
-    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
-    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
-    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
-}
-@section Sidebar
-{
-    <div class="padding-content padding-bottom0">
-        <h4 class="text-shadow-black source-sans-prolight">Reports</h4>
-
-        @*To resolve Bug 312: Report plan selector needs to be moved*@
-        <form class="nl-form-plan-title without-margin report-summry">
-            <span class="report-summry-select" id="nl-ReportSummry">
-                <select id="reportSummry" data-default="0%" class="">
-                </select>
-                <div class="nl-overlay"></div>
-            </span>
-
-            <span class="report-summry-plans" id="nl-ReportSummry2">
-                <select id="reportSummry2" data-default="0%" class="" maxlength="18">
-                </select>
-                <div class="nl-overlay"></div>
-            </span>
-        </form>
-        @*To resolve Bug 312: Report plan selector needs to be moved*@
-
-        <div class="wraper-btns cf">
-            <div class="span6">
-                @if (RevenuePlanner.Helpers.Sessions.PlanId != 0)
-                {
-                    <button id="BtnAddActual" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("AddActual", "Home")'">Add Actuals</button>    
-                }
-                else
-                {
-                    <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" disabled="disabled" type="button">Add Actuals</button>
-                }
-            </div>
-            <div class="span6">
-                <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" id="BtnShareReport">Share Report</button>
-            </div>
-        </div>
-    </div>
-
-
-    <ul class="nav nav-list nav-gray-reports">
-        <li class="item">
-            <a class="source-sans-probold summary" onclick="window.location.href='@Url.Action("Index", "Report", new { isFromReport = true})'"><span></span>SUMMARY</a>
-        </li>
-        <li class="item">
-            <a class="source-sans-probold revenue" onclick="window.location.href='@Url.Action("Revenue", "Report")'"><span></span>REVENUE</a>
-        </li>
-        <li class="item active">
-            <a class="source-sans-probold conversion" onclick="window.location.href='@Url.Action("Conversion", "Report")'"><span></span>CONVERSION</a>
-        </li>
-    </ul>
-}
-
-@Html.Action("ConversionReportHeader", "Report", new { id = (string)ViewBag.SelectOption })
-<ul class="nav nav-tabs" style="border-bottom: 0px;">
-    <li class="source-sans-proregular">
-        <h2 class="title-header plan">@ViewBag.PlanTitle</h2>
-    </li>
-</ul>
+﻿@using RevenuePlanner.Helpers
 <ul class="nav nav-tabs" id="ParentULConversionSummary">
     <li class="source-sans-proregular">
         <h2 class="title-header">Conversion Summary</h2>
@@ -196,123 +119,65 @@
     </div>
     <input type="hidden" id="chartDataMQLPerformance" value="" />
 </div>
-<div id="DivShareReport">
-</div>
 
 <script type="text/javascript">
     var selectOption = "@ViewBag.SelectOption"
     var TempreportTableInfo2; var Tempdataset;
     var tempreportDataPrevious; var tempDataSetPrevious;
     $(document).ready(function () {
-
-        /* To resolve Bug 312: Report plan selector needs to be moved */
-        var BU = @Html.Raw(Json.Encode(Model.lstBusinessUnit))
-        populateBU(BU, "reportSummry");
-        function populateBU(items, id) {
-            var $dropdown = $("#" + id);
-            var $html = '';
-            $html += '<option value=' + 0 + ' selected>' + "All Business Units" + '</option>';
-            if (items.length > 0) {
-                $.each(items, function (index, BU) {
-
-                    if (BU.Selected) {
-                        $html += '<option value="' + BU.Value + '" selected>' + BU.Text + '</option>';
-                        CurrentBU = BU.Value;
-                    } else {
-                        $html += '<option value="' + BU.Value + '">' + BU.Text + '</option>';
-                    }
-                });
-            }
-            $dropdown.append($html);
-            nlform = new NLForm(document.getElementById('nl-ReportSummry'));
-        }
-
-        var plans = @Html.Raw(Json.Encode(Model.lstAllPlans))
-        populateNF(plans, "reportSummry2");
-
-        function populateNF(items, id) {
-            var $dropdown = $("#" + id);
-            $('#nl-ReportSummry2 > div[class="nl-field nl-dd"]').children().empty();
-            $('#reportSummry2').empty();
-            var $html = '';
-            $html += '<option value=' + 0 + ' selected>' + "All Plans" + '</option>';
-            if (items.length > 0) {
-                $.each(items, function (index, Plan) {
-
-                    if (Plan.Selected) {
-                        $html += '<option value="' + Plan.Value + '" selected>' + Plan.Text + '</option>';
-                        CurrentBU = Plan.Value;
-                    } else {
-                        $html += '<option value="' + Plan.Value + '">' + Plan.Text + '</option>';
-                    }
-                });
-            }
-            $dropdown.append($html);
-            nlform = new NLForm(document.getElementById('nl-ReportSummry2'));
-        }
-
-        onClickActivity();
-
-        function onClickActivity() {
-            $('#nl-ReportSummry > div[class="nl-field nl-dd"]').find('li').click(function (e) {
-                var Title = $(this).text();
-                var option = $.grep($('#reportSummry option'), function (value) { return $(value).text() == Title; })
-                SelectedBUId = $(option[0]).val();
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Content("~/Report/GetPlansListFromBusinessUnitId/")',
-                    data: {
-                        BusinessUnitId: SelectedBUId,
-                    },
-                    success: function (r) {
-                        populateNF(r.lstPlan, "reportSummry2");
-                        LoadConversionReportForPlan(SelectedBUId);
-                        $('#nl-ReportSummry2 > .nl-field:not(:last)').remove(); // code to remove extra blocks for Plan dropdown
-                    }
-                });
-            });
-
-            $('#nl-ReportSummry2').on('click', 'div[class="nl-field nl-dd"] li', function (e) {
-                var BUTitle = $('#nl-ReportSummry .nl-field-toggle').text();
-                var BUOption = $.grep($('#reportSummry option'), function (value) { return $(value).text() == BUTitle; });
-                SelectedBUId = $(BUOption[0]).val();
-
-                var PlanTitle = $(this).text();
-                var PlanOption = $.grep($('#reportSummry2 option'), function (value) { return $(value).text() == PlanTitle; });
-                SelectedPlanId = $(PlanOption[0]).val();
-
-                LoadConversionReportForPlan(SelectedBUId, SelectedPlanId);
-            });
-        }
-
-        // This function will load the data for selected parameters
-        function LoadConversionReportForPlan(SelectedBUId, SelectedPlanId) {
+        LoadHeaderData();
+        function LoadHeaderData() {
             $.ajax({
                 type: 'POST',
-                url: '@Url.Content("~/Report/SetReportParameter/")',
+                url: '@Url.Content("~/Report/GetReportHeader/")',
                 data: {
-                    BusinessUnitId: SelectedBUId,
-                    PlanId: SelectedPlanId
-                 },
-                success: function (r) {
-                    location.reload();
-                } 
+                    option: selectOption,
+                    isRevenue: false
+                },
+                success: function (data) {
+                    if (data != undefined) {
+                        setLabel(data);
+                    }
+                }
             });
         }
 
-        /* To resolve Bug 312: Report plan selector needs to be moved */
+        function setLabel(data) {
+            //setLabelToolTip("#revenueTrend", data.TrendRevenue, 5, true);
+            setLabelToolTip("#mqlProjected", data.ProjectedMQLValue, 5, false);
+            setLabelToolTip("#mqlActual", data.ActualMQLValue, 5, false);
+            // setLabelToolTip("#mqlTrend", data.TrendMQL, 5, false);
+            var mqlActualPercentage = 0, revenueTrendPercentage = 0, mqlTrendPercentage = 0;
+            if (parseFloat(data.ProjectedMQLValue) > 0) {
+                mqlActualPercentage = (((parseFloat(data.ActualMQLValue) - parseFloat(data.ProjectedMQLValue)) / parseFloat(data.ProjectedMQLValue)) * 100);
+                // mqlTrendPercentage = (((parseFloat(data.TrendMQL) - parseFloat(data.ProjectedMQLValue)) / parseFloat(data.ProjectedMQLValue)) * 100);
+            }
+            if (parseFloat(data.ProjectedRevenueValue) > 0) {
+                // revenueTrendPercentage = (((parseFloat(data.TrendRevenue) - parseFloat(data.ProjectedRevenueValue)) / parseFloat(data.ProjectedRevenueValue)) * 100);
+            }
+            // setPercentage("#mqlTrendPercentage", mqlTrendPercentage);
+            setPercentage("#mqlActualPercentage", mqlActualPercentage);
+            // setPercentage("#revenueTrendPercentage", revenueTrendPercentage);
+        }
 
-        $("#DivShareReport").hide();
+        function setPercentage(id, value) {
+            var absValue = FormatNumber(Math.abs(parseFloat(value)), true);
+            var isNegative = value < 0;
+            if (isNegative) {
+                $(id).addClass("red-value");
+                $(id).removeClass("green-value");
+                //Start Manoj Limbachiy Date: 05Feb2014 Bug 153:Extra % on Waterfall Conversion Report 
+                $(id).text("-" + absValue);
+                //End Manoj Limbachiy Date: 05Feb2014 Bug 153:Extra % on Waterfall Conversion Report 
+            }
+            else {
+                $(id).removeClass("red-value");
+                $(id).addClass("green-value");
+                //Start Manoj Limbachiy Date: 05Feb2014 Bug 153:Extra % on Waterfall Conversion Report 
+                $(id).text("+" + absValue);
+                //End Manoj Limbachiy Date: 05Feb2014 Bug 153:Extra % on Waterfall Conversion Report 
+            }
 
-        $("#BtnShareReport").click(function () {
-            ShowShareReport();
-        });
-
-        function ShowShareReport() {
-            var url = '@Url.Content("~/Report/ShowShareReport/")';
-            $("#DivShareReport").empty()
-                                       .load(url.concat('?reportType=') + '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()')
-                                       .show();
         }
 
         $("#ParentULMQLConversion").find('li:last').removeClass('disabled').addClass('active'); // this will add active class to first tab in MQL conversion plan report
@@ -330,7 +195,6 @@
                 $(this).removeClass("disabled");
                 $(this).addClass("active");
                 parentSummaryTab = selectParent;
-                //LoadConversionSummaryChildData();
                 LoadConversionSummaryData();
             }
         });
@@ -343,52 +207,6 @@
                 }
             });
         }
-
-        //function RemoveTabClassChildULConversionSummary() {
-        //    $('#ChildULConversionSummary').children().each(function () {
-        //        if ($(this).hasClass('active')) {
-        //            $(this).removeClass("active");
-        //            $(this).addClass("disabled");
-        //        }
-        //    });
-        //}
-
-       @* function LoadConversionSummaryChildData() {
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Report/GetChildTabForConversionSummary/")',
-                success: function (r) {
-                    if (typeof r != 'undefined') {
-                        $("#ChildULConversionSummary").empty();
-                        $("#ChildULConversionSummary").append('<li class="disabled pull-left" id=0><a >All Sources</a></li>');
-                        if (r.length) {
-                            for (i in r) {
-                                $("#ChildULConversionSummary").append('<li class="disabled pull-left" id="' + r[i].id + '"><a >' + r[i].title + '</a></li>');
-                            }
-                            $("#ChildULConversionSummary").find('li:first').removeClass("disabled");
-                            $("#ChildULConversionSummary").find('li:first').addClass("active");
-                            LoadConversionSummaryChildClick();
-                        }
-                        else {
-                            $("#ChildULConversionSummary").append('No Records found for This Selection.');
-                        }
-                    }
-                }
-            });
-        }*@
-
-        //function LoadConversionSummaryChildClick() {
-        //    $("#ChildULConversionSummary li").click(function () {
-        //        RemoveTabClassChildULConversionSummary();
-        //        $(this).removeClass("disabled");
-        //        $(this).addClass("active");
-        //        var selectParent = $(this).children().text();
-        //        var selectId = $(this).attr("id");
-        //        LoadConversionSummaryData(selectId);
-        //    });
-        //    var Childid = $("#ChildULConversionSummary").find('li:first').attr("id");
-        //    LoadConversionSummaryData(Childid);
-        //}
 
         function LoadConversionSummaryData() {
             $.ajax({
@@ -538,30 +356,30 @@
                         addRowReport(reportTableInfo.data[i].Title, reportTableInfo.data[i].INQ, reportTableInfo.data[i].MQL, reportTableInfo.data[i].ActualCW, reportTableInfo.data[i].ActualRevenue, reportTableInfo.data[i].ActualADS, reportTableInfo.data[i].ProjectedRevenue, reportTableInfo.data[i].ProjectedADS);
                     }
                     var $tableReports = $('#table_reports > tbody');
-                        $tableReports.append('<tr><td class="report-gray-row"></td>' +
-                                           '<td class="border-r report-gray-row">Blended Average</td>' +
-                                           '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(sumINQ / totalRow) + '</td>' +
-                                           '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(sumMQl / totalRow) + '</td>' +
-                                           '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(sumCW / totalRow) + '</td>' +
-                                           '<td class="border-r report-gray-row"><div class="div-line">' + FormatNumber(sumActualADS / totalRow, false) + '</div><div>' + FormatNumber(sumProjectedADS / totalRow, false) + '</div></td>' +
-                                           '<td class="border-r light-blue-row" ><div class="div-line small-bold-text">' + FormatNumber(sumActualRevenue / totalRow, false) + '</div><div class="small-bold-text">' + FormatNumber(sumProjectedRevenue / totalRow, false) + '</div></td>' +
-                                           '</tr>');
+                    $tableReports.append('<tr><td class="report-gray-row"></td>' +
+                                       '<td class="border-r report-gray-row">Blended Average</td>' +
+                                       '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(sumINQ / totalRow) + '</td>' +
+                                       '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(sumMQl / totalRow) + '</td>' +
+                                       '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(sumCW / totalRow) + '</td>' +
+                                       '<td class="border-r report-gray-row"><div class="div-line">' + FormatNumber(sumActualADS / totalRow, false) + '</div><div>' + FormatNumber(sumProjectedADS / totalRow, false) + '</div></td>' +
+                                       '<td class="border-r light-blue-row" ><div class="div-line small-bold-text">' + FormatNumber(sumActualRevenue / totalRow, false) + '</div><div class="small-bold-text">' + FormatNumber(sumProjectedRevenue / totalRow, false) + '</div></td>' +
+                                       '</tr>');
 
-                        var actualADSTotal = 0, projectedADSTotal = 0;
-                        if (sumCW > 0) {
-                            actualADSTotal = sumActualRevenue / sumCW;
-                        }
-                        if (sumProjectedCW > 0) {
-                            projectedADSTotal = sumProjectedRevenue / sumProjectedCW;
-                        }
-                        $tableReports.append('<tr><td class="report-gray-row"></td>' +
-                                           '<td class="border-r report-gray-row">Total</td>' +
-                                           '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(sumINQ) + '</td>' +
-                                           '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(sumMQl) + '</td>' +
-                                           '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(sumCW) + '</td>' +
-                                           '<td class="border-r report-gray-row"><div class="div-line">' + FormatNumber(actualADSTotal, false) + '</div><div>' + FormatNumber(projectedADSTotal, false) + '</div></td>' +
-                                           '<td class="border-r light-blue-row" ><div class="div-line small-bold-text">' + FormatNumber(sumActualRevenue, false) + '</div><div class="small-bold-text">' + FormatNumber(sumProjectedRevenue, false) + '</div></td>' +
-                                           '</tr>');
+                    var actualADSTotal = 0, projectedADSTotal = 0;
+                    if (sumCW > 0) {
+                        actualADSTotal = sumActualRevenue / sumCW;
+                    }
+                    if (sumProjectedCW > 0) {
+                        projectedADSTotal = sumProjectedRevenue / sumProjectedCW;
+                    }
+                    $tableReports.append('<tr><td class="report-gray-row"></td>' +
+                                       '<td class="border-r report-gray-row">Total</td>' +
+                                       '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(sumINQ) + '</td>' +
+                                       '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(sumMQl) + '</td>' +
+                                       '<td class="border-r report-gray-row large-bold-text">' + FormatWithRoundValue(sumCW) + '</td>' +
+                                       '<td class="border-r report-gray-row"><div class="div-line">' + FormatNumber(actualADSTotal, false) + '</div><div>' + FormatNumber(projectedADSTotal, false) + '</div></td>' +
+                                       '<td class="border-r light-blue-row" ><div class="div-line small-bold-text">' + FormatNumber(sumActualRevenue, false) + '</div><div class="small-bold-text">' + FormatNumber(sumProjectedRevenue, false) + '</div></td>' +
+                                       '</tr>');
 
                 } else {
                     $('#table_reports > tbody').append('<tr><td colspan="8" class="gray">No saved reports to display.</td></tr>');
@@ -576,18 +394,18 @@
             if ($tableReports.find("tr td.gray").html() == "No saved reports to display.") {
                 $tableReports.find("tr").remove();
             }
-                $tableReports.append('<tr><td></td>' +
-                                    '<td class="border-r">' + _title + '</td>' +
-                                    '<td class="border-r large-bold-text">' + FormatWithRoundValue(_Inq) + '</td>' +
-                                    // Comment line as per Pl Ticket 356.
-                                    //'<td class="border-r"><div class="div-line">' + FormatWithRoundValue(_inqMql[0].val) + '</div><div>' + FormatWithRoundValue(_inqMql[1].val) + '</div></td>' +
-                                    '<td class="border-r large-bold-text">' + FormatWithRoundValue(_mql) + '</td>' +
-                                    '<td class="border-r large-bold-text">' + FormatWithRoundValue(_actualcw) + '</td>' +
-                                    '<td class="border-r"><div class="div-line">' + FormatNumber(_actualADS, false) + '</div><div>' + FormatNumber(_projectedADS, false) + '</div></td>' +
-                                    '<td class="border-r light-blue-row"><div class="div-line small-bold-text">' + FormatNumber(_actualRevenue, false) + '</div><div class="small-bold-text">' + FormatNumber(_projectedRevenue, false) + '</div></td>' +
-                                    '</tr>');
+            $tableReports.append('<tr><td></td>' +
+                                '<td class="border-r">' + _title + '</td>' +
+                                '<td class="border-r large-bold-text">' + FormatWithRoundValue(_Inq) + '</td>' +
+                                // Comment line as per Pl Ticket 356.
+                                //'<td class="border-r"><div class="div-line">' + FormatWithRoundValue(_inqMql[0].val) + '</div><div>' + FormatWithRoundValue(_inqMql[1].val) + '</div></td>' +
+                                '<td class="border-r large-bold-text">' + FormatWithRoundValue(_mql) + '</td>' +
+                                '<td class="border-r large-bold-text">' + FormatWithRoundValue(_actualcw) + '</td>' +
+                                '<td class="border-r"><div class="div-line">' + FormatNumber(_actualADS, false) + '</div><div>' + FormatNumber(_projectedADS, false) + '</div></td>' +
+                                '<td class="border-r light-blue-row"><div class="div-line small-bold-text">' + FormatNumber(_actualRevenue, false) + '</div><div class="small-bold-text">' + FormatNumber(_projectedRevenue, false) + '</div></td>' +
+                                '</tr>');
 
-               
+
         }
 
         //fill reports table with data from json - For MQL Conversion Plan data
@@ -716,7 +534,7 @@
                     if (value < 0) {
                         htmlappend += '<td class="td-class-arrow red-value"><span class="red-arrow-down-icon"></span><span>' + FormatNumber(Math.abs(value), true) + '</span></td>';
                     }
-                    else if(value > 0) {
+                    else if (value > 0) {
                         htmlappend += '<td class="td-class-arrow green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(Math.abs(value), true) + '</span></td>';
                     }
                     else {
@@ -743,10 +561,9 @@
             }
         }
 
-    });
 
 
-    window.onload = function () {
+
         var filter = "@RevenuePlanner.Helpers.Common.Actuals";
         LoadPerformanceData(filter); //default tab loading
 
@@ -986,5 +803,5 @@
             if ($(this).attr('canvas_id') == "0")
                 $(this).addClass("prueba");
         });
-    }
+    });
 </script>
