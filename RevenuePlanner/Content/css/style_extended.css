@@ -1861,7 +1861,7 @@ a {
 }
 /* */
 
-.white-chart .small-value{display: block; font-size: 16px;}
+.white-chart .small-value{display: block; font-size: 14px;} /* Font size modified by kapil - 100614 - #508 */
 .bullhorn-bg{background-image:url(../images/bullhorn-bg.png); background-position:right bottom; background-repeat:no-repeat;}
 /* ======================================= */
 
