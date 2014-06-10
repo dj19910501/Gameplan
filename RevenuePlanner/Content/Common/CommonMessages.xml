@@ -239,6 +239,12 @@
 		<value>Model duplicated.</value>
 	</Field>
 	<!-- End - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #219 to clone a model. -->
+  <!-- Start - Added by :- Sohel Pathan on 10/06/2014 for PL ticket #516. -->
+  <Field>
+    <Name>TargetStageNotAssociatedWithModelMsg</Name>
+    <value>Target stage of selected tactic type is not associated with target stages of selected model.</value>
+  </Field>
+  <!-- End - Added by :- Sohel Pathan on 10/06/2014 for PL ticket #516. -->
 	<Field>
 		<Name>PlanDeleteSuccessful</Name>
 		<value>Plan {0} deleted successfully.</value>
