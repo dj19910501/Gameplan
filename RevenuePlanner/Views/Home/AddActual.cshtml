@@ -535,7 +535,7 @@
                 var stageId = $(this).attr('stageId');
                 var isError = false;
                 var isData = false;
-                var totalProjectedStageValueActual = ReplaceCC($("#lblProjectedStageValue" + tacticId).text());
+                var totalProjectedStageValueActual = ReplaceCC($("#ActuallblPProjectedStageValue" + tacticId).text());
                 var totalMQLActual = ReplaceCC($("#ActuallblPMQL" + tacticId).text());
                 var totalCWActual = ReplaceCC($("#ActuallblPCW" + tacticId).text());
                 var totalRevenueActual = ReplaceCC($("#ActuallblCRevenue" + tacticId).text());
@@ -784,7 +784,7 @@
           '<div class="accordion-inner">';
 
             for (var i = 0; i < arrStage.length; i++) {
-                if (arrStage[i] == '@Enums.ProjectedStageValue.ProjectedStageValue.ToString()') {
+                if (arrStage[i] == '@Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString()') {
                     $html += '<div class="body-toogle-actual">' + tacticStageTitle + '<div class="table-info-actual-left-wraper">' +
                                                                       '<div class="table-info-actual-left truncate" id="lblProjectedStageValue' + _id + '">' +
                                                     _projectedStageValue +

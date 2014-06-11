@@ -3152,16 +3152,16 @@ namespace RevenuePlanner.Helpers
 
             if (tacticStageLevel < levelMQL)
             {
-                lstStageTitle.Add(Enums.ProjectedStageValue.ProjectedStageValue.ToString());
+                lstStageTitle.Add(Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString());
                 lstStageTitle.Add(Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString());
             }
             else if (tacticStageLevel == levelMQL)
             {
-                lstStageTitle.Add(Enums.ProjectedStageValue.ProjectedStageValue.ToString());
+                lstStageTitle.Add(Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString());
             }
             else if (tacticStageLevel > levelMQL)
             {
-                lstStageTitle.Add(Enums.ProjectedStageValue.ProjectedStageValue.ToString());
+                lstStageTitle.Add(Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString());
             }
 
             lstStageTitle.Add(Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString());

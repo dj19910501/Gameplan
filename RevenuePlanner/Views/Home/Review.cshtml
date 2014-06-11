@@ -1,6 +1,7 @@
 ﻿@using RevenuePlanner.Helpers
 @{
     var tacticReview = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
+    bool ShowMQL = (bool)ViewBag.ShowMQL;
 }
 <div class="span5 width360" id="inspect-modal-right-div" style="width:420px !important;">
     <div class="font-size18">Overview</div>
@@ -23,11 +24,14 @@
             <span class="font_size16" title="@tacticReview.StageTitle">@tacticReview.StageTitle</span>
             <div class="margin-top16">Goal</div>    @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
         </div>
-        <div class="chart-gray pull-left size65x38 without-padding">
-            <div class="padding-top16"><span id="mqls-id" class="font_size30" style="line-height:24px;">@tacticReview.MQLs</span></div> @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
-            <span class="font_size16" title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</span>
-            <div class="margin-top16">Goal</div>    @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
-        </div>
+        @if(ShowMQL)
+        {
+            <div class="chart-gray pull-left size65x38 without-padding">
+                <div class="padding-top16"><span id="mqls-id" class="font_size30" style="line-height:24px;">@tacticReview.MQLs</span></div> @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
+                <span class="font_size16" title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</span>
+                <div class="margin-top16">Goal</div>    @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
+            </div>
+        }
     </div>
     <div class="cf margin-top40 textalign-mozcenter">
         <div class="pull-left size65x38 ">

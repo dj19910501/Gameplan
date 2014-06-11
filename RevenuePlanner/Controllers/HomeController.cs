@@ -2101,9 +2101,6 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-
-
-
             ViewBag.ReviewModel = (from tc in tacticComment
                                    where (tc.PlanTacticId.HasValue)
                                    select new InspectReviewModel
@@ -2122,7 +2119,20 @@ namespace RevenuePlanner.Controllers
             {
                 im.Owner = ownername.ToString();
             }
-            im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.ProjectedStageValue), im.StartDate, im.PlanTacticId);
+
+            string TitleMQL = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
+            int MQLStageLevel = Convert.ToInt32(db.Stages.FirstOrDefault(s => s.ClientId == Sessions.User.ClientId && s.Code == TitleMQL).Level);
+            //Compareing MQL stage level with tactic stage level
+            if (im.StageLevel < MQLStageLevel)
+            {
+                ViewBag.ShowMQL = true;
+                im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.ProjectedStageValue), im.StartDate, im.PlanTacticId);
+            }
+            else
+            {
+                ViewBag.ShowMQL = false;
+            }
+
             ViewBag.TacticDetail = im;
             ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
 
@@ -2236,18 +2246,9 @@ namespace RevenuePlanner.Controllers
                                   Cost = pcpt.Cost,
                                   StartDate = pcpt.StartDate,
                                   EndDate = pcpt.EndDate,
-                                  //INQs = pcpt.INQs,
                                   VerticalTitle = pcpt.Vertical.Title,
                                   AudiencTitle = pcpt.Audience.Title,
-                                  //INQsActual = pcpt.INQsActual == null ? 0 : pcpt.INQsActual,
-                                  //MQLsActual = pcpt.MQLsActual == null ? 0 : pcpt.MQLsActual,
                                   CostActual = pcpt.CostActual == null ? 0 : pcpt.CostActual,
-                                  //CWs = pcpt.CWs == null ? 0 : pcpt.CWs,
-                                  //CWsActual = pcpt.CWsActual == null ? 0 : pcpt.CWsActual,
-                                  //Revenues = pcpt.Revenues == null ? 0 : pcpt.Revenues,
-                                  //RevenuesActual = pcpt.RevenuesActual == null ? 0 : pcpt.RevenuesActual,
-                                  //ROI = pcpt.ROI == null ? 0 : pcpt.ROI,
-                                  //ROIActual = pcpt.ROIActual == null ? 0 : pcpt.ROIActual,
                                   IsDeployedToIntegration = pcpt.IsDeployedToIntegration,
                                   LastSyncDate = pcpt.LastSyncDate,
                                   StageId = pcpt.StageId,
@@ -2302,12 +2303,6 @@ namespace RevenuePlanner.Controllers
                     imodel.Cost = Common.CalculateProgramCost(objPlan_Campaign_Program.PlanProgramId); //objPlan_Campaign_Program.Cost; // Modified for PL#440 by Dharmraj
                     imodel.StartDate = objPlan_Campaign_Program.StartDate;
                     imodel.EndDate = objPlan_Campaign_Program.EndDate;
-                    //imodel.INQs = objPlan_Campaign_Program.INQs;
-
-                    //if (objPlan_Campaign_Program.Vertical != null)
-                    //    imodel.VerticalTitle = objPlan_Campaign_Program.Vertical.Title;
-                    //if (objPlan_Campaign_Program.Audience != null)
-                    //    imodel.AudiencTitle = objPlan_Campaign_Program.Audience.Title;
 
                     imodel.IsDeployedToIntegration = objPlan_Campaign_Program.IsDeployedToIntegration;
                     imodel.LastSyncDate = objPlan_Campaign_Program.LastSyncDate;
@@ -2372,12 +2367,6 @@ namespace RevenuePlanner.Controllers
                     imodel.Cost = Common.CalculateCampaignCost(objPlan_Campaign.PlanCampaignId); //objPlan_Campaign.Cost; // Modified for PL#440 by Dharmraj
                     imodel.StartDate = objPlan_Campaign.StartDate;
                     imodel.EndDate = objPlan_Campaign.EndDate;
-                    //imodel.INQs = objPlan_Campaign.INQs;
-
-                    //if (objPlan_Campaign.Vertical != null)
-                    //    imodel.VerticalTitle = objPlan_Campaign.Vertical.Title;
-                    //if (objPlan_Campaign.Audience != null)
-                    //    imodel.AudiencTitle = objPlan_Campaign.Audience.Title;
 
                     imodel.IsDeployedToIntegration = objPlan_Campaign.IsDeployedToIntegration;
                     imodel.IntegrationType = GetIntegrationTypeTitleByModel(objPlan_Campaign.Plan.Model);
@@ -2475,7 +2464,7 @@ namespace RevenuePlanner.Controllers
             im.Revenues = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 1);
             tacticList = Common.ProjectedRevenueCalculateList(tid, true);
 
-            string TitleProjectedStageValue = Enums.ProjectedStageValue.ProjectedStageValue.ToString();
+            string TitleProjectedStageValue = Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString();
             string TitleCW = Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString();
             string TitleMQL = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
             string TitleRevenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
@@ -2627,15 +2616,11 @@ namespace RevenuePlanner.Controllers
                                     {
                                         foreach (var t in tacticactual)
                                         {
-                                            if (t.StageTitle == Enums.ProjectedStageValue.ProjectedStageValue.ToString())
+                                            if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString())
                                             {
                                                 Plan_Campaign_Program_Tactic_Actual objpcpta = new Plan_Campaign_Program_Tactic_Actual();
                                                 objpcpta.PlanTacticId = t.PlanTacticId;
                                                 objpcpta.StageTitle = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
-                                                //if (t.StageTitle == Enums.ProjectedStageValue.ProjectedStageValue.ToString()) projectedStageValue += t.ActualValue;
-                                                //if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString()) mql += t.ActualValue;
-                                                //if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString()) cw += t.ActualValue;
-                                                //if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString()) revenue += t.ActualValue;
                                                 objpcpta.Period = t.Period;
                                                 objpcpta.Actualvalue = t.ActualValue;
                                                 objpcpta.CreatedDate = DateTime.Now;
@@ -2652,7 +2637,7 @@ namespace RevenuePlanner.Controllers
                                         Plan_Campaign_Program_Tactic_Actual objpcpta = new Plan_Campaign_Program_Tactic_Actual();
                                         objpcpta.PlanTacticId = t.PlanTacticId;
                                         objpcpta.StageTitle = t.StageTitle;
-                                        if (t.StageTitle == Enums.ProjectedStageValue.ProjectedStageValue.ToString()) projectedStageValue += t.ActualValue;
+                                        if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString()) projectedStageValue += t.ActualValue;
                                         if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString()) mql += t.ActualValue;
                                         if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString()) cw += t.ActualValue;
                                         if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString()) revenue += t.ActualValue;
@@ -2668,14 +2653,7 @@ namespace RevenuePlanner.Controllers
                             }
 
                             Plan_Campaign_Program_Tactic objPCPT = db.Plan_Campaign_Program_Tactic.Where(pt => pt.PlanTacticId == actualResult.PlanTacticId).SingleOrDefault();
-                            //objPCPT.INQsActual = projectedStageValue;
-                            //objPCPT.MQLsActual = mql;
-                            //objPCPT.CWsActual = cw;
-                            //objPCPT.RevenuesActual = revenue;
                             objPCPT.CostActual = actualResult.TotalCostActual;
-                            //objPCPT.ROI = actualResult.ROI;
-                            //objPCPT.ROIActual = actualResult.ROIActual;
-                            //objPCPT.Status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
                             objPCPT.ModifiedBy = Sessions.User.UserId;
                             objPCPT.ModifiedDate = DateTime.Now;
                             db.Entry(objPCPT).State = EntityState.Modified;
@@ -3833,7 +3811,7 @@ namespace RevenuePlanner.Controllers
             string userList = string.Join(",", userListId.Select(s => s.ToString()).ToArray());
             List<User> userName = objBDSUserRepository.GetMultipleTeamMemberDetails(userList, Sessions.ApplicationId);
 
-            string TitleProjectedStageValue = Enums.ProjectedStageValue.ProjectedStageValue.ToString();
+            string TitleProjectedStageValue = Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString();
             string TitleCW = Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString();
             string TitleMQL = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
             string TitleRevenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
@@ -4365,7 +4343,7 @@ namespace RevenuePlanner.Controllers
         {
             if (Sessions.User.UserId.Equals(Guid.Parse(UserId)))
             {
-                return Json(new { returnURL = "#"}, JsonRequestBehavior.AllowGet);
+                return Json(new { returnURL = "#" }, JsonRequestBehavior.AllowGet);
             }
             else
             {

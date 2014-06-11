@@ -404,16 +404,7 @@ namespace RevenuePlanner.Helpers
             CW
         }
         #endregion
-
-        #region ProjectedStageTitle
-
-        public enum ProjectedStageValue
-        {
-            ProjectedStageValue
-        }
-
-        #endregion
-
+        
         #region Change log object
         public enum ChangeLog_TableName
         {
