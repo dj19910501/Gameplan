@@ -837,5 +837,24 @@ ELSE
 
 -- =========================================== End - Script- 10 (Drop Metric Table Script) ============================================================================
 
+Go
 
+-- =========================================== Start - Script- 11 (Update ConvertionTitle Value) ============================================================================
 
+IF EXISTS (select 1 from INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'Stage')
+BEGIN
+	
+	IF EXISTS (select 1 from INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'Stage' AND COLUMN_NAME = 'ConversionTitle')
+	BEGIN
+		Update S1 SET ConversionTitle = S1.Title + ' -> ' + S2.Title 
+		FROM Stage S1
+		INNER JOIN Stage S2 ON S2.Level = (S1.Level + 1) AND S1.ClientId = S2.ClientId AND ISNULL(S2.IsDeleted, 0) = 0
+		WHERE ISNULL(S2.IsDeleted, 0) = 0 AND S1.ConversionTitle IS NULL AND S1.Code <> 'ADS'  
+	END	
+	ELSE
+		PRINT('ConversionTitle column does not exists in Stage table.')
+
+END
+ELSE 
+	PRINT('Stage table does not exists.')
+-- =========================================== End - Script- 11 (Update ConvertionTitle Value) ============================================================================
