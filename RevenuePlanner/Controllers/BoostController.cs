@@ -240,7 +240,7 @@ namespace RevenuePlanner.Controllers
                     {
                         MetricModel Metricsobj = new MetricModel();
                         Metricsobj.MetricType = StageType_CR;
-                        Metricsobj.MetricName = itemCR.ConversionTitle;
+                        Metricsobj.MetricName = Common.GetReplacedString(itemCR.ConversionTitle);
                         weight = db.ImprovementTacticType_Metric.Where(itm => itm.StageId == itemCR.StageId && itm.ImprovementTacticTypeId == id && itm.StageType == StageType_CR).Select(v => v.Weight).FirstOrDefault();
                         Metricsobj.ConversionValue = weight;
                         weight = db.ImprovementTacticType_Metric.Where(itm => itm.StageId == itemSV.StageId && itm.ImprovementTacticTypeId == id && itm.StageType == StageType_SV).Select(v => v.Weight).FirstOrDefault();
