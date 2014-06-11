@@ -1431,7 +1431,7 @@ namespace RevenuePlanner.Controllers
                         description = pcptj.Description,
                         cost = pcptj.Cost,
                         //inqs = pcptj.INQs,
-                        mqls = Common.CalculateMQLTactic(Convert.ToDouble(pcptj.ProjectedStageValue), pcptj.StartDate, pcptj.PlanTacticId, pcptj.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId),
+                        mqls = Common.CalculateMQLTactic(Convert.ToDouble(pcptj.ProjectedStageValue), pcptj.StartDate, pcptj.PlanTacticId, pcptj.StageId, pcptj.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId),
                         /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
                          changed by : Nirav Shah on 13 feb 2014*/
                         isOwner = Sessions.User.UserId == pcptj.CreatedBy ? 0 : 1,
@@ -2345,7 +2345,7 @@ namespace RevenuePlanner.Controllers
             int tacticStageLevel = Convert.ToInt32(db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == pcpt.PlanTacticId).Stage.Level);
             if (tacticStageLevel < levelMQL)
             {
-                pcptm.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(pcpt.ProjectedStageValue), pcpt.StartDate, pcpt.PlanTacticId, pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId);
+                pcptm.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(pcpt.ProjectedStageValue), pcpt.StartDate, pcpt.PlanTacticId, pcpt.StageId,pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId);
             }
             else if (tacticStageLevel == levelMQL)
             {
@@ -2822,7 +2822,7 @@ namespace RevenuePlanner.Controllers
                         }
 
             int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-                        return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId, modelId) });
+                        return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId,form.StageId, modelId) });
                     }
                 }
                 else
@@ -2842,7 +2842,7 @@ namespace RevenuePlanner.Controllers
                     }
 
                     int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-                    return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId, modelId) });
+                    return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId,form.StageId, modelId) });
                 }
                 else if (tacticStageLevel == levelMQL)
                 {
@@ -2867,14 +2867,14 @@ namespace RevenuePlanner.Controllers
                 {
                     StartDate = DateTime.Now;
                     int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-                    return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId, modelId) });
+                    return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId, form.StageId, modelId) });
                 }
 
                 if (tacticStageLevel < levelMQL)
                 {
                     StartDate = DateTime.Now;
                     int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-                    return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId, modelId) });
+                    return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId,form.StageId, modelId) });
                 }
                 else if (tacticStageLevel == levelMQL)
                 {

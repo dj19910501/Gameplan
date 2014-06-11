@@ -47,7 +47,7 @@
                             {
                                 stageLable = Html.LabelForCW(s);
                             }
-                            else if (s == Enums.ProjectedStageValue.ProjectedStageValue.ToString())
+                            else if (s == Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString())
                             {
                                 stageLable = ViewBag.TacticStageTitle;
                             }
@@ -116,7 +116,7 @@
                 <tbody>
                     @foreach (var s in ViewBag.StageTitle)
                     {
-                            if (s == Enums.ProjectedStageValue.ProjectedStageValue.ToString())
+                            if (s == Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString())
                             {
                     <tr class="height42">
                                     <th id="inqP" class="text-align-right  projected font908D88">@tacticActual.ProjectedStageValue</th>

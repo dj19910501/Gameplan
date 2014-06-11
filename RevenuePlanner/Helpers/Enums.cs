@@ -401,19 +401,11 @@ namespace RevenuePlanner.Helpers
             SAL,
             SQL,
             MQL,
-            CW
+            CW,
+			ADS
         }
         #endregion
-
-        #region ProjectedStageTitle
-
-        public enum ProjectedStageValue
-        {
-            ProjectedStageValue
-        }
-
-        #endregion
-
+        
         #region Change log object
         public enum ChangeLog_TableName
         {

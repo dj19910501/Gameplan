@@ -767,6 +767,21 @@ namespace RevenuePlanner.Helpers
         }
         // End - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #219 to clone a model.
 
+        // Start - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
+        private string _TargetStageNotAssociatedWithModelMsg;
+        public string TargetStageNotAssociatedWithModelMsg
+        {
+            get
+            {
+                return _TargetStageNotAssociatedWithModelMsg;
+            }
+            set
+            {
+                _TargetStageNotAssociatedWithModelMsg = value;
+            }
+        }
+        // End - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
+
         private string _PlanDeleteSuccessful;
         public string PlanDeleteSuccessful
         {
@@ -1516,6 +1531,11 @@ namespace RevenuePlanner.Helpers
                                             _ModelDuplicated = strMsgValue;
                                             break;
                                         // End - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #219 to clone a model.
+                                        // Start - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
+                                        case "TargetStageNotAssociatedWithModelMsg":
+                                            _TargetStageNotAssociatedWithModelMsg = strMsgValue;
+                                            break;
+                                        // End - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
 
                                         /* 
                                          * Changed by : Juned Katariya on 18th Feb 2014

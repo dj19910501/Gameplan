@@ -2762,6 +2762,7 @@ namespace RevenuePlanner.Controllers
             {
                 TempData["ErrorMessage"] = string.Format(Common.objCached.StageNotExist);
             }
+            ViewBag.TargetStageNotAssociatedWithModelMsg = string.Format(Common.objCached.TargetStageNotAssociatedWithModelMsg);    // Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
             return View(objTacticTypeModel);
         }
 
@@ -2825,6 +2826,14 @@ namespace RevenuePlanner.Controllers
 
             //returns all tactics
             objTacticList = objTacticList.Union(lstMstaerTactic).ToList();
+
+            // Start - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
+            string Marketing = Convert.ToString(Enums.Funnel.Marketing).ToLower();
+            string StageType = Enums.StageType.CR.ToString();
+            var stagesList = db.Model_Funnel_Stage.Where(s => s.Model_Funnel.ModelId == id && s.AllowedTargetStage == true && s.StageType == StageType && s.Model_Funnel.Funnel.Title == Marketing)
+                                                      .Select(n => n.StageId).Distinct().ToList();
+            // End - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
+
             var allTactic = objTacticList.Select(p => new
             {
                 id = p.TacticTypeId,
@@ -2837,7 +2846,8 @@ namespace RevenuePlanner.Controllers
                 //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
                 ProjectedStageValue = (p.ProjectedStageValue == null) ? 0 : p.ProjectedStageValue,
                 revenue = (p.ProjectedRevenue == null) ? 0 : p.ProjectedRevenue,
-                IsDeployedToIntegration = p.IsDeployedToIntegration
+                IsDeployedToIntegration = p.IsDeployedToIntegration,
+                IsTargetStageOfModel = (p.StageId == null) ? true : stagesList.Contains(Convert.ToInt32(p.StageId))     // Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
             }).Select(p => p).Distinct().OrderBy(p => p.title);
 
             return Json(allTactic, JsonRequestBehavior.AllowGet);
