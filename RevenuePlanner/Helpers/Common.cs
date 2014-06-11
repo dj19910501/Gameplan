@@ -2433,7 +2433,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="PlanTacticId"></param>
         /// <param name="ModelId"></param>
         /// <returns></returns>
-        public static double CalculateMQLTactic(double INQ, DateTime StartDate, int PlanTacticId, int ModelId = 0)
+        public static double CalculateMQLTactic(double projecteStageValue, DateTime StartDate, int PlanTacticId, int stageId, int ModelId = 0)
         {
             MRPEntities dbm = new MRPEntities();
             if (ModelId == 0)
@@ -2441,7 +2441,7 @@ namespace RevenuePlanner.Helpers
                 ModelId = dbm.Plan_Campaign_Program_Tactic.Where(p => p.PlanTacticId == PlanTacticId).Select(p => p.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).SingleOrDefault();
             }
             
-            return Math.Round(INQ * GetMQLConversionRate(StartDate, ModelId), 0, MidpointRounding.AwayFromZero);
+            return Math.Round(projecteStageValue * GetMQLConversionRate(StartDate, ModelId, stageId), 0, MidpointRounding.AwayFromZero);
         }
 
         /// <summary>
@@ -2453,19 +2453,31 @@ namespace RevenuePlanner.Helpers
         /// <param name="StartDate"></param>
         /// <param name="ModelId"></param>
         /// <returns></returns>
-        public static double GetMQLConversionRate(DateTime StartDate, int ModelId)
+        public static double GetMQLConversionRate(DateTime StartDate, int ModelId, int stageId)
         {
-            MRPEntities dbmql = new MRPEntities();
             ModelId = GetModelId(StartDate, ModelId);
-            List<int> ModelIds = new List<int>();
-            ModelIds.Add(ModelId);
-            List<ModelConvertionRateRelation> mqllist = GetModelConversionRate(ModelIds, Enums.Stage.MQL.ToString());
-            if (mqllist.Count() > 0)
-            {
-                return mqllist.Sum(m => m.ConversionRate);
-            }
 
-            return 0;
+            MRPEntities dbStage = new MRPEntities();
+            List<Stage> stageList = dbStage.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId).Select(stage => stage).ToList();
+            string stageMQL = Enums.Stage.MQL.ToString();
+            int levelMQL = stageList.Single(s => s.Code.Equals(stageMQL)).Level.Value;
+            List<int> mqlStagelist = new List<int>();
+            string CR = Enums.StageType.CR.ToString();
+            string marketing = Enums.Funnel.Marketing.ToString();
+
+            List<StageRelation> stageRelationList = dbStage.Model_Funnel_Stage.Where(m => m.Model_Funnel.Funnel.Title.Equals(marketing) && m.Model_Funnel.ModelId == ModelId && m.StageType == CR).Select(m => new StageRelation
+            {
+                StageId = m.StageId,
+                StageType = m.StageType,
+                Value = m.Value / 100
+            }
+                    ).ToList();
+                
+            int projectedStageLevel = stageList.Single(s => s.StageId == stageId).Level.Value;
+            mqlStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelMQL).Select(s => s.StageId).ToList();
+
+            return projectedStageLevel <= levelMQL ? 1 * (stageRelationList.Where(sr => mqlStagelist.Contains(sr.StageId)).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
+            
         }
 
         /// <summary>
@@ -2479,16 +2491,12 @@ namespace RevenuePlanner.Helpers
         /// <returns></returns>
         public static List<Plan_Tactic_MQL> GetMQLValueTacticList(List<Plan_Campaign_Program_Tactic> PlanTacticList, bool isRound = true)
         {
-            List<TacticModelRelation> tacticModelList = GetTacticModelRelationList(PlanTacticList);
-            List<ModelConvertionRateRelation> mlist = GetModelConversionRate(tacticModelList.Select(t => t.ModelId).Distinct().ToList(), Enums.Stage.MQL.ToString());
-
-            List<Plan_Tactic_MQL> TacticMQLList = (from tactic in PlanTacticList
-                                                   join t in tacticModelList on tactic.PlanTacticId equals t.PlanTacticId
-                                                   join ml in mlist on t.ModelId equals ml.ModelId
+            List<TacticStageValue> tacticStageList = GetTacticStageRelation(PlanTacticList, false);
+            List<Plan_Tactic_MQL> TacticMQLList = (from tactic in tacticStageList
                                                    select new Plan_Tactic_MQL
                                                       {
-                                                          PlanTacticId = t.PlanTacticId,
-                                                          MQL = isRound ? Math.Round(Convert.ToDouble(tactic.ProjectedStageValue * ml.ConversionRate), 0, MidpointRounding.AwayFromZero) : Convert.ToDouble(tactic.ProjectedStageValue * ml.ConversionRate)
+                                                          PlanTacticId = tactic.TacticObj.PlanTacticId,
+                                                          MQL = isRound ? Math.Round(tactic.MQLValue, 0, MidpointRounding.AwayFromZero) : tactic.MQLValue
                                                       }).ToList();
             return TacticMQLList;
         }
@@ -2514,136 +2522,136 @@ namespace RevenuePlanner.Helpers
 
         #region "Report Calculation"
 
-        /// <summary>
-        /// Get Conversion Rate for Model Ids.
-        /// Addded By Bhavesh Dobariya
-        /// </summary>
-        /// <param name="ModelIds"></param>
-        /// <param name="stageCode"></param>
-        /// <returns></returns>
-        public static List<ModelConvertionRateRelation> GetModelConversionRate(List<int> ModelIds, string stageCode)
-        {
-            MRPEntities dbStage = new MRPEntities();
-            List<int> Levelelist = new List<int>();
-            string stageINQ = Enums.Stage.INQ.ToString();
-            int levelINQ = dbStage.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageINQ)).Level.Value;
-            if (stageCode == Enums.Stage.INQ.ToString())
-            {
-                for (int i = 1; i < levelINQ; i++)
-                {
-                    Levelelist.Add(i);
-                }
-            }
-            else if (stageCode == Enums.Stage.MQL.ToString())
-            {
-                string stageMQL = Enums.Stage.MQL.ToString();
-                int levelMQL = dbStage.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageMQL)).Level.Value;
-                for (int i = levelINQ; i < levelMQL; i++)
-                {
-                    Levelelist.Add(i);
-                }
-            }
-            else
-            {
-                string stageCW = Enums.Stage.CW.ToString();
-                int levelCW = dbStage.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageCW)).Level.Value;
-                for (int i = levelINQ; i <= levelCW; i++)
-                {
-                    Levelelist.Add(i);
-                }
-            }
-            string stageTypeCR = Enums.StageType.CR.ToString();
-            string marketing = Enums.Funnel.Marketing.ToString();
+        ///// <summary>
+        ///// Get Conversion Rate for Model Ids.
+        ///// Addded By Bhavesh Dobariya
+        ///// </summary>
+        ///// <param name="ModelIds"></param>
+        ///// <param name="stageCode"></param>
+        ///// <returns></returns>
+        //public static List<ModelConvertionRateRelation> GetModelConversionRate(List<int> ModelIds, string stageCode)
+        //{
+        //    MRPEntities dbStage = new MRPEntities();
+        //    List<int> Levelelist = new List<int>();
+        //    string stageINQ = Enums.Stage.INQ.ToString();
+        //    int levelINQ = dbStage.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageINQ)).Level.Value;
+        //    if (stageCode == Enums.Stage.INQ.ToString())
+        //    {
+        //        for (int i = 1; i < levelINQ; i++)
+        //        {
+        //            Levelelist.Add(i);
+        //        }
+        //    }
+        //    else if (stageCode == Enums.Stage.MQL.ToString())
+        //    {
+        //        string stageMQL = Enums.Stage.MQL.ToString();
+        //        int levelMQL = dbStage.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageMQL)).Level.Value;
+        //        for (int i = levelINQ; i < levelMQL; i++)
+        //        {
+        //            Levelelist.Add(i);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        string stageCW = Enums.Stage.CW.ToString();
+        //        int levelCW = dbStage.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageCW)).Level.Value;
+        //        for (int i = levelINQ; i <= levelCW; i++)
+        //        {
+        //            Levelelist.Add(i);
+        //        }
+        //    }
+        //    string stageTypeCR = Enums.StageType.CR.ToString();
+        //    string marketing = Enums.Funnel.Marketing.ToString();
 
-            var MlistStageValue = (from modelFunnelStage in dbStage.Model_Funnel_Stage
-                                   join stage in dbStage.Stages on modelFunnelStage.StageId equals stage.StageId
-                                   where ModelIds.Contains(modelFunnelStage.Model_Funnel.ModelId) && modelFunnelStage.StageType.Equals(stageTypeCR) &&
-                                                                    stage.ClientId.Equals(Sessions.User.ClientId) &&
-                                                                    Levelelist.Contains((int)stage.Level) && modelFunnelStage.Model_Funnel.Funnel.Title.Equals(marketing)
-                                   select new
-                                   {
-                                       ModelId = modelFunnelStage.Model_Funnel.ModelId,
-                                       Value = modelFunnelStage.Value
-                                   }).ToList().GroupBy(rl => new { ModelId = rl.ModelId }).ToList().Select(r => new
-                                   {
-                                       ModelId = r.Key.ModelId,
-                                       Value = (r.Aggregate(1.0, (s1, s2) => s1 * (s2.Value / 100)))
-                                   }).ToList();
+        //    var MlistStageValue = (from modelFunnelStage in dbStage.Model_Funnel_Stage
+        //                           join stage in dbStage.Stages on modelFunnelStage.StageId equals stage.StageId
+        //                           where ModelIds.Contains(modelFunnelStage.Model_Funnel.ModelId) && modelFunnelStage.StageType.Equals(stageTypeCR) &&
+        //                                                            stage.ClientId.Equals(Sessions.User.ClientId) &&
+        //                                                            Levelelist.Contains((int)stage.Level) && modelFunnelStage.Model_Funnel.Funnel.Title.Equals(marketing)
+        //                           select new
+        //                           {
+        //                               ModelId = modelFunnelStage.Model_Funnel.ModelId,
+        //                               Value = modelFunnelStage.Value
+        //                           }).ToList().GroupBy(rl => new { ModelId = rl.ModelId }).ToList().Select(r => new
+        //                           {
+        //                               ModelId = r.Key.ModelId,
+        //                               Value = (r.Aggregate(1.0, (s1, s2) => s1 * (s2.Value / 100)))
+        //                           }).ToList();
 
-            List<ModelConvertionRateRelation> modellist = (from m in ModelIds
-                                                           join modelFunnel in dbStage.Model_Funnel on m equals modelFunnel.ModelId
-                                                           where modelFunnel.Funnel.Title.Equals(marketing)
-                                                           select new ModelConvertionRateRelation
-                                                     {
-                                                         ModelId = m,
-                                                         AverageDealSize = modelFunnel.AverageDealSize,
-                                                         ConversionRate = MlistStageValue.Where(ms => ms.ModelId == m).Count() > 0 ? MlistStageValue.Where(ms => ms.ModelId == m).Select(ms => ms.Value).SingleOrDefault() : 1
-                                                     }).ToList();
+        //    List<ModelConvertionRateRelation> modellist = (from m in ModelIds
+        //                                                   join modelFunnel in dbStage.Model_Funnel on m equals modelFunnel.ModelId
+        //                                                   where modelFunnel.Funnel.Title.Equals(marketing)
+        //                                                   select new ModelConvertionRateRelation
+        //                                             {
+        //                                                 ModelId = m,
+        //                                                 AverageDealSize = modelFunnel.AverageDealSize,
+        //                                                 ConversionRate = MlistStageValue.Where(ms => ms.ModelId == m).Count() > 0 ? MlistStageValue.Where(ms => ms.ModelId == m).Select(ms => ms.Value).SingleOrDefault() : 1
+        //                                             }).ToList();
 
-            return modellist;
-        }
+        //    return modellist;
+        //}
 
-        /// <summary>
-        /// Get Velocity for Model Ids.
-        /// Addded By Bhavesh Dobariya
-        /// </summary>
-        /// <param name="ModelIds"></param>
-        /// <param name="stageCode"></param>
-        /// <returns></returns>
-        public static List<ModelVelocityRelation> GetModelVelocity(List<int> ModelIds, string stageCode)
-        {
-            MRPEntities dbStage = new MRPEntities();
-            List<int> Levelelist = new List<int>();
-            string stageINQ = Enums.Stage.INQ.ToString();
-            int levelINQ = dbStage.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageINQ)).Level.Value;
-            if (stageCode == Enums.Stage.INQ.ToString())
-            {
-                for (int i = 1; i < levelINQ; i++)
-                {
-                    Levelelist.Add(i);
-                }
-            }
-            else if (stageCode == Enums.Stage.MQL.ToString())
-            {
-                string stageMQL = Enums.Stage.MQL.ToString();
-                int levelMQL = dbStage.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageMQL)).Level.Value;
-                for (int i = levelINQ; i < levelMQL; i++)
-                {
-                    Levelelist.Add(i);
-                }
-            }
-            else
-            {
-                string stageCW = Enums.Stage.CW.ToString();
-                int levelCW = dbStage.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageCW)).Level.Value;
-                for (int i = levelINQ; i <= levelCW; i++)
-                {
-                    Levelelist.Add(i);
-                }
-            }
-            string stageTypeSV = Enums.StageType.SV.ToString();
-            string marketing = Enums.Funnel.Marketing.ToString();
+        ///// <summary>
+        ///// Get Velocity for Model Ids.
+        ///// Addded By Bhavesh Dobariya
+        ///// </summary>
+        ///// <param name="ModelIds"></param>
+        ///// <param name="stageCode"></param>
+        ///// <returns></returns>
+        //public static List<ModelVelocityRelation> GetModelVelocity(List<int> ModelIds, string stageCode)
+        //{
+        //    MRPEntities dbStage = new MRPEntities();
+        //    List<int> Levelelist = new List<int>();
+        //    string stageINQ = Enums.Stage.INQ.ToString();
+        //    int levelINQ = dbStage.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageINQ)).Level.Value;
+        //    if (stageCode == Enums.Stage.INQ.ToString())
+        //    {
+        //        for (int i = 1; i < levelINQ; i++)
+        //        {
+        //            Levelelist.Add(i);
+        //        }
+        //    }
+        //    else if (stageCode == Enums.Stage.MQL.ToString())
+        //    {
+        //        string stageMQL = Enums.Stage.MQL.ToString();
+        //        int levelMQL = dbStage.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageMQL)).Level.Value;
+        //        for (int i = levelINQ; i < levelMQL; i++)
+        //        {
+        //            Levelelist.Add(i);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        string stageCW = Enums.Stage.CW.ToString();
+        //        int levelCW = dbStage.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageCW)).Level.Value;
+        //        for (int i = levelINQ; i <= levelCW; i++)
+        //        {
+        //            Levelelist.Add(i);
+        //        }
+        //    }
+        //    string stageTypeSV = Enums.StageType.SV.ToString();
+        //    string marketing = Enums.Funnel.Marketing.ToString();
 
-            var MlistStageValue = (from modelFunnelStage in dbStage.Model_Funnel_Stage
-                                   join stage in dbStage.Stages on modelFunnelStage.StageId equals stage.StageId
-                                   where ModelIds.Contains(modelFunnelStage.Model_Funnel.ModelId) && modelFunnelStage.StageType.Equals(stageTypeSV) &&
-                                                                    stage.ClientId.Equals(Sessions.User.ClientId) &&
-                                                                    Levelelist.Contains((int)stage.Level) && modelFunnelStage.Model_Funnel.Funnel.Title.Equals(marketing)
-                                   select new
-                                   {
-                                       ModelId = modelFunnelStage.Model_Funnel.ModelId,
-                                       value = modelFunnelStage.Value
-                                   }).ToList();
+        //    var MlistStageValue = (from modelFunnelStage in dbStage.Model_Funnel_Stage
+        //                           join stage in dbStage.Stages on modelFunnelStage.StageId equals stage.StageId
+        //                           where ModelIds.Contains(modelFunnelStage.Model_Funnel.ModelId) && modelFunnelStage.StageType.Equals(stageTypeSV) &&
+        //                                                            stage.ClientId.Equals(Sessions.User.ClientId) &&
+        //                                                            Levelelist.Contains((int)stage.Level) && modelFunnelStage.Model_Funnel.Funnel.Title.Equals(marketing)
+        //                           select new
+        //                           {
+        //                               ModelId = modelFunnelStage.Model_Funnel.ModelId,
+        //                               value = modelFunnelStage.Value
+        //                           }).ToList();
 
-            List<ModelVelocityRelation> modellist = (from m in ModelIds
-                                                     select new ModelVelocityRelation
-                                                     {
-                                                         ModelId = m,
-                                                         Velocity = MlistStageValue.Where(ms => ms.ModelId == m).Count() > 0 ? MlistStageValue.Where(ms => ms.ModelId == m).Sum(ms => ms.value) : 0
-                                                     }).ToList();
+        //    List<ModelVelocityRelation> modellist = (from m in ModelIds
+        //                                             select new ModelVelocityRelation
+        //                                             {
+        //                                                 ModelId = m,
+        //                                                 Velocity = MlistStageValue.Where(ms => ms.ModelId == m).Count() > 0 ? MlistStageValue.Where(ms => ms.ModelId == m).Sum(ms => ms.value) : 0
+        //                                             }).ToList();
 
-            return modellist;
-        }
+        //    return modellist;
+        //}
 
         /// <summary>
         /// Calculate Projected Revenue of Tactic List.
@@ -3328,7 +3336,7 @@ namespace RevenuePlanner.Helpers
             string marketing = Enums.Funnel.Marketing.ToString();
             string size = Enums.StageType.Size.ToString();
             string CR = Enums.StageType.CR.ToString();
-            string ADS = "ADS";
+            string ADS = Enums.Stage.ADS.ToString();
             int adsStageId = dbStage.Stages.Single(stage => stage.Code.Equals(ADS) && stage.ClientId == Sessions.User.ClientId).StageId;
             List<ModelStageRelationList> modleStageRelationist = new List<ModelStageRelationList>();
             foreach (int modelId in modleIds)

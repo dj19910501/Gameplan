@@ -2126,7 +2126,7 @@ namespace RevenuePlanner.Controllers
             if (im.StageLevel < MQLStageLevel)
             {
                 ViewBag.ShowMQL = true;
-                im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.ProjectedStageValue), im.StartDate, im.PlanTacticId);
+                im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.ProjectedStageValue),im.StartDate,im.PlanTacticId,Convert.ToInt32(im.StageId));
             }
             else
             {
@@ -2503,7 +2503,7 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.UpdatedBy = null;
             }
-            im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.ProjectedStageValue), im.StartDate, im.PlanTacticId);
+            im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.ProjectedStageValue), im.StartDate, im.PlanTacticId, Convert.ToInt32(im.StageId));
             ViewBag.TacticDetail = im;
             bool isValidUser = true;
             if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)

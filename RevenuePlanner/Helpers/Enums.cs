@@ -401,7 +401,8 @@ namespace RevenuePlanner.Helpers
             SAL,
             SQL,
             MQL,
-            CW
+            CW,
+			ADS
         }
         #endregion
         
