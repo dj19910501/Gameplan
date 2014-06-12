@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data;
 using SalesforceSharp;
-using Integration.Eloqua;
 
 namespace Integration
 {
@@ -186,16 +185,7 @@ namespace Integration
                 }
                 else if (_integrationType.Equals(IntegrationType.Eloqua.ToString()))
                 {
-                    IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId);
-                    if (integrationEloquaClient.IsAuthenticated)
-                    {
-                        _isResultError = integrationEloquaClient.SyncData();
-                    }
-                    else
-                    {
-                        instanceLogEnd.ErrorDescription = "Authentication Failed :" + integrationEloquaClient._ErrorMessage;
-                        _isResultError = true;
-                    }
+
                 }
 
                 int integrationinstanceId = Convert.ToInt32(_integrationInstanceId);
@@ -237,11 +227,7 @@ namespace Integration
             }
             else if (_integrationType.Equals(IntegrationType.Eloqua.ToString()))
             {
-                IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0);
-                if (integrationEloquaClient.IsAuthenticated)
-                {
-                    return integrationEloquaClient.GetTargetDataType();
-                }
+
             }
 
             return null;

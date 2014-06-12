@@ -64,11 +64,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Eloqua\EloquaModel.cs" />
-    <Compile Include="Eloqua\IntegrationEloquaClient.cs" />
     <Compile Include="ExternalIntegration.cs" />
-    <Compile Include="Helper\Common.cs" />
-    <Compile Include="Helper\Enums.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Salesforce\IntegrationSalesforceClient.cs" />
     <Compile Include="ScheduledExternalIntegration.cs" />

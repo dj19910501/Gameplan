@@ -9,7 +9,7 @@ using System.Linq;
 using System.Transactions;
 using System.Web.Mvc;
 using Integration.Salesforce;
-using Integration.Eloqua;
+
 namespace RevenuePlanner.Controllers
 {
     public class ExternalServiceController : CommonController
@@ -774,16 +774,7 @@ namespace RevenuePlanner.Controllers
             {
                 if (form.IntegrationType.Title.Equals(Integration.IntegrationType.Eloqua.ToString()))
                 {
-                    string eloqua = Integration.IntegrationType.Eloqua.ToString();
-                    IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient();
-                    integrationEloquaClient._instance = form.Instance;// "TechnologyPartnerBulldog";
-                    integrationEloquaClient._username = form.Username;// "Brij.Bhavsar";
-                    integrationEloquaClient._password = form.Password;//"Brij1234";
-                    RevenuePlanner.Models.IntegrationType integrationType = db.IntegrationTypes.Single(intgtype => intgtype.Title.Equals(eloqua));
-                    integrationEloquaClient._apiURL = integrationType.APIURL;
-                    integrationEloquaClient._apiVersion = integrationType.APIVersion;
-                    integrationEloquaClient.Authenticate();
-                    isAuthenticated = integrationEloquaClient.IsAuthenticated;
+                    isAuthenticated = false;
                 }
                 else if (form.IntegrationType.Title.Equals(Integration.IntegrationType.Salesforce.ToString()) && form.IntegrationTypeAttributes != null)
                 {
