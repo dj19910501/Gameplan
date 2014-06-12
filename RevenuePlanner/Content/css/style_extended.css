@@ -2208,3 +2208,27 @@ label {
 #divTimeOptions {
     margin-left:5px !important;
 }
+
+/* Added by Kapil - 061114 - #453 - Contact Support Popup */
+#DivContactSupportPopup.form-contact-support {
+    width: 400px;
+    height: 495px;
+}
+.note-editor {
+    margin: 0 5px;
+}
+.note-editor .note-editable {
+    background:white;
+    text-align:left;
+    line-height: 22px;
+}
+.note-editable p {
+    line-height: 18px;
+    margin-bottom: 5px;
+}
+.form-contact-support .icon-contact-support {
+    padding-top:20px;
+    background:none;
+}
+/* */
+
