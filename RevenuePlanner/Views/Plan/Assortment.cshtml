@@ -867,7 +867,7 @@
                                                     '<span class="pull-right width50px text-right font-black">&nbsp;</span>' +
                                               '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
                                               '<span class="pull-right width150px text-right font-black tipsyclass">$' + FormatCommas(_programs[i].tactics[k].cost.toString(), false) + '</span>' +
-                                              '<span class="pull-right width100px text-right font-black tipsyclass">' + FormatCommas(_programs[i].tactics[k].mqls.toString(), false) + '</span>' +
+                                              '<span class="pull-right width100px text-right font-black tipsyclass">' + displayTacticMQL(_programs[i].tactics[k].mqls.toString()) + '</span>' +
                                                 '</div>' +
                                             '</div>';
                               
@@ -900,6 +900,16 @@
             }
             $tableCampaigns.append($html);
 
+        }
+
+        function displayTacticMQL(MQL)
+        {
+            if (MQL == 'N/A') {
+                return 'N/A';
+            }
+            else {
+                return FormatCommas(MQL, false);
+            }
         }
 
         function addEventTriggerSlidepanel() {

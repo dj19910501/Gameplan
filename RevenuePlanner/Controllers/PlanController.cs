@@ -1431,7 +1431,7 @@ namespace RevenuePlanner.Controllers
                         description = pcptj.Description,
                         cost = pcptj.Cost,
                         //inqs = pcptj.INQs,
-                        mqls = Common.CalculateMQLTactic(Convert.ToDouble(pcptj.ProjectedStageValue), pcptj.StartDate, pcptj.PlanTacticId, pcptj.StageId, pcptj.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId),
+                        mqls = GetTictitMQL(pcptj),
                         /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
                          changed by : Nirav Shah on 13 feb 2014*/
                         isOwner = Sessions.User.UserId == pcptj.CreatedBy ? 0 : 1,
@@ -1440,6 +1440,26 @@ namespace RevenuePlanner.Controllers
             }).Select(p => p).Distinct().OrderBy(p => p.id);
 
             return Json(campaignobj, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Function for calculate MQL based on tactic stage level
+        /// added by dharmraj for ticket #440
+        /// </summary>
+        /// <param name="objTactic"></param>
+        /// <returns></returns>
+        public string GetTictitMQL(Plan_Campaign_Program_Tactic objTactic)
+        {
+            string TitleMQL = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
+            int MQLStageLevel = Convert.ToInt32(db.Stages.FirstOrDefault(s => s.ClientId == Sessions.User.ClientId && s.Code == TitleMQL).Level);
+            if (objTactic.Stage.Level > MQLStageLevel)
+            {
+                return "N/A";
+            }
+            else
+            {
+                return Common.CalculateMQLTactic(Convert.ToDouble(objTactic.ProjectedStageValue), objTactic.StartDate, objTactic.PlanTacticId, objTactic.StageId, objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).ToString();
+            }
         }
 
         /// <summary>

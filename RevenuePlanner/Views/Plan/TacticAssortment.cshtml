@@ -127,12 +127,12 @@
                     <label id="lblStageTitle" title="@Model.StageTitle">@Model.StageTitle</label>
                     @*@Html.TextBoxFor(model => model.INQs, new { placeholder = "0", id = "txtinq", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })*@
                     @Html.TextBoxFor(model => model.ProjectedStageValue, new { placeholder = "0", id = "txtProjectedStageValue", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
-
                 </div>
 
                 <div class="width65px margin-right20 pull-left">
                     <label title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</label>
-                    @Html.TextBoxFor(model => model.MQLs, new { placeholder = "0", id = "txtmql", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @readonly = "true" })
+                    @*@Html.TextBoxFor(model => model.MQLs, new { placeholder = "0", id = "txtmql", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @readonly = "true" })*@
+                    <input type="text" value="@Model.MQLs" readonly="true" id = "txtmql" />
                 </div>
 
                 <div class="width65px pull-left">
@@ -276,7 +276,9 @@ if ((bool)ViewBag.IsOwner)
         }
         $("#txtProjectedStageValue").focusout(function () {
             var projectedStageValue = ReplaceCC($("#txtProjectedStageValue").val());
+            $("#txtProjectedStageValue").val(ReplaceCC($("#txtProjectedStageValue").val()));
             GetConversionRate(projectedStageValue, false);
+            $("#txtProjectedStageValue").val(FormatCommas($("#txtProjectedStageValue").val(), false));
         });
 
         var mqlConversion = 0;
@@ -288,11 +290,12 @@ if ((bool)ViewBag.IsOwner)
                 success: function (data) {
                     if (data.mql == 'N/A') {
                         $("#txtmql").val(data.mql);
+                        $("#txtmql").removeClass('priceValue');
                     }
                     else {
-                    mqlConversion = data.mql;
-                    $("#txtmql").val(FormatCommas(mqlConversion.toString(), false));
-                }
+                        mqlConversion = data.mql;
+                        $("#txtmql").val(FormatCommas(mqlConversion.toString(), false));
+                    }
                 }
             });
     }
