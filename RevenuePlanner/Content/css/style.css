@@ -4314,7 +4314,7 @@ span.red-arrow-down-icon {
     }
 
 .report-info {
-    width: calc(100% - 415px);
+    width: calc(100% - 417px); /* edited by kapil - 061214 - #506 */
     height: 226px;
     margin: 20px 15px 15px 0px;
     text-align: left;
