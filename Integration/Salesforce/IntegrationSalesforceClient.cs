@@ -15,17 +15,10 @@ using Newtonsoft.Json.Linq;
 using System.Security.Cryptography;
 using System.IO;
 using System.Configuration;
+using Integration.Helper;
 
 namespace Integration.Salesforce
 {
-    public enum Mode
-    {
-        Create,
-        Update,
-        Delete,
-        None
-    }
-
     public enum StageValue
     {
         INQ,
@@ -113,40 +106,8 @@ namespace Integration.Salesforce
             this._consumerKey = attributeKeyPair[ConsumerKey]; // "3MVG9zJJ_hX_0bb.x24JN3A5KwgO2gmkr5JfDDUx6U8FrvE_cFweCf7y3OkkLZeSkQDraDWZIrFcNqSvnAil_";
             this._consumerSecret = attributeKeyPair[ConsumerSecret];  //"2775499149223461438";
             this._username = integrationInstance.Username;//"brijmohan.bhavsar@indusa.com";
-            this._password = Decrypt(integrationInstance.Password); //"brijmohan";
+            this._password = Common.Decrypt(integrationInstance.Password); //"brijmohan";
             this._apiURL = integrationInstance.IntegrationType.APIURL; //"https://test.salesforce.com/services/oauth2/token";
-        }
-
-        /// <summary>
-        /// Decrypt string
-        /// </summary>
-        /// <param name="strText"></param>
-        /// <returns></returns>
-        private static string Decrypt(string strText)
-        {
-            byte[] byKey = null;
-            byte[] IV = { 0X12, 0X34, 0X56, 0X78, 0X90, 0XAB, 0XCD, 0XEF };
-            byte[] inputByteArray = new byte[strText.Length + 1];
-
-            try
-            {
-                byKey = System.Text.Encoding.UTF8.GetBytes(((string)("&%#@?,:*")).Substring(0, 8));
-                DESCryptoServiceProvider des = new DESCryptoServiceProvider();
-                inputByteArray = Convert.FromBase64String(strText);
-                MemoryStream ms = new MemoryStream();
-                CryptoStream cs = new CryptoStream(ms, des.CreateDecryptor(byKey, IV), CryptoStreamMode.Write);
-
-                cs.Write(inputByteArray, 0, inputByteArray.Length);
-                cs.FlushFinalBlock();
-                System.Text.Encoding encoding = System.Text.Encoding.UTF8;
-
-                return encoding.GetString(ms.ToArray());
-
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
         }
 
         public void Authenticate()
@@ -460,8 +421,8 @@ namespace Integration.Salesforce
 
         private Plan_Campaign SyncCampaingData(Plan_Campaign planCampaign)
         {
-            Mode currentMode = GetMode(planCampaign.IsDeleted, planCampaign.IsDeployedToIntegration, planCampaign.IntegrationInstanceCampaignId, planCampaign.Status);
-            if (currentMode.Equals(Mode.Create))
+            Enums.Mode currentMode = Common.GetMode(planCampaign.IsDeleted, planCampaign.IsDeployedToIntegration, planCampaign.IntegrationInstanceCampaignId, planCampaign.Status);
+            if (currentMode.Equals(Enums.Mode.Create))
             {
                 IntegrationInstancePlanEntityLog instanceLogCampaign = new IntegrationInstancePlanEntityLog();
                 instanceLogCampaign.IntegrationInstanceLogId = _integrationInstanceLogId;
@@ -487,7 +448,7 @@ namespace Integration.Salesforce
                 instanceLogCampaign.CreatedDate = DateTime.Now;
                 db.Entry(instanceLogCampaign).State = EntityState.Added;
             }
-            else if (currentMode.Equals(Mode.Update))
+            else if (currentMode.Equals(Enums.Mode.Update))
             {
                 IntegrationInstancePlanEntityLog instanceLogCampaign = new IntegrationInstancePlanEntityLog();
                 instanceLogCampaign.IntegrationInstanceLogId = _integrationInstanceLogId;
@@ -530,7 +491,7 @@ namespace Integration.Salesforce
                 instanceLogCampaign.CreatedDate = DateTime.Now;
                 db.Entry(instanceLogCampaign).State = EntityState.Added;
             }
-            else if (currentMode.Equals(Mode.Delete))
+            else if (currentMode.Equals(Enums.Mode.Delete))
             {
                 var tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.PlanCampaignId == planCampaign.PlanCampaignId).ToList();
                 var programList = db.Plan_Campaign_Program.Where(program => program.PlanCampaignId == planCampaign.PlanCampaignId).ToList();
@@ -691,8 +652,8 @@ namespace Integration.Salesforce
         private Plan_Campaign_Program SyncProgramData(Plan_Campaign_Program planProgram)
         {
             //// Get program based on _id property.
-            Mode currentMode = GetMode(planProgram.IsDeleted, planProgram.IsDeployedToIntegration, planProgram.IntegrationInstanceProgramId, planProgram.Status);
-            if (currentMode.Equals(Mode.Create))
+            Enums.Mode currentMode = Common.GetMode(planProgram.IsDeleted, planProgram.IsDeployedToIntegration, planProgram.IntegrationInstanceProgramId, planProgram.Status);
+            if (currentMode.Equals(Enums.Mode.Create))
             {
                 Plan_Campaign planCampaign = planProgram.Plan_Campaign;
                 _parentId = planCampaign.IntegrationInstanceCampaignId;
@@ -754,7 +715,7 @@ namespace Integration.Salesforce
                 }
 
             }
-            else if (currentMode.Equals(Mode.Update))
+            else if (currentMode.Equals(Enums.Mode.Update))
             {
                 IntegrationInstancePlanEntityLog instanceLogProgram = new IntegrationInstancePlanEntityLog();
                 instanceLogProgram.IntegrationInstanceLogId = _integrationInstanceLogId;
@@ -797,7 +758,7 @@ namespace Integration.Salesforce
                 instanceLogProgram.CreatedDate = DateTime.Now;
                 db.Entry(instanceLogProgram).State = EntityState.Added;
             }
-            else if (currentMode.Equals(Mode.Delete))
+            else if (currentMode.Equals(Enums.Mode.Delete))
             {
                 var tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanProgramId == planProgram.PlanProgramId).ToList();
                 if (tacticList.Where(tactic => tactic.IsDeployedToIntegration && !tactic.IsDeleted).Count() == 0)
@@ -901,8 +862,8 @@ namespace Integration.Salesforce
 
         private Plan_Campaign_Program_Tactic SyncTacticData(Plan_Campaign_Program_Tactic planTactic)
         {
-            Mode currentMode = GetMode(planTactic.IsDeleted, planTactic.IsDeployedToIntegration, planTactic.IntegrationInstanceTacticId, planTactic.Status);
-            if (currentMode.Equals(Mode.Create))
+            Enums.Mode currentMode = Common.GetMode(planTactic.IsDeleted, planTactic.IsDeployedToIntegration, planTactic.IntegrationInstanceTacticId, planTactic.Status);
+            if (currentMode.Equals(Enums.Mode.Create))
             {
                 Plan_Campaign_Program planProgram = planTactic.Plan_Campaign_Program;
                 _parentId = planProgram.IntegrationInstanceProgramId;
@@ -996,7 +957,7 @@ namespace Integration.Salesforce
                     db.Entry(instanceLogTactic).State = EntityState.Added;
                 }
             }
-            else if (currentMode.Equals(Mode.Update))
+            else if (currentMode.Equals(Enums.Mode.Update))
             {
                 IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
                 instanceLogTactic.IntegrationInstanceLogId = _integrationInstanceLogId;
@@ -1039,7 +1000,7 @@ namespace Integration.Salesforce
                 instanceLogTactic.CreatedDate = DateTime.Now;
                 db.Entry(instanceLogTactic).State = EntityState.Added;
             }
-            else if (currentMode.Equals(Mode.Delete))
+            else if (currentMode.Equals(Enums.Mode.Delete))
             {
                 IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
                 instanceLogTactic.IntegrationInstanceLogId = _integrationInstanceLogId;
@@ -1189,8 +1150,8 @@ namespace Integration.Salesforce
 
         private Plan_Improvement_Campaign_Program_Tactic SyncImprovementData(Plan_Improvement_Campaign_Program_Tactic planIMPTactic)
         {
-            Mode currentMode = GetMode(planIMPTactic.IsDeleted, planIMPTactic.IsDeployedToIntegration, planIMPTactic.IntegrationInstanceTacticId, planIMPTactic.Status);
-            if (currentMode.Equals(Mode.Create))
+            Enums.Mode currentMode = Common.GetMode(planIMPTactic.IsDeleted, planIMPTactic.IsDeployedToIntegration, planIMPTactic.IntegrationInstanceTacticId, planIMPTactic.Status);
+            if (currentMode.Equals(Enums.Mode.Create))
             {
                 Plan_Improvement_Campaign_Program planIMPProgram = planIMPTactic.Plan_Improvement_Campaign_Program;
                 _parentId = planIMPProgram.IntegrationInstanceProgramId;
@@ -1283,7 +1244,7 @@ namespace Integration.Salesforce
                 }
 
             }
-            else if (currentMode.Equals(Mode.Update))
+            else if (currentMode.Equals(Enums.Mode.Update))
             {
                 IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
                 instanceLogTactic.IntegrationInstanceLogId = _integrationInstanceLogId;
@@ -1326,7 +1287,7 @@ namespace Integration.Salesforce
                 instanceLogTactic.CreatedDate = DateTime.Now;
                 db.Entry(instanceLogTactic).State = EntityState.Added;
             }
-            else if (currentMode.Equals(Mode.Delete))
+            else if (currentMode.Equals(Enums.Mode.Delete))
             {
                 IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
                 instanceLogTactic.IntegrationInstanceLogId = _integrationInstanceLogId;
@@ -1442,30 +1403,6 @@ namespace Integration.Salesforce
             }
         }
 
-        private Mode GetMode(bool isDeleted, bool isDeployedToIntegration, string integrationInstanceTacticId, string status)
-        {
-            // delete reject status from list function
-            List<string> statusList = GetStatusListAfterApproved();
-            // Status = After Approve - Is Deploy = true -  integrationInstanceTacticId = null - isDeleted = false
-            if (statusList.Contains(status) && isDeployedToIntegration && string.IsNullOrWhiteSpace(integrationInstanceTacticId) && !isDeleted)
-            {
-                return Mode.Create;
-            }
-            // Status = After Approve - Is Deploy = true -  integrationInstanceTacticId = yes - isDeleted = false
-            else if (statusList.Contains(status) && isDeployedToIntegration && !string.IsNullOrWhiteSpace(integrationInstanceTacticId) && !isDeleted)
-            {
-                return Mode.Update;
-            }
-            else if (!string.IsNullOrWhiteSpace(integrationInstanceTacticId))
-            {
-                return Mode.Delete;
-            }
-            else
-            {
-                return Mode.None;
-            }
-        }
-
         private string CreateCampaign(Plan_Campaign planCampaign)
         {
             Dictionary<string, object> campaign = GetCampaign(planCampaign);
@@ -1475,14 +1412,14 @@ namespace Integration.Salesforce
 
         private string CreateProgram(Plan_Campaign_Program planProgram)
         {
-            Dictionary<string, object> program = GetProgram(planProgram, Mode.Create);
+            Dictionary<string, object> program = GetProgram(planProgram, Enums.Mode.Create);
             string programId = _client.Create(objectName, program);
             return programId;
         }
 
         private string CreateTactic(Plan_Campaign_Program_Tactic planTactic)
         {
-            Dictionary<string, object> tactic = GetTactic(planTactic, Mode.Create);
+            Dictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Create);
             string tacticId = _client.Create(objectName, tactic);
             return tacticId;
         }
@@ -1496,14 +1433,14 @@ namespace Integration.Salesforce
 
         private string CreateImprovementProgram(Plan_Improvement_Campaign_Program planIMPProgram)
         {
-            Dictionary<string, object> program = GetImprovementProgram(planIMPProgram, Mode.Create);
+            Dictionary<string, object> program = GetImprovementProgram(planIMPProgram, Enums.Mode.Create);
             string programId = _client.Create(objectName, program);
             return programId;
         }
 
         private string CreateImprovementTactic(Plan_Improvement_Campaign_Program_Tactic planIMPTactic)
         {
-            Dictionary<string, object> tactic = GetImprovementTactic(planIMPTactic, Mode.Create);
+            Dictionary<string, object> tactic = GetImprovementTactic(planIMPTactic, Enums.Mode.Create);
             string tacticId = _client.Create(objectName, tactic);
             return tacticId;
         }
@@ -1516,35 +1453,26 @@ namespace Integration.Salesforce
 
         private bool UpdateProgram(Plan_Campaign_Program planProgram)
         {
-            Dictionary<string, object> program = GetProgram(planProgram, Mode.Update);
+            Dictionary<string, object> program = GetProgram(planProgram, Enums.Mode.Update);
             return _client.Update(objectName, planProgram.IntegrationInstanceProgramId, program);
         }
 
         private bool UpdateTactic(Plan_Campaign_Program_Tactic planTactic)
         {
-            Dictionary<string, object> tactic = GetTactic(planTactic, Mode.Update);
+            Dictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Update);
             IntegrationInstanceTacticIds.Add(Convert.ToString(planTactic.IntegrationInstanceTacticId));
             return _client.Update(objectName, planTactic.IntegrationInstanceTacticId, tactic);
         }
 
         private bool UpdateImprovementTactic(Plan_Improvement_Campaign_Program_Tactic planIMPTactic)
         {
-            Dictionary<string, object> tactic = GetImprovementTactic(planIMPTactic, Mode.Update);
+            Dictionary<string, object> tactic = GetImprovementTactic(planIMPTactic,Enums.Mode.Update);
             return _client.Update(objectName, planIMPTactic.IntegrationInstanceTacticId, tactic);
         }
 
         private bool Delete(string recordid)
         {
             return _client.Delete(objectName, recordid);
-        }
-
-        private static List<string> GetStatusListAfterApproved()
-        {
-            List<string> tacticStatus = new List<string>();
-            tacticStatus.Add(ExternalIntegration.TacticStatusValues[TacticStatus.Approved.ToString()].ToString());
-            tacticStatus.Add(ExternalIntegration.TacticStatusValues[TacticStatus.InProgress.ToString()].ToString());
-            tacticStatus.Add(ExternalIntegration.TacticStatusValues[TacticStatus.Complete.ToString()].ToString());
-            return tacticStatus;
         }
 
         private string GetErrorMessage(SalesforceException e)
@@ -1560,21 +1488,21 @@ namespace Integration.Salesforce
             return campaign;
         }
 
-        private Dictionary<string, object> GetProgram(Plan_Campaign_Program planProgram, Mode mode)
+        private Dictionary<string, object> GetProgram(Plan_Campaign_Program planProgram, Enums.Mode mode)
         {
             Dictionary<string, object> program = GetTargetKeyValue<Plan_Campaign_Program>(planProgram, _mappingProgram);
 
-            if (mode.Equals(Mode.Create))
+            if (mode.Equals(Enums.Mode.Create))
             {
                 program.Add(ColumnParentId, _parentId);
             }
             return program;
         }
 
-        private Dictionary<string, object> GetTactic(Plan_Campaign_Program_Tactic planTactic, Mode mode)
+        private Dictionary<string, object> GetTactic(Plan_Campaign_Program_Tactic planTactic, Enums.Mode mode)
         {
             Dictionary<string, object> tactic = GetTargetKeyValue<Plan_Campaign_Program_Tactic>(planTactic, _mappingTactic);
-            if (mode.Equals(Mode.Create))
+            if (mode.Equals(Enums.Mode.Create))
             {
                 tactic.Add(ColumnParentId, _parentId);
             }
@@ -1588,21 +1516,21 @@ namespace Integration.Salesforce
             return campaign;
         }
 
-        private Dictionary<string, object> GetImprovementProgram(Plan_Improvement_Campaign_Program planIMPProgram, Mode mode)
+        private Dictionary<string, object> GetImprovementProgram(Plan_Improvement_Campaign_Program planIMPProgram, Enums.Mode mode)
         {
             Dictionary<string, object> program = GetTargetKeyValue<Plan_Improvement_Campaign_Program>(planIMPProgram, _mappingImprovementProgram);
 
-            if (mode.Equals(Mode.Create))
+            if (mode.Equals(Enums.Mode.Create))
             {
                 program.Add(ColumnParentId, _parentId);
             }
             return program;
         }
 
-        private Dictionary<string, object> GetImprovementTactic(Plan_Improvement_Campaign_Program_Tactic planIMPTactic, Mode mode)
+        private Dictionary<string, object> GetImprovementTactic(Plan_Improvement_Campaign_Program_Tactic planIMPTactic, Enums.Mode mode)
         {
             Dictionary<string, object> tactic = GetTargetKeyValue<Plan_Improvement_Campaign_Program_Tactic>(planIMPTactic, _mappingImprovementTactic);
-            if (mode.Equals(Mode.Create))
+            if (mode.Equals(Enums.Mode.Create))
             {
                 tactic.Add(ColumnParentId, _parentId);
             }
