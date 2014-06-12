@@ -120,7 +120,8 @@
                             {
                     <tr class="height42">
                                     <th id="inqP" class="text-align-right  projected font908D88">@tacticActual.ProjectedStageValue</th>
-                                    <th id="lblTotalProjectedStageValue" class="border-r font3F3F3F text-align-right">@tacticActual.ProjectedStageValueActual</th>
+                                    <th id="lblTotalProjectedStageValue" class="border-r font3F3F3F text-align-right">@tacticActual.ProjectedStageValueActual
+                                    </th>
                     </tr>
                             }
                             else if (s.ToLower() == Common.StageCodeMQL)
@@ -406,7 +407,7 @@
             }
             if (parseFloat(totalMQLActual) > parseFloat(totalProjectedStageValueActual)) {
                 var msg = "@RevenuePlanner.Helpers.Common.objCached.ValidationForMqlGreaterThanINQ"
-                var msgdisplay = msg.replace('{0}', totalMQLActual).replace('{1}', totalProjectedStageValueActual);
+                var msgdisplay = msg.replace('{0}', totalMQLActual).replace('{1}', '@ViewBag.TacticStageTitle').replace('{3}', '@ViewBag.TacticStageTitle').replace('{2}', totalProjectedStageValueActual);
                 $("#spanMessageError").text(msgdisplay);
                 $("#errorMessage").css("display", "block");
                 var topsize = $(document).scrollTop() + 41;

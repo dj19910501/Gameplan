@@ -536,6 +536,7 @@
                 var isError = false;
                 var isData = false;
                 var totalProjectedStageValueActual = ReplaceCC($("#ActuallblPProjectedStageValue" + tacticId).text());
+                var ProjectedStageValueTitle = $("#hdnProjectedStageValueTitle" + tacticId).val();
                 var totalMQLActual = ReplaceCC($("#ActuallblPMQL" + tacticId).text());
                 var totalCWActual = ReplaceCC($("#ActuallblPCW" + tacticId).text());
                 var totalRevenueActual = ReplaceCC($("#ActuallblCRevenue" + tacticId).text());
@@ -585,7 +586,7 @@
                 }
                 if (parseFloat(totalMQLActual) > parseFloat(totalProjectedStageValueActual)) {
                     var msg = "@RevenuePlanner.Helpers.Common.objCached.ValidationForMqlGreaterThanINQ"
-                    var msgdisplay = msg.replace('{0}', totalMQLActual).replace('{1}', totalProjectedStageValueActual);
+                    var msgdisplay = msg.replace('{0}', totalMQLActual).replace('{1}', ProjectedStageValueTitle).replace('{3}', ProjectedStageValueTitle).replace('{2}', totalProjectedStageValueActual);
                     $("#spanMessageError").text(msgdisplay);
                     $("#errorMessage").css("display", "block");
                     return false;
@@ -785,7 +786,7 @@
 
             for (var i = 0; i < arrStage.length; i++) {
                 if (arrStage[i] == '@Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString()') {
-                    $html += '<div class="body-toogle-actual">' + tacticStageTitle + '<div class="table-info-actual-left-wraper">' +
+                    $html += '<div class="body-toogle-actual">' + tacticStageTitle + '<input type="hidden" id="hdnProjectedStageValueTitle' + _id + '" value="' + tacticStageTitle + '" /><div class="table-info-actual-left-wraper">' +
                                                                       '<div class="table-info-actual-left truncate" id="lblProjectedStageValue' + _id + '">' +
                                                     _projectedStageValue +
                                             '</div>' +

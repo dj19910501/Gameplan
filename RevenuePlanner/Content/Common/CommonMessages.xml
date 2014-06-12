@@ -202,7 +202,7 @@
 	</Field>
 	<Field>
 		<Name>ValidationForMqlGreaterThanINQ</Name>
-		<value>Unable to save data as entered.  Total MQLs of {0} exceeds total INQs of {1}. Total MQLs must be less than or equal to total INQs.</value>
+		<value>Unable to save data as entered.  Total MQLs of {0} exceeds total {1} of {2}. Total MQLs must be less than or equal to total {3}.</value>
 	</Field>
 	<!--
   * changed by : Nirav Shah on 31 Jan 2013
