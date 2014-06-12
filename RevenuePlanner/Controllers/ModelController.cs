@@ -694,17 +694,11 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
+                        //// PL #497 	Customized Target stage - Model Inputs By Udaya on 06/12/2014
                         mModel_Funnel_Stage.Value = objModel_Funnel_Stage.Value;
                         mModel_Funnel_Stage.ModifiedBy = Sessions.User.UserId;
                         mModel_Funnel_Stage.ModifiedDate = DateTime.Now;
-                        if (stageType == Enums.StageType.CR.ToString())
-                        {
-                            mModel_Funnel_Stage.AllowedTargetStage = boolValue;
-                        }
-                        else
-                        {
-                            mModel_Funnel_Stage.AllowedTargetStage = false;
-                        }
+                        mModel_Funnel_Stage.AllowedTargetStage = boolValue;
                         db.Entry(mModel_Funnel_Stage).State = EntityState.Modified;
                         int resModel_Funnel_Stage = db.SaveChanges();
                     }
