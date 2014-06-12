@@ -2232,3 +2232,7 @@ label {
 }
 /* */
 
+/* PL #501 	Stage Refactoring - Boost Best In Class By Udaya on 06/12/2014*/
+.best-inClass.column-right{
+	width: 45% !important;
+}
