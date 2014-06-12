@@ -9,7 +9,7 @@ using System.Linq;
 using System.Transactions;
 using System.Web.Mvc;
 using Integration.Salesforce;
-
+using Integration.Eloqua;
 namespace RevenuePlanner.Controllers
 {
     public class ExternalServiceController : CommonController
@@ -20,7 +20,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Integration Listing
-        
+
         /// <summary>
         /// Integration data listing
         /// </summary>
@@ -102,7 +102,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Add Integration
-        
+
         /// <summary>
         /// Add new Integration Service
         /// </summary>
@@ -204,7 +204,7 @@ namespace RevenuePlanner.Controllers
                             }
                             else if (form.SyncFrequency.Frequency == "Weekly")
                             {
-                                DateTime nextDate = GetNextDateForDay(DateTime.Now,(DayOfWeek)Enum.Parse(typeof(DayOfWeek),objSyncFrequency.DayofWeek));
+                                DateTime nextDate = GetNextDateForDay(DateTime.Now, (DayOfWeek)Enum.Parse(typeof(DayOfWeek), objSyncFrequency.DayofWeek));
                                 TimeSpan time = (TimeSpan)objSyncFrequency.Time;
                                 objSyncFrequency.NextSyncDate = new DateTime(nextDate.Year, nextDate.Month, nextDate.Day, time.Hours, time.Minutes, time.Seconds);
                             }
@@ -718,7 +718,7 @@ namespace RevenuePlanner.Controllers
         }
 
         #endregion
-        
+
         /// <summary>
         /// Sync service
         /// </summary>
@@ -774,7 +774,16 @@ namespace RevenuePlanner.Controllers
             {
                 if (form.IntegrationType.Title.Equals(Integration.IntegrationType.Eloqua.ToString()))
                 {
-                    isAuthenticated = false;
+                    string eloqua = Integration.IntegrationType.Eloqua.ToString();
+                    IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient();
+                    integrationEloquaClient._instance = form.Instance;// "TechnologyPartnerBulldog";
+                    integrationEloquaClient._username = form.Username;// "Brij.Bhavsar";
+                    integrationEloquaClient._password = form.Password;//"Brij1234";
+                    RevenuePlanner.Models.IntegrationType integrationType = db.IntegrationTypes.Single(intgtype => intgtype.Title.Equals(eloqua));
+                    integrationEloquaClient._apiURL = integrationType.APIURL;
+                    integrationEloquaClient._apiVersion = integrationType.APIVersion;
+                    integrationEloquaClient.Authenticate();
+                    isAuthenticated = integrationEloquaClient.IsAuthenticated;
                 }
                 else if (form.IntegrationType.Title.Equals(Integration.IntegrationType.Salesforce.ToString()) && form.IntegrationTypeAttributes != null)
                 {
@@ -874,22 +883,22 @@ namespace RevenuePlanner.Controllers
 
                 List<GameplanDataTypeModel> listGameplanDataTypeStageOne = new List<GameplanDataTypeModel>();
                 listGameplanDataTypeStageOne = (from i in db.IntegrationInstances
-                                                 join d in db.GameplanDataTypes on i.IntegrationTypeId equals d.IntegrationTypeId
-                                                 join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
-                                                 from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
+                                                join d in db.GameplanDataTypes on i.IntegrationTypeId equals d.IntegrationTypeId
+                                                join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
+                                                from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
                                                 where i.IntegrationInstanceId == id && d.IsDeleted == false && d.IsStage == true && listStageCode.Contains(d.ActualFieldName)
-                                                 select new GameplanDataTypeModel
-                                                 {
-                                                     GameplanDataTypeId = d.GameplanDataTypeId,
-                                                     IntegrationTypeId = d.IntegrationTypeId,
-                                                     TableName = d.TableName,
-                                                     ActualFieldName = d.ActualFieldName,
-                                                     DisplayFieldName = d.DisplayFieldName,
-                                                     IsGet = d.IsGet,
-                                                     IntegrationInstanceDataTypeMappingId = m.IntegrationInstanceDataTypeMappingId,
-                                                     IntegrationInstanceId = i.IntegrationInstanceId,
-                                                     TargetDataType = m.TargetDataType
-                                                 }).ToList();
+                                                select new GameplanDataTypeModel
+                                                {
+                                                    GameplanDataTypeId = d.GameplanDataTypeId,
+                                                    IntegrationTypeId = d.IntegrationTypeId,
+                                                    TableName = d.TableName,
+                                                    ActualFieldName = d.ActualFieldName,
+                                                    DisplayFieldName = d.DisplayFieldName,
+                                                    IsGet = d.IsGet,
+                                                    IntegrationInstanceDataTypeMappingId = m.IntegrationInstanceDataTypeMappingId,
+                                                    IntegrationInstanceId = i.IntegrationInstanceId,
+                                                    TargetDataType = m.TargetDataType
+                                                }).ToList();
 
                 foreach (var item in listGameplanDataTypeStageOne)
                 {
@@ -897,7 +906,7 @@ namespace RevenuePlanner.Controllers
                 }
 
                 listGameplanDataTypeStageZero.AddRange(listGameplanDataTypeStageOne);
-                
+
                 if (listGameplanDataTypeStageZero != null && listGameplanDataTypeStageZero.Count > 0)
                 {
                     TempData["TargetFieldInvalidMsg"] = Common.objCached.TargetFieldInvalidMsg;
