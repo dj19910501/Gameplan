@@ -374,7 +374,7 @@ function GetAbberiviatedValue(value) {
             actualvalue = value.toFixed(2) + postfix[indexvalue];
         }
     }
-     
+
     return (isNegative ? '-' + actualvalue.toString() : actualvalue.toString());
 }
 

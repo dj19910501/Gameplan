@@ -3861,6 +3861,7 @@ namespace RevenuePlanner.Controllers
                     {
                         pcpt.TacticTypeId = tactic.TacticTypeId;
                        
+
                         int result = db.SaveChanges();
                     }
                 }

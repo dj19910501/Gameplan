@@ -2190,7 +2190,7 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.IsDiffrentStageType = true;
             }
-            /*End Added by Mitesh Vaishnav on 13/06/2014 to address changes related to #498 Customized Target Stage - Publish model*/
+            /*End Added by Mitesh Vaishnav on 13/06/2014 to address changes related to #498 Customized Target Stage - Publish model */
             return PartialView("Review");
         }
 
