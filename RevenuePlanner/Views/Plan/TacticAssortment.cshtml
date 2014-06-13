@@ -79,20 +79,20 @@
             <span class="verticalIdSelectBox" style="  margin-left: -2px;">@Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
             
 
-            @if (ExtIntService!=string.Empty)
+            @if (ExtIntService != string.Empty)
             {
-                
-             if(Model.IsDeployedToIntegration)
-             {
+
+                if (Model.IsDeployedToIntegration)
+                {
                  <label style="margin-top:6px;">Status</label>
                  <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to @ExtIntService" maxlength="18" readonly />
-             }
-             else
-             {
+                }
+                else
+                {
                  <label style="margin-top:6px;">Status</label>
                  <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to @ExtIntService" maxlength="18" readonly />
-             }
-             }
+                }
+            }
 
             @Html.Hidden("hdnRedirect", (bool)ViewBag.RedirectType, new { id = "hdnRedirectType" })
             @if ((bool)ViewBag.RedirectType)
@@ -124,7 +124,14 @@
             <div class="cf width100">
                 <div class="width65px margin-right20 pull-left">
                     @*<label title="@Html.LabelForINQ("INQ")">@Html.LabelForINQ("INQ")</label>*@
-                    <label id="lblStageTitle" title="@Model.StageTitle">@Model.StageTitle</label>
+
+   <label id="lblStageTitle" title="@Model.StageTitle">@Model.StageTitle &nbsp;
+                          @if (ViewBag.IsDiffrentStageType == true)
+                          {
+                        <span>
+                            <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" /></span>
+                              
+                          }</label>
                     @*@Html.TextBoxFor(model => model.INQs, new { placeholder = "0", id = "txtinq", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })*@
                     @Html.TextBoxFor(model => model.ProjectedStageValue, new { placeholder = "0", id = "txtProjectedStageValue", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
                 </div>
@@ -149,8 +156,8 @@
             }
         </div>
         <!--end content dark-->
-if ((bool)ViewBag.IsOwner)
-{
+            if ((bool)ViewBag.IsOwner)
+            {
         <div class="wraper-btns cf">
             <div class="span6">
                 <button id="save_campaign_tactic" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
@@ -159,7 +166,7 @@ if ((bool)ViewBag.IsOwner)
                 <button class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
             </div>
         </div>
-}
+            }
         <!--End buttons-->
     }
 
@@ -167,6 +174,10 @@ if ((bool)ViewBag.IsOwner)
 <script type="text/javascript">
 
     $(document).ready(function () {
+
+        /*Added by Mitesh Vaishnav on 13/06/2014 to address #498 Customized Target Stage - Publish model */
+        ImageTipsy('#diffrentStageIcon');
+
         //$.ajaxSetup({ cache: false });
         $('#slidepanel-container').slimScroll({ scrollTo: '0px' });
         var isredirect = "@ViewBag.RedirectType";
@@ -174,8 +185,7 @@ if ((bool)ViewBag.IsOwner)
         var hdnYear = @ViewBag.Year
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
-        if ('@TempData["TacticMQL"]' == "N/A")
-        {
+        if ('@TempData["TacticMQL"]' == "N/A") {
             $("#txtmql").removeClass("priceValue");
             $("#txtmql").val("N/A");
         }
@@ -298,9 +308,9 @@ if ((bool)ViewBag.IsOwner)
                     }
                 }
             });
-    }
+        }
         $('form').find('input[type=text], textarea').each(function () {
-                ValidationForTitle(this);
+            ValidationForTitle(this);
         });
 
         $('form').find('input[type=text], select, textarea').each(function () {
@@ -330,7 +340,7 @@ if ((bool)ViewBag.IsOwner)
             });
         });
 
-        
+
 
         $("#save_campaign_tactic").mousedown(function () {
             //CheckUserSession("#save_campaign_tactic", true);
@@ -346,9 +356,8 @@ if ((bool)ViewBag.IsOwner)
             //}
             saveTactic();
         });
-      
-        function saveTactic() 
-        {
+
+        function saveTactic() {
             var iserror = false;
             $('form').find('input[type=text], select, textarea').each(function () {
                 if ($(this).attr('require') == 'true') {
@@ -401,7 +410,7 @@ if ((bool)ViewBag.IsOwner)
                 //if (!validateDateCompare(csdate, sdate, "Campaign Start Date")) return false;
                 //if (!validateDateCompare(edate, pedate, "Program End Date")) return false;
                 //if (!validateDateCompare(edate, cedate, "Campaign End Date")) return false;
-               
+
 
             }
 
@@ -410,7 +419,7 @@ if ((bool)ViewBag.IsOwner)
                 $("#txtmql").val(0);
             }
             else {
-            $("#txtmql").val(ReplaceCC($("#txtmql").val()));
+                $("#txtmql").val(ReplaceCC($("#txtmql").val()));
             }
             $("#txtCost").val(ReplaceCC($("#txtCost").val()));
             var arrClosedTaskString = null;
@@ -522,7 +531,7 @@ if ((bool)ViewBag.IsOwner)
                         ID: idTactic,
                         RedirectType: isAssortment,
                         closedTask: arrClosedTaskString,
-                        UserId: uId 
+                        UserId: uId
                     },
                     success: function (data) {
                         if (data.returnURL != 'undefined' && data.returnURL == '#') {

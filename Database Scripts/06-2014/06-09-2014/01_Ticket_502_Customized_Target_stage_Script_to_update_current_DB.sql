@@ -1,3 +1,5 @@
+-- Run this script on MRP Database
+
 -- =========================================== Start - Script- 1 (Add ConversionTitle Column and ADS entry in Stage Table) ==================================================================
 
 IF EXISTS (select 1 from INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'Stage')
@@ -295,139 +297,18 @@ END
 
 GO
 
--- =========================================== Start - Script- 4 (ImprovementType_Touches table drop MetricId and Add StageId and StageType) ===============================================================
+-- =========================================== Start - Script- 4 (drop ImprovementType_Touches table) ===============================================================
 
-BEGIN TRANSACTION
-
--- ======================================== Truncate 'ImprovementTacticType_Touches' data, Drop 'MetricId' Column and add 'StageId' and 'StageType' field. Populate 'ImprovementTacticType_Touches' again. =========================
-
-IF EXISTS (select 1 from INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'ImprovementTacticType_Touches') AND
-	NOT EXISTS (select 1 from INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'ImprovementTacticType_Touches' AND COLUMN_NAME = 'StageId')
+IF EXISTS (select 1 from INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'ImprovementTacticType_Touches')
 BEGIN
 	
-	IF EXISTS (select 1 from INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'ImprovementTacticType_Touches_Bckp')
-	BEGIN
-		DROP TABLE ImprovementTacticType_Touches_Bckp
-	END	
-
-	select * into ImprovementTacticType_Touches_Bckp from  ImprovementTacticType_Touches
-		
-	IF NOT EXISTS (select 1 from INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'ImprovementTacticType_Touches' AND COLUMN_NAME = 'StageId')
-	BEGIN
-		TRUNCATE TABLE ImprovementTacticType_Touches
-	END
-	ELSE
-		PRINT('Data has already been migrated')
-
-	IF EXISTS (select 1 from INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_NAME = 'FK_ImprovementTacticType_Touches_Metric' AND CONSTRAINT_SCHEMA = 'dbo')
-	BEGIN
-		ALTER TABLE ImprovementTacticType_Touches DROP CONSTRAINT FK_ImprovementTacticType_Touches_Metric
-	END
-	ELSE
-		PRINT('FK_ImprovementTacticType_Touches_Metric constraints does not exists in Metric table') 
-
-	IF OBJECT_ID('PK_ImprovementTacticType_Touches', 'UQ') IS NOT NULL
-	BEGIN
-		ALTER TABLE ImprovementTacticType_Touches DROP CONSTRAINT PK_ImprovementTacticType_Touches
-	END
-	ELSE
-		PRINT('PK_ImprovementTacticType_Touches constraints does not exists in ImprovementTacticType_Touches table')
-
-	IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE CONSTRAINT_NAME = 'PK_ImprovementTacticType_Touches' AND 
-		TABLE_NAME = 'ImprovementTacticType_Touches' 
-		AND TABLE_SCHEMA ='dbo' )
-		BEGIN
-			ALTER TABLE ImprovementTacticType_Touches DROP CONSTRAINT PK_ImprovementTacticType_Touches
-		END
-		ELSE
-			PRINT('PK_ImprovementTacticType_Touches constraints does not exists in ImprovementTacticType_Touches table')
-
-
-	IF EXISTS (select 1 from INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'ImprovementTacticType_Touches' AND COLUMN_NAME = 'MetricId')
-	BEGIN
-		ALTER TABLE ImprovementTacticType_Touches DROP COLUMN MetricId
-	END
-	ELSE 
-		PRINT('MetricId column does not exists in ImprovementTacticType_Touches table')
-
-	IF NOT EXISTS (select 1 from INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'ImprovementTacticType_Touches' AND COLUMN_NAME = 'StageId')
-	BEGIN
-		ALTER TABLE ImprovementTacticType_Touches ADD StageId INT NOT NULL
-	END
-	ELSE 
-		PRINT('StageId column already exists in ImprovementTacticType_Touches table')
-		
-	IF NOT EXISTS (select 1 from INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_NAME = 'FK_ImprovementTacticType_Touches_Stage' AND CONSTRAINT_SCHEMA = 'dbo')
-	BEGIN
-		ALTER TABLE [dbo].[ImprovementTacticType_Touches]  WITH CHECK ADD  CONSTRAINT [FK_ImprovementTacticType_Touches_Stage] FOREIGN KEY([StageId])
-		REFERENCES [dbo].[Stage] ([StageId])
-	
-		ALTER TABLE [dbo].[ImprovementTacticType_Touches] CHECK CONSTRAINT [FK_ImprovementTacticType_Touches_Stage]
-	END
-	ELSE 
-		PRINT('FK_ImprovementTacticType_Touches_Stage constraints already exists in ImprovementTacticType_Touches table')
-
-	IF OBJECT_ID('PK_ImprovementTacticType_Touches_Stage', 'UQ') IS NULL
-	BEGIN
-		ALTER TABLE ImprovementTacticType_Touches ADD CONSTRAINT PK_ImprovementTacticType_Touches_Stage UNIQUE (ImprovementTacticTypeId, StageId)
-	END
-	ELSE
-		PRINT('PK_ImprovementTacticType_Touches_Stage constraints does not exists in ImprovementTacticType_Touches table')
-
-	
-	IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE CONSTRAINT_NAME = 'PK_ImprovementTacticType_Touches' AND 
-	TABLE_NAME = 'ImprovementTacticType_Touches' 
-	AND TABLE_SCHEMA ='dbo' )
-	BEGIN
-		ALTER TABLE ImprovementTacticType_Touches
-		ADD CONSTRAINT PK_ImprovementTacticType_Touches 
-		PRIMARY KEY (ImprovementTacticTypeId, StageId) 
-	END
-	ELSE
-		PRINT('PK_ImprovementTacticType_Touches constraints exists in ImprovementTacticType_Touches table')
+	DROP Table ImprovementTacticType_Touches
 
 END
 ELSE
 	PRINT('ImprovementTacticType_Touches table does not exists')
 
-GO
-
-IF EXISTS (select 1 from INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'ImprovementTacticType_Touches') AND
-	EXISTS (select 1 from INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'ImprovementTacticType_Touches' AND COLUMN_NAME = 'StageId')
-BEGIN
-	DECLARE @RecordCount INT = (SELECT COUNT(1) FROM ImprovementTacticType_Touches)
-
-	IF (ISNULL(@RecordCount, 0)) = 0
-	BEGIN
-		INSERT INTO ImprovementTacticType_Touches (ImprovementTacticTypeId, StageId, CreatedDate, CreatedBy) 
-		SELECT ITT.ImprovementTacticTypeId,  S.StageId, ITT.CreatedDate, ITT.CreatedBy 
-		FROM ImprovementTacticType_Touches_Bckp ITT
-		INNER JOIN Metric M ON M.MetricId = ITT.MetricId 
-		INNER JOIN Stage S ON S.Code = M.MetricCode AND S.ClientId = M.ClientId  AND ISNULL(S.IsDeleted, 0) = 0
-	END
-	ELSE
-		PRINT('Data has already migrated. ' + CAST(@RecordCount as varchar(10)) + ' Records found.')
-
-	IF EXISTS (select 1 from INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'ImprovementTacticType_Touches_Bckp')
-	BEGIN
-		DROP TABLE ImprovementTacticType_Touches_Bckp
-	END
-END
-
-IF @@ERROR != 0
-BEGIN
-		PRINT('Transaction RollBack')
-		SELECT ErrorNumber = ERROR_NUMBER(), ErrorSeverity = ERROR_SEVERITY(), ErrorState = ERROR_STATE(), ErrorProcedure = ERROR_PROCEDURE(), ErrorLine = ERROR_LINE(), ErrorMessage = ERROR_MESSAGE(), AdditionalMessage = 'Error occured.' ;
-		ROLLBACK TRANSACTION;
-        RETURN;
-END
-ELSE
-BEGIN
-	PRINT('Transaction Commited')
-	COMMIT TRANSACTION;
-END
-
--- =========================================== End - Script- 4 (ImprovementType_Touches table drop MetricId and Add StageId and StageType) ==================================================================
+-- =========================================== End - Script- 4 (drop ImprovementType_Touches table) ==================================================================
 
 GO
 

@@ -7190,7 +7190,7 @@ input.icon-check-blue{background-image: url("../images/circle-check-icon-small-b
 
 
 /* Added by Kapil for Status - 100614 - #509 */
-.pending {
+/*.pending {
     color: #ff931e;
 }
 .rejected {
@@ -7198,5 +7198,5 @@ input.icon-check-blue{background-image: url("../images/circle-check-icon-small-b
 }
 .approved {
     color:#7ac943;
-}
+}*/
 /* */

@@ -3,33 +3,48 @@
     var tacticReview = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
     bool ShowMQL = (bool)ViewBag.ShowMQL;
 }
-<div class="span5 width360" id="inspect-modal-right-div" style="width:420px !important;">
+<div class="span5 width360" id="inspect-modal-right-div" style="width: 420px !important;">
     <div class="font-size18">Overview</div>
     <div id="campaign-title" class="bold padding-top16 font-size18">@tacticReview.CampaignTitle</div>
     <div id="program-title" class="font-size18">@tacticReview.ProgramTitle</div>
     <div class="cf source-sans-proregular padding-top32">
         <div class="chart-gray pull-left size65x38 without-padding">
-            <div class="padding-top16"><span id="startDay-id" class="font_size30" style="line-height:24px;">@tacticReview.StartDate.ToString("dd")</span></div> @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
+            <div class="padding-top16"><span id="startDay-id" class="font_size30" style="line-height: 24px;">@tacticReview.StartDate.ToString("dd")</span></div>
+            @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
             <span id="startMonth-id" class="font_size16">@tacticReview.StartDate.ToString("MMM")</span>
-            <div class="margin-top16">Start</div>   @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
+            <div class="margin-top16">Start</div>
+            @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
         </div>
         <div class="chart-gray pull-left size65x38 without-padding">
-            <div class="padding-top16"><span id="endDay-id" class="font_size30" style="line-height:24px;">@tacticReview.EndDate.ToString("dd")</span></div> @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
+            <div class="padding-top16"><span id="endDay-id" class="font_size30" style="line-height: 24px;">@tacticReview.EndDate.ToString("dd")</span></div>
+            @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
             <span id="endMonth-id" class="font_size16">@tacticReview.EndDate.ToString("MMM")</span>
-            <div class="margin-top16">End</div> @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
+            <div class="margin-top16">End</div>
+            @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
         </div>
         <div class="chart-gray pull-left size65x38 without-padding">
-            <div class="padding-top16"><span id="inq-id" class="font_size30" style="line-height:24px;">@tacticReview.ProjectedStageValue</span></div>  @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
+            <div class="padding-top16"><span id="inq-id" class="font_size30" style="line-height: 24px;">@tacticReview.ProjectedStageValue</span></div>
+            @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
             @*<span class="font_size16" title="@Html.LabelForINQ("INQ")">@Html.LabelForINQ("INQ")</span>*@
             <span class="font_size16" title="@tacticReview.StageTitle">@tacticReview.StageTitle</span>
-            <div class="margin-top16">Goal</div>    @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
+            <div class="margin-top16">
+                Goal
+                @if (ViewBag.IsDiffrentStageType == true)
+                {
+                    <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" />
+                    
+                }
+            </div>
+            @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
         </div>
-        @if(ShowMQL)
+        @if (ShowMQL)
         {
             <div class="chart-gray pull-left size65x38 without-padding">
-                <div class="padding-top16"><span id="mqls-id" class="font_size30" style="line-height:24px;">@tacticReview.MQLs</span></div> @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
+                <div class="padding-top16"><span id="mqls-id" class="font_size30" style="line-height: 24px;">@tacticReview.MQLs</span></div>
+                @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
                 <span class="font_size16" title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</span>
-                <div class="margin-top16">Goal</div>    @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
+                <div class="margin-top16">Goal</div>
+                @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
             </div>
         }
     </div>
@@ -52,13 +67,15 @@
         <div class="pull-left size65x38 margin-left20">
             <div class="audience-review"></div>
             <div>
-                <label id="audience">Audience</label></div>
+                <label id="audience">Audience</label>
+            </div>
             <span id="audience-id" class="blue-text bold" title="@tacticReview.AudiencTitle">@tacticReview.AudiencTitle</span>
         </div>
         <div class="pull-left size65x38 margin-left20">
             <div class="integration-review"></div>
             <div>
-                <label id="integration">Integration</label></div>
+                <label id="integration">Integration</label>
+            </div>
             <span id="integration-id" class="blue-text bold" title="@tacticReview.IntegrationType">@tacticReview.IntegrationType</span>
         </div>
     </div>
@@ -73,7 +90,8 @@
             {
                 <div class="post-div" style="clear: both; width: 100%; border-bottom: solid 1px #A8A8A8;">
                     <div style="float: left; width: 10%;">
-                        <img class="avatar-user" src="@Url.Action("LoadUserImage", "User", new { id = item.CreatedBy })" alt="User avatar" /></div>
+                        <img class="avatar-user" src="@Url.Action("LoadUserImage", "User", new { id = item.CreatedBy })" alt="User avatar" />
+                    </div>
                     <div style="float: left; width: 90%;">
                         <span class="bold">@item.CommentedBy</span>
                         <span>@item.Comment</span><br />
@@ -93,11 +111,11 @@
         <button id="btnComment" class="btn btn-blue text-shadow-blue source-sans-proregular new-comment-buttom " type="button">Comment</button>
     </div>
     <div class="cf pull-left">
-     
+
         <div style="float: right; margin-top: 10px;">
-            <button class="btn btn-blue text-shadow-blue source-sans-proregular  button-inspect-result-modal pull-right  resize-button margin-left20 btn-blue share-tactic-icon" id="BtnShareTactic" type="button" style="width:80px;"><span class="flag-icon"></span>Share </button>
+            <button class="btn btn-blue text-shadow-blue source-sans-proregular  button-inspect-result-modal pull-right  resize-button margin-left20 btn-blue share-tactic-icon" id="BtnShareTactic" type="button" style="width: 80px;"><span class="flag-icon"></span>Share </button>
         </div>
-       
+
         @{
             string Submit = "Submit for Approval";
             string Approve = "Approve";
@@ -199,11 +217,11 @@
                 
             <div class="margin-top10" style="float: right;">
                 <div id="btn_change_status" class="btn-group dropup">
-                    <button id="btnApproved" data-toggle="dropdown" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular margin-left20" style="width:125px;">
+                    <button id="btnApproved" data-toggle="dropdown" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular margin-left20" style="width: 125px;">
                         <span class="flag-icon approve-icon-dropdown"></span>
                         <span id="spanTactic">@firstStatus</span>
                     </button>
-                     @Html.Hidden("hdnStatusValue", firstStatus, new { id = "hdnStatusValue" });
+                    @Html.Hidden("hdnStatusValue", firstStatus, new { id = "hdnStatusValue" });
                     @if (len >= 2)
                     {
                         <button data-toggle="dropdown" class="btn dropdown-toggle height25 btn-blue displayinherit">
@@ -239,9 +257,9 @@
 
             if ((bool)ViewBag.IsModelDeploy)
             {
-                <div class="margin-top10" style="float: right;">
+            <div class="margin-top10" style="float: right;">
                 <div id="btn_sync_status" class="btn-group dropup">
-                    <button id="btnSync" data-toggle="dropdown" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width:65px;">
+                    <button id="btnSync" data-toggle="dropdown" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 65px;">
                         <span class="flag-icon sync-icon-dropdown"></span>
                         <span id="spanSyncStatus">
                             @if (tacticReview.IsDeployedToIntegration)
@@ -263,17 +281,17 @@
                     {
                         @Html.Hidden("hdnSyncStatusValue", "Don't Sync", new { id = "hdnSyncStatusValue" });
                     }
-                        <button data-toggle="dropdown" class="btn dropdown-toggle height25 btn-blue displayinherit">
-                            <span class="caret "></span>
-                        </button>                
-                        <ul class="dropdown-menu " id="uldivSync">
-                            <li>
-                                <a id="aSync">Sync</a>
-                            </li>
-                            <li>
-                                <a id="aNotSync">Don't Sync</a>
-                            </li>
-                        </ul>
+                    <button data-toggle="dropdown" class="btn dropdown-toggle height25 btn-blue displayinherit">
+                        <span class="caret "></span>
+                    </button>
+                    <ul class="dropdown-menu " id="uldivSync">
+                        <li>
+                            <a id="aSync">Sync</a>
+                        </li>
+                        <li>
+                            <a id="aNotSync">Don't Sync</a>
+                        </li>
+                    </ul>
                 </div>
             </div> 
             }            
@@ -286,192 +304,195 @@
 <script type="text/javascript">
     $(document).ready(function () {
 
-          SetFormatForLabel("#inq-id", 5);
-          SetFormatForLabel("#mqls-id", 5);
-          $("#BtnShareTactic").click(function () {
-              $("#DivPartialShareTactic").empty();
-              var url = '@Url.Content("~/Home/ShowShareTactic/")';
-              $("#DivPartialShareTactic").load(url + '?planTacticId=' + $('#hdnPlanTacticId').val() + '&section=@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()'); // section parameter added to open share tactic popup
-          });
+        /*Added by Mitesh Vaishnav on 13/06/2014 to address #498 Customized Target Stage - Publish model */
+        ImageTipsy('#diffrentStageIcon');
 
-          $("#uldiv li a").click(function () {
-              $("#spanTactic").html($(this).text());
-              $("#hdnStatusValue").val($(this).text());
-          });
+        SetFormatForLabel("#inq-id", 5);
+        SetFormatForLabel("#mqls-id", 5);
+        $("#BtnShareTactic").click(function () {
+            $("#DivPartialShareTactic").empty();
+            var url = '@Url.Content("~/Home/ShowShareTactic/")';
+            $("#DivPartialShareTactic").load(url + '?planTacticId=' + $('#hdnPlanTacticId').val() + '&section=@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()'); // section parameter added to open share tactic popup
+        });
 
-          $("#btnSync").click(function () {
+        $("#uldiv li a").click(function () {
+            $("#spanTactic").html($(this).text());
+            $("#hdnStatusValue").val($(this).text());
+        });
 
-              var IsDeployedToIntegration = false;
-              var spanSyncStatus = $("#hdnSyncStatusValue").val();
-              if (spanSyncStatus == 'Sync') {
-                  IsDeployedToIntegration = true;
+        $("#btnSync").click(function () {
+
+            var IsDeployedToIntegration = false;
+            var spanSyncStatus = $("#hdnSyncStatusValue").val();
+            if (spanSyncStatus == 'Sync') {
+                IsDeployedToIntegration = true;
+            }
+            var PlanTacticId = $('#hdnPlanTacticId').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Home/SaveSyncToIntegration/")',
+                data: {
+                    id: PlanTacticId,
+                    section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", //section parameter added to save tactic comment
+                    IsDeployedToIntegration: IsDeployedToIntegration
+                },
+                success: function (data) {
+                    if (data.result) {
+                        $("#successMessage").css("display", "block");
+                        var topsize = $(document).scrollTop() + 41;
+                        $("#modal-container-186470").css("top", topsize + "px");
+                        $("#spanMessageSuccess").empty();
+                        $("#spanMessageSuccess").text(data.msg);
+                    }
+                },
+                error: function () {
+                    $("#errorMessage").css("display", "block");
+                    var topsize = $(document).scrollTop() + 41;
+                    $("#modal-container-186470").css("top", topsize + "px");
+                    $("#spanMessageError").empty();
+                    GoToLogin();
+                    return false;
+                }
+            });
+        });
+
+        $("#uldivSync li a").click(function () {
+            $("#spanSyncStatus").html($(this).text());
+            $("#hdnSyncStatusValue").val($(this).text());
+        });
+
+        var divheight = $("#divInnerComment").height();
+        $("#divComment").scrollTop(divheight);
+
+        // On Comment Button Save Commnet
+        $("#btnComment").click(function () {
+            $("#successMessage").css("display", "none");
+            $("#errorMessage").css("display", "none");
+            var commentText = $('#txtAreaComment').val();
+            if (commentText == '') {
+                var msgspan = "Make sure all fields are filled and valid,try again.";
+                $("#errorMessage").css("display", "block");
+                /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                var topsize = $(document).scrollTop() + 41;
+
+                $("#modal-container-186470").css("top", topsize + "px");
+                $("#txtAreaComment").addClass("error");
+                $("#spanMessageError").text(msgspan);
+                return false;
+            }
+            else {
+                //if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test(commentText)) {
+                //    var msgspan = "Special character are not allowed, try again.";
+                //    $("#errorMessage").css("display", "block");
+                //    /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                //    var topsize = $(document).scrollTop() + 41;
+                //    $("#modal-container-186470").css("top", topsize + "px");
+                //    $("#txtAreaComment").addClass("error");
+                //    $("#spanMessageError").text(msgspan);
+                //    return false;
+                //}
+                $("#txtAreaComment").removeClass("error");
+            }
+
+            var PlanTacticId = $('#hdnPlanTacticId').val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Home/SaveComment/")',
+                data: {
+                    comment: commentText,
+                    planTacticId: PlanTacticId,
+                    section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()" //section parameter added to save tactic comment
+                },
+                success: function (data) {
+                    if (data != 'undefined') {
+                        if (data.id != 0) {
+                            $("#successMessage").css("display", "block");
+                            /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                            var topsize = $(document).scrollTop() + 41;
+                            $("#modal-container-186470").css("top", topsize + "px");
+                            $("#spanMessageSuccess").empty();
+                            $("#spanMessageSuccess").text(data.msg);
+                            loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue);//section parameter passed to open tactic popup
+                        }
+                        else {
+                            $("#errorMessage").css("display", "block");
+                            var topsize = $(document).scrollTop() + 41;
+                            $("#modal-container-186470").css("top", topsize + "px");
+                            $("#spanMessageError").empty();
+                            $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
+                        }
+                    }
+                },
+                error: function () {
+                    $("#errorMessage").css("display", "block");
+                    var topsize = $(document).scrollTop() + 41;
+                    $("#modal-container-186470").css("top", topsize + "px");
+                    $("#spanMessageError").empty();
+                    GoToLogin();
+                    return false;
+                }
+            });
+        });
+
+        // Click on Approved Button Save Comment & Change Status
+        $("#btnApproved").click(function () {
+            $("#successMessage").css("display", "none");
+            $("#errorMessage").css("display", "none");
+            statusValue = $("#hdnStatusValue").val();
+            var PlanTacticId = $('#hdnPlanTacticId').val();
+            var stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
+            if (statusValue == "Submit for Approval") {
+                stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()";
+            }
+            else if (statusValue == "Approve") {
+                stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
+            }
+            else if (statusValue == "Reject") {
+                stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()";
               }
-              var PlanTacticId = $('#hdnPlanTacticId').val();
-
-              $.ajax({
-                  type: 'POST',
-                  url: '@Url.Content("~/Home/SaveSyncToIntegration/")',
-                  data: {
-                      id: PlanTacticId,
-                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", //section parameter added to save tactic comment
-                      IsDeployedToIntegration: IsDeployedToIntegration
-                  },
-                  success: function (data) {
-                      if (data.result) {
-                          $("#successMessage").css("display", "block");
-                          var topsize = $(document).scrollTop() + 41;
-                          $("#modal-container-186470").css("top", topsize + "px");
-                          $("#spanMessageSuccess").empty();
-                          $("#spanMessageSuccess").text(data.msg);
-                      }
-                  },
-                  error: function () {
-                      $("#errorMessage").css("display", "block");
-                      var topsize = $(document).scrollTop() + 41;
-                      $("#modal-container-186470").css("top", topsize + "px");
-                      $("#spanMessageError").empty();
-                      GoToLogin();
-                      return false;
-                  }
-              });
-          });
-
-          $("#uldivSync li a").click(function () {
-              $("#spanSyncStatus").html($(this).text());
-              $("#hdnSyncStatusValue").val($(this).text());
-          });
-
-          var divheight = $("#divInnerComment").height();
-          $("#divComment").scrollTop(divheight);
-
-          // On Comment Button Save Commnet
-          $("#btnComment").click(function () {
-              $("#successMessage").css("display", "none");
-              $("#errorMessage").css("display", "none");
-              var commentText = $('#txtAreaComment').val();
-              if (commentText == '') {
-                  var msgspan = "Make sure all fields are filled and valid,try again.";
-                  $("#errorMessage").css("display", "block");
-                  /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-                  var topsize = $(document).scrollTop() + 41;
-
-                  $("#modal-container-186470").css("top", topsize + "px");
-                  $("#txtAreaComment").addClass("error");
-                  $("#spanMessageError").text(msgspan);
-                  return false;
-              }
-              else {
-                  //if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test(commentText)) {
-                  //    var msgspan = "Special character are not allowed, try again.";
-                  //    $("#errorMessage").css("display", "block");
-                  //    /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-                  //    var topsize = $(document).scrollTop() + 41;
-                  //    $("#modal-container-186470").css("top", topsize + "px");
-                  //    $("#txtAreaComment").addClass("error");
-                  //    $("#spanMessageError").text(msgspan);
-                  //    return false;
-                  //}
-                  $("#txtAreaComment").removeClass("error");
-              }
-
-              var PlanTacticId = $('#hdnPlanTacticId').val();
-              $.ajax({
-                  type: 'POST',
-                  url: '@Url.Content("~/Home/SaveComment/")',
-                  data: {
-                      comment: commentText,
-                      planTacticId: PlanTacticId,
-                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()" //section parameter added to save tactic comment
-                  },
-                  success: function (data) {
-                      if (data != 'undefined') {
-                          if (data.id != 0) {
-                              $("#successMessage").css("display", "block");
-                              /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-                              var topsize = $(document).scrollTop() + 41;
-                              $("#modal-container-186470").css("top", topsize + "px");
-                              $("#spanMessageSuccess").empty();
-                              $("#spanMessageSuccess").text(data.msg);
-                              loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue);//section parameter passed to open tactic popup
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Home/ApprovedTactic/")',
+                data: {
+                    status: stat,
+                    planTacticId: PlanTacticId,
+                    section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()" //section parameter added to approve tactic
+                },
+                success: function (data) {
+                    if (data != 'undefined') {
+                        if (data.id != 0) {
+                            $("#successMessage").css("display", "block");
+                            var topsize = $(document).scrollTop() + 41;
+                            $("#modal-container-186470").css("top", topsize + "px");
+                            $("#spanMessageSuccess").empty();
+                            $("#spanMessageSuccess").text(data.msg);
+                            loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue); //section parameter passed to open tactic popup
+                        }
+                        else {
+                            $("#errorMessage").css("display", "block");
+                            var topsize = $(document).scrollTop() + 41;
+                            $("#modal-container-186470").css("top", topsize + "px");
+                            $("#spanMessageError").empty();
+                            $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
                           }
-                          else {
-                              $("#errorMessage").css("display", "block");
-                              var topsize = $(document).scrollTop() + 41;
-                              $("#modal-container-186470").css("top", topsize + "px");
-                              $("#spanMessageError").empty();
-                              $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
-                          }
-                      }
-                  },
-                  error: function () {
-                      $("#errorMessage").css("display", "block");
-                      var topsize = $(document).scrollTop() + 41;
-                      $("#modal-container-186470").css("top", topsize + "px");
-                      $("#spanMessageError").empty();
-                      GoToLogin();
-                      return false;
-                  }
-              });
-          });
 
-          // Click on Approved Button Save Comment & Change Status
-          $("#btnApproved").click(function () {
-              $("#successMessage").css("display", "none");
-              $("#errorMessage").css("display", "none");
-              statusValue = $("#hdnStatusValue").val();
-              var PlanTacticId = $('#hdnPlanTacticId').val();
-              var stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
-              if (statusValue == "Submit for Approval") {
-                  stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()";
-              }
-              else if (statusValue == "Approve") {
-                  stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
-              }
-              else if (statusValue == "Reject") {
-                  stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()";
-              }
-              $.ajax({
-                  type: 'POST',
-                  url: '@Url.Content("~/Home/ApprovedTactic/")',
-                  data: {
-                      status: stat,
-                      planTacticId: PlanTacticId,
-                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()" //section parameter added to approve tactic
-                  },
-                  success: function (data) {
-                      if (data != 'undefined') {
-                          if (data.id != 0) {
-                              $("#successMessage").css("display", "block");
-                              var topsize = $(document).scrollTop() + 41;
-                              $("#modal-container-186470").css("top", topsize + "px");
-                              $("#spanMessageSuccess").empty();
-                              $("#spanMessageSuccess").text(data.msg);
-                              loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue); //section parameter passed to open tactic popup
-                          }
-                          else {
-                              $("#errorMessage").css("display", "block");
-                              var topsize = $(document).scrollTop() + 41;
-                              $("#modal-container-186470").css("top", topsize + "px");
-                              $("#spanMessageError").empty();
-                              $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
-                          }
-
-                          // Added by Dharmraj to refresh current tab for PL #364,#365,#366
+                        // Added by Dharmraj to refresh current tab for PL #364,#365,#366
                           RefreshCurrentTab();
                       }
-                  },
-                  error: function () {
-                      $("#errorMessage").css("display", "block");
-                      var topsize = $(document).scrollTop() + 41;
-                      $("#modal-container-186470").css("top", topsize + "px");
-                      $("#spanMessageError").empty();
-                      GoToLogin();
-                      return false;
-                  }
-              });
+                },
+                error: function () {
+                    $("#errorMessage").css("display", "block");
+                    var topsize = $(document).scrollTop() + 41;
+                    $("#modal-container-186470").css("top", topsize + "px");
+                    $("#spanMessageError").empty();
+                    GoToLogin();
+                    return false;
+                }
+            });
 
-          });
+        });
 
 
-      });
+    });
 </script>

@@ -374,7 +374,7 @@ function GetAbberiviatedValue(value) {
             actualvalue = value.toFixed(2) + postfix[indexvalue];
         }
     }
-     
+
     return (isNegative ? '-' + actualvalue.toString() : actualvalue.toString());
 }
 
@@ -482,6 +482,18 @@ function NumberFormatterTipsy(lableId, maxSize) {
             $(this).removeAttr('original-title');
             $(this).removeClass('north');
         }
+    });
+}
+
+// Added by Mitesh Vaishnav on 13/06/2014 to address #498 Customized Target Stage - Publish model
+function ImageTipsy(lableId) {
+    $(lableId).each(function () {
+        var txtvalue = $(this).attr('title');
+        var lengthvalue = txtvalue.length;
+        $(this).attr('title', txtvalue);
+        $(this).addClass('north');
+        $('.north').tipsy({ gravity: 's' });
+
     });
 }
 
