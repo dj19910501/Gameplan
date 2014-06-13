@@ -1391,7 +1391,7 @@ namespace RevenuePlanner.Helpers
                 {
                     // Added BY Bhavesh
                     // Calculate MQL at runtime #376
-                    objHomePlanModelHeader.MQLs = Common.GetMQLValueTacticList(planTacticIds).Sum(tm => tm.MQL);
+                    objHomePlanModelHeader.MQLs = GetTacticStageRelation(planTacticIds, false).Sum(t => t.MQLValue); ;// Common.GetMQLValueTacticList(planTacticIds).Sum(tm => tm.MQL);
                     string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
                     if (string.IsNullOrEmpty(MQLStageLabel))
                     {
@@ -1411,7 +1411,7 @@ namespace RevenuePlanner.Helpers
                 /// Added By: Maninder Singh Wadhva
                 /// Addressed PL Ticket: 37,38,47,49
                 //// Getting improved MQL.
-                double? improvedMQL = Common.CalculateImprovedMQL(planId, true);
+                double? improvedMQL = GetTacticStageRelation(planTacticIds, true).Sum(t => t.MQLValue);
 
                 //// Calculating percentage increase.
                 if (improvedMQL.HasValue && objHomePlanModelHeader.MQLs != 0)
@@ -3219,13 +3219,35 @@ namespace RevenuePlanner.Helpers
 
                 TacticStageValue tacticStageValueObj = new TacticStageValue();
                 tacticStageValueObj.TacticObj = tactic;
+                if (inqStagelist.Count > 0)
+                {
                 tacticStageValueObj.INQValue = projectedStageLevel <= levelINQ ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => inqStagelist.Contains(sr.StageId) && sr.StageType == CR).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
+                }
+                if (mqlStagelist.Count > 0)
+                {
                 tacticStageValueObj.MQLValue = projectedStageLevel <= levelMQL ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => mqlStagelist.Contains(sr.StageId) && sr.StageType == CR).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
+                }
+                if (cwStagelist.Count > 0)
+                {
                 tacticStageValueObj.CWValue = projectedStageLevel < levelCW ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => cwStagelist.Contains(sr.StageId) && sr.StageType == CR).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
+                }
+                if (revenueStagelist.Count > 0)
+                {
                 tacticStageValueObj.RevenueValue = projectedStageLevel < levelCW ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => revenueStagelist.Contains(sr.StageId) && (sr.StageType == CR || sr.StageType == Size)).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
+                }
+                if (inqVelocityStagelist.Count > 0)
+                {
                 tacticStageValueObj.INQVelocity = stageRelation.Where(sr => inqVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
+                }
+                if (mqlVelocityStagelist.Count > 0)
+                {
                 tacticStageValueObj.MQLVelocity = stageRelation.Where(sr => mqlVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
+                }
+                if (cwVelocityStagelist.Count > 0)
+                {
                 tacticStageValueObj.CWVelocity = stageRelation.Where(sr => cwVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
+                }
+                tacticStageValueObj.ADSValue = stageRelation.Where(sr => sr.StageType == Size).Sum(sr => sr.Value);
                 tacticStageValueObj.ActualTacticList = actualTacticList.Where(a => a.PlanTacticId == tactic.PlanTacticId).ToList();
                 tacticStageValueObj.TacticYear = tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
 
@@ -3246,6 +3268,11 @@ namespace RevenuePlanner.Helpers
             List<ImprovementTypeWeightList> improvementTypeWeightList = GetImprovementTacticWeightList(impids);
             List<StageList> stageList = GetStageList();
             List<TacticStageValueRelation> TacticSatgeValueList = new List<TacticStageValueRelation>();
+            string Size = Enums.StageType.Size.ToString();
+            int ADSStageId = stageList.Single(s => s.Level == null && s.StageType == Size).StageId;
+            double bestInClassAdsValue = bestInClassStageRelation.Single(b => b.StageId == ADSStageId).Value;
+            List<PlanADSRelation> planADSList = GetPlanADSList(planIMPTacticList, improvementTypeWeightList, ADSStageId, Size, bestInClassAdsValue);
+
             foreach (Plan_Campaign_Program_Tactic tactic in tlist)
             {
                 int planId = tacticPlanList.Single(t => t.PlanTacticId == tactic.PlanTacticId).PlanId;
@@ -3263,13 +3290,20 @@ namespace RevenuePlanner.Helpers
                     foreach (StageList stage in stageList)
                     {
                         StageRelation stageRelationObj = new StageRelation();
+                        stageRelationObj.StageId = stage.StageId;
+                        stageRelationObj.StageType = stage.StageType;
+                        if (stage.StageType == Size && ADSStageId == stage.StageId && planADSList.Single(p => p.PlanId == planId).isImprovementExits)
+                        {
+                            stageRelationObj.Value = planADSList.Single(p => p.PlanId == planId).ADS;
+                        }
+                        else
+                        {
                         var stageimplist = improvementIdsWeighList.Where(impweight => impweight.StageId == stage.StageId && impweight.StageType == stage.StageType && impweight.Value > 0).ToList();
                         double impcount = stageimplist.Count();
                         double impWeight = impcount <= 0 ? 0 : stageimplist.Sum(s => s.Value);
                         double improvementValue = GetImprovement(stage.StageType, bestInClassStageRelation.Single(b => b.StageId == stage.StageId && b.StageType == stage.StageType).Value, stageModelRelation.Single(s => s.StageId == stage.StageId && s.StageType == stage.StageType).Value, impcount, impWeight);
-                        stageRelationObj.StageId = stage.StageId;
-                        stageRelationObj.StageType = stage.StageType;
                         stageRelationObj.Value = improvementValue;
+                        }
                         stageRelationList.Add(stageRelationObj);
                     }
 
@@ -3521,17 +3555,50 @@ namespace RevenuePlanner.Helpers
             return improvementValue;
         }
 
+        public static List<PlanADSRelation> GetPlanADSList(List<PlanIMPTacticListRelation> planIMPList,List<ImprovementTypeWeightList> improvementTypeWeightList,int ADSStageId,string Size, double bestInClassSizeValue)
+        {
+            MRPEntities dbStage = new MRPEntities();
+            string marketing = Enums.Funnel.Marketing.ToString();
+            List<PlanADSRelation> planADSList = new List<PlanADSRelation>();
+            List<int> planIds = planIMPList.Select(p => p.PlanId).ToList();
+            List<PlanModelRelation> planModelRelation = dbStage.Plans.Where(p => planIds.Contains(p.PlanId)).Select(p => new PlanModelRelation { PlanId = p.PlanId, ModelId = p.ModelId }).ToList();
+            foreach (PlanIMPTacticListRelation planIMP in planIMPList)
+            {
+                bool isImprovementExits = false;
+                int modelId = planModelRelation.Single(p => p.PlanId == planIMP.PlanId).ModelId;
+                if (planIMP.ImprovementTacticList.Count > 0)
+                {
+                     //// Get Model id based on effective date From.
+                    modelId = GetModelId(planIMP.ImprovementTacticList.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), modelId);
+                }
+                double ADSValue = dbStage.Model_Funnel.Single(mf => mf.ModelId == modelId && mf.Funnel.Title == marketing).AverageDealSize;
+                if (planIMP.ImprovementTacticList.Count > 0)
+                {
+                    var improvementTypeList = planIMP.ImprovementTacticList.Select(imptactic => imptactic.ImprovementTacticTypeId).ToList();
+                    var improvementIdsWeighList = improvementTypeWeightList.Where(imptype => improvementTypeList.Contains(imptype.ImprovementTypeId) && imptype.isDeploy).Select(imptype => imptype).ToList();
+                    var stageimplist = improvementIdsWeighList.Where(impweight => impweight.StageId == ADSStageId && impweight.StageType == Size && impweight.Value > 0).ToList();
+                    double impcount = stageimplist.Count();
+                    double impWeight = impcount <= 0 ? 0 : stageimplist.Sum(s => s.Value);
+                    ADSValue = GetImprovement(Size, bestInClassSizeValue, ADSValue, impcount, impWeight);
+                    isImprovementExits = true;
+                }
+                planADSList.Add(new PlanADSRelation { PlanId = planIMP.PlanId, ADS = ADSValue, isImprovementExits = isImprovementExits });
+            }
+
+            return planADSList;
+        }
+
         #endregion
 
         #region ""
 
-        public static double GetCalculatedValueImproved(int planId, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities, string code, bool isIncludeImprovement = true)
+        public static double GetCalculatedValueImproved(int planId, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities, string stageType, bool isIncludeImprovement = true)
         {
             List<StageRelation> stagevalueList = CalculateStageValue(planId, improvementActivities, isIncludeImprovement);
             double returnValue = 0;
             if (stagevalueList.Count > 0)
             {
-                returnValue = stagevalueList.Where(s => s.StageType == code).Sum(s => s.Value);
+                returnValue = stagevalueList.Where(s => s.StageType == stageType).Sum(s => s.Value);
             }
             return returnValue;
         }
@@ -3549,8 +3616,11 @@ namespace RevenuePlanner.Helpers
             List<StageList> stageList = GetStageList();
             //// Getting model based on plan id.
             int ModelId = db.Plans.Where(p => p.PlanId == planId).Select(p => p.ModelId).SingleOrDefault();
+            if (improvementActivities.Count > 0)
+            {
             //// Get Model id based on effective date From.
             ModelId = GetModelId(improvementActivities.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), ModelId);
+            }
             List<int> modelids = new List<int>();
             modelids.Add(ModelId);
             List<ModelStageRelationList> modleStageRelationList = GetModelStageRelation(modelids);
@@ -3581,6 +3651,74 @@ namespace RevenuePlanner.Helpers
             }
 
             return finalStageResult;
+        }
+
+        public static List<TacticStageValue> GetTacticStageValueListForImprovement(List<Plan_Campaign_Program_Tactic> marketingActivities, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities)
+        {
+            MRPEntities dbStage = new MRPEntities();
+            List<StageRelation> stageRelation = CalculateStageValue(Sessions.PlanId, improvementActivities, true);
+            List<Stage> stageList = dbStage.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId).Select(stage => stage).ToList();
+            List<TacticStageValue> tacticStageList = new List<TacticStageValue>();
+            string stageINQ = Enums.Stage.INQ.ToString();
+            int levelINQ = stageList.Single(s => s.Code.Equals(stageINQ)).Level.Value;
+            string stageMQL = Enums.Stage.MQL.ToString();
+            int levelMQL = stageList.Single(s => s.Code.Equals(stageMQL)).Level.Value;
+            string stageCW = Enums.Stage.CW.ToString();
+            int levelCW = stageList.Single(s => s.Code.Equals(stageCW)).Level.Value;
+            List<int> inqStagelist = new List<int>();
+            List<int> mqlStagelist = new List<int>();
+            List<int> cwStagelist = new List<int>();
+            List<int> revenueStagelist = new List<int>();
+
+            List<int> inqVelocityStagelist = stageList.Where(s => s.Level >= 1 && s.Level < levelINQ).Select(s => s.StageId).ToList();
+            List<int> mqlVelocityStagelist = stageList.Where(s => s.Level >= levelINQ && s.Level < levelMQL).Select(s => s.StageId).ToList();
+            List<int> cwVelocityStagelist = stageList.Where(s => s.Level >= levelMQL && s.Level <= levelCW).Select(s => s.StageId).ToList();
+
+            string CR = Enums.StageType.CR.ToString();
+            string SV = Enums.StageType.SV.ToString();
+            string Size = Enums.StageType.Size.ToString();
+            foreach (Plan_Campaign_Program_Tactic tactic in marketingActivities)
+            {
+                int projectedStageLevel = stageList.Single(s => s.StageId == tactic.StageId).Level.Value;
+                inqStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelINQ).Select(s => s.StageId).ToList();
+                mqlStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelMQL).Select(s => s.StageId).ToList();
+                cwStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level <= levelCW).Select(s => s.StageId).ToList();
+                revenueStagelist = stageList.Where(s => (s.Level >= projectedStageLevel && s.Level <= levelCW) || s.Level == null).Select(s => s.StageId).ToList();
+
+                TacticStageValue tacticStageValueObj = new TacticStageValue();
+                tacticStageValueObj.TacticObj = tactic;
+                if (inqStagelist.Count > 0)
+                {
+                    tacticStageValueObj.INQValue = projectedStageLevel <= levelINQ ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => inqStagelist.Contains(sr.StageId) && sr.StageType == CR).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
+                }
+                if (mqlStagelist.Count > 0)
+                {
+                    tacticStageValueObj.MQLValue = projectedStageLevel <= levelMQL ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => mqlStagelist.Contains(sr.StageId) && sr.StageType == CR).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
+                }
+                if (cwStagelist.Count > 0)
+                {
+                    tacticStageValueObj.CWValue = projectedStageLevel < levelCW ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => cwStagelist.Contains(sr.StageId) && sr.StageType == CR).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
+                }
+                if (revenueStagelist.Count > 0)
+                {
+                    tacticStageValueObj.RevenueValue = projectedStageLevel < levelCW ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => revenueStagelist.Contains(sr.StageId) && (sr.StageType == CR || sr.StageType == Size)).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
+                }
+                if (inqVelocityStagelist.Count > 0)
+                {
+                    tacticStageValueObj.INQVelocity = stageRelation.Where(sr => inqVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
+                }
+                if (mqlVelocityStagelist.Count > 0)
+                {
+                    tacticStageValueObj.MQLVelocity = stageRelation.Where(sr => mqlVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
+                }
+                if (cwVelocityStagelist.Count > 0)
+                {
+                    tacticStageValueObj.CWVelocity = stageRelation.Where(sr => cwVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
+                }
+                tacticStageValueObj.ADSValue = stageRelation.Where(sr => sr.StageType == Size).Sum(sr => sr.Value);
+                tacticStageList.Add(tacticStageValueObj);
+            }
+            return tacticStageList;
         }
 
         #endregion

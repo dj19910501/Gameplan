@@ -276,4 +276,18 @@ namespace RevenuePlanner.Models
         public List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList { get; set; }
         public string TacticYear { get; set; }
     }
+
+    public class PlanADSRelation
+    {
+        public int PlanId { get; set; }
+        public double ADS { get; set; }
+        public bool isImprovementExits {get; set;}
+    }
+
+    public class PlanModelRelation
+    {
+        public int PlanId { get; set; }
+        public int ModelId { get; set; }
+    }
+
 }
