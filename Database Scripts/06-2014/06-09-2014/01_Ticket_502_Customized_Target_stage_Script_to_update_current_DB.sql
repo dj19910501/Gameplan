@@ -1,3 +1,5 @@
+-- Run this script on MRP Database
+
 -- =========================================== Start - Script- 1 (Add ConversionTitle Column and ADS entry in Stage Table) ==================================================================
 
 IF EXISTS (select 1 from INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'Stage')
