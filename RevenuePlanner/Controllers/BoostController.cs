@@ -230,8 +230,8 @@ namespace RevenuePlanner.Controllers
             List<MetricModel> listMetrics = new List<MetricModel>();
             List<MetricModel> listMetricssize = new List<MetricModel>();
             // Modified by Mitesh Vaishnav on 03/06/2014 for Customized Target stage - Boost Improvement Tactic
-            var stageFilterCR = db.Stages.Where(n => n.IsDeleted == false && n.ClientId == Sessions.User.ClientId && n.ImprovementTacticType_Metric.Where(ittm => ittm.StageId == n.StageId && ittm.StageType == StageType_CR).FirstOrDefault().StageType == StageType_CR).ToList();
-            var stageFilterSV = db.Stages.Where(n => n.IsDeleted == false && n.ClientId == Sessions.User.ClientId && n.ImprovementTacticType_Metric.Where(ittm => ittm.StageId == n.StageId && ittm.StageType == StageType_SV).FirstOrDefault().StageType == StageType_SV).ToList();
+            var stageFilterCR = db.Stages.Where(n => n.IsDeleted == false && n.ClientId == Sessions.User.ClientId).ToList();//modified by Mitesh Vaishnav on 13/06/2014 to address #500 Customized Target stage - Boost Improvement Tactic 
+            var stageFilterSV = db.Stages.Where(n => n.IsDeleted == false && n.ClientId == Sessions.User.ClientId).ToList();//modified by Mitesh Vaishnav on 13/06/2014 to address #500 Customized Target stage - Boost Improvement Tactic 
             foreach (var itemCR in stageFilterCR.Where(m => m.Level != null && m.Code != StageTypeCW).OrderBy(o => o.Level).ToList())
             {
                 foreach (var itemSV in stageFilterSV.Where(m => m.Level != null && m.Code != StageTypeCW).OrderBy(o => o.Level).ToList())
