@@ -584,11 +584,12 @@ namespace RevenuePlanner.Controllers
                     #endregion
                 case GanttTabs.Stage:
                     #region Stage
+                    //// Modified by Maninder Singh Wadhva on 06/13/2014 for PL #526 Home & Plan Pages: Stages are different but all Tactics are displayed under SUS
                     var queryStages = tactic.Select(t => new
                     {
-                        t.TacticType.StageId,
-                        t.TacticType.Stage.Title,
-                        t.TacticType.Stage.ColorCode,
+                        t.StageId,
+                        t.Stage.Title,
+                        t.Stage.ColorCode,
                         //Status = t.Status   //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
                     }).Distinct();
 
@@ -596,8 +597,8 @@ namespace RevenuePlanner.Controllers
                     {
                         t.PlanTacticId,
                         t.Title,
-                        t.TacticType.StageId,
-                        TaskId = string.Format("S{0}_C{1}_P{2}_T{3}", t.TacticType.StageId, t.Plan_Campaign_Program.PlanCampaignId, t.PlanProgramId, t.PlanTacticId),
+                        t.StageId,
+                        TaskId = string.Format("S{0}_C{1}_P{2}_T{3}", t.StageId, t.Plan_Campaign_Program.PlanCampaignId, t.PlanProgramId, t.PlanTacticId),
                         //Status = t.Status   //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
                     });
 
@@ -1087,6 +1088,7 @@ namespace RevenuePlanner.Controllers
         /// Function to get GANTT chart task detail for Stage.
         /// Modfied By: Maninder Singh Wadhva.
         /// Reason: To show task whose either start or end date or both date are outside current view.
+        /// Modified by Maninder Singh Wadhva on 06/13/2014 for PL #526 Home & Plan Pages: Stages are different but all Tactics are displayed under SUS
         /// </summary>
         /// <param name="campaign">Campaign of plan version.</param>
         /// <param name="program">Program of plan version.</param>
@@ -1097,21 +1099,21 @@ namespace RevenuePlanner.Controllers
             //// Stage
             var taskStages = tactic.Select(t => new
             {
-                id = string.Format("S{0}", t.TacticType.StageId),
-                text = t.TacticType.Stage.Title,
-                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateStageAndBusinessUnit(campaign, program, tactic.Where(tt => tt.TacticType.StageId.Equals(t.TacticType.StageId)).ToList<Plan_Campaign_Program_Tactic>())),
+                id = string.Format("S{0}", t.StageId),
+                text = t.Stage.Title,
+                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateStageAndBusinessUnit(campaign, program, tactic.Where(tt => tt.StageId.Equals(t.StageId)).ToList<Plan_Campaign_Program_Tactic>())),
                 duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
                                                           CalendarEndDate,
-                                                          GetMinStartDateStageAndBusinessUnit(campaign, program, tactic.Where(tt => tt.TacticType.StageId.Equals(t.TacticType.StageId)).ToList<Plan_Campaign_Program_Tactic>()),
-                                                          GetMaxEndDateStageAndBusinessUnit(campaign, program, tactic.Where(tt => tt.TacticType.StageId.Equals(t.TacticType.StageId)).ToList<Plan_Campaign_Program_Tactic>())),
-                progress = GetProgress(Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateStageAndBusinessUnit(campaign, program, tactic.Where(tt => tt.TacticType.StageId.Equals(t.TacticType.StageId)).ToList<Plan_Campaign_Program_Tactic>())),
+                                                          GetMinStartDateStageAndBusinessUnit(campaign, program, tactic.Where(tt => tt.StageId.Equals(t.StageId)).ToList<Plan_Campaign_Program_Tactic>()),
+                                                          GetMaxEndDateStageAndBusinessUnit(campaign, program, tactic.Where(tt => tt.StageId.Equals(t.StageId)).ToList<Plan_Campaign_Program_Tactic>())),
+                progress = GetProgress(Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateStageAndBusinessUnit(campaign, program, tactic.Where(tt => tt.StageId.Equals(t.StageId)).ToList<Plan_Campaign_Program_Tactic>())),
                                             Common.GetEndDateAsPerCalendar(CalendarStartDate,
                                                           CalendarEndDate,
-                                                          GetMinStartDateStageAndBusinessUnit(campaign, program, tactic.Where(tt => tt.TacticType.StageId.Equals(t.TacticType.StageId)).ToList<Plan_Campaign_Program_Tactic>()),
-                                                          GetMaxEndDateStageAndBusinessUnit(campaign, program, tactic.Where(tt => tt.TacticType.StageId.Equals(t.TacticType.StageId)).ToList<Plan_Campaign_Program_Tactic>())),
+                                                          GetMinStartDateStageAndBusinessUnit(campaign, program, tactic.Where(tt => tt.StageId.Equals(t.StageId)).ToList<Plan_Campaign_Program_Tactic>()),
+                                                          GetMaxEndDateStageAndBusinessUnit(campaign, program, tactic.Where(tt => tt.StageId.Equals(t.StageId)).ToList<Plan_Campaign_Program_Tactic>())),
                                                           tactic, improvementTactic),//progress = 0,
                 open = false,
-                color = string.Concat(GANTT_BAR_CSS_CLASS_PREFIX, t.TacticType.Stage.ColorCode.ToLower()),
+                color = string.Concat(GANTT_BAR_CSS_CLASS_PREFIX, t.Stage.ColorCode.ToLower()),
                 //Status = t.Status       //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
             }).Distinct();
 
@@ -1130,7 +1132,7 @@ namespace RevenuePlanner.Controllers
             //// Tactic
             var taskDataTactic = tactic.Select(t => new
             {
-                id = string.Format("S{0}_C{1}_P{2}_T{3}", t.TacticType.StageId, t.Plan_Campaign_Program.PlanCampaignId, t.Plan_Campaign_Program.PlanProgramId, t.PlanTacticId),
+                id = string.Format("S{0}_C{1}_P{2}_T{3}", t.StageId, t.Plan_Campaign_Program.PlanCampaignId, t.Plan_Campaign_Program.PlanProgramId, t.PlanTacticId),
                 text = t.Title,
                 start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, t.StartDate),
                 duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
@@ -1139,8 +1141,8 @@ namespace RevenuePlanner.Controllers
                                                           t.EndDate),
                 progress = GetTacticProgress(t, improvementTactic), //progress = 0,
                 open = false,
-                parent = string.Format("S{0}_C{1}_P{2}", t.TacticType.StageId, t.Plan_Campaign_Program.PlanCampaignId, t.PlanProgramId),
-                color = string.Concat(GANTT_BAR_CSS_CLASS_PREFIX, t.TacticType.Stage.ColorCode.ToLower()),
+                parent = string.Format("S{0}_C{1}_P{2}", t.StageId, t.Plan_Campaign_Program.PlanCampaignId, t.PlanProgramId),
+                color = string.Concat(GANTT_BAR_CSS_CLASS_PREFIX, t.Stage.ColorCode.ToLower()),
                 plantacticid = t.PlanTacticId,
                 Status = t.Status       //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
             }).OrderBy(t => t.text);
@@ -1162,7 +1164,7 @@ namespace RevenuePlanner.Controllers
             //// Program
             var taskDataProgram = tactic.Select(t => new
             {
-                id = string.Format("S{0}_C{1}_P{2}", t.TacticType.StageId, t.Plan_Campaign_Program.PlanCampaignId, t.PlanProgramId),
+                id = string.Format("S{0}_C{1}_P{2}", t.StageId, t.Plan_Campaign_Program.PlanCampaignId, t.PlanProgramId),
                 text = t.Plan_Campaign_Program.Title,
                 start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, t.Plan_Campaign_Program.StartDate),
                 duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
@@ -1171,7 +1173,7 @@ namespace RevenuePlanner.Controllers
                                                           t.Plan_Campaign_Program.EndDate),
                 progress = GetProgramProgress(tactic, t.Plan_Campaign_Program, improvementTactic),//progress = 0,
                 open = false,
-                parent = string.Format("S{0}_C{1}", t.TacticType.StageId, t.Plan_Campaign_Program.PlanCampaignId),
+                parent = string.Format("S{0}_C{1}", t.StageId, t.Plan_Campaign_Program.PlanCampaignId),
                 color = "",
                 planprogramid = t.PlanProgramId,
                 Status = t.Plan_Campaign_Program.Status     //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
@@ -1194,7 +1196,7 @@ namespace RevenuePlanner.Controllers
             //// Campaign
             var taskDataCampaign = tactic.Select(t => new
             {
-                id = string.Format("S{0}_C{1}", t.TacticType.StageId, t.Plan_Campaign_Program.PlanCampaignId),
+                id = string.Format("S{0}_C{1}", t.StageId, t.Plan_Campaign_Program.PlanCampaignId),
                 text = t.Plan_Campaign_Program.Plan_Campaign.Title,
                 start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, t.Plan_Campaign_Program.Plan_Campaign.StartDate),
                 duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
@@ -1203,7 +1205,7 @@ namespace RevenuePlanner.Controllers
                                                           t.Plan_Campaign_Program.Plan_Campaign.EndDate),
                 progress = GetCampaignProgress(tactic, t.Plan_Campaign_Program.Plan_Campaign, improvementTactic),//progress = 0,
                 open = false,
-                parent = string.Format("S{0}", t.TacticType.StageId),
+                parent = string.Format("S{0}", t.StageId),
                 color = Common.COLORC6EBF3_WITH_BORDER,
                 plancampaignid = t.Plan_Campaign_Program.PlanCampaignId,
                 Status = t.Plan_Campaign_Program.Plan_Campaign.Status       //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
