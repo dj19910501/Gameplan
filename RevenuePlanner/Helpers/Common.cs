@@ -1408,18 +1408,21 @@ namespace RevenuePlanner.Helpers
                     objHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Cost.ToString()].ToString();
                 }
 
-                /// Added By: Maninder Singh Wadhva
-                /// Addressed PL Ticket: 37,38,47,49
-                //// Getting improved MQL.
-                double? improvedMQL = GetTacticStageRelation(planTacticIds, true).Sum(t => t.MQLValue);
-
-                //// Calculating percentage increase.
-                if (improvedMQL.HasValue && objHomePlanModelHeader.MQLs != 0)
+                var impList = db.Plan_Improvement_Campaign_Program_Tactic.Where(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == planId && !imp.IsDeleted).ToList();
+                if (impList.Count > 0)
                 {
-                    objHomePlanModelHeader.PercentageMQLImproved = ((improvedMQL - objHomePlanModelHeader.MQLs) / objHomePlanModelHeader.MQLs) * 100;
-                    objHomePlanModelHeader.MQLs = Convert.ToDouble(improvedMQL);
-                }
+                    /// Added By: Maninder Singh Wadhva
+                    /// Addressed PL Ticket: 37,38,47,49
+                    //// Getting improved MQL.
+                    double? improvedMQL = GetTacticStageRelation(planTacticIds, true).Sum(t => t.MQLValue);
 
+                    //// Calculating percentage increase.
+                    if (improvedMQL.HasValue && objHomePlanModelHeader.MQLs != 0)
+                    {
+                        objHomePlanModelHeader.PercentageMQLImproved = ((improvedMQL - objHomePlanModelHeader.MQLs) / objHomePlanModelHeader.MQLs) * 100;
+                        objHomePlanModelHeader.MQLs = Convert.ToDouble(improvedMQL);
+                    }
+                }
                 if (planTacticIds != null)
                 {
                     objHomePlanModelHeader.TacticCount = planTacticIds.Count();
@@ -3219,34 +3222,13 @@ namespace RevenuePlanner.Helpers
 
                 TacticStageValue tacticStageValueObj = new TacticStageValue();
                 tacticStageValueObj.TacticObj = tactic;
-                if (inqStagelist.Count > 0)
-                {
                 tacticStageValueObj.INQValue = projectedStageLevel <= levelINQ ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => inqStagelist.Contains(sr.StageId) && sr.StageType == CR).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
-                }
-                if (mqlStagelist.Count > 0)
-                {
                 tacticStageValueObj.MQLValue = projectedStageLevel <= levelMQL ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => mqlStagelist.Contains(sr.StageId) && sr.StageType == CR).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
-                }
-                if (cwStagelist.Count > 0)
-                {
                 tacticStageValueObj.CWValue = projectedStageLevel < levelCW ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => cwStagelist.Contains(sr.StageId) && sr.StageType == CR).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
-                }
-                if (revenueStagelist.Count > 0)
-                {
                 tacticStageValueObj.RevenueValue = projectedStageLevel < levelCW ? Convert.ToDouble(tactic.ProjectedStageValue) * (stageRelation.Where(sr => revenueStagelist.Contains(sr.StageId) && (sr.StageType == CR || sr.StageType == Size)).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
-                }
-                if (inqVelocityStagelist.Count > 0)
-                {
                 tacticStageValueObj.INQVelocity = stageRelation.Where(sr => inqVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
-                }
-                if (mqlVelocityStagelist.Count > 0)
-                {
                 tacticStageValueObj.MQLVelocity = stageRelation.Where(sr => mqlVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
-                }
-                if (cwVelocityStagelist.Count > 0)
-                {
                 tacticStageValueObj.CWVelocity = stageRelation.Where(sr => cwVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
-                }
                 tacticStageValueObj.ADSValue = stageRelation.Where(sr => sr.StageType == Size).Sum(sr => sr.Value);
                 tacticStageValueObj.ActualTacticList = actualTacticList.Where(a => a.PlanTacticId == tactic.PlanTacticId).ToList();
                 tacticStageValueObj.TacticYear = tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;

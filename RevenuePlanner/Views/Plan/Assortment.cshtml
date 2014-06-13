@@ -175,10 +175,10 @@
     }
 
     $("#btnSaveAndContinue").click(function () {
-        CheckUserSession("#btnSaveAndContinue", true);
-        if (reason == 'user') {
-            return false;
-        }
+        //CheckUserSession("#btnSaveAndContinue", true);
+        //if (reason == 'user') {
+        //    return false;
+        //}
         if (isApply) {
             $('#cErrorDuplicatePlan').html('<strong>Error! </strong> Please add at least one campaign.');
             $("#errorMessageDuplicatePlan").slideDown(3000);
@@ -188,15 +188,22 @@
             // PL Ticket 289,377,378
             if (SuggestionIMPTacticIdList.length != 0) {
                 if (confirm('Are you sure you want to delete the un-deployed improvement tactic? Please note that any changes to the improvement tactic owned by others won\'t be saved.')) {
+                    var uId = $(window).attr('name');
                     $.ajax({
                         type: 'POST',
                         url: '@Url.Content("~/Plan/DeleteSuggestedBoxImprovementTactic/")',
                         data: {
-                            SuggestionIMPTacticIdList: SuggestionIMPTacticIdList.toString()
+                            SuggestionIMPTacticIdList: SuggestionIMPTacticIdList.toString(),
+                            UserId: uId
                         },
                         success: function (data) {
-            var url = '@Url.Action("ApplyToCalendar", "Plan")';
-            window.location.href = url;
+                            if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                                window.location = '@Url.Content("~/Login/Index")';
+                            }
+                            else {
+                                var url = '@Url.Action("ApplyToCalendar", "Plan")';
+                                window.location.href = url;
+                            }
                         }
                     });
                     }

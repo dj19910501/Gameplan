@@ -4570,8 +4570,16 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="SuggestionIMPTacticIdList"></param>
         /// <returns></returns>
-        public JsonResult DeleteSuggestedBoxImprovementTactic(string SuggestionIMPTacticIdList)
+        public JsonResult DeleteSuggestedBoxImprovementTactic(string SuggestionIMPTacticIdList, string UserId = "")
         {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
             List<int> plantacticids = new List<int>();
             if (SuggestionIMPTacticIdList.ToString() != string.Empty)
             {

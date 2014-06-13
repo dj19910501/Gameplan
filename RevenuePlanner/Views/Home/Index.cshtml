@@ -2026,8 +2026,8 @@ function addRowTactic(index, id, text, projectedStageValue, mqls, cws, cost, isD
         }
 
         $html += '<span class="title-baseline-model">' + text + '</span><span class="search-icon"></span></td>' +
-                    '<td class="sm">' + projectedStageValue + '</td>' +
-                    '<td class="sm">' + mqls + '</td>' +
+                    '<td class="sm">' + displayTacticMQL(projectedStageValue) + '</td>' +
+                    '<td class="sm">' + displayTacticMQL(mqls) + '</td>' +
                     '<td class="sm">' + FormatCurrency(cws, false) + '</td>' +
                     '<td class="border-r sm">' + FormatCurrency(cost, false) + '</td>' +
                     '<td><span class="reject-icon active"></span><span class="accept-icon"></span></td>' +
@@ -2041,8 +2041,8 @@ function addRowTactic(index, id, text, projectedStageValue, mqls, cws, cost, isD
         }
 
         $html += '<span class="title-baseline-model">' + text + '</span><span class="search-icon"></span></td>' +
-                    '<td class="sm">' + projectedStageValue + '</td>' +
-                    '<td class="sm">' + mqls + '</td>' +
+                    '<td class="sm">' + displayTacticMQL(projectedStageValue) + '</td>' +
+                    '<td class="sm">' + displayTacticMQL(mqls) + '</td>' +
                     '<td class="sm">' + FormatCurrency(cws, false) + '</td>' +
                     '<td class="border-r sm">' + FormatCurrency(cost, false) + '</td>' +
                     '<td><span class="reject-icon"></span><span class="accept-icon"></span></td>' +
@@ -2051,6 +2051,15 @@ function addRowTactic(index, id, text, projectedStageValue, mqls, cws, cost, isD
 
     $activitiesTable.append($html);
 
+}
+
+function displayTacticMQL(MQL) {
+    if (MQL != 'N/A' && MQL != '---') {
+        return FormatCommas(MQL, false);
+    }
+    else {
+        return MQL;
+    }
 }
 
 $(document).on("click", ".accept-icon", function () {

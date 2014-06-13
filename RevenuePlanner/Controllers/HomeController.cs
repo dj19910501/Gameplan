@@ -1386,9 +1386,12 @@ namespace RevenuePlanner.Controllers
             string tacticStatusDeclined = Enums.TacticStatusValues.Single(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value;
             // Added BY Bhavesh
             // Calculate MQL at runtime #376
-            List<Plan_Tactic_MQL> MQLTacticList = Common.GetMQLValueTacticList(tactic);
-            // Ticket #345
-            List<ProjectedRevenueClass> tacticList = Common.ProjectedRevenueCalculateList(tactic);
+            List<TacticStageValue> tacticStageRelationList = Common.GetTacticStageRelation(tactic, false);
+            var stageList = db.Stages.Where(s => s.ClientId == Sessions.User.ClientId).ToList();
+            string inqstage = Enums.Stage.INQ.ToString();
+            string mqlstage = Enums.Stage.MQL.ToString();
+            int inqLevel = Convert.ToInt32(stageList.Single(s => s.Code == inqstage).Level);
+            int mqlLevel = Convert.ToInt32(stageList.Single(s => s.Code == mqlstage).Level);
             var taskDataTactic = tactic.Select(t => new
             {
                 id = string.Format("C{0}_P{1}_T{2}_Y{3}", t.Plan_Campaign_Program.PlanCampaignId, t.Plan_Campaign_Program.PlanProgramId, t.PlanTacticId, t.TacticTypeId),
@@ -1404,10 +1407,10 @@ namespace RevenuePlanner.Controllers
                 color = string.Concat(GANTT_BAR_CSS_CLASS_PREFIX, t.TacticType.ColorCode.ToLower()),
                 isSubmitted = t.Status.Equals(tacticStatusSubmitted),
                 isDeclined = t.Status.Equals(tacticStatusDeclined),
-                projectedStageValue = t.ProjectedStageValue, //inqs = t.INQs,
-                mqls = MQLTacticList.Where(tm => tm.PlanTacticId == t.PlanTacticId).Select(tm => tm.MQL),
+                projectedStageValue = stageList.Single(s => s.StageId == t.StageId).Level <= inqLevel ? Convert.ToString(tacticStageRelationList.Single(tm => tm.TacticObj.PlanTacticId == t.PlanTacticId).INQValue) : "N/A",
+                mqls = stageList.Single(s => s.StageId == t.StageId).Level <= mqlLevel ? Convert.ToString(tacticStageRelationList.Single(tm => tm.TacticObj.PlanTacticId == t.PlanTacticId).MQLValue) : "N/A",
                 cost = t.Cost,
-                cws = t.Status.Equals(tacticStatusSubmitted) || t.Status.Equals(tacticStatusDeclined) ? Math.Round(tacticList.Where(tl => tl.PlanTacticId == t.PlanTacticId).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 1) : 0,
+                cws = t.Status.Equals(tacticStatusSubmitted) || t.Status.Equals(tacticStatusDeclined) ? Math.Round(tacticStageRelationList.Single(tm => tm.TacticObj.PlanTacticId == t.PlanTacticId).RevenueValue, 1) : 0,
                 plantacticid = t.PlanTacticId,
                 Status = t.Status       //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
             }).OrderBy(t => t.text);
