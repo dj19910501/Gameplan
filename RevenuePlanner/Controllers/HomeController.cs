@@ -107,7 +107,7 @@ namespace RevenuePlanner.Controllers
             }
 
             //// Getting active model of above business unit. 
-            string modelPublishedStatus = Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Published.ToString())).Value;
+            //string modelPublishedStatus = Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Published.ToString())).Value;
             List<Model> models = db.Models.Where(m => businessUnitIds.Contains(m.BusinessUnitId) && m.IsDeleted == false).ToList();
             if (currentPlanId == 0)
             {
@@ -136,6 +136,31 @@ namespace RevenuePlanner.Controllers
                 //// Getting Active plan for all above models.
                 string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
                 activePlan = activePlan.Where(p => p.Status.Equals(planPublishedStatus)).ToList();
+
+                if (activePlan.Count == 0)
+                {
+                    bool hasPublishedPlan = false;
+                    for (int i = 0; i < businessUnitIds.Count; i++)
+                    {
+                        Guid BUnitId = businessUnitIds[i];
+                        if (!hasPublishedPlan)
+                        {
+                            // Getting active model of above business unit. 
+                            models = db.Models.Where(m => m.BusinessUnitId == BUnitId && m.IsDeleted == false).ToList();
+
+                            //// Getting modelIds
+                            modelIds = models.Select(m => m.ModelId).ToList();
+
+                            activePlan = db.Plans.Where(p => modelIds.Contains(p.Model.ModelId) && p.IsActive.Equals(true) && p.IsDeleted == false).ToList();
+                            activePlan = activePlan.Where(p => p.Status.Equals(planPublishedStatus)).ToList();
+                        }
+                        if (activePlan.Count > 0)
+                        {
+                            hasPublishedPlan = true;
+                            Sessions.BusinessUnitId = BUnitId;
+                        }
+                    }
+                }
             }
             // Added by Bhavesh, Current year first plan select in dropdown
             string currentYear = DateTime.Now.Year.ToString();
