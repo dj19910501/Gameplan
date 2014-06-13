@@ -485,6 +485,18 @@ function NumberFormatterTipsy(lableId, maxSize) {
     });
 }
 
+// Added by Mitesh Vaishnav on 13/06/2014 to address #498 Customized Target Stage - Publish model
+function ImageTipsy(lableId) {
+    $(lableId).each(function () {
+        var txtvalue = $(this).attr('title');
+        var lengthvalue = txtvalue.length;
+        $(this).attr('title', txtvalue);
+        $(this).addClass('north');
+        $('.north').tipsy({ gravity: 's' });
+
+    });
+}
+
 // Added by Juned - Bug# 244
 function NumberFormatterTipsyTitle(lableId, maxSize) {
     $(lableId).each(function () {

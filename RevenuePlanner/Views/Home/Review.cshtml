@@ -22,9 +22,15 @@
             <div class="padding-top16"><span id="inq-id" class="font_size30" style="line-height:24px;">@tacticReview.ProjectedStageValue</span></div>  @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
             @*<span class="font_size16" title="@Html.LabelForINQ("INQ")">@Html.LabelForINQ("INQ")</span>*@
             <span class="font_size16" title="@tacticReview.StageTitle">@tacticReview.StageTitle</span>
-            <div class="margin-top16">Goal</div>    @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
+           <div class="margin-top16">
+                Goal
+                @if (ViewBag.IsDiffrentStageType == true)
+                {
+                    <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" />
+                }
+            </div> @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
         </div>
-        @if(ShowMQL)
+        @if (ShowMQL)
         {
             <div class="chart-gray pull-left size65x38 without-padding">
                 <div class="padding-top16"><span id="mqls-id" class="font_size30" style="line-height:24px;">@tacticReview.MQLs</span></div> @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
@@ -286,113 +292,116 @@
 <script type="text/javascript">
     $(document).ready(function () {
 
-          SetFormatForLabel("#inq-id", 5);
-          SetFormatForLabel("#mqls-id", 5);
-          $("#BtnShareTactic").click(function () {
-              $("#DivPartialShareTactic").empty();
-              var url = '@Url.Content("~/Home/ShowShareTactic/")';
-              $("#DivPartialShareTactic").load(url + '?planTacticId=' + $('#hdnPlanTacticId').val() + '&section=@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()'); // section parameter added to open share tactic popup
-          });
+        /*Added by Mitesh Vaishnav on 13/06/2014 to address #498 Customized Target Stage - Publish model */
+        ImageTipsy('#diffrentStageIcon');
 
-          $("#uldiv li a").click(function () {
-              $("#spanTactic").html($(this).text());
-              $("#hdnStatusValue").val($(this).text());
-          });
+        SetFormatForLabel("#inq-id", 5);
+        SetFormatForLabel("#mqls-id", 5);
+        $("#BtnShareTactic").click(function () {
+            $("#DivPartialShareTactic").empty();
+            var url = '@Url.Content("~/Home/ShowShareTactic/")';
+            $("#DivPartialShareTactic").load(url + '?planTacticId=' + $('#hdnPlanTacticId').val() + '&section=@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()'); // section parameter added to open share tactic popup
+        });
 
-          $("#btnSync").click(function () {
+        $("#uldiv li a").click(function () {
+            $("#spanTactic").html($(this).text());
+            $("#hdnStatusValue").val($(this).text());
+        });
 
-              var IsDeployedToIntegration = false;
-              var spanSyncStatus = $("#hdnSyncStatusValue").val();
-              if (spanSyncStatus == 'Sync') {
-                  IsDeployedToIntegration = true;
-              }
-              var PlanTacticId = $('#hdnPlanTacticId').val();
+        $("#btnSync").click(function () {
 
-              $.ajax({
-                  type: 'POST',
-                  url: '@Url.Content("~/Home/SaveSyncToIntegration/")',
-                  data: {
-                      id: PlanTacticId,
-                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", //section parameter added to save tactic comment
+            var IsDeployedToIntegration = false;
+            var spanSyncStatus = $("#hdnSyncStatusValue").val();
+            if (spanSyncStatus == 'Sync') {
+                IsDeployedToIntegration = true;
+            }
+            var PlanTacticId = $('#hdnPlanTacticId').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Home/SaveSyncToIntegration/")',
+                data: {
+                    id: PlanTacticId,
+                    section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", //section parameter added to save tactic comment
                       IsDeployedToIntegration: IsDeployedToIntegration
                   },
-                  success: function (data) {
-                      if (data.result) {
-                          $("#successMessage").css("display", "block");
-                          var topsize = $(document).scrollTop() + 41;
-                          $("#modal-container-186470").css("top", topsize + "px");
-                          $("#spanMessageSuccess").empty();
-                          $("#spanMessageSuccess").text(data.msg);
-                      }
+                success: function (data) {
+                    if (data.result) {
+                        $("#successMessage").css("display", "block");
+                        var topsize = $(document).scrollTop() + 41;
+                        $("#modal-container-186470").css("top", topsize + "px");
+                        $("#spanMessageSuccess").empty();
+                        $("#spanMessageSuccess").text(data.msg);
+                    }
+                },
+                error: function () {
+                    $("#errorMessage").css("display", "block");
+                    var topsize = $(document).scrollTop() + 41;
+                    $("#modal-container-186470").css("top", topsize + "px");
+                    $("#spanMessageError").empty();
+                    GoToLogin();
+                    return false;
+                }
+            });
+        });
+
+        $("#uldivSync li a").click(function () {
+            $("#spanSyncStatus").html($(this).text());
+            $("#hdnSyncStatusValue").val($(this).text());
+        });
+
+        var divheight = $("#divInnerComment").height();
+        $("#divComment").scrollTop(divheight);
+
+        // On Comment Button Save Commnet
+        $("#btnComment").click(function () {
+            $("#successMessage").css("display", "none");
+            $("#errorMessage").css("display", "none");
+            var commentText = $('#txtAreaComment').val();
+            if (commentText == '') {
+                var msgspan = "Make sure all fields are filled and valid,try again.";
+                $("#errorMessage").css("display", "block");
+                /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                var topsize = $(document).scrollTop() + 41;
+
+                $("#modal-container-186470").css("top", topsize + "px");
+                $("#txtAreaComment").addClass("error");
+                $("#spanMessageError").text(msgspan);
+                return false;
+            }
+            else {
+                //if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test(commentText)) {
+                //    var msgspan = "Special character are not allowed, try again.";
+                //    $("#errorMessage").css("display", "block");
+                //    /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                //    var topsize = $(document).scrollTop() + 41;
+                //    $("#modal-container-186470").css("top", topsize + "px");
+                //    $("#txtAreaComment").addClass("error");
+                //    $("#spanMessageError").text(msgspan);
+                //    return false;
+                //}
+                $("#txtAreaComment").removeClass("error");
+            }
+
+            var PlanTacticId = $('#hdnPlanTacticId').val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Home/SaveComment/")',
+                data: {
+                    comment: commentText,
+                    planTacticId: PlanTacticId,
+                    section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()" //section parameter added to save tactic comment
                   },
-                  error: function () {
-                      $("#errorMessage").css("display", "block");
-                      var topsize = $(document).scrollTop() + 41;
-                      $("#modal-container-186470").css("top", topsize + "px");
-                      $("#spanMessageError").empty();
-                      GoToLogin();
-                      return false;
-                  }
-              });
-          });
-
-          $("#uldivSync li a").click(function () {
-              $("#spanSyncStatus").html($(this).text());
-              $("#hdnSyncStatusValue").val($(this).text());
-          });
-
-          var divheight = $("#divInnerComment").height();
-          $("#divComment").scrollTop(divheight);
-
-          // On Comment Button Save Commnet
-          $("#btnComment").click(function () {
-              $("#successMessage").css("display", "none");
-              $("#errorMessage").css("display", "none");
-              var commentText = $('#txtAreaComment').val();
-              if (commentText == '') {
-                  var msgspan = "Make sure all fields are filled and valid,try again.";
-                  $("#errorMessage").css("display", "block");
-                  /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-                  var topsize = $(document).scrollTop() + 41;
-
-                  $("#modal-container-186470").css("top", topsize + "px");
-                  $("#txtAreaComment").addClass("error");
-                  $("#spanMessageError").text(msgspan);
-                  return false;
-              }
-              else {
-                  //if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test(commentText)) {
-                  //    var msgspan = "Special character are not allowed, try again.";
-                  //    $("#errorMessage").css("display", "block");
-                  //    /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-                  //    var topsize = $(document).scrollTop() + 41;
-                  //    $("#modal-container-186470").css("top", topsize + "px");
-                  //    $("#txtAreaComment").addClass("error");
-                  //    $("#spanMessageError").text(msgspan);
-                  //    return false;
-                  //}
-                  $("#txtAreaComment").removeClass("error");
-              }
-
-              var PlanTacticId = $('#hdnPlanTacticId').val();
-              $.ajax({
-                  type: 'POST',
-                  url: '@Url.Content("~/Home/SaveComment/")',
-                  data: {
-                      comment: commentText,
-                      planTacticId: PlanTacticId,
-                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()" //section parameter added to save tactic comment
-                  },
-                  success: function (data) {
-                      if (data != 'undefined') {
-                          if (data.id != 0) {
-                              $("#successMessage").css("display", "block");
-                              /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-                              var topsize = $(document).scrollTop() + 41;
-                              $("#modal-container-186470").css("top", topsize + "px");
-                              $("#spanMessageSuccess").empty();
-                              $("#spanMessageSuccess").text(data.msg);
-                              loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue);//section parameter passed to open tactic popup
+                success: function (data) {
+                    if (data != 'undefined') {
+                        if (data.id != 0) {
+                            $("#successMessage").css("display", "block");
+                            /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                            var topsize = $(document).scrollTop() + 41;
+                            $("#modal-container-186470").css("top", topsize + "px");
+                            $("#spanMessageSuccess").empty();
+                            $("#spanMessageSuccess").text(data.msg);
+                            loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue);//section parameter passed to open tactic popup
                           }
                           else {
                               $("#errorMessage").css("display", "block");
@@ -403,26 +412,26 @@
                           }
                       }
                   },
-                  error: function () {
-                      $("#errorMessage").css("display", "block");
-                      var topsize = $(document).scrollTop() + 41;
-                      $("#modal-container-186470").css("top", topsize + "px");
-                      $("#spanMessageError").empty();
-                      GoToLogin();
-                      return false;
-                  }
-              });
-          });
+                error: function () {
+                    $("#errorMessage").css("display", "block");
+                    var topsize = $(document).scrollTop() + 41;
+                    $("#modal-container-186470").css("top", topsize + "px");
+                    $("#spanMessageError").empty();
+                    GoToLogin();
+                    return false;
+                }
+            });
+        });
 
-          // Click on Approved Button Save Comment & Change Status
-          $("#btnApproved").click(function () {
-              $("#successMessage").css("display", "none");
-              $("#errorMessage").css("display", "none");
-              statusValue = $("#hdnStatusValue").val();
-              var PlanTacticId = $('#hdnPlanTacticId').val();
-              var stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
-              if (statusValue == "Submit for Approval") {
-                  stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()";
+        // Click on Approved Button Save Comment & Change Status
+        $("#btnApproved").click(function () {
+            $("#successMessage").css("display", "none");
+            $("#errorMessage").css("display", "none");
+            statusValue = $("#hdnStatusValue").val();
+            var PlanTacticId = $('#hdnPlanTacticId').val();
+            var stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
+            if (statusValue == "Submit for Approval") {
+                stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()";
               }
               else if (statusValue == "Approve") {
                   stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
@@ -430,9 +439,9 @@
               else if (statusValue == "Reject") {
                   stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()";
               }
-              $.ajax({
-                  type: 'POST',
-                  url: '@Url.Content("~/Home/ApprovedTactic/")',
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Home/ApprovedTactic/")',
                   data: {
                       status: stat,
                       planTacticId: PlanTacticId,
@@ -470,8 +479,8 @@
                   }
               });
 
-          });
+        });
 
 
-      });
+    });
 </script>

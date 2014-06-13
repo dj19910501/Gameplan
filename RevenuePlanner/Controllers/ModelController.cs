@@ -3860,8 +3860,7 @@ namespace RevenuePlanner.Controllers
                     if (pcpt.TacticType.TacticTypeId == tactic.PreviousTacticTypeId)
                     {
                         pcpt.TacticTypeId = tactic.TacticTypeId;
-                        pcpt.StageId = Convert.ToInt32(tactic.StageId);////Added by Mitesh Vaishnav on 03/06/2014 for ticket #498 Customized Target Stage - Publish model
-                        pcpt.ProjectedStageValue = tactic.ProjectedStageValue;////Added by Mitesh Vaishnav on 03/06/2014 for ticket #498 Customized Target Stage - Publish model
+                       
                         int result = db.SaveChanges();
                     }
                 }

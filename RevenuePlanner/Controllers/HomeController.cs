@@ -2179,6 +2179,18 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.IsValidDirectorUser = isValidDirectorUser;
             ViewBag.IsValidOwner = isValidOwner;
+            /*Added by Mitesh Vaishnav on 13/06/2014 to address changes related to #498 Customized Target Stage - Publish model*/
+            var pcpt = db.Plan_Campaign_Program_Tactic.Where(p => p.PlanTacticId.Equals(id)).SingleOrDefault();
+            var tacticType = db.TacticTypes.Where(tt => tt.TacticTypeId == pcpt.TacticTypeId).FirstOrDefault();
+            if (pcpt.StageId == tacticType.StageId)
+            {
+                ViewBag.IsDiffrentStageType = false;
+            }
+            else
+            {
+                ViewBag.IsDiffrentStageType = true;
+            }
+            /*End Added by Mitesh Vaishnav on 13/06/2014 to address changes related to #498 Customized Target Stage - Publish model*/
             return PartialView("Review");
         }
 

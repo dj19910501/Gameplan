@@ -2386,6 +2386,18 @@ namespace RevenuePlanner.Controllers
             pcptm.StageId = Convert.ToInt32(pcpt.StageId);
             pcptm.StageTitle = db.Stages.FirstOrDefault(varS => varS.StageId == pcpt.StageId).Title;
             pcptm.ProjectedStageValue = Convert.ToDouble(pcpt.ProjectedStageValue);
+            /*Added by Mitesh Vaishnav on 13/06/2014 to address changes related to #498 Customized Target Stage - Publish model*/
+            var modelTacticStageType = tList.Where(tt => tt.TacticTypeId == pcpt.TacticTypeId).FirstOrDefault().StageId;
+            var plantacticStageType = pcpt.StageId;
+            if (modelTacticStageType == plantacticStageType)
+            {
+                ViewBag.IsDiffrentStageType = false;
+            }
+            else
+            {
+                ViewBag.IsDiffrentStageType = true;
+            }
+            /*End Added by Mitesh Vaishnav on 13/06/2014 to address changes related to #498 Customized Target Stage - Publish model*/
 
             /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
             if (Sessions.User.UserId == pcpt.CreatedBy)
