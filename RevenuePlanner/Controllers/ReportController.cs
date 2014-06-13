@@ -67,12 +67,6 @@ namespace RevenuePlanner.Controllers
             //List of Plans
             List<SelectListItem> lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
 
-            if (Sessions.BusinessUnitId != Guid.Empty)
-            {
-                lstBusinessUnits.Where(lbu => lbu.Value == Convert.ToString(Sessions.BusinessUnitId)).ToList().ForEach(lbu => lbu.Selected = true);
-                lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Model.BusinessUnitId == Sessions.BusinessUnitId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
-            }
-
             if (Sessions.PlanId != 0)
             {
                 if (Common.IsPlanPublished(Sessions.PlanId))
@@ -84,9 +78,20 @@ namespace RevenuePlanner.Controllers
                     Sessions.ReportPlanId = Sessions.PublishedPlanId;
                 }
             }
+
             if (Sessions.ReportPlanId > 0)
             {
+                Sessions.BusinessUnitId = db.Plans.Where(p => p.PlanId == Sessions.ReportPlanId).Select(p => p.Model.BusinessUnitId).SingleOrDefault();
+                lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Model.BusinessUnitId == Sessions.BusinessUnitId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
                 lstPlans.Where(lp => lp.Value == Convert.ToString(Sessions.ReportPlanId)).ToList().ForEach(lp => lp.Selected = true);
+            }
+            if (Sessions.BusinessUnitId != Guid.Empty)
+            {
+                lstBusinessUnits.Where(lbu => lbu.Value == Convert.ToString(Sessions.BusinessUnitId)).ToList().ForEach(lbu => lbu.Selected = true);
+                if (Sessions.ReportPlanId <= 0)
+                {
+                    lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Model.BusinessUnitId == Sessions.BusinessUnitId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
+                }
             }
 
             if (Sessions.ReportPlanId == 0)
