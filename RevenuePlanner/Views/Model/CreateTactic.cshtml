@@ -6,6 +6,14 @@
     //Start Manoj Limbachiya PL # 486
     bool IsDeplyed = ViewBag.IsDeployed;
             //End Manoj Limbachiya PL # 486
+    // Start - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
+    string ModelStatus = Convert.ToString(ViewBag.ModelStatus);
+    @Html.Hidden("hdnModelStatus", ModelStatus);
+    string TacticTypeStageId = Convert.ToString(ViewBag.TacticTypeStageId);
+    @Html.Hidden("hdnStageId", TacticTypeStageId);
+    string ChangeTargetStageMsg = Convert.ToString(ViewBag.ChangeTargetStageMsg);
+    @Html.Hidden("hdnChangeTargetStageMsg", ChangeTargetStageMsg);
+    // End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
 }
 <div class="head">
     <span class="close-form source-sans-proregular">» CLOSE MENU</span>
@@ -341,6 +349,19 @@
                 StageId = 'null';
             }
             var ModelTacticTypeId = $("#hdnTacticTypeId").val();
+
+            // Start - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
+            if ($('#hdnModelStatus').val().toLowerCase() == 'published' && $('#hdnStageId').val() != '')
+            {
+                if ($('#hdnStageId').val() != $('#StageId').val())
+                {
+                    if (!confirm($('#hdnChangeTargetStageMsg').val().toString())) {
+                        return false;
+                        e.preventDefault();
+                    }
+                }
+            }
+            // End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
 
             $.ajax({
                 type: 'POST',

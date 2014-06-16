@@ -1250,6 +1250,21 @@ namespace RevenuePlanner.Helpers
             }
         }
         //End Manoj Limbachiya PL # 486
+
+        // Start - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
+        private string _ChangeTargetStageMsg;
+        public string ChangeTargetStageMsg
+        {
+            get
+            {
+                return _ChangeTargetStageMsg;
+            }
+            set
+            {
+                _ChangeTargetStageMsg = value;
+            }
+        }
+        // End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
         #endregion
 
 
@@ -1634,6 +1649,11 @@ namespace RevenuePlanner.Helpers
                                             _TacticCanNotDeployed = strMsgValue;
                                             break;
                                         //End Manoj Limbachiya PL # 486
+                                        // Start - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
+                                        case "ChangeTargetStageMsg":
+                                            _ChangeTargetStageMsg = strMsgValue;
+                                            break;
+                                        // End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
                                     }
                                 }
                                 i = i + 1;

@@ -418,4 +418,10 @@
     <value>{0} tactic type is being used in a plan and hence cannot be marked as Not Deployed.</value>
   </Field>
   <!--End Manoj Limbachiya PL # 486-->
+  <!-- Start - Added By Sohel Pathan on 16/06/2014 for PL ticket #528 -->
+  <Field>
+    <Name>ChangeTargetStageMsg</Name>
+    <value>You are about to modify target stage of a tactic of published model, Do you want to continue?</value>
+  </Field>
+  <!-- End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528 -->
 </Messages>
