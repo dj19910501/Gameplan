@@ -1292,6 +1292,19 @@ namespace RevenuePlanner.Helpers
                 _LoginWithSameSession = value;
             }
         }
+        private string _ChangeTargetStageMsg;
+        public string ChangeTargetStageMsg
+        {
+            get
+            {
+                return _ChangeTargetStageMsg;
+            }
+            set
+            {
+                _ChangeTargetStageMsg = value;
+            }
+        }
+        // End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
         #endregion
 
 
@@ -1689,6 +1702,11 @@ namespace RevenuePlanner.Helpers
                                         case "LoginWithSameSession":
                                             _LoginWithSameSession = strMsgValue;
                                             break;
+                                        // Start - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
+                                        case "ChangeTargetStageMsg":
+                                            _ChangeTargetStageMsg = strMsgValue;
+                                            break;
+                                        // End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
                                     }
                                 }
                                 i = i + 1;

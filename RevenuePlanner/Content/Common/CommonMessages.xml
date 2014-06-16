@@ -433,4 +433,10 @@
 		<Name>LoginWithSameSession</Name>
 		<value>Another user is logged in with the same session.</value>
 	</Field>
+  <!-- Start - Added By Sohel Pathan on 16/06/2014 for PL ticket #528 -->
+  <Field>
+    <Name>ChangeTargetStageMsg</Name>
+    <value>You are about to modify target stage of a tactic of published model, Do you want to continue?</value>
+  </Field>
+  <!-- End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528 -->
 </Messages>
