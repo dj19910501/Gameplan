@@ -3024,10 +3024,11 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Added By: Nirav Shah.
         /// Action to Save Tactic data .
+        /// Changed ProjectedStageValue,ProjectedRevenue parameters datatype int to double for not saving tactic with large value. by dharmraj
         /// </summary>
         ///   //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
         [HttpPost]
-        public ActionResult SaveTactic(string Title, string Description, int? StageId, int ProjectedStageValue, int ProjectedRevenue, int TacticTypeId, string modelID, bool isDeployedToIntegration, bool isDeployedToModel)
+        public ActionResult SaveTactic(string Title, string Description, int? StageId, double ProjectedStageValue, double ProjectedRevenue, int TacticTypeId, string modelID, bool isDeployedToIntegration, bool isDeployedToModel)
         {
             try
             {
