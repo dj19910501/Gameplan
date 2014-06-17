@@ -209,74 +209,94 @@ namespace Integration.Salesforce
             List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(t => IntegrationInstanceTacticIds.Contains(t.IntegrationInstanceTacticId)).ToList();
             try
             {
-            var AllRecords = _client.Query<object>("SELECT " + columnList + " FROM " + this.objectName + " WHERE " + ColumnId + " in ('" + integrationTacticIds + "')");
+                var AllRecords = _client.Query<object>("SELECT " + columnList + " FROM " + this.objectName + " WHERE " + ColumnId + " in ('" + integrationTacticIds + "')");
 
-            //put below code in transaction
-            List<Plan_Campaign_Program_Tactic_Actual> actualTacicList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => IntegrationInstanceTacticIds.Contains(ta.Plan_Campaign_Program_Tactic.IntegrationInstanceTacticId)).ToList();
-            actualTacicList.ForEach(t => db.Entry(t).State = EntityState.Deleted);
-            db.SaveChanges();
+                //put below code in transaction
+                List<Plan_Campaign_Program_Tactic_Actual> actualTacicList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => IntegrationInstanceTacticIds.Contains(ta.Plan_Campaign_Program_Tactic.IntegrationInstanceTacticId)).ToList();
+                actualTacicList.ForEach(t => db.Entry(t).State = EntityState.Deleted);
+                db.SaveChanges();
 
-            foreach (var resultin in AllRecords)
-            {
-                string TacticResult = resultin.ToString();
-                JObject jobj = JObject.Parse(TacticResult);
-                string idvalue = Convert.ToString(jobj[ColumnId]);
-                Plan_Campaign_Program_Tactic tactic = tacticList.Where(t => t.IntegrationInstanceTacticId == idvalue).Single();
+                foreach (var resultin in AllRecords)
+                {
+                    string TacticResult = resultin.ToString();
+                    JObject jobj = JObject.Parse(TacticResult);
+                    string idvalue = Convert.ToString(jobj[ColumnId]);
+                    Plan_Campaign_Program_Tactic tactic = tacticList.Where(t => t.IntegrationInstanceTacticId == idvalue).Single();
                     int tacticStageLevel = Convert.ToInt32(tactic.Stage.Level);
                     string tacticStageCode = tactic.Stage.Code;
                     Guid ClientId = (Guid)tactic.TacticType.ClientId;
                     int MQLStageLevel = Convert.ToInt32(db.Stages.FirstOrDefault(s => s.ClientId == ClientId && s.Code == Stage_MQL).Level);
 
-                tactic.CostActual = 0;
+                    tactic.CostActual = 0;
 
-                foreach (var mapping in mappingGetTactic)
-                {
-                    if (jobj[mapping.Value] != null && Convert.ToString(jobj[mapping.Value]) != string.Empty)
+                    foreach (var mapping in mappingGetTactic)
                     {
-                        if (mapping.Key == actualCost)
+                        if (jobj[mapping.Value] != null && Convert.ToString(jobj[mapping.Value]) != string.Empty)
                         {
+                            if (mapping.Key == actualCost)
+                            {
 
-                            int index = tacticList.IndexOf(tactic);
-                            if (index >= 0)
-                            {
-                                tactic.CostActual = Convert.ToDouble(jobj[mapping.Value]);
-                                tacticList[index] = tactic;
-                            }
-                        }
-                        else
-                        {
-                            double actualValue = Convert.ToDouble(jobj[mapping.Value]);
-                            int totalMonth = 0;
-                            if (tactic.StartDate.Month == tactic.EndDate.Month)
-                            {
-                                totalMonth = 1;
+                                int index = tacticList.IndexOf(tactic);
+                                if (index >= 0)
+                                {
+                                    tactic.CostActual = Convert.ToDouble(jobj[mapping.Value]);
+                                    tacticList[index] = tactic;
+                                }
                             }
                             else
                             {
-                                totalMonth = tactic.EndDate.Month - tactic.StartDate.Month + 1;
-                            }
+                                double actualValue = Convert.ToDouble(jobj[mapping.Value]);
+                                int totalMonth = 0;
+                                if (tactic.StartDate.Month == tactic.EndDate.Month)
+                                {
+                                    totalMonth = 1;
+                                }
+                                else
+                                {
+                                    totalMonth = tactic.EndDate.Month - tactic.StartDate.Month + 1;
+                                }
 
                                 if (mapping.Key == Stage_CW || mapping.Key == Stage_Revenue)
                                 {
-                            for (int iMonth = tactic.StartDate.Month; iMonth <= tactic.EndDate.Month; iMonth++)
-                            {
-                                Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
-                                actualTactic.Actualvalue = Math.Round(actualValue / totalMonth);
-                                actualTactic.PlanTacticId = tactic.PlanTacticId;
-                                actualTactic.Period = "Y" + iMonth;
-                                actualTactic.StageTitle = mapping.Key;
-                                //change date & created by
-                                actualTactic.CreatedDate = DateTime.Now;
-                                actualTactic.CreatedBy = _userId;
-                                db.Entry(actualTactic).State = EntityState.Added;
-                            }
+                                    // Modified by dharmraj for ticket #524 : Actual value Splitting across months.
+                                    double actualValueTotalTemp = 0;
+                                    for (int iMonth = tactic.StartDate.Month; iMonth <= tactic.EndDate.Month; iMonth++)
+                                    {
+                                        // Modified by dharmraj for ticket #524 : Actual value Splitting across months.
+                                        double actualValueMonthWise = Math.Round(actualValue / totalMonth);
+                                        actualValueTotalTemp += actualValueMonthWise;
+                                        if (iMonth == tactic.EndDate.Month && actualValueTotalTemp != actualValue)
+                                        {
+                                            actualValueMonthWise = actualValueMonthWise - (actualValueTotalTemp - actualValue);
+                                        }
+
+                                        Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
+                                        actualTactic.Actualvalue = actualValueMonthWise;//Math.Round(actualValue / totalMonth);
+                                        actualTactic.PlanTacticId = tactic.PlanTacticId;
+                                        actualTactic.Period = "Y" + iMonth;
+                                        actualTactic.StageTitle = mapping.Key;
+                                        //change date & created by
+                                        actualTactic.CreatedDate = DateTime.Now;
+                                        actualTactic.CreatedBy = _userId;
+                                        db.Entry(actualTactic).State = EntityState.Added;
+                                    }
                                 }
                                 else if (mapping.Key == tacticStageCode)
                                 {
+                                    // Modified by dharmraj for ticket #524 : Actual value Splitting across months.
+                                    double actualValueTotalTemp = 0;
                                     for (int iMonth = tactic.StartDate.Month; iMonth <= tactic.EndDate.Month; iMonth++)
                                     {
+                                        // Modified by dharmraj for ticket #524 : Actual value Splitting across months.
+                                        double actualValueMonthWise = Math.Round(actualValue / totalMonth);
+                                        actualValueTotalTemp += actualValueMonthWise;
+                                        if (iMonth == tactic.EndDate.Month && actualValueTotalTemp != actualValue)
+                                        {
+                                            actualValueMonthWise = actualValueMonthWise - (actualValueTotalTemp - actualValue);
+                                        }
+
                                         Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
-                                        actualTactic.Actualvalue = Math.Round(actualValue / totalMonth);
+                                        actualTactic.Actualvalue = actualValueMonthWise;//Math.Round(actualValue / totalMonth);
                                         actualTactic.PlanTacticId = tactic.PlanTacticId;
                                         actualTactic.Period = "Y" + iMonth;
                                         actualTactic.StageTitle = Stage_ProjectedStageValue;
@@ -288,10 +308,20 @@ namespace Integration.Salesforce
 
                                     if (tacticStageLevel == MQLStageLevel)
                                     {
+                                        // Modified by dharmraj for ticket #524 : Actual value Splitting across months.
+                                        actualValueTotalTemp = 0;
                                         for (int iMonth = tactic.StartDate.Month; iMonth <= tactic.EndDate.Month; iMonth++)
                                         {
+                                            // Modified by dharmraj for ticket #524 : Actual value Splitting across months.
+                                            double actualValueMonthWise = Math.Round(actualValue / totalMonth);
+                                            actualValueTotalTemp += actualValueMonthWise;
+                                            if (iMonth == tactic.EndDate.Month && actualValueTotalTemp != actualValue)
+                                            {
+                                                actualValueMonthWise = actualValueMonthWise - (actualValueTotalTemp - actualValue);
+                                            }
+
                                             Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
-                                            actualTactic.Actualvalue = Math.Round(actualValue / totalMonth);
+                                            actualTactic.Actualvalue = actualValueMonthWise;//Math.Round(actualValue / totalMonth);
                                             actualTactic.PlanTacticId = tactic.PlanTacticId;
                                             actualTactic.Period = "Y" + iMonth;
                                             actualTactic.StageTitle = Stage_MQL;
@@ -306,10 +336,20 @@ namespace Integration.Salesforce
                                 {
                                     if (tacticStageLevel < MQLStageLevel)
                                     {
+                                        // Modified by dharmraj for ticket #524 : Actual value Splitting across months.
+                                        double actualValueTotalTemp = 0;
                                         for (int iMonth = tactic.StartDate.Month; iMonth <= tactic.EndDate.Month; iMonth++)
                                         {
+                                            // Modified by dharmraj for ticket #524 : Actual value Splitting across months.
+                                            double actualValueMonthWise = Math.Round(actualValue / totalMonth);
+                                            actualValueTotalTemp += actualValueMonthWise;
+                                            if (iMonth == tactic.EndDate.Month && actualValueTotalTemp != actualValue)
+                                            {
+                                                actualValueMonthWise = actualValueMonthWise - (actualValueTotalTemp - actualValue);
+                                            }
+
                                             Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
-                                            actualTactic.Actualvalue = Math.Round(actualValue / totalMonth);
+                                            actualTactic.Actualvalue = actualValueMonthWise;//Math.Round(actualValue / totalMonth);
                                             actualTactic.PlanTacticId = tactic.PlanTacticId;
                                             actualTactic.Period = "Y" + iMonth;
                                             actualTactic.StageTitle = Stage_MQL;
@@ -319,10 +359,10 @@ namespace Integration.Salesforce
                                             db.Entry(actualTactic).State = EntityState.Added;
                                         }
                                     }
+                                }
                             }
                         }
                     }
-                }
 
                     tactic.LastSyncDate = DateTime.Now;
                     tactic.ModifiedDate = DateTime.Now;
@@ -339,8 +379,8 @@ namespace Integration.Salesforce
                     instanceTactic.CreatedDate = DateTime.Now;
                     instanceTactic.CreatedBy = _userId;
                     db.Entry(instanceTactic).State = EntityState.Added;
-            }
-            db.SaveChanges();
+                }
+                db.SaveChanges();
             }
             catch (SalesforceException e)
             {
