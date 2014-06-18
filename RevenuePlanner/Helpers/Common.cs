@@ -881,7 +881,7 @@ namespace RevenuePlanner.Helpers
         /// <summary>
         /// Added By: Maninder Singh Wadhva.
         /// Date: 11/26/2013
-        /// Function to get key of corresponding value.
+        /// Function to get key of corresponding value using dictionary.
         /// </summary>
         /// <typeparam name="T">Type of Enum.</typeparam>
         /// <param name="dictionary">Dictionary to which value belong.</param>
@@ -894,6 +894,19 @@ namespace RevenuePlanner.Helpers
                        select KeyValue.Key.ToUpper()).FirstOrDefault();
 
             return (T)Enum.Parse(typeof(T), key, true);
+        }
+
+        /// <summary>
+        /// Added By: Maninder Singh Wadhva.
+        /// Date: 06/18/2014
+        /// Function to get key based on string.
+        /// </summary>
+        /// <typeparam name="T">Enum Type.</typeparam>
+        /// <param name="value">Value i.e. ToString() of enum key.</param>
+        /// <returns>Returns appropriate enum key.</returns>
+        public static T GetKey<T>(string value)
+        {
+            return (T)Enum.Parse(typeof(T), value, true);
         }
         #endregion
 
