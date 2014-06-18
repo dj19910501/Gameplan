@@ -1,10 +1,12 @@
 ﻿$(document).ready(function () {
     //// Bug 295:Waterfall Conversion Summary Graph misleading
     //// Array to hold chart points.
+    var dataset = JSON.parse($('#chartDataSummary').val());
+
     var arrChartData = [];
 
     //// Pushing data into array.
-    $.each(data, function (index, objChardData) {
+    $.each(dataset, function (index, objChardData) {
         arrChartData.push(parseInt(objChardData.Actual));
         arrChartData.push(parseInt(objChardData.Projected));
     });
@@ -23,7 +25,7 @@
     //// Calculating step value.
     var stepValue = endValue / 10;
 
-    setgraphdata(data)
+    setgraphdata(dataset)
     function setgraphdata(data) {
         var barChart = new dhtmlXChart({
             view: "bar",

@@ -169,7 +169,8 @@ namespace RevenuePlanner.Controllers
             overAllRevenueActual = 0;
             overAllMQLProjected = 0;
             overAllRevenueProjected = 0;
-            var MQLActuallist = ActualTacticList.Where(pcpt => pcpt.StageTitle.Equals(Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString())).ToList();
+            var MQLActuallist = ActualTacticList.Where(pcpt => pcpt.StageTitle.Equals(Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString()) && includeMonth.Contains(Tacticdata.Single(t => t.TacticObj.PlanTacticId == pcpt.PlanTacticId).TacticYear + pcpt.Period)).ToList();
+            //pt => Tacticdata.Single(t => t.TacticObj.PlanTacticId == pt.PlanTacticId).TacticYear + pt.Period
             if (MQLActuallist.Count > 0)
             {
                 overAllMQLActual = MQLActuallist.Sum(t => t.Actualvalue);
@@ -181,7 +182,7 @@ namespace RevenuePlanner.Controllers
                 overAllMQLProjected = MQLProjectedlist.Sum(mr => mr.Field<double>(ColumnValue));
             }
 
-            var RevenueActualllist = ActualTacticList.Where(pcpt => pcpt.StageTitle.Equals(Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString())).ToList();
+            var RevenueActualllist = ActualTacticList.Where(pcpt => pcpt.StageTitle.Equals(Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString()) && includeMonth.Contains(Tacticdata.Single(t => t.TacticObj.PlanTacticId == pcpt.PlanTacticId).TacticYear + pcpt.Period)).ToList();
             if (RevenueActualllist.Count > 0)
             {
                 overAllRevenueActual = RevenueActualllist.Sum(t => t.Actualvalue);
@@ -220,7 +221,7 @@ namespace RevenuePlanner.Controllers
             string inq = Enums.Stage.INQ.ToString();
             int INQStageId = db.Stages.Single(s => s.ClientId == Sessions.User.ClientId && s.Code == inq).StageId;
 
-            var INQActualList = GetActualValueForINQ(ActualTacticList, INQStageId);
+            var INQActualList = GetActualValueForINQ(ActualTacticList, INQStageId).Where(pcta => includeMonth.Contains(Tacticdata.Single(t => t.TacticObj.PlanTacticId == pcta.PlanTacticId).TacticYear + pcta.Period)).ToList();
             if (INQActualList.Count > 0)
             {
                 overAllInqActual = INQActualList.Sum(t => t.Actualvalue);
@@ -244,7 +245,7 @@ namespace RevenuePlanner.Controllers
             #endregion
 
             #region MQL
-            var CWActualList = ActualTacticList.Where(pcpt => pcpt.StageTitle.Equals(Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString())).ToList();
+            var CWActualList = ActualTacticList.Where(pcpt => pcpt.StageTitle.Equals(Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString()) && includeMonth.Contains(Tacticdata.Single(t => t.TacticObj.PlanTacticId == pcpt.PlanTacticId).TacticYear + pcpt.Period)).ToList();
             if (CWActualList.Count > 0)
             {
                 overAllCWActual = CWActualList.Sum(t => t.Actualvalue);

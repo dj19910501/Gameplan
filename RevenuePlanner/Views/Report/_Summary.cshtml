@@ -9,7 +9,7 @@
 @Html.Hidden("hdnIsPlanExistToShowReport", isPlanExistToShowReport)
 <div id="htmlContent" class="padding-content cf source-sans-proregular">
 <div class="report-gray-container" id="DivSummaryRevenue" style="display: none; margin-top: 0px !important;">
-    <a class="CursorHand" onclick="window.location.href='@Url.Action("Revenue", "Report")'">
+    <a id="AViewDetailReportRevenueChart" class="CursorHand">
         <div class="report-chart">
             <label>Realized Revenue to Plan</label>
             <div class="info">
@@ -50,7 +50,8 @@
 </div>
 
 <div class="report-gray-container" id="DivSummaryWaterfall" style="display: none;">
-    <a class="CursorHand" onclick="window.location.href='@Url.Action("Conversion", "Report")'">
+    <input type="hidden" id="chartDataSummary" value="" />
+    <a id="AViewDetailReportConversionChart" class="CursorHand">
         <div class="report-chart">
             <label>@Html.LabelForINQ("INQ") > @Html.LabelForMQL("MQL") > @Html.LabelForCW("CW")</label>
             <div id="chartDiv" class="report-chart1" style="width: 140px; height: 85px; left: 14px; top: 0px;"></div>
@@ -85,8 +86,20 @@
             $("#liConversion").focus().click();
         });
 
+        $('#AViewDetailReportRevenueChart').click(function()
+        {
+            $("#liRevenue").focus().click();
+        });
+
+        $('#AViewDetailReportConversionChart').click(function()
+        {
+            $("#liConversion").focus().click();
+        }); 
+
         ShowHideReport();
         var data = @Html.Raw(Json.Encode(Model.chartData));
+        //// Hidden field to store chart data that is consumed while generating PDF report.
+        $('#chartDataSummary').val(JSON.stringify(data));
 
         //// Bug 295:Waterfall Conversion Summary Graph misleading
         //// Array to hold chart points.
