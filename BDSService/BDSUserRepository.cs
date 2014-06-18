@@ -7,9 +7,9 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Elmah;
 using System.IO;
-
 using System.Web;
 using BDSService.Helpers;
+using System.Transactions;
 
 namespace BDSService
 {
@@ -183,6 +183,7 @@ namespace BDSService
                 userObj.Client = db.Clients.Where(cl => cl.ClientId == user.ClientId).Select(c => c.Name).FirstOrDefault();
                 userObj.DisplayName = user.DisplayName;
                 userObj.Email = user.Email;
+                userObj.Phone = user.Phone;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                 userObj.FirstName = user.FirstName;
                 userObj.JobTitle = user.JobTitle;
                 userObj.LastName = user.LastName;
@@ -194,6 +195,12 @@ namespace BDSService
                 userObj.SecurityQuestionId = user.SecurityQuestionId;
                 userObj.SecurityQuestion = db.SecurityQuestions.Where(sq => sq.SecurityQuestionId == user.SecurityQuestionId).Select(s => s.SecurityQuestion1).FirstOrDefault();
                 userObj.Answer = user.Answer;
+                // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                userObj.IsManager = db.User_Application.Where(a => a.IsDeleted.Equals(false) && a.ManagerId == userId && a.ApplicationId == applicationId).Any();
+                userObj.ManagerId = db.User_Application.Where(a => a.IsDeleted.Equals(false) && a.UserId == userId && a.ApplicationId == applicationId).Select(a => a.ManagerId).FirstOrDefault();
+                if (userObj.ManagerId != null && userObj.ManagerId != Guid.Empty)
+                    userObj.ManagerName = db.Users.Where(a => a.IsDeleted.Equals(false) && a.UserId == userObj.ManagerId).Select(a => a.FirstName + " " + a.LastName).FirstOrDefault();
+                // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
             }
             return userObj;
         }
@@ -498,52 +505,84 @@ namespace BDSService
             int retVal = 0;
             try
             {
-                var objDuplicateCheck = db.Users.Where(u => u.Email.Trim().ToLower() == user.Email.Trim().ToLower() && u.IsDeleted == false).FirstOrDefault();
-                if (objDuplicateCheck != null)
+                using (TransactionScope scope = new TransactionScope())     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                 {
-                    retVal = -1;
-                }
-                else
-                {
-                    User obj = new User();
+                    var objDuplicateCheck = db.Users.Where(u => u.Email.Trim().ToLower() == user.Email.Trim().ToLower() && u.IsDeleted == false).FirstOrDefault();
+                    if (objDuplicateCheck != null)
+                    {
+                        retVal = -1;
+                    }
+                    else
+                    {
+                        User obj = new User();
 
-                    Guid NewUserId = Guid.NewGuid();
-                    obj.UserId = NewUserId;
+                        Guid NewUserId = Guid.NewGuid();
+                        obj.UserId = NewUserId;
 
-                    byte[] saltbytes = Common.GetSaltBytes();
-                    obj.FirstName = user.FirstName;
-                    obj.LastName = user.LastName;
+                        byte[] saltbytes = Common.GetSaltBytes();
+                        obj.FirstName = user.FirstName;
+                        obj.LastName = user.LastName;
 
-                    // Generate final hash i.e. to be stored in DB
-                    string FinalPwd = Common.ComputeFinalHash(user.Password, saltbytes);
+                        // Generate final hash i.e. to be stored in DB
+                        string FinalPwd = Common.ComputeFinalHash(user.Password, saltbytes);
 
-                    obj.Password = FinalPwd;
-                    obj.Email = user.Email;
-                    obj.JobTitle = user.JobTitle;
-                    obj.ClientId = user.ClientId;
-                    if (user.ProfilePhoto != null)
-                        obj.ProfilePhoto = user.ProfilePhoto;
-                    obj.BusinessUnitId = user.BusinessUnitId;
-                    obj.GeographyId = user.GeographyId;
-                    obj.CreatedDate = DateTime.Now;
-                    obj.IsDeleted = false;
-                    obj.CreatedDate = DateTime.Now;
-                    db.Entry(obj).State = EntityState.Added;
-                    db.Users.Add(obj);
-                    int res = db.SaveChanges();
+                        obj.Password = FinalPwd;
+                        obj.Email = user.Email;
+                        obj.Phone = user.Phone;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                        obj.JobTitle = user.JobTitle;
+                        obj.ClientId = user.ClientId;
+                        if (user.ProfilePhoto != null)
+                            obj.ProfilePhoto = user.ProfilePhoto;
+                        obj.BusinessUnitId = user.BusinessUnitId;
+                        obj.GeographyId = user.GeographyId;
+                        obj.CreatedDate = DateTime.Now;
+                        obj.IsDeleted = false;
+                        obj.CreatedDate = DateTime.Now;
+                        db.Entry(obj).State = EntityState.Added;
+                        db.Users.Add(obj);
+                        int res = db.SaveChanges();
 
-                    //Insert in User_Application
-                    User_Application objUser_Application = new User_Application();
-                    objUser_Application.UserId = obj.UserId;
-                    objUser_Application.ApplicationId = applicationId;
-                    objUser_Application.RoleId = user.RoleId;
-                    objUser_Application.CreatedDate = DateTime.Now;
-                    objUser_Application.CreatedBy = createdBy;
-                    db.Entry(objUser_Application).State = EntityState.Added;
-                    db.User_Application.Add(objUser_Application);
-                    res = db.SaveChanges();
+                        //Insert in User_Application
+                        User_Application objUser_Application = new User_Application();
+                        objUser_Application.UserId = obj.UserId;
+                        objUser_Application.ApplicationId = applicationId;
+                        objUser_Application.RoleId = user.RoleId;
+                        objUser_Application.CreatedDate = DateTime.Now;
+                        objUser_Application.CreatedBy = createdBy;
+                        objUser_Application.ManagerId = user.ManagerId;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                        db.Entry(objUser_Application).State = EntityState.Added;
+                        db.User_Application.Add(objUser_Application);
+                        res = db.SaveChanges();
 
-                    retVal = 1;
+                        // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                        //-- Insert User_Activity_Permission data
+                        if (user.RoleId != null && user.RoleId != Guid.Empty)
+                        {
+                            var lstDefaultRights = db.Role_Activity_Permission.Where(a => a.RoleId == user.RoleId).ToList();
+
+                            if (lstDefaultRights != null)
+                            {
+                                if (lstDefaultRights.Count > 0)
+                                {
+                                    foreach (var item in lstDefaultRights)
+                                    {
+                                        User_Activity_Permission objUser_Activity_Permission = new User_Activity_Permission();
+                                        objUser_Activity_Permission.UserId = user.UserId;
+                                        objUser_Activity_Permission.ApplicationActivityId = item.ApplicationActivityId;
+                                        objUser_Activity_Permission.CreatedBy = createdBy;
+                                        objUser_Activity_Permission.CreatedDate = DateTime.Now;
+                                        db.Entry(objUser_Activity_Permission).State = EntityState.Added;
+                                        db.User_Activity_Permission.Add(objUser_Activity_Permission);
+                                        db.SaveChanges();
+                                    }
+                                }
+                            }
+                        }
+                        // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+
+                        retVal = 1;
+                    }
+                    scope.Complete();       // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                 }
             }
             catch (Exception ex)
@@ -569,52 +608,125 @@ namespace BDSService
             int retVal = 0;
             try
             {
-                var obj = db.Users.Where(u => u.UserId == user.UserId && u.IsDeleted == false).FirstOrDefault();
-                if (obj == null)
+                using (TransactionScope scope = new TransactionScope())     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                 {
-                    retVal = -1;
-                }
-                else
-                {
-                    var objUserEmail = db.Users.Where(u => u.Email == user.Email && u.UserId != user.UserId && u.IsDeleted == false).FirstOrDefault();
-                    if (objUserEmail != null)
+                    var obj = db.Users.Where(u => u.UserId == user.UserId && u.IsDeleted == false).FirstOrDefault();
+                    if (obj == null)
                     {
-                        retVal = -2;
+                        retVal = -1;
                     }
                     else
                     {
-                        obj.UserId = user.UserId;
-                        obj.FirstName = user.FirstName;
-                        obj.LastName = user.LastName;
-                        obj.Email = user.Email;
-                        obj.JobTitle = user.JobTitle;
-                        obj.ClientId = user.ClientId;
-                        obj.BusinessUnitId = user.BusinessUnitId;
-                        obj.GeographyId = user.GeographyId;
-                        if (user.ProfilePhoto != null)
+                        var objUserEmail = db.Users.Where(u => u.Email == user.Email && u.UserId != user.UserId && u.IsDeleted == false).FirstOrDefault();
+                        if (objUserEmail != null)
                         {
-                            obj.ProfilePhoto = user.ProfilePhoto;
+                            retVal = -2;
                         }
                         else
                         {
-                            obj.ProfilePhoto = null;
+                            obj.UserId = user.UserId;
+                            obj.FirstName = user.FirstName;
+                            obj.LastName = user.LastName;
+                            obj.Email = user.Email;
+                            obj.Phone = user.Phone;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                            obj.JobTitle = user.JobTitle;
+                            obj.ClientId = user.ClientId;
+                            obj.BusinessUnitId = user.BusinessUnitId;
+                            obj.GeographyId = user.GeographyId;
+                            if (user.ProfilePhoto != null)
+                            {
+                                obj.ProfilePhoto = user.ProfilePhoto;
+                            }
+                            else
+                            {
+                                obj.ProfilePhoto = null;
+                            }
+                            obj.IsDeleted = user.IsDeleted;
+                            db.Entry(obj).State = EntityState.Modified;
+                            db.SaveChanges();
+
+                            //Update in User_Application
+                            var objUser_Application = db.User_Application.Where(u => u.UserId == user.UserId && u.ApplicationId == applicationId && u.IsDeleted == false).FirstOrDefault();
+
+                            // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                            Guid oldRoleId = objUser_Application.RoleId;
+                            Guid newRoleId = user.RoleId;
+                            // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+
+                            objUser_Application.UserId = user.UserId;
+                            objUser_Application.ApplicationId = applicationId;
+                            objUser_Application.RoleId = user.RoleId;
+                            objUser_Application.ModifiedDate = DateTime.Now;
+                            objUser_Application.ModifiedBy = modifiedBy;
+                            objUser_Application.ManagerId = user.ManagerId;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                            db.Entry(objUser_Application).State = EntityState.Modified;
+                            db.SaveChanges();
+
+                            retVal = 1;
+
+                            // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                            //-- When delete a Manager, re-assign the subordinates to other manager.
+                            if (user.IsDeleted == true && user.IsManager == true)
+                                retVal = ReassignManager(user.UserId, user.NewManagerId, modifiedBy);
+
+                            #region Manage User Role when role changes
+                            //-- Insert User_Activity_Permission data
+                            if (oldRoleId != null && oldRoleId != Guid.Empty && newRoleId != null && newRoleId != Guid.Empty && oldRoleId != newRoleId && user.IsDeleted == false)
+                            {
+                                //-- List of rights for role before role changes (old role).
+                                var lstOldRights = db.Role_Activity_Permission.Where(a => a.RoleId == oldRoleId).ToList();
+
+                                //-- List of rights for role that has to be updated (new role).
+                                var lstNewRights = db.Role_Activity_Permission.Where(a => a.RoleId == newRoleId).ToList();
+
+                                //-- List of rights of old roles that needs to be deleted as new role assigns.
+                                var lstRightsToDelete = lstOldRights.Where(a => !lstNewRights.Select(b => b.ApplicationActivityId).Contains(a.ApplicationActivityId)).ToList();
+
+                                //-- List of rights of new roles that needs to be inserted as new role assigns.
+                                var lstRightsToInsert = lstNewRights.Where(a => !lstOldRights.Select(b => b.ApplicationActivityId).Contains(a.ApplicationActivityId)).ToList();
+
+                                //-- Delete old rights
+                                if (lstRightsToDelete != null)
+                                {
+                                    if (lstRightsToDelete.Count > 0)
+                                    {
+                                        foreach (var item in lstRightsToDelete)
+                                        {
+                                            var objUser_Activity_Permission = db.User_Activity_Permission.Where(a => a.UserId == user.UserId && a.ApplicationActivityId == item.ApplicationActivityId).FirstOrDefault();
+                                            if (objUser_Activity_Permission != null)
+                                            {
+                                                db.Entry(objUser_Activity_Permission).State = EntityState.Deleted;
+                                                db.User_Activity_Permission.Remove(objUser_Activity_Permission);
+                                                db.SaveChanges();
+                                            }
+                                        }
+                                    }
+                                }
+
+                                //-- Insert new rights
+                                if (lstRightsToInsert != null)
+                                {
+                                    if (lstRightsToInsert.Count > 0)
+                                    {
+                                        foreach (var item in lstRightsToInsert)
+                                        {
+                                            User_Activity_Permission objUser_Activity_Permission = new User_Activity_Permission();
+                                            objUser_Activity_Permission.ApplicationActivityId = item.ApplicationActivityId;
+                                            objUser_Activity_Permission.CreatedBy = modifiedBy;
+                                            objUser_Activity_Permission.CreatedDate = DateTime.Now;
+                                            objUser_Activity_Permission.UserId = user.UserId;
+                                            db.Entry(objUser_Activity_Permission).State = EntityState.Added;
+                                            db.User_Activity_Permission.Add(objUser_Activity_Permission);
+                                            db.SaveChanges();
+                                        }
+                                    }
+                                }
+                            }
+                            #endregion
+                            // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                         }
-                        obj.IsDeleted = user.IsDeleted;
-                        db.Entry(obj).State = EntityState.Modified;
-                        db.SaveChanges();
-
-                        //Update in User_Application
-                        var objUser_Application = db.User_Application.Where(u => u.UserId == user.UserId && u.ApplicationId == applicationId && u.IsDeleted == false).FirstOrDefault();
-                        objUser_Application.UserId = user.UserId;
-                        objUser_Application.ApplicationId = applicationId;
-                        objUser_Application.RoleId = user.RoleId;
-                        objUser_Application.ModifiedDate = DateTime.Now;
-                        objUser_Application.ModifiedBy = modifiedBy;
-                        db.Entry(objUser_Application).State = EntityState.Modified;
-                        db.SaveChanges();
-
-                        retVal = 1;
                     }
+                    scope.Complete();       // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                 }
             }
             catch (Exception ex)
@@ -624,6 +736,47 @@ namespace BDSService
             return retVal;
         }
 
+        #endregion
+
+        #region Re-assign manager
+        /// <summary>
+        /// When a manager profile get deleted, re-assign the subordinates to other manager.
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy>
+        /// <CreatedDate>17/06/2014</CreatedDate>
+        /// <param name="UserId"></param>
+        /// <param name="NewManagerId"></param>
+        /// <param name="modifiedBy"></param>
+        /// <returns></returns>
+        public int ReassignManager(Guid UserId, Guid? NewManagerId, Guid modifiedBy)
+        {
+            try
+            {
+                var lstSubOrdinated = db.User_Application.Where(a => a.ManagerId == UserId && a.IsDeleted.Equals(false)).ToList();
+
+                if (lstSubOrdinated != null)
+                {
+                    if (lstSubOrdinated.Count > 0)
+                    {
+                        foreach (var item in lstSubOrdinated)
+                        {
+                            item.ManagerId = NewManagerId;
+                            item.ModifiedDate = DateTime.Now;
+                            item.ModifiedBy = modifiedBy;
+                            db.Entry(item).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                    }
+                }
+
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+                return -1;
+            }
+        }
         #endregion
 
         #region Get User Role

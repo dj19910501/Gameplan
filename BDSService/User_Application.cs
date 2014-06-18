@@ -24,8 +24,10 @@ namespace BDSService
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
         public bool IsDeleted { get; set; }
+        public Nullable<System.Guid> ManagerId { get; set; }
     
         public virtual Application Application { get; set; }
         public virtual User User { get; set; }
+        public virtual User User1 { get; set; }
     }
 }

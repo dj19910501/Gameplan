@@ -58,5 +58,17 @@ namespace BDSService.BDSEntities
         public string SecurityQuestion { get; set; }
         [DataMember]
         public string Answer { get; set; }
+        // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+        [DataMember]
+        public Guid? ManagerId { get; set; }
+        [DataMember]
+        public string ManagerName { get; set; }
+        [DataMember]
+        public bool IsManager { get; set; }
+        [DataMember]
+        public Guid? NewManagerId { get; set; }
+        [DataMember]
+        public string Phone { get; set; }
+        // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
     }
 }

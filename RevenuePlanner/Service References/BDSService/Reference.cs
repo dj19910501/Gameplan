@@ -56,6 +56,9 @@ namespace RevenuePlanner.BDSService {
         private bool IsDirectorField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private bool IsManagerField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
         private bool IsPlannerField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
@@ -71,7 +74,19 @@ namespace RevenuePlanner.BDSService {
         private string LastNameField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Nullable<System.Guid> ManagerIdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string ManagerNameField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Nullable<System.Guid> NewManagerIdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string PasswordField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string PhoneField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private byte[] ProfilePhotoField;
@@ -248,6 +263,19 @@ namespace RevenuePlanner.BDSService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool IsManager {
+            get {
+                return this.IsManagerField;
+            }
+            set {
+                if ((this.IsManagerField.Equals(value) != true)) {
+                    this.IsManagerField = value;
+                    this.RaisePropertyChanged("IsManager");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
         public bool IsPlanner {
             get {
                 return this.IsPlannerField;
@@ -313,6 +341,45 @@ namespace RevenuePlanner.BDSService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Nullable<System.Guid> ManagerId {
+            get {
+                return this.ManagerIdField;
+            }
+            set {
+                if ((this.ManagerIdField.Equals(value) != true)) {
+                    this.ManagerIdField = value;
+                    this.RaisePropertyChanged("ManagerId");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string ManagerName {
+            get {
+                return this.ManagerNameField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.ManagerNameField, value) != true)) {
+                    this.ManagerNameField = value;
+                    this.RaisePropertyChanged("ManagerName");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Nullable<System.Guid> NewManagerId {
+            get {
+                return this.NewManagerIdField;
+            }
+            set {
+                if ((this.NewManagerIdField.Equals(value) != true)) {
+                    this.NewManagerIdField = value;
+                    this.RaisePropertyChanged("NewManagerId");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
         public string Password {
             get {
                 return this.PasswordField;
@@ -321,6 +388,19 @@ namespace RevenuePlanner.BDSService {
                 if ((object.ReferenceEquals(this.PasswordField, value) != true)) {
                     this.PasswordField = value;
                     this.RaisePropertyChanged("Password");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Phone {
+            get {
+                return this.PhoneField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.PhoneField, value) != true)) {
+                    this.PhoneField = value;
+                    this.RaisePropertyChanged("Phone");
                 }
             }
         }

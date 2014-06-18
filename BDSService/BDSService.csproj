@@ -54,6 +54,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -130,6 +131,9 @@
     <Compile Include="Role.cs">
       <DependentUpon>BDSAuth.tt</DependentUpon>
     </Compile>
+    <Compile Include="Role_Activity_Permission.cs">
+      <DependentUpon>BDSAuth.tt</DependentUpon>
+    </Compile>
     <Compile Include="Role_Permission.cs">
       <DependentUpon>BDSAuth.tt</DependentUpon>
     </Compile>
@@ -137,6 +141,9 @@
       <DependentUpon>BDSAuth.tt</DependentUpon>
     </Compile>
     <Compile Include="User.cs">
+      <DependentUpon>BDSAuth.tt</DependentUpon>
+    </Compile>
+    <Compile Include="User_Activity_Permission.cs">
       <DependentUpon>BDSAuth.tt</DependentUpon>
     </Compile>
     <Compile Include="User_Application.cs">

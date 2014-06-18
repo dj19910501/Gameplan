@@ -18,6 +18,7 @@ namespace BDSService
         {
             this.PasswordResetRequests = new HashSet<PasswordResetRequest>();
             this.User_Application = new HashSet<User_Application>();
+            this.User_Application1 = new HashSet<User_Application>();
         }
     
         public System.Guid UserId { get; set; }
@@ -35,10 +36,12 @@ namespace BDSService
         public Nullable<System.DateTime> CreatedDate { get; set; }
         public Nullable<int> SecurityQuestionId { get; set; }
         public string Answer { get; set; }
+        public string Phone { get; set; }
     
         public virtual Client Client { get; set; }
         public virtual ICollection<PasswordResetRequest> PasswordResetRequests { get; set; }
         public virtual SecurityQuestion SecurityQuestion { get; set; }
         public virtual ICollection<User_Application> User_Application { get; set; }
+        public virtual ICollection<User_Application> User_Application1 { get; set; }
     }
 }

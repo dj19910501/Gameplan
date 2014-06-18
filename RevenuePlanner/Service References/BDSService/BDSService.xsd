@@ -14,12 +14,17 @@
       <xs:element minOccurs="0" name="IsClientAdmin" type="xs:boolean" />
       <xs:element minOccurs="0" name="IsDeleted" type="xs:boolean" />
       <xs:element minOccurs="0" name="IsDirector" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsManager" type="xs:boolean" />
       <xs:element minOccurs="0" name="IsPlanner" type="xs:boolean" />
       <xs:element minOccurs="0" name="IsSystemAdmin" type="xs:boolean" />
       <xs:element minOccurs="0" name="JobTitle" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="LastLoginDate" nillable="true" type="xs:dateTime" />
       <xs:element minOccurs="0" name="LastName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ManagerId" nillable="true" type="ser:guid" />
+      <xs:element minOccurs="0" name="ManagerName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="NewManagerId" nillable="true" type="ser:guid" />
       <xs:element minOccurs="0" name="Password" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Phone" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="ProfilePhoto" nillable="true" type="xs:base64Binary" />
       <xs:element minOccurs="0" name="RoleCode" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="RoleId" type="ser:guid" />

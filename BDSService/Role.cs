@@ -29,6 +29,7 @@ namespace BDSService
         public Nullable<System.Guid> CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
+        public string ColorCode { get; set; }
     
         public virtual ICollection<Application_Role> Application_Role { get; set; }
         public virtual ICollection<Role_Permission> Role_Permission { get; set; }

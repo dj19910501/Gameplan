@@ -512,6 +512,13 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.IsSysAdmin = false;
             }
+            // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+            if (role == Enums.Role.ClientAdmin || role == Enums.Role.SystemAdmin)
+            {
+                // Get All User List for Manager
+                ViewData["ManagerList"] = GetManagersList(Guid.Empty);
+            }
+            // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
         }
 
         /// <summary>
@@ -598,6 +605,7 @@ namespace RevenuePlanner.Controllers
                     objUser.Password = Common.ComputeSingleHash(password); //Single hash password
 
                     objUser.Email = form.Email;
+                    objUser.Phone = form.Phone;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                     objUser.JobTitle = form.JobTitle;
                     objUser.ClientId = form.ClientId;
                     objUser.RoleId = form.RoleId;
@@ -612,6 +620,7 @@ namespace RevenuePlanner.Controllers
                     }
                     objUser.BusinessUnitId = form.BusinessUnitId;
                     objUser.GeographyId = form.GeographyId;
+                    objUser.ManagerId = form.ManagerId;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
 
                     int retVal = objBDSServiceClient.CreateUser(objUser, Sessions.ApplicationId, Sessions.User.UserId);
                     if (retVal == 1)
@@ -814,6 +823,7 @@ namespace RevenuePlanner.Controllers
                     objUserModel.Client = objUser.Client;
                     objUserModel.DisplayName = objUser.DisplayName;
                     objUserModel.Email = objUser.Email;
+                    objUserModel.Phone = objUser.Phone;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
                     objUserModel.FirstName = objUser.FirstName;
                     objUserModel.JobTitle = objUser.JobTitle;
                     objUserModel.LastName = objUser.LastName;
@@ -827,7 +837,11 @@ namespace RevenuePlanner.Controllers
                     objUserModel.RoleTitle = objUser.RoleTitle;
                     objUserModel.Password = objUser.Password;
                     objUserModel.ConfirmPassword = objUser.Password;
-
+                    // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                    objUserModel.IsManager = objUser.IsManager;
+                    if (objUser.ManagerId != null && objUser.ManagerId != Guid.Empty)
+                        objUserModel.ManagerId = objUser.ManagerId;
+                    // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                     if (Sessions.IsSystemAdmin)
                     {
                         objUserModel.IsSystemAdmin = true;
@@ -845,6 +859,17 @@ namespace RevenuePlanner.Controllers
                         objUserModel.IsPlanner = true;
                     }
                     LoadEditModeComponents(objUserModel.ClientId, src);
+                    // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                    if ((Sessions.User.RoleCode == Enums.RoleCodes.CA.ToString() || Sessions.User.RoleCode == Enums.RoleCodes.SA.ToString()) && objUserModel.RoleCode != Enums.RoleCodes.SA.ToString())
+                    {
+                        // Get All User List for Manager
+                        ViewData["ManagerList"] = GetManagersList(objUser.UserId);
+                    }
+                    else
+                    {
+                        objUserModel.ManagerName = objUser.ManagerName;
+                    }
+                    // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
 
                     //Get Default Image
                     byte[] imageBytes = Common.ReadFile(Server.MapPath("~") + "/content/images/user_image_not_found.png");
@@ -915,12 +940,17 @@ namespace RevenuePlanner.Controllers
                     objUser.FirstName = form.FirstName;
                     objUser.LastName = form.LastName;
                     objUser.Email = form.Email;
+                    objUser.Phone = form.Phone;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                     objUser.JobTitle = form.JobTitle;
                     if (form.IsDeleted != null)
                     {
                         if (Convert.ToString(form.IsDeleted).ToLower() == "yes")
                         {
                             objUser.IsDeleted = true;
+                            // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
+                            objUser.IsManager = form.IsManager;
+                            objUser.NewManagerId = form.NewManagerId;
+                            // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
                         }
                         else
                         {
@@ -950,6 +980,21 @@ namespace RevenuePlanner.Controllers
                         if (objRole != null)
                         {
                             objUser.RoleCode = objRole.Code;
+                            // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
+                            if ((Sessions.User.RoleCode == Enums.RoleCodes.CA.ToString() || Sessions.User.RoleCode == Enums.RoleCodes.SA.ToString()) && objUser.RoleCode != Enums.RoleCodes.SA.ToString())
+                            {
+                                // Get All User List for Manager
+                                ViewData["ManagerList"] = GetManagersList(objUser.UserId);
+                            }
+                            if (objUser.RoleCode == Enums.RoleCodes.CA.ToString() || objUser.RoleCode == Enums.RoleCodes.SA.ToString())
+                            {
+                                objUser.ManagerId = null;
+                            }
+                            else
+                            {
+                                objUser.ManagerId = form.ManagerId;
+                            }
+                            // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
                         }
                     }
                     int retVal = objBDSServiceClient.UpdateUser(objUser, Sessions.ApplicationId, Sessions.User.UserId);
@@ -1312,6 +1357,30 @@ namespace RevenuePlanner.Controllers
             return Json(geographyData, JsonRequestBehavior.AllowGet);
         }
 
+        #endregion
+
+        #region Userdefined Functions
+
+        #region Get list of Managers
+        /// <summary>
+        /// Get list of Managers by Client and application Id.
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy>
+        /// <CreatedDate>11.06.2014</CreatedDate>
+        /// <returns>List<UserModel></returns>
+        public List<UserModel> GetManagersList(Guid UserId)
+        {
+            if (Sessions.ApplicationId != Guid.Empty && Sessions.ApplicationId != null && Sessions.User.UserId != Guid.Empty && Sessions.User.UserId != null)
+            {
+                //var UserList = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId, Sessions.ApplicationId);
+                var UserList = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
+                var ManagerList = UserList.Where(a => a.UserId != UserId && a.RoleCode != Enums.RoleCodes.SA.ToString() && a.IsDeleted.Equals(false)).Select(a => new UserModel { ManagerId = a.UserId, ManagerName = a.FirstName + " " + a.LastName }).ToList();
+                return ManagerList.OrderBy(a => a.ManagerName).ToList();
+            }
+            return null;
+        }
+        #endregion
+        
         #endregion
     }
 }
