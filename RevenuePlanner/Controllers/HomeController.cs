@@ -2546,6 +2546,24 @@ namespace RevenuePlanner.Controllers
                 ViewBag.UpdatedBy = null;
             }
             im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.ProjectedStageValue), im.StartDate, im.PlanTacticId, Convert.ToInt32(im.StageId));
+
+            // Modified by dharmraj for implement new formula to calculate ROI, #533
+            if (im.Cost > 0)
+            {
+                im.ROI = (im.Revenues - im.Cost) / im.Cost;
+            }
+            else
+                im.ROI = 0;
+
+            if (im.CostActual > 0)
+            {
+                im.ROIActual = (im.RevenuesActual - im.CostActual) / im.CostActual;
+            }
+            else
+            {
+                im.ROIActual = 0;
+            }
+
             ViewBag.TacticDetail = im;
             bool isValidUser = true;
             if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
@@ -2554,21 +2572,6 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.IsValidUser = isValidUser;
 
-            if (im.Cost > 0)
-            {
-                im.ROI = im.Revenues / im.Cost;
-            }
-            else
-                im.ROI = 0;
-
-            if (im.CostActual > 0)
-            {
-                im.ROIActual = im.RevenuesActual / im.CostActual;
-            }
-            else
-            {
-                im.ROIActual = 0;
-            }
             ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
             if (im.LastSyncDate != null)
             {
@@ -3899,8 +3902,6 @@ namespace RevenuePlanner.Controllers
             {
                 id = t.id,
                 title = t.title,
-                //inqProjected = t.INQs,
-                //inqActual = t.INQsActual == null ? 0 : t.INQsActual,
                 mqlProjected = t.mqlProjected,
                 mqlActual = t.mqlActual,
                 cwProjected = t.cwProjected,
@@ -3909,8 +3910,8 @@ namespace RevenuePlanner.Controllers
                 revenueActual = t.revenueActual,
                 costProjected = t.costProjected,
                 costActual = t.costActual,
-                roiProjected = t.costProjected == 0 ? 0 : (t.revenueProjected / t.costProjected),
-                roiActual = t.costActual == 0 ? 0 : (t.revenueActual / t.costActual),
+                roiProjected = t.costProjected == 0 ? 0 : ((t.revenueProjected - t.costProjected) / t.costProjected), // Modified by dharmraj for implement new formula to calculate ROI, #533
+                roiActual = t.costActual == 0 ? 0 : ((t.revenueActual - t.costActual) / t.costActual), // Modified by dharmraj for implement new formula to calculate ROI, #533
                 geographyId = t.geographyId,
                 individualId = t.individualId,
                 tacticTypeId = t.tacticTypeId,

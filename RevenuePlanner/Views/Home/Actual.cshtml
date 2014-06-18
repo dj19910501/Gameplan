@@ -116,21 +116,21 @@
                 <tbody>
                     @foreach (var s in ViewBag.StageTitle)
                     {
-                            if (s == Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString())
-                            {
-                    <tr class="height42">
-                                    <th id="inqP" class="text-align-right  projected font908D88">@tacticActual.ProjectedStageValue</th>
-                                    <th id="lblTotalProjectedStageValue" class="border-r font3F3F3F text-align-right">@tacticActual.ProjectedStageValueActual
-                                    </th>
-                    </tr>
-                            }
-                            else if (s.ToLower() == Common.StageCodeMQL)
-                            {
-                    <tr class="height42">
-                        <th id="mqlP" class="text-align-right  projected font908D88">@tacticActual.MQLs</th>
-                        <th id="lblTotalMQL" class="border-r font3F3F3F text-align-right ">@tacticActual.MQLsActual</th>
-                    </tr>
-                            }
+                        if (s == Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString())
+                        {
+                            <tr class="height42">
+                                <th id="inqP" class="text-align-right  projected font908D88">@tacticActual.ProjectedStageValue</th>
+                                <th id="lblTotalProjectedStageValue" class="border-r font3F3F3F text-align-right">@tacticActual.ProjectedStageValueActual
+                                </th>
+                            </tr>
+                        }
+                        else if (s.ToLower() == Common.StageCodeMQL)
+                        {
+                            <tr class="height42">
+                                <th id="mqlP" class="text-align-right  projected font908D88">@tacticActual.MQLs</th>
+                                <th id="lblTotalMQL" class="border-r font3F3F3F text-align-right ">@tacticActual.MQLsActual</th>
+                            </tr>
+                        }
                     }
 
                     <tr class="height42">
@@ -148,7 +148,7 @@
                     </tr>
                     <tr class="height42">
                         <th id="roiP" class="text-align-right height22 projected padding-bottom9 font908D88">@tacticActual.ROI</th>
-                        <th id="roiT" class="border-r redfont text-align-right">@tacticActual.ROIActual</th>
+                        <th id="roiT" class="border-r font3F3F3F text-align-right">@tacticActual.ROIActual</th>
                     </tr>
                 </tbody>
             </table>
@@ -246,7 +246,7 @@
             var pcost = parseFloat(ReplaceCC(document.getElementById('cP').innerHTML));
             if (pcost != 0 && !isNaN(pcost)) {
                 var prevenue = parseFloat(ReplaceCC($("#rP").text()));
-                var roip = prevenue / pcost;
+                var roip = (prevenue - pcost) / pcost;
                 $("#roiP").text(roip.toFixed(2));
             }
 
@@ -327,17 +327,19 @@
         $('#cT').bind('change', calculateRIO);
         $('#cT').bind('keyup', calculateRIO);
 
+        // Modified by dharmraj for implement new formula to calculate ROI, #533
         function calculateRIO() {
             var pcost = parseFloat(ReplaceCC($("#cp").text()));
             if (pcost != 0 && !isNaN(pcost)) {
                 var prevenue = parseFloat(ReplaceCC($("#rP").text()));
-                var roip = prevenue / pcost;
+                var roip = (prevenue - pcost) / pcost;
                 $("#roiP").text(roip.toFixed(2));
             }
+
             pcost = parseFloat(ReplaceCC($("#cT").val()));
             if (pcost != 0 && !isNaN(pcost)) {
                 var prevenue = parseFloat(ReplaceCC($("#lblTotalRevenue").text()));
-                var roiT = prevenue / pcost;
+                var roiT = (prevenue - pcost) / pcost;
                 $("#roiT").text(roiT.toFixed(2));
             }
         }

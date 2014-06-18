@@ -383,7 +383,7 @@
                     }
                 }
             }
-                       
+
             function SetTipsyPrice(obj, objVal) {
                 if (obj != null || obj != 'undefined') {
                     var objTxt = objVal.replace('.', '').replace(/,/g, '').replace('$', '');
@@ -501,17 +501,18 @@
                 });
             });
 
+            // Modified by dharmraj for implement new formula to calculate ROI, #533
             function calculateRIO(id) {
                 var pcost = parseFloat(ReplaceCC($("#ProjectedlblCCost" + id).text()));
                 if (pcost != 0 && !isNaN(pcost)) {
                     var prevenue = parseFloat(ReplaceCC($("#ProjectedlblValueRevenue" + id).text()));
-                    var roip = prevenue / pcost;
+                    var roip = (prevenue - pcost) / pcost;
                     $("#ProjectedROI" + id).text(roip.toFixed(2));
                 }
                 pcost = parseFloat(ReplaceCC($("#ActuallblCCost" + id).val()));
                 if (pcost != 0 && !isNaN(pcost)) {
                     var prevenue = parseFloat(ReplaceCC($("#ActuallblCRevenue" + id).text()));
-                    var roiT = prevenue / pcost;
+                    var roiT = (prevenue - pcost) / pcost;
                     $("#ActualROI" + id).text(roiT.toFixed(2));
                 }
             }
@@ -714,8 +715,6 @@
                                             '</div>' +
                                         '</a>';
 
-            // if (typeof _actualData != 'undefined') {
-            //if (_actualData.length > 0) {
             $html += '<div class="header-toogle-actual-right">' +
             '<div class="shadow-scroll-table-mask-left"></div>' +
             '<div class="table-actual-mask">' +
@@ -797,15 +796,15 @@
                                     '</div>';
                 }
                 else if (arrStage[i].toLowerCase() == '@Common.StageCodeMQL') {
-            $html += '<div class="body-toogle-actual">@Html.LabelForMQL("MQL")<div class="table-info-actual-left-wraper">' +
-                                            '<div class="table-info-actual-left truncate" id="ProjectedlblPMQL' + _id + '">' +
-                                                _mqlProjected +
-                                            '</div>' +
-                                            '<div class="table-info-actual-left table-info-actual-width truncate" id="ActuallblPMQL' + _id + '">' +
-                                                _mqlActual +
-                                            '</div>' +
-                                        '</div>' +
-                                    '</div>';
+                    $html += '<div class="body-toogle-actual">@Html.LabelForMQL("MQL")<div class="table-info-actual-left-wraper">' +
+                                                    '<div class="table-info-actual-left truncate" id="ProjectedlblPMQL' + _id + '">' +
+                                                        _mqlProjected +
+                                                    '</div>' +
+                                                    '<div class="table-info-actual-left table-info-actual-width truncate" id="ActuallblPMQL' + _id + '">' +
+                                                        _mqlActual +
+                                                    '</div>' +
+                                                '</div>' +
+                                            '</div>';
                 }
             }
 
@@ -828,11 +827,7 @@
                                             '</div>' +
                                         '</div>' +
                                     '</div>';
-            //}
-            //else {
 
-            //}
-            //}//if
             $html += '<div class="body-toogle-actual">Cost' +
                                 '<div id="border-right" class="table-info-actual-left-wraper">' +
                                     '<div class="table-info-actual-left truncate" id="ProjectedlblCCost' + _id + '">' +
@@ -844,19 +839,19 @@
                                 '</div>' +
                             '</div>';
 
-            var roiProjectedValue = 0;
-            if (_costProjected != 0 && !isNaN(_costProjected)) {
-                var prevenue = parseFloat(_revenueProjected);
-                roiProjectedValue = (Math.round(prevenue / parseFloat(_costProjected) * 100) / 100);
-            }
+            //var roiProjectedValue = 0;
+            //if (_costProjected != 0 && !isNaN(_costProjected)) {
+            //    var prevenue = parseFloat(_revenueProjected);
+            //    roiProjectedValue = (Math.round(prevenue / parseFloat(_costProjected) * 100) / 100);
+            //}
 
             $html += '<div class="body-toogle-actual">ROI' +
                                     '<div id="border-right" class="table-info-actual-left-wraper">' +
                                         '<div class="table-info-actual-left truncate" id="ProjectedROI' + _id + '">' +
-                                            roiProjectedValue +
+                                            _roiProjected.toFixed(2) +
                                         '</div>' +
-                                        '<div class="table-info-actual-left table-info-actual-width truncate green-value" id="ActualROI' + _id + '">' +
-                                            _roiActual +
+                                        '<div class="table-info-actual-left table-info-actual-width truncate " id="ActualROI' + _id + '">' +
+                                            _roiActual.toFixed(2) +
                                         '</div>' +
                                     '</div>' +
                                 '</div>';
