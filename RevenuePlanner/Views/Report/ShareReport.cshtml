@@ -177,8 +177,10 @@
             //$("#MQLPerformance").before('<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />');
 
             //+ $('#ChildULConversionSummary').wrap('<p/>').parent().html()
-            var html =$('#ParentULConversionSummary').wrap('<p/>').parent().html() + $('#DivHtmlContent').wrap('<p/>').parent().html();
-            var $html = $('<div id="content_wraper" class="span10 all-height" style="width:100%">' + html + '</div>');
+            var html ='<div><div class="nav nav-tabs" style="border-bottom: 0px;">' + $('#h2PlanTitle').parent().parent().html() + '</div></br>';
+
+            html +='<div>' + $('#ParentULConversionSummary').wrap('<p/>').parent().html() + $('#DivHtmlContent').wrap('<p/>').parent().html();
+            var $html = $('<div id="content_wraper" class="span10 all-height" style="width:100%">' + html + '</div></div></div>');
             $html.find("#MQLPerformance").before('<div style="width:100%;height:400px;"></div>');
             $html.find('div[id="chartDiv1"]').empty();
             $html.find('div[id="chartDiv2"]').empty();
@@ -190,8 +192,9 @@
 
         function GetHTMLRevenue()
         {
-            var html =$('#ParentULRevenueSummary').wrap('<p/>').parent().html() + $('#ChildULRevenueSummary').wrap('<p/>').parent().html() + $('#DivHtmlContent').wrap('<p/>').parent().html();
-            var $html = $('<div id="content_wraper" class="span10 all-height" style="width:100%">' + html + '</div>');
+            var html ='<div><div class="nav nav-tabs" style="border-bottom: 0px;">' + $('#h2PlanTitle').parent().parent().html() + '</div></br>';
+            html +='<div>' + $('#ParentULRevenueSummary').wrap('<p/>').parent().html() + $('#ChildULRevenueSummary').wrap('<p/>').parent().html() + $('#DivHtmlContent').wrap('<p/>').parent().html();
+            var $html = $('<div id="content_wraper" class="span10 all-height" style="width:100%">' + html + '</div></div></div>');
             $html.find("#ParentULSourcePerformance").before('<div style="width:100%;height:80px;"></div>');
             $html.find('div[id="chartDiv3"]').empty();
             $html.find('div[id="chartDiv4"]').empty();
@@ -202,8 +205,9 @@
         }
 
         function GetHTMLSummary(){
-            var html =$('#ulNav').wrap('<p/>').parent().html() + $('#htmlContent').wrap('<p/>').parent().html();
-            var $html = $('<div>' + html + '</div>');
+            var html ='<div><div class="nav nav-tabs" style="border-bottom: 0px;">' + $('#h2PlanTitle').parent().parent().html() + '</div></br>';
+            html += '<div>' + $('#htmlContent').wrap('<p/>').parent().html() + '</div></div>';
+            var $html = $(html);//$('<div>' + html + '</div>');
             $html.find('div[id="chartDiv"]').empty();
             $html.find('#AViewDetailReportRevenue').remove();
             $html.find('#AViewDetailReportConversion').remove();
