@@ -139,6 +139,9 @@ namespace RevenuePlanner.Controllers
                         }
                         //End Manoj Limbachiya : 11/23/2013 - Menu filling  and Role Permission
 
+                        //// Set user activity permission session.
+                        SetUserActivityPermission();
+
                         //Redirect users logging in for the first time to the change password module
                         if (obj.LastLoginDate == null)
                         {
@@ -214,14 +217,34 @@ namespace RevenuePlanner.Controllers
 
                 /* Bug 25:Unavailability of BDSService leads to no error shown to user */
             }
-            
+
             //// Start - Added by :- Sohel Pathan on 22/05/2014 for PL ticket #469 to display release version from database
             string applicationReleaseVersion = Common.GetCurrentApplicationReleaseVersion();
             ViewBag.ApplicationReleaseVersion = applicationReleaseVersion;
             //// End - Added by :- Sohel Pathan on 22/05/2014 for PL ticket #469 to display release version from database
-            
+
             ViewBag.ReturnUrl = returnUrl;
             return View(form);
+        }
+
+        /// <summary>
+        /// Added By: Maninder Singh Wadhva.
+        /// Date: 06/18/2014
+        /// Function to set user activity permissions in session.
+        /// </summary>
+        private void SetUserActivityPermission()
+        {
+            //////// Get user application activity permission using BDSService
+            //List<Enums.ApplicationActivity> applicationActivity = new List<Enums.ApplicationActivity>();
+            //applicationActivity.Add(Common.GetKey<Enums.ApplicationActivity>(Enums.ApplicationActivity.Model.ToString()));
+            //applicationActivity.Add(Common.GetKey<Enums.ApplicationActivity>(Enums.ApplicationActivity.Report.ToString()));
+            //applicationActivity.Add(Common.GetKey<Enums.ApplicationActivity>(Enums.ApplicationActivity.Plan.ToString()));
+            ////Sessions.UserActivityPermission = applicationActivity;
+
+            //foreach (Enums.ApplicationActivity itemApplicationActivity in applicationActivity)
+            //{
+            //    Sessions.UserActivityPermission |= itemApplicationActivity;
+            //}
         }
 
         private ActionResult RedirectLocal(string returnUrl)
@@ -372,7 +395,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="QuestionList"></param>
         /// <returns></returns>
         public List<SelectListItem> GetQuestionList(List<BDSService.SecurityQuestion> QuestionList)
-        {   
+        {
             List<SelectListItem> optionslist = new List<SelectListItem>();
 
             optionslist = QuestionList.AsEnumerable().Select(x => new SelectListItem
@@ -481,7 +504,7 @@ namespace RevenuePlanner.Controllers
                         objPasswordResetRequest.PasswordResetRequestId = Guid.NewGuid();
                         objPasswordResetRequest.UserId = objUser.UserId;
                         objPasswordResetRequest.AttemptCount = 0;
-                        objPasswordResetRequest.CreatedDate=DateTime.Now;
+                        objPasswordResetRequest.CreatedDate = DateTime.Now;
 
                         string PasswordResetRequestId = objBDSServiceClient.CreatePasswordResetRequest(objPasswordResetRequest);
 

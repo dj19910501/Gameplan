@@ -9,6 +9,43 @@ namespace RevenuePlanner.Helpers
     public abstract class Sessions
     {
         /// <summary>
+        /// Added By: Maninder Singh Wadhva.
+        /// Date: 06/18/2014
+        /// Session variable for user activity permissions.
+        /// </summary>
+        public static Enums.ApplicationActivity UserActivityPermission
+        {
+            get
+            {
+                if (HttpContext.Current.Session["UserActivityPermission"] != null)
+                {
+                    return ((Enums.ApplicationActivity)HttpContext.Current.Session["UserActivityPermission"]);
+                }
+
+                return new Enums.ApplicationActivity();
+            }
+            set
+            {
+                HttpContext.Current.Session["UserActivityPermission"] = value;
+            }
+        }
+
+        ///// <summary>
+        ///// MRP Application Id
+        ///// </summary>
+        //public static List<Enums.ApplicationActivity> UserActivityPermission
+        //{
+        //    get
+        //    {
+        //        return ((List<Enums.ApplicationActivity>)HttpContext.Current.Session["UserActivityPermission"]);
+        //    }
+        //    set
+        //    {
+        //        HttpContext.Current.Session["UserActivityPermission"] = value;
+        //    }
+        //}
+
+        /// <summary>
         /// MRP Application Id
         /// </summary>
         public static Guid ApplicationId

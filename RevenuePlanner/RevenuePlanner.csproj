@@ -203,6 +203,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\AuthorizeUserAttribute.cs" />
     <Compile Include="Helpers\Common.cs" />
     <Compile Include="Helpers\Enums.cs" />
     <Compile Include="Helpers\HtmlHelpers.cs" />
