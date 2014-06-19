@@ -1136,5 +1136,480 @@ namespace BDSService
         }
 
         #endregion
+
+        #region Get Role List New
+
+        /// <summary>
+        /// Function to get role list.
+        /// </summary>
+        /// added by uday for #513
+        /// <returns>Returns roles .</returns>
+        public List<BDSEntities.Role> GetAllRoleList(Guid applicationid)
+        {
+            List<BDSEntities.Role> roleList = new List<BDSEntities.Role>();
+            List<Role> rolelist = new List<Role>();
+
+            //rolelist = db.Roles.Where(role => role.IsDeleted == false).ToList();
+            rolelist = (from role in db.Roles
+                        join approle in db.Application_Role on role.RoleId equals approle.RoleId
+                        where approle.ApplicationId == applicationid
+                        select role).ToList();
+            if (rolelist.Count > 0)
+            {
+                foreach (var role in rolelist)
+                {
+                    BDSEntities.Role roleEntity = new BDSEntities.Role();
+                    roleEntity.RoleId = role.RoleId;
+                    roleEntity.Code = role.Code;
+                    roleEntity.Title = role.Title;
+                    roleEntity.ColorCode = role.ColorCode;
+                    roleEntity.Description = role.Description;
+                    roleEntity.IsDeleted = role.IsDeleted;
+                    roleEntity.CreatedBy = role.CreatedBy;
+                    roleEntity.CreatedDate = role.CreatedDate;
+                    roleEntity.ModifiedBy = role.ModifiedBy;
+                    roleEntity.ModifiedDate = role.ModifiedDate;
+                    roleList.Add(roleEntity);
+                }
+            }
+            return roleList;
+        }
+
+        #endregion
+
+        #region Get Application activity list
+
+        /// <summary>
+        /// Function to get Application activity list
+        /// </summary>
+        /// added by uday for #513
+        /// <returns>Application activity list .</returns>
+        public List<BDSEntities.ApplicationActivity> GetApplicationactivitylist(Guid applicationid)
+        {
+            List<BDSEntities.ApplicationActivity> ApplicationActivityList = new List<BDSEntities.ApplicationActivity>();
+            List<Application_Activity> ApplicationActivity = new List<Application_Activity>();
+
+            ApplicationActivity = db.Application_Activity.Where(application => application.ApplicationId == applicationid).ToList();
+            if (ApplicationActivity.Count > 0)
+            {
+                foreach (var item in ApplicationActivity)
+                {
+                    BDSEntities.ApplicationActivity applactlist = new BDSEntities.ApplicationActivity();
+                    applactlist.ApplicationActivityId = item.ApplicationActivityId;
+                    applactlist.ApplicationId = item.ApplicationId;
+                    applactlist.CreatedDate = item.CreatedDate;
+                    applactlist.ActivityTitle = item.ActivityTitle;
+                    applactlist.ParentId = Convert.ToInt32(item.ParentId);
+                    ApplicationActivityList.Add(applactlist);
+                }
+            }
+
+            return ApplicationActivityList;
+        }
+
+        #endregion
+
+        #region DuplicateRoleCheck
+
+        /// <summary>
+        /// Function to insert new Role
+        /// </summary>//added by uday #513
+        /// <param name="user">user entity</param>
+        /// <param name="applicationId">application</param>
+        /// <param name="createdBy">created by this user</param>
+        /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
+        public int DuplicateRoleCheck(BDSEntities.Role role, Guid applicationid)
+        {
+            int retVal = 0;
+            try
+            {
+                var objDuplicateCheck = (from roles in db.Roles
+                                         join approle in db.Application_Role on roles.RoleId equals approle.RoleId
+                                         where approle.ApplicationId == applicationid && roles.Description == role.Description
+                                         select roles.Description).FirstOrDefault();
+                if (objDuplicateCheck != null)
+                {
+                    retVal = -1;
+                }
+                else
+                {
+                    retVal = 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return retVal;
+        }
+
+        #endregion
+
+        #region Get List Of Users for particular role
+
+        /// <summary>
+        /// Function to get Get List Of Users for particular role #513
+        /// </summary>
+        /// <param name="clientId">client</param>
+        /// <param name="applicationId">application</param>
+        /// <param name="userId">user</param>
+        /// <param name="isSystemAdmin">whether user is admin of or not</param>
+        /// <returns>Returns Get List Of Users for particular role.</returns>
+        public List<BDSEntities.User> GetRoleMemberList(Guid applicationId, Guid roleid)
+        {
+            List<BDSEntities.User> roleMemberList = new List<BDSEntities.User>();
+            List<User> lstUser = (from user in db.Users
+                                  join ua in db.User_Application on user.UserId equals ua.UserId
+                                  where ua.RoleId == roleid && ua.ApplicationId == applicationId && user.IsDeleted == false
+                                  select user).OrderBy(q => q.FirstName).ToList();
+            if (lstUser.Count > 0)
+            {
+                foreach (var user in lstUser)
+                {
+                    BDSEntities.User userEntity = new BDSEntities.User();
+                    userEntity.UserId = user.UserId;
+                    userEntity.ClientId = user.ClientId;
+                    userEntity.BusinessUnitId = user.BusinessUnitId;
+                    userEntity.GeographyId = user.GeographyId;
+                    userEntity.Client = db.Clients.Where(cl => cl.ClientId == user.ClientId).Select(c => c.Name).FirstOrDefault();
+                    userEntity.DisplayName = user.DisplayName;
+                    userEntity.Email = user.Email;
+                    userEntity.FirstName = user.FirstName;
+                    userEntity.JobTitle = user.JobTitle;
+                    userEntity.LastName = user.LastName;
+                    userEntity.Password = user.Password;
+                    userEntity.ProfilePhoto = user.ProfilePhoto;
+                    userEntity.RoleId = db.User_Application.Where(ua => ua.ApplicationId == applicationId && ua.UserId == user.UserId).Select(u => u.RoleId).FirstOrDefault();
+                    userEntity.RoleCode = db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Code).FirstOrDefault();
+                    userEntity.RoleTitle = db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Title).FirstOrDefault();
+                    roleMemberList.Add(userEntity);
+                }
+            }
+            return roleMemberList;
+        }
+
+        #endregion
+
+        #region  Add new role and its permissions
+
+        /// <summary>
+        /// Function Add new role and its permissions #51
+        /// </summary>
+        /// <param name="role id">role id</param>
+        /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
+        public int CreateRole(string roledesc, string permissionID, string colorcode, Guid applicationid, Guid createdby, Guid roleid)
+        {
+            int retVal = 0;
+            Guid NewRoleId = Guid.NewGuid();
+            try
+            {
+                //Insert in Role
+                var obj = (from roles in db.Roles
+                           join approle in db.Application_Role on roles.RoleId equals approle.RoleId
+                           where approle.ApplicationId == applicationid && roles.RoleId == roleid
+                           select roles).FirstOrDefault();
+
+                var objnew = (from roles in db.Roles
+                              join approle in db.Application_Role on roles.RoleId equals approle.RoleId
+                              where approle.ApplicationId == applicationid && roles.RoleId == roleid
+                              select approle).FirstOrDefault();
+
+                if (obj != null)
+                {
+                    obj.ColorCode = colorcode;
+                    db.Entry(obj).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+                else
+                {
+                    Role objrole = new Role();
+                    objrole.RoleId = NewRoleId;
+                    objrole.Code = "";
+                    objrole.Title = roledesc;
+                    objrole.Description = roledesc;
+                    objrole.CreatedBy = createdby;
+                    objrole.CreatedDate = DateTime.Now;
+                    objrole.IsDeleted = false;
+                    objrole.ColorCode = colorcode;
+
+                    db.Entry(objrole).State = EntityState.Added;
+                    db.Roles.Add(objrole);
+                    db.SaveChanges();
+                }
+
+                //Insert in Application_role
+                if (objnew != null)
+                {
+                }
+                else
+                {
+                    Application_Role objApplication_Role = new Application_Role();
+                    objApplication_Role.ApplicationId = applicationid;
+                    objApplication_Role.RoleId = NewRoleId;
+                    objApplication_Role.CreatedBy = createdby;
+                    objApplication_Role.CreatedDate = DateTime.Now;
+                    objApplication_Role.IsDeleted = false;
+                    db.Entry(objApplication_Role).State = EntityState.Added;
+                    db.Application_Role.Add(objApplication_Role);
+                    db.SaveChanges();
+                }
+
+                ////Insert in [Role_Activity_Permission]
+                if (roleid != Guid.Empty)
+                {
+                    var objdelete = db.Role_Activity_Permission.Where(roleapp => roleapp.RoleId == roleid).ToList();
+                    if (objdelete.Count > 0)
+                    {
+                        foreach (var item in objdelete)
+                        {
+                            db.Entry(item).State = EntityState.Deleted;
+                            db.SaveChanges();
+                        }
+                    }
+                    string[] id = permissionID.Split(',');
+                    if (id.Length > 0)
+                    {
+                        for (int i = 0; i < id.Length; i++)
+                        {
+                            string[] strarr = id[i].Split('_');
+                            if (strarr.Contains("true"))
+                            {
+                                Role_Activity_Permission objactivitypermission = new Role_Activity_Permission();
+                                objactivitypermission.ApplicationActivityId = Convert.ToInt32(strarr[1]);
+                                objactivitypermission.RoleId = roleid;
+                                objactivitypermission.CreatedBy = createdby;
+                                objactivitypermission.CreatedDate = DateTime.Now;
+                                db.Entry(objactivitypermission).State = EntityState.Added;
+                                db.Role_Activity_Permission.Add(objactivitypermission);
+                                db.SaveChanges();
+
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    string[] id = permissionID.Split(',');
+                    if (id.Length > 0)
+                    {
+                        for (int i = 0; i < id.Length; i++)
+                        {
+                            string[] strarr = id[i].Split('_');
+                            if (strarr.Contains("true"))
+                            {
+                                Role_Activity_Permission objactivitypermission = new Role_Activity_Permission();
+                                objactivitypermission.ApplicationActivityId = Convert.ToInt32(strarr[1]);
+                                objactivitypermission.RoleId = NewRoleId;
+                                objactivitypermission.CreatedBy = createdby;
+                                objactivitypermission.CreatedDate = DateTime.Now;
+                                db.Entry(objactivitypermission).State = EntityState.Added;
+                                db.Role_Activity_Permission.Add(objactivitypermission);
+                                db.SaveChanges();
+
+                            }
+                        }
+                    }
+                }
+                retVal = 1;
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            return retVal;
+        }
+
+        #endregion
+
+        #region delete role and reassign new role to existing users
+
+        /// <summary>
+        /// 3delete role and reassign new role to existing users. #513
+        /// </summary>
+        /// <param name="role id">role id</param>
+        /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
+        public int DeleteRoleAndReassign(Guid delroleid, Guid reassignroleid, Guid applicationid)
+        {
+            int retVal = 0;
+            try
+            {
+                var obj = (from roles in db.Roles
+                           join approle in db.Application_Role on roles.RoleId equals approle.RoleId
+                           where approle.ApplicationId == applicationid && roles.RoleId == delroleid
+                           select roles).FirstOrDefault();
+
+                var objnew = (from roles in db.Roles
+                              join approle in db.Application_Role on roles.RoleId equals approle.RoleId
+                              where approle.ApplicationId == applicationid && roles.RoleId == delroleid
+                              select approle).FirstOrDefault();
+
+                var objuser = db.User_Application.Where(userapp => userapp.ApplicationId == applicationid && userapp.RoleId == delroleid).ToList();
+
+                var objrolepermisson = (from roles in db.Role_Permission
+                                        join approle in db.Application_Role on roles.RoleId equals approle.RoleId
+                                        where approle.ApplicationId == applicationid && roles.RoleId == delroleid
+                                        select roles).ToList();
+
+                var objappactivity = db.Role_Activity_Permission.Where(roleapp => roleapp.RoleId == delroleid).ToList();
+
+                if (obj == null || objnew == null || objuser == null)
+                {
+                    retVal = -1;
+                }
+                else
+                {
+                    db.Entry(objnew).State = EntityState.Deleted;
+                    db.SaveChanges();
+
+                    foreach (var item in objuser)
+                    {
+                        item.RoleId = reassignroleid;
+
+                        db.Entry(item).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
+
+                    foreach (var item in objrolepermisson)
+                    {
+                        db.Entry(item).State = EntityState.Deleted;
+                        db.SaveChanges();
+                    }
+
+                    foreach (var item in objappactivity)
+                    {
+                        db.Entry(item).State = EntityState.Deleted;
+                        db.SaveChanges();
+                    }
+
+                    db.Entry(obj).State = EntityState.Deleted;
+                    db.SaveChanges();
+                    retVal = 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            return retVal;
+        }
+
+        #endregion
+
+        #region  Copy role and its permissions
+
+        /// <summary>
+        /// Function Copy role and its permissions. #513
+        /// </summary>
+        /// <param name="role id">role id</param>
+        /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
+        public int CopyRole(string copyroledesc, Guid originalid, Guid applicationid, Guid createdby)
+        {
+            int retVal = 0;
+            try
+            {
+                //Insert in Role
+
+                var objrole = (from roles in db.Roles
+                               join approle in db.Application_Role on roles.RoleId equals approle.RoleId
+                               where approle.ApplicationId == applicationid && roles.RoleId == originalid
+                               select roles).FirstOrDefault();
+                Role objrolenew;
+
+                Guid NewRoleId = Guid.Empty;
+                if (objrole != null)
+                {
+                    objrolenew = new Role();
+
+                    NewRoleId = Guid.NewGuid();
+                    objrolenew.RoleId = NewRoleId;
+                    objrolenew.Code = "";
+                    objrolenew.Title = copyroledesc;
+                    objrolenew.Description = copyroledesc;
+                    objrolenew.CreatedBy = createdby;
+                    objrolenew.CreatedDate = DateTime.Now;
+                    objrolenew.IsDeleted = false;
+                    objrolenew.ColorCode = objrole.ColorCode;
+
+                    db.Entry(objrolenew).State = EntityState.Added;
+                    db.Roles.Add(objrolenew);
+                    db.SaveChanges();
+                }
+                //Insert in Application_role
+                Application_Role objApplication_Role = new Application_Role();
+                objApplication_Role.ApplicationId = applicationid;
+                objApplication_Role.RoleId = NewRoleId;
+                objApplication_Role.CreatedBy = createdby;
+                objApplication_Role.CreatedDate = DateTime.Now;
+                objApplication_Role.IsDeleted = false;
+                db.Entry(objApplication_Role).State = EntityState.Added;
+                db.Application_Role.Add(objApplication_Role);
+                db.SaveChanges();
+
+
+                ////Insert in [Role_Activity_Permission]
+                var objappactivity = db.Role_Activity_Permission.Where(roleapp => roleapp.RoleId == originalid).ToList();
+                if (objappactivity.Count > 0)
+                {
+                    foreach (var item in objappactivity)
+                    {
+                        Role_Activity_Permission objactivitypermission = new Role_Activity_Permission();
+                        objactivitypermission.ApplicationActivityId = item.ApplicationActivityId;
+                        objactivitypermission.RoleId = NewRoleId;
+                        objactivitypermission.CreatedBy = createdby;
+                        objactivitypermission.CreatedDate = DateTime.Now;
+                        db.Entry(objactivitypermission).State = EntityState.Added;
+                        db.Role_Activity_Permission.Add(objactivitypermission);
+                        db.SaveChanges();
+                    }
+                }
+                retVal = 1;
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            return retVal;
+        }
+
+        #endregion
+
+        #region Get List Of roleactivitypermissions
+
+        /// <summary>
+        /// Function to get Get List Of Users for particular role #513
+        /// </summary>
+        /// <param name="clientId">client</param>
+        /// <param name="applicationId">application</param>
+        /// <param name="userId">user</param>
+        /// <param name="isSystemAdmin">whether user is admin of or not</param>
+        /// <returns>Returns Get List roleactivitypermissions.</returns>
+        public List<BDSEntities.ApplicationActivity> GetRoleactivitypermissions(Guid roleid)
+        {
+            List<BDSEntities.ApplicationActivity> roleactivitypermissions = new List<BDSEntities.ApplicationActivity>();
+         
+            List<Application_Activity> ApplicationActivity = db.Role_Activity_Permission.Where(roleactivity => roleactivity.RoleId == roleid).Select(roleActivity => roleActivity.Application_Activity).ToList();
+
+           
+            if (ApplicationActivity.Count > 0)
+            {
+                foreach (var item in ApplicationActivity)
+                {
+                    BDSEntities.ApplicationActivity applactlist = new BDSEntities.ApplicationActivity();
+                    applactlist.ApplicationActivityId = item.ApplicationActivityId;
+                    applactlist.ApplicationId = item.ApplicationId;
+                    applactlist.CreatedDate = item.CreatedDate;
+                    applactlist.ActivityTitle = item.ActivityTitle;
+                    applactlist.ParentId = Convert.ToInt32(item.ParentId);
+                    roleactivitypermissions.Add(applactlist);
+                }
+            }
+
+            return roleactivitypermissions;
+        }
+
+        #endregion
     }
 }

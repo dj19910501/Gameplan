@@ -106,5 +106,33 @@ namespace BDSService
 
         [OperationContract]
         List<string> GetUserActivityPermission(Guid userId, Guid applicationId);
+
+        /// added by uday for #513
+        [OperationContract]
+        List<BDSEntities.ApplicationActivity> GetApplicationactivitylist(Guid applicationid);
+
+        /// added by uday for #513
+        [OperationContract]
+        int DuplicateRoleCheck(BDSEntities.Role role, Guid applicationid);
+
+        /// added by uday for #513
+        [OperationContract]
+        List<BDSEntities.User> GetRoleMemberList(Guid applicationId, Guid roleid);
+
+        /// added by uday for #513
+        [OperationContract]
+        int DeleteRoleAndReassign(Guid delroleid, Guid reassignroleid, Guid applicationid);
+
+        /// added by uday for #513
+        [OperationContract]
+        int CreateRole(string roledesc, string permissionID, string colorcode, Guid applicationid, Guid createdby, Guid roleid);
+
+        /// added by uday for #513
+        [OperationContract]
+        int CopyRole(string copyroledesc, Guid originalid, Guid applicationid, Guid createdby);
+
+        /// added by uday for #513
+        [OperationContract]
+        List<BDSEntities.ApplicationActivity> GetRoleactivitypermissions(Guid roleid);
     }
 }

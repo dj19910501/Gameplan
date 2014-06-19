@@ -200,5 +200,55 @@ namespace BDSService
             BDSPermissionRepository obj = new BDSPermissionRepository();
             return obj.GetUserActivityPermission(userId, applicationId);
         }
+
+        /// added by uday for #513
+        public List<BDSEntities.ApplicationActivity> GetApplicationactivitylist(Guid applicationid)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetApplicationactivitylist(applicationid);
+        }
+
+        /// added by uday for #513
+        public int DuplicateRoleCheck(BDSEntities.Role role, Guid applicationId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.DuplicateRoleCheck(role, applicationId);
+        }
+
+        /// added by uday for #513
+        public List<BDSEntities.User> GetRoleMemberList(Guid applicationId, Guid roleid)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetRoleMemberList(applicationId, roleid);
+        }
+
+        /// added by uday for #513
+        public int DeleteRoleAndReassign(Guid delroleid, Guid reassignroleid, Guid applicationid)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.DeleteRoleAndReassign(delroleid, reassignroleid, applicationid);
+        }
+
+        /// added by uday for #513
+        public int CreateRole(string roledesc, string permissionID, string colorcode, Guid applicationid, Guid createdby, Guid roleid)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.CreateRole(roledesc, permissionID, colorcode, applicationid, createdby, roleid);
+        }
+
+        /// added by uday for #513
+        public int CopyRole(string copyroledesc, Guid originalid, Guid applicationid, Guid createdby)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.CopyRole(copyroledesc, originalid, applicationid, createdby);
+        }
+
+        /// added by uday for #513
+        public List<BDSEntities.ApplicationActivity> GetRoleactivitypermissions(Guid roleid)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetRoleactivitypermissions(roleid);
+        }
     }
+
 }

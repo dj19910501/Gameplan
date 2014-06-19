@@ -1,0 +1,283 @@
+﻿@model IEnumerable<RevenuePlanner.Models.RoleModel>
+@using RevenuePlanner.BDSService;
+@using RevenuePlanner.Helpers;
+
+@{
+    ViewBag.Title = "ManageRoles";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var emptyGuidId = Guid.Empty;
+    //var lstUsers = ViewData["users"] == null ? new List<User>() : (List<User>)ViewData["users"];
+    //var lstroles = ViewData["roles"] == null ? new List<Role>() : (List<Role>)ViewData["roles"];
+}
+
+@*<h2>manageroles</h2>
+<body>*@
+
+@section Sidebar {
+    <div class="padding-content">
+        <h4 class="text-shadow-black source-sans-prolight">Preferences</h4>
+    </div>
+    <ul class="nav nav-list nav-gray">
+        <li class="item">
+            <a class="source-sans-probold inputs" href="#" id="aMyProfile"><span></span>MY PROFILE</a>
+        </li>
+        <li class="item">
+            <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
+        </li>
+        <li class="item active">@*uday for new screen*@
+            <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
+        </li>
+    </ul>
+}
+
+
+
+<ul class="nav nav-tabs">
+    <li class="source-sans-proregular">
+        <h2 class="title-header">Organization</h2>
+    </li>
+</ul>
+
+<div class="padding-content cf source-sans-proregular">
+    <div class="row">
+        <div class="span2 myaccount-colum">
+            <div class="width216">
+                <ul class="nav nav-pills nav-stacked width216">
+                    <li><a href="#">My Permissions</a></li>
+                    <li><a href="#">Organization Hierarchy</a></li>
+                    <li><a href="#">Manage Users</a></li>
+                    <li class="active"><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="span9">
+
+            <div class="manage-roles">
+                <h4>Manage Roles</h4>
+
+                <div>
+                    <span class="btn-group">
+                        <button class="btn btn-blue btn-primary source-sans-proregular add-role-icon" id="addrole"><span></span>Add a Role</button>
+                    </span>
+                </div>
+
+                <table class="user-roles">
+                    @foreach (var item in Model)
+                    {
+                        var id = "rolelabel" + item.RoleId;
+                        <tr>
+                            <td id="@id" width="140">@item.RoleTitle</td>
+                            <td width="100">
+                                <span class="btn-group">
+                                    <button class="btn btn-grey btn-primary without-text-shadow source-sans-prolight btnEdit" id="editbtn">View/Edit</button>
+                                    <input type="hidden"  value="@item.RoleId" />
+                                    <!--this is used to bind values like to know the id of clicked row like selected value in combobox.-->
+                                </span>
+                            </td>
+                            <td>
+                                <span class="btn-group">
+                                    <button class="btn btn-grey btn-primary without-text-shadow source-sans-prolight btnCopy" id="copybtn">Duplicate</button>
+                                    <input type="hidden"  value="@item.RoleId" />
+                                </span>
+                            </td>
+                            <td><span class="delete-temp-program" id="delete">
+                                <input type="hidden"  value="@item.RoleId" /></span></td>
+                        </tr>
+                    }
+                </table>
+
+                <!--div to display pop up for add role-->
+                <div id="DivPartialShareTactic" style="display: none;">
+                    <div class="container-fluid all-height DivResetDefaults" id="DivShareTacticPopupMain">
+                        <div class="row-fluid calc-height">
+                            <div class="span12">
+
+                                <div id="DivAddRolePopup" class="form-inspect-share hide fade in height-auto" role="dialog" style="display: block;">
+
+                                    <div style="padding-bottom: 20px;" class="login-wrapper">
+                                        <h2 class="primary-title source-sans-proregular without-text-shadow">Adding a new role</h2>
+                                        <h4 class="source-sans-prolight">Please enter the name of role.</h4>
+                                        <input type="text" value="" placeholder="Enter new role" name="textfield" maxlength="200" id="newrole" class="input-block-level source-sans-proregular newrole">
+                                        <!--error message-->
+                                        <div id="errorMessage" class="alert hide alert-error message-position">
+                                            <a class="close">×</a>
+                                            <strong>Error!</strong><span id="spanErrorMessageRole"></span>
+                                        </div>
+                                        <!--error message-->
+                                        <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" value="Submit" id="addrolebtn">Add Role</button>
+                                        <button class="cancel-btn btn-link text-shadow-black" type="button" id="cancelbtn">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="DivBackgroundShareTactic" class="modal-backdrop fade in" style="z-index: 9999"></div>
+                </div>
+
+                <!--div to load partialview for delete role-->
+                <div id="loaddiv"></div>
+
+                <!--div to display pop up for copying role-->
+                <div id="DivPartialShareTacticcopy" style="display: none;">
+                    <div class="container-fluid all-height DivResetDefaults" id="DivShareTacticPopupMaincopy">
+                        <div class="row-fluid calc-height">
+                            <div class="span12">
+
+                                <div id="DivAddRolePopupcopy" class="form-inspect-share hide fade in height-auto" role="dialog" style="display: block;">
+
+                                    <div style="padding-bottom: 20px;" class="login-wrapper">
+                                        <h2 class="primary-title source-sans-proregular without-text-shadow">Copying a role</h2>
+                                        <h4 class="source-sans-prolight">Please rename the role with similar permissions as </h4>
+                                        <h4 id="original" class="source-sans-prosemibold"></h4>
+                                        <input type="text" value="" placeholder="Enter new role" name="textfield" maxlength="200" id="copyroledesc" class="input-block-level source-sans-proregular">                                       
+                                        <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" value="Submit" id="copyrolebtn">Add Role</button>
+                                        <button class="cancel-btn btn-link text-shadow-black" type="button" id="cancelbtncopy">Cancel</button>
+                                        <!--success message-->
+                                        <div id="successMessagedel" class="alert hide alert-success message-position">
+                                            <a class="close">×</a>
+                                            <strong>Success.</strong><span id="spanSuccessMessagecopy"></span>
+                                        </div>
+                                        <!--success message-->
+                                        <!--error message-->
+                                        <div id="errorMessagecopy" class="alert hide alert-error message-position">
+                                            <a class="close">×</a>
+                                            <strong>Error!</strong><span id="spanErrorMessageRolecopy"></span>
+                                        </div>
+                                        <!--error message-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="DivBackgroundShareTacticcopy" class="modal-backdrop fade in" style="z-index: 9999"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var originalid = "";
+    $('#addrole').click(function () {
+        $('.newrole').val('');
+        $('#DivPartialShareTactic').show();
+    });
+
+    $('#cancelbtn').click(function () {
+        $('#DivPartialShareTactic').hide();
+    });
+
+    $('#cancelbtncopy').click(function () {
+        $('#DivPartialShareTacticcopy').hide();
+    });
+
+
+    $('.btnCopy').click(function () {
+
+        var id = $(this).next().val();
+        var roleselected = $("#rolelabel" + id).html();
+        originalid = $(this).next().val();
+        $('#original').html(roleselected + '.');
+        $('#DivPartialShareTacticcopy').show();
+    });
+
+    function close_popup() {
+        $('#DivBackgroundShareTacticcopy').css("display", "none");
+        $('#DivPartialShareTacticcopy').css("display", "none");
+        $('#DivBackgroundShareTacticcopy').remove();
+        $('#DivPartialShareTacticcopy').remove();
+        close_messages();
+    }
+
+
+    function close_messages() {
+        $('#errorMessagecopy').css("display", "none");
+        $('#successMessage').css("display", "none");
+    }
+
+    $('#addrolebtn').click(function () {
+        var roledescription = $('#newrole').val();
+
+        $.ajax({
+            url: '@Url.Content("~/Organization/AddRole/")',
+            data: {
+                roledesc: roledescription
+            },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                if (result == true) {
+                    url = '@Url.Content("~/Organization/Edit")';
+                    window.location.href = url + "?roleId=" + '@emptyGuidId';
+                }
+                else {
+                    var msgspan = "A role with the same name already exists.";;
+                    $("#errorMessage").css("display", "block");
+                    $("#spanErrorMessageRole").text(msgspan);
+                }
+            }
+        });
+    });
+
+
+    $('#copyrolebtn').click(function () {
+       
+        var copyroledescription = $('#copyroledesc').val();
+
+        $.ajax({
+            url: '@Url.Content("~/Organization/CopyRole/")',
+            data: {
+                copyroledesc: copyroledescription,
+                originalroleid: originalid
+            },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                if (result == true) {
+                    var msgspan = "Role Copied Successfully.";
+                    $("#spanSuccessMessagecopy").text(msgspan);
+                    $("#successMessagedel").slideDown(1200);
+                    $("#successMessagedel").slideUp(2500).promise().always(function () {
+                        close_popup();
+                    });
+                    $('#copyroledesc').val(' ');
+                }
+                else {
+                    var msgspan = "Some error occured while copying role.";;
+                    $("#errorMessage").css("display", "block");
+                    $("#spanErrorMessageRole").text(msgspan);
+                }
+            }
+        });
+    });
+
+
+    $('#aIntegrations').click(function () {
+        var url = '';
+        url = '@Url.Content("~/ExternalService/Index")';
+        window.location.href = url;
+    });
+
+
+    $('#aMyProfile').click(function () {
+        var url = '';
+        url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
+        window.location.href = url;
+    });
+
+    $('.btnEdit').click(function () {
+        var id = $(this).next().val(); @*<!--this is used to pass values like to know the id of clicked row like selected value in combobox*@
+        var url = '@Url.Content("~/Organization/Edit/")';
+        window.location.href = url + "?roleId=" + id;
+    });
+
+    $('.delete-temp-program').click(function () {
+        var id = $(this).children().val();
+        var roleselected = $("#rolelabel" + id).html();
+        var url = '@Url.Content("~/Organization/Delete/")';
+        //how to load partial view....
+        $("#loaddiv").load(url + "?roleId=" + id, "&selectedrole=" + roleselected);
+    });
+</script>
+

@@ -104,6 +104,7 @@
       <DependentUpon>BDSAuth.edmx</DependentUpon>
     </Compile>
     <Compile Include="BDSAuthorization.cs" />
+    <Compile Include="BDSEntities\ApplicationActivity.cs" />
     <Compile Include="BDSEntities\Client.cs" />
     <Compile Include="BDSEntities\Menu.cs" />
     <Compile Include="BDSEntities\PasswordResetRequest.cs" />
