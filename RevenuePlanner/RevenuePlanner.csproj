@@ -558,13 +558,13 @@
     <Content Include="Scripts\js\ReportRevenue.js" />
     <Content Include="Scripts\js\ReportSummary.js" />
     <Content Include="Scripts\summernote.min.js" />
-    <Content Include="Service References\BDSService\BDSService.disco" />
-    <Content Include="Service References\BDSService\configuration91.svcinfo" />
-    <Content Include="Service References\BDSService\configuration.svcinfo" />
-    <Content Include="Service References\BDSService\Reference.svcmap">
+    <None Include="Service References\BDSService\BDSService.disco" />
+    <None Include="Service References\BDSService\configuration91.svcinfo" />
+    <None Include="Service References\BDSService\configuration.svcinfo" />
+    <None Include="Service References\BDSService\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
-    </Content>
+    </None>
     <Content Include="Views\Plan\PlanSelector.cshtml">
       <SubType>Code</SubType>
     </Content>
@@ -732,7 +732,7 @@
     <Content Include="Views\Organization\Edit.cshtml" />
     <Content Include="Views\Organization\Hierarchy.cshtml" />
     <Content Include="Views\Organization\ManageRoles.cshtml" />
-    <Content Include="Service References\BDSService\BDSService.wsdl" />
+    <None Include="Service References\BDSService\BDSService.wsdl" />
     <None Include="Service References\BDSService\BDSService.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -745,7 +745,13 @@
     <None Include="Service References\BDSService\BDSService3.xsd">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.ApplicationActivity.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.Client.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.CustomRestriction.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.Menu.datasource">
@@ -764,6 +770,9 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.User.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserApplicationPermission.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
     <None Include="Web.BulldogProduction.config" />
