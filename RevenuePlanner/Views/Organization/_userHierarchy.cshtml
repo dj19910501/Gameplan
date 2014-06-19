@@ -1,0 +1,46 @@
+﻿@model RevenuePlanner.Models.UserHierarchyModel
+@using RevenuePlanner.Helpers
+
+    @{
+        var userId = Model.UserId;
+        var userLabelId = "spnUserName" + userId;
+        var hdnEmailId = "hdnEmail" + userId;
+        var hdnPhoneId = "hdnPhone" + userId;
+        var hdnJobTitleId = "hdnJobTitle" + userId;
+        var hdnGeographyId = "hdnGeography" + userId;
+        var stringClass = string.Empty;
+        if (Model.subUsers.Count == 0)
+        {
+            stringClass = "no-nesting";
+        }
+
+        string varUrl = Url.Action("vieweditpermission", "Organization");
+        string EditURL = varUrl + "?userId=" + Model.UserId + "&permissionMode=Edit&Name=" + Model.FirstName + "&RoleName=" + Model.RoleTitle;
+        string ViewURL = varUrl + "?userId=" + Model.UserId + "&permissionMode=View&Name=" + Model.FirstName + "&RoleName=" + Model.RoleTitle;
+    }
+    <li class="@stringClass">
+        @if (Model.subUsers.Count == 0)
+        {
+            <span class="hitarea"></span>
+        }
+        <span id="@userLabelId">@Model.FirstName</span>
+        <span class="job-role" style="background-color:@Model.ColorCode">@Model.RoleTitle</span>
+        <a class="btn btn-default" href='@EditURL'>Edit</a>
+        <a class="btn btn-default" href='@ViewURL'>View</a>
+        <a class="btn btn-default" onclick="showContactDetail('@userId');">Contact</a>
+        <input type="hidden" id="@hdnEmailId" value="@Model.Email" />
+        <input type="hidden" id="@hdnPhoneId" value="@Model.Phone" />
+        <input type="hidden" id="@hdnJobTitleId" value="@Model.JobTitle" />
+        <input type="hidden" id="@hdnGeographyId" value="@Model.Geography" />
+        @{
+            if (Model.subUsers.Count > 0)
+            {
+                <ul>
+                    @for (int j = 0; j < Model.subUsers.Count; j++)
+		            {
+                        Html.RenderPartial("_userHierarchy", Model.subUsers[j]);
+		            }
+                </ul>
+            }
+        }
+    </li>

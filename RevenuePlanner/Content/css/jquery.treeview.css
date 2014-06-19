@@ -1,0 +1,94 @@
+.treeview, .treeview ul { 
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.treeview{
+	margin-left:85px;
+}
+.treeview ul {
+	background-color: white;
+	margin-top: 4px;
+}
+.treeview > li ul li{
+	padding-left:70px;
+	background: url(../images/treeview-ver-line.gif) left top no-repeat;
+	margin-left:-16px;
+}
+.treeview .hitarea {
+	background: url(../images/arrow-collapse.gif) right top no-repeat;
+	height: 17px;
+	width: 17px;
+	margin-left: -17px;
+	float: left;
+}
+.treeview div.hitarea{
+	cursor: pointer;
+}
+.treeview li.expandable > .hitarea{
+	background: url(../images/arrow-expand.gif) right top no-repeat;
+}
+
+.treeview li.no-nesting > .hitarea{
+	background: url(../images/arrow-expand.gif) right top no-repeat;
+}
+.treeview li ul li .hitarea{
+	margin-left: -67px;
+    padding-left: 66px;
+}
+.treeview > li ul li.lastExpandable, .treeview > li ul li.lastCollapsable {
+    /*background-position: 0 -689px;*/
+    background-position: 0 -325px;
+}
+
+/* fix for IE6 */
+* html .hitarea {
+	display: inline;
+	float:none;
+}
+.treeview li { 
+	padding: 0 0pt 0 17px;
+	line-height:18px;
+}
+.treeview li > ul li{
+	padding-top:16px;
+	padding-bottom:22px;
+}
+.treeview li > ul li ul{
+	margin-top:-6px;
+	margin-left:15px;
+	margin-bottom:5px;
+}
+.treeview li > ul li ul li{
+	margin-bottom:0;
+	background: url(../images/treeview-ver-line-solid.gif) left top no-repeat;
+}
+.treeview li > ul li ul li.first > span {
+    margin-top: 15px;
+}
+.treeview li > ul li ul li > span {
+	margin-left:0;
+}
+.treeview li > ul li ul li > span .hitarea{
+	background: url(../images/arrow-expand2.gif) right top no-repeat;
+}
+.treeview li > ul li li{
+	margin-bottom:10px;
+	padding-bottom:5px;
+}
+.treeview li span{
+	display: inline-block;
+    line-height: 18px;
+    margin-left: 5px;
+    vertical-align: top;
+}
+.hitarea{font-family: 'source_sans_proregular', Arial, "sans-serif" !important;}
+.treeview .hover { color: #333; cursor: pointer; }
+.treeview .expandable-hitarea { background-position: left top; }
+.treeview li.last { background-position: 0 -324px;}
+.treeview .collapsable.lastCollapsable.first {
+background-position: 0 -310px;
+}
+.treeview > li > ul > li:last-child {
+    background-position: 0 -689px;
+}

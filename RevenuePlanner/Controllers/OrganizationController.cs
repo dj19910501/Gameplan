@@ -16,6 +16,7 @@ namespace RevenuePlanner.Controllers
         // GET: /Organization/
 
         private BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+        private MRPEntities db = new MRPEntities();
 
         public ActionResult Index()
         {
@@ -239,6 +240,87 @@ namespace RevenuePlanner.Controllers
             return Json(false);
             //return Json(new { name = "dsfsdf" });
             //return RedirectToAction("Edit", "Organization");
+        }
+
+        /// <summary>
+        /// Organization Hierarchy
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult OrganizationHierarchy()
+        {
+            BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
+            try
+            {
+                List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
+                lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+
+                List<BDSService.UserHierarchy> lstManagerUserHierarchy = lstUserHierarchy.Where(u => u.ManagerId == null).ToList();
+
+                var result = lstManagerUserHierarchy.Select(u => CreateUserHierarchy(lstUserHierarchy, u)).ToList();
+                ViewBag.UserHierarchy = result;
+
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
+                }
+            }
+
+            return View();
+
+        }
+
+        /// <summary>
+        /// Function to get all sub users of manager user
+        /// Dharmraj, Ticket #520
+        /// </summary>
+        /// <param name="lstUserHierarchy"></param>
+        /// <param name="managerId"></param>
+        /// <returns></returns>
+        public List<BDSService.UserHierarchy> GetSubUsers(List<BDSService.UserHierarchy> lstUserHierarchy, Guid? managerId)
+        {
+            if (managerId == null)
+                return null;
+            else
+                return lstUserHierarchy.Where(u => u.ManagerId == managerId).ToList();
+        }
+
+        /// <summary>
+        /// Function for making user hierarchy
+        /// Dharmraj, Ticket #520
+        /// </summary>
+        /// <param name="lstUserHierarchy"></param>
+        /// <param name="objUserHierarchy"></param>
+        /// <returns></returns>
+        public UserHierarchyModel CreateUserHierarchy(List<BDSService.UserHierarchy> lstUserHierarchy, BDSService.UserHierarchy objUserHierarchy)
+        {
+            Guid userid = objUserHierarchy.UserId;
+            string FirstName = objUserHierarchy.FirstName;
+            string LastName = objUserHierarchy.LastName;
+            string Email = objUserHierarchy.Email;
+            Guid RoleId = objUserHierarchy.RoleId;
+            string RoleTitle = objUserHierarchy.RoleTitle;
+            string ColorCode = objUserHierarchy.ColorCode;
+            string JobTitle = objUserHierarchy.JobTitle;
+            Guid GeographyId = objUserHierarchy.GeographyId;
+            var objGeography = db.Geographies.FirstOrDefault(g => g.GeographyId == objUserHierarchy.GeographyId);
+            string Geography = objGeography == null ? string.Empty : objGeography.Title;
+            string Phone = objUserHierarchy.Phone;
+            Guid? ManagerId = objUserHierarchy.ManagerId;
+            var subUsers = GetSubUsers(lstUserHierarchy, userid)
+              .Select(r => CreateUserHierarchy(lstUserHierarchy, r))
+              .ToList();
+            return new UserHierarchyModel { UserId = userid, FirstName = FirstName, LastName = LastName, Email = Email, RoleId = RoleId, RoleTitle = RoleTitle, ColorCode = ColorCode, JobTitle = JobTitle, GeographyId = GeographyId, Geography = Geography, Phone = Phone, ManagerId = ManagerId, subUsers = subUsers };
         }
     }
 }

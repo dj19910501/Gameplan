@@ -34,4 +34,21 @@ namespace RevenuePlanner.Models
             public Guid ApplicationId { get; set; }
         }
 
+        public class UserHierarchyModel
+        {
+            public Guid UserId { get; set; }
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string Email { get; set; }
+            public Guid RoleId { get; set; }
+            public string RoleTitle { get; set; }
+            public string ColorCode { get; set; }
+            public string JobTitle { get; set; }
+            public Guid GeographyId { get; set; }
+            public string Geography { get; set; }
+            public string Phone { get; set; }
+            public Guid? ManagerId { get; set; }
+            public IList<UserHierarchyModel> subUsers { get; set; }
+        }
+
 }
