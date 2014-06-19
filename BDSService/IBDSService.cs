@@ -109,6 +109,10 @@ namespace BDSService
 
         /// added by uday for #513
         [OperationContract]
+        List<BDSEntities.Role> GetAllRoleList(Guid applicationid);
+
+        /// added by uday for #513
+        [OperationContract]
         List<BDSEntities.ApplicationActivity> GetApplicationactivitylist(Guid applicationid);
 
         /// added by uday for #513

@@ -249,6 +249,13 @@ namespace BDSService
             BDSUserRepository obj = new BDSUserRepository();
             return obj.GetRoleactivitypermissions(roleid);
         }
+
+        /// added by uday for #513
+        public List<BDSEntities.Role> GetAllRoleList(Guid applicationid)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetAllRoleList(applicationid);
+        }
     }
 
 }
