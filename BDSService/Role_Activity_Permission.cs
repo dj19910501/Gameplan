@@ -19,5 +19,7 @@ namespace BDSService
         public System.Guid RoleId { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
+    
+        public virtual Application_Activity Application_Activity { get; set; }
     }
 }

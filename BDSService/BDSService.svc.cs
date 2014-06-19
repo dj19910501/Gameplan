@@ -194,5 +194,11 @@ namespace BDSService
             BDSUserRepository obj = new BDSUserRepository();
             return obj.GetApplicationReleaseVersion(applicationId);
         }
+
+        public List<string> GetUserActivityPermission(Guid userId, Guid applicationId)
+        {
+            BDSPermissionRepository obj = new BDSPermissionRepository();
+            return obj.GetUserActivityPermission(userId, applicationId);
+        }
     }
 }

@@ -19,6 +19,8 @@ namespace BDSService
             this.PasswordResetRequests = new HashSet<PasswordResetRequest>();
             this.User_Application = new HashSet<User_Application>();
             this.User_Application1 = new HashSet<User_Application>();
+            this.CustomRestrictions = new HashSet<CustomRestriction>();
+            this.CustomRestrictions1 = new HashSet<CustomRestriction>();
         }
     
         public System.Guid UserId { get; set; }
@@ -43,5 +45,7 @@ namespace BDSService
         public virtual SecurityQuestion SecurityQuestion { get; set; }
         public virtual ICollection<User_Application> User_Application { get; set; }
         public virtual ICollection<User_Application> User_Application1 { get; set; }
+        public virtual ICollection<CustomRestriction> CustomRestrictions { get; set; }
+        public virtual ICollection<CustomRestriction> CustomRestrictions1 { get; set; }
     }
 }

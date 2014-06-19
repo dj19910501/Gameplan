@@ -29,6 +29,13 @@
         <AssociationConnector Association="BDSAuthDevModel.FK_User_Application_User_ManagerId" />
         <EntityTypeShape EntityType="BDSAuthDevModel.User_Activity_Permission" Width="1.5" PointX="10.125" PointY="15.125" />
         <EntityTypeShape EntityType="BDSAuthDevModel.Role_Activity_Permission" Width="1.5" PointX="7.0069095487738533" PointY="0.75913347339217252" />
+        <EntityTypeShape EntityType="BDSAuthDevModel.Application_Activity" Width="1.5" PointX="8.1421083361572162" PointY="15.760127089805961" />
+        <EntityTypeShape EntityType="BDSAuthDevModel.CustomRestriction" Width="1.5" PointX="4.1344518494487046" PointY="6.3796377658749179" />
+        <AssociationConnector Association="BDSAuthDevModel.FK_Application_Activity_Application" />
+        <AssociationConnector Association="BDSAuthDevModel.FK_Role_Activity_Permission_Application_Activity" />
+        <AssociationConnector Association="BDSAuthDevModel.FK_User_Activity_Permission_Application_Activity" />
+        <AssociationConnector Association="BDSAuthDevModel.FK_CustomRestriction_User" />
+        <AssociationConnector Association="BDSAuthDevModel.FK_CustomRestriction_User1" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

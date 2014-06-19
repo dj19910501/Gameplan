@@ -234,17 +234,27 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         private void SetUserActivityPermission()
         {
-            //////// Get user application activity permission using BDSService
-            //List<Enums.ApplicationActivity> applicationActivity = new List<Enums.ApplicationActivity>();
-            //applicationActivity.Add(Common.GetKey<Enums.ApplicationActivity>(Enums.ApplicationActivity.Model.ToString()));
-            //applicationActivity.Add(Common.GetKey<Enums.ApplicationActivity>(Enums.ApplicationActivity.Report.ToString()));
-            //applicationActivity.Add(Common.GetKey<Enums.ApplicationActivity>(Enums.ApplicationActivity.Plan.ToString()));
-            ////Sessions.UserActivityPermission = applicationActivity;
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
 
-            //foreach (Enums.ApplicationActivity itemApplicationActivity in applicationActivity)
-            //{
-            //    Sessions.UserActivityPermission |= itemApplicationActivity;
-            //}
+            try
+            {
+                // Get user application activity permission using BDSService
+                var lstUserActivityPermissions = objBDSServiceClient.GetUserActivityPermission(Sessions.User.UserId, Sessions.ApplicationId);
+                Sessions.UserActivityPermission = new Enums.ApplicationActivity();
+                foreach (string permission in lstUserActivityPermissions)
+                {
+                    Sessions.UserActivityPermission |= Common.GetKey<Enums.ApplicationActivity>(permission);
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    ModelState.AddModelError("", Common.objCached.ServiceUnavailableMessage);
+                }
+            }
         }
 
         private ActionResult RedirectLocal(string returnUrl)

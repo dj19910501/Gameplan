@@ -82,6 +82,9 @@
     <Compile Include="Application.cs">
       <DependentUpon>BDSAuth.tt</DependentUpon>
     </Compile>
+    <Compile Include="Application_Activity.cs">
+      <DependentUpon>BDSAuth.tt</DependentUpon>
+    </Compile>
     <Compile Include="Application_Role.cs">
       <DependentUpon>BDSAuth.tt</DependentUpon>
     </Compile>
@@ -118,6 +121,9 @@
       <DependentUpon>BDSAuth.tt</DependentUpon>
     </Compile>
     <Compile Include="CommonFile.cs" />
+    <Compile Include="CustomRestriction.cs">
+      <DependentUpon>BDSAuth.tt</DependentUpon>
+    </Compile>
     <Compile Include="EnumFile.cs" />
     <Compile Include="Helpers\Common.cs" />
     <Compile Include="IBDSService.cs" />
