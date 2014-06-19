@@ -1589,10 +1589,10 @@ namespace BDSService
         public List<BDSEntities.ApplicationActivity> GetRoleactivitypermissions(Guid roleid)
         {
             List<BDSEntities.ApplicationActivity> roleactivitypermissions = new List<BDSEntities.ApplicationActivity>();
-         
+
             List<Application_Activity> ApplicationActivity = db.Role_Activity_Permission.Where(roleactivity => roleactivity.RoleId == roleid).Select(roleActivity => roleActivity.Application_Activity).ToList();
 
-           
+
             if (ApplicationActivity.Count > 0)
             {
                 foreach (var item in ApplicationActivity)
@@ -1623,6 +1623,7 @@ namespace BDSService
                 ApplicationId = act.ApplicationId,
                 ParentId = act.ParentId,
                 CreatedDate = act.CreatedDate,
+                ActivityTitle = act.ActivityTitle
 
             }).ToList();
             if (appActivity.Count > 0)
@@ -1676,13 +1677,8 @@ namespace BDSService
             {
                 foreach (var activity in userActivityList)
                 {
-                    User_Activity_Permission obj = new User_Activity_Permission();
-                    obj.UserId = activity.UserId;
-                    obj.ApplicationActivityId = activity.ApplicationActivityId;
-                    obj.CreatedBy = activity.CreatedBy;
-                    obj.CreatedDate = activity.CreatedDate;
-                    db.Entry(obj).State = EntityState.Deleted;
-                    db.User_Activity_Permission.Remove(obj);
+                    db.Entry(activity).State = EntityState.Deleted;
+                    db.User_Activity_Permission.Remove(activity);
                     db.SaveChanges();
                     retVal = 1;
                 }
@@ -1699,11 +1695,8 @@ namespace BDSService
             {
                 foreach (var customRestriction in userCustomrestrictionList)
                 {
-                    CustomRestriction obj = new CustomRestriction();
-                    obj.UserId = customRestriction.UserId;
-                    obj.CustomRestrictionId = customRestriction.CustomRestrictionId;
-                    db.Entry(obj).State = EntityState.Deleted;
-                    db.CustomRestrictions.Remove(obj);
+                    db.Entry(customRestriction).State = EntityState.Deleted;
+                    db.CustomRestrictions.Remove(customRestriction);
                     db.SaveChanges();
                     retVal = 1;
                 }
@@ -1721,11 +1714,13 @@ namespace BDSService
                 DeleteUserCustomrestriction(userId, applicationId);
                 foreach (var item in permissions)
                 {
-                    if (permissions[1].ToString().ToLower() == "yes")
+
+                    if (item.ToLower().Contains("yes"))
                     {
+                        string[] splitpermissions = item.Split('_');
                         User_Activity_Permission obj = new User_Activity_Permission();
                         obj.UserId = userId;
-                        obj.ApplicationActivityId = Convert.ToInt32(permissions[2]);
+                        obj.ApplicationActivityId = Convert.ToInt32(splitpermissions[2]);
                         obj.CreatedBy = CreatorId;
                         obj.CreatedDate = System.DateTime.Now;
                         db.Entry(obj).State = EntityState.Added;
@@ -1733,13 +1728,14 @@ namespace BDSService
                         db.SaveChanges();
                         retVal = 1;
                     }
-                    else if (permissions[1].ToString().ToLower() == "verticals")
+                    else if (item.ToLower().Contains("verticals"))
                     {
+                        string[] splitpermissions = item.Split('_');
                         CustomRestriction obj = new CustomRestriction();
                         obj.UserId = userId;
-                        obj.CustomFieldId = permissions[2];
+                        obj.CustomFieldId = splitpermissions[2];
                         obj.CustomField = "Verticals";
-                        obj.Permission = Convert.ToInt16(permissions[0]);
+                        obj.Permission = Convert.ToInt16(splitpermissions[0]);
                         obj.CreatedDate = System.DateTime.Now;
                         obj.CreatedBy = CreatorId;
                         db.Entry(obj).State = EntityState.Added;
@@ -1747,13 +1743,14 @@ namespace BDSService
                         db.SaveChanges();
                         retVal = 1;
                     }
-                    else if (permissions[1].ToString().ToLower() == "geography")
+                    else if (item.ToLower().Contains("geography"))
                     {
+                        string[] splitpermissions = item.Split('_');
                         CustomRestriction obj = new CustomRestriction();
                         obj.UserId = userId;
-                        obj.CustomFieldId = permissions[2];
+                        obj.CustomFieldId = splitpermissions[2];
                         obj.CustomField = "Geography";
-                        obj.Permission = Convert.ToInt16(permissions[0]);
+                        obj.Permission = Convert.ToInt16(splitpermissions[0]);
                         obj.CreatedDate = System.DateTime.Now;
                         obj.CreatedBy = CreatorId;
                         db.Entry(obj).State = EntityState.Added;
@@ -1770,7 +1767,7 @@ namespace BDSService
         public int resetToRoleDefault(Guid userId, Guid CreatorId, Guid applicationId)
         {
             int retVal = 0;
-            var roleId = db.User_Application.Where(usr => usr.UserId == userId).FirstOrDefault().RoleId;
+            var roleId = db.User_Application.Where(usr => usr.UserId == userId && usr.ApplicationId == applicationId).FirstOrDefault().RoleId;
             var DefaultActivities = db.Role_Activity_Permission.Where(rap => rap.RoleId == roleId).ToList();
             if (DefaultActivities.Count > 0)
             {

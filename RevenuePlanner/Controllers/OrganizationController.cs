@@ -322,5 +322,135 @@ namespace RevenuePlanner.Controllers
               .ToList();
             return new UserHierarchyModel { UserId = userid, FirstName = FirstName, LastName = LastName, Email = Email, RoleId = RoleId, RoleTitle = RoleTitle, ColorCode = ColorCode, JobTitle = JobTitle, GeographyId = GeographyId, Geography = Geography, Phone = Phone, ManagerId = ManagerId, subUsers = subUsers };
         }
+        /// <summary>
+        /// Added By: Mitesh Vaishnav
+        /// View/Edit user permission.
+        /// </summary>
+        public ActionResult ViewEditPermission(string userId, string permissionMode, string Name, string RoleName)
+        {
+            ViewBag.PermissionMode = permissionMode;
+            Guid UserId = Guid.Parse(userId);
+            ViewBag.userId = UserId;
+            ViewBag.Name = Name;
+            ViewBag.RoleName = RoleName;
+            var clientVerticals = db.Verticals.Where(ver => ver.ClientId == Sessions.User.ClientId).ToList();
+            var clientGeography = db.Geographies.Where(ver => ver.ClientId == Sessions.User.ClientId).ToList();
+            var userCustomRestrictionList = objBDSServiceClient.GetUserCustomRestrictionList(UserId, Sessions.ApplicationId);
+            var allAtctivity = objBDSServiceClient.GetAllApplicationActivity(Sessions.ApplicationId);
+            var userActivity = objBDSServiceClient.GetUserActivity(UserId, Sessions.ApplicationId);
+
+            List<UserActivityPermissionModel> userActivityPermissionList = new List<UserActivityPermissionModel>();
+            foreach (var item in allAtctivity)
+            {
+                UserActivityPermissionModel uapobj = new UserActivityPermissionModel();
+                uapobj.ApplicationActivityId = item.ApplicationActivityId;
+                uapobj.ApplicationId = item.ApplicationId;
+                uapobj.CreatedDate = item.CreatedDate;
+                uapobj.ParentId = item.ParentId;
+                uapobj.Title = item.ActivityTitle;
+                uapobj.Permission = "No";
+                if (userActivity != null)
+                {
+                    if (userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).ToList().Count > 0)
+                    {
+                        uapobj.Permission = "Yes";
+                        uapobj.UserCreatedBy = userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).FirstOrDefault().CreatedBy;
+                        uapobj.UserCreatedDate = userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).FirstOrDefault().CreatedDate;
+                        uapobj.UserId = userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).FirstOrDefault().UserId;
+                    }
+                    else
+                    {
+                        uapobj.Permission = "No";
+                    }
+                }
+                userActivityPermissionList.Add(uapobj);
+            }
+            List<CustomRestrictionModel> customRestrictionList = new List<CustomRestrictionModel>();
+            foreach (var item in clientVerticals)
+            {
+                CustomRestrictionModel cRestrictionobj = new CustomRestrictionModel();
+                cRestrictionobj.Title = item.Title;
+                cRestrictionobj.CustomField = "Verticals";
+                cRestrictionobj.CustomFieldId = item.VerticalId.ToString();
+                var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId == item.VerticalId.ToString()).FirstOrDefault() : null;
+                if (IsUserRestrictionExist != null)
+                {
+                    string permission = ((Enums.CustomRestrictionPermission)Enum.Parse(typeof(Enums.CustomRestrictionPermission), IsUserRestrictionExist.Permission.ToString())).ToString();
+                    cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(permission)).Value;
+                    cRestrictionobj.Permission = IsUserRestrictionExist.Permission;
+                }
+                else
+                {
+                    string none = Enums.CustomRestrictionPermission.None.ToString();
+                    cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(none)).Value;
+                    cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.None;
+                }
+                customRestrictionList.Add(cRestrictionobj);
+            }
+            foreach (var item in clientGeography)
+            {
+                CustomRestrictionModel cRestrictionobj = new CustomRestrictionModel();
+                cRestrictionobj.Title = item.Title;
+                cRestrictionobj.CustomField = "Geography";
+                cRestrictionobj.CustomFieldId = item.GeographyId.ToString();
+                var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId == item.GeographyId.ToString()).FirstOrDefault() : null;
+                if (IsUserRestrictionExist != null)
+                {
+                    string permission = ((Enums.CustomRestrictionPermission)Enum.Parse(typeof(Enums.CustomRestrictionPermission), IsUserRestrictionExist.Permission.ToString())).ToString();
+                    cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(permission)).Value;
+                    cRestrictionobj.Permission = IsUserRestrictionExist.Permission;
+                }
+                else
+                {
+                    string none = Enums.CustomRestrictionPermission.None.ToString();
+                    cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(none)).Value;
+                    cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.None;
+                }
+                customRestrictionList.Add(cRestrictionobj);
+            }
+            ViewData["CustomRestriction"] = customRestrictionList;
+            return View(userActivityPermissionList);
+        }
+
+        /// <summary>
+        /// Added By: Mitesh Vaishnav
+        /// update user's activity permissions.
+        /// </summary>
+        [HttpPost]
+        public bool SaveUserPermission(string permissionIds, string userId)
+        {
+            try
+            {
+                string[] arrPermissionId = permissionIds.Split(',');
+                Guid UserId = Guid.Parse(userId);
+                Guid CurrentUserID = Sessions.User.UserId;
+                int i = objBDSServiceClient.AddUserActivityPermissions(UserId, CurrentUserID, arrPermissionId.ToList(), Sessions.ApplicationId);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Added By: Mitesh Vaishnav
+        /// Reset user's activity permissions as per his role default permission.
+        /// </summary>
+        [HttpPost]
+        public bool ResetToRoleDefault(string userId)
+        {
+            try
+            {
+                Guid UserId = Guid.Parse(userId);
+                Guid creatorId = Sessions.User.UserId;
+                int i = objBDSServiceClient.resetToRoleDefault(UserId, creatorId, Sessions.ApplicationId);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

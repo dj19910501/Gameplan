@@ -215,6 +215,7 @@
     <Compile Include="Models\BaselineModel.cs" />
     <Compile Include="Models\BoostModel.cs" />
     <Compile Include="Models\ChangeLog_ViewModel.cs" />
+    <Compile Include="Models\CustomRestrictionModel.cs" />
     <Compile Include="Models\ExtrenalServiceModel.cs" />
     <Compile Include="Models\ForgotPasswordModel.cs" />
     <Compile Include="Models\HomePlanModel.cs" />
@@ -230,6 +231,7 @@
     <Compile Include="Models\SummaryReportModel.cs" />
     <Compile Include="Models\SyncFrequencyModel.cs" />
     <Compile Include="Models\Tactic_TypeModel.cs" />
+    <Compile Include="Models\UserActivityPermissionModel.cs" />
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service References\BDSService\Reference.cs">
@@ -328,6 +330,7 @@
     <Content Include="Content\images\busunit.png" />
     <Content Include="Content\images\check-green.png" />
     <Content Include="Content\images\check-red.png" />
+    <Content Include="Content\images\check_signup.png" />
     <Content Include="Content\images\circle-check-icon-blue.png" />
     <Content Include="Content\images\circle-check-icon-gray.png" />
     <Content Include="Content\images\circle-check-icon-small-blue.png" />
@@ -364,6 +367,7 @@
     <Content Include="Content\images\green-arrow-up.png" />
     <Content Include="Content\images\green-row.png" />
     <Content Include="Content\images\gridCheckbox-icon.png" />
+    <Content Include="Content\images\help-icon.png" />
     <Content Include="Content\images\horizontal-shadow-left.png" />
     <Content Include="Content\images\horizontal-shadow-right.png" />
     <Content Include="Content\images\icon-check-accordion.png" />
@@ -567,13 +571,6 @@
     <Content Include="Scripts\js\ReportRevenue.js" />
     <Content Include="Scripts\js\ReportSummary.js" />
     <Content Include="Scripts\summernote.min.js" />
-    <Content Include="Integration.BDSService.Client.datasource" />
-    <Content Include="Integration.BDSService.Menu.datasource" />
-    <Content Include="Integration.BDSService.PasswordResetRequest.datasource" />
-    <Content Include="Integration.BDSService.Permission.datasource" />
-    <Content Include="Integration.BDSService.Role.datasource" />
-    <Content Include="Integration.BDSService.SecurityQuestion.datasource" />
-    <Content Include="Integration.BDSService.User.datasource" />
     <None Include="Service References\BDSService\BDSService.disco" />
     <None Include="Service References\BDSService\configuration91.svcinfo" />
     <None Include="Service References\BDSService\configuration.svcinfo" />
@@ -796,6 +793,7 @@
     </Content>
     <Content Include="Views\Organization\OrganizationHierarchy.cshtml" />
     <Content Include="Views\Organization\_userHierarchy.cshtml" />
+    <Content Include="Views\Organization\ViewEditPermission.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

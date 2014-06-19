@@ -287,6 +287,20 @@ namespace RevenuePlanner.Helpers
 
         #endregion
 
+        /* Added by Mitesh Vaishnav for PL ticket #521 */
+        public enum CustomRestrictionPermission
+        {
+            None = 0,
+            ViewOnly = 1,
+            ViewEdit = 2
+        }
+        public static Dictionary<string, string> CustomRestrictionValues = new Dictionary<string, string>(){
+        { CustomRestrictionPermission.None.ToString(),"None"},
+            { CustomRestrictionPermission.ViewOnly.ToString(),"View Only"},
+            {CustomRestrictionPermission.ViewEdit.ToString(),"View/Edit"}
+         };
+        /* End Added by Mitesh Vaishnav for PL ticket #521 */
+
         #region Notification
         /// <summary>
         /// Added By: Maninder Singh Wadhva.
