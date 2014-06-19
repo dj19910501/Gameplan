@@ -14,11 +14,14 @@ namespace BDSService
     
     public partial class User_Activity_Permission
     {
+        public int UserActivityPermissionId { get; set; }
         public System.Guid UserId { get; set; }
         public int ApplicationActivityId { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
     
         public virtual Application_Activity Application_Activity { get; set; }
+        public virtual User User { get; set; }
+        public virtual User User1 { get; set; }
     }
 }

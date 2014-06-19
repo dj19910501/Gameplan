@@ -21,5 +21,7 @@ namespace BDSService
         public System.Guid CreatedBy { get; set; }
     
         public virtual Application_Activity Application_Activity { get; set; }
+        public virtual Role Role { get; set; }
+        public virtual User User { get; set; }
     }
 }

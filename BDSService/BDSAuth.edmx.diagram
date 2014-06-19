@@ -4,39 +4,43 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="8a7dbe4fda7d482abfdda5fbeda64528" Name="Diagram1">
-        <EntityTypeShape EntityType="BDSAuthDevModel.Application" Width="1.5" PointX="6" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="BDSAuthDevModel.Application_Role" Width="1.5" PointX="8.25" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="BDSAuthDevModel.Client" Width="1.5" PointX="0.75" PointY="4.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="BDSAuthDevModel.Menu_Application" Width="1.5" PointX="8.25" PointY="9.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="BDSAuthDevModel.PasswordResetRequest" Width="1.5" PointX="5.25" PointY="5.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="BDSAuthDevModel.Role" Width="1.5" PointX="11.625" PointY="7.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="BDSAuthDevModel.Role_Permission" Width="1.5" PointX="10.25" PointY="11.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="BDSAuthDevModel.SecurityQuestion" Width="1.5" PointX="0.75" PointY="1.5" IsExpanded="true" />
-        <AssociationConnector Association="BDSAuthDevModel.FK_Application_Role_Application" ManuallyRouted="false" />
-        <AssociationConnector Association="BDSAuthDevModel.FK_Menu_Application_Application" ManuallyRouted="false" />
-        <AssociationConnector Association="BDSAuthDevModel.FK_Application_Role_Role" ManuallyRouted="false" />
-        <AssociationConnector Association="BDSAuthDevModel.FK_Menu_Application_Menu_Application" ManuallyRouted="false" />
-        <AssociationConnector Association="BDSAuthDevModel.FK_Role_Permission_Menu_Application" ManuallyRouted="false" />
-        <AssociationConnector Association="BDSAuthDevModel.FK_Role_Permission_Role" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="BDSAuthDevModel.User_Application" Width="1.5" PointX="1.1531741140192255" PointY="30.316915570905859" />
-        <AssociationConnector Association="BDSAuthDevModel.FK_User_Application_Application" />
-        <EntityTypeShape EntityType="BDSAuthDevModel.User" Width="1.5" PointX="0.0889199674543552" PointY="18.701536276704417" />
-        <AssociationConnector Association="BDSAuthDevModel.FK_User_Client" />
-        <AssociationConnector Association="BDSAuthDevModel.FK_PasswordResetRequest_User" />
-        <AssociationConnector Association="BDSAuthDevModel.FK_User_SecurityQuestion" />
-        <AssociationConnector Association="BDSAuthDevModel.FK_User_Application_User" />
-        <AssociationConnector Association="BDSAuthDevModel.FK_User_Application_User_ManagerId" />
-        <EntityTypeShape EntityType="BDSAuthDevModel.User_Activity_Permission" Width="1.5" PointX="10.125" PointY="15.125" />
-        <EntityTypeShape EntityType="BDSAuthDevModel.Role_Activity_Permission" Width="1.5" PointX="7.0069095487738533" PointY="0.75913347339217252" />
-        <EntityTypeShape EntityType="BDSAuthDevModel.Application_Activity" Width="1.5" PointX="8.1421083361572162" PointY="15.760127089805961" />
-        <EntityTypeShape EntityType="BDSAuthDevModel.CustomRestriction" Width="1.5" PointX="4.1344518494487046" PointY="6.3796377658749179" />
-        <AssociationConnector Association="BDSAuthDevModel.FK_Application_Activity_Application" />
-        <AssociationConnector Association="BDSAuthDevModel.FK_Role_Activity_Permission_Application_Activity" />
-        <AssociationConnector Association="BDSAuthDevModel.FK_User_Activity_Permission_Application_Activity" />
-        <AssociationConnector Association="BDSAuthDevModel.FK_CustomRestriction_User" />
-        <AssociationConnector Association="BDSAuthDevModel.FK_CustomRestriction_User1" />
-        </Diagram>
+      <Diagram DiagramId="6fe9ffeb55d14376a517fcde5c9da303" Name="Diagram1">
+        <EntityTypeShape EntityType="BDSAuthModel.Application" Width="1.5" PointX="3.75" PointY="2.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDSAuthModel.Application_Activity" Width="1.5" PointX="6" PointY="2.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDSAuthModel.Application_Role" Width="1.5" PointX="11.25" PointY="8.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDSAuthModel.Client" Width="1.5" PointX="0.75" PointY="8" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDSAuthModel.CustomRestriction" Width="1.5" PointX="5.25" PointY="7.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDSAuthModel.Menu_Application" Width="1.5" PointX="6" PointY="19.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDSAuthModel.PasswordResetRequest" Width="1.5" PointX="5.25" PointY="10.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDSAuthModel.Role" Width="1.5" PointX="6" PointY="14.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDSAuthModel.Role_Activity_Permission" Width="1.5" PointX="8.25" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDSAuthModel.Role_Permission" Width="1.5" PointX="8.25" PointY="17.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDSAuthModel.SecurityQuestion" Width="1.5" PointX="0.75" PointY="5" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDSAuthModel.User" Width="1.5" PointX="3" PointY="7" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDSAuthModel.User_Activity_Permission" Width="1.5" PointX="8.25" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDSAuthModel.User_Application" Width="1.5" PointX="8.25" PointY="12.125" IsExpanded="true" />
+        <AssociationConnector Association="BDSAuthModel.FK_Application_Activity_Application" ManuallyRouted="false" />
+        <AssociationConnector Association="BDSAuthModel.FK_Application_Role_Application" ManuallyRouted="false" />
+        <AssociationConnector Association="BDSAuthModel.FK_Menu_Application_Application" ManuallyRouted="false" />
+        <AssociationConnector Association="BDSAuthModel.FK_User_Application_Application" ManuallyRouted="false" />
+        <AssociationConnector Association="BDSAuthModel.FK_Role_Activity_Permission_Application_Activity" ManuallyRouted="false" />
+        <AssociationConnector Association="BDSAuthModel.FK_User_Activity_Permission_Application_Activity" ManuallyRouted="false" />
+        <AssociationConnector Association="BDSAuthModel.FK_Application_Role_Role" ManuallyRouted="false" />
+        <AssociationConnector Association="BDSAuthModel.FK_User_Client" ManuallyRouted="false" />
+        <AssociationConnector Association="BDSAuthModel.FK_CustomRestriction_User" ManuallyRouted="false" />
+        <AssociationConnector Association="BDSAuthModel.FK_CustomRestriction_User1" ManuallyRouted="false" />
+        <AssociationConnector Association="BDSAuthModel.FK_Menu_Application_Menu_Application" ManuallyRouted="false" />
+        <AssociationConnector Association="BDSAuthModel.FK_Role_Permission_Menu_Application" ManuallyRouted="false" />
+        <AssociationConnector Association="BDSAuthModel.FK_PasswordResetRequest_User" ManuallyRouted="false" />
+        <AssociationConnector Association="BDSAuthModel.FK_Role_Activity_Permission_Role" ManuallyRouted="false" />
+        <AssociationConnector Association="BDSAuthModel.FK_Role_Permission_Role" ManuallyRouted="false" />
+        <AssociationConnector Association="BDSAuthModel.FK_Role_Activity_Permission_User" ManuallyRouted="false" />
+        <AssociationConnector Association="BDSAuthModel.FK_User_SecurityQuestion" ManuallyRouted="false" />
+        <AssociationConnector Association="BDSAuthModel.FK_User_Activity_Permission_User" ManuallyRouted="false" />
+        <AssociationConnector Association="BDSAuthModel.FK_User_Activity_Permission_User1" ManuallyRouted="false" />
+        <AssociationConnector Association="BDSAuthModel.FK_User_Application_User" ManuallyRouted="false" />
+        <AssociationConnector Association="BDSAuthModel.FK_User_Application_User_ManagerId" ManuallyRouted="false" />
+      </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

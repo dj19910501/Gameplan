@@ -26,18 +26,18 @@ namespace BDSService
         }
     
         public DbSet<Application> Applications { get; set; }
+        public DbSet<Application_Activity> Application_Activity { get; set; }
         public DbSet<Application_Role> Application_Role { get; set; }
         public DbSet<Client> Clients { get; set; }
+        public DbSet<CustomRestriction> CustomRestrictions { get; set; }
         public DbSet<Menu_Application> Menu_Application { get; set; }
         public DbSet<PasswordResetRequest> PasswordResetRequests { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<Role_Activity_Permission> Role_Activity_Permission { get; set; }
         public DbSet<Role_Permission> Role_Permission { get; set; }
         public DbSet<SecurityQuestion> SecurityQuestions { get; set; }
-        public DbSet<User_Application> User_Application { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<User_Activity_Permission> User_Activity_Permission { get; set; }
-        public DbSet<Role_Activity_Permission> Role_Activity_Permission { get; set; }
-        public DbSet<Application_Activity> Application_Activity { get; set; }
-        public DbSet<CustomRestriction> CustomRestrictions { get; set; }
+        public DbSet<User_Application> User_Application { get; set; }
     }
 }

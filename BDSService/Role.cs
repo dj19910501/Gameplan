@@ -17,6 +17,7 @@ namespace BDSService
         public Role()
         {
             this.Application_Role = new HashSet<Application_Role>();
+            this.Role_Activity_Permission = new HashSet<Role_Activity_Permission>();
             this.Role_Permission = new HashSet<Role_Permission>();
         }
     
@@ -32,6 +33,7 @@ namespace BDSService
         public string ColorCode { get; set; }
     
         public virtual ICollection<Application_Role> Application_Role { get; set; }
+        public virtual ICollection<Role_Activity_Permission> Role_Activity_Permission { get; set; }
         public virtual ICollection<Role_Permission> Role_Permission { get; set; }
     }
 }
