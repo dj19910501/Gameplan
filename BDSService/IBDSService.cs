@@ -138,5 +138,29 @@ namespace BDSService
         /// added by uday for #513
         [OperationContract]
         List<BDSEntities.ApplicationActivity> GetRoleactivitypermissions(Guid roleid);
+
+        /* Added by Mitesh Vaishnav #521 */
+        [OperationContract]
+        List<BDSEntities.ApplicationActivity> GetAllApplicationActivity(Guid applicationId);
+
+        [OperationContract]
+        List<BDSEntities.UserApplicationPermission> GetUserActivity(Guid userId, Guid applicationId);
+
+        [OperationContract]
+        List<BDSEntities.CustomRestriction> GetUserCustomRestrictionList(Guid userId, Guid applicationId);
+
+        [OperationContract]
+        int AddUserActivityPermissions(Guid userId, Guid CreatorId, string[] permissions, Guid applicationId);
+
+        [OperationContract]
+        int DeleteUserActivityPermission(Guid userId, Guid applicationId);
+
+        [OperationContract]
+        int DeleteUserCustomrestriction(Guid userId, Guid applicationId);
+
+        [OperationContract]
+        int resetToRoleDefault(Guid userId, Guid CretorId, Guid applicationId);
+
+        /*End: Added by Mitesh Vaishnav #521 */
     }
 }

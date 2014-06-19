@@ -17,7 +17,7 @@ namespace BDSService.BDSEntities
         [DataMember]
         public Guid ApplicationId { get; set; }
         [DataMember]
-        public int ParentId { get; set; }
+        public int? ParentId { get; set; }
         [DataMember]
         public string ActivityTitle { get; set; }
         [DataMember]

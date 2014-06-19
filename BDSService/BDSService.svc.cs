@@ -256,6 +256,46 @@ namespace BDSService
             BDSUserRepository obj = new BDSUserRepository();
             return obj.GetAllRoleList(applicationid);
         }
+
+        public List<BDSEntities.ApplicationActivity> GetAllApplicationActivity(Guid applicationId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetAllApplicationActivity(applicationId);
+        }
+
+        public List<BDSEntities.UserApplicationPermission> GetUserActivity(Guid userId, Guid applicationId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetUserActivity(userId, applicationId);
+        }
+
+        public List<BDSEntities.CustomRestriction> GetUserCustomRestrictionList(Guid userId, Guid applicationId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetUserCustomRestrictionList(userId, applicationId);
+        }
+
+        public int AddUserActivityPermissions(Guid userId, Guid CreatorId, string[] permissions, Guid applicationId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.AddUserActivityPermissions(userId, CreatorId, permissions, applicationId);
+        }
+
+        public int DeleteUserActivityPermission(Guid userId, Guid applicationId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.DeleteUserActivityPermission(userId, applicationId);
+        }
+        public int DeleteUserCustomrestriction(Guid userId, Guid applicationId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.DeleteUserCustomrestriction(userId, applicationId);
+        }
+        public int resetToRoleDefault(Guid userId, Guid CreatorId, Guid applicationId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.resetToRoleDefault(userId, CreatorId, applicationId);
+        }
     }
 
 }
