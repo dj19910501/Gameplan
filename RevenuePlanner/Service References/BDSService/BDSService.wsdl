@@ -194,6 +194,12 @@
   <wsdl:message name="IBDSService_GetApplicationReleaseVersion_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetApplicationReleaseVersionResponse" />
   </wsdl:message>
+  <wsdl:message name="IBDSService_GetUserActivityPermission_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetUserActivityPermission" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetUserActivityPermission_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetUserActivityPermissionResponse" />
+  </wsdl:message>
   <wsdl:portType name="IBDSService">
     <wsdl:operation name="ValidateUser">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/ValidateUser" message="tns:IBDSService_ValidateUser_InputMessage" />
@@ -318,6 +324,10 @@
     <wsdl:operation name="GetApplicationReleaseVersion">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetApplicationReleaseVersion" message="tns:IBDSService_GetApplicationReleaseVersion_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetApplicationReleaseVersionResponse" message="tns:IBDSService_GetApplicationReleaseVersion_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetUserActivityPermission">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetUserActivityPermission" message="tns:IBDSService_GetUserActivityPermission_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetUserActivityPermissionResponse" message="tns:IBDSService_GetUserActivityPermission_OutputMessage" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="BasicHttpBinding_IBDSService" type="tns:IBDSService">
@@ -594,6 +604,15 @@
     </wsdl:operation>
     <wsdl:operation name="GetApplicationReleaseVersion">
       <soap:operation soapAction="http://tempuri.org/IBDSService/GetApplicationReleaseVersion" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUserActivityPermission">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/GetUserActivityPermission" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

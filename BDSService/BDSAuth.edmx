@@ -7,8 +7,10 @@
     <Schema Namespace="BDSAuthDevModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityContainer Name="BDSAuthDevModelStoreContainer">
           <EntitySet Name="Application" EntityType="BDSAuthDevModel.Store.Application" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Application_Activity" EntityType="BDSAuthDevModel.Store.Application_Activity" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Application_Role" EntityType="BDSAuthDevModel.Store.Application_Role" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Client" EntityType="BDSAuthDevModel.Store.Client" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="CustomRestriction" EntityType="BDSAuthDevModel.Store.CustomRestriction" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Menu_Application" EntityType="BDSAuthDevModel.Store.Menu_Application" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="PasswordResetRequest" EntityType="BDSAuthDevModel.Store.PasswordResetRequest" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Role" EntityType="BDSAuthDevModel.Store.Role" store:Type="Tables" Schema="dbo" />
@@ -18,6 +20,10 @@
           <EntitySet Name="User" EntityType="BDSAuthDevModel.Store.User" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="User_Activity_Permission" EntityType="BDSAuthDevModel.Store.User_Activity_Permission" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="User_Application" EntityType="BDSAuthDevModel.Store.User_Application" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK_Application_Activity_Application" Association="BDSAuthDevModel.Store.FK_Application_Activity_Application">
+            <End Role="Application" EntitySet="Application" />
+            <End Role="Application_Activity" EntitySet="Application_Activity" />
+          </AssociationSet>
           <AssociationSet Name="FK_Application_Role_Application" Association="BDSAuthDevModel.Store.FK_Application_Role_Application">
             <End Role="Application" EntitySet="Application" />
             <End Role="Application_Role" EntitySet="Application_Role" />
@@ -25,6 +31,14 @@
           <AssociationSet Name="FK_Application_Role_Role" Association="BDSAuthDevModel.Store.FK_Application_Role_Role">
             <End Role="Role" EntitySet="Role" />
             <End Role="Application_Role" EntitySet="Application_Role" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomRestriction_User" Association="BDSAuthDevModel.Store.FK_CustomRestriction_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="CustomRestriction" EntitySet="CustomRestriction" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomRestriction_User1" Association="BDSAuthDevModel.Store.FK_CustomRestriction_User1">
+            <End Role="User" EntitySet="User" />
+            <End Role="CustomRestriction" EntitySet="CustomRestriction" />
           </AssociationSet>
           <AssociationSet Name="FK_Menu_Application_Application" Association="BDSAuthDevModel.Store.FK_Menu_Application_Application">
             <End Role="Application" EntitySet="Application" />
@@ -38,6 +52,10 @@
             <End Role="User" EntitySet="User" />
             <End Role="PasswordResetRequest" EntitySet="PasswordResetRequest" />
           </AssociationSet>
+          <AssociationSet Name="FK_Role_Activity_Permission_Application_Activity" Association="BDSAuthDevModel.Store.FK_Role_Activity_Permission_Application_Activity">
+            <End Role="Application_Activity" EntitySet="Application_Activity" />
+            <End Role="Role_Activity_Permission" EntitySet="Role_Activity_Permission" />
+          </AssociationSet>
           <AssociationSet Name="FK_Role_Permission_Menu_Application" Association="BDSAuthDevModel.Store.FK_Role_Permission_Menu_Application">
             <End Role="Menu_Application" EntitySet="Menu_Application" />
             <End Role="Role_Permission" EntitySet="Role_Permission" />
@@ -45,6 +63,10 @@
           <AssociationSet Name="FK_Role_Permission_Role" Association="BDSAuthDevModel.Store.FK_Role_Permission_Role">
             <End Role="Role" EntitySet="Role" />
             <End Role="Role_Permission" EntitySet="Role_Permission" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Activity_Permission_Application_Activity" Association="BDSAuthDevModel.Store.FK_User_Activity_Permission_Application_Activity">
+            <End Role="Application_Activity" EntitySet="Application_Activity" />
+            <End Role="User_Activity_Permission" EntitySet="User_Activity_Permission" />
           </AssociationSet>
           <AssociationSet Name="FK_User_Application_Application" Association="BDSAuthDevModel.Store.FK_User_Application_Application">
             <End Role="Application" EntitySet="Application" />
@@ -82,6 +104,17 @@
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
           <Property Name="ReleaseVersion" Type="nvarchar" MaxLength="25" />
         </EntityType>
+        <EntityType Name="Application_Activity">
+          <Key>
+            <PropertyRef Name="ApplicationActivityId" />
+          </Key>
+          <Property Name="ApplicationActivityId" Type="int" Nullable="false" />
+          <Property Name="ApplicationId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ParentId" Type="int" />
+          <Property Name="ActivityTitle" Type="nvarchar" Nullable="false" />
+          <Property Name="Code" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="Application_Role">
           <Key>
             <PropertyRef Name="ApplicationRoleId" />
@@ -114,6 +147,18 @@
           <Property Name="CreatedBy" Type="uniqueidentifier" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
+        </EntityType>
+        <EntityType Name="CustomRestriction">
+          <Key>
+            <PropertyRef Name="CustomRestrictionId" />
+          </Key>
+          <Property Name="CustomRestrictionId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CustomField" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="CustomFieldId" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="Permission" Type="smallint" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
         <EntityType Name="Menu_Application">
           <Key>
@@ -245,6 +290,18 @@
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
           <Property Name="ManagerId" Type="uniqueidentifier" />
         </EntityType>
+        <Association Name="FK_Application_Activity_Application">
+          <End Role="Application" Type="BDSAuthDevModel.Store.Application" Multiplicity="1" />
+          <End Role="Application_Activity" Type="BDSAuthDevModel.Store.Application_Activity" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Application">
+              <PropertyRef Name="ApplicationId" />
+            </Principal>
+            <Dependent Role="Application_Activity">
+              <PropertyRef Name="ApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Application_Role_Application">
           <End Role="Application" Type="BDSAuthDevModel.Store.Application" Multiplicity="1" />
           <End Role="Application_Role" Type="BDSAuthDevModel.Store.Application_Role" Multiplicity="*" />
@@ -266,6 +323,30 @@
             </Principal>
             <Dependent Role="Application_Role">
               <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomRestriction_User">
+          <End Role="User" Type="BDSAuthDevModel.Store.User" Multiplicity="1" />
+          <End Role="CustomRestriction" Type="BDSAuthDevModel.Store.CustomRestriction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="CustomRestriction">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomRestriction_User1">
+          <End Role="User" Type="BDSAuthDevModel.Store.User" Multiplicity="1" />
+          <End Role="CustomRestriction" Type="BDSAuthDevModel.Store.CustomRestriction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="CustomRestriction">
+              <PropertyRef Name="CreatedBy" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -305,6 +386,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Role_Activity_Permission_Application_Activity">
+          <End Role="Application_Activity" Type="BDSAuthDevModel.Store.Application_Activity" Multiplicity="1" />
+          <End Role="Role_Activity_Permission" Type="BDSAuthDevModel.Store.Role_Activity_Permission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Application_Activity">
+              <PropertyRef Name="ApplicationActivityId" />
+            </Principal>
+            <Dependent Role="Role_Activity_Permission">
+              <PropertyRef Name="ApplicationActivityId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Role_Permission_Menu_Application">
           <End Role="Menu_Application" Type="BDSAuthDevModel.Store.Menu_Application" Multiplicity="1" />
           <End Role="Role_Permission" Type="BDSAuthDevModel.Store.Role_Permission" Multiplicity="*" />
@@ -326,6 +419,18 @@
             </Principal>
             <Dependent Role="Role_Permission">
               <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Activity_Permission_Application_Activity">
+          <End Role="Application_Activity" Type="BDSAuthDevModel.Store.Application_Activity" Multiplicity="1" />
+          <End Role="User_Activity_Permission" Type="BDSAuthDevModel.Store.User_Activity_Permission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Application_Activity">
+              <PropertyRef Name="ApplicationActivityId" />
+            </Principal>
+            <Dependent Role="User_Activity_Permission">
+              <PropertyRef Name="ApplicationActivityId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -454,6 +559,28 @@
           </AssociationSet>
           <EntitySet Name="User_Activity_Permission" EntityType="BDSAuthDevModel.User_Activity_Permission" />
           <EntitySet Name="Role_Activity_Permission" EntityType="BDSAuthDevModel.Role_Activity_Permission" />
+          <EntitySet Name="Application_Activity" EntityType="BDSAuthDevModel.Application_Activity" />
+          <EntitySet Name="CustomRestrictions" EntityType="BDSAuthDevModel.CustomRestriction" />
+          <AssociationSet Name="FK_Application_Activity_Application" Association="BDSAuthDevModel.FK_Application_Activity_Application">
+            <End Role="Application" EntitySet="Applications" />
+            <End Role="Application_Activity" EntitySet="Application_Activity" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Role_Activity_Permission_Application_Activity" Association="BDSAuthDevModel.FK_Role_Activity_Permission_Application_Activity">
+            <End Role="Application_Activity" EntitySet="Application_Activity" />
+            <End Role="Role_Activity_Permission" EntitySet="Role_Activity_Permission" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Activity_Permission_Application_Activity" Association="BDSAuthDevModel.FK_User_Activity_Permission_Application_Activity">
+            <End Role="Application_Activity" EntitySet="Application_Activity" />
+            <End Role="User_Activity_Permission" EntitySet="User_Activity_Permission" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomRestriction_User" Association="BDSAuthDevModel.FK_CustomRestriction_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="CustomRestriction" EntitySet="CustomRestrictions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomRestriction_User1" Association="BDSAuthDevModel.FK_CustomRestriction_User1">
+            <End Role="User" EntitySet="Users" />
+            <End Role="CustomRestriction" EntitySet="CustomRestrictions" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Application">
           <Key>
@@ -472,6 +599,7 @@
           <NavigationProperty Name="Application_Role" Relationship="BDSAuthDevModel.FK_Application_Role_Application" FromRole="Application" ToRole="Application_Role" />
           <NavigationProperty Name="Menu_Application" Relationship="BDSAuthDevModel.FK_Menu_Application_Application" FromRole="Application" ToRole="Menu_Application" />
           <NavigationProperty Name="User_Application" Relationship="BDSAuthDevModel.FK_User_Application_Application" FromRole="Application" ToRole="User_Application" />
+          <NavigationProperty Name="Application_Activity" Relationship="BDSAuthDevModel.FK_Application_Activity_Application" FromRole="Application" ToRole="Application_Activity" />
         </EntityType>
         <EntityType Name="Application_Role">
           <Key>
@@ -715,6 +843,8 @@
           <NavigationProperty Name="SecurityQuestion" Relationship="BDSAuthDevModel.FK_User_SecurityQuestion" FromRole="User" ToRole="SecurityQuestion" />
           <NavigationProperty Name="User_Application" Relationship="BDSAuthDevModel.FK_User_Application_User" FromRole="User" ToRole="User_Application" />
           <NavigationProperty Name="User_Application1" Relationship="BDSAuthDevModel.FK_User_Application_User_ManagerId" FromRole="User" ToRole="User_Application" />
+          <NavigationProperty Name="CustomRestrictions" Relationship="BDSAuthDevModel.FK_CustomRestriction_User" FromRole="User" ToRole="CustomRestriction" />
+          <NavigationProperty Name="CustomRestrictions1" Relationship="BDSAuthDevModel.FK_CustomRestriction_User1" FromRole="User" ToRole="CustomRestriction" />
         </EntityType>
         <Association Name="FK_User_Client">
           <End Type="BDSAuthDevModel.Client" Role="Client" Multiplicity="1" />
@@ -787,6 +917,7 @@
           <Property Type="Int32" Name="ApplicationActivityId" Nullable="false" />
           <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
           <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <NavigationProperty Name="Application_Activity" Relationship="BDSAuthDevModel.FK_User_Activity_Permission_Application_Activity" FromRole="User_Activity_Permission" ToRole="Application_Activity" />
         </EntityType>
         <EntityType Name="Role_Activity_Permission">
           <Key>
@@ -797,7 +928,96 @@
           <Property Type="Guid" Name="RoleId" Nullable="false" />
           <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
           <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <NavigationProperty Name="Application_Activity" Relationship="BDSAuthDevModel.FK_Role_Activity_Permission_Application_Activity" FromRole="Role_Activity_Permission" ToRole="Application_Activity" />
         </EntityType>
+        <EntityType Name="Application_Activity">
+          <Key>
+            <PropertyRef Name="ApplicationActivityId" />
+          </Key>
+          <Property Type="Int32" Name="ApplicationActivityId" Nullable="false" />
+          <Property Type="Guid" Name="ApplicationId" Nullable="false" />
+          <Property Type="Int32" Name="ParentId" />
+          <Property Type="String" Name="ActivityTitle" Nullable="false" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Code" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Application" Relationship="BDSAuthDevModel.FK_Application_Activity_Application" FromRole="Application_Activity" ToRole="Application" />
+          <NavigationProperty Name="Role_Activity_Permission" Relationship="BDSAuthDevModel.FK_Role_Activity_Permission_Application_Activity" FromRole="Application_Activity" ToRole="Role_Activity_Permission" />
+          <NavigationProperty Name="User_Activity_Permission" Relationship="BDSAuthDevModel.FK_User_Activity_Permission_Application_Activity" FromRole="Application_Activity" ToRole="User_Activity_Permission" />
+        </EntityType>
+        <EntityType Name="CustomRestriction">
+          <Key>
+            <PropertyRef Name="CustomRestrictionId" />
+          </Key>
+          <Property Type="Int32" Name="CustomRestrictionId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Guid" Name="UserId" Nullable="false" />
+          <Property Type="String" Name="CustomField" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="CustomFieldId" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="Int16" Name="Permission" Nullable="false" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="BDSAuthDevModel.FK_CustomRestriction_User" FromRole="CustomRestriction" ToRole="User" />
+          <NavigationProperty Name="User1" Relationship="BDSAuthDevModel.FK_CustomRestriction_User1" FromRole="CustomRestriction" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_Application_Activity_Application">
+          <End Type="BDSAuthDevModel.Application" Role="Application" Multiplicity="1" />
+          <End Type="BDSAuthDevModel.Application_Activity" Role="Application_Activity" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Application">
+              <PropertyRef Name="ApplicationId" />
+            </Principal>
+            <Dependent Role="Application_Activity">
+              <PropertyRef Name="ApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Role_Activity_Permission_Application_Activity">
+          <End Type="BDSAuthDevModel.Application_Activity" Role="Application_Activity" Multiplicity="1" />
+          <End Type="BDSAuthDevModel.Role_Activity_Permission" Role="Role_Activity_Permission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Application_Activity">
+              <PropertyRef Name="ApplicationActivityId" />
+            </Principal>
+            <Dependent Role="Role_Activity_Permission">
+              <PropertyRef Name="ApplicationActivityId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Activity_Permission_Application_Activity">
+          <End Type="BDSAuthDevModel.Application_Activity" Role="Application_Activity" Multiplicity="1" />
+          <End Type="BDSAuthDevModel.User_Activity_Permission" Role="User_Activity_Permission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Application_Activity">
+              <PropertyRef Name="ApplicationActivityId" />
+            </Principal>
+            <Dependent Role="User_Activity_Permission">
+              <PropertyRef Name="ApplicationActivityId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomRestriction_User">
+          <End Type="BDSAuthDevModel.User" Role="User" Multiplicity="1" />
+          <End Type="BDSAuthDevModel.CustomRestriction" Role="CustomRestriction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="CustomRestriction">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomRestriction_User1">
+          <End Type="BDSAuthDevModel.User" Role="User" Multiplicity="1" />
+          <End Type="BDSAuthDevModel.CustomRestriction" Role="CustomRestriction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="CustomRestriction">
+              <PropertyRef Name="CreatedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -985,6 +1205,31 @@
                 <ScalarProperty Name="RoleId" ColumnName="RoleId" />
                 <ScalarProperty Name="ApplicationActivityId" ColumnName="ApplicationActivityId" />
                 <ScalarProperty Name="RolePermissionId" ColumnName="RolePermissionId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Application_Activity">
+            <EntityTypeMapping TypeName="BDSAuthDevModel.Application_Activity">
+              <MappingFragment StoreEntitySet="Application_Activity">
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="ActivityTitle" ColumnName="ActivityTitle" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="ApplicationId" ColumnName="ApplicationId" />
+                <ScalarProperty Name="ApplicationActivityId" ColumnName="ApplicationActivityId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CustomRestrictions">
+            <EntityTypeMapping TypeName="BDSAuthDevModel.CustomRestriction">
+              <MappingFragment StoreEntitySet="CustomRestriction">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Permission" ColumnName="Permission" />
+                <ScalarProperty Name="CustomFieldId" ColumnName="CustomFieldId" />
+                <ScalarProperty Name="CustomField" ColumnName="CustomField" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="CustomRestrictionId" ColumnName="CustomRestrictionId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -1,4 +1,4 @@
-﻿// Default code generation is disabled for model 'E:\Sohel.Pathan\Projects\Gameplan\Gameplan_Jun2014\Gameplan\BDSService\BDSAuth.edmx'. 
+﻿// Default code generation is disabled for model 'D:\Dharmraj Data\Projects\Game Plan\GamePlan-June 2\Gameplan\BDSService\BDSAuth.edmx'. 
 // To enable default code generation, change the value of the 'Code Generation Strategy' designer
 // property to an alternate value. This property is available in the Properties Window when the model is
 // open in the designer.

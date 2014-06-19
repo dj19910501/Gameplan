@@ -1557,6 +1557,12 @@ namespace RevenuePlanner.BDSService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetApplicationReleaseVersion", ReplyAction="http://tempuri.org/IBDSService/GetApplicationReleaseVersionResponse")]
         System.Threading.Tasks.Task<string> GetApplicationReleaseVersionAsync(System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetUserActivityPermission", ReplyAction="http://tempuri.org/IBDSService/GetUserActivityPermissionResponse")]
+        System.Collections.Generic.List<string> GetUserActivityPermission(System.Guid userId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetUserActivityPermission", ReplyAction="http://tempuri.org/IBDSService/GetUserActivityPermissionResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<string>> GetUserActivityPermissionAsync(System.Guid userId, System.Guid applicationId);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -1832,6 +1838,14 @@ namespace RevenuePlanner.BDSService {
         
         public System.Threading.Tasks.Task<string> GetApplicationReleaseVersionAsync(System.Guid applicationId) {
             return base.Channel.GetApplicationReleaseVersionAsync(applicationId);
+        }
+        
+        public System.Collections.Generic.List<string> GetUserActivityPermission(System.Guid userId, System.Guid applicationId) {
+            return base.Channel.GetUserActivityPermission(userId, applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<string>> GetUserActivityPermissionAsync(System.Guid userId, System.Guid applicationId) {
+            return base.Channel.GetUserActivityPermissionAsync(userId, applicationId);
         }
     }
 }

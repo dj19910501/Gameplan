@@ -103,5 +103,8 @@ namespace BDSService
 
         [OperationContract]
         string GetApplicationReleaseVersion(Guid applicationId);
+
+        [OperationContract]
+        List<string> GetUserActivityPermission(Guid userId, Guid applicationId);
     }
 }

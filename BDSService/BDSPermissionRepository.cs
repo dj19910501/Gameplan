@@ -39,5 +39,22 @@ namespace BDSService
             }
             
         }
+
+        /// <summary>
+        /// returns list of user application permissions
+        /// added by dharmraj, ticket #519
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="applicationId"></param>
+        /// <returns></returns>
+        public List<string> GetUserActivityPermission(Guid userId, Guid applicationId)
+        {
+            List<string> lstUserActivityPermission = (from uap in db.User_Activity_Permission
+                                                      join aa in db.Application_Activity on uap.ApplicationActivityId equals aa.ApplicationActivityId
+                                                      where uap.UserId == userId && aa.ApplicationId == applicationId
+                                                      select aa.Code).ToList();
+
+            return lstUserActivityPermission;
+        }
     }
 }
