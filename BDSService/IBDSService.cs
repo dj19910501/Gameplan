@@ -162,5 +162,8 @@ namespace BDSService
         int resetToRoleDefault(Guid userId, Guid CretorId, Guid applicationId);
 
         /*End: Added by Mitesh Vaishnav #521 */
+
+        [OperationContract]
+        List<BDSEntities.UserHierarchy> GetUserHierarchy(Guid clientId, Guid applicationId);
     }
 }

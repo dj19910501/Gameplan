@@ -114,6 +114,7 @@
     <Compile Include="BDSEntities\SecurityQuestion.cs" />
     <Compile Include="BDSEntities\User.cs" />
     <Compile Include="BDSEntities\UserApplicationPermission.cs" />
+    <Compile Include="BDSEntities\UserHierarchy.cs" />
     <Compile Include="BDSMenuRepository.cs" />
     <Compile Include="BDSPermissionRepository.cs" />
     <Compile Include="BDSService.svc.cs">

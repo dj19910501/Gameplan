@@ -296,6 +296,12 @@ namespace BDSService
             BDSUserRepository obj = new BDSUserRepository();
             return obj.resetToRoleDefault(userId, CreatorId, applicationId);
         }
+
+        public List<BDSEntities.UserHierarchy> GetUserHierarchy(Guid clientId, Guid applicationId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetUserHierarchy(clientId, applicationId);
+        }
     }
 
 }

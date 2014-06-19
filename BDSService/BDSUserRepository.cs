@@ -1792,5 +1792,43 @@ namespace BDSService
             return retVal;
         }
         #endregion
+
+        #region User hierarchy
+
+        /// <summary>
+        /// Get All users and respective managers by applicationId and clientId
+        /// Dharmraj, Ticket #520
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <param name="applicationId"></param>
+        /// <returns></returns>
+        public List<BDSEntities.UserHierarchy> GetUserHierarchy(Guid clientId, Guid applicationId)
+        {
+            List<BDSEntities.UserHierarchy> lstUserHierarchy = (
+                            from u in db.Users
+                            join ua in db.User_Application on u.UserId equals ua.UserId
+                            join r in db.Roles on ua.RoleId equals r.RoleId
+                            where u.IsDeleted == false && u.ClientId == clientId && ua.ApplicationId == applicationId
+                            select new BDSEntities.UserHierarchy
+                            {
+                                UserId = u.UserId,
+                                Email = u.Email,
+                                FirstName = u.FirstName,
+                                LastName = u.LastName,
+                                RoleId = r.RoleId,
+                                RoleTitle = r.Title,
+                                ColorCode = r.ColorCode,
+                                JobTitle = u.JobTitle,
+                                GeographyId = u.GeographyId,
+                                Phone = u.Phone,
+                                ManagerId = ua.ManagerId
+                            }
+                          ).ToList();
+
+            return lstUserHierarchy;
+
+        }
+
+        #endregion
     }
 }
