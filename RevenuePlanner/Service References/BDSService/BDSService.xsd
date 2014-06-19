@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:tns="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:import schemaLocation="http://localhost:51731/BDSService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:import schemaLocation="http://121.243.79.150:8085/BDSServiceDev/BDSService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
   <xs:complexType name="User">
     <xs:sequence>
       <xs:element minOccurs="0" name="Answer" nillable="true" type="xs:string" />
@@ -14,17 +14,12 @@
       <xs:element minOccurs="0" name="IsClientAdmin" type="xs:boolean" />
       <xs:element minOccurs="0" name="IsDeleted" type="xs:boolean" />
       <xs:element minOccurs="0" name="IsDirector" type="xs:boolean" />
-      <xs:element minOccurs="0" name="IsManager" type="xs:boolean" />
       <xs:element minOccurs="0" name="IsPlanner" type="xs:boolean" />
       <xs:element minOccurs="0" name="IsSystemAdmin" type="xs:boolean" />
       <xs:element minOccurs="0" name="JobTitle" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="LastLoginDate" nillable="true" type="xs:dateTime" />
       <xs:element minOccurs="0" name="LastName" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="ManagerId" nillable="true" type="ser:guid" />
-      <xs:element minOccurs="0" name="ManagerName" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="NewManagerId" nillable="true" type="ser:guid" />
       <xs:element minOccurs="0" name="Password" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="Phone" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="ProfilePhoto" nillable="true" type="xs:base64Binary" />
       <xs:element minOccurs="0" name="RoleCode" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="RoleId" type="ser:guid" />
