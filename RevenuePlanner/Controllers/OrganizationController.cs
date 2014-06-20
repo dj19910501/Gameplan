@@ -323,16 +323,17 @@ namespace RevenuePlanner.Controllers
             return new UserHierarchyModel { UserId = userid, FirstName = FirstName, LastName = LastName, Email = Email, RoleId = RoleId, RoleTitle = RoleTitle, ColorCode = ColorCode, JobTitle = JobTitle, GeographyId = GeographyId, Geography = Geography, Phone = Phone, ManagerId = ManagerId, subUsers = subUsers };
         }
         /// <summary>
-        /// Added By: Mitesh Vaishnav
+        /// Added By: Mitesh Vaishnav for PL ticket #521
         /// View/Edit user permission.
         /// </summary>
-        public ActionResult ViewEditPermission(string userId, string permissionMode, string Name, string RoleName)
+        public ActionResult ViewEditPermission(string Id, string Mode)
         {
-            ViewBag.PermissionMode = permissionMode;
-            Guid UserId = Guid.Parse(userId);
+            ViewBag.PermissionMode = Mode;
+            Guid UserId = Guid.Parse(Id);
             ViewBag.userId = UserId;
-            ViewBag.Name = Name;
-            ViewBag.RoleName = RoleName;
+            var userDetails = objBDSServiceClient.GetTeamMemberDetails(UserId, Sessions.ApplicationId);
+            ViewBag.Name = userDetails.FirstName+" "+userDetails.LastName;
+            ViewBag.RoleName = userDetails.RoleTitle;
             var clientVerticals = db.Verticals.Where(ver => ver.ClientId == Sessions.User.ClientId).ToList();
             var clientGeography = db.Geographies.Where(ver => ver.ClientId == Sessions.User.ClientId).ToList();
             var userCustomRestrictionList = objBDSServiceClient.GetUserCustomRestrictionList(UserId, Sessions.ApplicationId);
