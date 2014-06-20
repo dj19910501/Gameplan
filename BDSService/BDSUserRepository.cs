@@ -567,7 +567,7 @@ namespace BDSService
                                     foreach (var item in lstDefaultRights)
                                     {
                                         User_Activity_Permission objUser_Activity_Permission = new User_Activity_Permission();
-                                        objUser_Activity_Permission.UserId = user.UserId;
+                                        objUser_Activity_Permission.UserId = obj.UserId;
                                         objUser_Activity_Permission.ApplicationActivityId = item.ApplicationActivityId;
                                         objUser_Activity_Permission.CreatedBy = createdBy;
                                         objUser_Activity_Permission.CreatedDate = DateTime.Now;
