@@ -84,7 +84,7 @@
                                     {
                                     
                                         <div class="dd-row">
-                                            <label>@item.Title</label>
+                                            <label>@Html.Raw(item.Title)</label>
                                             <span>@item.Permission</span>
                                         </div>
                                   
@@ -185,7 +185,7 @@ else
                                     {
                                 
                                         <div class="dd-row">
-                                            <label>@item.Title</label>
+                                            <label>@Html.Raw(item.Title)</label>
                                             @if (item.Permission == "Yes")
                                             {
                                                 <span class="radioGrp">
