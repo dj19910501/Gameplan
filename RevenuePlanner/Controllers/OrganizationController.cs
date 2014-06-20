@@ -328,6 +328,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         public ActionResult ViewEditPermission(string Id, string Mode)
         {
+
             ViewBag.PermissionMode = Mode;
             Guid UserId = Guid.Parse(Id);
             ViewBag.userId = UserId;
