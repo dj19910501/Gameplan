@@ -143,6 +143,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
+        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
 
         $("#treeView").treeview({
             /*animated: "fast",*/
@@ -177,7 +178,8 @@
     function showContactDetail(userId) {
 
         $("#lblUserName").html($("#spnUserName" + userId).html());
-        $("#lblJobDetail").html($("#hdnJobTitle" + userId).val() + ' - ' + $("#hdnGeography" + userId).val());
+        var geography = $("#hdnGeography" + userId).val();
+        $("#lblJobDetail").html($("#hdnJobTitle" + userId).val() + (geography == '' ? '' : (' - ' + geography)));
         $("#lblEmail").attr("href", "mailto:" + $("#hdnEmail" + userId).val());
         $("#lblEmail").html($("#hdnEmail" + userId).val());
         $("#lblPhone").html("<strong>Phone: </strong>" + $("#hdnPhone" + userId).val());

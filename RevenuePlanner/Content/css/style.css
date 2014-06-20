@@ -7237,7 +7237,7 @@ input.icon-check-blue{background-image: url("../images/circle-check-icon-small-b
 /* */
 
 /* User Permissions - Contact Popup */
-.modal-inspect-review-small{min-height:160px; height: auto; width:490px; position: fixed !important; top:5%; left:30%; z-index: 1050;
+.modal-inspect-review-small{min-height:160px; height: auto; width:490px; position: fixed !important; top:5%; left:30% !important; z-index: 1050;
 background-color: #ffffff; padding:20px; margin-top:1px; border-radius: 5px 5px 5px 5px;}
 .modal-inspect-review-small .title-simple { color:#4D4D4D; border-bottom:1px solid #bdbdbd; margin:0 0 15px; line-height: 38px;}
 .modal-inspect-review-small a{text-decoration:underline;}
