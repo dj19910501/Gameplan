@@ -25,15 +25,16 @@
         <li class="item active">
             <a class="source-sans-probold inputs" href="#"><span></span>MY PROFILE</a>
         </li>
+             <li class="item">@*uday for new screen*@
+            <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
+        </li>
         @if (Sessions.User.RoleCode.Equals(Enums.RoleCodes.SA.ToString(), StringComparison.OrdinalIgnoreCase) || Sessions.User.RoleCode.Equals(Enums.RoleCodes.CA.ToString(), StringComparison.OrdinalIgnoreCase))
         {
             <li class="item">
                 <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
             </li>
         }
-         <li class="item">@*uday for new screen*@
-            <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
-        </li>
+    
     </ul>
 }
 
