@@ -15,8 +15,8 @@
         }
 
         string varUrl = Url.Action("vieweditpermission", "Organization");
-        string EditURL = varUrl + "?userId=" + Model.UserId + "&permissionMode=Edit&Name=" + Model.FirstName + "&RoleName=" + Model.RoleTitle;
-        string ViewURL = varUrl + "?userId=" + Model.UserId + "&permissionMode=View&Name=" + Model.FirstName + "&RoleName=" + Model.RoleTitle;
+        string EditURL = varUrl + "?Id=" + Model.UserId + "&Mode=Edit";
+        string ViewURL = varUrl + "?Id=" + Model.UserId + "&Mode=View";
     }
     <li class="@stringClass">
         @if (Model.subUsers.Count == 0)
