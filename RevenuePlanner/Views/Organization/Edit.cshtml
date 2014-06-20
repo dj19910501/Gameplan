@@ -56,7 +56,7 @@
             <div class="width216">
                 <ul class="nav nav-pills nav-stacked width216">
                     <li><a href="#">My Permissions</a></li>
-                    <li><a href="#">Organization Hierarchy</a></li>
+                     <li><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
                     <li><a href="#">Manage Users</a></li>
                     <li class="active"><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
                 </ul>
@@ -206,6 +206,7 @@
         if (roleid != '00000000-0000-0000-0000-000000000000') {
             //$('.nl-field').find('.nl-field-toggle').html(title);
             $('.color-id').css('background-color', coloredit);//to set color while edit mode
+            colorCode = coloredit;
         }
     });
 
