@@ -333,6 +333,8 @@ namespace RevenuePlanner.Controllers
             Guid UserId = Guid.Parse(Id);
             ViewBag.userId = UserId;
             var userDetails = objBDSServiceClient.GetTeamMemberDetails(UserId, Sessions.ApplicationId);
+            var roleColorCode = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId).Where(rol => rol.RoleId == userDetails.RoleId).FirstOrDefault().ColorCode;
+            ViewBag.RoleColorCode = roleColorCode;
             ViewBag.Name = userDetails.FirstName + " " + userDetails.LastName;
             ViewBag.RoleName = userDetails.RoleTitle;
             var clientVerticals = db.Verticals.Where(ver => ver.ClientId == Sessions.User.ClientId).ToList();

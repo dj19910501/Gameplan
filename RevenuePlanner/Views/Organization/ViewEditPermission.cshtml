@@ -18,12 +18,13 @@
         <li class="item">
             <a class="source-sans-probold inputs" href="#" id="aMyProfile"><span></span>MY PROFILE</a>
         </li>
-        <li class="item">
-            <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
-        </li>
         <li class="item active">
             <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
         </li>
+        <li class="item">
+            <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
+        </li>
+
     </ul>
 }
 
@@ -172,9 +173,10 @@ else
                     <div class="user-permissions">
                         <h4>Edit Permissions - @ViewBag.Name <span class="job-role director">@ViewBag.RoleName</span></h4>
 
-                        <dl>
+
                             @foreach (var headerItem in headers)
                             {
+                            <dl>
                                 <dt>@headerItem.Title</dt>
                                 <dd>
                                     @foreach (var item in Model.Where(act => act.ParentId == headerItem.ApplicationActivityId))
@@ -212,8 +214,9 @@ else
 
                                     }
                                 </dd>
-                            }
                         </dl>
+                        }
+
                         <h4 class="extra-space">*Custom Restrictions</h4>
                         <dl>
                             <dt>Verticals</dt>
@@ -408,6 +411,7 @@ else
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/check.js")"></script>
 <script type="text/javascript">
     $(document).ready(function () {
+        $('.director').css('background-color', '@ViewBag.RoleColorCode');
         $(".check_signup").dgStyle();
     });
     $('#backbtn').click(function () {
@@ -496,6 +500,18 @@ else
         url = '@Url.Content("~/Organization/OrganizationHierarchy")';
         window.location.href = url;
     });
+    $('#aMyProfile').click(function () {
+        var url = '';
+        url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
+            window.location.href = url;
+     });
+
+        $('#aIntegrations').click(function () {
+            var url = '';
+            url = '@Url.Content("~/ExternalService/Index")';
+            window.location.href = url;
+        });
+
 
 </script>
 
