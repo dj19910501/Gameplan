@@ -3,15 +3,13 @@
 @using RevenuePlanner.Helpers;
 
 @{
-    ViewBag.Title = "ManageRoles";
+    ViewBag.Title = "Manage Roles";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var emptyGuidId = Guid.Empty;
     //var lstUsers = ViewData["users"] == null ? new List<User>() : (List<User>)ViewData["users"];
     //var lstroles = ViewData["roles"] == null ? new List<Role>() : (List<Role>)ViewData["roles"];
 }
 
-@*<h2>manageroles</h2>
-<body>*@
 
 @section Sidebar {
     <div class="padding-content">
@@ -21,7 +19,7 @@
         <li class="item">
             <a class="source-sans-probold inputs" href="#" id="aMyProfile"><span></span>MY PROFILE</a>
         </li>
-         <li class="item active">@*uday for new screen*@
+        <li class="item active">@*uday for new screen*@
             <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
         </li>
         <li class="item">
@@ -31,14 +29,13 @@
 }
 
 
-
 <ul class="nav nav-tabs">
     <li class="source-sans-proregular">
         <h2 class="title-header">Organization</h2>
     </li>
 </ul>
 
-<div class="padding-content cf source-sans-proregular">
+<div class="padding-content cf source-sans-proregular" id="content" style="padding-bottom: 0px !important">
     <div class="row">
         <div class="span2 myaccount-colum">
             <div class="width216">
@@ -58,7 +55,7 @@
 
                 <div>
                     <span class="btn-group">
-                        <button class="btn btn-blue btn-primary source-sans-proregular add-role-icon" id="addrole"><span></span>Add a Role</button>
+                        <button class="btn btn-blue btn-primary source-sans-proregular add-role-icon" title="Add a role" id="addrole"><span></span>Add a Role</button>
                     </span>
                 </div>
 
@@ -67,21 +64,21 @@
                     {
                         var id = "rolelabel" + item.RoleId;
                         <tr>
-                            <td id="@id" width="140">@item.RoleTitle</td>
+                            <td id="@id" width="200">@item.RoleTitle</td>@*review point*@
                             <td width="100">
                                 <span class="btn-group">
-                                    <button class="btn btn-grey btn-primary without-text-shadow source-sans-prolight btnEdit" id="editbtn">View/Edit</button>
+                                    <button class="btn btn-grey btn-primary without-text-shadow source-sans-prolight btnEdit" title="View/Edit" id="editbtn">View/Edit</button>
                                     <input type="hidden"  value="@item.RoleId" />
                                     <!--this is used to bind values like to know the id of clicked row like selected value in combobox.-->
                                 </span>
                             </td>
                             <td>
                                 <span class="btn-group">
-                                    <button class="btn btn-grey btn-primary without-text-shadow source-sans-prolight btnCopy" id="copybtn">Duplicate</button>
+                                    <button class="btn btn-grey btn-primary without-text-shadow source-sans-prolight btnCopy" title="Duplicate" id="copybtn">Duplicate</button>
                                     <input type="hidden"  value="@item.RoleId" />
                                 </span>
                             </td>
-                            <td><span class="delete-temp-program" id="delete">
+                            <td><span class="delete-temp-program" title="Delete" id="delete">
                                 <input type="hidden"  value="@item.RoleId" /></span></td>
                         </tr>
                     }
@@ -97,15 +94,15 @@
 
                                     <div style="padding-bottom: 20px;" class="login-wrapper">
                                         <h2 class="primary-title source-sans-proregular without-text-shadow">Adding a new role</h2>
-                                        <h4 class="source-sans-prolight">Please enter the name of role.</h4>
-                                        <input type="text" value="" placeholder="Enter new role" name="textfield" maxlength="200" id="newrole" class="input-block-level source-sans-proregular newrole">
+                                        <h4 class="source-sans-prolight">Please enter the name of the role.</h4>@*review point*@
+                                        <input type="text" value="" placeholder="Enter new role" name="textfield" maxlength="255" id="newrole" class="input-block-level source-sans-proregular newrole">
                                         <!--error message-->
                                         <div id="errorMessage" class="alert hide alert-error message-position">
                                             <a class="close">×</a>
-                                            <strong>Error!</strong><span id="spanErrorMessageRole"></span>
+                                            <strong></strong><span id="spanErrorMessageRole"></span>
                                         </div>
                                         <!--error message-->
-                                        <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" value="Submit" id="addrolebtn">Add Role</button>
+                                        <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" value="Submit" title="Add Role" id="addrolebtn">Add Role</button>
                                         <button class="cancel-btn btn-link text-shadow-black" type="button" id="cancelbtn">Cancel</button>
                                     </div>
                                 </div>
@@ -128,21 +125,21 @@
 
                                     <div style="padding-bottom: 20px;" class="login-wrapper">
                                         <h2 class="primary-title source-sans-proregular without-text-shadow">Copying a role</h2>
-                                        <h4 class="source-sans-prolight">Please rename the role with similar permissions as </h4>
-                                        <h4 id="original" class="source-sans-prosemibold"></h4>
-                                        <input type="text" value="" placeholder="Enter new role" name="textfield" maxlength="200" id="copyroledesc" class="input-block-level source-sans-proregular">                                       
-                                        <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" value="Submit" id="copyrolebtn">Add Role</button>
+                                        <h4 class="source-sans-prolight">Please rename the role with 
+                                            similar permissions as <strong id="original"></strong></h4>@*review point*@
+                                        <input type="text" value="" placeholder="Enter new role" name="textfield" maxlength="255" id="copyroledesc" class="input-block-level source-sans-proregular">
+                                        <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" title="Add Role" value="Submit" id="copyrolebtn">Add Role</button>
                                         <button class="cancel-btn btn-link text-shadow-black" type="button" id="cancelbtncopy">Cancel</button>
-                                        <!--success message-->
+                                       @* <!--success message-->
                                         <div id="successMessagedel" class="alert hide alert-success message-position">
                                             <a class="close">×</a>
                                             <strong>Success.</strong><span id="spanSuccessMessagecopy"></span>
                                         </div>
-                                        <!--success message-->
+                                        <!--success message-->*@
                                         <!--error message-->
                                         <div id="errorMessagecopy" class="alert hide alert-error message-position">
                                             <a class="close">×</a>
-                                            <strong>Error!</strong><span id="spanErrorMessageRolecopy"></span>
+                                            <strong></strong><span id="spanErrorMessageRolecopy"></span>
                                         </div>
                                         <!--error message-->
                                     </div>
@@ -159,6 +156,12 @@
 
 <script type="text/javascript">
     var originalid = "";
+   
+    $(document).ready(function () {
+    
+        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");//review point
+    });
+
     $('#addrole').click(function () {
         $('.newrole').val('');
         $('#DivPartialShareTactic').show();
@@ -174,7 +177,7 @@
 
 
     $('.btnCopy').click(function () {
-
+        $('#copyroledesc').val(' ');
         var id = $(this).next().val();
         var roleselected = $("#rolelabel" + id).html();
         originalid = $(this).next().val();
@@ -198,58 +201,79 @@
 
     $('#addrolebtn').click(function () {
         var roledescription = $('#newrole').val();
+        if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test($("#newrole").val())) {
+            var msgspan = "Special character are not allowed, try again.";
+            $("#errorMessage").css("display", "block");
+            $("#newrole").addClass("error");
+            $(".input-block-level").removeClass("error");
+            $("#spanErrorMessageRole").text(msgspan);//review point
+        }
+        else {
 
-        $.ajax({
-            url: '@Url.Content("~/Organization/AddRole/")',
-            data: {
-                roledesc: roledescription
-            },
-            type: 'POST',
-            cache: false,
-            success: function (result) {
-                if (result == true) {
-                    url = '@Url.Content("~/Organization/Edit")';
-                    window.location.href = url + "?roleId=" + '@emptyGuidId';
+            $.ajax({
+                url: '@Url.Content("~/Organization/AddRole/")',
+                data: {
+                    roledesc: roledescription
+                },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    if (result == true) {
+                        url = '@Url.Content("~/Organization/Edit")';
+                        window.location.href = url + "?roleId=" + '@emptyGuidId';
+                    }
+                    else {
+                        var msgspan = "A role with the same name already exists.";;
+                        $("#errorMessage").css("display", "block");
+                        $("#spanErrorMessageRole").text(msgspan);
+                    }
                 }
-                else {
-                    var msgspan = "A role with the same name already exists.";;
-                    $("#errorMessage").css("display", "block");
-                    $("#spanErrorMessageRole").text(msgspan);
-                }
-            }
-        });
+            });
+        }
     });
 
 
     $('#copyrolebtn').click(function () {
-       
-        var copyroledescription = $('#copyroledesc').val();
 
-        $.ajax({
-            url: '@Url.Content("~/Organization/CopyRole/")',
-            data: {
-                copyroledesc: copyroledescription,
-                originalroleid: originalid
-            },
-            type: 'POST',
-            cache: false,
-            success: function (result) {
-                if (result == true) {
-                    var msgspan = "Role Copied Successfully.";
-                    $("#spanSuccessMessagecopy").text(msgspan);
-                    $("#successMessagedel").slideDown(1200);
-                    $("#successMessagedel").slideUp(2500).promise().always(function () {
-                        close_popup();
-                    });
-                    $('#copyroledesc').val(' ');
+        var copyroledescription = $('#copyroledesc').val();
+        if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test($("#copyroledesc").val())) {
+            var msgspan = "Special character are not allowed, try again.";
+            $("#errorMessagecopy").css("display", "block");
+            $("#copyroledesc").addClass("error");
+            $(".input-block-level").removeClass("error");
+            $("#spanErrorMessageRolecopy").text(msgspan);//review point
+        }
+        else {
+
+            $.ajax({
+                url: '@Url.Content("~/Organization/CopyRole/")',
+                data: {
+                    copyroledesc: copyroledescription,
+                    originalroleid: originalid
+                },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    if (result == true) {
+                        //var msgspan = "Role Copied Successfully.";
+                        //$("#spanSuccessMessagecopy").text(msgspan);
+                        //$("#successMessagedel").slideDown(1200);
+                        //$("#successMessagedel").slideUp(2500).promise().always(function () {
+                        //    close_popup();
+                        //});
+                        $('#copyroledesc').val(' ');
+                        var url = '';
+                        url = '@Url.Content("~/Organization/ManageRoles")';
+                        window.location.href = url;
+                    }
+                    else {
+                        var msgspan = "A role with the same name already exists.";;
+                        $("#errorMessagecopy").css("display", "block");
+                        $("#spanErrorMessageRolecopy").text(msgspan);
+                    }
                 }
-                else {
-                    var msgspan = "Some error occured while copying role.";;
-                    $("#errorMessage").css("display", "block");
-                    $("#spanErrorMessageRole").text(msgspan);
-                }
-            }
-        });
+            });
+        }
     });
 
 

@@ -152,7 +152,7 @@
                             <div id="DivDefaultRolePopup" class="form-inspect-share hide fade in height-auto" role="dialog" style="display: block;">
                                 <div style="padding-bottom: 20px;" class="login-wrapper">
                                     <h4 class="source-sans-prosemibold">Defaults Saved.</h4>
-                                    <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" value="Submit" id="delbtn">Close</button>
+                                    <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" value="Submit" id="closebtn">Close</button>
                                 </div>
                             </div>
                         </div>
@@ -208,10 +208,16 @@
             //$('.nl-field').find('.nl-field-toggle').html(title);
             $('.color-id').css('background-color', coloredit);//to set color while edit mode
             colorCode = coloredit;
+            $('.nl-dd-checked').attr('value', roleid.toString());//review point
         }
     });
 
-
+    $('#closebtn').click(function () {
+        var url = '';
+        url = '@Url.Content("~/Organization/ManageRoles")';
+        window.location.href = url;
+    });//review point
+    
     $('#aIntegrations').click(function () {
         var url = '';
         url = '@Url.Content("~/ExternalService/Index")';

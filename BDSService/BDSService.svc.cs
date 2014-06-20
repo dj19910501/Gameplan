@@ -223,7 +223,7 @@ namespace BDSService
         }
 
         /// added by uday for #513
-        public int DeleteRoleAndReassign(Guid delroleid, Guid reassignroleid, Guid applicationid)
+        public int DeleteRoleAndReassign(Guid delroleid, Guid? reassignroleid, Guid applicationid)
         {
             BDSUserRepository obj = new BDSUserRepository();
             return obj.DeleteRoleAndReassign(delroleid, reassignroleid, applicationid);

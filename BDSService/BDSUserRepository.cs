@@ -1153,7 +1153,7 @@ namespace BDSService
             rolelist = (from role in db.Roles
                         join approle in db.Application_Role on role.RoleId equals approle.RoleId
                         where approle.ApplicationId == applicationid
-                        select role).ToList();
+                        select role).OrderBy(role => role.Description).ToList();//change review point order by clause
             if (rolelist.Count > 0)
             {
                 foreach (var role in rolelist)
@@ -1429,7 +1429,7 @@ namespace BDSService
         /// </summary>
         /// <param name="role id">role id</param>
         /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
-        public int DeleteRoleAndReassign(Guid delroleid, Guid reassignroleid, Guid applicationid)
+        public int DeleteRoleAndReassign(Guid delroleid, Guid? reassignroleid, Guid applicationid)
         {
             int retVal = 0;
             try
@@ -1461,13 +1461,15 @@ namespace BDSService
                 {
                     db.Entry(objnew).State = EntityState.Deleted;
                     db.SaveChanges();
-
-                    foreach (var item in objuser)
+                    if (objuser.Count > 0 && reassignroleid != null && reassignroleid != Guid.Empty)
                     {
-                        item.RoleId = reassignroleid;
+                        foreach (var item in objuser)
+                        {
+                            item.RoleId = reassignroleid.Value;
 
-                        db.Entry(item).State = EntityState.Modified;
-                        db.SaveChanges();
+                            db.Entry(item).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
                     }
 
                     foreach (var item in objrolepermisson)

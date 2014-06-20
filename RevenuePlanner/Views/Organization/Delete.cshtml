@@ -20,33 +20,36 @@
                         <h2 class="primary-title source-sans-proregular without-text-shadow">Deleting an existing role</h2>
                         <h4 class="source-sans-prolight">You are about to remove the role:</h4>
                         <h4 id="selectedrole" class="source-sans-prosemibold">@selectedroledisplay</h4>
-                        <div class="affected-area">
-                            <h5 class="source-sans-prosemibold">The users below will be affected:</h5>
-                            <div class="affected-list">
-                                <ul class="source-sans-proregular">
-                                    @foreach (var item in lstUsers)
-                                    {
-                                        var displayname = item.LastName + ',' + item.FirstName;
-                                        <li>@displayname</li>                           
-                                    }
-                                </ul>
+                        @if (lstUsers.Count > 0)//change for validation
+                        {
+                            <div class="affected-area">
+                                <h5 class="source-sans-prosemibold">The users below will be affected:</h5>
+                                <div class="affected-list">
+                                    <ul class="source-sans-proregular">
+                                        @foreach (var item in lstUsers)
+                                        {
+                                            var displayname = item.LastName + ',' + item.FirstName;
+                                            <li>@displayname</li>                           
+                                        }
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
-                        <div class="reassign-role">
-                            <label class="source-sans-prolight">Reassign a role to these users:</label>
-                            <span class="selectBox">
-                                @Html.DropDownList("ddllist", new SelectList((System.Collections.IEnumerable)ViewData["roles"], "value", "text"), "Please Select")
-                            </span>
-                        </div>
+                            <div class="reassign-role">
+                                <label class="source-sans-prolight">Reassign a role to these users:</label>
+                                <span class="selectBox">
+                                    @Html.DropDownList("ddllist", new SelectList((System.Collections.IEnumerable)ViewData["roles"], "value", "text"), "Please Select")
+                                </span>
+                            </div>
+                        }
                         <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" value="Submit" id="delbtn">Delete Role</button>
-                        <button class="cancel-btn btn-link text-shadow-black" type="button" id="delcancelbtn">Cancel</button>                     
+                        <button class="cancel-btn btn-link text-shadow-black" type="button" id="delcancelbtn">Cancel</button>
                     </div>
-                      <!--success message-->
-                        <div id="successMessagedel" class="alert hide alert-success message-position">
-                            <a class="close">×</a>
-                            <strong>Success.</strong><span id="spanSuccessMessageRole"></span>
-                        </div>
-                        <!--success message-->
+                    <!--success message-->
+                    <div id="successMessagedel" class="alert hide alert-success message-position">
+                        <a class="close">×</a>
+                        <strong>Success.</strong><span id="spanSuccessMessageRole"></span>
+                    </div>
+                    <!--success message-->
                 </div>
             </div>
         </div>

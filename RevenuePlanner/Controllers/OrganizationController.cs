@@ -130,6 +130,8 @@ namespace RevenuePlanner.Controllers
                     ViewBag.current = rolelist.Where(role => role.RoleId == roleId).Select(role => role.Description).FirstOrDefault();
                     ViewBag.roleid = roleId;
                     ViewBag.colorcode = rolelist.Where(role => role.RoleId == roleId).Select(role => role.ColorCode).FirstOrDefault();
+
+                    rolelist = rolelist.Where(a => a.RoleId != roleId).ToList();//review point
                 }
                 List<RoleModel> listrolemodel = new List<RoleModel>();
                 IList<SelectListItem> RoleList = new List<SelectListItem>();
@@ -187,8 +189,12 @@ namespace RevenuePlanner.Controllers
 
 
         [HttpPost]
-        public JsonResult DeleteRole(Guid delroleid, Guid reassignroleid)
+        public JsonResult DeleteRole(Guid delroleid, Guid? reassignroleid)
         {
+            if (reassignroleid == null)
+            {
+                reassignroleid = Guid.Empty;
+            }
             int retval = objBDSServiceClient.DeleteRoleAndReassign(delroleid, reassignroleid, Sessions.ApplicationId);
             if (retval == 1)
             {
@@ -226,15 +232,22 @@ namespace RevenuePlanner.Controllers
                 BDSService.Role objrole = new BDSService.Role();
                 objrole.Description = copyroledesc;
                 Session["session"] = objrole;
-
-                int retval = objBDSServiceClient.CopyRole(copyroledesc, originalroleid, Sessions.ApplicationId, Sessions.User.UserId);
-                if (retval == 1)
+                int retvalcheck = objBDSServiceClient.DuplicateRoleCheck(objrole, Sessions.ApplicationId);
+                if (retvalcheck == 1)
                 {
-                    return Json(true);
+                    int retval = objBDSServiceClient.CopyRole(copyroledesc.Trim(), originalroleid, Sessions.ApplicationId, Sessions.User.UserId);
+                    if (retval == 1)
+                    {
+                        return Json(true);
+                    }
+                    else
+                    {
+                        return Json(false);
+                    }
                 }
                 else
                 {
-                    return Json(false);
+                    return Json(false, JsonRequestBehavior.AllowGet);
                 }
             }
             return Json(false);
