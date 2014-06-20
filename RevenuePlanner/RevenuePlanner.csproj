@@ -743,7 +743,6 @@
     <Content Include="Views\ExternalService\MapDataTypes.cshtml" />
     <Content Include="Views\Organization\Delete.cshtml" />
     <Content Include="Views\Organization\Edit.cshtml" />
-    <Content Include="Views\Organization\Hierarchy.cshtml" />
     <Content Include="Views\Organization\ManageRoles.cshtml" />
     <None Include="Service References\BDSService\BDSService.wsdl" />
     <None Include="Service References\BDSService\BDSService.xsd">
