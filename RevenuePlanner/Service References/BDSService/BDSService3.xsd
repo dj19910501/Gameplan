@@ -77,39 +77,25 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="GetAllRoleList">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element xmlns:q12="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationid" type="q12:guid" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="GetAllRoleListResponse">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element xmlns:q13="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetAllRoleListResult" nillable="true" type="q13:ArrayOfRole" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
   <xs:element name="GetMultipleTeamMemberDetails">
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" name="userIdList" nillable="true" type="xs:string" />
-        <xs:element xmlns:q14="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q14:guid" />
+        <xs:element xmlns:q12="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q12:guid" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="GetMultipleTeamMemberDetailsResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q15="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetMultipleTeamMemberDetailsResult" nillable="true" type="q15:ArrayOfUser" />
+        <xs:element xmlns:q13="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetMultipleTeamMemberDetailsResult" nillable="true" type="q13:ArrayOfUser" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="ChangePassword">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q16="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="userId" type="q16:guid" />
+        <xs:element xmlns:q14="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="userId" type="q14:guid" />
         <xs:element minOccurs="0" name="newPassword" nillable="true" type="xs:string" />
         <xs:element minOccurs="0" name="currPassword" nillable="true" type="xs:string" />
       </xs:sequence>
@@ -125,7 +111,7 @@
   <xs:element name="CheckCurrentPassword">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q17="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="userId" type="q17:guid" />
+        <xs:element xmlns:q15="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="userId" type="q15:guid" />
         <xs:element minOccurs="0" name="currentPassword" nillable="true" type="xs:string" />
       </xs:sequence>
     </xs:complexType>
@@ -140,45 +126,45 @@
   <xs:element name="GetMenu">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q18="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="ApplicationId" type="q18:guid" />
-        <xs:element xmlns:q19="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="RoleId" type="q19:guid" />
+        <xs:element xmlns:q16="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="ApplicationId" type="q16:guid" />
+        <xs:element xmlns:q17="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="RoleId" type="q17:guid" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="GetMenuResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q20="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetMenuResult" nillable="true" type="q20:ArrayOfMenu" />
+        <xs:element xmlns:q18="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetMenuResult" nillable="true" type="q18:ArrayOfMenu" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="GetAllMenu">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q21="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="ApplicationId" type="q21:guid" />
-        <xs:element xmlns:q22="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="RoleId" type="q22:guid" />
+        <xs:element xmlns:q19="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="ApplicationId" type="q19:guid" />
+        <xs:element xmlns:q20="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="RoleId" type="q20:guid" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="GetAllMenuResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q23="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetAllMenuResult" nillable="true" type="q23:ArrayOfMenu" />
+        <xs:element xmlns:q21="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetAllMenuResult" nillable="true" type="q21:ArrayOfMenu" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="GetPermission">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q24="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="ApplicationId" type="q24:guid" />
-        <xs:element xmlns:q25="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="RoleId" type="q25:guid" />
+        <xs:element xmlns:q22="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="ApplicationId" type="q22:guid" />
+        <xs:element xmlns:q23="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="RoleId" type="q23:guid" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="GetPermissionResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q26="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetPermissionResult" nillable="true" type="q26:ArrayOfPermission" />
+        <xs:element xmlns:q24="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetPermissionResult" nillable="true" type="q24:ArrayOfPermission" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -199,7 +185,7 @@
   <xs:element name="DeleteUser">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q27="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="userId" type="q27:guid" />
+        <xs:element xmlns:q25="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="userId" type="q25:guid" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -220,16 +206,16 @@
   <xs:element name="GetUserDetailsResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q28="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetUserDetailsResult" nillable="true" type="q28:User" />
+        <xs:element xmlns:q26="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetUserDetailsResult" nillable="true" type="q26:User" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="CreateUser">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q29="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="user" nillable="true" type="q29:User" />
-        <xs:element xmlns:q30="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q30:guid" />
-        <xs:element xmlns:q31="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="createdBy" type="q31:guid" />
+        <xs:element xmlns:q27="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="user" nillable="true" type="q27:User" />
+        <xs:element xmlns:q28="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q28:guid" />
+        <xs:element xmlns:q29="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="createdBy" type="q29:guid" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -243,9 +229,9 @@
   <xs:element name="UpdateUser">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q32="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="user" nillable="true" type="q32:User" />
-        <xs:element xmlns:q33="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q33:guid" />
-        <xs:element xmlns:q34="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="modifiedBy" type="q34:guid" />
+        <xs:element xmlns:q30="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="user" nillable="true" type="q30:User" />
+        <xs:element xmlns:q31="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q31:guid" />
+        <xs:element xmlns:q32="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="modifiedBy" type="q32:guid" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -259,8 +245,8 @@
   <xs:element name="GetUserRole">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q35="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="id" type="q35:guid" />
-        <xs:element xmlns:q36="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q36:guid" />
+        <xs:element xmlns:q33="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="id" type="q33:guid" />
+        <xs:element xmlns:q34="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q34:guid" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -274,7 +260,7 @@
   <xs:element name="GetApplicationName">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q37="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q37:guid" />
+        <xs:element xmlns:q35="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q35:guid" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -288,7 +274,7 @@
   <xs:element name="GetClientName">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q38="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="userId" type="q38:guid" />
+        <xs:element xmlns:q36="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="userId" type="q36:guid" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -302,14 +288,14 @@
   <xs:element name="AllowedMenusForUser">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q39="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="roleId" type="q39:guid" />
+        <xs:element xmlns:q37="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="roleId" type="q37:guid" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="AllowedMenusForUserResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q40="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="AllowedMenusForUserResult" nillable="true" type="q40:ArrayOfint" />
+        <xs:element xmlns:q38="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="AllowedMenusForUserResult" nillable="true" type="q38:ArrayOfint" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -330,7 +316,7 @@
   <xs:element name="ResetPassword">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q41="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="userId" type="q41:guid" />
+        <xs:element xmlns:q39="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="userId" type="q39:guid" />
         <xs:element minOccurs="0" name="SingleHash_NewPassword" nillable="true" type="xs:string" />
       </xs:sequence>
     </xs:complexType>
@@ -345,22 +331,22 @@
   <xs:element name="GetRoleDetails">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q42="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="roleId" type="q42:guid" />
+        <xs:element xmlns:q40="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="roleId" type="q40:guid" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="GetRoleDetailsResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q43="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetRoleDetailsResult" nillable="true" type="q43:Role" />
+        <xs:element xmlns:q41="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetRoleDetailsResult" nillable="true" type="q41:Role" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="UpdateLastLoginDate">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q44="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="userId" type="q44:guid" />
-        <xs:element xmlns:q45="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q45:guid" />
+        <xs:element xmlns:q42="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="userId" type="q42:guid" />
+        <xs:element xmlns:q43="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q43:guid" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -374,7 +360,7 @@
   <xs:element name="CreatePasswordResetRequest">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q46="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="objPasswordResetRequest" nillable="true" type="q46:PasswordResetRequest" />
+        <xs:element xmlns:q44="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="objPasswordResetRequest" nillable="true" type="q44:PasswordResetRequest" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -388,21 +374,21 @@
   <xs:element name="GetPasswordResetRequest">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q47="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="PasswordResetRequestId" type="q47:guid" />
+        <xs:element xmlns:q45="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="PasswordResetRequestId" type="q45:guid" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="GetPasswordResetRequestResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q48="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetPasswordResetRequestResult" nillable="true" type="q48:PasswordResetRequest" />
+        <xs:element xmlns:q46="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetPasswordResetRequestResult" nillable="true" type="q46:PasswordResetRequest" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="UpdatePasswordResetRequest">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q49="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="objPasswordResetRequest" nillable="true" type="q49:PasswordResetRequest" />
+        <xs:element xmlns:q47="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="objPasswordResetRequest" nillable="true" type="q47:PasswordResetRequest" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -421,14 +407,14 @@
   <xs:element name="GetSecurityQuestionResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q50="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetSecurityQuestionResult" nillable="true" type="q50:ArrayOfSecurityQuestion" />
+        <xs:element xmlns:q48="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetSecurityQuestionResult" nillable="true" type="q48:ArrayOfSecurityQuestion" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="UpdateUserSecurityQuestion">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q51="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="user" nillable="true" type="q51:User" />
+        <xs:element xmlns:q49="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="user" nillable="true" type="q49:User" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -442,22 +428,22 @@
   <xs:element name="GetUserListByClientId">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q52="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="clientId" type="q52:guid" />
-        <xs:element xmlns:q53="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q53:guid" />
+        <xs:element xmlns:q50="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="clientId" type="q50:guid" />
+        <xs:element xmlns:q51="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q51:guid" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="GetUserListByClientIdResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q54="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetUserListByClientIdResult" nillable="true" type="q54:ArrayOfUser" />
+        <xs:element xmlns:q52="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetUserListByClientIdResult" nillable="true" type="q52:ArrayOfUser" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="GetApplicationReleaseVersion">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q55="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q55:guid" />
+        <xs:element xmlns:q53="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q53:guid" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -465,6 +451,267 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" name="GetApplicationReleaseVersionResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetUserActivityPermission">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q54="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="userId" type="q54:guid" />
+        <xs:element xmlns:q55="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q55:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetUserActivityPermissionResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q56="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="GetUserActivityPermissionResult" nillable="true" type="q56:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllRoleList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q57="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationid" type="q57:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllRoleListResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q58="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetAllRoleListResult" nillable="true" type="q58:ArrayOfRole" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetApplicationactivitylist">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q59="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationid" type="q59:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetApplicationactivitylistResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q60="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetApplicationactivitylistResult" nillable="true" type="q60:ArrayOfApplicationActivity" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DuplicateRoleCheck">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q61="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="role" nillable="true" type="q61:Role" />
+        <xs:element xmlns:q62="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationid" type="q62:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DuplicateRoleCheckResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="DuplicateRoleCheckResult" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetRoleMemberList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q63="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q63:guid" />
+        <xs:element xmlns:q64="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="roleid" type="q64:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetRoleMemberListResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q65="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetRoleMemberListResult" nillable="true" type="q65:ArrayOfUser" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteRoleAndReassign">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q66="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="delroleid" type="q66:guid" />
+        <xs:element xmlns:q67="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="reassignroleid" type="q67:guid" />
+        <xs:element xmlns:q68="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationid" type="q68:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteRoleAndReassignResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="DeleteRoleAndReassignResult" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateRole">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="roledesc" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="permissionID" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="colorcode" nillable="true" type="xs:string" />
+        <xs:element xmlns:q69="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationid" type="q69:guid" />
+        <xs:element xmlns:q70="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="createdby" type="q70:guid" />
+        <xs:element xmlns:q71="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="roleid" type="q71:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateRoleResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="CreateRoleResult" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CopyRole">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="copyroledesc" nillable="true" type="xs:string" />
+        <xs:element xmlns:q72="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="originalid" type="q72:guid" />
+        <xs:element xmlns:q73="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationid" type="q73:guid" />
+        <xs:element xmlns:q74="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="createdby" type="q74:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CopyRoleResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="CopyRoleResult" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetRoleactivitypermissions">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q75="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="roleid" type="q75:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetRoleactivitypermissionsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q76="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetRoleactivitypermissionsResult" nillable="true" type="q76:ArrayOfApplicationActivity" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllApplicationActivity">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q77="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q77:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllApplicationActivityResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q78="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetAllApplicationActivityResult" nillable="true" type="q78:ArrayOfApplicationActivity" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetUserActivity">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q79="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="userId" type="q79:guid" />
+        <xs:element xmlns:q80="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q80:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetUserActivityResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q81="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetUserActivityResult" nillable="true" type="q81:ArrayOfUserApplicationPermission" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetUserCustomRestrictionList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q82="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="userId" type="q82:guid" />
+        <xs:element xmlns:q83="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q83:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetUserCustomRestrictionListResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q84="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetUserCustomRestrictionListResult" nillable="true" type="q84:ArrayOfCustomRestriction" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddUserActivityPermissions">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q85="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="userId" type="q85:guid" />
+        <xs:element xmlns:q86="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="CreatorId" type="q86:guid" />
+        <xs:element xmlns:q87="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="permissions" nillable="true" type="q87:ArrayOfstring" />
+        <xs:element xmlns:q88="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q88:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddUserActivityPermissionsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddUserActivityPermissionsResult" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteUserActivityPermission">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q89="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="userId" type="q89:guid" />
+        <xs:element xmlns:q90="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q90:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteUserActivityPermissionResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="DeleteUserActivityPermissionResult" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteUserCustomrestriction">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q91="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="userId" type="q91:guid" />
+        <xs:element xmlns:q92="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q92:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteUserCustomrestrictionResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="DeleteUserCustomrestrictionResult" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="resetToRoleDefault">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q93="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="userId" type="q93:guid" />
+        <xs:element xmlns:q94="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="CretorId" type="q94:guid" />
+        <xs:element xmlns:q95="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q95:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="resetToRoleDefaultResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="resetToRoleDefaultResult" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetUserHierarchy">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q96="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="clientId" type="q96:guid" />
+        <xs:element xmlns:q97="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationId" type="q97:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetUserHierarchyResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q98="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetUserHierarchyResult" nillable="true" type="q98:ArrayOfUserHierarchy" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

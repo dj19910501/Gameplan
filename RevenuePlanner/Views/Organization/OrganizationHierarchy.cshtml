@@ -24,15 +24,15 @@
         <li class="item">
             <a class="source-sans-probold inputs" href="#" id="aMyProfile"><span></span>MY PROFILE</a>
         </li>
+        <li class="item active">
+            <a class="source-sans-probold organization" href="#"><span></span>ORGANIZATION</a>
+        </li>
         @if (Sessions.User.RoleCode.Equals(Enums.RoleCodes.SA.ToString(), StringComparison.OrdinalIgnoreCase) || Sessions.User.RoleCode.Equals(Enums.RoleCodes.CA.ToString(), StringComparison.OrdinalIgnoreCase))
         {
             <li class="item">
                 <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
             </li>
         }
-        <li class="item active">
-            <a class="source-sans-probold organization" href="#"><span></span>ORGANIZATION</a>
-        </li>
     </ul>
 }
 
@@ -89,8 +89,8 @@
                                 }
 
                                 string varUrl = Url.Action("vieweditpermission", "Organization");
-                                string EditURL = varUrl + "?userId=" + UserHierarchy[i].UserId + "&permissionMode=Edit&Name=" + UserHierarchy[i].FirstName + "&RoleName=" + UserHierarchy[i].RoleTitle;
-                                string ViewURL = varUrl + "?userId=" + UserHierarchy[i].UserId + "&permissionMode=View&Name=" + UserHierarchy[i].FirstName + "&RoleName=" + UserHierarchy[i].RoleTitle;
+                                string EditURL = varUrl + "?Id=" + UserHierarchy[i].UserId + "&Mode=Edit";
+                                string ViewURL = varUrl + "?Id=" + UserHierarchy[i].UserId + "&Mode=View";
                                 
                             <li class="@stringClass">
                                 @if (UserHierarchy[i].subUsers.Count == 0)
@@ -190,6 +190,10 @@
     function hideContactDetail() {
         $("#modal-container-186470").hide();
         $(".modal-backdrop").hide();
+    }
+
+    function setTempData() {
+        
     }
 
 </script>
