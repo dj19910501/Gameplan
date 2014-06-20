@@ -58,21 +58,21 @@ namespace BDSService
                     userEntity.RoleId = db.User_Application.Where(ua => ua.ApplicationId == applicationId && ua.UserId == user.UserId).Select(u => u.RoleId).FirstOrDefault();
                     userEntity.RoleCode = db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Code).FirstOrDefault();
                     userEntity.RoleTitle = db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Title).FirstOrDefault();
-                    if (!isSystemAdmin)
-                    {
-                        if (userEntity.RoleCode != null)
-                        {
-                            EnumFile.Role role = CommonFile.GetKey<EnumFile.Role>(EnumFile.RoleCodeValues, userEntity.RoleCode);
-                            if (role != EnumFile.Role.SystemAdmin)
-                            {
+                    //if (!isSystemAdmin)
+                    //{
+                    //    if (userEntity.RoleCode != null)
+                    //    {
+                    //        EnumFile.Role role = CommonFile.GetKey<EnumFile.Role>(EnumFile.RoleCodeValues, userEntity.RoleCode);
+                    //        if (role != EnumFile.Role.SystemAdmin)
+                    //        {
+                    //            teamMemberList.Add(userEntity);
+                    //        }
+                    //    }
+                    //}
+                    //else
+                    //{
                                 teamMemberList.Add(userEntity);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        teamMemberList.Add(userEntity);
-                    }
+                    //}
                 }
             }
             return teamMemberList;

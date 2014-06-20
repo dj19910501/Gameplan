@@ -499,7 +499,7 @@ namespace RevenuePlanner.Controllers
                 ViewData["Geographies"] = null;
             }
 
-            ViewData["Roles"] = objBDSServiceClient.GetRoleList(permRoleCodesForIns);
+            ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId);
             ViewBag.CurrClientId = Sessions.User.ClientId;
             ViewBag.CurrClient = Sessions.User.Client;
 
@@ -769,7 +769,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.SourceValue = src;
             }
             ViewData["Clients"] = objBDSServiceClient.GetClientList();
-            ViewData["Roles"] = objBDSServiceClient.GetRoleList(permRoleCodesForUpd);
+            ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId);
             ViewBag.CurrentUserId = Convert.ToString(Sessions.User.UserId);
             ViewBag.CurrentUserRole = Convert.ToString(Sessions.User.RoleCode);
             ViewBag.PermRoleCodesForUpd = permRoleCodesForUpd;

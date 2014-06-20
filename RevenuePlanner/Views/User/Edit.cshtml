@@ -176,7 +176,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                 // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.Phone)
-                    @if (permRoleCodesForDel.Contains(Model.RoleCode))
+                    @if ((Convert.ToString(Model.UserId) == currentUserId) || permRoleCodesForDel.Contains(Model.RoleCode))
                     {
                         @Html.TextBoxFor(model => model.Phone, new { maxlength = "12", placeholder = "000-000-0000" })
                         @Html.ValidationMessageFor(model => model.Phone)
@@ -506,7 +506,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
 
         //function to add or remove class ERROR when inputs text are empty.
         $('input').blur(function () {
-            if ($(this).attr('type') == 'text') {
+            if ($(this).attr('type') == 'text' && $(this).attr('readonly') != 'readonly') {
                 if ($(this).val() == '') {
                     $(this).addClass("error");
                 } else {
