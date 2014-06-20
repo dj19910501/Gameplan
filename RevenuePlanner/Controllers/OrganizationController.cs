@@ -328,11 +328,12 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         public ActionResult ViewEditPermission(string Id, string Mode)
         {
+
             ViewBag.PermissionMode = Mode;
             Guid UserId = Guid.Parse(Id);
             ViewBag.userId = UserId;
             var userDetails = objBDSServiceClient.GetTeamMemberDetails(UserId, Sessions.ApplicationId);
-            ViewBag.Name = userDetails.FirstName+" "+userDetails.LastName;
+            ViewBag.Name = userDetails.FirstName + " " + userDetails.LastName;
             ViewBag.RoleName = userDetails.RoleTitle;
             var clientVerticals = db.Verticals.Where(ver => ver.ClientId == Sessions.User.ClientId).ToList();
             var clientGeography = db.Geographies.Where(ver => ver.ClientId == Sessions.User.ClientId).ToList();
