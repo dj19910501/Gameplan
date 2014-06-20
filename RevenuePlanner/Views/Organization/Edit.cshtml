@@ -1,0 +1,325 @@
+﻿@using RevenuePlanner.BDSService;
+@using RevenuePlanner.Helpers;
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var current = ViewBag.current;
+    var lstActivity = ViewData["activitylist"] == null ? new List<ApplicationActivity>() : (List<ApplicationActivity>)ViewData["activitylist"];
+    var lstpermission = ViewData["permissionlist"] == null ? new List<ApplicationActivity>() : (List<ApplicationActivity>)ViewData["permissionlist"];
+}
+@section nlFormContent{
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
+
+}
+@section Sidebar {
+    <div class="padding-content">
+        <h4 class="text-shadow-black source-sans-prolight">Preferences</h4>
+    </div>
+    <ul class="nav nav-list nav-gray">
+        <li class="item">
+            <a class="source-sans-probold inputs" href="#" id="aMyProfile"><span></span>MY PROFILE</a>
+        </li>
+        <li class="item">
+            <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
+        </li>
+        <li class="item active">@*uday for new screen*@
+            <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
+        </li>
+    </ul>
+}
+
+<!--success message-->
+<div id="successMessage" class="alert hide alert-success message-position">
+    <a class="close">×</a>
+    <strong>Success.</strong><span id="spanSuccessMessageRole"></span>
+</div>
+<!--success message-->
+<!--error message-->
+<div id="errorMessage" class="alert hide alert-error message-position">
+    <a class="close">×</a>
+    <strong>Error!</strong><span id="spanErrorMessageRole"></span>
+</div>
+<!--error message-->
+
+<ul class="nav nav-tabs">
+    <li class="source-sans-proregular">
+        <h2 class="title-header">Organization</h2>
+    </li>
+</ul>
+
+<div class="padding-content cf source-sans-proregular" id="content" style="padding-bottom: 0px !important">
+    <div class="row">
+        <div class="span2 myaccount-colum">
+            <div class="width216">
+                <ul class="nav nav-pills nav-stacked width216">
+                    <li><a href="#">My Permissions</a></li>
+                    <li><a href="#">Organization Hierarchy</a></li>
+                    <li><a href="#">Manage Users</a></li>
+                    <li class="active"><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="span9">
+
+            <div class="manage-roles">
+                <h4>Default Role Permissions</h4>
+                <!-- Manage Roles Header -->
+                <div class="manage-roles-header clearfix">
+                    <div class="pull-left">
+                        <div id="nl-form" class="nl-form-plan-title without-margin">
+                            @Html.DropDownList("ddlRoles", new SelectList((System.Collections.IEnumerable)TempData["RoleList"], "Value", "Text"), (string)ViewBag.Current, new { require = "true" })
+                            <div class="nl-overlay"></div>
+                        </div>
+                        <script>
+                            var nlform = new NLForm(document.getElementById('nl-form'));
+                        </script>
+                    </div>
+                    <div class="pull-right">
+                        <div class="colorPicker">
+                            <label>Pick a Color:</label>
+                            <div class="color-box">
+                                <span class="color-id"></span>
+                                <span class="caret-black"></span>
+                                <div class="color-theme">
+                                    <span class="color-theme-box box1" data-id="#3fa9f5"></span>
+                                    <span class="color-theme-box box2" data-id="#144d6b"></span>
+                                    <span class="color-theme-box box3" data-id="#d4d4d4"></span>
+                                    <span class="color-theme-box box4" data-id="#3f3f3f"></span>
+                                    <span class="color-theme-box box5" data-id="#7ac943"></span>
+                                    <span class="color-theme-box box6" data-id="#407b22"></span>
+                                    <span class="color-theme-box box7" data-id="#f0be29"></span>
+                                    <span class="color-theme-box box8" data-id="#ff931e"></span>
+                                    <span class="color-theme-box box9" data-id="#e34522"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- -->
+                <div class="table-manage-roles">
+                    <table width="100%" class="source-sans-proregular">
+                        @foreach (var item in lstActivity)
+                        {
+                            @*<input  type="hidden"  name="txtActivityId"  value="@item.ApplicationActivityId" >*@
+                            if (item.ParentId == Convert.ToInt32(0))
+                            {            
+                            <tr>
+                                <td colspan="2" class="permissionType">@item.ActivityTitle</td>
+                            </tr>
+                            }
+                            else
+                            {
+                            <tr>
+                                <td>@item.ActivityTitle</td>
+                                <td width="23">
+                                    @if (lstpermission.Where(l => l.ApplicationActivityId == item.ApplicationActivityId).SingleOrDefault() != null)
+                                    {                                  
+                                        <span class="check_signup_checkbox">
+                                            <input type="checkbox" name="checkbox" id="checkbox_@item.ApplicationActivityId" checked="checked">
+                                        </span>                                                                 
+                                    }
+                                    else
+                                    {
+                                        <span class="check_signup_checkbox">
+                                            <input type="checkbox" name="checkbox" id="checkbox_@item.ApplicationActivityId">
+                                        </span>
+                                    }
+                                </td>
+                            </tr>                          
+                            }
+                        }
+                    </table>
+                </div>
+                <div class="bottom-btns">
+                    <span class="btn-group">
+                        <button class="btn btn-blue btn-large without-text-shadow source-sans-proregular" type="submit" value="Submit" id="savebtn">Save &amp; Close</button>
+                    </span>
+                    <span class="btn-group">
+                        <button class="btn btn-grey text-shadow-white source-sans-proregular" id="backbtn">Back</button>
+                    </span>
+                </div>
+            </div>
+
+            <div id="DivPartialShareTacticDel" style="display: none;">
+                <div class="container-fluid all-height DivResetDefaults" id="DivShareTacticPopupMainDel">
+                    <div class="row-fluid calc-height">
+                        <div class="span12">
+                            <div id="DivDefaultRolePopup" class="form-inspect-share hide fade in height-auto" role="dialog" style="display: block;">
+                                <div style="padding-bottom: 20px;" class="login-wrapper">
+                                    <h4 class="source-sans-prosemibold">Defaults Saved.</h4>
+                                    <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" value="Submit" id="delbtn">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="DivBackgroundShareTacticDel" class="modal-backdrop fade in" style="z-index: 9999"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="~/Scripts/js/check.js"></script>
+<script type="text/javascript">
+    var colorCode = "#3fa9f5";
+    var selectedRoleId;
+    $(document).ready(function () {
+
+        $(".check_signup_checkbox").dgStyle();
+
+        $('.caret-black').click(function () {
+            $('.color-theme').fadeToggle(150);
+        });
+
+        $('.color-theme-box').click(function () {
+            colorCode = $(this).attr('data-id')
+            $('.color-id').css('background-color', colorCode);
+            $('.color-theme').fadeOut(150);
+        });
+
+
+        //selected change event
+        $('#nl-form > div[class="nl-field nl-dd"]').find('li').click(function () {
+            var originalvalue = $(this).attr('originalvalue');
+            var selectedRoleId = "";
+            $('#ddlRoles').find('option').each(function (index) {
+                if ($(this).text() == originalvalue) {
+                    selectedRoleId = $(this).val();
+                } 
+            });
+            if (selectedRoleId != "") {
+                var url = '@Url.Content("~/Organization/Edit/")';
+                window.location.href = url + "?roleId=" + selectedRoleId;               
+            }
+        });
+
+
+        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+
+        var roleid = '@ViewBag.roleid';
+        var title = '@ViewBag.current';
+        var coloredit = '@ViewBag.colorcode';
+        if (roleid != '00000000-0000-0000-0000-000000000000') {
+            //$('.nl-field').find('.nl-field-toggle').html(title);
+            $('.color-id').css('background-color', coloredit);//to set color while edit mode
+        }
+    });
+
+
+    $('#aIntegrations').click(function () {
+        var url = '';
+        url = '@Url.Content("~/ExternalService/Index")';
+        window.location.href = url;
+    });
+
+
+    $('#aMyProfile').click(function () {
+        var url = '';
+        url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
+        window.location.href = url;
+    });
+
+    $('#backbtn').click(function () {
+        var url = '';
+        url = '@Url.Content("~/Organization/ManageRoles")';
+        window.location.href = url;
+    });
+
+    $('#savebtn').click(function () {
+
+        var checked = [];
+        var ids = [];
+
+        $('.source-sans-proregular tr').each(function () {
+            $(this).find('input:checkbox').each(function () {
+                if ($(this).is(':checked') == true) {
+                    ids.push(this.id + '_true');
+                }
+                else {
+                    ids.push(this.id + '_false');
+                }
+            });
+        });
+
+        //validation
+        if (ids.toString() != null && ids.toString() != "") {
+
+
+            var count = 0;
+            var str = String(ids);
+            var strsa = str.split(",");
+            for (var i = 0; i < strsa.length; i++) {
+                var split = [];
+                split = strsa[i].split("_");
+                if (split[2] == "true") {
+                    count++;
+                }
+                else {
+                }
+            }
+            if (count > 0) {
+            }
+            else {
+                ShowError("Please Select atleast one permission");
+                return false;
+            }
+            //e.preventDefault();
+        }
+        //end validation
+
+        function ShowError(value) {
+            $("#errorMessage").slideDown(400);
+            $("html, body").animate({ scrollTop: 0 }, 1000);//to scroll the body to top automatically..dd
+            $("#spanErrorMessageRole").empty();
+            $("#spanErrorMessageRole").text(value);
+            return false;
+        }
+
+        function close_popup() {
+            $('#DivBackgroundShareTacticDel').css("display", "none");
+            $('#DivPartialShareTacticDel').css("display", "none");
+            $('#DivBackgroundShareTacticDel').remove();
+            $('#DivPartialShareTacticDel').remove();
+            close_messages();
+        }
+
+        function close_messages() {
+            $('#errorMessage').css("display", "none");
+            $('#successMessage').css("display", "none");
+        }
+
+        $('#delbtn').click(function () {
+            $('#DivPartialShareTacticDel').hide();
+        });
+
+
+        //syntax to get selected text 
+        var roledesc = $("#ddlRoles :selected").text();
+        var roleid = '@ViewBag.roleid';
+        $.ajax({
+            url: '@Url.Content("~/Organization/Save/")',
+            data: {
+                roledesc: roledesc,
+                checkbox: ids.toString(),
+                colorcode: colorCode,
+                roleid: roleid
+            },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                if (result == true) {
+                    $('#DivPartialShareTacticDel').show();
+                }
+                else {
+                    var msgspan = "Error.";
+                    $("#errorMessage").css("display", "block");
+                    $("#spanErrorMessageRole").text(msgspan);
+                }
+            }
+        });
+    });
+</script>

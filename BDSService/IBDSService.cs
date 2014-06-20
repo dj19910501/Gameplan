@@ -106,5 +106,64 @@ namespace BDSService
 
         [OperationContract]
         List<string> GetUserActivityPermission(Guid userId, Guid applicationId);
+
+        /// added by uday for #513
+        [OperationContract]
+        List<BDSEntities.Role> GetAllRoleList(Guid applicationid);
+
+        /// added by uday for #513
+        [OperationContract]
+        List<BDSEntities.ApplicationActivity> GetApplicationactivitylist(Guid applicationid);
+
+        /// added by uday for #513
+        [OperationContract]
+        int DuplicateRoleCheck(BDSEntities.Role role, Guid applicationid);
+
+        /// added by uday for #513
+        [OperationContract]
+        List<BDSEntities.User> GetRoleMemberList(Guid applicationId, Guid roleid);
+
+        /// added by uday for #513
+        [OperationContract]
+        int DeleteRoleAndReassign(Guid delroleid, Guid reassignroleid, Guid applicationid);
+
+        /// added by uday for #513
+        [OperationContract]
+        int CreateRole(string roledesc, string permissionID, string colorcode, Guid applicationid, Guid createdby, Guid roleid);
+
+        /// added by uday for #513
+        [OperationContract]
+        int CopyRole(string copyroledesc, Guid originalid, Guid applicationid, Guid createdby);
+
+        /// added by uday for #513
+        [OperationContract]
+        List<BDSEntities.ApplicationActivity> GetRoleactivitypermissions(Guid roleid);
+
+        /* Added by Mitesh Vaishnav #521 */
+        [OperationContract]
+        List<BDSEntities.ApplicationActivity> GetAllApplicationActivity(Guid applicationId);
+
+        [OperationContract]
+        List<BDSEntities.UserApplicationPermission> GetUserActivity(Guid userId, Guid applicationId);
+
+        [OperationContract]
+        List<BDSEntities.CustomRestriction> GetUserCustomRestrictionList(Guid userId, Guid applicationId);
+
+        [OperationContract]
+        int AddUserActivityPermissions(Guid userId, Guid CreatorId, string[] permissions, Guid applicationId);
+
+        [OperationContract]
+        int DeleteUserActivityPermission(Guid userId, Guid applicationId);
+
+        [OperationContract]
+        int DeleteUserCustomrestriction(Guid userId, Guid applicationId);
+
+        [OperationContract]
+        int resetToRoleDefault(Guid userId, Guid CretorId, Guid applicationId);
+
+        /*End: Added by Mitesh Vaishnav #521 */
+
+        [OperationContract]
+        List<BDSEntities.UserHierarchy> GetUserHierarchy(Guid clientId, Guid applicationId);
     }
 }

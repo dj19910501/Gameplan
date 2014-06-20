@@ -33,6 +33,9 @@
                 <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
             </li>
         }
+         <li class="item">@*uday for new screen*@
+            <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
+        </li>
     </ul>
 }
 
@@ -612,6 +615,14 @@
         }
     });
     // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
+
+
+    //added by uday for #513 for user roles screens.
+    $('#aOrganization').click(function () {
+        var url = '';
+        url = '@Url.Action("ManageRoles", "Organization")';
+        window.location.href = url;
+    });
 </script>
 
 @*@section Scripts {

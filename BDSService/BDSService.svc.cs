@@ -200,5 +200,108 @@ namespace BDSService
             BDSPermissionRepository obj = new BDSPermissionRepository();
             return obj.GetUserActivityPermission(userId, applicationId);
         }
+
+        /// added by uday for #513
+        public List<BDSEntities.ApplicationActivity> GetApplicationactivitylist(Guid applicationid)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetApplicationactivitylist(applicationid);
+        }
+
+        /// added by uday for #513
+        public int DuplicateRoleCheck(BDSEntities.Role role, Guid applicationId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.DuplicateRoleCheck(role, applicationId);
+        }
+
+        /// added by uday for #513
+        public List<BDSEntities.User> GetRoleMemberList(Guid applicationId, Guid roleid)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetRoleMemberList(applicationId, roleid);
+        }
+
+        /// added by uday for #513
+        public int DeleteRoleAndReassign(Guid delroleid, Guid reassignroleid, Guid applicationid)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.DeleteRoleAndReassign(delroleid, reassignroleid, applicationid);
+        }
+
+        /// added by uday for #513
+        public int CreateRole(string roledesc, string permissionID, string colorcode, Guid applicationid, Guid createdby, Guid roleid)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.CreateRole(roledesc, permissionID, colorcode, applicationid, createdby, roleid);
+        }
+
+        /// added by uday for #513
+        public int CopyRole(string copyroledesc, Guid originalid, Guid applicationid, Guid createdby)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.CopyRole(copyroledesc, originalid, applicationid, createdby);
+        }
+
+        /// added by uday for #513
+        public List<BDSEntities.ApplicationActivity> GetRoleactivitypermissions(Guid roleid)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetRoleactivitypermissions(roleid);
+        }
+
+        /// added by uday for #513
+        public List<BDSEntities.Role> GetAllRoleList(Guid applicationid)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetAllRoleList(applicationid);
+        }
+
+        public List<BDSEntities.ApplicationActivity> GetAllApplicationActivity(Guid applicationId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetAllApplicationActivity(applicationId);
+        }
+
+        public List<BDSEntities.UserApplicationPermission> GetUserActivity(Guid userId, Guid applicationId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetUserActivity(userId, applicationId);
+        }
+
+        public List<BDSEntities.CustomRestriction> GetUserCustomRestrictionList(Guid userId, Guid applicationId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetUserCustomRestrictionList(userId, applicationId);
+        }
+
+        public int AddUserActivityPermissions(Guid userId, Guid CreatorId, string[] permissions, Guid applicationId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.AddUserActivityPermissions(userId, CreatorId, permissions, applicationId);
+        }
+
+        public int DeleteUserActivityPermission(Guid userId, Guid applicationId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.DeleteUserActivityPermission(userId, applicationId);
+        }
+        public int DeleteUserCustomrestriction(Guid userId, Guid applicationId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.DeleteUserCustomrestriction(userId, applicationId);
+        }
+        public int resetToRoleDefault(Guid userId, Guid CreatorId, Guid applicationId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.resetToRoleDefault(userId, CreatorId, applicationId);
+        }
+
+        public List<BDSEntities.UserHierarchy> GetUserHierarchy(Guid clientId, Guid applicationId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetUserHierarchy(clientId, applicationId);
+        }
     }
+
 }

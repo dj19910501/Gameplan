@@ -1,0 +1,199 @@
+﻿@using RevenuePlanner.Helpers
+
+<link href="@Url.Content("~/Content/css/jquery.treeview.css")" rel="stylesheet">
+<script src="@Url.Content("~/Scripts/jquery.cookie.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery.treeview.js")"></script>
+
+@{
+    ViewBag.Title = "Organization Hierarchy";
+    ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var UserHierarchy = (List<RevenuePlanner.Models.UserHierarchyModel>)ViewBag.UserHierarchy;
+    string isViewOnly = ViewBag.IsViewOnly;
+}
+
+@Html.Hidden("IsViewOnly", isViewOnly)
+@Html.Hidden("SuccMsg", TempData["SuccessMessage"])
+@Html.Hidden("ErrMsg", TempData["ErrorMessage"])
+
+@section Sidebar {
+    <div class="padding-content">
+        <h4 class="text-shadow-black source-sans-prolight">Preferences</h4>
+    </div>
+    <ul class="nav nav-list nav-gray">
+        <li class="item">
+            <a class="source-sans-probold inputs" href="#" id="aMyProfile"><span></span>MY PROFILE</a>
+        </li>
+        <li class="item active">
+            <a class="source-sans-probold organization" href="#"><span></span>ORGANIZATION</a>
+        </li>
+        @if (Sessions.User.RoleCode.Equals(Enums.RoleCodes.SA.ToString(), StringComparison.OrdinalIgnoreCase) || Sessions.User.RoleCode.Equals(Enums.RoleCodes.CA.ToString(), StringComparison.OrdinalIgnoreCase))
+        {
+            <li class="item">
+                <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
+            </li>
+        }
+    </ul>
+}
+
+<!--success message-->
+<div id="successMessage" class="alert hide alert-success message-position">
+    <a class="close">×</a>
+    <strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))
+</div>
+<!--success message-->
+<!--error message-->
+<div id="errorMessage" class="alert hide alert-error message-position">
+    <a class="close">×</a>
+    <strong>Error!</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))
+</div>
+<!--error message-->
+
+<ul class="nav nav-tabs">
+    <li class="source-sans-proregular">
+        <h2 class="title-header">Organization</h2>
+    </li>
+</ul>
+
+<div class="padding-content cf source-sans-proregular" id="content">
+    <div class="row">
+        <div class="span2 width216">
+            <div class="padding-right70">
+                <ul class="nav nav-pills nav-stacked width216">
+                   <li><a href="#">My Permissions</a></li>
+                    <li class="active"><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
+                    <li><a href="#">Manage Users</a></li>
+                    <li><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="span9">
+
+            <ul id="treeView">
+                <li>
+                    <span>@Sessions.User.Client</span>
+                    <ul>
+                        @{
+                            for (int i = 0; i < UserHierarchy.Count; i++)
+                            {
+                                var userId = UserHierarchy[i].UserId;
+                                var userLabelId = "spnUserName" + userId;
+                                var hdnEmailId = "hdnEmail" + userId;
+                                var hdnPhoneId = "hdnPhone" + userId;
+                                var hdnJobTitleId = "hdnJobTitle" + userId;
+                                var hdnGeographyId = "hdnGeography" + userId;
+                                var stringClass = string.Empty;
+                                if (UserHierarchy[i].subUsers.Count == 0)
+                                {
+                                    stringClass = "no-nesting";
+                                }
+
+                                string varUrl = Url.Action("vieweditpermission", "Organization");
+                                string EditURL = varUrl + "?Id=" + UserHierarchy[i].UserId + "&Mode=Edit";
+                                string ViewURL = varUrl + "?Id=" + UserHierarchy[i].UserId + "&Mode=View";
+                                
+                            <li class="@stringClass">
+                                @if (UserHierarchy[i].subUsers.Count == 0)
+                                {
+                                    <span class="hitarea"></span>
+                                }
+                                <span id="@userLabelId">@UserHierarchy[i].FirstName</span>
+                                <span class="job-role" style="background-color:@UserHierarchy[i].ColorCode">@UserHierarchy[i].RoleTitle</span>
+                                <a class="btn btn-default" href='@EditURL'>Edit</a>
+                                <a class="btn btn-default" href='@ViewURL'>View</a>
+                                <a class="btn btn-default" onclick="showContactDetail('@userId');">Contact</a>
+                                <input type="hidden" id="@hdnEmailId" value="@UserHierarchy[i].Email" />
+                                <input type="hidden" id="@hdnPhoneId" value="@UserHierarchy[i].Phone" />
+                                <input type="hidden" id="@hdnJobTitleId" value="@UserHierarchy[i].JobTitle" />
+                                <input type="hidden" id="@hdnGeographyId" value="@UserHierarchy[i].Geography" />
+
+                                @{
+                                if (UserHierarchy[i].subUsers.Count > 0)
+                                {
+                                    <ul>
+                                        @for (int j = 0; j < UserHierarchy[i].subUsers.Count; j++)
+                                        {
+                                            Html.RenderPartial("_userHierarchy", UserHierarchy[i].subUsers[j]);
+                                        }
+                                    </ul>
+                                }
+                                }
+
+                            </li>
+                            }  
+                        }
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div hidden="true" style="margin-top: 80px;" class="modal-inspect-review-small hide" id="modal-container-186470">
+    <div id="divPartial">
+        <buttom data-dismiss="modal" class="close-x-icon"></buttom>
+    </div>
+    <div class="source-sans-proregular">
+        <h2 id="lblUserName" class="title-simple source-sans-prolight"></h2>
+        <p id="lblJobDetail"></p>
+        <p><strong>Email: </strong><a id="lblEmail"></a></p>
+        <p id="lblPhone"></p>
+    </div>
+</div>
+<div class="modal-backdrop hide fade in"></div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#treeView").treeview({
+            /*animated: "fast",*/
+            collapsed: false,
+            //persist: "cookie",
+            toggle: function () {
+                window.console && console.log("%o was toggled", this);
+            }
+        });
+
+        $('.treeview li > ul li li').wrapInner("<span />");
+        $('.treeview li > ul li ul > li:first-child').addClass("first");
+
+        $(".close-x-icon").click(function () {
+            hideContactDetail();
+        });
+
+        $('#aMyProfile').click(function () {
+            var url = '';
+            url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
+        window.location.href = url;
+        });
+
+        $('#aIntegrations').click(function () {
+            var url = '';
+            url = '@Url.Content("~/ExternalService/Index")';
+            window.location.href = url;
+        });
+
+    });
+
+    function showContactDetail(userId) {
+
+        $("#lblUserName").html($("#spnUserName" + userId).html());
+        $("#lblJobDetail").html($("#hdnJobTitle" + userId).val() + ' - ' + $("#hdnGeography" + userId).val());
+        $("#lblEmail").attr("href", "mailto:" + $("#hdnEmail" + userId).val());
+        $("#lblEmail").html($("#hdnEmail" + userId).val());
+        $("#lblPhone").html("<strong>Phone: </strong>" + $("#hdnPhone" + userId).val());
+
+
+        $("#modal-container-186470").show();
+        $(".modal-backdrop").show();
+    }
+
+    function hideContactDetail() {
+        $("#modal-container-186470").hide();
+        $(".modal-backdrop").hide();
+    }
+
+    function setTempData() {
+        
+    }
+
+</script>

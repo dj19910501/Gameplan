@@ -197,6 +197,7 @@
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\ModelController.cs" />
     <Compile Include="Controllers\NoAccessController.cs" />
+    <Compile Include="Controllers\OrganizationController.cs" />
     <Compile Include="Controllers\PlanController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -214,6 +215,7 @@
     <Compile Include="Models\BaselineModel.cs" />
     <Compile Include="Models\BoostModel.cs" />
     <Compile Include="Models\ChangeLog_ViewModel.cs" />
+    <Compile Include="Models\CustomRestrictionModel.cs" />
     <Compile Include="Models\ExtrenalServiceModel.cs" />
     <Compile Include="Models\ForgotPasswordModel.cs" />
     <Compile Include="Models\HomePlanModel.cs" />
@@ -224,10 +226,12 @@
     <Compile Include="Models\IntegrationTypeAttributeModel.cs" />
     <Compile Include="Models\IntegrationTypeModel.cs" />
     <Compile Include="Models\LoginModel.cs" />
+    <Compile Include="Models\OrganizationModel.cs" />
     <Compile Include="Models\PlanModel.cs" />
     <Compile Include="Models\SummaryReportModel.cs" />
     <Compile Include="Models\SyncFrequencyModel.cs" />
     <Compile Include="Models\Tactic_TypeModel.cs" />
+    <Compile Include="Models\UserActivityPermissionModel.cs" />
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service References\BDSService\Reference.cs">
@@ -259,6 +263,7 @@
     <Content Include="Content\css\font-awesome.min.css" />
     <Content Include="Content\css\font.css" />
     <Content Include="Content\css\jquery.slidepanel.css" />
+    <Content Include="Content\css\jquery.treeview.css" />
     <Content Include="Content\css\NaturalLanguageForm\component.css" />
     <Content Include="Content\css\NaturalLanguageForm\default.css" />
     <Content Include="Content\css\Select2\select2.css" />
@@ -279,11 +284,14 @@
     <Content Include="Content\fonts\sourcesanspro-regular-webfont.svg" />
     <Content Include="Content\fonts\sourcesanspro-semibold-webfont.svg" />
     <Content Include="Content\images\add-icon-blue.png" />
+    <Content Include="Content\images\add-icon-white.png" />
     <Content Include="Content\images\ajax-loader.gif" />
     <Content Include="Content\images\apple-touch-icon-114-precomposed.png" />
     <Content Include="Content\images\apple-touch-icon-144-precomposed.png" />
     <Content Include="Content\images\apple-touch-icon-57-precomposed.png" />
     <Content Include="Content\images\apple-touch-icon-72-precomposed.png" />
+    <Content Include="Content\images\arrow-collapse.gif" />
+    <Content Include="Content\images\arrow-collapse2.gif" />
     <Content Include="Content\images\arrow-d-icon-active.png" />
     <Content Include="Content\images\arrow-d-icon-blue.png" />
     <Content Include="Content\images\arrow-d-icon.png" />
@@ -292,6 +300,8 @@
     <Content Include="Content\images\arrow-down-header.png" />
     <Content Include="Content\images\arrow-down-results.png" />
     <Content Include="Content\images\arrow-down-white.png" />
+    <Content Include="Content\images\arrow-expand.gif" />
+    <Content Include="Content\images\arrow-expand2.gif" />
     <Content Include="Content\images\arrow-icon.png" />
     <Content Include="Content\images\arrow-right-accordion.png" />
     <Content Include="Content\images\arrow-right-icon-active.png" />
@@ -320,6 +330,7 @@
     <Content Include="Content\images\busunit.png" />
     <Content Include="Content\images\check-green.png" />
     <Content Include="Content\images\check-red.png" />
+    <Content Include="Content\images\check_signup.png" />
     <Content Include="Content\images\circle-check-icon-blue.png" />
     <Content Include="Content\images\circle-check-icon-gray.png" />
     <Content Include="Content\images\circle-check-icon-small-blue.png" />
@@ -356,6 +367,7 @@
     <Content Include="Content\images\green-arrow-up.png" />
     <Content Include="Content\images\green-row.png" />
     <Content Include="Content\images\gridCheckbox-icon.png" />
+    <Content Include="Content\images\help-icon.png" />
     <Content Include="Content\images\horizontal-shadow-left.png" />
     <Content Include="Content\images\horizontal-shadow-right.png" />
     <Content Include="Content\images\icon-check-accordion.png" />
@@ -412,6 +424,8 @@
     <Content Include="Content\images\support-login-icon.png" />
     <Content Include="Content\images\tactic-recimp-bg.gif" />
     <Content Include="Content\images\to-approve-bar.jpg" />
+    <Content Include="Content\images\treeview-ver-line-solid.gif" />
+    <Content Include="Content\images\treeview-ver-line.gif" />
     <Content Include="Content\images\trophy-02.png" />
     <Content Include="Content\images\user_image_not_found.png" />
     <Content Include="Content\images\vertical.png" />
@@ -545,11 +559,18 @@
     <Content Include="Content\fonts\sourcesanspro-semibold-webfont.eot" />
     <Content Include="Content\fonts\sourcesanspro-semibold-webfont.ttf" />
     <Content Include="Content\fonts\sourcesanspro-semibold-webfont.woff" />
+    <Content Include="Scripts\jquery.cookie.js" />
     <Content Include="Scripts\jquery.selectbox-0.2.js" />
+    <Content Include="Scripts\jquery.treeview.js" />
+    <Content Include="Scripts\js\check.js" />
     <Content Include="Scripts\js\jquery-migrate-1.2.1.min.js" />
     <Content Include="Content\fonts\fontawesome-webfont.eot" />
     <Content Include="Content\fonts\fontawesome-webfont.ttf" />
     <Content Include="Content\fonts\fontawesome-webfont.woff" />
+    <Content Include="Scripts\js\ReportConversion.js" />
+    <Content Include="Scripts\js\ReportRevenue.js" />
+    <Content Include="Scripts\js\ReportSummary.js" />
+    <Content Include="Scripts\summernote.min.js" />
     <None Include="Service References\BDSService\BDSService.disco" />
     <None Include="Service References\BDSService\configuration91.svcinfo" />
     <None Include="Service References\BDSService\configuration.svcinfo" />
@@ -557,10 +578,6 @@
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
-    <Content Include="Scripts\js\ReportConversion.js" />
-    <Content Include="Scripts\js\ReportRevenue.js" />
-    <Content Include="Scripts\js\ReportSummary.js" />
-    <Content Include="Scripts\summernote.min.js" />
     <Content Include="Views\Plan\PlanSelector.cshtml">
       <SubType>Code</SubType>
     </Content>
@@ -588,19 +605,6 @@
     <Content Include="Views\Report\ReportHeader.cshtml" />
     <Content Include="Views\Report\Revenue.cshtml" />
     <Content Include="Views\Report\ShareReport.cshtml" />
-    <None Include="Service References\BDSService\BDSService.wsdl" />
-    <None Include="Service References\BDSService\BDSService.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\BDSService\BDSService1.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\BDSService\BDSService2.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\BDSService\BDSService3.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <Content Include="Views\Report\_Summary.cshtml" />
     <Content Include="Views\Plan\ImprovementTactic.cshtml" />
     <Content Include="Views\Home\_ImpactImprovementTactic.cshtml" />
@@ -720,7 +724,9 @@
     <Content Include="Views\Model\_modeloverview.cshtml" />
     <Content Include="Views\Model\_contactinquiry.cshtml" />
     <Content Include="Views\Home\ShareTactic.cshtml" />
-    <Content Include="Web.Config" />
+    <Content Include="Web.Config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Views\Boost\BestInClass.cshtml" />
     <Content Include="Views\Boost\CreateImprovementTactic.cshtml" />
     <Content Include="Views\Boost\Index.cshtml" />
@@ -735,6 +741,35 @@
     <Content Include="Views\ExternalService\Edit.cshtml" />
     <Content Include="Views\Model\Integration.cshtml" />
     <Content Include="Views\ExternalService\MapDataTypes.cshtml" />
+    <Content Include="Views\Organization\Delete.cshtml" />
+    <Content Include="Views\Organization\Edit.cshtml" />
+    <Content Include="Views\Organization\Hierarchy.cshtml" />
+    <Content Include="Views\Organization\ManageRoles.cshtml" />
+    <None Include="Service References\BDSService\BDSService.wsdl" />
+    <None Include="Service References\BDSService\BDSService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\BDSService1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\BDSService2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\BDSService3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.ApplicationActivity.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.CustomRestriction.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserApplicationPermission.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserHierarchy.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.Client.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
@@ -756,6 +791,9 @@
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.User.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
+    <Content Include="Views\Organization\OrganizationHierarchy.cshtml" />
+    <Content Include="Views\Organization\_userHierarchy.cshtml" />
+    <Content Include="Views\Organization\ViewEditPermission.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

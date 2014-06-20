@@ -16,11 +16,14 @@ namespace BDSService
     {
         public User()
         {
-            this.PasswordResetRequests = new HashSet<PasswordResetRequest>();
-            this.User_Application = new HashSet<User_Application>();
-            this.User_Application1 = new HashSet<User_Application>();
             this.CustomRestrictions = new HashSet<CustomRestriction>();
             this.CustomRestrictions1 = new HashSet<CustomRestriction>();
+            this.PasswordResetRequests = new HashSet<PasswordResetRequest>();
+            this.Role_Activity_Permission = new HashSet<Role_Activity_Permission>();
+            this.User_Activity_Permission = new HashSet<User_Activity_Permission>();
+            this.User_Activity_Permission1 = new HashSet<User_Activity_Permission>();
+            this.User_Application = new HashSet<User_Application>();
+            this.User_Application1 = new HashSet<User_Application>();
         }
     
         public System.Guid UserId { get; set; }
@@ -41,11 +44,14 @@ namespace BDSService
         public string Phone { get; set; }
     
         public virtual Client Client { get; set; }
-        public virtual ICollection<PasswordResetRequest> PasswordResetRequests { get; set; }
-        public virtual SecurityQuestion SecurityQuestion { get; set; }
-        public virtual ICollection<User_Application> User_Application { get; set; }
-        public virtual ICollection<User_Application> User_Application1 { get; set; }
         public virtual ICollection<CustomRestriction> CustomRestrictions { get; set; }
         public virtual ICollection<CustomRestriction> CustomRestrictions1 { get; set; }
+        public virtual ICollection<PasswordResetRequest> PasswordResetRequests { get; set; }
+        public virtual ICollection<Role_Activity_Permission> Role_Activity_Permission { get; set; }
+        public virtual SecurityQuestion SecurityQuestion { get; set; }
+        public virtual ICollection<User_Activity_Permission> User_Activity_Permission { get; set; }
+        public virtual ICollection<User_Activity_Permission> User_Activity_Permission1 { get; set; }
+        public virtual ICollection<User_Application> User_Application { get; set; }
+        public virtual ICollection<User_Application> User_Application1 { get; set; }
     }
 }

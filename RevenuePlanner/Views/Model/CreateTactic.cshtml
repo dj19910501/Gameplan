@@ -153,10 +153,7 @@
             }
         });
         $("#deleteTactic").click(function () {
-            CheckUserSession("#deleteTactic", true);
-            if (reason == 'user') {
-                return false;
-            }
+            var uId = $(window).attr('name');   // Added by Sohel Pathan on 19/06/2014 for PL ticket #536
             if (confirm('Are you sure you want to delete this tactic?')) {
                 var idTactic = $("#hdnTacticTypeId").val();
                 $.ajax({
@@ -164,16 +161,23 @@
                     url: '@Url.Content("~/Model/DeleteTactic")',
                     data: {
                         ID: idTactic
+                        , UserId: uId    // Added by Sohel Pathan on 19/06/2014 for PL ticket #536
                     },
                     success: function (data) {
-                        if (data.status == 'SUCCESS') {
-                            $('.close-form', this.$panel).click();
-                            window.location.reload(true);
+                        // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #536
+                        if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                            window.location = '@Url.Content("~/Login/Index")';
                         }
-                        if (data.status == 'ERROR') {
-                            ShowError(data.Message);
+                        // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #536
+                        else {
+                             if (data.status == 'SUCCESS') {
+                                  $('.close-form', this.$panel).click();
+                                  window.location.reload(true);
+                             }
+                             if (data.status == 'ERROR') {
+                                 ShowError(data.Message);
+                             }
                         }
-
                     }
                 });
             }

@@ -22,6 +22,9 @@
         <li class="item active">
             <a class="source-sans-probold integrations" href="#"><span></span>INTEGRATIONS</a>
         </li>
+          <li class="item">@*uday for new screen*@
+            <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
+        </li>
     </ul>
 }
 @using (Html.BeginForm(new { id = ViewBag.IntegrationInstanceId }))
@@ -196,4 +199,12 @@
         }
     });
     //// End - Added by :- Sohel Pathan on 28/05/2014 for PL #494 to Validate that a target field should be mapped to an entity only once.
+
+
+    //added by uday for #513 for user roles screens.
+    $('#aOrganization').click(function () {
+        var url = '';
+        url = '@Url.Action("ManageRoles", "Organization")';
+        window.location.href = url;
+    });
 </script>

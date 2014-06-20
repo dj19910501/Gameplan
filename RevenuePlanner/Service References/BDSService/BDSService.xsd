@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:tns="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:import schemaLocation="http://localhost:51731/BDSService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:import schemaLocation="http://121.243.79.150:8085/BDSServiceDev/BDSService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
   <xs:complexType name="User">
     <xs:sequence>
       <xs:element minOccurs="0" name="Answer" nillable="true" type="xs:string" />
@@ -76,6 +76,7 @@
   <xs:complexType name="Role">
     <xs:sequence>
       <xs:element minOccurs="0" name="Code" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ColorCode" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="CreatedBy" nillable="true" type="ser:guid" />
       <xs:element minOccurs="0" name="CreatedDate" nillable="true" type="xs:dateTime" />
       <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
@@ -144,4 +145,75 @@
     </xs:sequence>
   </xs:complexType>
   <xs:element name="SecurityQuestion" nillable="true" type="tns:SecurityQuestion" />
+  <xs:complexType name="ArrayOfApplicationActivity">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ApplicationActivity" nillable="true" type="tns:ApplicationActivity" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfApplicationActivity" nillable="true" type="tns:ArrayOfApplicationActivity" />
+  <xs:complexType name="ApplicationActivity">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ActivityTitle" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ApplicationActivityId" type="xs:int" />
+      <xs:element minOccurs="0" name="ApplicationId" type="ser:guid" />
+      <xs:element minOccurs="0" name="CreatedDate" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="ParentId" nillable="true" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ApplicationActivity" nillable="true" type="tns:ApplicationActivity" />
+  <xs:complexType name="ArrayOfUserApplicationPermission">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="UserApplicationPermission" nillable="true" type="tns:UserApplicationPermission" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfUserApplicationPermission" nillable="true" type="tns:ArrayOfUserApplicationPermission" />
+  <xs:complexType name="UserApplicationPermission">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ApplicationActivityId" type="xs:int" />
+      <xs:element minOccurs="0" name="CreatedBy" type="ser:guid" />
+      <xs:element minOccurs="0" name="CreatedDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="UserId" type="ser:guid" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="UserApplicationPermission" nillable="true" type="tns:UserApplicationPermission" />
+  <xs:complexType name="ArrayOfCustomRestriction">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="CustomRestriction" nillable="true" type="tns:CustomRestriction" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfCustomRestriction" nillable="true" type="tns:ArrayOfCustomRestriction" />
+  <xs:complexType name="CustomRestriction">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CreatedBy" type="ser:guid" />
+      <xs:element minOccurs="0" name="CreatedDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="CustomField" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CustomFieldId" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CustomRestrictionId" type="xs:int" />
+      <xs:element minOccurs="0" name="Permission" type="xs:int" />
+      <xs:element minOccurs="0" name="UserId" type="ser:guid" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="CustomRestriction" nillable="true" type="tns:CustomRestriction" />
+  <xs:complexType name="ArrayOfUserHierarchy">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="UserHierarchy" nillable="true" type="tns:UserHierarchy" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfUserHierarchy" nillable="true" type="tns:ArrayOfUserHierarchy" />
+  <xs:complexType name="UserHierarchy">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ColorCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Email" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="FirstName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="GeographyId" type="ser:guid" />
+      <xs:element minOccurs="0" name="JobTitle" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="LastName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ManagerId" nillable="true" type="ser:guid" />
+      <xs:element minOccurs="0" name="Phone" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="RoleId" type="ser:guid" />
+      <xs:element minOccurs="0" name="RoleTitle" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="UserId" type="ser:guid" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="UserHierarchy" nillable="true" type="tns:UserHierarchy" />
 </xs:schema>

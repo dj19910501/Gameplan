@@ -2955,12 +2955,24 @@ namespace RevenuePlanner.Controllers
         /// Date: 05May2014
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="UserId"></param>  Added by Sohel Pathan on 19/06/2014 for PL ticket #536
         /// <returns></returns>
         [HttpPost]
-        public ActionResult DeleteTactic(int id = 0)
+        public ActionResult DeleteTactic(int id = 0,string UserId = "")
         {
+            // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #536
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #536
+
             TacticType ttModel = db.TacticTypes.Where(t => t.TacticTypeId == id).SingleOrDefault();
-            if (ttModel != null)
+            if (ttModel != null && ttModel.Model != null)   // Modified by Sohel Pathan on 19/06/2014 for PL ticket #536
             {
                 int ModelId = ttModel.Model.ModelId;
                 Model objModel = db.Models.Where(m => m.ModelId == ModelId).SingleOrDefault();

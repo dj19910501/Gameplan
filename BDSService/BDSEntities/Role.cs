@@ -28,5 +28,7 @@ namespace BDSService.BDSEntities
         public DateTime? ModifiedDate { get; set; }
         [DataMember]
         public Guid? ModifiedBy { get; set; }
+        [DataMember]
+        public string ColorCode { get; set; }//added by uday as per DB changes for #513
     }
 }

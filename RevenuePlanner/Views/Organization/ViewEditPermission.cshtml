@@ -1,0 +1,501 @@
+﻿@model List<RevenuePlanner.Models.UserActivityPermissionModel>
+@{
+    
+    ViewBag.Title = "ViewPermission";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    //var applicationActicity = ViewData["allAtctivity"] as List<RevenuePlanner.BDSService.ApplicationActivity>;
+    //var usersAtcitivity = ViewData["userActivity"] as List<RevenuePlanner.BDSService.UserApplicationPermission>;
+    var headers = Model.Where(uact => uact.ParentId == null);
+    var cRestrictionList = ViewData["CustomRestriction"] as List<RevenuePlanner.Models.CustomRestrictionModel>;
+}
+
+
+@section Sidebar {
+    <div class="padding-content">
+        <h4 class="text-shadow-black source-sans-prolight">Preferences</h4>
+    </div>
+    <ul class="nav nav-list nav-gray">
+        <li class="item">
+            <a class="source-sans-probold inputs" href="#" id="aMyProfile"><span></span>MY PROFILE</a>
+        </li>
+        <li class="item">
+            <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
+        </li>
+        <li class="item active">
+            <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
+        </li>
+    </ul>
+}
+
+
+
+
+
+
+@if (ViewBag.PermissionMode == "View")
+{
+    <div id="content_wraper" class="span10 padding-top40">
+        <!--success message-->
+        <div id="successMessage" class="alert hide alert-success message-position">
+            <a class="close">×</a>
+            <strong>Success.</strong> Model inputs successfully saved.
+        </div>
+        <!--success message-->
+        <!--error message-->
+        <div id="errorMessage" class="alert hide alert-error message-position">
+            <a class="close">×</a>
+            <strong>Error!</strong> Make sure all fields are filled and try again.
+        </div>
+        <!--error message-->
+
+        <ul class="nav nav-tabs">
+            <li class="source-sans-proregular">
+                <h2 class="title-header">Organization</h2>
+            </li>
+        </ul>
+
+        <div class="padding-content cf source-sans-proregular">
+            <div class="row">
+                <div class="span2 myaccount-colum">
+                    <div class="width216">
+                        <ul class="nav nav-pills nav-stacked width216">
+                            <li><a href="#">My Permissions</a></li>
+                            <li class="active"><a href="#">Organization Hierarchy</a></li>
+                            <li><a href="#">Manage Users</a></li>
+                            <li><a href="#">Manage Roles</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="span9">
+
+                    <div class="user-permissions">
+                        <h4>View Permissions - @ViewBag.Name <span class="job-role director">@ViewBag.RoleName</span></h4>
+
+                        @foreach (var headerItem in headers)
+                        {
+                            <dl>
+                                <dt>@headerItem.Title</dt>
+                                <dd>
+                                    @foreach (var item in Model.Where(act => act.ParentId == headerItem.ApplicationActivityId))
+                                    {
+                                    
+                                        <div class="dd-row">
+                                            <label>@item.Title</label>
+                                            <span>@item.Permission</span>
+                                        </div>
+                                  
+                                    }
+                                </dd>
+                            </dl>
+                        }
+
+
+                        <h4 class="extra-space">*Custom Restrictions</h4>
+                        <dl>
+                            <dt>Verticals</dt>
+                            <dd>
+                                @foreach (var item in cRestrictionList.Where(crl => crl.CustomField == "Verticals"))
+                                {
+                                    <div class="dd-row">
+                                        <label>@item.Title</label>
+                                        <span>@item.permissiontext</span>
+                                    </div>
+                           
+                                }
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>Geography</dt>
+                            <dd>
+                                @foreach (var item in cRestrictionList.Where(crl => crl.CustomField == "Geography"))
+                                {
+                                    <div class="dd-row">
+                                        <label>@item.Title</label>
+                                        <span>@item.permissiontext</span>
+                                    </div>
+                           
+                                }
+                            </dd>
+                        </dl>
+
+                        <div class="bottom-btns">
+                            <span class="btn-group">
+                                <button class="btn btn-grey text-shadow-white source-sans-proregular" id="backbtn">Back</button>
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div id="content_wraper" class="span10 padding-top40">
+        <!--success message-->
+        <div id="successMessage" class="alert hide alert-success message-position">
+            <a class="close">×</a>
+            <strong>Success.</strong><span id="spanSuccessMessage"></span>
+        </div>
+        <!--success message-->
+        <!--error message-->
+        <div id="errorMessage" class="alert hide alert-error message-position">
+            <a class="close">×</a>
+            <strong>Error!</strong><span id="spanErrorMessage"></span>
+        </div>
+        <!--error message-->
+
+        <ul class="nav nav-tabs">
+            <li class="source-sans-proregular">
+                <h2 class="title-header">Organization</h2>
+            </li>
+        </ul>
+
+        <div class="padding-content cf source-sans-proregular">
+            <div class="row">
+                <div class="span2 myaccount-colum">
+                    <div class="width216">
+                        <ul class="nav nav-pills nav-stacked width216">
+                            <li><a href="#">My Permissions</a></li>
+                            <li class="active"><a href="#">Organization Hierarchy</a></li>
+                            <li><a href="#">Manage Users</a></li>
+                            <li><a href="#">Manage Roles</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="span9">
+
+                    <div class="user-permissions">
+                        <h4>Edit Permissions - @ViewBag.Name <span class="job-role director">@ViewBag.RoleName</span></h4>
+
+                        <dl>
+                            @foreach (var headerItem in headers)
+                            {
+                                <dt>@headerItem.Title</dt>
+                                <dd>
+                                    @foreach (var item in Model.Where(act => act.ParentId == headerItem.ApplicationActivityId))
+                                    {
+                                
+                                        <div class="dd-row">
+                                            <label>@item.Title</label>
+                                            @if (item.Permission == "Yes")
+                                            {
+                                                <span class="radioGrp">
+                                                    <span class="check_signup">
+                                                        <input type="radio" name="radio_permission_@item.ApplicationActivityId" id="radio_Yes_@item.ApplicationActivityId" checked="checked" style="background-position: left -34px;" autocomplete="off" />
+                                                        Yes
+                                                    </span>
+                                                    <span class="check_signup">
+                                                        <input type="radio" name="radio_permission_@item.ApplicationActivityId" id="radio_No_@item.ApplicationActivityId" style="background-position: left 0px;" autocomplete="off" />
+                                                        No
+                                                    </span>
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="radioGrp">
+                                                    <span class="check_signup">
+                                                        <input type="radio" name="radio_permission_@item.ApplicationActivityId" id="radio_Yes_@item.ApplicationActivityId" style="background-position: left 0px;" autocomplete="off" />
+                                                        Yes
+                                                    </span>
+                                                    <span class="check_signup">
+                                                        <input type="radio" name="radio_permission_@item.ApplicationActivityId" id="radio_No_@item.ApplicationActivityId" checked="checked" style="background-position: left -34px;" autocomplete="off" />
+                                                        No
+                                                    </span>
+                                                </span>
+                                            }
+                                        </div>
+
+                                    }
+                                </dd>
+                            }
+                        </dl>
+                        <h4 class="extra-space">*Custom Restrictions</h4>
+                        <dl>
+                            <dt>Verticals</dt>
+                            <dd>
+                                @foreach (var item in cRestrictionList.Where(crl => crl.CustomField == "Verticals"))
+                                {
+                                    <div class="dd-row">
+                                        <label>@item.Title</label>
+
+                                        @if (@item.Permission == 0)
+                                        {
+                                            <span class="radioGrp">
+                                                <span class="check_signup">
+                                                    <input type="radio" name="radio_verticals_@item.CustomFieldId" id="0_Verticals_@item.CustomFieldId"  checked="checked" autocomplete="off"  />
+                                                    None
+                                                </span>
+                                                <span class="check_signup">
+                                                    <input type="radio" name="radio_verticals_@item.CustomFieldId" id="2_Verticals_@item.CustomFieldId" autocomplete="off"  />
+                                                    View/Edit
+                                                </span>
+                                                <span class="check_signup">
+                                                    <input type="radio" name="radio_verticals_@item.CustomFieldId" id="1_Verticals_@item.CustomFieldId" autocomplete="off"  />
+                                                    View Only
+                                                </span>
+                                            </span>
+                                        }
+                                        else if (@item.Permission == 1)
+                                        {
+                                            <span class="radioGrp">
+                                                <span class="check_signup">
+                                                    <input type="radio" name="radio_verticals_@item.CustomFieldId" id="0_None_@item.CustomFieldId" autocomplete="off" />
+                                                    None
+                                                </span>
+                                                <span class="check_signup">
+                                                    <input type="radio" name="radio_verticals_@item.CustomFieldId" id="2_ViewEdit_@item.CustomFieldId"  autocomplete="off"  />
+                                                    View/Edit
+                                                </span>
+                                                <span class="check_signup">
+                                                    <input type="radio" name="radio_verticals_@item.CustomFieldId" id="1_ViewOnly_@item.CustomFieldId" checked="checked"  autocomplete="off" />
+                                                    View Only
+                                                </span>
+                                            </span>  
+                                        }
+                                        else if (@item.Permission == 2)
+                                        {
+                                            <span class="radioGrp">
+                                                <span class="check_signup">
+                                                    <input type="radio" name="radio_verticals_@item.CustomFieldId" id="0_None_@item.CustomFieldId" autocomplete="off" />
+                                                    None
+                                                </span>
+                                                <span class="check_signup">
+                                                    <input type="radio" name="radio_verticals_@item.CustomFieldId" id="2_ViewEdit_@item.CustomFieldId" autocomplete="off" checked="checked" />
+                                                    View/Edit
+                                                </span>
+                                                <span class="check_signup">
+                                                    <input type="radio" name="radio_verticals_@item.CustomFieldId" id="1_ViewOnly_@item.CustomFieldId"  autocomplete="off" />
+                                                    View Only
+                                                </span>
+                                            </span>
+                                        }
+
+                                    </div>
+                                }
+                            </dd>
+                        </dl>
+
+                        <dl>
+                            <dt>Geography</dt>
+                            <dd>
+                                @foreach (var item in cRestrictionList.Where(crl => crl.CustomField == "Geography"))
+                                {
+                                    <div class="dd-row">
+                                        <label>@item.Title</label>
+
+                                        @if (@item.Permission == 0)
+                                        {
+                                            <span class="radioGrp">
+                                                <span class="check_signup">
+                                                    <input type="radio" name="radio_geography_@item.CustomFieldId" id="0_Geography_@item.CustomFieldId" value="radio" checked="checked" />
+                                                    None
+                                                </span>
+                                                <span class="check_signup">
+                                                    <input type="radio" name="radio_geography_@item.CustomFieldId" id="2_Geography_@item.CustomFieldId" value="radio" />
+                                                    View/Edit
+                                                </span>
+                                                <span class="check_signup">
+                                                    <input type="radio" name="radio_geography_@item.CustomFieldId" id="1_Geography_@item.CustomFieldId" value="radio" />
+                                                    View Only
+                                                </span>
+                                            </span>
+                                        }
+                                        else if (@item.Permission == 1)
+                                        {
+                                            <span class="radioGrp">
+                                                <span class="check_signup">
+                                                    <input type="radio" name="radio_geography_@item.CustomFieldId" id="0_Geography_@item.CustomFieldId" value="radio"  />
+                                                    None
+                                                </span>
+                                                <span class="check_signup">
+                                                    <input type="radio" name="radio_geography_@item.CustomFieldId" id="2_Geography_@item.CustomFieldId" value="radio"  />
+                                                    View/Edit
+                                                </span>
+                                                <span class="check_signup">
+                                                    <input type="radio" name="radio_geography_@item.CustomFieldId" id="1_Geography_@item.CustomFieldId" value="radio" checked="checked" />
+                                                    View Only
+                                                </span>
+                                            </span> 
+                                        }
+                                        else if (@item.Permission == 2)
+                                        {
+                                            <span class="radioGrp">
+                                                <span class="check_signup">
+                                                    <input type="radio" name="radio_geography_@item.CustomFieldId" id="0_Geography_@item.CustomFieldId" value="radio"  />
+                                                    None
+                                                </span>
+                                                <span class="check_signup">
+                                                    <input type="radio" name="radio_geography_@item.CustomFieldId" id="2_Geography_@item.CustomFieldId" value="radio" checked="checked" />
+                                                    View/Edit
+                                                </span>
+                                                <span class="check_signup">
+                                                    <input type="radio" name="radio_geography_@item.CustomFieldId" id="1_Geography_@item.CustomFieldId" value="radio"  />
+                                                    View Only
+                                                </span>
+                                            </span>
+                                        }
+
+                                    </div>
+                                }
+
+                            </dd>
+                        </dl>
+                        <div id="divpartialsharetactic" class="hide">
+                            <div id="divsharetacticpopupmain" class="container-fluid all-height DivResetDefaults">
+                                <div class="row-fluid calc-height">
+                                    <div class="span12">
+
+                                        <div style="display: block; z-index: 10500; height: auto; width: 320px;" aria-hidden="true" aria-labelledby="mymodallabel" role="dialog" class="form-inspect-share hide fade in height-auto" id="divsharetacticpopup">
+
+                                            <div class="login-wrapper" style="padding-bottom: 20px;">
+                                                <h2 class="primary-title source-sans-proregular without-text-shadow">Reset to Defaults?</h2>
+                                                <p>This user's permissions will be reset to the role default permissions. Do you want to proceed?</p>
+                                                <button value="submit" type="submit" class="form-inspect-share-button btn btn-large default-btn" id="proceedDefault">Proceed</button>
+                                                <button type="button" class="btn-link" id="proceedCancel">Cancel</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="z-index: 9999" class="modal-backdrop fade in" id="divbackgroundsharetactic"></div>
+                        </div>
+                        <div id="divpartialsharetactic1" class="hide">
+                            <div id="divsharetacticpopupmain1" class="container-fluid all-height DivResetDefaults">
+                                <div class="row-fluid calc-height">
+                                    <div class="span12">
+
+                                        <div style="display: block; z-index: 10500; height: auto; width: 320px;" aria-hidden="true" aria-labelledby="mymodallabel" role="dialog" class="form-inspect-share hide fade in height-auto" id="divsharetacticpopup">
+
+                                            <div class="login-wrapper" style="padding-bottom: 20px;">
+                                                <h2 class="primary-title source-sans-proregular without-text-shadow">Permissions Saved</h2>
+
+
+                                                <button type="button" class="form-inspect-share-button btn btn-large default-btn" style="float:none;" id="btn-close">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="z-index: 9999" class="modal-backdrop fade in" id="divbackgroundsharetactic1"></div>
+                        </div>
+                        @*fdfd*@
+                        <div class="bottom-btns">
+                            <span class="btn-group">
+                                <button class="btn btn-blue btn-large without-text-shadow source-sans-proregular" type="submit" value="Submit" id="savebtn">Save &amp; Close</button>
+                            </span>
+                            <span class="btn-group">
+                                <button class="btn btn-grey text-shadow-white source-sans-proregular" id="backbtn">Back</button>
+                            </span>
+                            <span class="link-btn">
+                                <a href="#" class="btn-link" id="ResetRoleDefualt">Reset to Role Defaults</a>
+                                <a href="#">
+                                    <img src="../Content/images/help-icon.png" alt=""></a>
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/check.js")"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".check_signup").dgStyle();
+    });
+    $('#backbtn').click(function () {
+        var url = '';
+        url = '@Url.Content("~/Organization/OrganizationHierarchy")';
+        window.location.href = url;
+    });
+    $('#savebtn').click(function () {
+
+        var checked = [];
+        var ids = [];
+
+        $('.radioGrp span').each(function () {
+            $(this).find('input:radio').each(function () {
+                if ($(this).is(':checked') == true) {
+                    ids.push(this.id + '_true');
+                }
+            });
+        });
+
+        var userId = '@ViewBag.UserId';
+        $.ajax({
+            url: '@Url.Content("~/Organization/SaveUserPermission/")',
+            data: {
+
+                permissionIds: ids.toString(),
+                UserId: userId
+
+            },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                if (result == 'True') {
+                    $('#divpartialsharetactic1').show();
+                }
+                else {
+                    var msgspan = "Error.";
+                    $("#errorMessage").css("display", "block");
+                    $("#spanErrorMessage").text(msgspan);
+                }
+            }
+        });
+    });
+
+    $('#proceedDefault').click(function () {
+
+
+        var userId = '@ViewBag.UserId';
+        $.ajax({
+            url: '@Url.Content("~/Organization/ResetToRoleDefault/")',
+            data: {
+                UserId: userId,
+                creatorId: '@ViewBag.CreatorId'
+            },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                if (result == 'True') {
+                    var msgspan = "Model inputs successfully saved.";
+                    $("#spanSuccessMessage").text(msgspan);
+                    $("#successMessage").slideDown(1200);
+                    $("#successMessage").slideUp(2500).promise().always(function () {
+                        close_popup();
+                    });
+                    url = '@Url.Content("~/Organization/OrganizationHierarchy")';
+                    window.location.href = url;
+                }
+                else {
+                    var msgspan = "Error.";
+                    $("#errorMessage").css("display", "block");
+                    $("#spanErrorMessage").text(msgspan);
+                }
+            }
+        });
+    });
+    $('#ResetRoleDefualt').click(function () {
+
+        $('#divpartialsharetactic').show();
+    });
+    $('#proceedCancel').click(function () {
+
+        $('#divpartialsharetactic').hide();
+    });
+    $('#btn-close').click(function () {
+
+        url = '@Url.Content("~/Organization/OrganizationHierarchy")';
+        window.location.href = url;
+    });
+
+</script>
+

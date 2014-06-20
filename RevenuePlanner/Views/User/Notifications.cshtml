@@ -31,6 +31,9 @@
                 <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
             </li>
         }
+         <li class="item">@*uday for new screen*@
+            <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
+        </li>
     </ul>
 }
 
@@ -203,7 +206,14 @@
         var url = '';
         url = '@Url.Content("~/ExternalService/Index")';
             window.location.href = url;
-        });
+    });
+
+    //added by uday for #513 for user roles screens.
+    $('#aOrganization').click(function () {
+        var url = '';
+        url = '@Url.Action("ManageRoles", "Organization")';
+        window.location.href = url;
+    });
 </script>
 
 @*@section Scripts {
