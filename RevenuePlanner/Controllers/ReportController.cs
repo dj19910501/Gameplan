@@ -2891,55 +2891,61 @@ namespace RevenuePlanner.Controllers
         /// <returns>Return html string with CSS and Javascript.</returns>
         private string AddCSSAndJS(string htmlOfCurrentView, string reportType)
         {
-            var htmlStart = "<html>";
-            var headStart = "<head>";
-            var cssBootstrap = string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/bootstrap.css"));
-            var cssBootstrapResponsive = string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/bootstrap-responsive.css"));
-            var cssStyle = string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/style.css"));
-            var cssDatepicker = string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/datepicker.css"));
-            var cssStyle_extended = string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/style_extended.css"));
-            var jsDhtmlxgantt = string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/DHTMLX/dhtmlxgantt.js"));
-            var cssDhtmlxgantt = string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/DHTMLX/dhtmlxgantt.css"));
+       
+            string html = "<html>";
+            html +=  "<head>";
+            html +=  string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/bootstrap.css"));
+            html +=  string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/bootstrap-responsive.css"));
+            html +=  string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/style.css"));
+            html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/datepicker.css"));
+            html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/style_extended.css"));
+            html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/tipsy.css"));
+            html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/DHTMLX/dhtmlxgantt.css"));
+            
+            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/DHTMLX/dhtmlxgantt.js"));
+            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery.min.js"));
+            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery-migrate-1.2.1.min.js"));
+            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/bootstrap.min.js"));
+            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery.slimscroll.js"));
+            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery.slidepanel.js"));
+            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/scripts.js"));
+            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/scripts_extended.js"));
+            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/jquery.form.min.js"));
+            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/bootstrap-datepicker.js"));
+            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery.price_format.1.8.js"));
+            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery.price_format.1.8.min.js"));
+            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/slimScrollHorizontal.js"));
+            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery.tipsy.js"));
+            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/jquery.selectbox-0.2.js"));
 
-            var jsjqueryminjs = string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery.min.js"));
-            var jsbootstrapminjs = string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/bootstrap.min.js"));
-            var jsjqueryslimscrolljs = string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery.slimscroll.js"));
-            var jsjqueryslidepaneljs = string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery.slidepanel.js"));
-            var jsscriptsjs = string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/scripts.js"));
-            var jsscripts_extendedjs = string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/scripts_extended.js"));
-            var jsjqueryformminjs = string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery.form.js"));
-            var jsbootstrapdatepickerjs = string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/bootstrap-datepicker.js"));
-            var jsjqueryprice_format18js = string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery.price_format.1.8.js"));
-            var jsjqueryprice_format18minjs = string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery.price_format.1.8.js"));
-            var jsslimScrollHorizontaljs = string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/slimScrollHorizontal.js"));
-            var jsjquerytipsyjs = string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery.tipsy.js"));
-            var csstipsy = string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/tipsy.css"));
-            var jsDhtmlxchart = string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/dhtmlxchart.js"));
-            var cssDhtmlchart = string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/dhtmlxchart.css"));
+            html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/font-awesome.min.css"));
+            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/modernizr-2.5.3.js"));
 
-            var jsReportSummary = string.Empty;
-            var jsReportRevenue = string.Empty;
-            var jsReportConversion = string.Empty;
+            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/dhtmlxchart.js"));
+            html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/dhtmlxchart.css"));
+            
+            html += "</head>";
+            html += "<body>";
+            html += htmlOfCurrentView;
+            html += "</body>";
+            html += "</html>";
+
             if (reportType.Equals(Enums.ReportType.Summary.ToString()))
             {
-                jsReportSummary = string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/ReportSummary.js"));
+                html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/ReportSummary.js"));
             }
             else if (reportType.Equals(Enums.ReportType.Revenue.ToString()))
             {
-                jsReportRevenue = string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/ReportRevenue.js"));
+                html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/ReportRevenue.js"));
             }
             else
             {
-                jsReportConversion = string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/ReportConversion.js"));
+                html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/ReportConversion.js"));
             }
 
-            var headEnd = "</head>";
-            var bodyStart = "<body>";
-            var bodyEnd = "</body>";
-            var htmlEnd = "</html>";
-            return htmlStart + headStart + cssBootstrap + cssBootstrapResponsive + cssStyle + cssDatepicker + cssStyle_extended + jsDhtmlxgantt + cssDhtmlxgantt + jsjqueryminjs +
-                jsbootstrapminjs + jsjqueryslimscrolljs + jsjqueryslidepaneljs + jsscriptsjs + jsscripts_extendedjs + jsjqueryformminjs + jsbootstrapdatepickerjs + jsjqueryprice_format18js + jsjqueryprice_format18minjs
-               + jsslimScrollHorizontaljs + jsjquerytipsyjs + csstipsy + jsDhtmlxchart + cssDhtmlchart + headEnd + bodyStart + htmlOfCurrentView + bodyEnd + htmlEnd + jsReportSummary + jsReportRevenue + jsReportConversion;
+            
+
+            return html;
         }
 
         #endregion
