@@ -1,7 +1,9 @@
 ﻿@model List<RevenuePlanner.Models.UserActivityPermissionModel>
+@using RevenuePlanner.Helpers
 @{
     
     ViewBag.Title = "ViewPermission";
+    ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     Layout = "~/Views/Shared/_Layout.cshtml";
     //var applicationActicity = ViewData["allAtctivity"] as List<RevenuePlanner.BDSService.ApplicationActivity>;
     //var usersAtcitivity = ViewData["userActivity"] as List<RevenuePlanner.BDSService.UserApplicationPermission>;
