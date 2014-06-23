@@ -577,10 +577,10 @@
         });
     }
 
-    //added by uday for #513 for user roles screens.
+    //Modified by Mitesh Vaishnav on 23-06-2014
     $('#aOrganization').click(function () {
         var url = '';
-        url = '@Url.Action("OrganizationHierarchy", "Organization")';
+        url = '@Url.Action("ViewEditPermission", "Organization", new { usrid = Sessions.User.UserId, Mode = "MyPermission" })';
         window.location.href = url;
     });
 </script>

@@ -35,7 +35,7 @@
 
 
 
-@if (ViewBag.PermissionMode == "View")
+@if (ViewBag.PermissionMode == "View" || ViewBag.PermissionMode == "MyPermission")
 {
     <div id="content_wraper" class="span10 padding-top40">
         <!--success message-->
@@ -62,10 +62,18 @@
                 <div class="span2 myaccount-colum">
                     <div class="width216">
                         <ul class="nav nav-pills nav-stacked width216">
+                            @if (ViewBag.PermissionMode == "View")
+                            {
                             <li><a href='@ViewPermissionURL'>My Permissions</a></li>
-                    <li class="active"><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
-                    <li><a href="#">Manage Users</a></li>
-                    <li><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
+                            <li class="active"><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
+                            }
+                            else
+                            {
+                              <li class="active"><a href='@ViewPermissionURL'>My Permissions</a></li>
+                              <li ><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
+                            }
+                               <li><a href="#">Manage Users</a></li>
+                              <li><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
                         </ul>
                     </div>
                 </div>
@@ -217,7 +225,7 @@ else
                                     }
                                 </dd>
                         </dl>
-                        }
+                            }
 
                         <h4 class="extra-space">*Custom Restrictions</h4>
                         <dl>
@@ -505,12 +513,12 @@ else
     $('#aMyProfile').click(function () {
         var url = '';
         url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
-            window.location.href = url;
-     });
+        window.location.href = url;
+    });
 
-        $('#aIntegrations').click(function () {
-            var url = '';
-            url = '@Url.Content("~/ExternalService/Index")';
+    $('#aIntegrations').click(function () {
+        var url = '';
+        url = '@Url.Content("~/ExternalService/Index")';
             window.location.href = url;
         });
 
