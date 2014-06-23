@@ -12,6 +12,7 @@
     string isViewOnly = ViewBag.IsViewOnly;
     string varUrlnew = Url.Action("vieweditpermission", "Organization");
     string ViewPermissionURL = varUrlnew + "?Id=" + Sessions.User.UserId + "&Mode=MyPermission";
+    
 }
 
 @Html.Hidden("IsViewOnly", isViewOnly)
