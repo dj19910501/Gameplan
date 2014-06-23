@@ -1326,7 +1326,7 @@ namespace BDSService
                     objrole.RoleId = NewRoleId;
                     objrole.Code = "";
                     objrole.Title = roledesc;
-                    objrole.Description = roledesc;
+                    //objrole.Description = roledesc;
                     objrole.CreatedBy = createdby;
                     objrole.CreatedDate = DateTime.Now;
                     objrole.IsDeleted = false;
@@ -1528,7 +1528,7 @@ namespace BDSService
                     objrolenew.RoleId = NewRoleId;
                     objrolenew.Code = "";
                     objrolenew.Title = copyroledesc;
-                    objrolenew.Description = copyroledesc;
+                    //objrolenew.Description = copyroledesc;
                     objrolenew.CreatedBy = createdby;
                     objrolenew.CreatedDate = DateTime.Now;
                     objrolenew.IsDeleted = false;
