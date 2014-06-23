@@ -91,7 +91,7 @@ namespace RevenuePlanner.Controllers
             if (roledesc != null && roledesc != string.Empty)
             {
                 BDSService.Role objrole = new BDSService.Role();
-                objrole.Description = roledesc;
+                objrole.Description = roledesc.Trim();
                 Session["session"] = objrole;
 
                 int retval = objBDSServiceClient.DuplicateRoleCheck(objrole, Sessions.ApplicationId);
@@ -198,6 +198,7 @@ namespace RevenuePlanner.Controllers
             int retval = objBDSServiceClient.DeleteRoleAndReassign(delroleid, reassignroleid.Value, Sessions.ApplicationId);
             if (retval == 1)
             {
+                TempData["SuccessMessage"] = "Role Deleted Successfully.";
                 return Json(true, JsonRequestBehavior.AllowGet);
             }
             else
@@ -220,7 +221,6 @@ namespace RevenuePlanner.Controllers
             {
                 return Json(false, JsonRequestBehavior.AllowGet);
             }
-            //return Json(false, JsonRequestBehavior.AllowGet);
         }
 
 
@@ -238,11 +238,12 @@ namespace RevenuePlanner.Controllers
                     int retval = objBDSServiceClient.CopyRole(copyroledesc.Trim(), originalroleid, Sessions.ApplicationId, Sessions.User.UserId);
                     if (retval == 1)
                     {
-                        return Json(true);
+                        TempData["SuccessMessage"] = "Role Copied Successfully.";
+                        return Json(true, JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
-                        return Json(false);
+                        return Json(false, JsonRequestBehavior.AllowGet);
                     }
                 }
                 else
@@ -251,8 +252,6 @@ namespace RevenuePlanner.Controllers
                 }
             }
             return Json(false);
-            //return Json(new { name = "dsfsdf" });
-            //return RedirectToAction("Edit", "Organization");
         }
 
         /// <summary>

@@ -10,6 +10,8 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var UserHierarchy = (List<RevenuePlanner.Models.UserHierarchyModel>)ViewBag.UserHierarchy;
     string isViewOnly = ViewBag.IsViewOnly;
+    string varUrlnew = Url.Action("vieweditpermission", "Organization");
+    string ViewPermissionURL = varUrlnew + "?Id=" + Sessions.User.UserId + "&Mode=View";
 }
 
 @Html.Hidden("IsViewOnly", isViewOnly)
@@ -60,7 +62,7 @@
         <div class="span2 width216">
             <div class="padding-right70">
                 <ul class="nav nav-pills nav-stacked width216">
-                   <li><a href="#">My Permissions</a></li>
+                    <li><a href='@ViewPermissionURL'>My Permissions</a></li>
                     <li class="active"><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
                     <li><a href="#">Manage Users</a></li>
                     <li><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
@@ -164,7 +166,7 @@
         $('#aMyProfile').click(function () {
             var url = '';
             url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
-        window.location.href = url;
+            window.location.href = url;
         });
 
         $('#aIntegrations').click(function () {
@@ -195,7 +197,7 @@
     }
 
     function setTempData() {
-        
+
     }
 
 </script>

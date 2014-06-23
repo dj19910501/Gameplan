@@ -1,12 +1,15 @@
 ﻿@using RevenuePlanner.BDSService;
 @using RevenuePlanner.Helpers;
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Edit Role";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var current = ViewBag.current;
     var lstActivity = ViewData["activitylist"] == null ? new List<ApplicationActivity>() : (List<ApplicationActivity>)ViewData["activitylist"];
     var lstpermission = ViewData["permissionlist"] == null ? new List<ApplicationActivity>() : (List<ApplicationActivity>)ViewData["permissionlist"];
+     string varUrl = Url.Action("vieweditpermission", "Organization");
+    string ViewPermissionURL = varUrl + "?Id=" + Sessions.User.UserId + "&Mode=View";
 }
+
 @section nlFormContent{
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
@@ -56,7 +59,7 @@
         <div class="span2 myaccount-colum">
             <div class="width216">
                 <ul class="nav nav-pills nav-stacked width216">
-                    <li><a href="#">My Permissions</a></li>
+                    <li><a href='@ViewPermissionURL'>My Permissions</a></li>
                      <li><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
                     <li><a href="#">Manage Users</a></li>
                     <li class="active"><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>

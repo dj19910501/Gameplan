@@ -6,10 +6,12 @@
     ViewBag.Title = "Manage Roles";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var emptyGuidId = Guid.Empty;
-    //var lstUsers = ViewData["users"] == null ? new List<User>() : (List<User>)ViewData["users"];
-    //var lstroles = ViewData["roles"] == null ? new List<Role>() : (List<Role>)ViewData["roles"];
+    string varUrl = Url.Action("vieweditpermission", "Organization");
+    string ViewPermissionURL = varUrl + "?Id=" + Sessions.User.UserId + "&Mode=View";
 }
 
+
+@Html.Hidden("SuccMsg", TempData["SuccessMessage"])
 
 @section Sidebar {
     <div class="padding-content">
@@ -27,7 +29,11 @@
         </li>
     </ul>
 }
-
+<!--success message-->
+<div id="successMessage" class="alert hide alert-success message-position">
+    <a class="close">×</a>
+    <div id="cSuccess"><strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))</div>
+</div>
 
 <ul class="nav nav-tabs">
     <li class="source-sans-proregular">
@@ -40,7 +46,7 @@
         <div class="span2 myaccount-colum">
             <div class="width216">
                 <ul class="nav nav-pills nav-stacked width216">
-                    <li><a href="#">My Permissions</a></li>
+                    <li><a href='@ViewPermissionURL'>My Permissions</a></li>
                     <li><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
                     <li><a href="#">Manage Users</a></li>
                     <li class="active"><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
@@ -63,6 +69,7 @@
                     @foreach (var item in Model)
                     {
                         var id = "rolelabel" + item.RoleId;
+
                         <tr>
                             <td id="@id" width="200">@item.RoleTitle</td>@*review point*@
                             <td width="100">
@@ -121,27 +128,21 @@
                         <div class="row-fluid calc-height">
                             <div class="span12">
 
-                                <div id="DivAddRolePopupcopy" class="form-inspect-share hide fade in height-auto" role="dialog" style="display: block;">
+                                <div id="DivAddRolePopupcopy" class="form-inspect-share hide fade in height-auto popup" role="dialog" style="display: block;">
 
                                     <div style="padding-bottom: 20px;" class="login-wrapper">
                                         <h2 class="primary-title source-sans-proregular without-text-shadow">Copying a role</h2>
-                                        <h4 class="source-sans-prolight">Please rename the role with 
+                                        <h4 class="source-sans-prolight">Please rename the new role with 
                                             similar permissions as <strong id="original"></strong></h4>@*review point*@
-                                        <input type="text" value="" placeholder="Enter new role" name="textfield" maxlength="255" id="copyroledesc" class="input-block-level source-sans-proregular">
-                                        <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" title="Add Role" value="Submit" id="copyrolebtn">Add Role</button>
-                                        <button class="cancel-btn btn-link text-shadow-black" type="button" id="cancelbtncopy">Cancel</button>
-                                       @* <!--success message-->
-                                        <div id="successMessagedel" class="alert hide alert-success message-position">
-                                            <a class="close">×</a>
-                                            <strong>Success.</strong><span id="spanSuccessMessagecopy"></span>
-                                        </div>
-                                        <!--success message-->*@
+                                        <input type="text" value="" placeholder="Enter new role" name="textfield" maxlength="255" id="copyroledesc" class="input-block-level source-sans-proregular copyroledesc">
                                         <!--error message-->
                                         <div id="errorMessagecopy" class="alert hide alert-error message-position">
                                             <a class="close">×</a>
                                             <strong></strong><span id="spanErrorMessageRolecopy"></span>
                                         </div>
                                         <!--error message-->
+                                        <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" title="Add Role" value="Submit" id="copyrolebtn">Add Role</button>
+                                        <button class="cancel-btn btn-link text-shadow-black" type="button" id="cancelbtncopy">Cancel</button>
                                     </div>
                                 </div>
                             </div>
@@ -156,14 +157,21 @@
 
 <script type="text/javascript">
     var originalid = "";
-   
+
     $(document).ready(function () {
-    
+        if ($('#SuccMsg').val() == null || $('#SuccMsg').val() == '') {
+            $("#successMessage").slideUp(400);
+        }
+        else {
+            $("#successMessage").slideDown(1200);
+            $("#successMessage").slideUp(3000);
+        }
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");//review point
     });
 
     $('#addrole').click(function () {
         $('.newrole').val('');
+        $(".newrole").removeClass("error");
         $('#DivPartialShareTactic').show();
     });
 
@@ -177,7 +185,8 @@
 
 
     $('.btnCopy').click(function () {
-        $('#copyroledesc').val(' ');
+        $('#copyroledesc').val('');
+        $(".copyroledesc").removeClass("error");
         var id = $(this).next().val();
         var roleselected = $("#rolelabel" + id).html();
         originalid = $(this).next().val();
@@ -200,26 +209,40 @@
     }
 
     $('#addrolebtn').click(function () {
-        var roledescription = $('#newrole').val();
-        if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test($("#newrole").val())) {
-            var msgspan = "Special character are not allowed, try again.";
-            $("#errorMessage").css("display", "block");
-            $("#newrole").addClass("error");
-            $(".input-block-level").removeClass("error");
-            $("#spanErrorMessageRole").text(msgspan);//review point
-        }
-        else {
+        $(".newrole").removeClass("error");
+        var flag = 0;
+        $('.newrole').each(function () {
+            if ($(this).val() == "") {
+                $(this).addClass("error");
+                flag = 1;
+            }
+        });
 
-            $.ajax({
-                url: '@Url.Content("~/Organization/AddRole/")',
-                data: {
-                    roledesc: roledescription
-                },
-                type: 'POST',
-                cache: false,
-                success: function (result) {
-                    if (result == true) {
-                        url = '@Url.Content("~/Organization/Edit")';
+        if (flag == 1) {
+            var msgspan = "Please enter values in all field.";
+            $("#errorMessage").css("display", "block");
+            $("#spanErrorMessageRole").text(msgspan);
+        } else {
+            var roledescription = $('#newrole').val();
+            if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test($("#newrole").val())) {
+                var msgspan = "Special character are not allowed, try again.";
+                $("#errorMessage").css("display", "block");
+                $("#newrole").addClass("error");
+                $(".input-block-level").removeClass("error");
+                $("#spanErrorMessageRole").text(msgspan);//review point
+            }
+            else {
+
+                $.ajax({
+                    url: '@Url.Content("~/Organization/AddRole/")',
+                    data: {
+                        roledesc: roledescription
+                    },
+                    type: 'POST',
+                    cache: false,
+                    success: function (result) {
+                        if (result == true) {
+                            url = '@Url.Content("~/Organization/Edit")';
                         window.location.href = url + "?roleId=" + '@emptyGuidId';
                     }
                     else {
@@ -228,14 +251,31 @@
                         $("#spanErrorMessageRole").text(msgspan);
                     }
                 }
-            });
+                });
         }
+    }
+        return false;
     });
 
 
-    $('#copyrolebtn').click(function () {
+$('#copyrolebtn').click(function () {
 
-        var copyroledescription = $('#copyroledesc').val();
+    var copyroledescription = $('#copyroledesc').val();
+
+    $(".copyroledesc").removeClass("error");
+    var flag = 0;
+    $('.copyroledesc').each(function () {
+        if ($(this).val() == "") {
+            $(this).addClass("error");
+            flag = 1;
+        }
+    });
+
+    if (flag == 1) {
+        var msgspan = "Please enter values in all field.";
+        $("#errorMessagecopy").css("display", "block");
+        $("#spanErrorMessageRolecopy").text(msgspan);
+    } else {
         if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test($("#copyroledesc").val())) {
             var msgspan = "Special character are not allowed, try again.";
             $("#errorMessagecopy").css("display", "block");
@@ -255,43 +295,39 @@
                 cache: false,
                 success: function (result) {
                     if (result == true) {
-                        //var msgspan = "Role Copied Successfully.";
-                        //$("#spanSuccessMessagecopy").text(msgspan);
-                        //$("#successMessagedel").slideDown(1200);
-                        //$("#successMessagedel").slideUp(2500).promise().always(function () {
-                        //    close_popup();
-                        //});
                         $('#copyroledesc').val(' ');
                         var url = '';
                         url = '@Url.Content("~/Organization/ManageRoles")';
-                        window.location.href = url;
+                            window.location.href = url;
+                        }
+                        else {
+                            var msgspan = "A role with the same name already exists.";;
+                            $("#errorMessagecopy").css("display", "block");
+                            $("#spanErrorMessageRolecopy").text(msgspan);
+                        }
                     }
-                    else {
-                        var msgspan = "A role with the same name already exists.";;
-                        $("#errorMessagecopy").css("display", "block");
-                        $("#spanErrorMessageRolecopy").text(msgspan);
-                    }
-                }
             });
+            }
         }
-    });
+    return false;
+});
 
 
     $('#aIntegrations').click(function () {
         var url = '';
         url = '@Url.Content("~/ExternalService/Index")';
-        window.location.href = url;
-    });
+    window.location.href = url;
+});
 
 
-    $('#aMyProfile').click(function () {
-        var url = '';
-        url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
-        window.location.href = url;
-    });
+$('#aMyProfile').click(function () {
+    var url = '';
+    url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
+    window.location.href = url;
+});
 
-    $('.btnEdit').click(function () {
-        var id = $(this).next().val(); @*<!--this is used to pass values like to know the id of clicked row like selected value in combobox*@
+$('.btnEdit').click(function () {
+    var id = $(this).next().val(); @*<!--this is used to pass values like to know the id of clicked row like selected value in combobox*@
         var url = '@Url.Content("~/Organization/Edit/")';
         window.location.href = url + "?roleId=" + id;
     });

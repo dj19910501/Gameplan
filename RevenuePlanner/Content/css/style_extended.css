@@ -2767,6 +2767,7 @@ label {
         font-family: 'source_sans_prolight', Arial, "sans-serif";
         background: url(../images/arrow-d-big-icon-blue.png) right center no-repeat;
         padding-right: 23px;
+        text-decoration: underline; /*review point*/
     }
 
 .colorPicker {
@@ -2988,6 +2989,19 @@ label {
 
     #DivAddRolePopupcopy input {
         width: 96%;
+    }
+
+      .popup .message-position {
+        float: left;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        margin-top: 0 !important;
+        padding: 8px 24px 8px 8px;
+    }
+
+    .popup .alert .close {
+        right: -15px;
+        top: 0;
     }
 
 .reassign-role {

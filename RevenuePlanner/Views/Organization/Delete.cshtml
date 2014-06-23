@@ -6,7 +6,12 @@
     var selectedroledisplay = ViewData["roleselected"];
    
 }
-
+@Html.Hidden("SuccMsg", TempData["SuccessMessage"])
+<!--success message-->
+<div id="successMessage" class="alert hide alert-success message-position">
+    <a class="close">×</a>
+    <div id="cSuccess"><strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))</div>
+</div>
 
 <!--div to display pop up for Delete role-->
 <div id="DivPartialShareTacticDel">
@@ -90,12 +95,9 @@
             cache: false,
             success: function (result) {
                 if (result == true) {
-                    var msgspan = "Deleted Successfully.";
-                    $("#spanSuccessMessageRole").text(msgspan);
-                    $("#successMessagedel").slideDown(1200);
-                    $("#successMessagedel").slideUp(2500).promise().always(function () {
-                        close_popup();
-                    });
+                    var url = '';
+                    url = '@Url.Content("~/Organization/ManageRoles")';
+                    window.location.href = url;
                 }
                 else {
                     var msgspan = "Error.";
