@@ -4427,7 +4427,6 @@ namespace RevenuePlanner.Controllers
             if (marketingActivities.Count() > 0)
             {
                 //// Getting Projected Reveneue or Closed Won improved based on marketing and improvement activities.
-                //improvedCW = Common.GetImprovedProjectedRevenueOrCW(Sessions.PlanId, marketingActivities, improvementActivities, false, 0);
                 improvedCW = tacticStageValueInnerList.Sum(t => t.CWValue);
             }
 
@@ -4543,7 +4542,6 @@ namespace RevenuePlanner.Controllers
             }
 
             List<StageRelation> stageRelationList = Common.CalculateStageValue(Sessions.PlanId, improvementActivitiesWithIncluded, true);
-            //HypotheticalModel hypotheticalModel = Common.GetHypotheticalModel(StageType, effectiveModel, improvementActivitiesWithIncluded);
             List<int> finalMetricList = stageList.Select(m => m.StageId).ToList();
 
             var datalist = suggestedImprovementActivitiesConversion.Select(si => new

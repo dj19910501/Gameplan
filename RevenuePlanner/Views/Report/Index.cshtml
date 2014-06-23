@@ -232,12 +232,13 @@
             nlform = new NLForm(document.getElementById('nl-formAct'));
             // onClickActivity();
             // LoadHeaderData();
-            if (isBusinessUnit) {
+
+          //  if (isBusinessUnit) {
                 GetPlanBasedOnTimeFilter();
-            }
-            else {
-                LoadRespectiveData();
-            }
+          //  }
+          //  else {
+          //      LoadRespectiveData();
+          //  }
         }
 
         function RemoveAllActiveItem() {
@@ -254,13 +255,13 @@
                 leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
                 RemoveAllActiveItem();
                 $(this).addClass('active');
-                isBusinessUnit = false;
-                if (SelectedPlanId == 0) {
                     loadPlanFromBusinessUnit();
-                }
-                else {
-                    LoadSummary();
-                }
+                //if (SelectedPlanId == 0) {
+                    
+                //}
+                //else {
+                //    LoadSummary();
+                //}
             }
         });
 
@@ -340,6 +341,7 @@
                 },
                 success: function (r) {
                     populateNFActivity(r, "drpthisyear");
+                    
                     onClickActivityForTimeFrame();
                 }
             });
@@ -357,6 +359,7 @@
         }
 
         function GetPlanBasedOnTimeFilter() {
+            
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Report/GetPlansListFromTimeFrame/")',

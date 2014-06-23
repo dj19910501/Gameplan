@@ -516,6 +516,11 @@ namespace RevenuePlanner.Controllers
                     lstPlan = Common.GetPlan().Where(pl => pl.Model.BusinessUnitId == BUId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
                     Sessions.BusinessUnitId = BUId;
                 }
+
+                if (Sessions.ReportPlanId != 0)
+                {
+                    lstPlan.Where(lp => Convert.ToString(lp.Value) == Convert.ToString(Sessions.ReportPlanId)).ToList().ForEach(lp => lp.Selected = true);
+                }
             }
             return Json(new { lstPlan }, JsonRequestBehavior.AllowGet);
         }
@@ -953,9 +958,6 @@ namespace RevenuePlanner.Controllers
         public List<SelectListItem> GetUpcomingActivityForReport(bool isBusinessUnit = false)
         {
             List<SelectListItem> items = new List<SelectListItem>();
-            items.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thisyear.ToString()].ToString(), Value = DateTime.Now.Year.ToString(), Selected = false });
-            items.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thisquarter.ToString()].ToString(), Value = Enums.UpcomingActivities.thisquarter.ToString(), Selected = false });
-            items.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.lastyear.ToString()].ToString(), Value = DateTime.Now.AddYears(-1).Year.ToString(), Selected = false });
 
             string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
             var plans = Common.GetPlan();
@@ -963,10 +965,18 @@ namespace RevenuePlanner.Controllers
             {
                 plans = plans.Where(p => p.Model.BusinessUnitId == Sessions.BusinessUnitId).ToList();
             }
-            var yearlist = plans.Where(p => p.Year != DateTime.Now.Year.ToString() && p.Year != DateTime.Now.AddYears(-1).Year.ToString() && p.Status.Equals(planPublishedStatus)).Select(p => p.Year).Distinct().ToList();
+            var yearlistPrevious = plans.Where(p => p.Year != DateTime.Now.Year.ToString() && p.Year != DateTime.Now.AddYears(-1).Year.ToString() && Convert.ToInt32(p.Year) < DateTime.Now.AddYears(-1).Year && p.Status.Equals(planPublishedStatus)).Select(p => p.Year).Distinct().OrderBy(p => p).ToList();
+            var yearlistAfter = plans.Where(p => p.Year != DateTime.Now.Year.ToString() && p.Year != DateTime.Now.AddYears(-1).Year.ToString() && Convert.ToInt32(p.Year) > DateTime.Now.Year && p.Status.Equals(planPublishedStatus)).Select(p => p.Year).Distinct().OrderBy(p => p).ToList();
 
-            yearlist.ForEach(p => items.Add(new SelectListItem { Text = p, Value = p, Selected = false }));
-            if (!isBusinessUnit && Sessions.ReportPlanId != 0)
+            yearlistPrevious.ForEach(p => items.Add(new SelectListItem { Text = p, Value = p, Selected = false }));
+
+            items.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.lastyear.ToString()].ToString(), Value = DateTime.Now.AddYears(-1).Year.ToString(), Selected = false });
+            items.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thisyear.ToString()].ToString(), Value = DateTime.Now.Year.ToString(), Selected = false });
+            items.Add(new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thisquarter.ToString()].ToString(), Value = Enums.UpcomingActivities.thisquarter.ToString(), Selected = false });
+
+            yearlistAfter.ForEach(p => items.Add(new SelectListItem { Text = p, Value = p, Selected = false }));
+            //if (!isBusinessUnit && Sessions.ReportPlanId != 0)
+            if (Sessions.BusinessUnitId != Guid.Empty && Sessions.ReportPlanId != 0)
             {
                 string year = plans.Single(p => p.PlanId == Sessions.ReportPlanId).Year;
                 items.Where(lp => Convert.ToString(lp.Value) == year).ToList().ForEach(lp => lp.Selected = true);
@@ -991,11 +1001,19 @@ namespace RevenuePlanner.Controllers
             if (!string.IsNullOrEmpty(BusinessUnitId) && BusinessUnitId != "0" && BusinessUnitId != Convert.ToString(Guid.Empty))
             {
                 Guid BusinessUnitGuid = new Guid(BusinessUnitId);
+                if (Sessions.BusinessUnitId != BusinessUnitGuid)
+                {
                 Sessions.BusinessUnitId = BusinessUnitGuid;
+                    Sessions.ReportPlanId = 0;
+                }
             }
             else if (BusinessUnitId == "0" || BusinessUnitId == Convert.ToString(Guid.Empty))
             {
                 Sessions.BusinessUnitId = Guid.Empty;
+                if (isBusinessUnit)
+                {
+                    Sessions.ReportPlanId = 0;
+                }
             }
 
             var upcomingList = GetUpcomingActivityForReport(isBusinessUnit).Select(p => new
@@ -1028,6 +1046,11 @@ namespace RevenuePlanner.Controllers
 
             List<SelectListItem> lstPlan = new List<SelectListItem>();
             lstPlan = plans.Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
+
+            if (Sessions.ReportPlanId != 0)
+            {
+                lstPlan.Where(lp => Convert.ToString(lp.Value) == Convert.ToString(Sessions.ReportPlanId)).ToList().ForEach(lp => lp.Selected = true);
+            }   
 
             return Json(new { lstPlan }, JsonRequestBehavior.AllowGet);
         }

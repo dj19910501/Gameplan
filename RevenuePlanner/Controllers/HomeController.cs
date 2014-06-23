@@ -4296,6 +4296,9 @@ namespace RevenuePlanner.Controllers
             PlanController pc = new PlanController();
             List<ImprovementStage> ImprovementMetric = pc.GetImprovementStages(ImprovementPlanTacticId, ImprovementTacticTypeId, EffectiveDate);
 
+            string CR = Enums.StageType.CR.ToString();
+            string SV = Enums.StageType.SV.ToString();
+            string Size = Enums.StageType.Size.ToString();
             var tacticobj = ImprovementMetric.Select(p => new
             {
                 MetricId = p.StageId,
@@ -4305,7 +4308,8 @@ namespace RevenuePlanner.Controllers
                 BaseLineRate = p.BaseLineRate,
                 PlanWithoutTactic = p.PlanWithoutTactic,
                 PlanWithTactic = p.PlanWithTactic,
-            }).Select(p => p).Distinct().OrderBy(p => p.MetricId);
+                Rank = p.StageType == CR ? 1 : (p.StageType == SV ? 2 : 3),
+            }).Select(p => p).Distinct().OrderBy(p => p.Rank).ToList();
 
             return Json(new { data = tacticobj }, JsonRequestBehavior.AllowGet);
         }
