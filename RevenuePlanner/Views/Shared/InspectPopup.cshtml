@@ -1,4 +1,5 @@
-﻿@{
+﻿@using RevenuePlanner.Helpers;
+@{
     var popupvalue = (string)ViewBag.InspectPopup;
 }
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
@@ -28,7 +29,25 @@
         </li>
         <li id="status-option" class="source-sans-pro pull-right">
             <p class="status-option-title hide" style="display: block;">Status: </p>
-            <span class="status-option" style="color: #78A9C2;">@tacticMaster.Status</span>
+               @*    added by uday for PL #509*@
+            @if (tacticMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value)
+            {
+                <span class="status-option statussubmitted">@tacticMaster.Status</span>
+            }
+            else if (tacticMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value)
+            {
+                <span class="status-option statusrejected">@tacticMaster.Status</span>
+            }
+            else if (tacticMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Complete.ToString())).Value ||
+                     tacticMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.InProgress.ToString())).Value ||
+                     tacticMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Approved.ToString())).Value)
+            {
+                <span class="status-option statusapproved">@tacticMaster.Status</span>
+            }
+            else if (tacticMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Created.ToString())).Value)
+            {
+                <span class="status-option statuscreated">@tacticMaster.Status</span>
+            }
         </li>
     </ul>
     <div id="divTab">

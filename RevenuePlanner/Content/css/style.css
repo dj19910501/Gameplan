@@ -7189,17 +7189,20 @@ input.icon-check-blue{background-image: url("../images/circle-check-icon-small-b
 .margin-top6 {margin-top:6px;}
 
 
-/* Added by Kapil for Status - 100614 - #509 */
-/*.pending {
+
+ /*Added by uday  #509*/
+.statussubmitted {
     color: #ff931e;
 }
-.rejected {
+.statusrejected {
     color:#ff2c34;
 }
-.approved {
+.statusapproved {
     color:#7ac943;
 }
-/* */
+.statuscreated {
+    color:#78A9C2;
+}
 
 /* Custom Classes for Treeview */
 .job-role{height:17px; padding:6px 7px; color:#fff; font-size:12px; font-family: 'source_sans_proregular', Arial, "sans-serif" !important; margin: -6px 12px 0 !important; font-weight:normal;}

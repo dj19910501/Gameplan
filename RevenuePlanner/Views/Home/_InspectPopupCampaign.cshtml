@@ -1,4 +1,5 @@
-﻿@{
+﻿@using RevenuePlanner.Helpers;
+@{
     var popupvalue = (string)ViewBag.InspectPopup;
 }
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
@@ -25,7 +26,25 @@
         </li>
         <li id="status-option" class="source-sans-pro pull-right">
             <p class="status-option-title hide" style="display: block;">Status: </p>
-            <span class="status-option approved source-sans-prosemibold">@campaignMaster.Status</span>
+           @*    added by uday for PL #509*@
+            @if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value)
+            {
+                <span class="status-option statussubmitted">@campaignMaster.Status</span>
+            }
+            else if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value)
+            {
+                <span class="status-option statusrejected">@campaignMaster.Status</span>
+            }
+            else if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Complete.ToString())).Value ||
+                     campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.InProgress.ToString())).Value ||
+                     campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Approved.ToString())).Value)
+            {
+                <span class="status-option statusapproved">@campaignMaster.Status</span>
+            }
+            else if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Created.ToString())).Value)
+            {
+                <span class="status-option statuscreated">@campaignMaster.Status</span>
+            }
         </li>
     </ul>
     <div id="divTab">
