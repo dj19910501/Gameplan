@@ -5,10 +5,10 @@
     ViewBag.Title = "ViewPermission";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     Layout = "~/Views/Shared/_Layout.cshtml";
-    //var applicationActicity = ViewData["allAtctivity"] as List<RevenuePlanner.BDSService.ApplicationActivity>;
-    //var usersAtcitivity = ViewData["userActivity"] as List<RevenuePlanner.BDSService.UserApplicationPermission>;
     var headers = Model.Where(uact => uact.ParentId == null);
     var cRestrictionList = ViewData["CustomRestriction"] as List<RevenuePlanner.Models.CustomRestrictionModel>;
+    string varUrl = Url.Action("vieweditpermission", "Organization");
+    string ViewPermissionURL = varUrl + "?Id=" + Sessions.User.UserId + "&Mode=View";
 }
 
 
@@ -62,7 +62,7 @@
                 <div class="span2 myaccount-colum">
                     <div class="width216">
                         <ul class="nav nav-pills nav-stacked width216">
-                            <li><a href="#">My Permissions</a></li>
+                            <li><a href='@ViewPermissionURL'>My Permissions</a></li>
                     <li class="active"><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
                     <li><a href="#">Manage Users</a></li>
                     <li><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
@@ -162,7 +162,7 @@ else
                 <div class="span2 myaccount-colum">
                     <div class="width216">
                         <ul class="nav nav-pills nav-stacked width216">
-                           <li><a href="#">My Permissions</a></li>
+                           <li><a href='@ViewPermissionURL'>My Permissions</a></li>
                     <li class="active"><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
                     <li><a href="#">Manage Users</a></li>
                     <li><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
