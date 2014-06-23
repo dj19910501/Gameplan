@@ -127,7 +127,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    ViewBag.current = rolelist.Where(role => role.RoleId == roleId).Select(role => role.Description).FirstOrDefault();
+                    ViewBag.current = rolelist.Where(role => role.RoleId == roleId).Select(role => role.Title).FirstOrDefault();
                     ViewBag.roleid = roleId;
                     ViewBag.colorcode = rolelist.Where(role => role.RoleId == roleId).Select(role => role.ColorCode).FirstOrDefault();
 
