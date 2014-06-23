@@ -1153,7 +1153,7 @@ namespace BDSService
             rolelist = (from role in db.Roles
                         join approle in db.Application_Role on role.RoleId equals approle.RoleId
                         where approle.ApplicationId == applicationid
-                        select role).OrderBy(role => role.Description).ToList();//change review point order by clause
+                        select role).OrderBy(role => role.Title).ToList();//change review point order by clause
             if (rolelist.Count > 0)
             {
                 foreach (var role in rolelist)
@@ -1225,8 +1225,8 @@ namespace BDSService
             {
                 var objDuplicateCheck = (from roles in db.Roles
                                          join approle in db.Application_Role on roles.RoleId equals approle.RoleId
-                                         where approle.ApplicationId == applicationid && roles.Description == role.Description
-                                         select roles.Description).FirstOrDefault();
+                                         where approle.ApplicationId == applicationid && roles.Title == role.Title
+                                         select roles.Title).FirstOrDefault();
                 if (objDuplicateCheck != null)
                 {
                     retVal = -1;

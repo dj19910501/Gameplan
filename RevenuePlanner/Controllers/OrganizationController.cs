@@ -231,6 +231,7 @@ namespace RevenuePlanner.Controllers
             {
                 BDSService.Role objrole = new BDSService.Role();
                 objrole.Description = copyroledesc;
+                objrole.Title = copyroledesc.Trim();
                 Session["session"] = objrole;
                 int retvalcheck = objBDSServiceClient.DuplicateRoleCheck(objrole, Sessions.ApplicationId);
                 if (retvalcheck == 1)

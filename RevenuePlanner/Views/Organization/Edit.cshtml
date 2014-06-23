@@ -6,8 +6,9 @@
     var current = ViewBag.current;
     var lstActivity = ViewData["activitylist"] == null ? new List<ApplicationActivity>() : (List<ApplicationActivity>)ViewData["activitylist"];
     var lstpermission = ViewData["permissionlist"] == null ? new List<ApplicationActivity>() : (List<ApplicationActivity>)ViewData["permissionlist"];
-     string varUrl = Url.Action("vieweditpermission", "Organization");
-     string ViewPermissionURL = varUrl + "?Id=" + Sessions.User.UserId + "&Mode=MyPermission"; 
+    string varUrl = Url.Action("vieweditpermission", "Organization");
+    string ViewPermissionURL = varUrl + "?Id=" + Sessions.User.UserId + "&Mode=MyPermission";
+    ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
 }
 
 @section nlFormContent{
@@ -25,13 +26,13 @@
         <li class="item">
             <a class="source-sans-probold inputs" href="#" id="aMyProfile"><span></span>MY PROFILE</a>
         </li>
-         <li class="item active">@*uday for new screen*@
+        <li class="item active">@*uday for new screen*@
             <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
         </li>
         <li class="item">
             <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
         </li>
-       
+
     </ul>
 }
 
@@ -60,7 +61,7 @@
             <div class="width216">
                 <ul class="nav nav-pills nav-stacked width216">
                     <li><a href='@ViewPermissionURL'>My Permissions</a></li>
-                     <li><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
+                    <li><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
                     <li><a href="#">Manage Users</a></li>
                     <li class="active"><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
                 </ul>
@@ -108,7 +109,7 @@
                     <table width="100%" class="source-sans-proregular">
                         @foreach (var item in lstActivity)
                         {
-                            @*<input  type="hidden"  name="txtActivityId"  value="@item.ApplicationActivityId" >*@
+@*<input  type="hidden"  name="txtActivityId"  value="@item.ApplicationActivityId" >*@
                             if (item.ParentId == Convert.ToInt32(0))
                             {            
                             <tr>
@@ -193,11 +194,11 @@
             $('#ddlRoles').find('option').each(function (index) {
                 if ($(this).text() == originalvalue) {
                     selectedRoleId = $(this).val();
-                } 
+                }
             });
             if (selectedRoleId != "") {
                 var url = '@Url.Content("~/Organization/Edit/")';
-                window.location.href = url + "?roleId=" + selectedRoleId;               
+                window.location.href = url + "?roleId=" + selectedRoleId;
             }
         });
 
@@ -220,7 +221,7 @@
         url = '@Url.Content("~/Organization/ManageRoles")';
         window.location.href = url;
     });//review point
-    
+
     $('#aIntegrations').click(function () {
         var url = '';
         url = '@Url.Content("~/ExternalService/Index")';
