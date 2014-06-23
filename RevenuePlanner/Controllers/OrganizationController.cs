@@ -195,7 +195,7 @@ namespace RevenuePlanner.Controllers
             {
                 reassignroleid = Guid.Empty;
             }
-            int retval = objBDSServiceClient.DeleteRoleAndReassign(delroleid, reassignroleid, Sessions.ApplicationId);
+            int retval = objBDSServiceClient.DeleteRoleAndReassign(delroleid, reassignroleid.Value, Sessions.ApplicationId);
             if (retval == 1)
             {
                 return Json(true, JsonRequestBehavior.AllowGet);
