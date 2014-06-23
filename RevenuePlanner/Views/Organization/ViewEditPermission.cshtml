@@ -8,7 +8,7 @@
     var headers = Model.Where(uact => uact.ParentId == null);
     var cRestrictionList = ViewData["CustomRestriction"] as List<RevenuePlanner.Models.CustomRestrictionModel>;
     string varUrl = Url.Action("vieweditpermission", "Organization");
-    string ViewPermissionURL = varUrl + "?Id=" + Sessions.User.UserId + "&Mode=View";
+    string ViewPermissionURL = varUrl + "?Id=" + Sessions.User.UserId + "&Mode=MyPermission";
 }
 
 
