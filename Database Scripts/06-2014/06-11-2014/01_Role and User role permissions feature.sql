@@ -438,6 +438,15 @@ BEGIN
 				  ,GetDate()
 				  ,'e5ef88eb-4748-4436-9acc-aba6b2c5f6a9'
 			  FROM [dbo].[Application_Activity] WHERE ParentId IS NOT NULL
+
+			  IF  (@code='CA')
+			  BEGIN
+					UPDATE ROLE SET ColorCode='#7AC943' WHERE CODE = @code
+			  END
+			  ELSE
+			  BEGIN
+					UPDATE ROLE SET ColorCode='#FF931E' WHERE CODE = @code
+			  END
 		END
 		ELSE IF (@code='D')
 		BEGIN 
@@ -451,6 +460,8 @@ BEGIN
 				  ,GetDate()
 				  ,'e5ef88eb-4748-4436-9acc-aba6b2c5f6a9'
 			  FROM [dbo].[Application_Activity] WHERE ParentId IS NOT NULL AND Code NOT IN ('UserAdmin')
+
+			  	UPDATE ROLE SET ColorCode='#3FA9F5' WHERE CODE = @code
 		END
 		ELSE IF (@code='P')
 		BEGIN 
@@ -464,6 +475,8 @@ BEGIN
 				  ,GetDate()
 				  ,'e5ef88eb-4748-4436-9acc-aba6b2c5f6a9'
 			  FROM [dbo].[Application_Activity] WHERE ParentId IS NOT NULL AND CODE IN ('PlanCreate', 'PlanEditOwnAndSubordinates', 'PlanEditAll', 'TacticActualsAddEdit')
+
+			  UPDATE ROLE SET ColorCode='#3F3F3F' WHERE CODE = @code
 		END
 
 			-- Get the next ROLE.
@@ -472,4 +485,71 @@ BEGIN
 	END 
 	CLOSE Role_cursor;
 	DEALLOCATE Role_cursor;
+END
+
+--======================Insert default rights for user with System Admin, Client Admin, Director and Planner=======
+IF NOT EXISTS (SELECT * FROM User_Activity_Permission)
+BEGIN
+	DECLARE @userroleid uniqueidentifier,  @userid uniqueidentifier, @rolecode nvarchar(50)
+	DECLARE User_cursor CURSOR FOR 
+	SELECT [UserId]
+      ,[RoleId]
+    FROM [BDSAuthQA].[dbo].[User_Application] where ApplicationId in (select ApplicationId from Application where Code='MRP') and UserId in (select userid from [user] where IsDeleted=0)
+ 	OPEN User_cursor
+
+	FETCH NEXT FROM User_cursor 
+	INTO @userid, @userroleid
+
+	WHILE @@FETCH_STATUS = 0
+	BEGIN
+		select @rolecode = Code from [Role] where RoleId=@userroleid
+		--PRINT '----- Procession Role ----- ' + @code
+		IF(@rolecode='SA' or @rolecode='CA')
+		BEGIN
+			 INSERT INTO [dbo].[User_Activity_Permission]
+							   ([UserId]
+							   ,[ApplicationActivityId]
+							   ,[CreatedDate]
+							   ,[CreatedBy])
+			  SELECT @userid,
+					 [ApplicationActivityId],
+					 GetDate(),
+				    'e5ef88eb-4748-4436-9acc-aba6b2c5f6a9'
+			  FROM [dbo].[Application_Activity] WHERE ParentId IS NOT NULL
+		END
+		ELSE IF (@rolecode='D')
+		BEGIN 
+			 INSERT INTO [dbo].[User_Activity_Permission]
+							   ([UserId]
+							   ,[ApplicationActivityId]
+							   ,[CreatedDate]
+							   ,[CreatedBy])
+			  SELECT @userid,
+					 [ApplicationActivityId],
+					 GetDate(),
+				    'e5ef88eb-4748-4436-9acc-aba6b2c5f6a9'
+			  FROM [dbo].[Application_Activity] WHERE ParentId IS NOT NULL AND Code NOT IN ('UserAdmin')
+		END
+		ELSE IF (@rolecode='P')
+		BEGIN 
+			 INSERT INTO [dbo].[User_Activity_Permission]
+							   ([UserId]
+							   ,[ApplicationActivityId]
+							   ,[CreatedDate]
+							   ,[CreatedBy])
+			  SELECT @userid,
+					 [ApplicationActivityId],
+					 GetDate(),
+				    'e5ef88eb-4748-4436-9acc-aba6b2c5f6a9'
+			  FROM [dbo].[Application_Activity] WHERE ParentId IS NOT NULL AND CODE IN ('PlanCreate', 'PlanEditOwnAndSubordinates', 'PlanEditAll', 'TacticActualsAddEdit')
+
+			  UPDATE ROLE SET ColorCode='#3F3F3F' WHERE CODE = @rolecode
+		END
+
+			-- Get the next user.
+		FETCH NEXT FROM User_cursor 
+	INTO @userid, @userroleid
+	END 
+	CLOSE User_cursor;
+	DEALLOCATE User_cursor;
 END
