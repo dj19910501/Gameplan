@@ -202,6 +202,10 @@
             {
                 $(this).css("width","60px");
             });
+            $html.find("li.disabled > a").each(function(){
+                $(this).parent().removeClass("disabled");
+                $(this).css("background-color","#E0DFDF");
+            });
             $html.find('div[id="chartDiv3"]').empty();
             $html.find('div[id="chartDiv4"]').empty();
             $html.find('div[id="chartDiv5"]').empty();

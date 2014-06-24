@@ -192,7 +192,9 @@
                 },
                 success: function (r) {
                     populateNF(r.lstPlan, "reportSummry2");
+                    if (SelectedPlanId == 0) {
                     $('#h2PlanTitle').html("All Plans");
+                    }
                     $('#nl-ReportSummry2 > .nl-field:not(:last)').remove(); // code to remove extra blocks for Plan dropdown
                 }
             });

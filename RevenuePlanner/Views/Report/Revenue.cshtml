@@ -617,7 +617,7 @@
                         count = count + 1;
                     });
                     var totalRMQL = parseFloat(sumCol[totalMonthIncluded]) - parseFloat(sumCol2[totalMonthIncluded]);
-                    $("#totalRealizationMQL").text(FormatINQMQL(totalRMQL), true);
+                    
                     if (totalRMQL < 0) {
                         if ($("#totalRealizationMQL").hasClass('green-value')) {
                             $("#totalRealizationMQL").addClass('red-value');
@@ -630,6 +630,8 @@
                             $("#totalRealizationMQL").removeClass('red-value');
                         }
                     }
+                    totalRMQL = Math.abs(totalRMQL);
+                    $("#totalRealizationMQL").text(FormatINQMQL(totalRMQL), true);
                 }
                 else {
                     $(this).find('#rowTotal .div-line').html("0");
