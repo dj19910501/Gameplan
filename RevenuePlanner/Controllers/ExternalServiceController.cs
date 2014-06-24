@@ -780,9 +780,9 @@ namespace RevenuePlanner.Controllers
 
             if (form.Instance != "" && form.Username != "" && form.Password != "")
             {
-                if (form.IntegrationType.Title.Equals(Integration.IntegrationType.Eloqua.ToString()))
+                if (form.IntegrationType.Title.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
                 {
-                    string eloqua = Integration.IntegrationType.Eloqua.ToString();
+                    string eloqua = Integration.Helper.Enums.IntegrationType.Eloqua.ToString();
                     IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient();
                     integrationEloquaClient._instance = form.Instance;// "TechnologyPartnerBulldog";
                     integrationEloquaClient._username = form.Username;// "Brij.Bhavsar";
@@ -793,7 +793,7 @@ namespace RevenuePlanner.Controllers
                     integrationEloquaClient.Authenticate();
                     isAuthenticated = integrationEloquaClient.IsAuthenticated;
                 }
-                else if (form.IntegrationType.Title.Equals(Integration.IntegrationType.Salesforce.ToString()) && form.IntegrationTypeAttributes != null)
+                else if (form.IntegrationType.Title.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()) && form.IntegrationTypeAttributes != null)
                 {
                     if (form.IntegrationTypeAttributes.Count > 0)
                     {
@@ -821,7 +821,7 @@ namespace RevenuePlanner.Controllers
 
                         if (!string.IsNullOrWhiteSpace(consumerKey) && !string.IsNullOrWhiteSpace(consumerSecret) && !string.IsNullOrWhiteSpace(securityToken))
                         {
-                            string salesforce = Integration.IntegrationType.Salesforce.ToString();
+                            string salesforce = Integration.Helper.Enums.IntegrationType.Salesforce.ToString();
                             IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient();
                             integrationSalesforceClient._username = form.Username;
                             integrationSalesforceClient._password = form.Password;

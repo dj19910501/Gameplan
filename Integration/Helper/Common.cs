@@ -12,7 +12,7 @@ namespace Integration.Helper
     {
         public static string UnableToUpdate = "Unable to update";
         public static string UnableToDelete = "Unable to delete";
-
+        public static string TacticSyncedComment = "Tactic synced with ";
         /// <summary>
         /// Decrypt string
         /// </summary>

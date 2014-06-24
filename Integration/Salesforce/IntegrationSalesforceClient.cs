@@ -985,6 +985,15 @@ namespace Integration.Salesforce
                         planTactic.ModifiedDate = DateTime.Now;
                         planTactic.ModifiedBy = _userId;
                         instanceLogTactic.Status = StatusResult.Success.ToString();
+                        //Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
+                        Plan_Campaign_Program_Tactic_Comment objTacticComment = new Plan_Campaign_Program_Tactic_Comment();
+                        objTacticComment.PlanTacticId = planTactic.PlanTacticId;
+                        objTacticComment.Comment = Common.TacticSyncedComment + Integration.Helper.Enums.IntegrationType.Salesforce.ToString();
+                        objTacticComment.CreatedDate = DateTime.Now;
+                        objTacticComment.CreatedBy = this._userId;
+                        db.Entry(objTacticComment).State = EntityState.Added;
+                        db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment);
+                        // End Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
                     }
                     catch (SalesforceException e)
                     {
@@ -1271,6 +1280,15 @@ namespace Integration.Salesforce
                         planIMPTactic.ModifiedDate = DateTime.Now;
                         planIMPTactic.ModifiedBy = _userId;
                         instanceLogTactic.Status = StatusResult.Success.ToString();
+                        //Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
+                        Plan_Improvement_Campaign_Program_Tactic_Comment objImpTacticComment = new Plan_Improvement_Campaign_Program_Tactic_Comment();
+                        objImpTacticComment.ImprovementPlanTacticId = planIMPTactic.ImprovementPlanTacticId;
+                        objImpTacticComment.Comment = Common.TacticSyncedComment + Integration.Helper.Enums.IntegrationType.Salesforce.ToString();
+                        objImpTacticComment.CreatedDate = DateTime.Now;
+                        objImpTacticComment.CreatedBy = this._userId;
+                        db.Entry(objImpTacticComment).State = EntityState.Added;
+                        db.Plan_Improvement_Campaign_Program_Tactic_Comment.Add(objImpTacticComment);
+                        //End: Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
                     }
                     catch (SalesforceException e)
                     {

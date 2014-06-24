@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Integration.Helper
 {
-    class Enums
+    public class Enums
     {
         public enum Mode
         {
@@ -15,6 +15,10 @@ namespace Integration.Helper
             Delete,
             None
         }
-
+        public enum IntegrationType
+        {
+            Salesforce,
+            Eloqua
+        }
     }
 }

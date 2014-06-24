@@ -36,11 +36,7 @@ namespace Integration
         Import_Actuals
     }
 
-    public enum IntegrationType
-    {
-        Salesforce,
-        Eloqua
-    }
+
 
     /// <summary>
     /// Enum for tactic.
@@ -171,7 +167,7 @@ namespace Integration
             {
                 int integrationinstanceLogId = instanceLogStart.IntegrationInstanceLogId;
                 IntegrationInstanceLog instanceLogEnd = db.IntegrationInstanceLogs.SingleOrDefault(instance => instance.IntegrationInstanceLogId == integrationinstanceLogId);
-            if (_integrationType.Equals(IntegrationType.Salesforce.ToString()))
+            if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
             {
                     IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId);
                 if (integrationSalesforceClient.IsAuthenticated)
@@ -184,7 +180,7 @@ namespace Integration
                         _isResultError = true;
                 }
             }
-            else if (_integrationType.Equals(IntegrationType.Eloqua.ToString()))
+            else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
             {
                     IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId);
                     if (integrationEloquaClient.IsAuthenticated)
@@ -227,7 +223,7 @@ namespace Integration
                 _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Title;
             }
 
-            if (_integrationType.Equals(IntegrationType.Salesforce.ToString()))
+            if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
             {
                 IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0);
                 if (integrationSalesforceClient.IsAuthenticated)
@@ -235,7 +231,7 @@ namespace Integration
                     return integrationSalesforceClient.GetTargetDataType();
                 }
             }
-            else if (_integrationType.Equals(IntegrationType.Eloqua.ToString()))
+            else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
             {
                 IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0);
                 if (integrationEloquaClient.IsAuthenticated)
