@@ -300,6 +300,11 @@ namespace RevenuePlanner.Helpers
             { CustomRestrictionPermission.ViewOnly.ToString(),"View Only"},
             {CustomRestrictionPermission.ViewEdit.ToString(),"View/Edit"}
          };
+        public enum CustomRestrictionType
+        {
+            Verticals,
+            Geography
+        }
         /* End Added by Mitesh Vaishnav for PL ticket #521 */
 
         #region Notification

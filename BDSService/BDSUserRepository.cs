@@ -1736,7 +1736,7 @@ namespace BDSService
                         CustomRestriction obj = new CustomRestriction();
                         obj.UserId = userId;
                         obj.CustomFieldId = splitpermissions[2];
-                        obj.CustomField = "Verticals";
+                        obj.CustomField = splitpermissions[1];
                         obj.Permission = Convert.ToInt16(splitpermissions[0]);
                         obj.CreatedDate = System.DateTime.Now;
                         obj.CreatedBy = CreatorId;
@@ -1751,7 +1751,7 @@ namespace BDSService
                         CustomRestriction obj = new CustomRestriction();
                         obj.UserId = userId;
                         obj.CustomFieldId = splitpermissions[2];
-                        obj.CustomField = "Geography";
+                        obj.CustomField = splitpermissions[1];
                         obj.Permission = Convert.ToInt16(splitpermissions[0]);
                         obj.CreatedDate = System.DateTime.Now;
                         obj.CreatedBy = CreatorId;
