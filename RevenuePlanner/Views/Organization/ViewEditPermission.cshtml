@@ -23,10 +23,12 @@
         <li class="item active">
             <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
         </li>
-        <li class="item">
-            <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
-        </li>
-
+        @if (Sessions.User.RoleCode.Equals(Enums.RoleCodes.SA.ToString(), StringComparison.OrdinalIgnoreCase) || Sessions.User.RoleCode.Equals(Enums.RoleCodes.CA.ToString(), StringComparison.OrdinalIgnoreCase))
+        {
+            <li class="item">
+                <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
+            </li>
+        }
     </ul>
 }
 
@@ -64,16 +66,16 @@
                         <ul class="nav nav-pills nav-stacked width216">
                             @if (ViewBag.PermissionMode == "View")
                             {
-                            <li><a href='@ViewPermissionURL'>My Permissions</a></li>
-                            <li class="active"><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
+                                <li><a href='@ViewPermissionURL'>My Permissions</a></li>
+                                <li class="active"><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
                             }
                             else
                             {
-                              <li class="active"><a href='@ViewPermissionURL'>My Permissions</a></li>
-                              <li ><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
+                                <li class="active"><a href='@ViewPermissionURL'>My Permissions</a></li>
+                                <li><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
                             }
-                               <li><a href="#">Manage Users</a></li>
-                              <li><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
+                            <li><a href="#">Manage Users</a></li>
+                            <li><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
                         </ul>
                     </div>
                 </div>
@@ -170,10 +172,10 @@ else
                 <div class="span2 myaccount-colum">
                     <div class="width216">
                         <ul class="nav nav-pills nav-stacked width216">
-                           <li><a href='@ViewPermissionURL'>My Permissions</a></li>
-                    <li class="active"><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
-                    <li><a href="#">Manage Users</a></li>
-                    <li><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
+                            <li><a href='@ViewPermissionURL'>My Permissions</a></li>
+                            <li class="active"><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
+                            <li><a href="#">Manage Users</a></li>
+                            <li><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
                         </ul>
                     </div>
                 </div>
@@ -184,8 +186,8 @@ else
                         <h4>Edit Permissions - @ViewBag.Name <span class="job-role director">@ViewBag.RoleName</span></h4>
 
 
-                            @foreach (var headerItem in headers)
-                            {
+                        @foreach (var headerItem in headers)
+                        {
                             <dl>
                                 <dt>@headerItem.Title</dt>
                                 <dd>
@@ -224,8 +226,8 @@ else
 
                                     }
                                 </dd>
-                        </dl>
-                            }
+                            </dl>
+                        }
 
                         <h4 class="extra-space">*Custom Restrictions</h4>
                         <dl>
@@ -388,7 +390,7 @@ else
                                                 <h2 class="primary-title source-sans-proregular without-text-shadow">Permissions Saved</h2>
 
 
-                                                <button type="button" class="form-inspect-share-button btn btn-large default-btn" style="float:none;" id="btn-close">Close</button>
+                                                <button type="button" class="form-inspect-share-button btn btn-large default-btn" style="float: none;" id="btn-close">Close</button>
                                             </div>
                                         </div>
                                     </div>
@@ -519,8 +521,8 @@ else
     $('#aIntegrations').click(function () {
         var url = '';
         url = '@Url.Content("~/ExternalService/Index")';
-            window.location.href = url;
-        });
+        window.location.href = url;
+    });
 
 
 </script>

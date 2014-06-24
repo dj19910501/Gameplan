@@ -25,9 +25,12 @@
         <li class="item active">@*uday for new screen*@
             <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
         </li>
-        <li class="item">
-            <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
-        </li>
+        @if (Sessions.User.RoleCode.Equals(Enums.RoleCodes.SA.ToString(), StringComparison.OrdinalIgnoreCase) || Sessions.User.RoleCode.Equals(Enums.RoleCodes.CA.ToString(), StringComparison.OrdinalIgnoreCase))
+        {
+            <li class="item">
+                <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
+            </li>
+        }
     </ul>
 }
 <!--success message-->
@@ -244,50 +247,50 @@
                     success: function (result) {
                         if (result == true) {
                             url = '@Url.Content("~/Organization/Edit")';
-                        window.location.href = url + "?roleId=" + '@emptyGuidId';
+                            window.location.href = url + "?roleId=" + '@emptyGuidId';
+                        }
+                        else {
+                            var msgspan = "A role with the same name already exists.";;
+                            $("#errorMessage").css("display", "block");
+                            $("#spanErrorMessageRole").text(msgspan);
+                        }
                     }
-                    else {
-                        var msgspan = "A role with the same name already exists.";;
-                        $("#errorMessage").css("display", "block");
-                        $("#spanErrorMessageRole").text(msgspan);
-                    }
-                }
                 });
+            }
         }
-    }
         return false;
     });
 
 
-$('#copyrolebtn').click(function () {
+    $('#copyrolebtn').click(function () {
 
-    var copyroledescription = $('#copyroledesc').val();
+        var copyroledescription = $('#copyroledesc').val();
 
-    $(".copyroledesc").removeClass("error");
-    var flag = 0;
-    $('.copyroledesc').each(function () {
-        if ($(this).val() == "") {
-            $(this).addClass("error");
-            flag = 1;
-        }
-    });
+        $(".copyroledesc").removeClass("error");
+        var flag = 0;
+        $('.copyroledesc').each(function () {
+            if ($(this).val() == "") {
+                $(this).addClass("error");
+                flag = 1;
+            }
+        });
 
-    if (flag == 1) {
-        var msgspan = "Please enter values in all field.";
-        $("#errorMessagecopy").css("display", "block");
-        $("#spanErrorMessageRolecopy").text(msgspan);
-    } else {
-        if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test($("#copyroledesc").val())) {
-            var msgspan = "Special character are not allowed, try again.";
+        if (flag == 1) {
+            var msgspan = "Please enter values in all field.";
             $("#errorMessagecopy").css("display", "block");
-            $("#copyroledesc").addClass("error");
-            $(".input-block-level").removeClass("error");
-            $("#spanErrorMessageRolecopy").text(msgspan);//review point
-        }
-        else {
+            $("#spanErrorMessageRolecopy").text(msgspan);
+        } else {
+            if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test($("#copyroledesc").val())) {
+                var msgspan = "Special character are not allowed, try again.";
+                $("#errorMessagecopy").css("display", "block");
+                $("#copyroledesc").addClass("error");
+                $(".input-block-level").removeClass("error");
+                $("#spanErrorMessageRolecopy").text(msgspan);//review point
+            }
+            else {
 
-            $.ajax({
-                url: '@Url.Content("~/Organization/CopyRole/")',
+                $.ajax({
+                    url: '@Url.Content("~/Organization/CopyRole/")',
                 data: {
                     copyroledesc: copyroledescription,
                     originalroleid: originalid
@@ -299,44 +302,44 @@ $('#copyrolebtn').click(function () {
                         $('#copyroledesc').val(' ');
                         var url = '';
                         url = '@Url.Content("~/Organization/ManageRoles")';
-                            window.location.href = url;
-                        }
-                        else {
-                            var msgspan = "A role with the same name already exists.";;
-                            $("#errorMessagecopy").css("display", "block");
-                            $("#spanErrorMessageRolecopy").text(msgspan);
-                        }
+                        window.location.href = url;
                     }
+                    else {
+                        var msgspan = "A role with the same name already exists.";;
+                        $("#errorMessagecopy").css("display", "block");
+                        $("#spanErrorMessageRolecopy").text(msgspan);
+                    }
+                }
             });
-            }
         }
+    }
     return false;
 });
 
 
-    $('#aIntegrations').click(function () {
-        var url = '';
-        url = '@Url.Content("~/ExternalService/Index")';
-    window.location.href = url;
-});
-
-
-$('#aMyProfile').click(function () {
+$('#aIntegrations').click(function () {
     var url = '';
-    url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
+    url = '@Url.Content("~/ExternalService/Index")';
+        window.location.href = url;
+    });
+
+
+    $('#aMyProfile').click(function () {
+        var url = '';
+        url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
     window.location.href = url;
 });
 
 $('.btnEdit').click(function () {
     var id = $(this).next().val(); @*<!--this is used to pass values like to know the id of clicked row like selected value in combobox*@
-        var url = '@Url.Content("~/Organization/Edit/")';
-        window.location.href = url + "?roleId=" + id;
-    });
+    var url = '@Url.Content("~/Organization/Edit/")';
+    window.location.href = url + "?roleId=" + id;
+});
 
-    $('.delete-temp-program').click(function () {
-        var id = $(this).children().val();
-        var roleselected = $("#rolelabel" + id).html();
-        var url = '@Url.Content("~/Organization/Delete/")';
+$('.delete-temp-program').click(function () {
+    var id = $(this).children().val();
+    var roleselected = $("#rolelabel" + id).html();
+    var url = '@Url.Content("~/Organization/Delete/")';
         //how to load partial view....
         $("#loaddiv").load(url + "?roleId=" + id, "&selectedrole=" + roleselected);
     });

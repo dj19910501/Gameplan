@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using System.Transactions;
 using System.Data.Objects;
 using System.IO;
+using RevenuePlanner.BDSService;
 
 
 
@@ -38,6 +39,14 @@ namespace RevenuePlanner.Controllers
         /// added id parameter by kunal on 01/17/2014 for edit plan
         public ActionResult Create(int id = 0)
         {
+            // Added by dharmraj to check user activity permission
+            bool IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+            ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;
+            if (id == 0 && !IsPlanCreateAuthorized)
+            {
+                return AuthorizeUserAttribute.RedirectToNoAccess();
+            }
+
             PlanModel objPlanModel = new PlanModel();
             try
             {
@@ -557,6 +566,10 @@ namespace RevenuePlanner.Controllers
                         break;
                 }
             }
+
+            // Added by dharmraj to check user activity permission
+            bool IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+            ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;
 
             var plan = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId));
             Sessions.BusinessUnitId = plan.Model.BusinessUnitId;
@@ -1337,6 +1350,10 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns View Of Assortment.</returns>
         public ActionResult Assortment(int campaignId = 0, int programId = 0, int tacticId = 0, string ismsg = "", string EditObject = "", bool isError = false)
         {
+            // Added by dharmraj to check user activity permission
+            bool IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+            ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;
+
             Plan plan = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId));
             ViewBag.PlanId = plan.PlanId;
             PlanModel pm = new PlanModel();
@@ -3077,25 +3094,31 @@ namespace RevenuePlanner.Controllers
         public ActionResult PlanSelector()
         {
             ViewBag.ActiveMenu = Enums.ActiveMenu.Plan;
-            ViewBag.IsViewOnly = "false";
+            //ViewBag.IsViewOnly = "false";
             try
             {
-                if (Sessions.RolePermission != null)
-                {
-                    Common.Permission permission = Common.GetPermission(ActionItem.Pref);
-                    switch (permission)
-                    {
-                        case Common.Permission.FullAccess:
-                            break;
-                        case Common.Permission.NoAccess:
-                            return RedirectToAction("Index", "NoAccess");
-                        case Common.Permission.NotAnEntity:
-                            break;
-                        case Common.Permission.ViewOnly:
-                            ViewBag.IsViewOnly = "true";
-                            break;
-                    }
-                }
+                //if (Sessions.RolePermission != null)
+                //{
+                //    Common.Permission permission = Common.GetPermission(ActionItem.Pref);
+                //    switch (permission)
+                //    {
+                //        case Common.Permission.FullAccess:
+                //            break;
+                //        case Common.Permission.NoAccess:
+                //            return RedirectToAction("Index", "NoAccess");
+                //        case Common.Permission.NotAnEntity:
+                //            break;
+                //        case Common.Permission.ViewOnly:
+                //            ViewBag.IsViewOnly = "true";
+                //            break;
+                //    }
+                //}
+
+                // To get permission status for Plan create, By dharmraj PL #519
+                ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+                // To get permission status for Plan Edit, By dharmraj PL #519
+                ViewBag.IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+
             }
             catch (Exception e)
             {
@@ -3112,6 +3135,18 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult GetPlanSelectorData(string Year, string BusinessUnit)
         {
+            //Get all subordinates of current user
+            BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
+            List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
+            lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+            var lstOwnAndSubOrdinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId)
+                                                        .ToList()
+                                                        .Select(u => u.UserId)
+                                                        .ToList();
+            lstOwnAndSubOrdinates.Add(Sessions.User.UserId);
+            // Get current user permission for edit own and subordinates plans.
+            bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+
             Guid BUId = Guid.Empty;
             if (!string.IsNullOrEmpty(BusinessUnit))
             {
@@ -3148,6 +3183,23 @@ namespace RevenuePlanner.Controllers
                         objPlanSelector.MQLS = (item.MQLs).ToString("#,##0");
                         objPlanSelector.Budget = (item.Budget).ToString("#,##0");
                         objPlanSelector.Status = item.Status;
+                        // Added to check edit status for current user by dharmraj for #538
+                        if (IsPlanEditOwnAndSubordinatesAuthorized)
+                        {
+                            if (lstOwnAndSubOrdinates.Contains(item.CreatedBy))
+                            {
+                                objPlanSelector.IsPlanEditable = true;
+                            }
+                            else
+                            {
+                                objPlanSelector.IsPlanEditable = false;
+                            }
+                        }
+                        else
+                        {
+                            objPlanSelector.IsPlanEditable = false;
+                        }
+
                         lstPlanSelector.Add(objPlanSelector);
                     }
                 }

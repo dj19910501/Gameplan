@@ -118,6 +118,7 @@ namespace RevenuePlanner.Models
         public string MQLS { get; set; }
         public string Budget { get; set; }
         public string Status { get; set; }
+        public bool IsPlanEditable { get; set; }
     }
 
     public class Plan_Tactic_MQL

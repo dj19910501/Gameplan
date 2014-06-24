@@ -243,16 +243,17 @@ namespace RevenuePlanner.Helpers
         /// Added By: Maninder Singh Wadhva.
         /// Date: 06/18/2014
         /// Enum to identify application activity.
+        /// Modified by sohel Pathan
         /// </summary>
         [System.Flags]
         public enum ApplicationActivity
         {
             UserAdministration = 1 << 0,
-            SystemAdmin = 1 << 1,
+            UserAdmin = 1 << 1,
             IntegrationCredential = 1 << 2,
             IntegrationCredentialCreateEdit = 1 << 3,
             Model = 1 << 4,
-            ModelViewEdit = 1 << 5,
+            ModelCreateEdit = 1 << 5,
             Plan = 1 << 6,
             PlanCreate = 1 << 7,
             PlanEditOwnAndSubordinates = 1 << 8,
@@ -260,14 +261,14 @@ namespace RevenuePlanner.Helpers
             TacticApproveForPeers = 1 << 10,
             TacticActualsAddEdit = 1 << 11,
             Boost = 1 << 12,
-            BoostView = 1 << 13,
-            BoostImprovementTacticEdit = 1 << 14,
-            BoostBestInClassNumberEdit = 1 << 15,
-            Report = 1 << 16,
-            ReportView = 1 << 17,
-            Comments = 1 << 18,
-            CommentsViewEdit = 1 << 19
+            BoostImprovementTacticCreateEdit = 1 << 13,
+            BoostBestInClassNumberEdit = 1 << 14,
+            Report = 1 << 15,
+            ReportView = 1 << 16,
+            Comments = 1 << 17,
+            CommentsViewEdit = 1 << 18
         }
+
 
         /// <summary>
         /// Added By: Maninder Singh Wadhva.
