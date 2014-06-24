@@ -101,12 +101,6 @@
     </div>
 }
 <script type="text/javascript">
-    $('#button-save').click(function () {
-        CheckUserSession("#button-save", true);
-        if (reason == 'user') {
-            return false;
-        }
-    });
     $('#aMyProfile').click(function () {
         var url = '';
         url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
@@ -198,6 +192,14 @@
             e.preventDefault();
             return false;
         }
+        //// Start - Added by :- Sohel Pathan on 24/06/2014 for PL ticket #494
+        if ($('#spanMessageSuccess').html() != '') {
+            CheckUserSession("#button-save", true);
+            if (reason == 'user') {
+                return false;
+            }
+        }
+        //// End - Added by :- Sohel Pathan on 24/06/2014 for PL ticket #494
     });
     //// End - Added by :- Sohel Pathan on 28/05/2014 for PL #494 to Validate that a target field should be mapped to an entity only once.
 
