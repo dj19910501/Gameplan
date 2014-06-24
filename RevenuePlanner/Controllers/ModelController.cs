@@ -284,7 +284,7 @@ namespace RevenuePlanner.Controllers
                             objModel.ParentModelId = currentModelId;
                             //End Model versioning change 02-Jan-2014
                             objModel.Year = DateTime.Now.Year;
-                            objModel.AddressableContacts = Convert.ToInt64(Convert.ToString(collection["AddressableContract"]).Replace(",", "").Replace("$", ""));
+                            objModel.AddressableContacts = 0;//Modified by Mitesh Vaishnav for PL Ticket #534
                             objModel.Status = Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Draft.ToString())).Value;
                             objModel.BusinessUnitId = Guid.Parse(collection["BusinessUnitId"]);
                             objModel.IsActive = true;
@@ -304,7 +304,7 @@ namespace RevenuePlanner.Controllers
                             {
                                 objModel.Version = "1.0";
                                 objModel.Year = DateTime.Now.Year;
-                                objModel.AddressableContacts = Convert.ToInt64(Convert.ToString(collection["AddressableContract"]).Replace(",", "").Replace("$", ""));
+                                objModel.AddressableContacts = 0;//Modified by Mitesh Vaishnav for PL Ticket #534
                                 objModel.Status = Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Draft.ToString())).Value;
                                 objModel.BusinessUnitId = Guid.Parse(collection["BusinessUnitId"]);
                                 objModel.IsActive = true;
@@ -322,7 +322,7 @@ namespace RevenuePlanner.Controllers
                                 isbenchmarkdb = obj.IsBenchmarked;
                                 if (obj != null)
                                 {
-                                    obj.AddressableContacts = Convert.ToInt64(Convert.ToString(collection["AddressableContract"]).Replace(",", "").Replace("$", ""));
+                                    obj.AddressableContacts = 0;//Modified By Mitesh Vaishnav for PL ticket #534
                                     obj.BusinessUnitId = Guid.Parse(collection["BusinessUnitId"]);
                                     obj.ModifiedDate = DateTime.Now;
                                     obj.ModifiedBy = Sessions.User.UserId;
@@ -341,12 +341,11 @@ namespace RevenuePlanner.Controllers
 
                         if (strtxtMarketing.Length > 0)
                         {
-                            if (strtxtMarketing.Length == 2)
+                            if (strtxtMarketing.Length == 1)
                             {
                                 long intValue = 0;
                                 double doubleValue = 0.0;
-                                long.TryParse(Convert.ToString(strtxtMarketing[0]).Replace(",", "").Replace("$", ""), out intValue);
-                                double.TryParse(Convert.ToString(strtxtMarketing[1]).Replace(",", "").Replace("$", ""), out doubleValue);
+                                double.TryParse(Convert.ToString(strtxtMarketing[0]).Replace(",", "").Replace("$", ""), out doubleValue);//Modified by Mitesh Vaishnav for PL Ticket #534
 
                                 objModel_Funnel.ExpectedLeadCount = intValue;
                                 TempData["MarketingLeads"] = intValue;
@@ -374,104 +373,9 @@ namespace RevenuePlanner.Controllers
                             intFunnelMarketing = objmfunnel.ModelFunnelId;
                         }
 
-                        objModel_Funnel = new Model_Funnel();
-                        objModel_Funnel.ModelId = intModelid;
-                        objModel_Funnel.FunnelId = Convert.ToInt32(Request.Form["hdn_FunnelTeleprospecting"]);
-                        //foreach (string tel in txtTeleprospecting)
-                        //{
-                        //    int intValue = 0;
-                        //    double doubleValue = 0.0;
-                        //    int.TryParse(Convert.ToString(tel).Replace(",", "").Replace("$", ""), out intValue);
-                        //    double.TryParse(Convert.ToString(tel).Replace(",", "").Replace("$", ""), out doubleValue);
-
-                        //    objModel_Funnel.ExpectedLeadCount = intValue;
-                        //    objModel_Funnel.AverageDealSize = doubleValue;
-                        //}
-                        string[] strtxtTeleprospecting = txtTeleprospecting.ToArray();
-
-                        if (strtxtTeleprospecting.Length > 0)
-                        {
-                            if (strtxtTeleprospecting.Length == 2)
-                            {
-                                long intValue = 0;
-                                double doubleValue = 0.0;
-                                long.TryParse(Convert.ToString(strtxtTeleprospecting[0]).Replace(",", "").Replace("$", ""), out intValue);
-                                double.TryParse(Convert.ToString(strtxtTeleprospecting[1]).Replace(",", "").Replace("$", ""), out doubleValue);
-
-                                objModel_Funnel.ExpectedLeadCount = intValue;
-                                objModel_Funnel.AverageDealSize = doubleValue;
-                            }
-                        }
-                        Model_Funnel tmodelfunnel = db.Model_Funnel.Where(f => f.ModelId == objModel_Funnel.ModelId && f.FunnelId == objModel_Funnel.FunnelId).FirstOrDefault();
-                        if (tmodelfunnel == null)
-                        {
-                            objModel_Funnel.CreatedBy = Sessions.User.UserId;
-                            objModel_Funnel.CreatedDate = DateTime.Now;
-                            db.Model_Funnel.Add(objModel_Funnel);
-                            int resModel_FunnelTeleprospecting = db.SaveChanges();
-                            intFunnelTeleprospecting = objModel_Funnel.ModelFunnelId;
-                        }
-                        else
-                        {
-                            tmodelfunnel.ModifiedBy = Sessions.User.UserId;
-                            tmodelfunnel.ModifiedDate = DateTime.Now;
-                            tmodelfunnel.ExpectedLeadCount = objModel_Funnel.ExpectedLeadCount;
-                            tmodelfunnel.AverageDealSize = objModel_Funnel.AverageDealSize;
-                            db.Entry(tmodelfunnel).State = EntityState.Modified;
-                            int resModel_FunnelTeleprospecting = db.SaveChanges();
-                            intFunnelTeleprospecting = tmodelfunnel.ModelFunnelId;
-                        }
-
-                        objModel_Funnel = new Model_Funnel();
-                        objModel_Funnel.ModelId = intModelid;
-                        objModel_Funnel.FunnelId = Convert.ToInt32(Request.Form["hdn_FunnelSales"]);
-                        //foreach (string sal in txtSales)
-                        //{
-                        //    int intValue = 0;
-                        //    double doubleValue = 0.0;
-                        //    int.TryParse(Convert.ToString(sal).Replace(",", "").Replace("$", ""), out intValue);
-                        //    double.TryParse(Convert.ToString(sal).Replace(",", "").Replace("$", ""), out doubleValue);
-                        //    objModel_Funnel.ExpectedLeadCount = intValue;
-                        //    objModel_Funnel.AverageDealSize = doubleValue;
-                        //}
-                        string[] strttxtSales = txtSales.ToArray();
-
-                        if (strttxtSales.Length > 0)
-                        {
-                            if (strttxtSales.Length == 2)
-                            {
-                                long intValue = 0;
-                                double doubleValue = 0.0;
-                                long.TryParse(Convert.ToString(strttxtSales[0]).Replace(",", "").Replace("$", ""), out intValue);
-                                double.TryParse(Convert.ToString(strttxtSales[1]).Replace(",", "").Replace("$", ""), out doubleValue);
-
-                                objModel_Funnel.ExpectedLeadCount = intValue;
-                                objModel_Funnel.AverageDealSize = doubleValue;
-                            }
-                        }
-                        objModel_Funnel.CreatedBy = Sessions.User.UserId;
-                        objModel_Funnel.CreatedDate = DateTime.Now;
 
 
-                        Model_Funnel smodelfunnel = db.Model_Funnel.Where(f => f.ModelId == objModel_Funnel.ModelId && f.FunnelId == objModel_Funnel.FunnelId).FirstOrDefault();
-                        if (smodelfunnel == null)
-                        {
-                            objModel_Funnel.CreatedBy = Sessions.User.UserId;
-                            objModel_Funnel.CreatedDate = DateTime.Now;
-                            db.Model_Funnel.Add(objModel_Funnel);
-                            int resModel_FunnelSales = db.SaveChanges();
-                            intFunnelSales = objModel_Funnel.ModelFunnelId;
-                        }
-                        else
-                        {
-                            smodelfunnel.ModifiedBy = Sessions.User.UserId;
-                            smodelfunnel.ModifiedDate = DateTime.Now;
-                            smodelfunnel.ExpectedLeadCount = objModel_Funnel.ExpectedLeadCount;
-                            smodelfunnel.AverageDealSize = objModel_Funnel.AverageDealSize;
-                            db.Entry(smodelfunnel).State = EntityState.Modified;
-                            int resModel_FunnelSales = db.SaveChanges();
-                            intFunnelSales = smodelfunnel.ModelFunnelId;
-                        }
+
                         if (IsBenchmarked == false)
                         {
                             /*changed by Nirav Shah on 2 APR 2013*/
@@ -491,49 +395,6 @@ namespace RevenuePlanner.Controllers
                                 SaveInputs(strhdnSTAGEId, strtxtMSV, strtxtTargetStage, intFunnelMarketing, Enums.StageType.SV.ToString());
                             }
 
-                            ////Marketing Conversion Rates
-                            //if (hdnSTAGEMCR != null && txtMCR != null)
-                            //{
-                            //    string[] strhdnSTAGEMCR = hdnSTAGEMCR.ToArray();
-                            //    string[] strtxtMCR = txtMCR.ToArray();
-                            //    SaveInputs(strhdnSTAGEMCR, strtxtMCR, intFunnelMarketing, Enums.StageType.CR.ToString());
-                            //}
-
-                            ////Marketing Stage Velocity
-                            //if (hdnSTAGEMSV != null && txtMSV != null)
-                            //{
-                            //    string[] strhdnSTAGEMSV = hdnSTAGEMSV.ToArray();
-                            //    string[] strtxtMSV = txtMSV.ToArray();
-                            //    SaveInputs(strhdnSTAGEMSV, strtxtMSV, intFunnelMarketing, Enums.StageType.SV.ToString());
-                            //}
-                            ////Teleprospecting Conversion Rates
-                            //if (hdnSTAGETCR != null && txtTCR != null)
-                            //{
-                            //    string[] strhdnSTAGETCR = hdnSTAGETCR.ToArray();
-                            //    string[] strtxtTCR = txtTCR.ToArray();
-                            //    SaveInputs(strhdnSTAGETCR, strtxtTCR, intFunnelTeleprospecting, Enums.StageType.CR.ToString());
-                            //}
-                            ////Teleprospecting Stage Velocity
-                            //if (hdnSTAGETSV != null && txtTSV != null)
-                            //{
-                            //    string[] strhdnSTAGETSV = hdnSTAGETSV.ToArray();
-                            //    string[] strtxtTSV = txtTSV.ToArray();
-                            //    SaveInputs(strhdnSTAGETSV, strtxtTSV, intFunnelTeleprospecting, Enums.StageType.SV.ToString());
-                            //}
-                            ////Sales Conversion Rates
-                            //if (hdnSTAGESCR != null && txtSCR != null)
-                            //{
-                            //    string[] strhdnSTAGESCR = hdnSTAGESCR.ToArray();
-                            //    string[] strtxtSCR = txtSCR.ToArray();
-                            //    SaveInputs(strhdnSTAGESCR, strtxtSCR, intFunnelSales, Enums.StageType.CR.ToString());
-                            //}
-                            ////Sales Stage Velocity
-                            //if (hdnSTAGESSV != null && txtSSV != null)
-                            //{
-                            //    string[] strhdnSTAGESSV = hdnSTAGESSV.ToArray();
-                            //    string[] strtxtSSV = txtSSV.ToArray();
-                            //    SaveInputs(strhdnSTAGESSV, strtxtSSV, intFunnelSales, Enums.StageType.SV.ToString());
-                            //}
                         }
                         else
                         {
@@ -559,7 +420,6 @@ namespace RevenuePlanner.Controllers
                         }
                         Sessions.ModelId = intModelid;
                         int intAddressableContacts = 0;
-                        int.TryParse(Convert.ToString(collection["AddressableContract"]).Replace(",", "").Replace("$", ""), out intAddressableContacts);
                         TempData["AddressableContacts"] = intAddressableContacts;
                         // save data in Model_Funnel table
 
@@ -1124,7 +984,7 @@ namespace RevenuePlanner.Controllers
         /// modified datatype of MSize,TSize and SSize from int to double
         public ActionResult LoadContactInquiry(int AC, int MLeads, double MSize, int TLeads, double TSize, int SLeads, double SSize)
         {
-            var FunnelList = db.Funnels.Where(c => c.IsDeleted == false).ToDictionary(c => c.FunnelId, c => c.Description);
+            var FunnelList = db.Funnels.Where(c => c.IsDeleted == false && c.Title == "Marketing").ToDictionary(c => c.FunnelId, c => c.Description);
             TempData["FunnelList"] = FunnelList;
             ContactInquiry m = new ContactInquiry();
             m.AddressableContract = AC;
@@ -2865,9 +2725,9 @@ namespace RevenuePlanner.Controllers
                 string StageType = Enums.StageType.CR.ToString();
                 //Changed by dharmraj for ticket #475
                 //ViewBag.Stages = db.Model_Funnel_Stage.Where(s => s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true && s.StageType == StageType && s.Model_Funnel.Funnel.Title == Marketing).Select(n => new { n.StageId, n.Stage.Code }).Distinct().ToList();
-                ViewBag.Stages = db.Model_Funnel_Stage.Where(s => s.Model_Funnel.ModelId == ModelId && 
-                                                                  s.AllowedTargetStage == true && 
-                                                                  s.StageType == StageType && 
+                ViewBag.Stages = db.Model_Funnel_Stage.Where(s => s.Model_Funnel.ModelId == ModelId &&
+                                                                  s.AllowedTargetStage == true &&
+                                                                  s.StageType == StageType &&
                                                                   s.Model_Funnel.Funnel.Title == Marketing)
                                                       .Select(n => new { n.StageId, n.Stage.Title })
                                                       .Distinct()
@@ -2903,7 +2763,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.CanDelete = false;
                 if (mtp.ModelId != null || mtp.ClientId != null)
                 {
-                   ViewBag.CanDelete = true;
+                    ViewBag.CanDelete = true;
                 }
                 //End Manoj Limbachiya 05May2014 PL#458
 
@@ -2958,7 +2818,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId"></param>  Added by Sohel Pathan on 19/06/2014 for PL ticket #536
         /// <returns></returns>
         [HttpPost]
-        public ActionResult DeleteTactic(int id = 0,string UserId = "")
+        public ActionResult DeleteTactic(int id = 0, string UserId = "")
         {
             // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #536
             if (!string.IsNullOrEmpty(UserId))
@@ -3596,7 +3456,7 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.ModelStatus = objModel.Status;
             ViewBag.ModelTitle = objModel.Title;
-            
+
             var businessunit = db.Models.Where(b => b.ModelId == id && b.IsDeleted == false).OrderByDescending(c => c.CreatedDate).Select(u => u.BusinessUnitId).FirstOrDefault();
             var IsBenchmarked = (id == 0) ? true : db.Models.Where(b => b.ModelId == id && b.IsDeleted == false).OrderByDescending(c => c.CreatedDate).Select(u => u.IsBenchmarked).FirstOrDefault();
             ViewBag.BusinessUnitId = Convert.ToString(businessunit);
@@ -3608,7 +3468,7 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.Msg = string.Format(Common.objCached.ModelTacticTypeNotexist, Title);
             }
-            
+
             ViewBag.ModelPublishEdit = Common.objCached.ModelPublishEdit;
             ViewBag.ModelPublishCreateNew = Common.objCached.ModelPublishCreateNew;
             ViewBag.ModelPublishComfirmation = Common.objCached.ModelPublishComfirmation;
@@ -3698,7 +3558,7 @@ namespace RevenuePlanner.Controllers
                     objModel.ModifiedDate = DateTime.Now;
 
                     db.Entry(objModel).State = EntityState.Modified;
-                    db.SaveChanges();    
+                    db.SaveChanges();
                 }
 
                 Common.DeleteIntegrationInstance(integrationId, false, modelId);
@@ -3879,7 +3739,7 @@ namespace RevenuePlanner.Controllers
                     if (pcpt.TacticType.TacticTypeId == tactic.PreviousTacticTypeId)
                     {
                         pcpt.TacticTypeId = tactic.TacticTypeId;
-                       
+
 
                         int result = db.SaveChanges();
                     }
@@ -4017,7 +3877,7 @@ namespace RevenuePlanner.Controllers
 
                                 #region Clone TacticTypes table entries
                                 var oldTacticTypes = mrp.TacticTypes.Where(m => m.ModelId == modelId && (m.IsDeleted == null ? false : m.IsDeleted) == false).ToList();
-                                
+
                                 if (oldTacticTypes != null)
                                 {
                                     if (oldTacticTypes.Count > 0)
@@ -4117,19 +3977,19 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                     TempData["SuccessMessage"] = Common.objCached.ModelDuplicated;
-                    return Json(new {  status = 1, msg = Common.objCached.ModelDuplicated }, JsonRequestBehavior.AllowGet);
+                    return Json(new { status = 1, msg = Common.objCached.ModelDuplicated }, JsonRequestBehavior.AllowGet);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Common.objCached.ModelDuplicated = string.Empty;
                     ErrorSignal.FromCurrentContext().Raise(ex);
-                    return Json(new { status = 0,  msg = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
+                    return Json(new { status = 0, msg = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
                 }
             }
             else
             {
                 Common.objCached.ModelDuplicated = string.Empty;
-                return Json(new { status = 0,  msg = "Invalid model Id." }, JsonRequestBehavior.AllowGet);
+                return Json(new { status = 0, msg = "Invalid model Id." }, JsonRequestBehavior.AllowGet);
             }
         }
         #endregion

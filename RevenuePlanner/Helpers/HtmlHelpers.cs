@@ -172,7 +172,7 @@ namespace RevenuePlanner.Helpers
                 sb.Append(item.Value + "<br>");
                 TagBuilder hdn = new TagBuilder("input");
                 hdn.Attributes.Add("type", "hidden");
-                if (item.Value.Contains("#MarketingLeads"))
+                if (item.Value.Contains("#MarketingDealSize"))//Modified by Mitesh Vaishnav for PL Ticket #534
                 {
                     hdn.Attributes.Add("id", "hdn_FunnelMarketing");
                     hdn.Attributes.Add("name", "hdn_FunnelMarketing");
