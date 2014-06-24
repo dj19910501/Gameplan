@@ -88,8 +88,19 @@
             if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString()))
             {
 
-                if ((bool)ViewBag.IsValidDirectorUser)
-                {
+                //if ((bool)ViewBag.IsValidDirectorUser)
+                //{
+                //    if ((bool)ViewBag.IsValidOwner)
+                //    {
+                //        aryStatus.Add(Submit);
+                //    }
+                //    else
+                //    {
+                //        isVisibleStatus = false;
+                //    }
+                //}
+                //else
+                //{
                     if ((bool)ViewBag.IsValidOwner)
                     {
                         aryStatus.Add(Submit);
@@ -98,22 +109,11 @@
                     {
                         isVisibleStatus = false;
                     }
-                }
-                else
-                {
-                    if ((bool)ViewBag.IsValidOwner)
-                    {
-                        aryStatus.Add(Submit);
-                    }
-                    else
-                    {
-                        isVisibleStatus = false;
-                    }
-                }
+                //}
             }
             else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()))
             {
-                if ((bool)ViewBag.IsValidDirectorUser)
+                if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.IsValidDirectorUser)
                 {
                     aryStatus.Add(Approve);
                     aryStatus.Add(Reject);
@@ -125,7 +125,7 @@
             }
             else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()))
             {
-                if ((bool)ViewBag.IsValidDirectorUser)
+                if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.IsValidDirectorUser)
                 {
                     aryStatus.Add(Reject);
                 }
@@ -136,7 +136,7 @@
             }
             else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()))
             {
-                if ((bool)ViewBag.IsValidDirectorUser)
+                if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.IsValidDirectorUser)
                 {
                     aryStatus.Add(Approve);
                 }
@@ -154,7 +154,7 @@
             }
             else
             {
-                if ((bool)ViewBag.IsValidDirectorUser)
+                if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.IsValidDirectorUser)
                 {
                     aryStatus.Add(Reject);
                 }

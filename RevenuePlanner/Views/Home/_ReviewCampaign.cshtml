@@ -160,7 +160,7 @@
             }
             else if (campaignReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()))
             {
-                if ((bool)ViewBag.isValidDirectorUser)
+                if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.isValidDirectorUser)
                 {
                     if (countNotApprovedTactic != 0 && countNotApprovedProgram != 0)
                     {
@@ -179,7 +179,7 @@
             }
             else if (campaignReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()))
             {
-                if ((bool)ViewBag.isValidDirectorUser)
+                if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.isValidDirectorUser)
                 {
                     aryStatus.Add(Reject);
                 }
@@ -190,7 +190,7 @@
             }
             else if (campaignReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()))
             {
-                if ((bool)ViewBag.isValidDirectorUser)
+                if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.isValidDirectorUser)
                 {
                     if ((bool)ViewBag.IsValidOwner)
                     {
@@ -224,7 +224,7 @@
             }
             else
             {
-                if ((bool)ViewBag.isValidDirectorUser)
+                if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.isValidDirectorUser)
                 {
                     aryStatus.Add(Reject);
                 }

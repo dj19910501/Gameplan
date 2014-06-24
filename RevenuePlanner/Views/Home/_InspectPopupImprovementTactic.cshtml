@@ -7,13 +7,18 @@
 <buttom class="close-x-icon" data-dismiss="modal" aria-hidden="true"></buttom>
 @{
     var tacticMaster = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
+    bool IsPlanEditable = (bool)ViewBag.IsPlanEditable;
 }
 @Html.Hidden("hdnPlanTacticId", tacticMaster.PlanTacticId, new { id = "hdnPlanTacticId" })
 @Html.Hidden("hdnTacticStatus", tacticMaster.Status, new { id = "hdnTacticStatus" })
 <div>
     <span class="boost-icon-flag bg-purple" style="background-color:#@tacticMaster.ColorCode !important;"></span>
     <h2 class="title-simple source-sans-prolight">@tacticMaster.TacticTitle
-    @Html.ActionLink(" ", "Assortment", "Plan", new { tacticId = tacticMaster.PlanTacticId, EditObject = "ImprovementTactic", ismsg = "" }, new { @class = "edit-icon"})</h2>
+    @if (IsPlanEditable)
+    {
+        @Html.ActionLink(" ", "Assortment", "Plan", new { tacticId = tacticMaster.PlanTacticId, EditObject = "ImprovementTactic", ismsg = "" }, new { @class = "edit-icon"})
+    }
+    </h2>
 </div>
 <div>
 

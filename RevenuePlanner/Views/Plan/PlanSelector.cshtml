@@ -4,9 +4,13 @@
     ViewBag.Title = "Plan Selector";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan;
     Layout = "~/Views/Shared/_Layout.cshtml";
-    string isViewOnly = ViewBag.IsViewOnly;
+    //string isViewOnly = ViewBag.IsViewOnly;
+    bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     string strConfirmationmessage = Common.objCached.PlanDeleteConfirmMessage;
+    bool IsPlanEditAllAuthorized = (bool)ViewBag.IsPlanEditAllAuthorized;
 }
+
+@Html.Hidden("IsPlanEditAllAuthorized", IsPlanEditAllAuthorized)
 
 @section Sidebar
 {
@@ -15,7 +19,14 @@
         <h4 class="text-shadow-black source-sans-prolight">Plan Summary</h4>
         <div class="wraper-btns cf">
             <div class="span6">
+                @if (IsPlanCreateAuthorized)
+                {
                 <button id="NewPlan" class="btn btn-blue text-shadow-blue source-sans-proregular createbtn" type="button">New Plan</button>
+                }
+                else
+                {
+                    <button id="NewPlan" class="btn btn-blue-disable text-shadow-blue source-sans-proregular createbtn" type="button" disabled="disabled">New Plan</button>    
+                }
             </div>
             <div class="span6">
                 <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button" disabled="disabled">Edit Plan</button> @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to Change Add Activity to “Edit Plan” and make it as disabled. *@
@@ -59,7 +70,10 @@
                 <th class="width150px">Budget</th>
                 <th>Status</th>
                 <th class="width75">Last Updated</th>
-                <th class="width50px">Action</th>
+                @if (IsPlanEditAllAuthorized)
+                {
+                    <th class="width50px">Action</th>       
+                }
             </tr>
         </thead>
         <tbody>
@@ -276,14 +290,14 @@
         if (typeof baselinesModels.lstPlanSelector != 'undefined') {
             if (baselinesModels.lstPlanSelector.length) {
                 for (i in baselinesModels.lstPlanSelector) {
-                    addRowBaseline(baselinesModels.lstPlanSelector[i].PlanId, baselinesModels.lstPlanSelector[i].PlanTitle, baselinesModels.lstPlanSelector[i].LastUpdated, baselinesModels.lstPlanSelector[i].MQLS, baselinesModels.lstPlanSelector[i].Budget, baselinesModels.lstPlanSelector[i].Status);
+                    addRowBaseline(baselinesModels.lstPlanSelector[i].PlanId, baselinesModels.lstPlanSelector[i].PlanTitle, baselinesModels.lstPlanSelector[i].LastUpdated, baselinesModels.lstPlanSelector[i].MQLS, baselinesModels.lstPlanSelector[i].Budget, baselinesModels.lstPlanSelector[i].Status, baselinesModels.lstPlanSelector[i].IsPlanEditable);
                 }
             }
         }
     }
 
     //add row in baselinesModels table
-    function addRowBaseline(_PlanId, _Title, _LastUpdated, _MQLs, _Budget, _Status) {
+    function addRowBaseline(_PlanId, _Title, _LastUpdated, _MQLs, _Budget, _Status, _IsPlanEditable) {
         var $baselineTable = $('#table_baseline > tbody');
         var $html = "";
         $html += '<tr id="' + _PlanId + '">' +
@@ -292,11 +306,19 @@
                 '<td>' + _MQLs + '</td>' +
                 '<td>$' + _Budget + '</td>' +
                 '<td>' + _Status + '</td>' +
-                '<td>' + _LastUpdated + '</td>' +
-                '<td><span class="delete-temp-program width5"></span><span class="edit-temp-program width5"></span></td>' +
-                '</tr>';
+                '<td>' + _LastUpdated + '</td>';
+
+        if ($('#IsPlanEditAllAuthorized').val() == 'True') {
+            if (_IsPlanEditable) {
+                $html += '<td><span class="delete-temp-program width5"></span><span class="edit-temp-program width5"></span></td>';
+            }
+            else {
+                $html += '<td></td>';
+            }
+        }
+
+        $html += '</tr>';
         $baselineTable.append($html);
-        
     }
 
     function LoadPlanData(SelectedYear, SelectedBU) {

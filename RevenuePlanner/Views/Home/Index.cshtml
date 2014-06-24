@@ -11,10 +11,12 @@
     //// Modified By Maninder Singh Wadhva PL Ticket#47
     bool isImprovement = Convert.ToBoolean(ViewBag.IsImprovement);
     int CurrentPlanId = Sessions.PlanId;/*changed by Nirav for plan consistency on 14 apr 2014*/
+    bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
+    bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
 
 }
 
-@Html.Hidden("IsViewOnly", isViewOnly)
+@Html.Hidden("IsViewOnly")
 @Html.Hidden("hdnshowInspectForPlanTacticId", showInspectForPlanTacticId)
 @Html.Hidden("hdnshowInspectForPlanCampaignId", showInspectForPlanCampaignId)
 @Html.Hidden("hdnshowInspectForPlanProgramId", showInspectForPlanProgramId)
@@ -254,86 +256,86 @@
 
     <div class="padding-content padding-bottom0" id="DivButtonsHome">
         <h4 class="text-shadow-black source-sans-prolight">Planning Review</h4>
-        @if (isViewOnly != "true")
-        {
             <div class="wraper-btns cf">
-                <div class="span6">
-                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("AddActual", "Home")'">Add Actuals</button>
-                </div>
-                <div class="span6">
+                @if (IsTacticActualsAddEditAuthorized)
+                {
+                    <div class="span6">
+                        <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("AddActual", "Home")'">Add Actuals</button>
+                    </div>    
+                }
+                <div class="span6" id="divPlanEditButtonHome">
                     <!-- change by kunal for edit plan  -->
                     <!-- start -->
                     @{
                         
-            if (Model.PlanId != null)
-            {
-                int pid = Model.PlanId;
-                if (CurrentPlanId != 0)
-                {
-                    CurrentPlanId = 0;
-                }
-                //int.TryParse(Convert.ToString(RevenuePlanner.Helpers.Sessions.PlanId), out pid);
-                //    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Create", "Plan", new { id = pid })'">Edit Plan</button>
-                        <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlan()">Edit Plan</button>/*changed by Nirav for plan consistency on 14 apr 2014*/
-            }
-            else
-            {
-                if (CurrentPlanId != 0)
-                {
-                    CurrentPlanId = 0;
-                }
-                        <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button">Edit Plan</button>
-            }
+                        if (Model.PlanId != null)
+                        {
+                            int pid = Model.PlanId;
+                            if (CurrentPlanId != 0)
+                            {
+                                CurrentPlanId = 0;
+                            }
+                            //int.TryParse(Convert.ToString(RevenuePlanner.Helpers.Sessions.PlanId), out pid);
+                            //    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Create", "Plan", new { id = pid })'">Edit Plan</button>
+                                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlan()">Edit Plan</button>/*changed by Nirav for plan consistency on 14 apr 2014*/
+                        }
+                        else
+                        {
+                            if (CurrentPlanId != 0)
+                            {
+                                CurrentPlanId = 0;
+                            }
+                            <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button">Edit Plan</button>
+                        }
                     }
                     <!-- end -->
                 </div>
             </div>
-        }
     </div>
 
     <div class="padding-content padding-bottom0" id="DivButtonsPlanSummary">
         <h4 class="text-shadow-black source-sans-prolight">Plan Summary</h4>
-        @if (isViewOnly != "true")
-        {
-            <div class="wraper-btns cf">
-                <div class="span6">
-                    <div class="btn-group ">
-                        <button id="BtnGroup" class="btn btn-blue text-shadow-blue source-sans-proregular buttom-width resize-drop-button without-border-buttom displayinherit   source-sans-prolight width90px">
-                            New Plan
-                        </button>
-                        <button data-toggle="dropdown" class="btn btn-blue dropdown-toggle height25 displayinherit width19px">
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu source-sans-prolight">
-                            <li>
-                                <a href="#">Create New</a>
-                            </li>
-                            <li>
-                                <a href="#">Duplicate</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="span6">
-                    <!-- change by kunal for edit plan - 01-17-2012 -->
-                    <!-- start -->
-                    @{
-            if (Model.PlanId != null)
+        <div class="wraper-btns cf">
+            @if (IsPlanCreateAuthorized) // added by dharmraj form user activity permission
             {
-                int pid = Model.PlanId;
-                //int.TryParse(Convert.ToString(RevenuePlanner.Helpers.Sessions.PlanId), out pid);
-                        <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Create", "Plan", new { id = pid })'">Edit Plan</button>
-            }
-            else
-            {
-                        <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button">Edit Plan</button>
-            }
-                    }
-                    <!-- end -->
-                    @*<button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Assortment", "Plan")'">Add Activity</button>*@
+            <div class="span6">
+                <div class="btn-group ">
+                    <button id="BtnGroup" class="btn btn-blue text-shadow-blue source-sans-proregular buttom-width resize-drop-button without-border-buttom displayinherit   source-sans-prolight width90px">
+                        New Plan
+                    </button>
+                    <button data-toggle="dropdown" class="btn btn-blue dropdown-toggle height25 displayinherit width19px">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu source-sans-prolight">
+                        <li>
+                            <a href="#">Create New</a>
+                        </li>
+                        <li>
+                            <a href="#">Duplicate</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
-        }
+            }
+            <div class="span6" id="divPlanEditButtonPlan">
+                <!-- change by kunal for edit plan - 01-17-2012 -->
+                <!-- start -->
+                @{
+                if (Model.PlanId != null)
+                {
+                    int pid = Model.PlanId;
+                    //int.TryParse(Convert.ToString(RevenuePlanner.Helpers.Sessions.PlanId), out pid);
+                            <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Create", "Plan", new { id = pid })'">Edit Plan</button>
+                }
+                else
+                {
+                            <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button">Edit Plan</button>
+                }
+                }
+                <!-- end -->
+                @*<button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Assortment", "Plan")'">Add Activity</button>*@
+            </div>
+        </div>
     </div>
 
     <!--First Static Accordion-->
@@ -1211,6 +1213,11 @@
                  $('#improvements').hide();
              }
 
+             // To hide/show current plan edit button based on user plan edit permission
+             if (CurrentPlanId > 0) {
+                 GetCurrentPlanPermissionDetail();
+             }
+
              //// Modified By Maninder Singh Wadhva PL Ticket#47
              //// filtering non improvement task data.
              var filteredNonImprovementData = $.grep(data.taskData, function (value) { return (typeof value.isImprovement == 'undefined') });
@@ -1255,7 +1262,7 @@
                  $(".shadow-scroll-gantt").show();
                  $("#table_activities").show();
                  FillTacticTableForRequest(data);
-                 
+
                  if ($('.gantt_ver_scroll').is(":visible")) {
                      //$(".shadow-scroll-gantt").removeClass("full-width");
                  }
@@ -1281,7 +1288,45 @@
              ////
          }
      });
- }
+   }
+
+    //Function to get current plan edit permission, PL #538
+    function GetCurrentPlanPermissionDetail() {
+        $.ajax({
+            type: "GET",
+            cache: false,
+            url: '@Url.Action("GetCurrentPlanPermissionDetail", "Home")',
+            data: {
+                planId: CurrentPlanId
+            },
+            success: function (data) {
+                if (data.IsPlanEditable) {
+
+                    switch ($('#ActiveMenu').val().toLowerCase()) {
+                        case 'home':
+                            $("#divPlanEditButtonHome").show();
+                            break;
+                        case 'plan':
+                            $("#divPlanEditButtonPlan").show();
+                            break;
+                    }
+                    $("#isViewOnly").val(true);
+                }
+                else {
+                    switch ($('#ActiveMenu').val().toLowerCase()) {
+                        case 'home':
+                            $("#divPlanEditButtonHome").hide();
+                            break;
+                        case 'plan':
+                            $("#divPlanEditButtonPlan").hide();
+                            break;
+                    }
+                    $("#isViewOnly").val(false);
+                }
+            }
+        });
+    }
+
 
  function FillTacticTableForRequest(data) {
      onlyTactic = $.grep(data.taskData, function (value) {

@@ -67,14 +67,7 @@ namespace RevenuePlanner.Helpers
         //     action result, and route data.
         protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
         {
-            filterContext.Result = new RedirectToRouteResult(
-                        new RouteValueDictionary(
-                            new
-                            {
-                                controller = "NoAccess",
-                                action = "Index"
-                            })
-                        );
+            filterContext.Result = RedirectToNoAccess();
         }
 
         //
@@ -89,5 +82,20 @@ namespace RevenuePlanner.Helpers
             return ((int)(Sessions.UserActivityPermission & permissions)) > 0;
         }
 
+        //
+        // Summary:
+        //     Redirect to "No access page"
+        //
+        public static RedirectToRouteResult RedirectToNoAccess()
+        {
+            return new RedirectToRouteResult(
+                        new RouteValueDictionary(
+                            new
+                            {
+                                controller = "NoAccess",
+                                action = "Index"
+                            })
+                        );
+        }
     }
 }

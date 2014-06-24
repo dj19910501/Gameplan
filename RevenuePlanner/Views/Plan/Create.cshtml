@@ -4,6 +4,7 @@
     ViewBag.Title = "Plan Definition";
     Layout = "~/Views/Shared/_Layout.cshtml";
     string strPlanid = Convert.ToString(Model.PlanId);
+    bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     
 }
 
@@ -20,6 +21,8 @@
     <div class="padding-content padding-bottom0 ">
         <h4 class="text-shadow-black source-sans-prolight">Plan Summary</h4>
         <div class="wraper-btns cf">
+             @if (IsPlanCreateAuthorized) // added by dharmraj form user activity permission
+             {
             <div class="span6">
                 <div class="btn-group ">
                     <button id="BtnGroup" class="btn btn-blue text-shadow-blue source-sans-proregular buttom-width resize-drop-button without-border-buttom displayinherit   source-sans-prolight width90px">
@@ -41,6 +44,7 @@
                     </ul>
                 </div>
             </div>
+              }
             <div class="span6">
                 <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button" disabled="disabled">Add Activity</button>
             </div>

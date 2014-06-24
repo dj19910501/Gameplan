@@ -39,6 +39,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region "Index"
+        
         /// <summary>
         /// Home index page
         /// In Plan Header, values of MQLs, Budget and number of Tactics of current plan shown from database.
@@ -48,22 +49,26 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false)
         {
-            if (Sessions.RolePermission != null)
-            {
-                Common.Permission permission = Common.GetPermission(ActionItem.Home);
-                switch (permission)
-                {
-                    case Common.Permission.FullAccess:
-                        break;
-                    case Common.Permission.NoAccess:
-                        return RedirectToAction("Homezero", "Home");
-                    case Common.Permission.NotAnEntity:
-                        break;
-                    case Common.Permission.ViewOnly:
-                        ViewBag.IsViewOnly = "true";
-                        break;
-                }
-            }
+            //if (Sessions.RolePermission != null)
+            //{
+            //    Common.Permission permission = Common.GetPermission(ActionItem.Home);
+            //    switch (permission)
+            //    {
+            //        case Common.Permission.FullAccess:
+            //            break;
+            //        case Common.Permission.NoAccess:
+            //            return RedirectToAction("Homezero", "Home");
+            //        case Common.Permission.NotAnEntity:
+            //            break;
+            //        case Common.Permission.ViewOnly:
+            //            ViewBag.IsViewOnly = "true";
+            //            break;
+            //    }
+            //}
+            // To get permission status for Plan create, By dharmraj PL #519
+            ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+            // To get permission status for Add/Edit Actual, By dharmraj PL #519
+            ViewBag.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
 
             ViewBag.ActiveMenu = activeMenu;
             ViewBag.ShowInspectForPlanTacticId = planTacticId;
@@ -234,6 +239,7 @@ namespace RevenuePlanner.Controllers
                     planmodel.objGeography = db.Geographies.Where(g => g.IsDeleted.Equals(false) && g.ClientId.Equals(Sessions.User.ClientId)).Select(g => g).OrderBy(g => g.Title).ToList();
 
                     Sessions.PlanId = planmodel.PlanId;
+
                 }
                 catch (Exception e)
                 {
@@ -255,6 +261,7 @@ namespace RevenuePlanner.Controllers
             }
 
         }
+        
         //New parameter activeMenu added to check whether this method is called from Home or Plan
         public ActionResult HomePlan(string Bid, int currentPlanId, string activeMenu)
         {
@@ -324,6 +331,7 @@ namespace RevenuePlanner.Controllers
 
             return PartialView("_PlanDropdown", objHomePlan);
         }
+        
         #endregion
 
         #region "Getting list of collaborator for current plan"
@@ -730,6 +738,48 @@ namespace RevenuePlanner.Controllers
                     return Json(new { }, JsonRequestBehavior.AllowGet);
             }
             #endregion
+        }
+
+        /// <summary>
+        /// //Function to get current plan edit permission, PL #538
+        /// Added by Dharmraj
+        /// </summary>
+        /// <param name="planId"></param>
+        /// <returns></returns>
+        public JsonResult GetCurrentPlanPermissionDetail(int planId)
+        {
+            // To get permission status for Plan Edit , By dharmraj PL #519
+            //Get all subordinates of current user
+            bool IsPlanEditable = true;
+            BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
+            List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
+            lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+            var lstOwnAndSubOrdinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId)
+                                                        .ToList()
+                                                        .Select(u => u.UserId)
+                                                        .ToList();
+            lstOwnAndSubOrdinates.Add(Sessions.User.UserId);
+            // Get current user permission for edit own and subordinates plans.
+            bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+            bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+            var objPlan = db.Plans.FirstOrDefault(p => p.PlanId == Sessions.PlanId);
+            if (IsPlanEditOwnAndSubordinatesAuthorized && IsPlanEditAllAuthorized)
+            {
+                if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy))
+                {
+                    IsPlanEditable = true;
+                }
+                else
+                {
+                    IsPlanEditable = false;
+                }
+            }
+            else
+            {
+                IsPlanEditable = false;
+            }
+
+            return Json(new { IsPlanEditable = IsPlanEditable }, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -1974,6 +2024,37 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
+                // To get permission status for Add/Edit Actual, By dharmraj PL #519
+                ViewBag.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
+                //Get all subordinates of current user
+                BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
+                List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
+                lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+                var lstOwnAndSubOrdinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId)
+                                                            .ToList()
+                                                            .Select(u => u.UserId)
+                                                            .ToList();
+                lstOwnAndSubOrdinates.Add(Sessions.User.UserId);
+                // Get current user permission for edit own and subordinates plans.
+                bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+                bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+                var objPlan = db.Plans.FirstOrDefault(p => p.PlanId == Sessions.PlanId);
+                if (IsPlanEditOwnAndSubordinatesAuthorized && IsPlanEditAllAuthorized)
+                {
+                    if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy))
+                    {
+                        ViewBag.IsPlanEditable = true;
+                    }
+                    else
+                    {
+                        ViewBag.IsPlanEditable = false;
+                    }
+                }
+                else
+                {
+                    ViewBag.IsPlanEditable = false;
+                }
+
                 if (Convert.ToString(section) != "")
                 {
                     if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower())
@@ -2170,17 +2251,12 @@ namespace RevenuePlanner.Controllers
                                      where bun.BusinessUnitId == im.BusinessUnitId
                                      select bun.Title).FirstOrDefault();
             ViewBag.BudinessUnitTitle = businessunittitle.ToString();
-            bool isValidDirectorUser = false;
+            
             bool isValidOwner = false;
-            if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
-            {
-                isValidDirectorUser = true;
-            }
             if (im.OwnerId == Sessions.User.UserId)
             {
                 isValidOwner = true;
             }
-            ViewBag.IsValidDirectorUser = isValidDirectorUser;
             ViewBag.IsValidOwner = isValidOwner;
             /*Added by Mitesh Vaishnav on 13/06/2014 to address changes related to #498 Customized Target Stage - Publish model*/
             var pcpt = db.Plan_Campaign_Program_Tactic.Where(p => p.PlanTacticId.Equals(id)).SingleOrDefault();
@@ -2194,6 +2270,17 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IsDiffrentStageType = true;
             }
             /*End Added by Mitesh Vaishnav on 13/06/2014 to address changes related to #498 Customized Target Stage - Publish model */
+
+            // To get permission status for Approve tactic , By dharmraj PL #538
+            var lstSubOrdinates = GetSubOrdinatesWithPeers();
+
+            bool isValidManagerUser = false;
+            if (lstSubOrdinates.Contains(im.OwnerId))
+            {
+                isValidManagerUser = true;
+            }
+            ViewBag.IsValidManagerUser = isValidManagerUser;
+
             return PartialView("Review");
         }
 
@@ -3229,20 +3316,24 @@ namespace RevenuePlanner.Controllers
                                      select bun.Title).FirstOrDefault();
             ViewBag.BudinessUnitTitle = businessunittitle.ToString();
 
-            bool isValidDirectorUser = false;
             bool isValidOwner = false;
-            if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
-            {
-                isValidDirectorUser = true;
-            }
             if (im.OwnerId == Sessions.User.UserId)
             {
                 isValidOwner = true;
             }
-            ViewBag.IsValidDirectorUser = isValidDirectorUser;
             ViewBag.IsValidOwner = isValidOwner;
 
             ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
+
+            //To get permission status for Approve campaign , By dharmraj PL #538
+            var lstSubOrdinates = GetSubOrdinatesWithPeers();
+
+            bool isValidManagerUser = false;
+            if (lstSubOrdinates.Contains(im.OwnerId))
+            {
+                isValidManagerUser = true;
+            }
+            ViewBag.IsValidManagerUser = isValidManagerUser;
 
             return PartialView("_ReviewProgram");
         }
@@ -3358,22 +3449,74 @@ namespace RevenuePlanner.Controllers
                                      select bun.Title).FirstOrDefault();
             ViewBag.BudinessUnitTitle = businessunittitle.ToString();
 
-            bool isValidDirectorUser = false;
+            //bool isValidDirectorUser = false;
             bool isValidOwner = false;
-            if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
-            {
-                isValidDirectorUser = true;
-            }
+            //if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
+            //{
+            //    isValidDirectorUser = true;
+            //}
             if (im.OwnerId == Sessions.User.UserId)
             {
                 isValidOwner = true;
             }
-            ViewBag.IsValidDirectorUser = isValidDirectorUser;
+            //ViewBag.IsValidDirectorUser = isValidDirectorUser;
             ViewBag.IsValidOwner = isValidOwner;
 
             ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
 
+            //To get permission status for Approve campaign , By dharmraj PL #538
+            var lstSubOrdinates = GetSubOrdinatesWithPeers();
+
+            bool isValidManagerUser = false;
+            if (lstSubOrdinates.Contains(im.OwnerId))
+            {
+                isValidManagerUser = true;
+            }
+            ViewBag.IsValidManagerUser = isValidManagerUser;
+
             return PartialView("_ReviewCampaign");
+        }
+
+        /// <summary>
+        /// Function to get all own and peers subordinates of current user
+        /// Added By Dharmraj for ticket #538, 23-06-2014
+        /// </summary>
+        /// <returns></returns>
+        public List<Guid> GetSubOrdinatesWithPeers()
+        {
+            //Get all subordinates of current user
+            BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
+            List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
+            lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+            var lstSubOrdinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId)
+                                                        .ToList()
+                                                        .Select(u => u.UserId)
+                                                        .ToList();
+            var ManagerId = lstUserHierarchy.FirstOrDefault(u => u.UserId == Sessions.User.UserId).ManagerId;
+            if (ManagerId != null)
+            {
+                var lstPeersId = lstUserHierarchy.Where(u => u.ManagerId == ManagerId)
+                                                        .ToList()
+                                                        .Select(u => u.UserId)
+                                                        .ToList();
+                if (lstPeersId.Count > 0)
+                {
+                    var lstPeersSubOrdinatesId = lstUserHierarchy.Where(u => lstPeersId.Contains(u.ManagerId.GetValueOrDefault(Guid.Empty)))
+                                                            .ToList()
+                                                            .Select(u => u.UserId)
+                                                            .ToList();
+
+                    // Get current user permission for Tactic ApproveForPeers.
+                    bool IsTacticApproveForPeersAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticApproveForPeers);
+
+                    if (IsTacticApproveForPeersAuthorized)
+                    {
+                        lstSubOrdinates = lstSubOrdinates.Concat(lstPeersSubOrdinatesId).ToList();
+                    }
+                }
+            }
+
+            return lstSubOrdinates;
         }
 
         #endregion
@@ -4265,18 +4408,29 @@ namespace RevenuePlanner.Controllers
                                      where bun.BusinessUnitId == im.BusinessUnitId
                                      select bun.Title).FirstOrDefault();
             ViewBag.BudinessUnitTitle = businessunittitle.ToString();
-            bool isValidDirectorUser = false;
+            //bool isValidDirectorUser = false;
             bool isValidOwner = false;
-            if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
-            {
-                isValidDirectorUser = true;
-            }
+            //if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
+            //{
+            //    isValidDirectorUser = true;
+            //}
             if (im.OwnerId == Sessions.User.UserId)
             {
                 isValidOwner = true;
             }
-            ViewBag.IsValidDirectorUser = isValidDirectorUser;
+            //ViewBag.IsValidDirectorUser = isValidDirectorUser;
             ViewBag.IsValidOwner = isValidOwner;
+
+            //To get permission status for Approve campaign , By dharmraj PL #538
+            var lstSubOrdinates = GetSubOrdinatesWithPeers();
+
+            bool isValidManagerUser = false;
+            if (lstSubOrdinates.Contains(im.OwnerId))
+            {
+                isValidManagerUser = true;
+            }
+            ViewBag.IsValidManagerUser = isValidManagerUser;
+
             return PartialView("_ReviewImprovementTactic");
         }
 
