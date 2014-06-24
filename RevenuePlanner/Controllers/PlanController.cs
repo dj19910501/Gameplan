@@ -3118,6 +3118,8 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
                 // To get permission status for Plan Edit, By dharmraj PL #519
                 ViewBag.IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+                // To get permission status for edit own and subordinate's plans, By dharmraj PL #519
+                ViewBag.IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
 
             }
             catch (Exception e)
@@ -3146,6 +3148,8 @@ namespace RevenuePlanner.Controllers
             lstOwnAndSubOrdinates.Add(Sessions.User.UserId);
             // Get current user permission for edit own and subordinates plans.
             bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+            // To get permission status for Plan Edit, By dharmraj PL #519
+            bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
 
             Guid BUId = Guid.Empty;
             if (!string.IsNullOrEmpty(BusinessUnit))
@@ -3183,8 +3187,13 @@ namespace RevenuePlanner.Controllers
                         objPlanSelector.MQLS = (item.MQLs).ToString("#,##0");
                         objPlanSelector.Budget = (item.Budget).ToString("#,##0");
                         objPlanSelector.Status = item.Status;
+
                         // Added to check edit status for current user by dharmraj for #538
-                        if (IsPlanEditOwnAndSubordinatesAuthorized)
+                        if (IsPlanEditAllAuthorized)
+                        {
+                            objPlanSelector.IsPlanEditable = true;
+                        }
+                        else if (IsPlanEditOwnAndSubordinatesAuthorized)
                         {
                             if (lstOwnAndSubOrdinates.Contains(item.CreatedBy))
                             {

@@ -8,8 +8,10 @@
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     string strConfirmationmessage = Common.objCached.PlanDeleteConfirmMessage;
     bool IsPlanEditAllAuthorized = (bool)ViewBag.IsPlanEditAllAuthorized;
+    bool IsPlanEditOwnAndSubordinatesAuthorized = (bool)ViewBag.IsPlanEditOwnAndSubordinatesAuthorized;
 }
 
+@Html.Hidden("IsPlanEditOwnAndSubordinatesAuthorized", IsPlanEditOwnAndSubordinatesAuthorized)
 @Html.Hidden("IsPlanEditAllAuthorized", IsPlanEditAllAuthorized)
 
 @section Sidebar
@@ -70,7 +72,7 @@
                 <th class="width150px">Budget</th>
                 <th>Status</th>
                 <th class="width75">Last Updated</th>
-                @if (IsPlanEditAllAuthorized)
+                @if (IsPlanEditAllAuthorized || IsPlanEditOwnAndSubordinatesAuthorized)
                 {
                     <th class="width50px">Action</th>       
                 }
@@ -308,7 +310,7 @@
                 '<td>' + _Status + '</td>' +
                 '<td>' + _LastUpdated + '</td>';
 
-        if ($('#IsPlanEditAllAuthorized').val() == 'True') {
+        if ($('#IsPlanEditAllAuthorized').val() == 'True' || $("#IsPlanEditOwnAndSubordinatesAuthorized").val() == 'True') {
             if (_IsPlanEditable) {
                 $html += '<td><span class="delete-temp-program width5"></span><span class="edit-temp-program width5"></span></td>';
             }

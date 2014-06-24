@@ -763,7 +763,11 @@ namespace RevenuePlanner.Controllers
             bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
             bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
             var objPlan = db.Plans.FirstOrDefault(p => p.PlanId == Sessions.PlanId);
-            if (IsPlanEditOwnAndSubordinatesAuthorized && IsPlanEditAllAuthorized)
+            if (IsPlanEditAllAuthorized)
+            {
+                IsPlanEditable = true;
+            }
+            else if (IsPlanEditOwnAndSubordinatesAuthorized)
             {
                 if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy))
                 {
@@ -2039,7 +2043,12 @@ namespace RevenuePlanner.Controllers
                 bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
                 bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
                 var objPlan = db.Plans.FirstOrDefault(p => p.PlanId == Sessions.PlanId);
-                if (IsPlanEditOwnAndSubordinatesAuthorized && IsPlanEditAllAuthorized)
+
+                if (IsPlanEditAllAuthorized)
+                {
+                    ViewBag.IsPlanEditable = true;
+                }
+                else if (IsPlanEditOwnAndSubordinatesAuthorized)
                 {
                     if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy))
                     {
