@@ -1,4 +1,4 @@
---Run this script on MRP database
+--Run this script on MRP  database
 
 --==============================Start Script-1 (Update dbo.Funnel table) ===============================================
 IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME='Funnel')
