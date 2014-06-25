@@ -104,7 +104,7 @@
                         <div class="row-fluid calc-height">
                             <div class="span12">
 
-                                <div id="DivAddRolePopup" class="form-inspect-share hide fade in height-auto" role="dialog" style="display: block;">
+                                <div id="DivAddRolePopup" class="form-inspect-share hide fade in height-auto popup" role="dialog" style="display: block;">
 
                                     <div style="padding-bottom: 20px;" class="login-wrapper">
                                         <h2 class="primary-title source-sans-proregular without-text-shadow">Adding a new role</h2>
@@ -179,6 +179,7 @@
     $('#addrole').click(function () {
         $('.newrole').val('');
         $(".newrole").removeClass("error");
+        $('#errorMessage').css("display", "none");
         $('#DivPartialShareTactic').show();
     });
 
@@ -194,6 +195,7 @@
     $('.btnCopy').click(function () {
         $('#copyroledesc').val('');
         $(".copyroledesc").removeClass("error");
+        $('#errorMessagecopy').css("display", "none");
         var id = $(this).next().val();
         var roleselected = $("#rolelabel" + id).html();
         originalid = $(this).next().val();
@@ -226,7 +228,7 @@
         });
 
         if (flag == 1) {
-            var msgspan = "Please enter values in all field.";
+            var msgspan = "Please enter value in the above field.";
             $("#errorMessage").css("display", "block");
             $("#spanErrorMessageRole").text(msgspan);
         } else {
@@ -279,7 +281,7 @@
         });
 
         if (flag == 1) {
-            var msgspan = "Please enter values in all field.";
+            var msgspan = "Please enter value in the above field.";
             $("#errorMessagecopy").css("display", "block");
             $("#spanErrorMessageRolecopy").text(msgspan);
         } else {
@@ -339,10 +341,11 @@ $('.btnEdit').click(function () {
     window.location.href = url + "?roleId=" + id;
 });
 
-$('.delete-temp-program').click(function () {
-    var id = $(this).children().val();
-    var roleselected = $("#rolelabel" + id).html();
-    var url = '@Url.Content("~/Organization/Delete/")';
+    $('.delete-temp-program').click(function () {
+        $('#errorMessagedel').css("display", "none");
+        var id = $(this).children().val();
+        var roleselected = $("#rolelabel" + id).html();
+        var url = '@Url.Content("~/Organization/Delete/")';
         //how to load partial view....
         $("#loaddiv").load(url + "?roleId=" + id, "&selectedrole=" + roleselected);
     });

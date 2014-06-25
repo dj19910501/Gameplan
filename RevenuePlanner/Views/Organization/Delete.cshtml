@@ -46,15 +46,15 @@
                                 </span>
                             </div>
                         }
+                         <!--error message-->
+                          <div id="errorMessagedel" class="alert hide alert-error message-position">
+                          <a class="close">×</a>
+                         <strong></strong><span id="spanErrorMessagedel"></span>
+                         </div>
+                         <!--error message-->
                         <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" value="Submit" id="delbtn">Delete Role</button>
                         <button class="cancel-btn btn-link text-shadow-black" type="button" id="delcancelbtn">Cancel</button>
                     </div>
-                    <!--success message-->
-                    <div id="successMessagedel" class="alert hide alert-success message-position">
-                        <a class="close">×</a>
-                        <strong>Success.</strong><span id="spanSuccessMessageRole"></span>
-                    </div>
-                    <!--success message-->
                 </div>
             </div>
         </div>
@@ -66,6 +66,13 @@
     $(".selectBox select").selectbox();
     $('#delcancelbtn').click(function () {
         $('#DivPartialShareTacticDel').hide();
+    });
+
+
+    $(".alert").find(".close").on("click", function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        $(this).closest(".alert").slideUp(400);
     });
 
     function close_popup() {
@@ -84,27 +91,36 @@
     $('#delbtn').click(function () {
         var deleterole = '@ViewData["deleterole"]';
         var reassignrole = $('#ddllist').val();
+        var check = '@lstUsers.Count';
 
-        $.ajax({
-            url: '@Url.Content("~/Organization/DeleteRole/")',
-            data: {
-                delroleid: deleterole,
-                reassignroleid: reassignrole
-            },
-            type: 'POST',
-            cache: false,
-            success: function (result) {
-                if (result == true) {
-                    var url = '';
-                    url = '@Url.Content("~/Organization/ManageRoles")';
-                    window.location.href = url;
+        if (parseInt(check) > 0 && reassignrole == "") {
+            var msgspan = "Please select a role to reassign.";
+            $("#errorMessagedel").css("display", "block");
+            $("#spanErrorMessagedel").text(msgspan);
+            return false;
+        }
+        else {
+            $.ajax({
+                url: '@Url.Content("~/Organization/DeleteRole/")',
+                data: {
+                    delroleid: deleterole,
+                    reassignroleid: reassignrole
+                },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    if (result == true) {
+                        var url = '';
+                        url = '@Url.Content("~/Organization/ManageRoles")';
+                        window.location.href = url;
+                    }
+                    else {
+                        var msgspan = "Error.";
+                        $("#errorMessage").css("display", "block");
+                        $("#spanErrorMessageRole").text(msgspan);
+                    }
                 }
-                else {
-                    var msgspan = "Error.";
-                    $("#errorMessage").css("display", "block");
-                    $("#spanErrorMessageRole").text(msgspan);
-                }
-            }
-        });
+            });
+        }
     });
 </script>

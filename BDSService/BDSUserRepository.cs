@@ -1152,7 +1152,7 @@ namespace BDSService
             //rolelist = db.Roles.Where(role => role.IsDeleted == false).ToList();
             rolelist = (from role in db.Roles
                         join approle in db.Application_Role on role.RoleId equals approle.RoleId
-                        where approle.ApplicationId == applicationid
+                        where approle.ApplicationId == applicationid && role.IsDeleted == false
                         select role).OrderBy(role => role.Title).ToList();//change review point order by clause
             if (rolelist.Count > 0)
             {
@@ -1459,8 +1459,10 @@ namespace BDSService
                 }
                 else
                 {
-                    db.Entry(objnew).State = EntityState.Deleted;
+                    objnew.IsDeleted = true;
+                    db.Entry(objnew).State = EntityState.Modified;
                     db.SaveChanges();
+
                     if (objuser.Count > 0 && reassignroleid != null && reassignroleid != Guid.Empty)
                     {
                         foreach (var item in objuser)
@@ -1484,7 +1486,8 @@ namespace BDSService
                         db.SaveChanges();
                     }
 
-                    db.Entry(obj).State = EntityState.Deleted;
+                    obj.IsDeleted = true;
+                    db.Entry(obj).State = EntityState.Modified;
                     db.SaveChanges();
                     retVal = 1;
                 }

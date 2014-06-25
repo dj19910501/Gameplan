@@ -97,6 +97,7 @@ namespace RevenuePlanner.Controllers
             {
                 BDSService.Role objrole = new BDSService.Role();
                 objrole.Description = roledesc.Trim();
+                objrole.Title = roledesc.Trim();
                 Session["session"] = objrole;
 
                 int retval = objBDSServiceClient.DuplicateRoleCheck(objrole, Sessions.ApplicationId);
@@ -170,6 +171,7 @@ namespace RevenuePlanner.Controllers
             {
                 BDSService.BDSServiceClient bdsuserrepository = new BDSServiceClient();
                 var memberlist = bdsuserrepository.GetAllRoleList(Sessions.ApplicationId);
+                memberlist = memberlist.Where(rolelist => rolelist.RoleId != roleid).ToList();//bug point
                 foreach (var item in memberlist)
                 {
                     RoleModel role = new RoleModel();

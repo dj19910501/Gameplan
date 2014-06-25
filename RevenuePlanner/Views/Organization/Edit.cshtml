@@ -47,7 +47,7 @@
 <!--error message-->
 <div id="errorMessage" class="alert hide alert-error message-position">
     <a class="close">×</a>
-    <strong>Error!</strong><span id="spanErrorMessageRole"></span>
+    <strong>Error! </strong><span id="spanErrorMessageRole"></span>
 </div>
 <!--error message-->
 
@@ -124,7 +124,7 @@
                             else
                             {
                             <tr>
-                                <td>@item.ActivityTitle</td>
+                                <td>@Html.Raw(item.ActivityTitle)</td>
                                 <td width="23">
                                     @if (lstpermission.Where(l => l.ApplicationActivityId == item.ApplicationActivityId).SingleOrDefault() != null)
                                     {                                  
@@ -144,7 +144,7 @@
                         }
                     </table>
                 </div>
-                <div class="bottom-btns">
+                <div class="bottom-btns margin-bottom-20">
                     <span class="btn-group">
                         <button class="btn btn-blue btn-large without-text-shadow source-sans-proregular" type="submit" value="Submit" id="savebtn">Save &amp; Close</button>
                     </span>
@@ -160,7 +160,7 @@
                         <div class="span12">
                             <div id="DivDefaultRolePopup" class="form-inspect-share hide fade in height-auto" role="dialog" style="display: block;">
                                 <div style="padding-bottom: 20px;" class="login-wrapper">
-                                    <h4 class="source-sans-prosemibold">Defaults Saved.</h4>
+                                    <h4 class="source-sans-prosemibold">Role Permissions Saved.</h4>
                                     <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" value="Submit" id="closebtn">Close</button>
                                 </div>
                             </div>
@@ -281,7 +281,7 @@
             if (count > 0) {
             }
             else {
-                ShowError("Please Select atleast one permission");
+                ShowError("Please Select at least one permission");
                 return false;
             }
             //e.preventDefault();

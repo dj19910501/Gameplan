@@ -2920,7 +2920,7 @@ label {
 #DivDeleteRolePopup {
     z-index: 10500;
     height: auto;
-    width: 330px;
+    width: 360px;/*change by uday for chrome browser*/
 }
 
     #DivDeleteRolePopup h4, #DivAddRolePopup h4, #DivAddRolePopupcopy h4, #DivDefaultRolePopup h4 {
@@ -2968,18 +2968,6 @@ label {
         width: 96%;
     }
 
-    #DivAddRolePopup .message-position {
-        float: left;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        margin-top: 0 !important;
-        padding: 8px 24px 8px 8px;
-    }
-
-    #DivAddRolePopup .alert .close {
-        right: -15px;
-        top: 0;
-    }
 
 #DivAddRolePopupcopy {
     z-index: 10500;
@@ -2996,7 +2984,7 @@ label {
         margin-left: 0 !important;
         margin-right: 0 !important;
         margin-top: 0 !important;
-        padding: 8px 24px 8px 8px;
+        padding: 8px 24px 8px;
     }
 
     .popup .alert .close {
@@ -3279,3 +3267,7 @@ font-family: 'source_sans_proregular', Arial, "sans-serif" !important; color:#ff
 						border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;
 }
 .profile-tooltip-inner label{font-family: 'source_sans_prolight', Arial, "sans-serif"; color:#C0C0C0; display:inline-block;}
+
+.margin-bottom-20 {
+    margin-bottom:20px;
+}
