@@ -25,7 +25,7 @@
         <li class="item active">@*uday for new screen*@
             <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
         </li>
-        @if (Sessions.User.RoleCode.Equals(Enums.RoleCodes.SA.ToString(), StringComparison.OrdinalIgnoreCase) || Sessions.User.RoleCode.Equals(Enums.RoleCodes.CA.ToString(), StringComparison.OrdinalIgnoreCase))
+        @if ((bool)ViewBag.IsIntegrationCredentialCreateEditAuthorized)   // Modified by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
         {
             <li class="item">
                 <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
@@ -52,8 +52,11 @@
                 <ul class="nav nav-pills nav-stacked width216">
                     <li><a href='@ViewPermissionURL'>My Permissions</a></li>
                     <li><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
+                    @if ((bool)ViewBag.IsUserAdminAuthorized)   // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
+                    {
                     <li><a href="#">Manage Users</a></li>
                     <li class="active"><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
+                    }
                 </ul>
             </div>
         </div>

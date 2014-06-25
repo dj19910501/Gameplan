@@ -30,7 +30,7 @@
         <li class="item active">
             <a class="source-sans-probold organization" href="#"><span></span>ORGANIZATION</a>
         </li>
-        @if (Sessions.User.RoleCode.Equals(Enums.RoleCodes.SA.ToString(), StringComparison.OrdinalIgnoreCase) || Sessions.User.RoleCode.Equals(Enums.RoleCodes.CA.ToString(), StringComparison.OrdinalIgnoreCase))
+        @if ((bool)ViewBag.IsIntegrationCredentialCreateEditAuthorized)   // Modified by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
         {
             <li class="item">
                 <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
@@ -65,8 +65,11 @@
                 <ul class="nav nav-pills nav-stacked width216">
                     <li><a href='@ViewPermissionURL'>My Permissions</a></li>
                     <li class="active"><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
+                    @if ((bool)ViewBag.IsUserAdminAuthorized)   // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
+                    {
                     <li><a href="#">Manage Users</a></li>
                     <li><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
+                    }
                 </ul>
             </div>
         </div>
@@ -102,7 +105,10 @@
                                 }
                                 <span id="@userLabelId">@UserHierarchy[i].FirstName @UserHierarchy[i].LastName</span>
                                 <span class="job-role" style="background-color:@UserHierarchy[i].ColorCode">@UserHierarchy[i].RoleTitle</span>
+                                @if ((bool)ViewBag.IsUserAdminAuthorized)
+                                {
                                 <a class="btn btn-default" href='@EditURL'>Edit</a>
+                                }
                                 <a class="btn btn-default" href='@ViewURL'>View</a>
                                 <a class="btn btn-default" onclick="showContactDetail('@userId');">Contact</a>
                                 <input type="hidden" id="@hdnEmailId" value="@UserHierarchy[i].Email" />

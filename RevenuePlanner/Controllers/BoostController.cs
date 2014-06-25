@@ -26,12 +26,17 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Best In Class
         /// </summary>
+        [AuthorizeUser(Enums.ApplicationActivity.BoostBestInClassNumberEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult BestInClass()
         {
-            if (Sessions.IsPlanner)
-            {
-                return RedirectToAction("Index", "NoAccess");
-            }
+            // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            ViewBag.IsBoostBestInClassNumberEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostBestInClassNumberEdit);
+            ViewBag.IsBoostImprovementTacticCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit);
+
+            //if (Sessions.IsPlanner)
+            //{
+            //    return RedirectToAction("Index", "NoAccess");
+            //}
 
             List<BestInClassModel> listBestInClassModel = new List<BestInClassModel>();
             //added by uday for ticket #501 deleted old code and added new parameters like stagetype_cr etc.
@@ -150,10 +155,26 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         public ActionResult Index()
         {
-            if (Sessions.IsPlanner)
+            // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            var IsBoostImprovementTacticCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit);
+            var IsBoostBestInClassNumberEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostBestInClassNumberEdit);
+            if (IsBoostImprovementTacticCreateEditAuthorized == false && IsBoostBestInClassNumberEditAuthorized == true)
+            {
+                return RedirectToAction("BestInClass");
+            }
+            else if (IsBoostImprovementTacticCreateEditAuthorized == false && IsBoostBestInClassNumberEditAuthorized == false)
             {
                 return RedirectToAction("Index", "NoAccess");
             }
+            
+            ViewBag.IsBoostImprovementTacticCreateEditAuthorized = IsBoostImprovementTacticCreateEditAuthorized;
+            ViewBag.IsBoostBestInClassNumberEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostBestInClassNumberEdit);
+            // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+
+            //if (Sessions.IsPlanner)
+            //{
+            //    return RedirectToAction("Index", "NoAccess");
+            //}
             return View();
         }
         /// <summary>

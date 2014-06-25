@@ -40,24 +40,28 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult Index()
         {
-            if (Sessions.RolePermission != null)
-            {
-                Common.Permission permission = Common.GetPermission(ActionItem.Pref);
-                switch (permission)
-                {
-                    case Common.Permission.FullAccess:
-                        break;
-                    case Common.Permission.NoAccess:
-                        return RedirectToAction("Index", "NoAccess");
-                    case Common.Permission.NotAnEntity:
-                        break;
-                    case Common.Permission.ViewOnly:
-                        ViewBag.IsViewOnly = "true";
-                        break;
-                }
-            }
+            // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin); 
 
-            string permRoleCodesForDel = string.Empty;
+            //if (Sessions.RolePermission != null)
+            //{
+            //    Common.Permission permission = Common.GetPermission(ActionItem.Pref);
+            //    switch (permission)
+            //    {
+            //        case Common.Permission.FullAccess:
+            //            break;
+            //        case Common.Permission.NoAccess:
+            //            return RedirectToAction("Index", "NoAccess");
+            //        case Common.Permission.NotAnEntity:
+            //            break;
+            //        case Common.Permission.ViewOnly:
+            //            ViewBag.IsViewOnly = "true";
+            //            break;
+            //    }
+            //}
+
+            //string permRoleCodesForDel = string.Empty;
             List<UserModel> teamMemberList = new List<UserModel>();
             List<BDSService.User> lstUser = null;
             try
@@ -94,28 +98,28 @@ namespace RevenuePlanner.Controllers
                         teamMemberList.Add(objUserModel);
                     }
                 }
-                if (Sessions.IsSystemAdmin || Sessions.IsClientAdmin || Sessions.IsDirector)
-                {
-                    ViewBag.IsAdmin = "true";
-                }
-                Enums.Role role = Common.GetKey<Enums.Role>(Enums.RoleCodeValues, Sessions.User.RoleCode);
-                switch (role)
-                {
-                    case Enums.Role.SystemAdmin:
-                        permRoleCodesForDel = Convert.ToString(Enums.RoleCodes.CA) + "," + Convert.ToString(Enums.RoleCodes.P) + "," + Convert.ToString(Enums.RoleCodes.D);
-                        break;
-                    case Enums.Role.ClientAdmin:
-                        permRoleCodesForDel = Convert.ToString(Enums.RoleCodes.P) + "," + Convert.ToString(Enums.RoleCodes.D);
-                        break;
-                    case Enums.Role.Director:
-                        permRoleCodesForDel = Convert.ToString(Enums.RoleCodes.P);
-                        break;
-                    case Enums.Role.Planner:
-                        permRoleCodesForDel = string.Empty;
-                        break;
-                    default:
-                        break;
-                }
+                //if (Sessions.IsSystemAdmin || Sessions.IsClientAdmin || Sessions.IsDirector)
+                //{
+                //    ViewBag.IsAdmin = "true";
+                //}
+                //Enums.Role role = Common.GetKey<Enums.Role>(Enums.RoleCodeValues, Sessions.User.RoleCode);
+                //switch (role)
+                //{
+                //    case Enums.Role.SystemAdmin:
+                //        permRoleCodesForDel = Convert.ToString(Enums.RoleCodes.CA) + "," + Convert.ToString(Enums.RoleCodes.P) + "," + Convert.ToString(Enums.RoleCodes.D);
+                //        break;
+                //    case Enums.Role.ClientAdmin:
+                //        permRoleCodesForDel = Convert.ToString(Enums.RoleCodes.P) + "," + Convert.ToString(Enums.RoleCodes.D);
+                //        break;
+                //    case Enums.Role.Director:
+                //        permRoleCodesForDel = Convert.ToString(Enums.RoleCodes.P);
+                //        break;
+                //    case Enums.Role.Planner:
+                //        permRoleCodesForDel = string.Empty;
+                //        break;
+                //    default:
+                //        break;
+                //}
             }
             catch (Exception e)
             {
@@ -132,7 +136,7 @@ namespace RevenuePlanner.Controllers
                     TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
                 }
             }
-            ViewBag.PermRoleCodesForDel = permRoleCodesForDel;
+            //ViewBag.PermRoleCodesForDel = permRoleCodesForDel;
             return View(teamMemberList.AsEnumerable());
         }
 
@@ -146,22 +150,25 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult ChangePassword()
         {
-            if (Sessions.RolePermission != null)
-            {
-                Common.Permission permission = Common.GetPermission(ActionItem.Pref);
-                switch (permission)
-                {
-                    case Common.Permission.FullAccess:
-                        break;
-                    case Common.Permission.NoAccess:
-                        return RedirectToAction("Index", "NoAccess");
-                    case Common.Permission.NotAnEntity:
-                        break;
-                    case Common.Permission.ViewOnly:
-                        ViewBag.IsViewOnly = "true";
-                        break;
-                }
-            }
+            // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit); 
+
+            //if (Sessions.RolePermission != null)
+            //{
+            //    Common.Permission permission = Common.GetPermission(ActionItem.Pref);
+            //    switch (permission)
+            //    {
+            //        case Common.Permission.FullAccess:
+            //            break;
+            //        case Common.Permission.NoAccess:
+            //            return RedirectToAction("Index", "NoAccess");
+            //        case Common.Permission.NotAnEntity:
+            //            break;
+            //        case Common.Permission.ViewOnly:
+            //            ViewBag.IsViewOnly = "true";
+            //            break;
+            //    }
+            //}
             return View();
         }
 
@@ -310,6 +317,9 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult SecurityQuestion()
         {
+            // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit); 
+
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
             var lstSecurityQuestion = objBDSServiceClient.GetSecurityQuestion();
 
@@ -468,25 +478,25 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         private void LoadCreateModeComponents(string clientId = "")
         {
-            string permRoleCodesForIns = string.Empty;
-            Enums.Role role = Common.GetKey<Enums.Role>(Enums.RoleCodeValues, Sessions.User.RoleCode);
-            switch (role)
-            {
-                case Enums.Role.SystemAdmin:
-                    permRoleCodesForIns = Convert.ToString(Enums.RoleCodes.CA) + "," + Convert.ToString(Enums.RoleCodes.P) + "," + Convert.ToString(Enums.RoleCodes.D);
-                    break;
-                case Enums.Role.ClientAdmin:
-                    permRoleCodesForIns = Convert.ToString(Enums.RoleCodes.P) + "," + Convert.ToString(Enums.RoleCodes.D);
-                    break;
-                case Enums.Role.Director:
-                    permRoleCodesForIns = Convert.ToString(Enums.RoleCodes.P);
-                    break;
-                case Enums.Role.Planner:
-                    permRoleCodesForIns = string.Empty;
-                    break;
-                default:
-                    break;
-            }
+            //string permRoleCodesForIns = string.Empty;
+            //Enums.Role role = Common.GetKey<Enums.Role>(Enums.RoleCodeValues, Sessions.User.RoleCode);
+            //switch (role)
+            //{
+            //    case Enums.Role.SystemAdmin:
+            //        permRoleCodesForIns = Convert.ToString(Enums.RoleCodes.CA) + "," + Convert.ToString(Enums.RoleCodes.P) + "," + Convert.ToString(Enums.RoleCodes.D);
+            //        break;
+            //    case Enums.Role.ClientAdmin:
+            //        permRoleCodesForIns = Convert.ToString(Enums.RoleCodes.P) + "," + Convert.ToString(Enums.RoleCodes.D);
+            //        break;
+            //    case Enums.Role.Director:
+            //        permRoleCodesForIns = Convert.ToString(Enums.RoleCodes.P);
+            //        break;
+            //    case Enums.Role.Planner:
+            //        permRoleCodesForIns = string.Empty;
+            //        break;
+            //    default:
+            //        break;
+            //}
             if (!String.IsNullOrWhiteSpace(clientId))
             {
                 Guid userClientId = Guid.Parse(clientId);
@@ -502,18 +512,18 @@ namespace RevenuePlanner.Controllers
             ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId);
             ViewBag.CurrClientId = Sessions.User.ClientId;
             ViewBag.CurrClient = Sessions.User.Client;
-
-            if (Sessions.IsSystemAdmin)
+            var IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
+            if (IsUserAdminAuthorized)//Sessions.IsSystemAdmin)
             {
-                ViewBag.IsSysAdmin = true;
+                //ViewBag.IsSysAdmin = true;
                 ViewData["Clients"] = objBDSServiceClient.GetClientList();
             }
             else
             {
-                ViewBag.IsSysAdmin = false;
+                //ViewBag.IsSysAdmin = false;
             }
             // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
-            if (role == Enums.Role.ClientAdmin || role == Enums.Role.SystemAdmin)
+            if (IsUserAdminAuthorized)
             {
                 // Get All User List for Manager
                 ViewData["ManagerList"] = GetManagersList(Guid.Empty);
@@ -525,28 +535,33 @@ namespace RevenuePlanner.Controllers
         /// Add New User
         /// </summary>
         /// <returns></returns>
+        [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult Create()
         {
+            // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
+
             try
             {
-                if (Sessions.RolePermission != null)
-                {
-                    Common.Permission permission = Common.GetPermission(ActionItem.Pref);
-                    switch (permission)
-                    {
-                        case Common.Permission.FullAccess:
-                            break;
-                        case Common.Permission.NoAccess:
-                            return RedirectToAction("Index", "NoAccess");
-                        case Common.Permission.NotAnEntity:
-                            break;
-                        case Common.Permission.ViewOnly:
-                            ViewBag.IsViewOnly = "true";
-                            break;
-                    }
-                }
+                //if (Sessions.RolePermission != null)
+                //{
+                //    Common.Permission permission = Common.GetPermission(ActionItem.Pref);
+                //    switch (permission)
+                //    {
+                //        case Common.Permission.FullAccess:
+                //            break;
+                //        case Common.Permission.NoAccess:
+                //            return RedirectToAction("Index", "NoAccess");
+                //        case Common.Permission.NotAnEntity:
+                //            break;
+                //        case Common.Permission.ViewOnly:
+                //            ViewBag.IsViewOnly = "true";
+                //            break;
+                //    }
+                //}
 
-                if (Sessions.IsSystemAdmin)
+                if ((bool)ViewBag.IsUserAdminAuthorized)
                 {
                     LoadCreateModeComponents();
                 }
@@ -730,34 +745,34 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         private void LoadEditModeComponents(Guid clientId, string src)
         {
-            string permRoleCodesForDel = string.Empty;
-            string permRoleCodesForUpd = string.Empty;
-            Enums.Role role = Common.GetKey<Enums.Role>(Enums.RoleCodeValues, Sessions.User.RoleCode);
-            switch (role)
-            {
-                case Enums.Role.SystemAdmin:
-                    permRoleCodesForUpd = Convert.ToString(Enums.RoleCodes.CA) + "," + Convert.ToString(Enums.RoleCodes.P) + "," + Convert.ToString(Enums.RoleCodes.D);
-                    if (src.ToLower() == "myaccount")
-                    {
-                        permRoleCodesForUpd = Convert.ToString(Enums.RoleCodes.SA) + "," + permRoleCodesForUpd;
-                    }
-                    permRoleCodesForDel = Convert.ToString(Enums.RoleCodes.CA) + "," + Convert.ToString(Enums.RoleCodes.P) + "," + Convert.ToString(Enums.RoleCodes.D);
-                    break;
-                case Enums.Role.ClientAdmin:
-                    permRoleCodesForUpd = Convert.ToString(Enums.RoleCodes.P) + "," + Convert.ToString(Enums.RoleCodes.D);
-                    permRoleCodesForDel = Convert.ToString(Enums.RoleCodes.P) + "," + Convert.ToString(Enums.RoleCodes.D);
-                    break;
-                case Enums.Role.Director:
-                    permRoleCodesForUpd = Convert.ToString(Enums.RoleCodes.P);
-                    permRoleCodesForDel = Convert.ToString(Enums.RoleCodes.P);
-                    break;
-                case Enums.Role.Planner:
-                    permRoleCodesForUpd = string.Empty;
-                    permRoleCodesForDel = string.Empty;
-                    break;
-                default:
-                    break;
-            }
+            //string permRoleCodesForDel = string.Empty;
+            //string permRoleCodesForUpd = string.Empty;
+            //Enums.Role role = Common.GetKey<Enums.Role>(Enums.RoleCodeValues, Sessions.User.RoleCode);
+            //switch (role)
+            //{
+            //    case Enums.Role.SystemAdmin:
+            //        permRoleCodesForUpd = Convert.ToString(Enums.RoleCodes.CA) + "," + Convert.ToString(Enums.RoleCodes.P) + "," + Convert.ToString(Enums.RoleCodes.D);
+            //        if (src.ToLower() == "myaccount")
+            //        {
+            //            permRoleCodesForUpd = Convert.ToString(Enums.RoleCodes.SA) + "," + permRoleCodesForUpd;
+            //        }
+            //        permRoleCodesForDel = Convert.ToString(Enums.RoleCodes.CA) + "," + Convert.ToString(Enums.RoleCodes.P) + "," + Convert.ToString(Enums.RoleCodes.D);
+            //        break;
+            //    case Enums.Role.ClientAdmin:
+            //        permRoleCodesForUpd = Convert.ToString(Enums.RoleCodes.P) + "," + Convert.ToString(Enums.RoleCodes.D);
+            //        permRoleCodesForDel = Convert.ToString(Enums.RoleCodes.P) + "," + Convert.ToString(Enums.RoleCodes.D);
+            //        break;
+            //    case Enums.Role.Director:
+            //        permRoleCodesForUpd = Convert.ToString(Enums.RoleCodes.P);
+            //        permRoleCodesForDel = Convert.ToString(Enums.RoleCodes.P);
+            //        break;
+            //    case Enums.Role.Planner:
+            //        permRoleCodesForUpd = string.Empty;
+            //        permRoleCodesForDel = string.Empty;
+            //        break;
+            //    default:
+            //        break;
+            //}
 
             if (clientId != null)
             {
@@ -772,8 +787,8 @@ namespace RevenuePlanner.Controllers
             ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId);
             ViewBag.CurrentUserId = Convert.ToString(Sessions.User.UserId);
             ViewBag.CurrentUserRole = Convert.ToString(Sessions.User.RoleCode);
-            ViewBag.PermRoleCodesForUpd = permRoleCodesForUpd;
-            ViewBag.PermRoleCodesForDel = permRoleCodesForDel;
+            //ViewBag.PermRoleCodesForUpd = permRoleCodesForUpd;
+            //ViewBag.PermRoleCodesForDel = permRoleCodesForDel;
         }
 
         /// <summary>
@@ -784,22 +799,26 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult Edit(string usrid = null, string src = "myaccount")
         {
-            if (Sessions.RolePermission != null)
-            {
-                Common.Permission permission = Common.GetPermission(ActionItem.Pref);
-                switch (permission)
-                {
-                    case Common.Permission.FullAccess:
-                        break;
-                    case Common.Permission.NoAccess:
-                        return RedirectToAction("Index", "NoAccess");
-                    case Common.Permission.NotAnEntity:
-                        break;
-                    case Common.Permission.ViewOnly:
-                        ViewBag.IsViewOnly = "true";
-                        break;
-                }
-            }
+            // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin); 
+
+            //if (Sessions.RolePermission != null)
+            //{
+            //    Common.Permission permission = Common.GetPermission(ActionItem.Pref);
+            //    switch (permission)
+            //    {
+            //        case Common.Permission.FullAccess:
+            //            break;
+            //        case Common.Permission.NoAccess:
+            //            return RedirectToAction("Index", "NoAccess");
+            //        case Common.Permission.NotAnEntity:
+            //            break;
+            //        case Common.Permission.ViewOnly:
+            //            ViewBag.IsViewOnly = "true";
+            //            break;
+            //    }
+            //}
             Guid userId = new Guid();
             if (usrid == null)
             {
@@ -860,7 +879,7 @@ namespace RevenuePlanner.Controllers
                     }
                     LoadEditModeComponents(objUserModel.ClientId, src);
                     // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
-                    if ((Sessions.User.RoleCode == Enums.RoleCodes.CA.ToString() || Sessions.User.RoleCode == Enums.RoleCodes.SA.ToString()) && objUserModel.RoleCode != Enums.RoleCodes.SA.ToString())
+                    if ((bool)ViewBag.IsUserAdminAuthorized && Sessions.User.UserId != objUser.UserId)
                     {
                         // Get All User List for Manager
                         ViewData["ManagerList"] = GetManagersList(objUser.UserId);
@@ -914,6 +933,10 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public ActionResult Edit(UserModel form, HttpPostedFileBase file)
         {
+            // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin); 
+
             try
             {
                 if (ModelState.IsValid)
@@ -981,19 +1004,19 @@ namespace RevenuePlanner.Controllers
                         {
                             objUser.RoleCode = objRole.Code;
                             // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
-                            if ((Sessions.User.RoleCode == Enums.RoleCodes.CA.ToString() || Sessions.User.RoleCode == Enums.RoleCodes.SA.ToString()) && objUser.RoleCode != Enums.RoleCodes.SA.ToString())
+                            if ((bool)ViewBag.IsUserAdminAuthorized && Sessions.User.UserId != objUser.UserId)
                             {
                                 // Get All User List for Manager
                                 ViewData["ManagerList"] = GetManagersList(objUser.UserId);
                             }
-                            if (objUser.RoleCode == Enums.RoleCodes.CA.ToString() || objUser.RoleCode == Enums.RoleCodes.SA.ToString())
-                            {
-                                objUser.ManagerId = null;
-                            }
-                            else
-                            {
+                            //if (objUser.RoleCode == Enums.RoleCodes.CA.ToString() || objUser.RoleCode == Enums.RoleCodes.SA.ToString())
+                            //{
+                            //    objUser.ManagerId = null;
+                            //}
+                            //else
+                            //{
                                 objUser.ManagerId = form.ManagerId;
-                            }
+                            //}
                             // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
                         }
                     }
@@ -1066,22 +1089,26 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult Notifications()
         {
-            if (Sessions.RolePermission != null)
-            {
-                Common.Permission permission = Common.GetPermission(ActionItem.Pref);
-                switch (permission)
-                {
-                    case Common.Permission.FullAccess:
-                        break;
-                    case Common.Permission.NoAccess:
-                        return RedirectToAction("Index", "NoAccess");
-                    case Common.Permission.NotAnEntity:
-                        break;
-                    case Common.Permission.ViewOnly:
-                        ViewBag.IsViewOnly = "true";
-                        break;
-                }
-            }
+            // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin); 
+
+            //if (Sessions.RolePermission != null)
+            //{
+            //    Common.Permission permission = Common.GetPermission(ActionItem.Pref);
+            //    switch (permission)
+            //    {
+            //        case Common.Permission.FullAccess:
+            //            break;
+            //        case Common.Permission.NoAccess:
+            //            return RedirectToAction("Index", "NoAccess");
+            //        case Common.Permission.NotAnEntity:
+            //            break;
+            //        case Common.Permission.ViewOnly:
+            //            ViewBag.IsViewOnly = "true";
+            //            break;
+            //    }
+            //}
 
             string typeSM = Enums.NotificationType.SM.ToString().ToLower();
             string typeAM = Enums.NotificationType.AM.ToString().ToLower();
@@ -1372,9 +1399,9 @@ namespace RevenuePlanner.Controllers
         {
             if (Sessions.ApplicationId != Guid.Empty && Sessions.ApplicationId != null && Sessions.User.UserId != Guid.Empty && Sessions.User.UserId != null)
             {
-                //var UserList = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId, Sessions.ApplicationId);
-                var UserList = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
-                var ManagerList = UserList.Where(a => a.UserId != UserId && a.RoleCode != Enums.RoleCodes.SA.ToString() && a.IsDeleted.Equals(false)).Select(a => new UserModel { ManagerId = a.UserId, ManagerName = a.FirstName + " " + a.LastName }).ToList();
+                var UserList = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId, Sessions.ApplicationId);
+                //var UserList = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
+                var ManagerList = UserList.Where(a => a.IsDeleted.Equals(false) && a.UserId != UserId && a.IsDeleted.Equals(false)).Select(a => new UserModel { ManagerId = a.UserId, ManagerName = a.FirstName + " " + a.LastName }).ToList();
                 return ManagerList.OrderBy(a => a.ManagerName).ToList();
             }
             return null;

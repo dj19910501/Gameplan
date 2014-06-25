@@ -439,4 +439,10 @@
     <value>You are about to modify target stage of a tactic of published model, Do you want to continue?</value>
   </Field>
   <!-- End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528 -->
+  <!-- Start - Added By Sohel Pathan on 25/06/2014 for PL ticket #537 -->
+  <Field>
+    <Name>UnauthorizedCommentSection</Name>
+    <value>You are not authorized to view/add comments.</value>
+  </Field>
+  <!-- End - Added By Sohel Pathan on 25/06/2014 for PL ticket #537 -->
 </Messages>

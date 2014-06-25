@@ -8,12 +8,12 @@
     ViewBag.Title = "My Team";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     Layout = "~/Views/Shared/_Layout.cshtml";
-    string isViewOnly = ViewBag.IsViewOnly;
-    var isAdmin = (string)ViewBag.IsAdmin;
-    var permRoleCodesForDel = (string)ViewBag.PermRoleCodesForDel;
+    //string isViewOnly = ViewBag.IsViewOnly;
+    //var isAdmin = (string)ViewBag.IsAdmin;
+    //var permRoleCodesForDel = (string)ViewBag.PermRoleCodesForDel;
 }
 
-@Html.Hidden("IsViewOnly", isViewOnly)
+@*@Html.Hidden("IsViewOnly", isViewOnly)*@
 @Html.Hidden("SuccMsg", TempData["SuccessMessage"])
 @Html.Hidden("ErrMsg", TempData["ErrorMessage"])
 
@@ -28,13 +28,12 @@
              <li class="item">@*uday for new screen*@
             <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
         </li>
-        @if (Sessions.User.RoleCode.Equals(Enums.RoleCodes.SA.ToString(), StringComparison.OrdinalIgnoreCase) || Sessions.User.RoleCode.Equals(Enums.RoleCodes.CA.ToString(), StringComparison.OrdinalIgnoreCase))
+        @if ((bool)ViewBag.IsIntegrationCredentialCreateEditAuthorized)   // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
         {
             <li class="item">
                 <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
             </li>
         }
-      
     </ul>
 }
 
@@ -107,24 +106,24 @@
                             <td title="@item.RoleTitle">
                                 @Html.DisplayFor(model => item.RoleTitle)
                             </td>
-                            @if (permRoleCodesForDel != null)
+                            @if((bool)ViewBag.IsUserAdminAuthorized) //@if (permRoleCodesForDel != null)
                             {
-                                if (permRoleCodesForDel.Contains(item.RoleCode))
-                                {
-                                    if (isViewOnly != "true")
-                                    {
+                                //if (permRoleCodesForDel.Contains(item.RoleCode))
+                                //{
+                                //    if ((bool)ViewBag.IsUserAdminAuthorized) //if (isViewOnly != "true")
+                                //    {
                                 <td class="userDelete">
                                     <a href="@Url.Action("Delete", "User", new { id = item.UserId })" onclick="return confirm('Are you sure you want to delete this Member?');" >
                                         <span class="x-icon hide pull-right" title="Delete Member"></span>
                                     </a>
-                                </td>
+                                </td>@*
                                     }
                                     else
                                     {
                                 <td class="userDelete">
                                     <span></span>
                                 </td>
-                                    }
+                                    }*@
                                 }
                                 else
                                 {
@@ -132,12 +131,12 @@
                                     <span></span>
                                 </td>
                                 }
-                            }
+                            @*}*@
                         </tr>
                     }
                 </tbody>
             </table>
-            @if (!string.IsNullOrWhiteSpace(isAdmin) && isAdmin.ToLower() == "true")
+            @if ((bool)ViewBag.IsUserAdminAuthorized)   // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
             {
                 <p>
                     <a id="lnkAddUser" href="@Url.Action("Create", "User")" class="link-blue">Add New User</a>
@@ -152,10 +151,10 @@
 
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
 
-        if ($('#IsViewOnly').val() != '') {
-            $('#lnkAddUser').remove();
-            //$("#userTable:input").attr("disabled", true);
-        }
+        //if ($('#IsViewOnly').val() != '') {
+        //    $('#lnkAddUser').remove();
+        //    //$("#userTable:input").attr("disabled", true);
+        //}
 
         /*close x event on message*/
         $(".close").click(function (e) {
@@ -180,9 +179,9 @@
         }
 
         $('.myteam td').click(function () {
-            if ($('#IsViewOnly').val() != '') {
-                return false;
-            }
+            //if ($('#IsViewOnly').val() != '') {
+            //    return false;
+            //}
             var tdClass = this.getAttribute('class');
             var userId = $(this).closest('tr').attr('id');
             if (tdClass == null || tdClass == '') {

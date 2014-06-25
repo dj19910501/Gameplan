@@ -62,8 +62,13 @@ namespace RevenuePlanner.Controllers
             return View(listorganizationmodel.AsEnumerable());
         }
 
+        [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult ManageRoles()
         {
+            // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
+
             List<RoleModel> listrolemodel = new List<RoleModel>();
             try
             {
@@ -112,6 +117,10 @@ namespace RevenuePlanner.Controllers
 
         public ActionResult Edit(Guid roleId)
         {
+            // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
+
             try
             {
                 BDSService.BDSServiceClient bdsuserrepository = new BDSServiceClient();
@@ -261,6 +270,10 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult OrganizationHierarchy()
         {
+            // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
+
             BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
             try
             {
@@ -341,6 +354,15 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         public ActionResult ViewEditPermission(string Id, string Mode)
         {
+            // Start - Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
+
+            if ((bool)ViewBag.IsUserAdminAuthorized == false && Mode.ToLower() != "view" && Mode.ToLower() != "mypermission")
+            {
+                return RedirectToAction("Index", "NoAccess");
+            }
+            // End - Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
 
             ViewBag.PermissionMode = Mode;
             Guid UserId = Guid.Parse(Id);

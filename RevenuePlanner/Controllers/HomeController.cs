@@ -2290,6 +2290,12 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.IsValidManagerUser = isValidManagerUser;
 
+            // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            ViewBag.IsCommentsViewEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.CommentsViewEdit);
+            if((bool)ViewBag.IsCommentsViewEditAuthorized == false)
+                ViewBag.UnauthorizedCommentSection = Common.objCached.UnauthorizedCommentSection;
+            // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+
             return PartialView("Review");
         }
 
@@ -3344,6 +3350,12 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.IsValidManagerUser = isValidManagerUser;
 
+            // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            ViewBag.IsCommentsViewEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.CommentsViewEdit);
+            if ((bool)ViewBag.IsCommentsViewEditAuthorized == false)
+                ViewBag.UnauthorizedCommentSection = Common.objCached.UnauthorizedCommentSection;
+            // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+
             return PartialView("_ReviewProgram");
         }
 
@@ -3482,6 +3494,12 @@ namespace RevenuePlanner.Controllers
                 isValidManagerUser = true;
             }
             ViewBag.IsValidManagerUser = isValidManagerUser;
+
+            // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            ViewBag.IsCommentsViewEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.CommentsViewEdit);
+            if ((bool)ViewBag.IsCommentsViewEditAuthorized == false)
+                ViewBag.UnauthorizedCommentSection = Common.objCached.UnauthorizedCommentSection;
+            // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
 
             return PartialView("_ReviewCampaign");
         }
@@ -4439,6 +4457,12 @@ namespace RevenuePlanner.Controllers
                 isValidManagerUser = true;
             }
             ViewBag.IsValidManagerUser = isValidManagerUser;
+
+            // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            ViewBag.IsCommentsViewEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.CommentsViewEdit);
+            if ((bool)ViewBag.IsCommentsViewEditAuthorized == false)
+                ViewBag.UnauthorizedCommentSection = Common.objCached.UnauthorizedCommentSection;
+            // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
 
             return PartialView("_ReviewImprovementTactic");
         }

@@ -133,6 +133,7 @@ namespace RevenuePlanner.Controllers
                         {
                             Sessions.AppMenus = objBDSServiceClient.GetMenu(Sessions.ApplicationId, Sessions.User.RoleId);
                         }
+                        
                         if (Sessions.RolePermission == null)
                         {
                             Sessions.RolePermission = objBDSServiceClient.GetPermission(Sessions.ApplicationId, Sessions.User.RoleId);
@@ -142,13 +143,39 @@ namespace RevenuePlanner.Controllers
                         //// Set user activity permission session.
                         SetUserActivityPermission();
 
+                        // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+                        if (Sessions.AppMenus != null)
+                        {
+                            var isAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
+                            var item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Model.ToString().ToUpper());
+                            if (item != null && !isAuthorized)
+                            {
+                                Sessions.AppMenus.Remove(item);
+                            }
+
+                            isAuthorized = (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit) ||
+                                AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostBestInClassNumberEdit));
+                            item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Boost.ToString().ToUpper());
+                            if (item != null && !isAuthorized)
+                            {
+                                Sessions.AppMenus.Remove(item);
+                            }
+
+                            isAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ReportView);
+                            item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Report.ToString().ToUpper());
+                            if (item != null && !isAuthorized)
+                            {
+                                Sessions.AppMenus.Remove(item);
+                            }
+                        }
+                        // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+
                         //Redirect users logging in for the first time to the change password module
                         if (obj.LastLoginDate == null)
                         {
                             Sessions.RedirectToChangePassword = true;
                             return RedirectToAction("ChangePassword", "User");
                         }
-
                         if (obj.SecurityQuestionId == null)
                         {
                             Sessions.RedirectToSetSecurityQuestion = true;

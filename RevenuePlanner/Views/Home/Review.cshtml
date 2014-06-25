@@ -82,8 +82,10 @@
 </div>
 
 <div class="span2 width50" id="inspect-modal-left-column2">
+    @if ((bool)ViewBag.IsCommentsViewEditAuthorized)    // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+    {
     <div>Notes</div>
-
+     
     <div id="divComment" class="chat-div" style="overflow: auto;">
         <div id="divInnerComment">
             @foreach (var item in ViewBag.ReviewModel)
@@ -110,6 +112,15 @@
         @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment" })
         <button id="btnComment" class="btn btn-blue text-shadow-blue source-sans-proregular new-comment-buttom " type="button">Comment</button>
     </div>
+    @* Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic*@
+    }
+    else
+    {
+        <div class="unauthorized-comment-section">
+            <span>@Html.Raw(HttpUtility.HtmlDecode((string)ViewBag.UnauthorizedCommentSection))</span>
+        </div>
+    }
+    @* End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic*@
     <div class="cf pull-left">
 
         <div style="float: right; margin-top: 10px;">
@@ -138,14 +149,14 @@
                 //}
                 //else
                 //{
-                    if ((bool)ViewBag.IsValidOwner)
-                    {
-                        aryStatus.Add(Submit);
-                    }
-                    else
-                    {
-                        isVisibleStatus = false;
-                    }
+                if ((bool)ViewBag.IsValidOwner)
+                {
+                    aryStatus.Add(Submit);
+                }
+                else
+                {
+                    isVisibleStatus = false;
+                }
                 //}
             }
             else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()))

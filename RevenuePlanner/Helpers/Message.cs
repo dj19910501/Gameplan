@@ -1292,6 +1292,7 @@ namespace RevenuePlanner.Helpers
                 _LoginWithSameSession = value;
             }
         }
+        // Start - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
         private string _ChangeTargetStageMsg;
         public string ChangeTargetStageMsg
         {
@@ -1305,6 +1306,21 @@ namespace RevenuePlanner.Helpers
             }
         }
         // End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
+
+        // Start - Added By Sohel Pathan on 25/06/2014 for PL ticket #537
+        private string _UnauthorizedCommentSection;
+        public string UnauthorizedCommentSection
+        {
+            get
+            {
+                return _UnauthorizedCommentSection;
+            }
+            set
+            {
+                _UnauthorizedCommentSection = value;
+            }
+        }
+        // End - Added By Sohel Pathan on 25/06/2014 for PL ticket #537
         #endregion
 
 
@@ -1707,6 +1723,11 @@ namespace RevenuePlanner.Helpers
                                             _ChangeTargetStageMsg = strMsgValue;
                                             break;
                                         // End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
+                                        // Start - Added By Sohel Pathan on 25/06/2014 for PL ticket #537
+                                        case "UnauthorizedCommentSection":
+                                            _UnauthorizedCommentSection = strMsgValue;
+                                            break;
+                                        // End - Added By Sohel Pathan on 25/06/2014 for PL ticket #537
                                     }
                                 }
                                 i = i + 1;

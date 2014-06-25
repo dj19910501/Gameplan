@@ -11,6 +11,7 @@
     string ViewPermissionURL = varUrl + "?Id=" + Sessions.User.UserId + "&Mode=MyPermission"; 
 }
 
+
 @section Sidebar {
     <div class="padding-content">
         <h4 class="text-shadow-black source-sans-prolight">Preferences</h4>
@@ -22,7 +23,7 @@
         <li class="item active">
             <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
         </li>
-        @if (Sessions.User.RoleCode.Equals(Enums.RoleCodes.SA.ToString(), StringComparison.OrdinalIgnoreCase) || Sessions.User.RoleCode.Equals(Enums.RoleCodes.CA.ToString(), StringComparison.OrdinalIgnoreCase))
+        @if ((bool)ViewBag.IsIntegrationCredentialCreateEditAuthorized)   // Modified by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
         {
             <li class="item">
                 <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
@@ -34,8 +35,6 @@
 @if (ViewBag.PermissionMode == "View" || ViewBag.PermissionMode == "MyPermission")
 {
    
-
-
     <!--success message-->
 
     <div id="successMessage" class="alert hide alert-success message-position">
@@ -85,8 +84,11 @@
 
                             <li><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
                         }
-                        <li><a href="#">Manage Users</a></li>
-                        <li><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
+                        @if ((bool)ViewBag.IsUserAdminAuthorized)   // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
+                        {
+                            <li><a href="#">Manage Users</a></li>
+                            <li><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
+                        }
                     </ul>
                 </div>
             </div>

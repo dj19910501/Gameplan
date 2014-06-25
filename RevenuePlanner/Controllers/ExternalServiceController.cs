@@ -25,8 +25,12 @@ namespace RevenuePlanner.Controllers
         /// Integration data listing
         /// </summary>
         /// <returns></returns>
+        [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]  // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult Index()
         {
+            // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            
             ViewBag.CurrentUserRole = Convert.ToString(Sessions.User.RoleCode);
 
             //-- Get list of IntegrationTypes
@@ -108,6 +112,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="integrationTypeId"></param>
         /// <returns></returns>
+        [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]  // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult create(int integrationTypeId)
         {
             ViewBag.integrationTypeId = integrationTypeId;
@@ -434,6 +439,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]  // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult edit(int id)
         {
             var record = db.IntegrationInstances
@@ -844,6 +850,7 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Map External Service - Gameplan Data Types (Fields)
         /// </summary>
+        [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]  // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult MapDataTypes(int id)
         {
             if (!Sessions.IsClientAdmin && !Sessions.IsSystemAdmin)

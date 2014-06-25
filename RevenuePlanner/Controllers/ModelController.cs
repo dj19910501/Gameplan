@@ -780,6 +780,7 @@ namespace RevenuePlanner.Controllers
         /// View for no model exist in case of current year, business unit of logged-in user
         /// </summary>
         /// <returns></returns>
+        [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult ModelZero()
         {
             ViewBag.ActiveMenu = Enums.ActiveMenu.Model;
@@ -3450,6 +3451,9 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         public ActionResult Integration(int id = 0)
         {
+            // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+
             ViewBag.ModelId = id;
 
             var objModel = db.Models.SingleOrDefault(b => b.ModelId == id && b.IsDeleted == false);

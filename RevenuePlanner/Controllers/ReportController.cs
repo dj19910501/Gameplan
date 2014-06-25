@@ -37,6 +37,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="activeMenu"></param>
         /// <returns></returns>
+        [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Report)
         {
             if (Sessions.RolePermission != null)

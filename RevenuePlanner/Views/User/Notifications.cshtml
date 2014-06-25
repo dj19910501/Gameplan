@@ -8,12 +8,12 @@
     ViewBag.Title = "My Notifications";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     Layout = "~/Views/Shared/_Layout.cshtml";
-    string isViewOnly = ViewBag.IsViewOnly;
+    //string isViewOnly = ViewBag.IsViewOnly;
     int SMCount = (int)ViewBag.SMCount;
     int AMCount = (int)ViewBag.AMCount;
 }
 
-@Html.Hidden("IsViewOnly", isViewOnly)
+@*@Html.Hidden("IsViewOnly", isViewOnly)*@
 @Html.Hidden("SuccMsg", TempData["SuccessMessage"])
 @Html.Hidden("ErrMsg", TempData["ErrorMessage"])
 
@@ -28,13 +28,12 @@
              <li class="item">@*uday for new screen*@
             <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
         </li>
-        @if (Sessions.User.RoleCode.Equals(Enums.RoleCodes.SA.ToString(), StringComparison.OrdinalIgnoreCase) || Sessions.User.RoleCode.Equals(Enums.RoleCodes.CA.ToString(), StringComparison.OrdinalIgnoreCase))
+        @if ((bool)ViewBag.IsIntegrationCredentialCreateEditAuthorized)   // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
         {
             <li class="item">
                 <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
             </li>
         }
-    
     </ul>
 }
 
@@ -133,14 +132,14 @@
                 </div>
             }
 
-            @if (isViewOnly != "true")
+            @*@if (isViewOnly != "true")
             {
-                <div class="cf inputs-aligned-horizontal">
+                *@<div class="cf inputs-aligned-horizontal">
                     <div class="container-button">
                         <input type="submit" value="Save" title="save" id="saveNotifications" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" style="margin-left: 172px;" />
                     </div>
                 </div>
-            }
+            @*}*@
         </div>
     </div>
 </div>
@@ -151,9 +150,9 @@
 
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
 
-        if ($('#IsViewOnly').val() != '') {
-            $("#content :input").attr("disabled", true);
-        }
+        //if ($('#IsViewOnly').val() != '') {
+        //    $("#content :input").attr("disabled", true);
+        //}
 
         /*close x event on message*/
         $(".close").click(function (e) {

@@ -25,7 +25,10 @@
         }
         <span id="@userLabelId">@Model.FirstName @Model.LastName</span>
         <span class="job-role" style="background-color:@Model.ColorCode">@Model.RoleTitle</span>
+        @if ((bool)ViewBag.IsUserAdminAuthorized)
+        {
         <a class="btn btn-default" href='@EditURL'>Edit</a>
+        }
         <a class="btn btn-default" href='@ViewURL'>View</a>
         <a class="btn btn-default" onclick="showContactDetail('@userId');">Contact</a>
         <input type="hidden" id="@hdnEmailId" value="@Model.Email" />
