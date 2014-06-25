@@ -1045,6 +1045,8 @@ namespace RevenuePlanner.Controllers
                         //// Modified By Maninder Singh Wadhva to Address PL#203
                         System.Web.HttpContext.Current.Cache.Remove(form.UserId + "_photo");
                         System.Web.HttpContext.Current.Cache.Remove(form.UserId + "_name");
+                        System.Web.HttpContext.Current.Cache.Remove(form.UserId + "_bu");//uday #416
+                        System.Web.HttpContext.Current.Cache.Remove(form.UserId + "_jtitle");//uday #416
                         return RedirectToAction("Index");
                     }
                     else if (retVal == -2)

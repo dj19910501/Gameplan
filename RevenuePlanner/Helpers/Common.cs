@@ -1211,7 +1211,7 @@ namespace RevenuePlanner.Helpers
                 {
                     if (System.Web.HttpContext.Current.Cache[userId + "_photo"] != null)
                     {
-                        var userData = new { imageBytes = System.Web.HttpContext.Current.Cache[userId + "_photo"], name = System.Web.HttpContext.Current.Cache[userId + "_name"] };
+                        var userData = new { imageBytes = System.Web.HttpContext.Current.Cache[userId + "_photo"], name = System.Web.HttpContext.Current.Cache[userId + "_name"], businessUnit = System.Web.HttpContext.Current.Cache[userId + "_bu"], jobTitle = System.Web.HttpContext.Current.Cache[userId + "_jtitle"] }; //uday #416
                         data.Add(userData);
                     }
                     else
@@ -1224,6 +1224,9 @@ namespace RevenuePlanner.Helpers
             byte[] imageBytesUserImageNotFound = Common.ReadFile(HttpContext.Current.Server.MapPath("~") + "/content/images/user_image_not_found.png");
             BDSServiceClient objBDSUserRepository = new BDSServiceClient();
             List<User> users = objBDSUserRepository.GetMultipleTeamMemberDetails(string.Join(",", newCollaboratorId), Sessions.ApplicationId);
+
+            var userlist = users.Select(u => u.BusinessUnitId).ToList();
+            var businesslist = db.BusinessUnits.Where(bui => userlist.Contains(bui.BusinessUnitId)).ToList();//#416
 
             foreach (User user in users)
             {
@@ -1251,10 +1254,13 @@ namespace RevenuePlanner.Helpers
                     }
                 }
 
+                var busititle = businesslist.Single(bui => bui.BusinessUnitId == user.BusinessUnitId).Title;//#416
                 string imageBytesBase64String = Convert.ToBase64String(imageBytes);
                 System.Web.HttpContext.Current.Cache[user.UserId + "_photo"] = imageBytesBase64String;
                 System.Web.HttpContext.Current.Cache[user.UserId + "_name"] = user.FirstName + " " + user.LastName;
-                var userData = new { imageBytes = imageBytesBase64String, name = user.FirstName + " " + user.LastName };
+                System.Web.HttpContext.Current.Cache[user.UserId + "_bu"] = busititle;//uday #416
+                System.Web.HttpContext.Current.Cache[user.UserId + "_jtitle"] = user.JobTitle;//uday #416
+                var userData = new { imageBytes = imageBytesBase64String, name = user.FirstName + " " + user.LastName, businessUnit = busititle, jobTitle = user.JobTitle };//added by uday buid & title #416 };
                 data.Add(userData);
             }
 

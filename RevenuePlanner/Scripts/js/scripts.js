@@ -118,6 +118,12 @@ function priceFormatChange(e) {
     }
 };
 
+/*Added by uday for PL Ticket #416*/
+function ProfileAttachToolTip() {
+    $('.profile-info').hover(function () {
+        $(this).find('.profile-tooltip').toggle();
+    });
+};
 
 
 

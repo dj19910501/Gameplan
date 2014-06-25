@@ -3259,3 +3259,23 @@ label {
     .user-permissions .nav-tabs li.active a {
         color: #555 !important;
     }
+
+       /*added by uday for Ticket #416*/
+.profile-info{display: inline-block; position:relative;}
+.profile-tooltip {
+    bottom: 0;
+    display: none;
+    font-size: 13px;
+    left: 50%;
+    margin-left: -90px;
+    position: absolute;
+    top: 40px;
+    width: 180px;
+    z-index: 9999;
+}
+.profile-tooltip-arrow{position: absolute; width: 0; height: 0; line-height: 0; border: 5px dashed #000; border-bottom-color: #000; top: -5px; left: 50%; margin-left: -5px; border-bottom-style: solid; border-top: none; border-left-color: transparent; border-right-color: transparent;}
+.profile-tooltip-inner { background-color: #000; color: #FFF; max-width: 200px; padding: 5px 8px 4px 8px; text-align: center; 
+font-family: 'source_sans_proregular', Arial, "sans-serif" !important; color:#fff;
+						border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;
+}
+.profile-tooltip-inner label{font-family: 'source_sans_prolight', Arial, "sans-serif"; color:#C0C0C0; display:inline-block;}

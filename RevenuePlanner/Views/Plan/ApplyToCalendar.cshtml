@@ -514,7 +514,7 @@
        function GetTactics() {
            AjaxRequest();
        }
-
+       var appendtag = '';//uday#416
        var ismsg = $("#hdnMsg").val();
        var hdnisError = $("#hdnisError").val();
        if (ismsg != '') {
@@ -593,12 +593,13 @@
 
                     ////  set collaborator's image
                     $.each(data.collaboratorsImage.Data, function () {
-                        SetCollaboratorImage(this);
+                        SetCollaboratorImage(this, appendtag);//#416
                     })
 
                     $('#divCollaborator').append('<span class="bold margin_left6 position_absolute">' + data.collaboratorsImage.Data.length + ' Collaborator(s) </span>');
                     $('#divCollaborator').append('<span class="font_size10 margin_left6 updated-text-align">Last updated ' + data.lastUpdateDate + '</span>');
-
+                    //added by uday for #416
+                    ProfileAttachToolTip();//function written in scripts.js
                 }
             });
         }
@@ -606,17 +607,28 @@
 
     //// Function to set collaborator's image
     //// Modified By Maninder Singh Wadhva to Address PL#203
-    function SetCollaboratorImage(collaborator) {
+    function SetCollaboratorImage(collaborator, appendtag) {
         console.log(collaborator);
         // Get collaborator image
         var imgs = collaborator.imageBytes;
         var username = collaborator.name;
-
+        var buid = collaborator.businessUnit;//uday#416
+        var title = collaborator.jobTitle;//uday#416
         // Set collaborator image
         var collaboratorImage = "<img title='" + username + "' class=\"avatar-user img-border align_avatar_image\""
          + "src='" + "data:image/jpg;base64,"
          + imgs + "'/>";
-        $("#divCollaborator").prepend(collaboratorImage);
+        // uday for ticket #416
+
+        var referencestart = "<a href='#' class=\"profile-info\">";
+        var referencenew = "<div class=\"profile-tooltip\">	<div class=\"profile-tooltip-arrow\"></div> <div class=\"profile-tooltip-inner\"> " +
+                                           " " + username + ',' + title + "<br /><label>Bussiness Unit:</label> " + buid + " </div> </div>";
+        var endreference = "</a>";
+        appendtag += referencestart;
+        appendtag += collaboratorImage;
+        appendtag += referencenew;
+        appendtag += endreference;
+        $("#divCollaborator").html($("#divCollaborator").html() + appendtag);
     }
 
     //// Function to start date of current quarter.
