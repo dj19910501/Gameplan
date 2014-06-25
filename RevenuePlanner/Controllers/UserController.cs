@@ -180,6 +180,9 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public ActionResult ChangePassword(UserChangePassword form)
         {
+            // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            
             try
             {
                 if (ModelState.IsValid)
@@ -338,6 +341,9 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public ActionResult SecurityQuestion(SecurityQuestionListModel form)
         {
+            // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
             try
             {
@@ -597,6 +603,9 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public ActionResult Create(UserModel form, HttpPostedFileBase file)
         {
+            // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+
             try
             {
                 if (ModelState.IsValid)
@@ -1399,8 +1408,8 @@ namespace RevenuePlanner.Controllers
         {
             if (Sessions.ApplicationId != Guid.Empty && Sessions.ApplicationId != null && Sessions.User.UserId != Guid.Empty && Sessions.User.UserId != null)
             {
-                var UserList = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId, Sessions.ApplicationId);
-                //var UserList = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
+                //var UserList = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId, Sessions.ApplicationId);
+                var UserList = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
                 var ManagerList = UserList.Where(a => a.IsDeleted.Equals(false) && a.UserId != UserId && a.IsDeleted.Equals(false)).Select(a => new UserModel { ManagerId = a.UserId, ManagerName = a.FirstName + " " + a.LastName }).ToList();
                 return ManagerList.OrderBy(a => a.ManagerName).ToList();
             }
