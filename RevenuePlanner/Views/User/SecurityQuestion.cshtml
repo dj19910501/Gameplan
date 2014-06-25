@@ -124,10 +124,11 @@
 
 
         $('#btnSubmit').click(function () {
-            CheckUserSession("#btnSubmit", true);
-            if (reason == 'user') {
-                return false;
-            }
+            // Modified by Dharmraj Mangukiya, #557
+            //CheckUserSession("#btnSubmit", true);
+            //if (reason == 'user') {
+            //    return false;
+            //}
             $('#content :input').each(function () {
                 if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
                     var input = $(this).val();
