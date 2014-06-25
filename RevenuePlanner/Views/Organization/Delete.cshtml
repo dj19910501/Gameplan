@@ -19,7 +19,7 @@
         <div class="row-fluid calc-height">
             <div class="span12">
 
-                <div id="DivDeleteRolePopup" class="form-inspect-share hide fade in height-auto" role="dialog" style="display: block;">
+                <div id="DivDeleteRolePopup" class="form-inspect-share hide fade in height-auto popup" role="dialog" style="display: block;">
 
                     <div style="padding-bottom: 20px;" class="login-wrapper">
                         <h2 class="primary-title source-sans-proregular without-text-shadow">Deleting an existing role</h2>
@@ -45,13 +45,14 @@
                                     @Html.DropDownList("ddllist", new SelectList((System.Collections.IEnumerable)ViewData["roles"], "value", "text"), "Please Select")
                                 </span>
                             </div>
-                        }
-                         <!--error message-->
+                            <br />
+                             <!--error message-->
                           <div id="errorMessagedel" class="alert hide alert-error message-position">
                           <a class="close">×</a>
                          <strong></strong><span id="spanErrorMessagedel"></span>
                          </div>
                          <!--error message-->
+                        }
                         <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" value="Submit" id="delbtn">Delete Role</button>
                         <button class="cancel-btn btn-link text-shadow-black" type="button" id="delcancelbtn">Cancel</button>
                     </div>

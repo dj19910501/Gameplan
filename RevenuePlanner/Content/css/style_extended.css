@@ -3028,6 +3028,10 @@ label {
     width: 330px;
 }
 
+#DivDeleteRolePopup .message-position {
+    width: 310px;
+}/*25-6-2014*/
+
     #DivDefaultRolePopup .form-inspect-share-button {
         float: none;
     }

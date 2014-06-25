@@ -867,14 +867,14 @@
        var title = collaborator.jobTitle;//uday#416
 
        // Set collaborator image
-       var collaboratorImage = "<img title='" + username + "' class=\"avatar-user img-border align_avatar_image\""
+       var collaboratorImage = "<img class=\"avatar-user img-border align_avatar_image\""
         + "src='" + "data:image/jpg;base64,"
         + imgs + "'/>";
        // uday for ticket #416
 
        var referencestart = "<a href='#' class=\"profile-info\">";
        var referencenew = "<div class=\"profile-tooltip\">	<div class=\"profile-tooltip-arrow\"></div> <div class=\"profile-tooltip-inner\"> " +
-                                        	" " + username + ',' + title + "<br /><label>Bussiness Unit:</label> " + buid + "</div> </div>";
+                                        	" " + username + ', ' + title + "<br /><label>Bussiness Unit:</label> " + buid + "</div> </div>";
        var endreference = "</a>";
        appendtag += referencestart;
        appendtag += collaboratorImage;
