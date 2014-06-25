@@ -54,8 +54,8 @@
                     <li><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
                     @if ((bool)ViewBag.IsUserAdminAuthorized)   // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
                     {
-                    <li><a href="#">Manage Users</a></li>
-                    <li class="active"><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
+                        <li><a href="#">Manage Users</a></li>
+                        <li class="active"><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
                     }
                 </ul>
             </div>
@@ -98,66 +98,67 @@
                     }
                 </table>
 
-                <!--div to display pop up for add role-->
-                <div id="DivPartialShareTactic" style="display: none;">
-                    <div class="container-fluid all-height DivResetDefaults" id="DivShareTacticPopupMain">
-                        <div class="row-fluid calc-height">
-                            <div class="span12">
 
-                                <div id="DivAddRolePopup" class="form-inspect-share hide fade in height-auto popup" role="dialog" style="display: block;">
+            </div>
+        </div>
+        <!--div to display pop up for add role-->
+        <div id="DivPartialShareTactic" style="display: none;">
+            <div class="container-fluid all-height DivResetDefaults" id="DivShareTacticPopupMain">
+                <div class="row-fluid calc-height">
+                    <div class="span12">
 
-                                    <div style="padding-bottom: 20px;" class="login-wrapper">
-                                        <h2 class="primary-title source-sans-proregular without-text-shadow">Adding a new role</h2>
-                                        <h4 class="source-sans-prolight">Please enter the name of the role.</h4>@*review point*@
-                                        <input type="text" value="" placeholder="Enter new role" name="textfield" maxlength="255" id="newrole" class="input-block-level source-sans-proregular newrole">
-                                        <!--error message-->
-                                        <div id="errorMessage" class="alert hide alert-error message-position">
-                                            <a class="close">×</a>
-                                            <strong></strong><span id="spanErrorMessageRole"></span>
-                                        </div>
-                                        <!--error message-->
-                                        <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" value="Submit" title="Add Role" id="addrolebtn">Add Role</button>
-                                        <button class="cancel-btn btn-link text-shadow-black" type="button" id="cancelbtn">Cancel</button>
-                                    </div>
+                        <div id="DivAddRolePopup" class="form-inspect-share hide fade in height-auto popup" role="dialog" style="display: block;">
+
+                            <div style="padding-bottom: 20px;" class="login-wrapper">
+                                <h2 class="primary-title source-sans-proregular without-text-shadow">Adding a new role</h2>
+                                <h4 class="source-sans-prolight">Please enter the name of the role.</h4>@*review point*@
+                                <input type="text" value="" placeholder="Enter new role" name="textfield" maxlength="255" id="newrole" class="input-block-level source-sans-proregular newrole">
+                                <!--error message-->
+                                <div id="errorMessage" class="alert hide alert-error message-position">
+                                    <a class="close">×</a>
+                                    <strong></strong><span id="spanErrorMessageRole"></span>
                                 </div>
+                                <!--error message-->
+                                <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" value="Submit" title="Add Role" id="addrolebtn">Add Role</button>
+                                <button class="cancel-btn btn-link text-shadow-black" type="button" id="cancelbtn">Cancel</button>
                             </div>
                         </div>
                     </div>
-                    <div id="DivBackgroundShareTactic" class="modal-backdrop fade in" style="z-index: 9999"></div>
-                </div>
-
-                <!--div to load partialview for delete role-->
-                <div id="loaddiv"></div>
-
-                <!--div to display pop up for copying role-->
-                <div id="DivPartialShareTacticcopy" style="display: none;">
-                    <div class="container-fluid all-height DivResetDefaults" id="DivShareTacticPopupMaincopy">
-                        <div class="row-fluid calc-height">
-                            <div class="span12">
-
-                                <div id="DivAddRolePopupcopy" class="form-inspect-share hide fade in height-auto popup" role="dialog" style="display: block;">
-
-                                    <div style="padding-bottom: 20px;" class="login-wrapper">
-                                        <h2 class="primary-title source-sans-proregular without-text-shadow">Copying a role</h2>
-                                        <h4 class="source-sans-prolight">Please rename the new role with 
-                                            similar permissions as <strong id="original"></strong></h4>@*review point*@
-                                        <input type="text" value="" placeholder="Enter new role" name="textfield" maxlength="255" id="copyroledesc" class="input-block-level source-sans-proregular copyroledesc">
-                                        <!--error message-->
-                                        <div id="errorMessagecopy" class="alert hide alert-error message-position">
-                                            <a class="close">×</a>
-                                            <strong></strong><span id="spanErrorMessageRolecopy"></span>
-                                        </div>
-                                        <!--error message-->
-                                        <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" title="Add Role" value="Submit" id="copyrolebtn">Add Role</button>
-                                        <button class="cancel-btn btn-link text-shadow-black" type="button" id="cancelbtncopy">Cancel</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="DivBackgroundShareTacticcopy" class="modal-backdrop fade in" style="z-index: 9999"></div>
                 </div>
             </div>
+            <div id="DivBackgroundShareTactic" class="modal-backdrop fade in" style="z-index: 9999"></div>
+        </div>
+
+        <!--div to load partialview for delete role-->
+        <div id="loaddiv"></div>
+
+        <!--div to display pop up for copying role-->
+        <div id="DivPartialShareTacticcopy" style="display: none;">
+            <div class="container-fluid all-height DivResetDefaults" id="DivShareTacticPopupMaincopy">
+                <div class="row-fluid calc-height">
+                    <div class="span12">
+
+                        <div id="DivAddRolePopupcopy" class="form-inspect-share hide fade in height-auto popup" role="dialog" style="display: block;">
+
+                            <div style="padding-bottom: 20px;" class="login-wrapper">
+                                <h2 class="primary-title source-sans-proregular without-text-shadow">Copying a role</h2>
+                                <h4 class="source-sans-prolight">Please rename the new role with 
+                                            similar permissions as <strong id="original"></strong></h4>@*review point*@
+                                <input type="text" value="" placeholder="Enter new role" name="textfield" maxlength="255" id="copyroledesc" class="input-block-level source-sans-proregular copyroledesc">
+                                <!--error message-->
+                                <div id="errorMessagecopy" class="alert hide alert-error message-position">
+                                    <a class="close">×</a>
+                                    <strong></strong><span id="spanErrorMessageRolecopy"></span>
+                                </div>
+                                <!--error message-->
+                                <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" title="Add Role" value="Submit" id="copyrolebtn">Add Role</button>
+                                <button class="cancel-btn btn-link text-shadow-black" type="button" id="cancelbtncopy">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="DivBackgroundShareTacticcopy" class="modal-backdrop fade in" style="z-index: 9999"></div>
         </div>
     </div>
 </div>
@@ -296,17 +297,17 @@
 
                 $.ajax({
                     url: '@Url.Content("~/Organization/CopyRole/")',
-                data: {
-                    copyroledesc: copyroledescription,
-                    originalroleid: originalid
-                },
-                type: 'POST',
-                cache: false,
-                success: function (result) {
-                    if (result == true) {
-                        $('#copyroledesc').val(' ');
-                        var url = '';
-                        url = '@Url.Content("~/Organization/ManageRoles")';
+                    data: {
+                        copyroledesc: copyroledescription,
+                        originalroleid: originalid
+                    },
+                    type: 'POST',
+                    cache: false,
+                    success: function (result) {
+                        if (result == true) {
+                            $('#copyroledesc').val(' ');
+                            var url = '';
+                            url = '@Url.Content("~/Organization/ManageRoles")';
                         window.location.href = url;
                     }
                     else {
@@ -315,37 +316,37 @@
                         $("#spanErrorMessageRolecopy").text(msgspan);
                     }
                 }
-            });
+                });
         }
     }
-    return false;
-});
+        return false;
+    });
 
 
 $('#aIntegrations').click(function () {
     var url = '';
     url = '@Url.Content("~/ExternalService/Index")';
-        window.location.href = url;
-    });
-
-
-    $('#aMyProfile').click(function () {
-        var url = '';
-        url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
     window.location.href = url;
 });
 
-$('.btnEdit').click(function () {
-    var id = $(this).next().val(); @*<!--this is used to pass values like to know the id of clicked row like selected value in combobox*@
+
+$('#aMyProfile').click(function () {
+    var url = '';
+    url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
+        window.location.href = url;
+    });
+
+    $('.btnEdit').click(function () {
+        var id = $(this).next().val(); @*<!--this is used to pass values like to know the id of clicked row like selected value in combobox*@
     var url = '@Url.Content("~/Organization/Edit/")';
     window.location.href = url + "?roleId=" + id;
 });
 
-    $('.delete-temp-program').click(function () {
-        $('#errorMessagedel').css("display", "none");
-        var id = $(this).children().val();
-        var roleselected = $("#rolelabel" + id).html();
-        var url = '@Url.Content("~/Organization/Delete/")';
+$('.delete-temp-program').click(function () {
+    $('#errorMessagedel').css("display", "none");
+    var id = $(this).children().val();
+    var roleselected = $("#rolelabel" + id).html();
+    var url = '@Url.Content("~/Organization/Delete/")';
         //how to load partial view....
         $("#loaddiv").load(url + "?roleId=" + id, "&selectedrole=" + roleselected);
     });
