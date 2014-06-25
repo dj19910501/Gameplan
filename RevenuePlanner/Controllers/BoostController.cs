@@ -489,6 +489,10 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public ActionResult deleteImprovementTactic(int improvementId)
         {
+            // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
+            ViewBag.IsBoostBestInClassNumberEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostBestInClassNumberEdit);
+            ViewBag.IsBoostImprovementTacticCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit);
+
             string successMessage = string.Empty;
             string ErrorMessage = string.Empty;
             try

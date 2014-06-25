@@ -115,6 +115,9 @@ namespace RevenuePlanner.Controllers
         [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]  // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult create(int integrationTypeId)
         {
+            // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+
             ViewBag.integrationTypeId = integrationTypeId;
             IntegrationModel objModelToView = new IntegrationModel();
 
@@ -148,6 +151,9 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public ActionResult create(IntegrationModel form)
         {
+            // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+
             ViewBag.integrationTypeId = form.IntegrationTypeId;
 
             if (TestIntegrationCredentialsWithForm(form))
@@ -442,6 +448,9 @@ namespace RevenuePlanner.Controllers
         [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]  // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult edit(int id)
         {
+            // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+
             var record = db.IntegrationInstances
                                     .Where(ii => ii.IsDeleted.Equals(false) && ii.ClientId == Sessions.User.ClientId && ii.IntegrationInstanceId == id)
                                     .Select(ii => ii).FirstOrDefault();
@@ -514,6 +523,9 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public ActionResult edit(IntegrationModel form)
         {
+            // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+
             ViewBag.integrationTypeId = form.IntegrationTypeId;
 
             if (TestIntegrationCredentialsWithForm(form))
@@ -853,6 +865,9 @@ namespace RevenuePlanner.Controllers
         [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]  // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult MapDataTypes(int id)
         {
+            // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+
             if (!Sessions.IsClientAdmin && !Sessions.IsSystemAdmin)
             {
                 return RedirectToAction("Index", "NoAccess");
@@ -952,6 +967,9 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public ActionResult MapDataTypes(int id, IList<GameplanDataTypeModel> form)
         {
+            // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+
             try
             {
                 using (MRPEntities mrp = new MRPEntities())
