@@ -2510,6 +2510,32 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.CreatedDate = DateTime.Now;
                                 db.Entry(pcpobj).State = EntityState.Added;
                                 int result = db.SaveChanges();
+                                ////Start - Added by : Mitesh Vaishnav on 25-06-2014    for PL ticket 554 Home & Plan Pages: Program and Campaign Blocks are not covering newly added Tactic.
+                                var planCampaignProgramDetails = (from pcp in db.Plan_Campaign_Program
+                                                join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                                                where pcp.PlanProgramId == pcpobj.PlanProgramId
+                                                select pcp).FirstOrDefault();
+                                if (planCampaignProgramDetails.StartDate > pcpobj.StartDate)
+                                {
+                                    planCampaignProgramDetails.StartDate = pcpobj.StartDate;
+                                }
+                                if (planCampaignProgramDetails.Plan_Campaign.StartDate > pcpobj.StartDate)
+                                {
+                                    planCampaignProgramDetails.Plan_Campaign.StartDate = pcpobj.StartDate;
+                                }
+                                if (pcpobj.EndDate > planCampaignProgramDetails.EndDate)
+                                {
+                                    planCampaignProgramDetails.EndDate = pcpobj.EndDate;
+                                }
+                                if (pcpobj.EndDate > planCampaignProgramDetails.Plan_Campaign.EndDate)
+                                {
+                                    planCampaignProgramDetails.Plan_Campaign.EndDate = pcpobj.EndDate;
+                                }
+                                db.Entry(planCampaignProgramDetails).State = EntityState.Modified;
+                                db.SaveChanges();
+
+                                ////End - Added by : Mitesh Vaishnav on 25-06-2014    for PL ticket 554 Home & Plan Pages: Program and Campaign Blocks are not covering newly added Tactic.
+
                                 //result = TacticValueCalculate(pcpobj.PlanProgramId); // Commented by Dharmraj for PL #440
                                 result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                                 if (result >= 1)
