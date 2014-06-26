@@ -95,6 +95,7 @@ namespace RevenuePlanner.Controllers
                         objUserModel.RoleCode = user.RoleCode;
                         objUserModel.RoleId = user.RoleId;
                         objUserModel.RoleTitle = user.RoleTitle;
+                        objUserModel.IsManager = user.IsManager;    // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                         teamMemberList.Add(objUserModel);
                     }
                 }
@@ -805,12 +806,16 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="usrid">user</param>
         /// <param name="src">source either "myaccount" or "myteam"</param>
+        /// <param name="isForDelete">Added to give delete option, if user has selected the delete operation from user listing.</param> // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
         /// <returns></returns>
-        public ActionResult Edit(string usrid = null, string src = "myaccount")
+        public ActionResult Edit(string usrid = null, string src = "myaccount", string isForDelete = "false")
         {
             // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
-            ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin); 
+            ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
+            
+            // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
+            ViewBag.isForDelete = isForDelete;
 
             //if (Sessions.RolePermission != null)
             //{
@@ -944,7 +949,10 @@ namespace RevenuePlanner.Controllers
         {
             // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
-            ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin); 
+            ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
+
+            // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
+            ViewBag.isForDelete = "false";
 
             try
             {

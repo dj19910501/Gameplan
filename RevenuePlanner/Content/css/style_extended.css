@@ -3275,3 +3275,26 @@ font-family: 'source_sans_proregular', Arial, "sans-serif" !important; color:#ff
 .margin-bottom-20 {
     margin-bottom:20px;
 }
+
+ /* Start - Added by Sohel Pathan on 26/06/2014 for PL ticket #517 */
+
+.UserProfile {
+    margin-right:2px;
+}
+
+.field-validation-error.selectbox-validation-message {
+    float:right;
+    text-align:left;
+    line-height:20px;
+    width:206px;
+}
+
+#divUserDelete .selectbox-validation-message {
+    float:right;
+    text-align:left;
+    line-height:20px;
+    width:204px;
+    margin-top:60px;
+
+}
+/* End - Added by Sohel Pathan on 26/06/2014 for PL ticket #517 */

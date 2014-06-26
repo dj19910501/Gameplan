@@ -113,10 +113,20 @@
                                 //    if ((bool)ViewBag.IsUserAdminAuthorized) //if (isViewOnly != "true")
                                 //    {
                                 <td class="userDelete">
-                                    @*<a href="@Url.Action("Delete", "User", new { id = item.UserId })" onclick="return confirm('Are you sure you want to delete this Member?');" >*@
-                                    <a onclick="DeleteOnEdit('@item.UserId.ToString()');" >
-                                        <span class="x-icon hide pull-right" title="Delete Member"></span>
-                                    </a>
+                                    @if (item.IsManager == false)    // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
+                                    {
+                                        <a href="@Url.Action("Delete", "User", new { id = item.UserId })" onclick="return confirm('Are you sure you want to delete this Member?');" >
+                                            <span class="x-icon hide pull-right" title="Delete Member"></span>
+                                        </a>
+                                    }
+                                    @* Start -- Added by Sohel Pathan on 26/06/2014 for PL ticket #517 *@
+                                    else
+                                    {
+                                        <a onclick="DeleteOnEdit('@item.UserId.ToString()');" >
+                                            <span class="x-icon hide pull-right" title="Delete Member"></span>
+                                        </a>
+                                    }
+                                    @* End - Added by Sohel Pathan on 26/06/2014 for PL ticket #517 *@
                                 </td>@*
                                     }
                                     else
@@ -198,9 +208,10 @@
         });
     });
 
+    // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
     function DeleteOnEdit(userId)
     {
-        window.location.href = "@Url.Content("~/user/edit?usrid=")" + userId + "&src=myteam";
+        window.location.href = "@Url.Content("~/user/edit?usrid=")" + userId + "&src=myteam&isForDelete=true";
     }
 
     // Added by :- Sohel Pathan on 13/5/2014 for PL #430 to setup integration screen

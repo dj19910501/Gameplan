@@ -58,6 +58,10 @@ namespace BDSService
                     userEntity.RoleId = db.User_Application.Where(ua => ua.ApplicationId == applicationId && ua.UserId == user.UserId).Select(u => u.RoleId).FirstOrDefault();
                     userEntity.RoleCode = db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Code).FirstOrDefault();
                     userEntity.RoleTitle = db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Title).FirstOrDefault();
+                    
+                    // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
+                    userEntity.IsManager = db.User_Application.Where(a => a.IsDeleted.Equals(false) && a.ManagerId == user.UserId && a.ApplicationId == applicationId).Any();
+
                     //if (!isSystemAdmin)
                     //{
                     //    if (userEntity.RoleCode != null)

@@ -231,7 +231,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                             @Html.DropDownListFor(c => c.ClientId, new SelectList((System.Collections.IEnumerable)ViewData["Clients"], "ClientId", "Name"), "Please Select")
                         </div>
                         @Html.ValidationMessageFor(model => model.ClientId)
-                        @Html.Label("", "The Organization field is required.", new { @class = "field-validation-error selectbox-validation-message", id = "lblClientIdRequired" })
+                        @Html.Label("", "The Organization field is required.", new { @class = "field-validation-error selectbox-validation-message", id = "lblClientIdRequired" })  // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                     }
                     else
                     {
@@ -251,6 +251,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                             @Html.DropDownListFor(c => c.BusinessUnitId, new SelectList((System.Collections.IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Title"), "Please Select")
                         </div>
                         @Html.ValidationMessageFor(model => model.BusinessUnitId)
+                        @Html.Label("", "The Business Unit field is required.", new { @class="field-validation-error selectbox-validation-message", id="lblBusinessUnitIdRequired" })   // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                     }
                     else
                     {
@@ -271,6 +272,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                             @Html.DropDownListFor(c => c.GeographyId, new SelectList((System.Collections.IEnumerable)ViewData["Geographies"], "GeographyId", "Title"), "Please Select")
                         </div>
                         @Html.ValidationMessageFor(model => model.GeographyId)
+                        @Html.Label("", "The Region field is required.", new { @class="field-validation-error selectbox-validation-message", id="lblGeographyIdRequired" }) // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                     }
                     else
                     {
@@ -290,6 +292,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                             @Html.DropDownListFor(c => c.RoleId, new SelectList((System.Collections.IEnumerable)ViewData["Roles"], "RoleId", "Title"), "Please Select")
                         </div>
                         @Html.ValidationMessageFor(model => model.RoleId)
+                        @Html.Label("", "The Role field is required.", new { @class="field-validation-error selectbox-validation-message", id="lblRoleIdRequired" })    // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                     }
                     else
                     {
@@ -318,6 +321,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                                     @Html.DropDownListFor(c => c.ManagerId, Enumerable.Empty<SelectListItem>(), "Please Select")
                                 }
                             </div>
+                            @Html.Label("", "The Manager field is required.", new { @class="field-validation-error selectbox-validation-message", id="lblManagerIdRequired" })  // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                         }
                         else
                         {
@@ -339,11 +343,21 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                 {
                     if ((bool)ViewBag.IsUserAdminAuthorized) //permRoleCodesForDel.Contains(Model.RoleCode))
                     {
-                        <div class="cf inputs-aligned-horizontal" style="margin-left: 179px;">
+                        <div class="cf inputs-aligned-horizontal" style="margin-left: 179px;" id="divUserDelete">
                             <div class="delete-container">
                             @Html.LabelFor(model => model.IsDeleted, new { style = "float:left;padding-left:60px;padding-top:2px;" })
                             @{
                                 var items = new List<System.Web.UI.WebControls.ListItem> { new System.Web.UI.WebControls.ListItem { Text = "No", Value = "No" }, new System.Web.UI.WebControls.ListItem { Text = "Yes", Value = "Yes" } };
+                                // Start - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
+                                if(ViewBag.isForDelete == "true")
+                                {
+                                    Model.IsDeleted = "Yes";
+                                }
+                                else
+                                {
+                                    Model.IsDeleted = "No";
+                                }
+                                // End - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                             }
                             @*Modified by :- Sohel on 27 March 2014 for ticket #334*@
                             <div class="selectBox" id="ddlIsDeletedSelectBox">
@@ -356,7 +370,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                                 <div id="divNewManager">
                                     @*@if (currentUserRole.Equals(Enums.RoleCodes.SA.ToString(), StringComparison.OrdinalIgnoreCase) || currentUserRole.Equals(Enums.RoleCodes.CA.ToString(), StringComparison.OrdinalIgnoreCase))
                                     {*@
-                                        @Html.Label("Reassign Subordinates to", new { style = "" })
+                                        @Html.Label("Reassign Subordinates to")
                                         <div class="selectBox" id="ddlNewManagerIdSelectBox">
                                             @if (ViewData["ManagerList"] != null)
                                             {
@@ -371,6 +385,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                                 </div>
                             @*}*@
                         </div>
+                        @Html.Label("", "The Reassign field is required.", new { @class="field-validation-error selectbox-validation-message", id="lblNewManagerIdRequired" })  @* Added by Sohel Pathan on 26/06/2014 for PL ticket #517 *@
                     </div>
                     }
                 }
@@ -403,6 +418,15 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
 <script type="text/javascript">
     $(document).ready(function () {
 
+        // Start - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
+        $('#lblClientIdRequired').hide();
+        $('#lblBusinessUnitIdRequired').hide();
+        $('#lblGeographyIdRequired').hide();
+        $('#lblRoleIdRequired').hide();
+        $('#lblManagerIdRequired').hide();
+        $('#lblNewManagerIdRequired').hide();
+        // End - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
+
         //Added by :- Sohel on 27 March 2014 for ticket #334
         $(".selectBox select").selectbox();
 
@@ -412,58 +436,70 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
             //ClientId Dropdown Required Validtion
             if (($("#ClientId option").eq(0).val() == "" && $("#ClientId").val() == "")) {
                 $("#ddlClientIdSelectBox .sbHolder").addClass("selectBoxError");
+                $('#lblClientIdRequired').show();   // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                 isValid = false;
             }
             else {
                 $("#ddlClientIdSelectBox .sbHolder").removeClass("selectBoxError");
+                $('#lblClientIdRequired').hide();   // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
             }
 
             //BusinessID Dropdown Required Validtion
             if (($("#BusinessUnitId option").eq(0).val() == "" && $("#BusinessUnitId").val() == "")) {
                 $("#ddlBusinessUnitIdSelectBox .sbHolder").addClass("selectBoxError");
+                $('#lblBusinessUnitIdRequired').show(); // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                 isValid = false;
             }
             else {
                 $("#ddlBusinessUnitIdSelectBox .sbHolder").removeClass("selectBoxError");
+                $('#lblBusinessUnitIdRequired').hide(); // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
             }
 
             //GeographyId Dropdown Required Validtion
             if (($("#GeographyId option").eq(0).val() == "" && $("#GeographyId").val() == "")) {
                 $("#ddlGeographyIdSelectBox .sbHolder").addClass("selectBoxError");
+                $('#lblGeographyIdRequired').show();    // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                 isValid = false;
             }
             else {
                 $("#ddlGeographyIdSelectBox .sbHolder").removeClass("selectBoxError");
+                $('#lblGeographyIdRequired').hide();    // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
             }
 
             //RoleID Dropdown Required Validtion
             if (($("#RoleId option").eq(0).val() == "" && $("#RoleId").val() == "")) {
                 $("#ddlRoleIdSelectBox .sbHolder").addClass("selectBoxError");
+                $('#lblRoleIdRequired').show(); // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                 isValid = false;
             }
             else {
                 $("#ddlRoleIdSelectBox .sbHolder").removeClass("selectBoxError");
+                $('#lblRoleIdRequired').hide(); // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
             }
 
             // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
             //if ($('#hdnLoggedInUserRole').val().toUpperCase() == 'SA' || $('#hdnLoggedInUserRole').val().toUpperCase() == 'CA') {
                 //if ($('#RoleId').next('div').find('.sbSelector').html().toLowerCase() != 'client admin' && $('#RoleId').next('div').find('.sbSelector').html().toLowerCase() != 'system admin') {
             if (($("#ManagerId option").eq(0).val() == "" && $("#ManagerId").val() == "") && $('#IsDeleted').val().toLowerCase() != 'yes') {
-                        $("#ddlManagerIdSelectBox .sbHolder").addClass("selectBoxError");
+                    $("#ddlManagerIdSelectBox .sbHolder").addClass("selectBoxError");
+                        $('#lblManagerIdRequired').show();  // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                         isValid = false;
                     }
                     else {
                         $("#ddlManagerIdSelectBox .sbHolder").removeClass("selectBoxError");
+                        $('#lblManagerIdRequired').hide();  // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                     }
                 //}
 
                 if ($('#IsDeleted').val().toLowerCase() == 'yes' && $('#IsManager').val().toLowerCase() == 'true') {
                     if ($("#NewManagerId option").eq(0).val() == "" && $("#NewManagerId").val() == "") {
                         $("#ddlNewManagerIdSelectBox .sbHolder").addClass("selectBoxError");
+                        $('#lblNewManagerIdRequired').show();   // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                         isValid = false;
                     }
                     else {
                         $("#ddlNewManagerIdSelectBox .sbHolder").removeClass("selectBoxError");
+                        $('#lblNewManagerIdRequired').hide();   // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                     }
                 }
             //}
@@ -546,34 +582,45 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
             if (clientId != "") {
                 loadBusinessUnit(clientId);
                 loadGeography(clientId);
+                // Start - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
+                $('#lblClientIdRequired').hide();
+                $('#lblBusinessUnitIdRequired').hide();
+                $('#lblGeographyIdRequired').hide();
+                $('#lblRoleIdRequired').hide();
+                $('#lblManagerIdRequired').hide();
             }
+            else {
+                $("#ddlClientIdSelectBox .sbHolder").addClass("selectBoxError");
+                $('#lblClientIdRequired').show();
+            }
+            // End - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
         });
         function loadBusinessUnit(clientId) {
             if (clientId != "" && clientId != "0" && clientId != "null") {
                 $.getJSON("@Url.Content("~/User/GetBusinessUnit")", { id: clientId },
-function (businessUnitData) {
-    var select = $("#BusinessUnitId");
-    select.empty();
-    $.each(businessUnitData, function (index, itemData) {
-        select.append($('<option/>', {
-            value: itemData.Value,
-            text: itemData.Text
-        }));
-    });
-    if ($("#BusinessUnitId option").eq(0).val() != "") {
-        $("#BusinessUnitId option").eq(0).before($("<option></option>").val("").text("Please select"));
-    }
-    if ($("#BusinessUnitId option").eq(0).val() == undefined) {
-        $("#BusinessUnitId").append($("<option></option>").val("").text("Please select"));
-    }
-    $("#BusinessUnitId").val("");
+                function (businessUnitData) {
+                    var select = $("#BusinessUnitId");
+                    select.empty();
+                    $.each(businessUnitData, function (index, itemData) {
+                        select.append($('<option/>', {
+                            value: itemData.Value,
+                            text: itemData.Text
+                        }));
+                    });
+                    if ($("#BusinessUnitId option").eq(0).val() != "") {
+                        $("#BusinessUnitId option").eq(0).before($("<option></option>").val("").text("Please select"));
+                    }
+                    if ($("#BusinessUnitId option").eq(0).val() == undefined) {
+                        $("#BusinessUnitId").append($("<option></option>").val("").text("Please select"));
+                    }
+                    $("#BusinessUnitId").val("");
 
-    //Added by :- Sohel on 27 March 2014 for ticket #334
-    $(".selectBox select").selectbox('detach');
-    $(".selectBox select").selectbox("attach");
-});
+                    //Added by :- Sohel on 27 March 2014 for ticket #334
+                    $(".selectBox select").selectbox('detach');
+                    $(".selectBox select").selectbox("attach");
+                });
+            }
         }
-    }
         function loadGeography(clientId) {
             if (clientId != "" && clientId != "0" && clientId != "null") {
                 $.getJSON("@Url.Content("~/User/GetGeography")", { id: clientId },
@@ -607,8 +654,18 @@ function (businessUnitData) {
             url = '@Url.Content("~/ExternalService/Index")';
             window.location.href = url;
         });
-        // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
-        $('#divNewManager').hide();
+        
+        // Start - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
+        if ($('#IsManager').val().toLowerCase() == 'true') {
+            if ($('#IsDeleted').val().toLowerCase() == 'yes')
+                $('#divNewManager').show();
+            else
+                $('#divNewManager').hide();
+        }
+        else {
+            $('#divNewManager').hide();
+        }
+        // End - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
 
         //if ($('#hdnLoggedInUserRole').val().toUpperCase() == 'SA' || $('#hdnLoggedInUserRole').val().toUpperCase() == 'CA') {
         //    if ($('#RoleId').next('div').find('.sbSelector').html().toLowerCase() == 'client admin' || $('#RoleId').next('div').find('.sbSelector').html().toLowerCase() == 'system admin') {
@@ -741,8 +798,10 @@ function (businessUnitData) {
             if ($('#IsManager').val().toLowerCase() == 'true') {
                 if ($(this).val().toLowerCase() == 'yes')
                     $('#divNewManager').show();
-                else
+                else {
                     $('#divNewManager').hide();
+                    $('#lblNewManagerIdRequired').hide();   // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
+                }
             }
         //}
     });
@@ -754,6 +813,69 @@ function (businessUnitData) {
         url = '@Url.Action("ViewEditPermission", "Organization", new { Id = Sessions.User.UserId, Mode = "MyPermission" })';
         window.location.href = url;
     });
+
+    // Start - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
+    $("#BusinessUnitId").change(function () {
+        var BusinessUnitId = $(this).val();
+        if (BusinessUnitId != "") {
+            $("#ddlBusinessUnitIdSelectBox .sbHolder").removeClass("selectBoxError");
+            $('#lblBusinessUnitIdRequired').hide();
+        }
+        else {
+            $("#ddlBusinessUnitIdSelectBox .sbHolder").addClass("selectBoxError");
+            $('#lblBusinessUnitIdRequired').show();
+        }
+    });
+
+    $("#GeographyId").change(function () {
+        var GeographyId = $(this).val();
+        if (GeographyId != "") {
+            $("#ddlGeographyIdSelectBox .sbHolder").removeClass("selectBoxError");
+            $('#lblGeographyIdRequired').hide();
+        }
+        else {
+            $("#ddlGeographyIdSelectBox .sbHolder").addClass("selectBoxError");
+            $('#lblGeographyIdRequired').show();
+        }
+    });
+
+    $("#RoleId").change(function () {
+        var RoleId = $(this).val();
+        if (RoleId != "") {
+            $("#ddlRoleIdSelectBox .sbHolder").removeClass("selectBoxError");
+            $('#lblRoleIdRequired').hide();
+        }
+        else {
+            $("#ddlRoleIdSelectBox .sbHolder").addClass("selectBoxError");
+            $('#lblRoleIdRequired').show();
+        }
+    });
+
+    $("#ManagerId").change(function () {
+        var ManagerId = $(this).val();
+        if (ManagerId != "") {
+            $("#ddlManagerIdSelectBox .sbHolder").removeClass("selectBoxError");
+            $('#lblManagerIdRequired').hide();
+        }
+        else {
+            $("#ddlManagerIdSelectBox .sbHolder").addClass("selectBoxError");
+            $('#lblManagerIdRequired').show();
+        }
+    });
+
+    $("#NewManagerId").change(function () {
+        var NewManagerId = $(this).val();
+        if (NewManagerId != "") {
+            $("#ddlNewManagerIdSelectBox .sbHolder").removeClass("selectBoxError");
+            $('#lblNewManagerIdRequired').hide();
+        }
+        else {
+            $("#ddlNewManagerIdSelectBox .sbHolder").addClass("selectBoxError");
+            $('#lblNewManagerIdRequired').show();
+        }
+    });
+
+    // End - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
 </script>
 
 @*@section Scripts {
