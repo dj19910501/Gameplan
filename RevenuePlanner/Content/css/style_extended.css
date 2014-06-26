@@ -960,14 +960,15 @@ a {
     margin-left: 0px;
     text-align: left;
 }
-
+    /* Modified by Mitesh on26-06-2014*/
     #ddlSecurityQuestionSelectBox .sbHolder {
-        height: 40px;
+        height: 33px;
     }
-
+    /* Modified by Mitesh on26-06-2014*/
     #ddlSecurityQuestionSelectBox .sbSelector {
-        margin-top: 10px;
+        margin-top: 3px;
         padding-left: 10px;
+        width: 100%;
     }
 
     #ddlSecurityQuestionSelectBox .sbOptions {
@@ -990,6 +991,25 @@ a {
 #ddlTacticSelectBox {
     width: 140px;
 }
+
+
+/*Added by Mitesh Vaishnav on 26-06-2014*/
+#ddlBusinessUnitSelectBox .sbSelector {
+    width: 83%;
+}
+
+#ddlCampaignSelectBox .sbSelector {
+    width: 90%;
+}
+
+#ddlProgramSelectBox .sbSelector {
+    width: 90%;
+}
+
+#ddlTacticSelectBox .sbSelector {
+    width: 90%;
+}
+/*End Added by Mitesh Vaishnav on 26-06-2014 */
 
 .sbHolder {
     font-size: 14px;
@@ -1232,13 +1252,23 @@ a {
     /* Edited by KAPIL 100414 - Boost Sidebar design change - #357 */
     .verticalIdSelectBox .sbHolder {
         z-index: auto;
+        background:url("../images/button-arrow.png") no-repeat center right 8px #fcfcfc !important;margin-bottom:0;box-shadow:1px -8px 13px #ededed inset, 0 1px 2px #ededed;/*Added by Mitesh Vaishnav on 26-06-2014*/
     }
-
+    /*Modofied by Mitesh Vaishnav on 26-06-2014*/
     .verticalIdSelectBox .sbSelector {
         /*color: #6d6d6d !important;*/
-        border-right: 1px solid #C6C6C6;
+        /*border-right: 1px solid #C6C6C6;*/
         font-size: 14px;
+        width:95%;
+        
     }
+    /*Added by Mitesh Vaishnav on 26-06-2014*/
+    .verticalIdSelectBox .sbToggle {
+        border-left: none;
+    border-right: none;
+    border-top: none;
+    }
+    /*End : Added by Mitesh Vaishnav on 26-06-2014*/
 
     /*.verticalIdSelectBox .sbToggle {
         border-top: 4px solid #908D88;

@@ -14,17 +14,38 @@
         
         var strValidation = "^(?:|^[^<>~%^;/|]+)$";
             
-        @Html.DropDownListFor(f => f.SecurityQuestionId, new SelectList(Model.SecurityQuestionList, "Value", "Text", Model.SecurityQuestionId), "Select Security Question", new { @class = "select-box", pattern = strValidation, @required = "required" })
+    <div class="selectBox UserProfile" id="ddlSecurityQuestionSelectBox">
+        @Html.DropDownListFor(f => f.SecurityQuestionId, new SelectList(Model.SecurityQuestionList, "Value", "Text", Model.SecurityQuestionId), "Select Security Question")
+       
+    </div>
+    
+
         @Html.TextBoxFor(f => f.Answer, new { maxlength = "255", @class = "input-block-level conv_helveticaltstd-light", placeholder = "Answer", required = "required" })
-        <button class="btn btn-large conv-proximanova-light" type="submit" value="Submit">Submit</button>
+    @Html.ValidationMessageFor(model => model.Answer)
+     
+    <button id="btnSubmit" class="btn btn-large conv-proximanova-light" type="submit" value="Submit">Submit</button>
+    
 }
 
 <script type="text/javascript">
 
     $(document).ready(function () {
-
+        $(".selectBox select").selectbox();
         $("#ReturnToSignIn").css("display", "none");
         $("#divOverlay").css("display", "block");
+
+        $('#btnSubmit').click(function () {
+            var isValid = true;
+            if (($("#SecurityQuestionId option").eq(0).val() == "" && $("#SecurityQuestionId").val() == "")) {
+                $("#ddlSecurityQuestionSelectBox .sbHolder").addClass("selectBoxError");
+                isValid = false;
+                return isValid;
+            }
+            else {
+                $("#ddlSecurityQuestionSelectBox .sbHolder").removeClass("selectBoxError");
+            }
+
+        });
 
     });
 

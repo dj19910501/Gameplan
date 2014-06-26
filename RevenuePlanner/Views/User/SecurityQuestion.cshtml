@@ -76,10 +76,9 @@
 
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.SecurityQuestionList)
-                    <div class="btn-group">
-                    @Html.DropDownListFor(f => f.SecurityQuestionId, new SelectList(Model.SecurityQuestionList, "Value", "Text", Model.SecurityQuestionId), "Select Security Question", new { @class = "select-box", pattern = strValidation, @required = "required" })
                     
-                    @Html.ValidationMessageFor(model => model.SecurityQuestionList)
+                    <div class="selectBox UserProfile" id="ddlSecurityQuestionSelectBox1">
+                        @Html.DropDownListFor(f => f.SecurityQuestionId, new SelectList(Model.SecurityQuestionList, "Value", "Text", Model.SecurityQuestionId), "Select Security Question", new { pattern = strValidation, @required = "required" })
                     </div>
                 </div>
 
@@ -104,7 +103,8 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
-
+        $(".selectBox select").selectbox();
+        $('#lblValidationDdlSecurityQuestion').hide();
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
 
         if ($('#SuccMsg').val() == null || $('#SuccMsg').val() == '') {
@@ -129,6 +129,17 @@
             //if (reason == 'user') {
             //    return false;
             //}
+            /* Modified by Mitesh Vaishnav on 26-06-2014 for internal issue "Change dropdown styling"*/
+            var isValid = true;
+            if (($("#SecurityQuestionId option").eq(0).val() == "" && $("#SecurityQuestionId").val() == "")) {
+                $("#ddlSecurityQuestionSelectBox1 .sbHolder").addClass("selectBoxError");
+                isValid = false;
+                return isValid;
+            }
+            else {
+                $("#ddlSecurityQuestionSelectBox1 .sbHolder").removeClass("selectBoxError");
+            }
+            /*End: Modified by Mitesh Vaishnav on 26-06-2014 for internal issue "Change dropdown styling"*/
             $('#content :input').each(function () {
                 if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
                     var input = $(this).val();
