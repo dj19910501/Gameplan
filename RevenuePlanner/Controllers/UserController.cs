@@ -42,7 +42,10 @@ namespace RevenuePlanner.Controllers
         {
             // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
-            ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin); 
+            ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
+
+            // Added By Sohel Pathan on 26/06/2014 for PL ticket #517
+            ViewBag.NotifyBeforManagerDeletion = Common.objCached.NotifyBeforeManagerDeletion;
 
             //if (Sessions.RolePermission != null)
             //{
@@ -900,7 +903,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                        objUserModel.ManagerName = objUser.ManagerName;
+                        objUserModel.ManagerName = (objUser.ManagerName == null ? "N/A" : objUser.ManagerName);
                     }
                     // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
 

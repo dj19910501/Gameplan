@@ -211,6 +211,7 @@
     // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
     function DeleteOnEdit(userId)
     {
+        alert('@ViewBag.NotifyBeforManagerDeletion');
         window.location.href = "@Url.Content("~/user/edit?usrid=")" + userId + "&src=myteam&isForDelete=true";
     }
 

@@ -2281,6 +2281,7 @@ a {
     width: 105px; /* Modified by :- Sohel Pathan on 17/06/2014 for PL ticket #517 */
     margin-left: 5px; /* Modified by :- Sohel Pathan on 17/06/2014 for PL ticket #517 */
     margin-top: 10px;
+    float:left;     /* Added by Sohel Pathan on 26/06/2014 for PL ticket #517 */
 }
 
 .selectBoxError {
@@ -3316,7 +3317,7 @@ font-family: 'source_sans_proregular', Arial, "sans-serif" !important; color:#ff
     float:right;
     text-align:left;
     line-height:20px;
-    width:206px;
+    width:203px;
 }
 
 #divUserDelete .selectbox-validation-message {

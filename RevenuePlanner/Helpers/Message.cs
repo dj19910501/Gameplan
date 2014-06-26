@@ -1321,6 +1321,21 @@ namespace RevenuePlanner.Helpers
             }
         }
         // End - Added By Sohel Pathan on 25/06/2014 for PL ticket #537
+
+        // Start - Added By Sohel Pathan on 26/06/2014 for PL ticket #517
+        private string _NotifyBeforeManagerDeletion;
+        public string NotifyBeforeManagerDeletion
+        {
+            get
+            {
+                return _NotifyBeforeManagerDeletion;
+            }
+            set
+            {
+                _NotifyBeforeManagerDeletion = value;
+            }
+        }
+        // End - Added By Sohel Pathan on 26/06/2014 for PL ticket #517
         #endregion
 
 
@@ -1726,6 +1741,11 @@ namespace RevenuePlanner.Helpers
                                         // Start - Added By Sohel Pathan on 25/06/2014 for PL ticket #537
                                         case "UnauthorizedCommentSection":
                                             _UnauthorizedCommentSection = strMsgValue;
+                                            break;
+                                        // End - Added By Sohel Pathan on 25/06/2014 for PL ticket #537
+                                        // Start - Added By Sohel Pathan on 25/06/2014 for PL ticket #537
+                                        case "NotifyBeforeManagerDeletion":
+                                            _NotifyBeforeManagerDeletion = strMsgValue;
                                             break;
                                         // End - Added By Sohel Pathan on 25/06/2014 for PL ticket #537
                                     }

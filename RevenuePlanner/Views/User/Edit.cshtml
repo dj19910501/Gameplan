@@ -224,7 +224,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                 }
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.ClientId)
-                    @if ((bool)ViewBag.IsUserAdminAuthorized) //Model.IsSystemAdmin)
+                    @if ((bool)ViewBag.IsUserAdminAuthorized && currentUserId != Convert.ToString(Model.UserId)) //Model.IsSystemAdmin)
                     {
                         //Modified by :- Sohel on 27 March 2014 for ticket #334
                         <div class="selectBox UserProfile" id="ddlClientIdSelectBox">
@@ -242,7 +242,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                 </div>
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.BusinessUnitId)
-                    @if ((bool)ViewBag.IsUserAdminAuthorized || currentUserId == Convert.ToString(Model.UserId))
+                    @if ((bool)ViewBag.IsUserAdminAuthorized && currentUserId != Convert.ToString(Model.UserId))
                     //@if (permRoleCodesForDel.Contains(Model.RoleCode) || (Model.IsSystemAdmin && currentUserId == Convert.ToString(Model.UserId)))
                     //@if ((Convert.ToString(Model.UserId) == currentUserId) || permRoleCodesForDel.Contains(Model.RoleCode))
                     {
@@ -263,7 +263,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
 
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.GeographyId)
-                    @if ((bool)ViewBag.IsUserAdminAuthorized || currentUserId == Convert.ToString(Model.UserId))
+                    @if ((bool)ViewBag.IsUserAdminAuthorized && currentUserId != Convert.ToString(Model.UserId))
                     //@if (permRoleCodesForDel.Contains(Model.RoleCode) || (Model.IsSystemAdmin && currentUserId == Convert.ToString(Model.UserId)))
                     //@if ((Convert.ToString(Model.UserId) == currentUserId) || permRoleCodesForDel.Contains(Model.RoleCode))
                     {
@@ -345,7 +345,8 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                     {
                         <div class="cf inputs-aligned-horizontal" style="margin-left: 179px;" id="divUserDelete">
                             <div class="delete-container">
-                            @Html.LabelFor(model => model.IsDeleted, new { style = "float:left;padding-left:60px;padding-top:2px;" })
+                            <div>
+                            @Html.LabelFor(model => model.IsDeleted, new { style = "float:left;padding-left:57px;padding-top:2px;" })
                             @{
                                 var items = new List<System.Web.UI.WebControls.ListItem> { new System.Web.UI.WebControls.ListItem { Text = "No", Value = "No" }, new System.Web.UI.WebControls.ListItem { Text = "Yes", Value = "Yes" } };
                                 // Start - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
@@ -363,7 +364,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                             <div class="selectBox" id="ddlIsDeletedSelectBox">
                                 @Html.DropDownListFor(c => c.IsDeleted, new SelectList(items, "Value", "Text"), new { style = "width:54px; height:23px;float:right;margin-top:10px;margin-right:12px;" })
                             </div>
-
+                            </div>
                             @*@if ((currentUserRole.Equals(Enums.RoleCodes.SA.ToString(), StringComparison.OrdinalIgnoreCase) || currentUserRole.Equals(Enums.RoleCodes.CA.ToString(), StringComparison.OrdinalIgnoreCase)) &&
                                 !Model.RoleCode.Equals(Enums.RoleCodes.SA.ToString(), StringComparison.OrdinalIgnoreCase))
                             {*@
