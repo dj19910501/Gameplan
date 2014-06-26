@@ -2153,10 +2153,10 @@ namespace RevenuePlanner.BDSService {
         System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetRoleMemberListAsync(System.Guid applicationId, System.Guid roleid);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/DeleteRoleAndReassign", ReplyAction="http://tempuri.org/IBDSService/DeleteRoleAndReassignResponse")]
-        int DeleteRoleAndReassign(System.Guid delroleid, System.Guid reassignroleid, System.Guid applicationid);
+        int DeleteRoleAndReassign(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/DeleteRoleAndReassign", ReplyAction="http://tempuri.org/IBDSService/DeleteRoleAndReassignResponse")]
-        System.Threading.Tasks.Task<int> DeleteRoleAndReassignAsync(System.Guid delroleid, System.Guid reassignroleid, System.Guid applicationid);
+        System.Threading.Tasks.Task<int> DeleteRoleAndReassignAsync(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/CreateRole", ReplyAction="http://tempuri.org/IBDSService/CreateRoleResponse")]
         int CreateRole(string roledesc, string permissionID, string colorcode, System.Guid applicationid, System.Guid createdby, System.Guid roleid);
@@ -2223,6 +2223,12 @@ namespace RevenuePlanner.BDSService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetUserHierarchy", ReplyAction="http://tempuri.org/IBDSService/GetUserHierarchyResponse")]
         System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.UserHierarchy>> GetUserHierarchyAsync(System.Guid clientId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetManagerList", ReplyAction="http://tempuri.org/IBDSService/GetManagerListResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetManagerList(System.Guid clientId, System.Guid applicationId, System.Guid userId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetManagerList", ReplyAction="http://tempuri.org/IBDSService/GetManagerListResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetManagerListAsync(System.Guid clientId, System.Guid applicationId, System.Guid userId);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -2540,11 +2546,11 @@ namespace RevenuePlanner.BDSService {
             return base.Channel.GetRoleMemberListAsync(applicationId, roleid);
         }
         
-        public int DeleteRoleAndReassign(System.Guid delroleid, System.Guid reassignroleid, System.Guid applicationid) {
+        public int DeleteRoleAndReassign(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid) {
             return base.Channel.DeleteRoleAndReassign(delroleid, reassignroleid, applicationid);
         }
         
-        public System.Threading.Tasks.Task<int> DeleteRoleAndReassignAsync(System.Guid delroleid, System.Guid reassignroleid, System.Guid applicationid) {
+        public System.Threading.Tasks.Task<int> DeleteRoleAndReassignAsync(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid) {
             return base.Channel.DeleteRoleAndReassignAsync(delroleid, reassignroleid, applicationid);
         }
         
@@ -2634,6 +2640,14 @@ namespace RevenuePlanner.BDSService {
         
         public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.UserHierarchy>> GetUserHierarchyAsync(System.Guid clientId, System.Guid applicationId) {
             return base.Channel.GetUserHierarchyAsync(clientId, applicationId);
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetManagerList(System.Guid clientId, System.Guid applicationId, System.Guid userId) {
+            return base.Channel.GetManagerList(clientId, applicationId, userId);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetManagerListAsync(System.Guid clientId, System.Guid applicationId, System.Guid userId) {
+            return base.Channel.GetManagerListAsync(clientId, applicationId, userId);
         }
     }
 }

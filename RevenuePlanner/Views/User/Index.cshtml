@@ -113,7 +113,8 @@
                                 //    if ((bool)ViewBag.IsUserAdminAuthorized) //if (isViewOnly != "true")
                                 //    {
                                 <td class="userDelete">
-                                    <a href="@Url.Action("Delete", "User", new { id = item.UserId })" onclick="return confirm('Are you sure you want to delete this Member?');" >
+                                    @*<a href="@Url.Action("Delete", "User", new { id = item.UserId })" onclick="return confirm('Are you sure you want to delete this Member?');" >*@
+                                    <a onclick="DeleteOnEdit('@item.UserId.ToString()');" >
                                         <span class="x-icon hide pull-right" title="Delete Member"></span>
                                     </a>
                                 </td>@*
@@ -196,6 +197,11 @@
     }
         });
     });
+
+    function DeleteOnEdit(userId)
+    {
+        window.location.href = "@Url.Content("~/user/edit?usrid=")" + userId + "&src=myteam";
+    }
 
     // Added by :- Sohel Pathan on 13/5/2014 for PL #430 to setup integration screen
     $('#aIntegrations').click(function () {

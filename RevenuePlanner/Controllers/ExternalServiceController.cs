@@ -868,10 +868,10 @@ namespace RevenuePlanner.Controllers
             // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
 
-            if (!Sessions.IsClientAdmin && !Sessions.IsSystemAdmin)
-            {
-                return RedirectToAction("Index", "NoAccess");
-            }
+            //if (!Sessions.IsClientAdmin && !Sessions.IsSystemAdmin)
+            //{
+            //    return RedirectToAction("Index", "NoAccess");
+            //}
             try
             {
                 ExternalIntegration objEx = new ExternalIntegration(id);

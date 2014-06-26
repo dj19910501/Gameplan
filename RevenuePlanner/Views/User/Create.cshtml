@@ -146,7 +146,8 @@
                         <div class="selectBox UserProfile" id="ddlClientIdSelectBox">
                             @Html.DropDownListFor(c => c.ClientId, new SelectList((System.Collections.IEnumerable)ViewData["Clients"], "ClientId", "Name"), "Please Select")
                         </div>
-                        @Html.ValidationMessageFor(model => model.ClientId)
+                        @Html.ValidationMessageFor(model => model.ClientId)    
+                        @Html.Label("", "The Organization field is required.", new { @class = "field-validation-error selectbox-validation-message", id = "lblClientIdRequired" })
                     @*}
                     else
                     {
@@ -170,6 +171,7 @@
                         }
                     </div>
                     @Html.ValidationMessageFor(model => model.BusinessUnitId)
+                    @Html.Label("", "The Business Unit field is required.", new { @class="field-validation-error selectbox-validation-message", id="lblBusinessUnitIdRequired" })
                 </div>
 
                 <div class="cf inputs-aligned-horizontal">
@@ -186,6 +188,7 @@
                         }
                     </div>
                     @Html.ValidationMessageFor(model => model.GeographyId)
+                    @Html.Label("", "The Region field is required.", new { @class="field-validation-error selectbox-validation-message", id="lblGeographyIdRequired" })
                 </div>
                 
                 <div class="cf inputs-aligned-horizontal">
@@ -194,12 +197,13 @@
                     <div class="selectBox UserProfile" id="ddlRoleIdSelectBox">
                         @Html.DropDownListFor(c => c.RoleId, new SelectList((System.Collections.IEnumerable)ViewData["Roles"], "RoleId", "Title"), "Please Select")
                     </div>
-                    @Html.ValidationMessageFor(model => model.RoleId)                    
+                    @Html.ValidationMessageFor(model => model.RoleId)
+                    @Html.Label("", "The Role field is required.", new { @class="field-validation-error selectbox-validation-message", id="lblRoleIdRequired" })
                 </div>
                 
                 // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
-                if (Sessions.User.RoleCode.Equals(Enums.RoleCodes.SA.ToString(), StringComparison.OrdinalIgnoreCase) || Sessions.User.RoleCode.Equals(Enums.RoleCodes.CA.ToString(), StringComparison.OrdinalIgnoreCase))
-                {
+                //if (Sessions.User.RoleCode.Equals(Enums.RoleCodes.SA.ToString(), StringComparison.OrdinalIgnoreCase) || Sessions.User.RoleCode.Equals(Enums.RoleCodes.CA.ToString(), StringComparison.OrdinalIgnoreCase))
+                //{
                     <div class="cf inputs-aligned-horizontal" id="divManager">
                         @Html.Label("Manager")
                         <div class="selectBox UserProfile" id="ddlManagerIdSelectBox">
@@ -212,10 +216,11 @@
                                 @Html.DropDownListFor(c => c.ManagerId, Enumerable.Empty<SelectListItem>(), "Please Select")
                             }
                         </div>
+                        @Html.Label("", "The Manager field is required.", new { @class="field-validation-error selectbox-validation-message", id="lblManagerIdRequired" })
                     </div>
-                }
+                @*}*@
                 // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
-                
+
                 //if (isViewOnly != "true")
                 //{
                 <div class="cf inputs-aligned-horizontal">
@@ -232,6 +237,12 @@
 <script type="text/javascript">
     $(document).ready(function () {
 
+        $('#lblClientIdRequired').hide();
+        $('#lblBusinessUnitIdRequired').hide();
+        $('#lblGeographyIdRequired').hide();
+        $('#lblRoleIdRequired').hide();
+        $('#lblManagerIdRequired').hide();
+
         //Added by :- Sohel on 27 March 2014 for ticket #334
         $(".selectBox select").selectbox();
         
@@ -241,37 +252,45 @@
             //ClientId Dropdown Required Validtion
             if (($("#ClientId option").eq(0).val() == "" && $("#ClientId").val() == "")) {
                 $("#ddlClientIdSelectBox .sbHolder").addClass("selectBoxError");
+                $('#lblClientIdRequired').show();
                 isValid = false;
             }
             else {
                 $("#ddlClientIdSelectBox .sbHolder").removeClass("selectBoxError");
+                $('#lblClientIdRequired').hide();
             }
 
             //BusinessID Dropdown Required Validtion
             if (($("#BusinessUnitId option").eq(0).val() == "" && $("#BusinessUnitId").val() == "")) {
                 $("#ddlBusinessUnitIdSelectBox .sbHolder").addClass("selectBoxError");
+                $('#lblBusinessUnitIdRequired').show();
                 isValid = false;
             }
             else {
                 $("#ddlBusinessUnitIdSelectBox .sbHolder").removeClass("selectBoxError");
+                $('#lblBusinessUnitIdRequired').hide();
             }
             
             //GeographyId Dropdown Required Validtion
             if (($("#GeographyId option").eq(0).val() == "" && $("#GeographyId").val() == "")) {
                 $("#ddlGeographyIdSelectBox .sbHolder").addClass("selectBoxError");
+                $('#lblGeographyIdRequired').show();
                 isValid = false;
             }
             else {
                 $("#ddlGeographyIdSelectBox .sbHolder").removeClass("selectBoxError");
+                $('#lblGeographyIdRequired').hide();
             }
 
             //RoleID Dropdown Required Validtion
             if (($("#RoleId option").eq(0).val() == "" && $("#RoleId").val() == "")) {
                 $("#ddlRoleIdSelectBox .sbHolder").addClass("selectBoxError");
+                $('#lblRoleIdRequired').show();
                 isValid = false;
             }
             else {
                 $("#ddlRoleIdSelectBox .sbHolder").removeClass("selectBoxError");
+                $('#lblRoleIdRequired').hide();
             }
 
             // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
@@ -279,10 +298,12 @@
                 //if ($('#RoleId').next('div').find('.sbSelector').html().toLowerCase() != 'client admin' && $('#RoleId').next('div').find('.sbSelector').html().toLowerCase() != 'system admin') {
                     if (($("#ManagerId option").eq(0).val() == "" && $("#ManagerId").val() == "")) {
                         $("#ddlManagerIdSelectBox .sbHolder").addClass("selectBoxError");
+                        $('#lblManagerIdRequired').show();
                         isValid = false;
                     }
                     else {
                         $("#ddlManagerIdSelectBox .sbHolder").removeClass("selectBoxError");
+                        $('#lblManagerIdRequired').hide();
                     }
                 //}
             //}
@@ -352,7 +373,7 @@
 
         //function to add or remove class ERROR when inputs text are empty.
         $('input').blur(function () {
-            if ($(this).attr('type') == 'text' || $(this).attr('type') == 'password') {
+            if (($(this).attr('type') == 'text' || $(this).attr('type') == 'password') && this.id != 'Phone') {
                 if ($(this).val() == '') {
                     $(this).addClass("error");
                 } else {
@@ -374,6 +395,15 @@
             if (clientId != "") {
                 loadBusinessUnit(clientId);
                 loadGeography(clientId);
+                $('#lblClientIdRequired').hide();
+                $('#lblBusinessUnitIdRequired').hide();
+                $('#lblGeographyIdRequired').hide();
+                $('#lblRoleIdRequired').hide();
+                $('#lblManagerIdRequired').hide();
+            }
+            else {
+                $("#ddlClientIdSelectBox .sbHolder").addClass("selectBoxError");
+                $('#lblClientIdRequired').show();
             }
         });
                 
@@ -626,6 +656,54 @@
         url = '@Url.Action("ViewEditPermission", "Organization", new { Id = Sessions.User.UserId, Mode = "MyPermission" })';
 
         window.location.href = url;
+    });
+
+    $("#BusinessUnitId").change(function () {
+        var BusinessUnitId = $(this).val();
+        if (BusinessUnitId != "") {
+            $("#ddlBusinessUnitIdSelectBox .sbHolder").removeClass("selectBoxError");
+            $('#lblBusinessUnitIdRequired').hide();
+        }
+        else {
+            $("#ddlBusinessUnitIdSelectBox .sbHolder").addClass("selectBoxError");
+            $('#lblBusinessUnitIdRequired').show();
+        }
+    });
+
+    $("#GeographyId").change(function () {
+        var GeographyId = $(this).val();
+        if (GeographyId != "") {
+            $("#ddlGeographyIdSelectBox .sbHolder").removeClass("selectBoxError");
+            $('#lblGeographyIdRequired').hide();
+        }
+        else {
+            $("#ddlGeographyIdSelectBox .sbHolder").addClass("selectBoxError");
+            $('#lblGeographyIdRequired').show();
+        }
+    });
+
+    $("#RoleId").change(function () {
+        var RoleId = $(this).val();
+        if (RoleId != "") {
+            $("#ddlRoleIdSelectBox .sbHolder").removeClass("selectBoxError");
+            $('#lblRoleIdRequired').hide();
+        }
+        else {
+            $("#ddlRoleIdSelectBox .sbHolder").addClass("selectBoxError");
+            $('#lblRoleIdRequired').show();
+        }
+    });
+
+    $("#ManagerId").change(function () {
+        var ManagerId = $(this).val();
+        if (ManagerId != "") {
+            $("#ddlManagerIdSelectBox .sbHolder").removeClass("selectBoxError");
+            $('#lblManagerIdRequired').hide();
+        }
+        else {
+            $("#ddlManagerIdSelectBox .sbHolder").addClass("selectBoxError");
+            $('#lblManagerIdRequired').show();
+        }
     });
 </script>
 

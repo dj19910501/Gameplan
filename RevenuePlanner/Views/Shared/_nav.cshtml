@@ -8,13 +8,13 @@
             {
                 string menuname = Convert.ToString(o.Name);
                 //if (o.IsEnable)
-                int code = Sessions.RolePermission.Where(m => m.Code == o.Code).Select(m => m.PermissionCode).SingleOrDefault();
-                if (code != 0)
-                {  
+                //int code = Sessions.RolePermission.Where(m => m.Code == o.Code).Select(m => m.PermissionCode).SingleOrDefault();
+                //if (code != 0)
+                //{  
                     <li class="@menuname.ToLower()"><a href="@Url.Action(Convert.ToString(o.ActionName), Convert.ToString(o.ControllerName))">
                         <div class="icon"></div>
                         <span class="source-sans-probold text-shadow-white">@menuname.ToUpper()</span></a></li>
-                }
+                //}
             }
         }
     </ul>

@@ -29,13 +29,13 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                string systemadmin = Enums.RoleCodes.SA.ToString();
-                string clientadmin = Enums.RoleCodes.CA.ToString();
-                string director = Enums.RoleCodes.D.ToString();
-                string planner = Enums.RoleCodes.P.ToString();
+                //string systemadmin = Enums.RoleCodes.SA.ToString();
+                //string clientadmin = Enums.RoleCodes.CA.ToString();
+                //string director = Enums.RoleCodes.D.ToString();
+                //string planner = Enums.RoleCodes.P.ToString();
 
                 BDSService.BDSServiceClient bdsuserrepository = new BDSServiceClient();
-                var memberlist = bdsuserrepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, Sessions.IsSystemAdmin);
+                var memberlist = bdsuserrepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);//Sessions.IsSystemAdmin);
                 foreach (var item in memberlist)
                 {
                     OrganizationModel obj = new OrganizationModel();

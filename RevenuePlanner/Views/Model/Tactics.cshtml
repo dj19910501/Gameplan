@@ -5,7 +5,7 @@
     ViewBag.Title = "Tactic Selection";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Model;
     Layout = "~/Views/Shared/_Layout.cshtml";
-    string isViewOnly = ViewBag.IsViewOnly;
+    //string isViewOnly = ViewBag.IsViewOnly;
     string ShowModelResultsTab = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ShowModelResultsTab"]);
     @Html.Hidden("hdnShowModelResultsTab", ShowModelResultsTab);
                                                                string PublishedMsg = ViewBag.ModelPublishComfirmation;
@@ -40,7 +40,7 @@
                             <a href="#">Create New</a>
                         </li>
                         @* Show Duplicate option only in Edit mode and only for latest version of model. *@
-                        @if (Convert.ToString(Model.ModelId) != "" && Convert.ToString(Model.ModelId) != "0" && isViewOnly != "true")
+                        @if (Convert.ToString(Model.ModelId) != "" && Convert.ToString(Model.ModelId) != "0") // && isViewOnly != "true")
                         {
                             <li id="liDuplicate">
                                 <a href="#">Duplicate</a>
@@ -164,7 +164,7 @@
 </ul>
 
 @Html.Hidden("0", (int)ViewBag.Version, new { id = "mode" })
-@Html.Hidden("IsViewOnly", isViewOnly)
+@*@Html.Hidden("IsViewOnly", isViewOnly)*@
 @Html.Hidden("EffectiveDate", currentdate)
 <div id="table_request" class="padding-content padding-top0 cf source-sans-proregular">
 
@@ -189,11 +189,11 @@
 
         </tbody>
     </table>
-    @if (isViewOnly != "true")
-    {
+    @*@if (isViewOnly != "true")
+    {*@
         <button id="create_new_tactic"  class="btn btn-blue btn-large text-shadow-blue source-sans-proregular pull-left font-size14" type="button">Create New Tactic</button>
         <button class="btn btn-blue btn-large text-shadow-blue source-sans-proregular pull-right font-size14" id="continue" type="button">Save & Continue</button>
-    }
+    @*}*@
 </div>
 
 <script type="text/javascript">
@@ -219,11 +219,11 @@
         }
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
 
-        if ($('#IsViewOnly').val() != '') {
-            MakeViewOnly(); //Bug 17:Should not be able to edit a published model
-            $("#errorMessage").html('<a class="close">×</a> View only permission');
-            $("#errorMessage").slideDown(1200);
-        }
+        //if ($('#IsViewOnly').val() != '') {
+        //    MakeViewOnly(); //Bug 17:Should not be able to edit a published model
+        //    $("#errorMessage").html('<a class="close">×</a> View only permission');
+        //    $("#errorMessage").slideDown(1200);
+        //}
         $('#NewModel').click(function (e) {
             window.location.href = "@Url.Action("Create", "Model")";
         });

@@ -40,22 +40,22 @@ namespace RevenuePlanner.Controllers
         [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Report)
         {
-            if (Sessions.RolePermission != null)
-            {
-                Common.Permission permission = Common.GetPermission(ActionItem.Report);
-                switch (permission)
-                {
-                    case Common.Permission.FullAccess:
-                        break;
-                    case Common.Permission.NoAccess:
-                        return RedirectToAction("Homezero", "Home");
-                    case Common.Permission.NotAnEntity:
-                        break;
-                    case Common.Permission.ViewOnly:
-                        ViewBag.IsViewOnly = "true";
-                        break;
-                }
-            }
+            //if (Sessions.RolePermission != null)
+            //{
+            //    Common.Permission permission = Common.GetPermission(ActionItem.Report);
+            //    switch (permission)
+            //    {
+            //        case Common.Permission.FullAccess:
+            //            break;
+            //        case Common.Permission.NoAccess:
+            //            return RedirectToAction("Homezero", "Home");
+            //        case Common.Permission.NotAnEntity:
+            //            break;
+            //        case Common.Permission.ViewOnly:
+            //            ViewBag.IsViewOnly = "true";
+            //            break;
+            //    }
+            //}
 
             ViewBag.ActiveMenu = activeMenu;
 
@@ -1229,22 +1229,22 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult GetConversionData(string BusinessUnitId = "", string PlanId = "", string timeFrameOption = "thisquarter")
         {
-            if (Sessions.RolePermission != null)
-            {
-                Common.Permission permission = Common.GetPermission(ActionItem.Report);
-                switch (permission)
-                {
-                    case Common.Permission.FullAccess:
-                        break;
-                    case Common.Permission.NoAccess:
-                        return RedirectToAction("Index", "NoAccess");
-                    case Common.Permission.NotAnEntity:
-                        break;
-                    case Common.Permission.ViewOnly:
-                        ViewBag.IsViewOnly = "true";
-                        break;
-                }
-            }
+            //if (Sessions.RolePermission != null)
+            //{
+            //    Common.Permission permission = Common.GetPermission(ActionItem.Report);
+            //    switch (permission)
+            //    {
+            //        case Common.Permission.FullAccess:
+            //            break;
+            //        case Common.Permission.NoAccess:
+            //            return RedirectToAction("Index", "NoAccess");
+            //        case Common.Permission.NotAnEntity:
+            //            break;
+            //        case Common.Permission.ViewOnly:
+            //            ViewBag.IsViewOnly = "true";
+            //            break;
+            //    }
+            //}
 
             SetReportParameter(BusinessUnitId, PlanId);
             ViewBag.MonthTitle = GetDisplayMonthListForReport(timeFrameOption);
@@ -1840,22 +1840,22 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult GetRevenueData(string BusinessUnitId = "", string PlanId = "", string timeFrameOption = "thisquarter")
         {
-            if (Sessions.RolePermission != null)
-            {
-                Common.Permission permission = Common.GetPermission(ActionItem.Report);
-                switch (permission)
-                {
-                    case Common.Permission.FullAccess:
-                        break;
-                    case Common.Permission.NoAccess:
-                        return RedirectToAction("Index", "NoAccess");
-                    case Common.Permission.NotAnEntity:
-                        break;
-                    case Common.Permission.ViewOnly:
-                        ViewBag.IsViewOnly = "true";
-                        break;
-                }
-            }
+            //if (Sessions.RolePermission != null)
+            //{
+            //    Common.Permission permission = Common.GetPermission(ActionItem.Report);
+            //    switch (permission)
+            //    {
+            //        case Common.Permission.FullAccess:
+            //            break;
+            //        case Common.Permission.NoAccess:
+            //            return RedirectToAction("Index", "NoAccess");
+            //        case Common.Permission.NotAnEntity:
+            //            break;
+            //        case Common.Permission.ViewOnly:
+            //            ViewBag.IsViewOnly = "true";
+            //            break;
+            //    }
+            //}
 
             SetReportParameter(BusinessUnitId, PlanId);
             ViewBag.MonthTitle = GetDisplayMonthListForReport(timeFrameOption);
@@ -2795,7 +2795,7 @@ namespace RevenuePlanner.Controllers
         {
             ViewBag.ReportType = reportType;
             BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
-            var individuals = bdsUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, Sessions.IsSystemAdmin);
+            var individuals = bdsUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);//Sessions.IsSystemAdmin);
 
             ////Added by :- Sohel Pathan on 27 March 2014 For Ticket #358
             if (Sessions.User != null)

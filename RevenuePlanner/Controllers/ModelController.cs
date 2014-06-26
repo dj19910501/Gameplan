@@ -57,19 +57,22 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult Create(int id = 0)
         {
-            Common.Permission permission = Common.GetPermission(ActionItem.Model);
-            switch (permission)
-            {
-                case Common.Permission.FullAccess:
-                    break;
-                case Common.Permission.NoAccess:
-                    return RedirectToAction("Index", "NoAccess");
-                case Common.Permission.NotAnEntity:
-                    break;
-                case Common.Permission.ViewOnly:
-                    ViewBag.IsViewOnly = "true";
-                    break;
-            }
+            // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
+
+            //Common.Permission permission = Common.GetPermission(ActionItem.Model);
+            //switch (permission)
+            //{
+            //    case Common.Permission.FullAccess:
+            //        break;
+            //    case Common.Permission.NoAccess:
+            //        return RedirectToAction("Index", "NoAccess");
+            //    case Common.Permission.NotAnEntity:
+            //        break;
+            //    case Common.Permission.ViewOnly:
+            //        ViewBag.IsViewOnly = "true";
+            //        break;
+            //}
             ViewBag.ModelId = id;
             var businessunit = db.Models.Where(b => b.ModelId == id && b.IsDeleted == false).OrderByDescending(c => c.CreatedDate).Select(u => u.BusinessUnitId).FirstOrDefault();
             var IsBenchmarked = (id == 0) ? true : db.Models.Where(b => b.ModelId == id && b.IsDeleted == false).OrderByDescending(c => c.CreatedDate).Select(u => u.IsBenchmarked).FirstOrDefault();
@@ -784,32 +787,32 @@ namespace RevenuePlanner.Controllers
         public ActionResult ModelZero()
         {
             ViewBag.ActiveMenu = Enums.ActiveMenu.Model;
-            ViewBag.IsViewOnly = "false";
+            //ViewBag.IsViewOnly = "false";
             try
             {
-                if (Sessions.RolePermission != null)
-                {
-                    Common.Permission permission = Common.GetPermission(ActionItem.Model);
-                    switch (permission)
-                    {
-                        case Common.Permission.FullAccess:
-                            break;
-                        case Common.Permission.NoAccess:
-                            return RedirectToAction("Index", "NoAccess");
-                        case Common.Permission.NotAnEntity:
-                            break;
-                        case Common.Permission.ViewOnly:
-                            ViewBag.IsViewOnly = "true";
-                            break;
-                    }
-                }
+                //if (Sessions.RolePermission != null)
+                //{
+                //    Common.Permission permission = Common.GetPermission(ActionItem.Model);
+                //    switch (permission)
+                //    {
+                //        case Common.Permission.FullAccess:
+                //            break;
+                //        case Common.Permission.NoAccess:
+                //            return RedirectToAction("Index", "NoAccess");
+                //        case Common.Permission.NotAnEntity:
+                //            break;
+                //        case Common.Permission.ViewOnly:
+                //            ViewBag.IsViewOnly = "true";
+                //            break;
+                //    }
+                //}
 
                 //Check whether the logged-in user has a Model built for his/ her Business Unit 
                 ViewBag.ModelExists = false;
                 if (Sessions.User != null)
                 {
                     Model objModel = new Model();
-                    if (Sessions.IsSystemAdmin || Sessions.IsClientAdmin || Sessions.IsDirector)
+                    if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))// Sessions.IsSystemAdmin || Sessions.IsClientAdmin || Sessions.IsDirector)
                     {
                         Guid clientId = Sessions.User.ClientId;
                         objModel = (from m in db.Models
@@ -895,7 +898,7 @@ namespace RevenuePlanner.Controllers
                 {
                     Guid clientId = Sessions.User.ClientId;
                     List<Guid> objBusinessUnit = new List<Guid>();
-                    if (Sessions.IsSystemAdmin || Sessions.IsClientAdmin || Sessions.IsDirector)
+                    if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin)) //Sessions.IsSystemAdmin || Sessions.IsClientAdmin || Sessions.IsDirector)
                     {
                         objBusinessUnit = db.BusinessUnits.Where(bu => bu.ClientId == clientId && bu.IsDeleted == false).Select(bu => bu.BusinessUnitId).ToList();
                     }
@@ -947,7 +950,7 @@ namespace RevenuePlanner.Controllers
                 businessUnit = p.BusinessUnit.Title,
                 version = p.Version,
                 status = p.Status,
-                isOwner = (Sessions.User.UserId == p.CreatedBy || Sessions.IsSystemAdmin || Sessions.IsClientAdmin || Sessions.IsDirector) ? 0 : 1,/*added by Nirav Shah  on 14 feb 2014  for 256:Model list - add delete option for model and -	Delete option will be available for owner or director or system admin or client Admin */
+                isOwner = (Sessions.User.UserId == p.CreatedBy || (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))) ? 0 : 1,/*added by Nirav Shah  on 14 feb 2014  for 256:Model list - add delete option for model and -	Delete option will be available for owner or director or system admin or client Admin */
                 effectiveDate = p.EffectiveDate.HasValue == true ? p.EffectiveDate.Value.Date.ToString("M/d/yy") : "",  /* Added by Sohel on 08/04/2014 for PL #424 to show Effective Date Column*/
             }).OrderBy(p => p.title);
             return Json(lstModel, JsonRequestBehavior.AllowGet);
@@ -1076,19 +1079,19 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult Audience(int id = 0, int modelvid = 0)
         {
-            Common.Permission permission = Common.GetPermission(ActionItem.Model);
-            switch (permission)
-            {
-                case Common.Permission.FullAccess:
-                    break;
-                case Common.Permission.NoAccess:
-                    return RedirectToAction("Index", "NoAccess");
-                case Common.Permission.NotAnEntity:
-                    break;
-                case Common.Permission.ViewOnly:
-                    ViewBag.IsViewOnly = "true";
-                    break;
-            }
+            //Common.Permission permission = Common.GetPermission(ActionItem.Model);
+            //switch (permission)
+            //{
+            //    case Common.Permission.FullAccess:
+            //        break;
+            //    case Common.Permission.NoAccess:
+            //        return RedirectToAction("Index", "NoAccess");
+            //    case Common.Permission.NotAnEntity:
+            //        break;
+            //    case Common.Permission.ViewOnly:
+            //        ViewBag.IsViewOnly = "true";
+            //        break;
+            //}
 
             ViewBag.ActiveMenu = Enums.ActiveMenu.Model;
             //ViewBag.MId = Convert.ToString(id);
@@ -2014,19 +2017,19 @@ namespace RevenuePlanner.Controllers
             bool noDataForModel1 = false;
             bool noDataForModel2 = false;
 
-            Common.Permission permission = Common.GetPermission(ActionItem.Model);
-            switch (permission)
-            {
-                case Common.Permission.FullAccess:
-                    break;
-                case Common.Permission.NoAccess:
-                    return RedirectToAction("Index", "NoAccess");
-                case Common.Permission.NotAnEntity:
-                    break;
-                case Common.Permission.ViewOnly:
-                    ViewBag.IsViewOnly = "true";
-                    break;
-            }
+            //Common.Permission permission = Common.GetPermission(ActionItem.Model);
+            //switch (permission)
+            //{
+            //    case Common.Permission.FullAccess:
+            //        break;
+            //    case Common.Permission.NoAccess:
+            //        return RedirectToAction("Index", "NoAccess");
+            //    case Common.Permission.NotAnEntity:
+            //        break;
+            //    case Common.Permission.ViewOnly:
+            //        ViewBag.IsViewOnly = "true";
+            //        break;
+            //}
 
             /* Bug 18:Model - results screen does not show for some models */
 
@@ -2580,19 +2583,19 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         public ActionResult Tactics(int id = 0)
         {
-            Common.Permission permission = Common.GetPermission(ActionItem.Model);
-            switch (permission)
-            {
-                case Common.Permission.FullAccess:
-                    break;
-                case Common.Permission.NoAccess:
-                    return RedirectToAction("Index", "NoAccess");
-                case Common.Permission.NotAnEntity:
-                    break;
-                case Common.Permission.ViewOnly:
-                    ViewBag.IsViewOnly = "true";
-                    break;
-            }
+            //Common.Permission permission = Common.GetPermission(ActionItem.Model);
+            //switch (permission)
+            //{
+            //    case Common.Permission.FullAccess:
+            //        break;
+            //    case Common.Permission.NoAccess:
+            //        return RedirectToAction("Index", "NoAccess");
+            //    case Common.Permission.NotAnEntity:
+            //        break;
+            //    case Common.Permission.ViewOnly:
+            //        ViewBag.IsViewOnly = "true";
+            //        break;
+            //}
             int Modelid = id;
 
             var objModel = db.Models.SingleOrDefault(varM => varM.ModelId == Modelid);

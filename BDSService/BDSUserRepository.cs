@@ -1832,5 +1832,43 @@ namespace BDSService
         }
 
         #endregion
+
+        #region Get ManagerList List
+        /// <summary>
+        /// Function to get manager list for specific user, client & application.
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy>
+        /// <CreatedDate>25/06/2014</CreatedDate>
+        /// <param name="clientId">client</param>
+        /// <param name="applicationId">application</param>
+        /// <param name="userId">user</param>
+        /// <returns>Returns manager list for specific user, client & application.</returns>
+        public List<BDSEntities.User> GetManagerList(Guid clientId, Guid applicationId, Guid userId)
+        {
+            List<BDSEntities.User> managerList = new List<BDSEntities.User>();
+            List<User> lstManager = (from u in db.Users
+                                  join ua in db.User_Application on u.UserId equals ua.UserId
+                                  where u.ClientId == clientId && ua.ApplicationId == applicationId && u.IsDeleted == false && (userId == Guid.Empty ? true : u.UserId != userId)
+                                  select u).ToList();
+            if (lstManager.Count > 0)
+            {
+                foreach (var user in lstManager)
+                {
+                    BDSEntities.User userEntity = new BDSEntities.User();
+                    userEntity.UserId = user.UserId;
+                    userEntity.ClientId = user.ClientId;
+                    userEntity.ManagerName = (user.FirstName + " " + user.LastName).Trim();
+                    userEntity.ManagerId = user.User_Application.Where(a => a.UserId == user.UserId && a.IsDeleted.Equals(false) && a.ApplicationId == applicationId).Select(a => a.ManagerId).FirstOrDefault();
+                    managerList.Add(userEntity);
+                }
+            }
+            
+            if (userId != Guid.Empty)
+                managerList = managerList.Where(a => a.ManagerId != userId).ToList();
+
+            return managerList.OrderBy(a => a.ManagerName).ToList();
+        }
+
+        #endregion
     }
 }

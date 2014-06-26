@@ -231,6 +231,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                             @Html.DropDownListFor(c => c.ClientId, new SelectList((System.Collections.IEnumerable)ViewData["Clients"], "ClientId", "Name"), "Please Select")
                         </div>
                         @Html.ValidationMessageFor(model => model.ClientId)
+                        @Html.Label("", "The Organization field is required.", new { @class = "field-validation-error selectbox-validation-message", id = "lblClientIdRequired" })
                     }
                     else
                     {

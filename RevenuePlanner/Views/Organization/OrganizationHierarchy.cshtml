@@ -9,13 +9,13 @@
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     Layout = "~/Views/Shared/_Layout.cshtml";
     var UserHierarchy = (List<RevenuePlanner.Models.UserHierarchyModel>)ViewBag.UserHierarchy;
-    string isViewOnly = ViewBag.IsViewOnly;
+    //string isViewOnly = ViewBag.IsViewOnly;
     string varUrlnew = Url.Action("vieweditpermission", "Organization");
     string ViewPermissionURL = varUrlnew + "?Id=" + Sessions.User.UserId + "&Mode=MyPermission";
     
 }
 
-@Html.Hidden("IsViewOnly", isViewOnly)
+@*@Html.Hidden("IsViewOnly", isViewOnly)*@
 @Html.Hidden("SuccMsg", TempData["SuccessMessage"])
 @Html.Hidden("ErrMsg", TempData["ErrorMessage"])
 

@@ -302,6 +302,12 @@ namespace BDSService
             BDSUserRepository obj = new BDSUserRepository();
             return obj.GetUserHierarchy(clientId, applicationId);
         }
+
+        public List<BDSEntities.User> GetManagerList(Guid clientId, Guid applicationId, Guid userId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetManagerList(clientId, applicationId, userId);
+        }
     }
 
 }

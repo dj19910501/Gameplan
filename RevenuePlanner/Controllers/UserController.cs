@@ -66,14 +66,14 @@ namespace RevenuePlanner.Controllers
             List<BDSService.User> lstUser = null;
             try
             {
-                if (Sessions.IsSystemAdmin)
-                {
+                //if (Sessions.IsSystemAdmin)
+                //{
                     lstUser = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
-                }
-                else
-                {
-                    lstUser = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, false);
-                }
+                //}
+                //else
+                //{
+                //    lstUser = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, false);
+                //}
                 if (lstUser.Count() > 0)
                 {
                     foreach (var user in lstUser)
@@ -424,32 +424,32 @@ namespace RevenuePlanner.Controllers
                 if (id != null)
                 {
                     string userRole = objBDSServiceClient.GetUserRole(id, Sessions.ApplicationId);
-                    Enums.Role delUserRole = Common.GetKey<Enums.Role>(Enums.RoleCodeValues, userRole);
-                    Enums.Role currUserRole = Common.GetKey<Enums.Role>(Enums.RoleCodeValues, Sessions.User.RoleCode);
-                    switch (currUserRole)
-                    {
-                        case Enums.Role.SystemAdmin:
-                            if (!(delUserRole == Enums.Role.ClientAdmin) && !(delUserRole == Enums.Role.Director) && !(delUserRole == Enums.Role.Planner))
-                            {
-                                TempData["ErrorMessage"] = Common.objCached.UserCantDeleted;
-                                return RedirectToAction("Index");
-                            }
-                            break;
-                        case Enums.Role.ClientAdmin:
-                            if (!(delUserRole == Enums.Role.Director) && !(delUserRole == Enums.Role.Planner))
-                            {
-                                TempData["ErrorMessage"] = Common.objCached.UserCantDeleted;
-                                return RedirectToAction("Index");
-                            }
-                            break;
-                        case Enums.Role.Director:
-                            if (!(delUserRole == Enums.Role.Planner))
-                            {
-                                TempData["ErrorMessage"] = Common.objCached.UserCantDeleted;
-                                return RedirectToAction("Index");
-                            }
-                            break;
-                    }
+                    //Enums.Role delUserRole = Common.GetKey<Enums.Role>(Enums.RoleCodeValues, userRole);
+                    //Enums.Role currUserRole = Common.GetKey<Enums.Role>(Enums.RoleCodeValues, Sessions.User.RoleCode);
+                    //switch (currUserRole)
+                    //{
+                    //    case Enums.Role.SystemAdmin:
+                    //        if (!(delUserRole == Enums.Role.ClientAdmin) && !(delUserRole == Enums.Role.Director) && !(delUserRole == Enums.Role.Planner))
+                    //        {
+                    //            TempData["ErrorMessage"] = Common.objCached.UserCantDeleted;
+                    //            return RedirectToAction("Index");
+                    //        }
+                    //        break;
+                    //    case Enums.Role.ClientAdmin:
+                    //        if (!(delUserRole == Enums.Role.Director) && !(delUserRole == Enums.Role.Planner))
+                    //        {
+                    //            TempData["ErrorMessage"] = Common.objCached.UserCantDeleted;
+                    //            return RedirectToAction("Index");
+                    //        }
+                    //        break;
+                    //    case Enums.Role.Director:
+                    //        if (!(delUserRole == Enums.Role.Planner))
+                    //        {
+                    //            TempData["ErrorMessage"] = Common.objCached.UserCantDeleted;
+                    //            return RedirectToAction("Index");
+                    //        }
+                    //        break;
+                    //}
                     int retVal = objBDSServiceClient.DeleteUser(id);
                     if (retVal == 1)
                         TempData["SuccessMessage"] = Common.objCached.UserDeleted;
@@ -870,22 +870,22 @@ namespace RevenuePlanner.Controllers
                     if (objUser.ManagerId != null && objUser.ManagerId != Guid.Empty)
                         objUserModel.ManagerId = objUser.ManagerId;
                     // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
-                    if (Sessions.IsSystemAdmin)
-                    {
-                        objUserModel.IsSystemAdmin = true;
-                    }
-                    else if (Sessions.IsClientAdmin)
-                    {
-                        objUserModel.IsClientAdmin = true;
-                    }
-                    else if (Sessions.IsDirector)
-                    {
-                        objUserModel.IsDirector = true;
-                    }
-                    else if (Sessions.IsPlanner)
-                    {
-                        objUserModel.IsPlanner = true;
-                    }
+                    //if (Sessions.IsSystemAdmin)
+                    //{
+                    //    objUserModel.IsSystemAdmin = true;
+                    //}
+                    //else if (Sessions.IsClientAdmin)
+                    //{
+                    //    objUserModel.IsClientAdmin = true;
+                    //}
+                    //else if (Sessions.IsDirector)
+                    //{
+                    //    objUserModel.IsDirector = true;
+                    //}
+                    //else if (Sessions.IsPlanner)
+                    //{
+                    //    objUserModel.IsPlanner = true;
+                    //}
                     LoadEditModeComponents(objUserModel.ClientId, src);
                     // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                     if ((bool)ViewBag.IsUserAdminAuthorized && Sessions.User.UserId != objUser.UserId)
@@ -1410,9 +1410,8 @@ namespace RevenuePlanner.Controllers
         {
             if (Sessions.ApplicationId != Guid.Empty && Sessions.ApplicationId != null && Sessions.User.UserId != Guid.Empty && Sessions.User.UserId != null)
             {
-                //var UserList = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId, Sessions.ApplicationId);
-                var UserList = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
-                var ManagerList = UserList.Where(a => a.IsDeleted.Equals(false) && a.UserId != UserId && a.IsDeleted.Equals(false)).Select(a => new UserModel { ManagerId = a.UserId, ManagerName = a.FirstName + " " + a.LastName }).ToList();
+                var UserList = objBDSServiceClient.GetManagerList(Sessions.User.ClientId, Sessions.ApplicationId, UserId);
+                var ManagerList = UserList.Select(a => new UserModel { ManagerId = a.UserId, ManagerName = a.ManagerName }).ToList();
                 return ManagerList.OrderBy(a => a.ManagerName).ToList();
             }
             return null;

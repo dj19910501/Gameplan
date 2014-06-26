@@ -6,7 +6,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     string strValidateForEmptyField = Common.objCached.ValidateForValidField;
     string strErrorOccured = Common.objCached.ErrorOccured;
-    string isViewOnly = ViewBag.IsViewOnly;
+    //string isViewOnly = ViewBag.IsViewOnly;
     string ModelId = Convert.ToString(ViewBag.ModelId);
     string BusinessUnitId = Convert.ToString(ViewBag.BusinessUnitId);
     bool IsBenchmarked = ViewBag.IsBenchmarked;
@@ -54,7 +54,7 @@
                             <a href="#">Create New</a>
                         </li>
                         @* Show Duplicate option only in Edit mode and only for latest version of model. *@
-                        @if(Convert.ToString(ViewBag.ModelId) != "" && Convert.ToString(ViewBag.ModelId) != "0" && isViewOnly != "true" && Model.lstmodelstage.Count() > 0)
+                        @if(Convert.ToString(ViewBag.ModelId) != "" && Convert.ToString(ViewBag.ModelId) != "0" && Model.lstmodelstage.Count() > 0)
                         {
                             <li id="liDuplicate">
                                 <a href="#">Duplicate</a>
@@ -118,7 +118,7 @@
 {
     @Html.Hidden("ValidateForEmptyField", @strValidateForEmptyField)
     @Html.Hidden("ErrorOccured", @strErrorOccured)
-    @Html.Hidden("IsViewOnly", isViewOnly)
+    @*@Html.Hidden("IsViewOnly", isViewOnly)*@
     @Html.Hidden("ModelId", ModelId)
     @Html.Hidden("_BusinessUnitId", BusinessUnitId)
     @Html.Hidden("Errormsg", errormsg)
@@ -321,7 +321,7 @@
                 <br />
                 <div class="container-button">
                     @{ 
-        if (isViewOnly != "true" && Model.lstmodelstage.Count() > 0)
+        if (Model.lstmodelstage.Count() > 0)
         {
                         <input id="btnsave" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Save Current Version & Continue" />
                         <input id="button-save" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Create New Version & Continue" />
@@ -548,12 +548,12 @@ $(document).ready(function () {
 
     $('.doubleText').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
     $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
-    if ($('#IsViewOnly').val() != '') {
-        MakeViewOnly(); //Bug 17:Should not be able to edit a published model
-        $("#errorMessage").html('<a class="close">×</a> View only permission');
-        $("#errorMessage").slideDown(1200);
-        $("#errorMessage").slideUp(3000);
-    }
+    //if ($('#IsViewOnly').val() != '') {
+    //    MakeViewOnly(); //Bug 17:Should not be able to edit a published model
+    //    $("#errorMessage").html('<a class="close">×</a> View only permission');
+    //    $("#errorMessage").slideDown(1200);
+    //    $("#errorMessage").slideUp(3000);
+    //}
     LoadModelData($("#ModelId").val(), $("#_BusinessUnitId").val(), true);
 });
 $(".subheader").click(function () {

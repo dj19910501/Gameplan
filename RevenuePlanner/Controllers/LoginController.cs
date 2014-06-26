@@ -107,26 +107,26 @@ namespace RevenuePlanner.Controllers
                         Sessions.User = obj;
 
                         //Start Maninder Singh Wadhva : 11/27/2013 - Setting role flag.
-                        Sessions.IsSystemAdmin = Sessions.IsClientAdmin = Sessions.IsDirector = Sessions.IsPlanner = false;
+                        //Sessions.IsSystemAdmin = Sessions.IsClientAdmin = Sessions.IsDirector = Sessions.IsPlanner = false;
 
-                        Enums.Role role = Common.GetKey<Enums.Role>(Enums.RoleCodeValues, Sessions.User.RoleCode);
-                        switch (role)
-                        {
-                            case Enums.Role.SystemAdmin:
-                                Sessions.IsSystemAdmin = true;
-                                break;
-                            case Enums.Role.ClientAdmin:
-                                Sessions.IsClientAdmin = true;
-                                break;
-                            case Enums.Role.Director:
-                                Sessions.IsDirector = true;
-                                break;
-                            case Enums.Role.Planner:
-                                Sessions.IsPlanner = true;
-                                break;
-                            default:
-                                break;
-                        }
+                        //Enums.Role role = Common.GetKey<Enums.Role>(Enums.RoleCodeValues, Sessions.User.RoleCode);
+                        //switch (role)
+                        //{
+                        //    case Enums.Role.SystemAdmin:
+                        //        Sessions.IsSystemAdmin = true;
+                        //        break;
+                        //    case Enums.Role.ClientAdmin:
+                        //        Sessions.IsClientAdmin = true;
+                        //        break;
+                        //    case Enums.Role.Director:
+                        //        Sessions.IsDirector = true;
+                        //        break;
+                        //    case Enums.Role.Planner:
+                        //        Sessions.IsPlanner = true;
+                        //        break;
+                        //    default:
+                        //        break;
+                        //}
                         //End Maninder Singh Wadhva : 11/27/2013 - Setting role flag.
                         //Start Manoj Limbachiya : 11/23/2013 - Menu filling and Role Permission
                         if (Sessions.AppMenus == null)

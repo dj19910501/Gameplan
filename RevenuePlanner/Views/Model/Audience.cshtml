@@ -3,7 +3,7 @@
     ViewBag.Title = "Model-Audience";
     string activeMenu = Convert.ToString(ViewBag.ActiveMenu);
     Layout = "~/Views/Shared/_Layout.cshtml";
-    string isViewOnly = ViewBag.IsViewOnly;
+    //string isViewOnly = ViewBag.IsViewOnly;
     string strValidateForValidField = RevenuePlanner.Helpers.Common.objCached.ValidateForValidField;
     string ShowModelResultsTab = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ShowModelResultsTab"]);
     bool flag = ViewBag.Flag;
@@ -928,10 +928,10 @@
                     </div>
                 </div>
                 <div class="line-separator"></div>
-                @if (isViewOnly != "true")
-                {
+                @*@if (isViewOnly != "true")
+                {*@
                     <input type="submit" id="button-save" class="btn btn-blue text-shadow-blue source-sans-proregular" name="button-save" value="Save & Continue" tabindex="45" />
-                }
+                @*}*@
             </div>
         </div>
     </div>
@@ -939,7 +939,7 @@
     @Html.Hidden("isPublishButton")
     @Html.Hidden("IsBenchmarked", IsBenchmarked)
     @Html.Hidden("MID", MID)
-    @Html.Hidden("IsViewOnly", isViewOnly)
+    @*@Html.Hidden("IsViewOnly", isViewOnly)*@
     @Html.Hidden("EffectiveDate", currentdate)
 }
 <script type="text/javascript">

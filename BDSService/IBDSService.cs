@@ -165,5 +165,8 @@ namespace BDSService
 
         [OperationContract]
         List<BDSEntities.UserHierarchy> GetUserHierarchy(Guid clientId, Guid applicationId);
+
+        [OperationContract]
+        List<BDSEntities.User> GetManagerList(Guid clientId, Guid applicationId, Guid userId);
     }
 }
