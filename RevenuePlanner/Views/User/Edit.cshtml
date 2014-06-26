@@ -657,10 +657,15 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
         
         // Start - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
         if ($('#IsManager').val().toLowerCase() == 'true') {
-            if ($('#IsDeleted').val().toLowerCase() == 'yes')
-                $('#divNewManager').show();
-            else
+            if (typeof $('#IsDeleted').val() != 'undefined') {
+                if ($('#IsDeleted').val().toLowerCase() == 'yes')
+                    $('#divNewManager').show();
+                else
+                    $('#divNewManager').hide();
+            }
+            else {
                 $('#divNewManager').hide();
+            }
         }
         else {
             $('#divNewManager').hide();
