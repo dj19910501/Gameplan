@@ -4250,6 +4250,12 @@ namespace RevenuePlanner.Controllers
                 suggestedImprovement.ImprovementTacticTypeId = imptactic.ImprovementTacticTypeId;
                 suggestedImprovement.ImprovementTacticTypeTitle = imptactic.Title;
 
+				//Added By Bhavesh :  #515 ignore negative revenue lift
+                if (improvedValue < projectedRevenueWithoutTacticTemp)
+                {
+                    improvedValue = projectedRevenueWithoutTacticTemp;
+                }
+                //End By Bhavesh : #515
                 suggestedImprovement.ProjectedRevenueWithoutTactic = projectedRevenueWithoutTacticTemp;
                 suggestedImprovement.ProjectedRevenueWithTactic = improvedValue;
                 if (projectedRevenueWithoutTacticTemp != 0)
