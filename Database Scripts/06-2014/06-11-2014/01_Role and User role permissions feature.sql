@@ -59,7 +59,7 @@ INSERT INTO [dbo].[Application_Activity]
      VALUES
            ('3',
            '1C10D4B9-7931-4A7C-99E9-A158CE158951'
-           ,''
+           ,NULL
            ,'Integration Credentials'
 		   ,'IntegrationCredentials'
            ,GETDATE())
