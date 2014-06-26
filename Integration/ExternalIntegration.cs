@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Data;
 using SalesforceSharp;
 using Integration.Eloqua;
+using Integration.Helper;
 
 namespace Integration
 {
@@ -150,10 +151,15 @@ namespace Integration
 
         private void IdentifyIntegration()
         {
+            ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
+            Common.IsAutoSync = false;
+
             if (_userId == Guid.Empty)
             {
                 _userId = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).CreatedBy;
+                Common.IsAutoSync = true;
             }
+
             _isResultError = false;
             IntegrationInstanceLog instanceLogStart = new IntegrationInstanceLog();
             instanceLogStart.IntegrationInstanceId = Convert.ToInt32(_integrationInstanceId);
