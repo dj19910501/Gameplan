@@ -3,14 +3,15 @@
     ViewBag.Title = "Plan";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan;
     Layout = "~/Views/Shared/_Layout.cshtml";
-    string isViewOnly = ViewBag.IsViewOnly;
+    //string isViewOnly = ViewBag.IsViewOnly;
     bool showBid = ViewBag.showBid;
     string Planid = Convert.ToString(RevenuePlanner.Helpers.Sessions.PlanId);
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
+    bool IsPlanEditable = (bool)ViewBag.IsPlanEditable;
 }
 
 
-@Html.Hidden("IsViewOnly", isViewOnly)
+@Html.Hidden("IsPlanEditable", IsPlanEditable)
 <script src="~/Scripts/js/DHTMLX/danddcontrol.js"></script>
 <script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
 <link href="@Url.Content("~/Content/css/dhtmlxchart_1.css")" rel="stylesheet" type="text/css" />
@@ -258,7 +259,7 @@
                     </div>
                 </div>
             }
-            @if (isViewOnly != "true")
+            @if (IsPlanEditable)
             {
                 <div class="span6">
                     <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Assortment", "Plan")'">Add Activity</button>
@@ -368,7 +369,7 @@
                     @* <a href="url">< @Html.ActionLink("Back", "Assortment", "Plan")
                     </a>*@
                     <a id="lnkGoBack" style="cursor: pointer;">Back</a>
-                    @if (isViewOnly != "true")
+                    @if (IsPlanEditable)
                     {
                         using (Html.BeginForm("ApplyToCalendar", "Plan", FormMethod.Post, new { @id = "frmPublishPlan" }))
                         {
@@ -1061,7 +1062,7 @@
         gantt.config.drag_links = false;
         gantt.config.drag_progress = false;
 
-        if ($('#IsViewOnly').val() != '') {
+        if ($('#IsPlanEditable').val() != 'True') {
             gantt.config.drag_resize = false;
         }
         else {

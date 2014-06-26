@@ -325,7 +325,8 @@
                 {
                     int pid = Model.PlanId;
                     //int.TryParse(Convert.ToString(RevenuePlanner.Helpers.Sessions.PlanId), out pid);
-                            <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Create", "Plan", new { id = pid })'">Edit Plan</button>
+                    @*<button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Create", "Plan", new { id = pid })'">Edit Plan</button>*@
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlan()">Edit Plan</button>
                 }
                 else
                 {

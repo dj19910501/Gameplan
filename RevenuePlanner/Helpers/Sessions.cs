@@ -75,73 +75,73 @@ namespace RevenuePlanner.Helpers
             }
         }
 
-        /// <summary>
-        /// Added By: Maninder Singh Wadhva.
-        /// Date: 11/27/2013
-        /// Flag to indicate current user is System Admin.
-        /// </summary>
-        public static bool IsSystemAdmin
-        {
-            get
-            {
-                return Convert.ToBoolean(HttpContext.Current.Session["IsSystemAdmin"]);
-            }
-            set
-            {
-                HttpContext.Current.Session["IsSystemAdmin"] = value;
-            }
-        }
+        ///// <summary>
+        ///// Added By: Maninder Singh Wadhva.
+        ///// Date: 11/27/2013
+        ///// Flag to indicate current user is System Admin.
+        ///// </summary>
+        //public static bool IsSystemAdmin
+        //{
+        //    get
+        //    {
+        //        return Convert.ToBoolean(HttpContext.Current.Session["IsSystemAdmin"]);
+        //    }
+        //    set
+        //    {
+        //        HttpContext.Current.Session["IsSystemAdmin"] = value;
+        //    }
+        //}
 
-        /// <summary>
-        /// Added By: Maninder Singh Wadhva.
-        /// Date: 11/27/2013
-        /// Flag to indicate current user is Client Admin.
-        /// </summary>
-        public static bool IsClientAdmin
-        {
-            get
-            {
-                return Convert.ToBoolean(HttpContext.Current.Session["IsClientAdmin"]);
-            }
-            set
-            {
-                HttpContext.Current.Session["IsClientAdmin"] = value;
-            }
-        }
+        ///// <summary>
+        ///// Added By: Maninder Singh Wadhva.
+        ///// Date: 11/27/2013
+        ///// Flag to indicate current user is Client Admin.
+        ///// </summary>
+        //public static bool IsClientAdmin
+        //{
+        //    get
+        //    {
+        //        return Convert.ToBoolean(HttpContext.Current.Session["IsClientAdmin"]);
+        //    }
+        //    set
+        //    {
+        //        HttpContext.Current.Session["IsClientAdmin"] = value;
+        //    }
+        //}
 
-        /// <summary>
-        /// Added By: Maninder Singh Wadhva.
-        /// Date: 11/27/2013
-        /// Flag to indicate current user is Director.
-        /// </summary>
-        public static bool IsDirector
-        {
-            get
-            {
-                return Convert.ToBoolean(HttpContext.Current.Session["IsDirector"]);
-            }
-            set
-            {
-                HttpContext.Current.Session["IsDirector"] = value;
-            }
-        }
+        ///// <summary>
+        ///// Added By: Maninder Singh Wadhva.
+        ///// Date: 11/27/2013
+        ///// Flag to indicate current user is Director.
+        ///// </summary>
+        //public static bool IsDirector
+        //{
+        //    get
+        //    {
+        //        return Convert.ToBoolean(HttpContext.Current.Session["IsDirector"]);
+        //    }
+        //    set
+        //    {
+        //        HttpContext.Current.Session["IsDirector"] = value;
+        //    }
+        //}
 
-        /// <summary>
-        /// Added By: Maninder Singh Wadhva.
-        /// Date: 11/27/2013
-        /// Flag to indicate current user is Planner.
-        /// </summary>
-        public static bool IsPlanner
-        {
-            get
-            {
-                return Convert.ToBoolean(HttpContext.Current.Session["IsPlanner"]);
-            }
-            set
-            {
-                HttpContext.Current.Session["IsPlanner"] = value;
-            }
-        }
+        ///// <summary>
+        ///// Added By: Maninder Singh Wadhva.
+        ///// Date: 11/27/2013
+        ///// Flag to indicate current user is Planner.
+        ///// </summary>
+        //public static bool IsPlanner
+        //{
+        //    get
+        //    {
+        //        return Convert.ToBoolean(HttpContext.Current.Session["IsPlanner"]);
+        //    }
+        //    set
+        //    {
+        //        HttpContext.Current.Session["IsPlanner"] = value;
+        //    }
+        //}
 
         /// <summary>
         /// Added By: Manoj Limbachiya.
@@ -184,10 +184,10 @@ namespace RevenuePlanner.Helpers
         public static void Clear()
         {
             Sessions.User = null;
-            Sessions.IsSystemAdmin = false;
-            Sessions.IsClientAdmin = false;
-            Sessions.IsDirector = false;
-            Sessions.IsPlanner = false;
+            //Sessions.IsSystemAdmin = false;
+            //Sessions.IsClientAdmin = false;
+            //Sessions.IsDirector = false;
+            //Sessions.IsPlanner = false;
             Sessions.AppMenus = null;
             Sessions.RolePermission = null;
             HttpContext.Current.Session["PlanId"] = 0;

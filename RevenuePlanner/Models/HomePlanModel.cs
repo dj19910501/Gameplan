@@ -40,8 +40,9 @@ namespace RevenuePlanner.Models
     }
     public class HomePlan
     {
-        public bool IsDirector { get; set; }
-        public bool IsClientAdmin { get; set; }
+        //public bool IsDirector { get; set; }
+        //public bool IsClientAdmin { get; set; }
+        public bool IsManager { get; set; } // Modified by Dharmraj, #538
         public List<SelectListItem> plans { get; set; }
     }
     public class HomePlanModelHeader

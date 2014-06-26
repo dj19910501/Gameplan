@@ -51,7 +51,7 @@ namespace RevenuePlanner.Controllers
             try
             {
                 ViewBag.ActiveMenu = Enums.ActiveMenu.Plan;
-                objPlanModel.IsDirector = Sessions.IsDirector;
+                //objPlanModel.IsDirector = Sessions.IsDirector;
                 Sessions.PlanId = id;/*added by Nirav for plan consistency on 14 apr 2014*/
 
                 var List = GetModelName();
@@ -450,7 +450,7 @@ namespace RevenuePlanner.Controllers
 
                 Guid clientId = Sessions.User.ClientId;
                 List<Guid> objBusinessUnit = new List<Guid>();
-                if (Sessions.IsSystemAdmin || Sessions.IsClientAdmin || Sessions.IsDirector)
+                if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))//if (Sessions.IsSystemAdmin || Sessions.IsClientAdmin || Sessions.IsDirector)
                 {
                     objBusinessUnit = db.BusinessUnits.Where(bu => bu.ClientId == clientId && bu.IsDeleted == false).Select(bu => bu.BusinessUnitId).ToList();
                 }
@@ -550,21 +550,55 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns view as action result.</returns>
         public ActionResult ApplyToCalendar(string ismsg = "", bool isError = false)
         {
-            if (Sessions.RolePermission != null)
+            //if (Sessions.RolePermission != null)
+            //{
+            //    Common.Permission permission = Common.GetPermission(ActionItem.Plan);
+            //    switch (permission)
+            //    {
+            //        case Common.Permission.FullAccess:
+            //            break;
+            //        case Common.Permission.NoAccess:
+            //            return RedirectToAction("Homezero", "Home");
+            //        case Common.Permission.NotAnEntity:
+            //            break;
+            //        case Common.Permission.ViewOnly:
+            //            ViewBag.IsViewOnly = "true";
+            //            break;
+            //    }
+            //}
+
+            // To get permission status for Plan Edit , By dharmraj PL #519
+            //Get all subordinates of current user
+            BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
+            List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
+            lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+            var lstOwnAndSubOrdinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId)
+                                                        .ToList()
+                                                        .Select(u => u.UserId)
+                                                        .ToList();
+            lstOwnAndSubOrdinates.Add(Sessions.User.UserId);
+            // Get current user permission for edit own and subordinates plans.
+            bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+            bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+            var objPlan = db.Plans.FirstOrDefault(p => p.PlanId == Sessions.PlanId);
+            if (IsPlanEditAllAuthorized)
             {
-                Common.Permission permission = Common.GetPermission(ActionItem.Plan);
-                switch (permission)
+                ViewBag.IsPlanEditable = true;
+            }
+            else if (IsPlanEditOwnAndSubordinatesAuthorized)
+            {
+                if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy))
                 {
-                    case Common.Permission.FullAccess:
-                        break;
-                    case Common.Permission.NoAccess:
-                        return RedirectToAction("Homezero", "Home");
-                    case Common.Permission.NotAnEntity:
-                        break;
-                    case Common.Permission.ViewOnly:
-                        ViewBag.IsViewOnly = "true";
-                        break;
+                    ViewBag.IsPlanEditable = true;
                 }
+                else
+                {
+                    ViewBag.IsPlanEditable = false;
+                }
+            }
+            else
+            {
+                ViewBag.IsPlanEditable = false;
             }
 
             // Added by dharmraj to check user activity permission
@@ -612,7 +646,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
             //planModel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId);
-            if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
+            if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))//if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
             {
                 //// Getting all business unit for client of director.
                 planModel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId);
@@ -640,7 +674,7 @@ namespace RevenuePlanner.Controllers
         public ActionResult PlanList(string Bid)
         {
             HomePlan objHomePlan = new HomePlan();
-            objHomePlan.IsDirector = Sessions.IsDirector;
+            //objHomePlan.IsDirector = Sessions.IsDirector;
             List<SelectListItem> planList;
             if (Bid == "false")
             {
@@ -1273,10 +1307,21 @@ namespace RevenuePlanner.Controllers
                 //Start Manoj Limbachiya  Ticket #363 Tactic Creation - Do not automatically submit a tactic
                 //planTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
                 bool isDirectorLevelUser = false;
-                if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
+                //if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
+                //{
+                //    if (planTactic.CreatedBy != Sessions.User.UserId) isDirectorLevelUser = true;
+                //}
+                // Added by dharmraj for Ticket #537
+                var lstUserHierarchy = objBDSServiceClient.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+                var lstSubordinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId).ToList().Select(u => u.UserId).ToList();
+                if (lstSubordinates.Count > 0)
                 {
-                    if (planTactic.CreatedBy != Sessions.User.UserId) isDirectorLevelUser = true;
+                    if (lstSubordinates.Contains(planTactic.CreatedBy))
+                    {
+                        isDirectorLevelUser = true;
+                    }
                 }
+
                 if (!isDirectorLevelUser)
                 {
                     DateTime todaydate = DateTime.Now;
@@ -2581,10 +2626,22 @@ namespace RevenuePlanner.Controllers
 
                                 Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(form.PlanTacticId)).SingleOrDefault();
                                 if (pcpobj.CreatedBy == Sessions.User.UserId) isOwner = true;
-                                if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
+                                //if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
+                                //{
+                                //    if (!isOwner) isDirectorLevelUser = true;
+                                //}
+                                // Added by dharmraj for Ticket #537
+                                var lstUserHierarchy = objBDSServiceClient.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+                                var lstSubordinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId).ToList().Select(u => u.UserId).ToList();
+                                if (lstSubordinates.Count > 0)
+                                {
+                                    if (lstSubordinates.Contains(pcpobj.CreatedBy))
                                 {
                                     if (!isOwner) isDirectorLevelUser = true;
                                 }
+                                }
+
+
                                 pcpobj.Title = form.Title;
                                 status = pcpobj.Status;
                                 if (pcpobj.TacticTypeId != form.TacticTypeId)
@@ -3280,7 +3337,8 @@ namespace RevenuePlanner.Controllers
                 title = b.Title
             }).Select(b => b).Distinct().OrderBy(b => b.title); /* Modified by Sohel on 08/04/2014 for PL #424 to Show The business unit tabs sorted in alphabetic order. */
 
-            if (Sessions.IsPlanner)
+            // Modified by Dharmraj, For #537
+            if (!AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))//if (Sessions.IsPlanner)
             {
                 returnDataGuid = (db.BusinessUnits.ToList().Where(bu => bu.ClientId.Equals(Sessions.User.ClientId) && bu.BusinessUnitId.Equals(Sessions.User.BusinessUnitId) && bu.IsDeleted.Equals(false)).Select(bu => bu).ToList()).Select(b => new
                 {
@@ -3694,33 +3752,43 @@ namespace RevenuePlanner.Controllers
                             else
                             {
                                 bool isReSubmission = false;
-                                bool isDirectorLevelUser = false;
+                                //bool isDirectorLevelUser = false;
+                                bool isManagerLevelUser = false;
                                 string status = string.Empty;
-                                if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
-                                {
-                                    isDirectorLevelUser = true;
-                                }
+                                //if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
+                                //{
+                                //    isDirectorLevelUser = true;
+                                //}
                                 Plan_Improvement_Campaign_Program_Tactic pcpobj = db.Plan_Improvement_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.ImprovementPlanTacticId.Equals(form.ImprovementPlanTacticId)).SingleOrDefault();
+
+                                //If improvement tacitc modified by immediate manager then no resubmission will take place, By dharmraj, Ticket #537
+                                var lstUserHierarchy = objBDSServiceClient.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+                                var lstSubordinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId).Select(u => u.UserId).ToList();
+                                if (lstSubordinates.Contains(pcpobj.CreatedBy))
+                                {
+                                    isManagerLevelUser = true;
+                                }
+
                                 pcpobj.Title = form.Title;
                                 status = pcpobj.Status;
 
                                 if (pcpobj.ImprovementTacticTypeId != form.ImprovementTacticTypeId)
                                 {
                                     pcpobj.ImprovementTacticTypeId = form.ImprovementTacticTypeId;
-                                    if (!isDirectorLevelUser) isReSubmission = true;
+                                    if (!isManagerLevelUser) isReSubmission = true;
                                 }
                                 pcpobj.Description = form.Description;
 
                                 if (pcpobj.EffectiveDate != form.EffectiveDate)
                                 {
                                     pcpobj.EffectiveDate = form.EffectiveDate;
-                                    if (!isDirectorLevelUser) isReSubmission = true;
+                                    if (!isManagerLevelUser) isReSubmission = true;
                                 }
 
                                 if (pcpobj.Cost != form.Cost)
                                 {
                                     pcpobj.Cost = form.Cost;
-                                    if (!isDirectorLevelUser) isReSubmission = true;
+                                    if (!isManagerLevelUser) isReSubmission = true;
                                 }
 
                                 pcpobj.ModifiedBy = Sessions.User.UserId;

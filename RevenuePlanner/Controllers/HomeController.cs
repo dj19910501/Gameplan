@@ -87,15 +87,16 @@ namespace RevenuePlanner.Controllers
 
             List<Guid> businessUnitIds = new List<Guid>();
 
-            if (Sessions.IsSystemAdmin)
-            {
-                var clientBusinessUnit = db.BusinessUnits.Where(b => b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
-                businessUnitIds = clientBusinessUnit.ToList();
-                planmodel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId); //commented due to not used any where
-                ViewBag.BusinessUnitIds = planmodel.BusinessUnitIds;//Added by Nirav for Custom Dropdown - 388
-                ViewBag.showBid = true;
-            }
-            else if (Sessions.IsDirector || Sessions.IsClientAdmin)
+            // Modified by Dharmraj, For #537
+            //if (Sessions.IsSystemAdmin)
+            //{
+            //    var clientBusinessUnit = db.BusinessUnits.Where(b => b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
+            //    businessUnitIds = clientBusinessUnit.ToList();
+            //    planmodel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId); //commented due to not used any where
+            //    ViewBag.BusinessUnitIds = planmodel.BusinessUnitIds;//Added by Nirav for Custom Dropdown - 388
+            //    ViewBag.showBid = true;
+            //}
+            if(AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))//else if (Sessions.IsDirector || Sessions.IsClientAdmin)
             {
                 var clientBusinessUnit = db.BusinessUnits.Where(b => b.ClientId.Equals(Sessions.User.ClientId) && b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
                 businessUnitIds = clientBusinessUnit.ToList();
@@ -267,8 +268,21 @@ namespace RevenuePlanner.Controllers
         {
             Enums.ActiveMenu objactivemenu = Common.GetKey<Enums.ActiveMenu>(Enums.ActiveMenuValues, activeMenu.ToLower());
             HomePlan objHomePlan = new HomePlan();
-            objHomePlan.IsDirector = Sessions.IsDirector;
-            objHomePlan.IsClientAdmin = Sessions.IsClientAdmin;
+            //objHomePlan.IsDirector = Sessions.IsDirector;
+            //objHomePlan.IsClientAdmin = Sessions.IsClientAdmin;
+            //objHomePlan.IsDirector = Sessions.IsDirector;
+            //objHomePlan.IsClientAdmin = Sessions.IsClientAdmin;
+            // Set the flag (IsManager) if current user have sub ordinates, By Dharmraj Mangukiya, #538
+            var lstUserHierarchy = objBDSUserRepository.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+            var lstSubordinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId).ToList();
+            if (lstSubordinates.Count > 0)
+            {
+                objHomePlan.IsManager = true;
+            }
+            else
+            {
+                objHomePlan.IsManager = true;
+            }
             List<SelectListItem> planList;
             if (Bid == "false")
             {
@@ -2668,10 +2682,10 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.TacticDetail = im;
             bool isValidUser = true;
-            if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
-            {
+            //if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
+            //{
                 if (im.OwnerId != Sessions.User.UserId) isValidUser = false;
-            }
+            //}
             ViewBag.IsValidUser = isValidUser;
 
             ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
@@ -3969,7 +3983,7 @@ namespace RevenuePlanner.Controllers
             planmodel.objGeography = db.Geographies.Where(g => g.IsDeleted.Equals(false) && g.ClientId == Sessions.User.ClientId).Select(g => g).OrderBy(g => g.Title).ToList();
             List<string> tacticStatus = Common.GetStatusListAfterApproved();
             BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
-            var individuals = bdsUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, Sessions.IsSystemAdmin);
+            var individuals = bdsUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
             planmodel.objIndividuals = individuals.OrderBy(i => string.Format("{0} {1}", i.FirstName, i.LastName)).ToList();
             List<TacticType> objTacticType = new List<TacticType>();
 
@@ -4266,7 +4280,7 @@ namespace RevenuePlanner.Controllers
             }
 
             BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
-            var individuals = bdsUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, Sessions.IsSystemAdmin);
+            var individuals = bdsUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
             if (individuals.Count != 0)
             {
                 ViewBag.EmailIds = individuals.Select(member => member.Email).ToList<string>();

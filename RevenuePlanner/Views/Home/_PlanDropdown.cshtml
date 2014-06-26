@@ -34,7 +34,7 @@
     <li class=" pull-right">
         <a id="AAudience" href="#">Audience</a>
     </li>
-    @if (Model.IsDirector || Model.IsClientAdmin)
+    @if (Model.IsManager) //if (Model.IsDirector || Model.IsClientAdmin)
     {
         <li class=" pull-right">
             <a id="ABusinessUnit" href="#">Business Unit</a>

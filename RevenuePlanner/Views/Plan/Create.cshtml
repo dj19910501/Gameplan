@@ -132,16 +132,14 @@
                         I'm using the 
 					    @*@Html.DropDownList("ddlModel", (SelectList)TempData["selectList"])*@
                         @{
-    if (strPlanid == "" || strPlanid == "0" || Model.IsDirector)
-    {
+                        if (strPlanid == "" || strPlanid == "0")//if (strPlanid == "" || strPlanid == "0" || Model.IsDirector)
+                        {
                             @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], "select", new { datadefault = "SelectModel", @class = "myValue", placeholder = @Model.ModelId })
-                               
-    }
-    else
-    {   
-                               
+                        }
+                        else
+                        {      
                             <span id="spandef">@Model.ModelTitle</span>
-    }
+                        }
                         }
                         model to create a new plan called						
 														@Html.TextBoxFor(model => model.Title, new { placeholder = @Model.Title, datasubline = "For example: <em>2014 North American Events</em>", datadefault = "Title", maxlength = "50", @class = "myValue" })

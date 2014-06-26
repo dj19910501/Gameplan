@@ -128,16 +128,16 @@ namespace RevenuePlanner.Helpers
 
         #endregion
 
-        #region Enums
+        //#region Enums
 
-        public enum Permission
-        {
-            NoAccess = 0,
-            ViewOnly = 1,
-            FullAccess = 2,
-            NotAnEntity = 3
-        }
-        #endregion
+        //public enum Permission
+        //{
+        //    NoAccess = 0,
+        //    ViewOnly = 1,
+        //    FullAccess = 2,
+        //    NotAnEntity = 3
+        //}
+        //#endregion
 
         #region Functions for File and IO Handling
 
@@ -584,6 +584,7 @@ namespace RevenuePlanner.Helpers
             List<string> lst_CollaboratorUserName = new List<string>();
             //List<string> lst_CollaboratorId = GetCollaboratorForTactic(planTacticId);
             List<string> lst_CollaboratorId = new List<string>();
+            Guid createdBy = new Guid();
             if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
             {
                 lst_CollaboratorId = GetCollaboratorForTactic(planTacticId);
@@ -613,18 +614,22 @@ namespace RevenuePlanner.Helpers
                 {
                     PlanName = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanTacticId == planTacticId).Select(pcpt => pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Title).SingleOrDefault();
                     PlanId = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanTacticId == planTacticId).Select(pcpt => pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId).SingleOrDefault();
+                    createdBy = db.Plan_Campaign_Program_Tactic.FirstOrDefault(pcpt => pcpt.PlanTacticId == planTacticId).CreatedBy;
                 }
                 else if (section == Convert.ToString(Enums.Section.Program).ToLower())
                 {
                     PlanName = db.Plan_Campaign_Program.Where(pcp => pcp.PlanProgramId == planTacticId).Select(pcp => pcp.Plan_Campaign.Plan.Title).SingleOrDefault();
+                    createdBy = db.Plan_Campaign_Program.FirstOrDefault(pcpt => pcpt.PlanProgramId == planTacticId).CreatedBy;
                 }
                 else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                 {
                     PlanName = db.Plan_Campaign.Where(pc => pc.PlanCampaignId == planTacticId).Select(pc => pc.Plan.Title).SingleOrDefault();
+                    createdBy = db.Plan_Campaign.FirstOrDefault(pcpt => pcpt.PlanCampaignId == planTacticId).CreatedBy;
                 }
                 else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                 {
                     PlanName = db.Plan_Improvement_Campaign_Program_Tactic.Where(pc => pc.ImprovementPlanTacticId == planTacticId).Select(pc => pc.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Title).SingleOrDefault();
+                    createdBy = db.Plan_Improvement_Campaign_Program_Tactic.FirstOrDefault(pcpt => pcpt.ImprovementPlanTacticId == planTacticId).CreatedBy;
                 }
                 if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
                 {
@@ -668,14 +673,23 @@ namespace RevenuePlanner.Helpers
                 else if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()))
                 {
                     var clientId = Sessions.User.ClientId;
-                    var directorRoleCode = Enums.RoleCodes.D.ToString();
-                    var lst_user = objBDSUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, Sessions.IsSystemAdmin);
-                    var lst_director = lst_user.Where(ld => ld.RoleCode.Equals(directorRoleCode)).Select(l => l).ToList();
-                    foreach (var item in lst_director)
+                    //var directorRoleCode = Enums.RoleCodes.D.ToString();
+                    //var lst_user = objBDSUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, Sessions.IsSystemAdmin);
+                    //var lst_director = lst_user.Where(ld => ld.RoleCode.Equals(directorRoleCode)).Select(l => l).ToList();
+                    //foreach (var item in lst_director)
+                    //{
+                    //    lst_CollaboratorEmail.Add(item.Email);
+                    //    lst_CollaboratorUserName.Add(item.FirstName);
+                    //}
+                    // To add manager's email address, By dharmraj, Ticket #537
+                    var lstUserHierarchy = objBDSUserRepository.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+                    var objOwnerUser = lstUserHierarchy.FirstOrDefault(u => u.UserId == createdBy);
+                    if (objOwnerUser.ManagerId != null)
                     {
-                        lst_CollaboratorEmail.Add(item.Email);
-                        lst_CollaboratorUserName.Add(item.FirstName);
+                        lst_CollaboratorEmail.Add(lstUserHierarchy.FirstOrDefault(u => u.UserId == objOwnerUser.ManagerId).Email);
+                        lst_CollaboratorUserName.Add(lstUserHierarchy.FirstOrDefault(u => u.UserId == objOwnerUser.ManagerId).FirstName);
                     }
+
                     if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
                         SendNotificationMail(lst_CollaboratorEmail, lst_CollaboratorUserName, title, PlanName, Enums.Custom_Notification.TacticSubmitted.ToString(), "", Convert.ToString(Enums.Section.Tactic).ToLower());
@@ -916,31 +930,31 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="actionItem"></param>
         /// <returns></returns>
-        public static Permission GetPermission(string actionItem)
-        {
-            if (Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
-            {
-                return Permission.FullAccess;
-            }
-            if (Sessions.RolePermission != null)
-            {
-                int PerCode = Sessions.RolePermission.Where(r => r.Code == actionItem).Select(r => r.PermissionCode).SingleOrDefault();
-                switch (PerCode)
-                {
-                    case 0:
-                        return Permission.NoAccess;
-                    case 1:
-                        return Permission.ViewOnly;
+        //public static Permission GetPermission(string actionItem)
+        //{
+        //    //if (Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
+        //    //{
+        //    //    return Permission.FullAccess;
+        //    //}
+        //    if (Sessions.RolePermission != null)
+        //    {
+        //        int PerCode = Sessions.RolePermission.Where(r => r.Code == actionItem).Select(r => r.PermissionCode).SingleOrDefault();
+        //        switch (PerCode)
+        //        {
+        //            case 0:
+        //                return Permission.NoAccess;
+        //            case 1:
+        //                return Permission.ViewOnly;
 
-                    case 2:
-                        return Permission.FullAccess;
+        //            case 2:
+        //                return Permission.FullAccess;
 
-                    default:
-                        return Permission.NoAccess;
-                }
-            }
-            return Permission.FullAccess;
-        }
+        //            default:
+        //                return Permission.NoAccess;
+        //        }
+        //    }
+        //    return Permission.FullAccess;
+        //}
         #endregion
 
         #region GeneralFunction
@@ -990,7 +1004,8 @@ namespace RevenuePlanner.Helpers
             MRPEntities db = new MRPEntities();
             List<Guid> businessUnitIds = new List<Guid>();
 
-            if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
+            // Modified by Dharmraj, For #537
+            if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))//if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
             {
                 //// Getting all business unit for client of director.
                 var clientBusinessUnit = db.BusinessUnits.Where(b => b.ClientId.Equals(Sessions.User.ClientId)).Select(b => b.BusinessUnitId).ToList<Guid>();
@@ -1461,12 +1476,13 @@ namespace RevenuePlanner.Helpers
             List<Guid> businessUnitIds = new List<Guid>();
             try
             {
-                if (Sessions.IsSystemAdmin)
-                {
-                    var clientBusinessUnit = mydb.BusinessUnits.Where(b => b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
-                    businessUnitIds = clientBusinessUnit.ToList();
-                }
-                else if (Sessions.IsDirector || Sessions.IsClientAdmin)
+                // Modified by Dharmraj, For #537
+                //if (Sessions.IsSystemAdmin)
+                //{
+                //    var clientBusinessUnit = mydb.BusinessUnits.Where(b => b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
+                //    businessUnitIds = clientBusinessUnit.ToList();
+                //}
+                if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))//else if (Sessions.IsDirector || Sessions.IsClientAdmin)
                 {
                     var clientBusinessUnit = mydb.BusinessUnits.Where(b => b.ClientId.Equals(Sessions.User.ClientId) && b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
                     businessUnitIds = clientBusinessUnit.ToList();
@@ -1491,14 +1507,24 @@ namespace RevenuePlanner.Helpers
                 {
                     if (allModelIds == null || allModelIds.Count == 0 && from == Enums.ActiveMenu.Home)
                     {
-                        if (Sessions.IsPlanner)
+                        // Modified by Dharmraj, For #537
+                        //if (Sessions.IsPlanner)
+                        //{
+                        //    return new MVCUrl { actionName = "PlanSelector", controllerName = "Plan", queryString = "" };
+                        //}
+                        //else
+                        //{
+                        //    return new MVCUrl { actionName = "ModelZero", controllerName = "Model", queryString = "" };
+                        //}
+                        if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate))
                         {
                             return new MVCUrl { actionName = "PlanSelector", controllerName = "Plan", queryString = "" };
                         }
-                        else
+                        if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit))
                         {
                             return new MVCUrl { actionName = "ModelZero", controllerName = "Model", queryString = "" };
                         }
+
                     }
                     var publishedModelIds = models.Where(m => m.Status.Equals(modelPublished)).Select(m => m.ModelId).ToList();
                     var draftModelIds = models.Where(m => m.Status.Equals(modelDraft)).Select(m => m.ModelId).ToList();
