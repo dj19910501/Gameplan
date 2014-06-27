@@ -611,7 +611,8 @@ table.myteam {
 /* Start Added By Juned*/
 .bulldog-logo {
     background-image: url("../images/bulldog-logo.png");
-    margin-top: 12px;
+    background-repeat: no-repeat;
+    margin-top: 20px;
     width: 128px;
     height: 46px;
     float: left;
