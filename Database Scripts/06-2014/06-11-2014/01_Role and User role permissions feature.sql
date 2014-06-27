@@ -61,7 +61,7 @@ INSERT INTO [dbo].[Application_Activity]
            '1C10D4B9-7931-4A7C-99E9-A158CE158951'
            ,NULL
            ,'Integration Credentials'
-		   ,'IntegrationCredentials'
+		   ,'IntegrationCredential'
            ,GETDATE())
 
 INSERT INTO [dbo].[Application_Activity]
@@ -274,6 +274,35 @@ INSERT INTO [dbo].[Application_Activity]
 		   ,'ReportView'
            ,GETDATE())
 
+INSERT INTO [dbo].[Application_Activity]
+           ([ApplicationActivityId]
+           ,[ApplicationId]
+           ,[ParentId]
+           ,[ActivityTitle]
+           ,[Code]
+           ,[CreatedDate])
+     VALUES
+          ('18',
+           '1C10D4B9-7931-4A7C-99E9-A158CE158951'
+           ,NULL
+           ,'Comments'
+		   ,'Comments'
+           ,GETDATE())
+
+INSERT INTO [dbo].[Application_Activity]
+           ([ApplicationActivityId]
+           ,[ApplicationId]
+           ,[ParentId]
+           ,[ActivityTitle]
+           ,[Code]
+           ,[CreatedDate])
+     VALUES
+          ('19',
+           '1C10D4B9-7931-4A7C-99E9-A158CE158951'
+           ,'18'
+		   ,'View/Edit Comments'
+		   ,'CommentsViewEdit'
+           ,GETDATE())
 END
 --=================End Application_Activity===================
 
