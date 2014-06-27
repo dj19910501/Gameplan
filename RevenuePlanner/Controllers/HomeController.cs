@@ -1953,7 +1953,8 @@ namespace RevenuePlanner.Controllers
                                 Plan_Improvement_Campaign_Program_Tactic_Comment improvementPlanTacticComment = new Plan_Improvement_Campaign_Program_Tactic_Comment()
                                 {
                                     ImprovementPlanTacticId = planTacticId,
-                                    Comment = string.Format("Improvement Tactic {0} by {1}", status, Sessions.User.DisplayName),
+                                    //changes done from displayname to FName and Lname by uday for internal issue on 27-6-2014
+                                    Comment = string.Format("Improvement Tactic {0} by {1}", status, Sessions.User.FirstName + " " + Sessions.User.LastName),
                                     CreatedDate = DateTime.Now,
                                     CreatedBy = Sessions.User.UserId
                                 };
@@ -1996,7 +1997,8 @@ namespace RevenuePlanner.Controllers
                                 Plan_Campaign_Program_Tactic_Comment pcptc = new Plan_Campaign_Program_Tactic_Comment()
                                 {
                                     PlanTacticId = planTacticId,
-                                    Comment = string.Format("Tactic {0} by {1}", status, Sessions.User.DisplayName),
+                                    //changes done from displayname to FName and Lname by uday for internal issue on 27-6-2014
+                                    Comment = string.Format("Tactic {0} by {1}", status, Sessions.User.FirstName + " " + Sessions.User.LastName),
                                     CreatedDate = DateTime.Now,
                                     CreatedBy = Sessions.User.UserId
                                 };
