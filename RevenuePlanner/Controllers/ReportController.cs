@@ -40,6 +40,9 @@ namespace RevenuePlanner.Controllers
         [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Report)
         {
+            // Added by Sohel Pathan on 27/06/2014 for PL ticket #537 to implement user permission Logic
+            ViewBag.TacticActualsAddEdit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
+
             //if (Sessions.RolePermission != null)
             //{
             //    Common.Permission permission = Common.GetPermission(ActionItem.Report);
@@ -123,6 +126,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="BusinessUnitId"></param>
         /// <param name="PlanId"></param>
         /// <returns></returns>
+        [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult GetSummaryData(string BusinessUnitId = "", string PlanId = "")
         {
             SummaryReportModel objSummaryReportModel = new SummaryReportModel();
@@ -1200,6 +1204,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="PlanId"></param>
         /// <param name="timeFrameOption"></param>
         /// <returns></returns>
+        [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult GetConversionData(string BusinessUnitId = "", string PlanId = "", string timeFrameOption = "thisquarter")
         {
             //if (Sessions.RolePermission != null)
@@ -1811,6 +1816,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="PlanId"></param>
         /// <param name="timeFrameOption"></param>
         /// <returns></returns>
+        [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult GetRevenueData(string BusinessUnitId = "", string PlanId = "", string timeFrameOption = "thisquarter")
         {
             //if (Sessions.RolePermission != null)

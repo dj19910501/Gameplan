@@ -25,10 +25,10 @@ namespace RevenuePlanner.Controllers
         /// Integration data listing
         /// </summary>
         /// <returns></returns>
-        [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]  // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+        [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]  // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult Index()
         {
-            // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
             
             ViewBag.CurrentUserRole = Convert.ToString(Sessions.User.RoleCode);
@@ -112,7 +112,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="integrationTypeId"></param>
         /// <returns></returns>
-        [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]  // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+        [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]  // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult create(int integrationTypeId)
         {
             // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
@@ -149,6 +149,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="form"></param>
         /// <returns></returns>
         [HttpPost]
+        [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult create(IntegrationModel form)
         {
             // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
@@ -445,7 +446,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]  // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+        [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]  // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult edit(int id)
         {
             // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
@@ -521,6 +522,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="form"></param>
         /// <returns></returns>
         [HttpPost]
+        [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult edit(IntegrationModel form)
         {
             // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
@@ -862,7 +864,7 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Map External Service - Gameplan Data Types (Fields)
         /// </summary>
-        [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]  // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+        [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]  // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult MapDataTypes(int id)
         {
             // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
@@ -965,6 +967,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="form"></param>
         /// <returns></returns>
         [HttpPost]
+        [AuthorizeUser(Enums.ApplicationActivity.IntegrationCredentialCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult MapDataTypes(int id, IList<GameplanDataTypeModel> form)
         {
             // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic

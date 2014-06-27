@@ -40,7 +40,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult Index()
         {
-            // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
             ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
 
@@ -154,7 +154,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult ChangePassword()
         {
-            // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit); 
 
             //if (Sessions.RolePermission != null)
@@ -324,7 +324,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult SecurityQuestion()
         {
-            // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit); 
 
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
@@ -421,6 +421,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="id">user to be deleted</param>
         /// <returns></returns>
+        [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult Delete(Guid id)
         {
             try
@@ -545,10 +546,10 @@ namespace RevenuePlanner.Controllers
         /// Add New User
         /// </summary>
         /// <returns></returns>
-        [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
+        [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult Create()
         {
-            // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
             ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
 
@@ -605,6 +606,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="file">user photo</param>
         /// <returns></returns>
         [HttpPost]
+        [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult Create(UserModel form, HttpPostedFileBase file)
         {
             // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
@@ -813,7 +815,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult Edit(string usrid = null, string src = "myaccount", string isForDelete = "false")
         {
-            // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
             ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
             
@@ -950,7 +952,7 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public ActionResult Edit(UserModel form, HttpPostedFileBase file)
         {
-            // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
             ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
 
@@ -1111,7 +1113,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult Notifications()
         {
-            // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
             ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin); 
 
