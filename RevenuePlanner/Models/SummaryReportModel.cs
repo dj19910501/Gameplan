@@ -13,16 +13,18 @@ namespace RevenuePlanner.Models
         public string PlanStatus { get; set; } //(Below or Above or At-Par) Plan
 
         //// Modified By: Maninder Singh Wadhva to address TFS Bug 296:Close and realize numbers in Revenue Summary are incorrectly calculated.
-        public string ProjectedRevenue { get; set; }
+        public double ProjectedRevenue { get; set; }
         public double MQLs { get; set; }
         public string Revenue { get; set; }
-        public string MQLsPercentage { get; set; }
-        public string RevenuePercentage { get; set; }
+        public double MQLsPercentage { get; set; }
+        public double RevenuePercentage { get; set; }
 
         //For Waterfall Conversion Summary
         public string OverallConversionPlanStatus { get; set; } //(Below or Above or At-Par) Plan
         public string ISQsStatus { get; set; }
+        public double INQPerValue { get; set; }
         public string MQLsStatus { get; set; }
+        public double MQLPerValue { get; set; }
         public string CWsStatus { get; set; }
         public List<WaterfallConversionSummaryChart> chartData = new List<WaterfallConversionSummaryChart>();
 

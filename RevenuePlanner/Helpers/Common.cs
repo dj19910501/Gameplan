@@ -3199,6 +3199,38 @@ namespace RevenuePlanner.Helpers
 
         }
 
+        public static bool GetRightsForTactic(List<UserCustomRestrictionModel> lstUserCustomRestriction, int verticalId, Guid geographyId)
+        {
+            bool returnValue = true;
+            if (lstUserCustomRestriction.Single(r => r.CustomField == Enums.CustomRestrictionType.Geography.ToString() && r.CustomFieldId == geographyId.ToString()).Permission != (int)Enums.CustomRestrictionPermission.ViewEdit)
+            {
+                returnValue = false;
+            }
+
+            if (lstUserCustomRestriction.Single(r => r.CustomField == Enums.CustomRestrictionType.Verticals.ToString() && r.CustomFieldId == verticalId.ToString()).Permission != (int)Enums.CustomRestrictionPermission.ViewEdit)
+            {
+                returnValue = false;
+            }
+
+            return returnValue;
+        }
+
+        public static bool GetRightsForTacticVisibility(List<UserCustomRestrictionModel> lstUserCustomRestriction, int verticalId, Guid geographyId)
+        {
+            bool returnValue = true;
+            if (lstUserCustomRestriction.Single(r => r.CustomField == Enums.CustomRestrictionType.Geography.ToString() && r.CustomFieldId == geographyId.ToString()).Permission == (int)Enums.CustomRestrictionPermission.None)
+            {
+                returnValue = false;
+            }
+
+            if (lstUserCustomRestriction.Single(r => r.CustomField == Enums.CustomRestrictionType.Verticals.ToString() && r.CustomFieldId == verticalId.ToString()).Permission == (int)Enums.CustomRestrictionPermission.None)
+            {
+                returnValue = false;
+            }
+
+            return returnValue;
+        }
+
         #endregion
         
     }

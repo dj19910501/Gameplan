@@ -204,12 +204,11 @@ namespace RevenuePlanner.Controllers
 
             // MQL
             objSummaryReportModel.MQLs = overAllMQLActual;
-            double overAllMQLPercentage = GetPercentageDifference(overAllMQLActual, overAllMQLProjected);
-            objSummaryReportModel.MQLsPercentage = overAllMQLPercentage.ToString("#0.##", CultureInfo.InvariantCulture);
+            objSummaryReportModel.MQLsPercentage = GetPercentageDifference(overAllMQLActual, overAllMQLProjected);
 
             // Actual Revenue
             objSummaryReportModel.Revenue = Convert.ToString(overAllRevenueActual);
-            objSummaryReportModel.RevenuePercentage = GetPercentageDifference(overAllRevenueActual, overAllRevenueProjected).ToString("#0.##", CultureInfo.InvariantCulture);
+            objSummaryReportModel.RevenuePercentage = GetPercentageDifference(overAllRevenueActual, overAllRevenueProjected);
 
             //// Modified By: Maninder Singh Wadhva to address TFS Bug 296:Close and realize numbers in Revenue Summary are incorrectly calculated.
             string abovePlan = "above plan";
@@ -220,7 +219,7 @@ namespace RevenuePlanner.Controllers
             objSummaryReportModel.PlanStatus = (overAllRevenueActual < overAllRevenueProjected) ? belowPlan : (overAllRevenueActual > overAllRevenueProjected) ? abovePlan : at_par;
 
             //// Projected Revenue
-            objSummaryReportModel.ProjectedRevenue = FormatNumber(overAllRevenueProjected);
+            objSummaryReportModel.ProjectedRevenue = overAllRevenueProjected;
 
             #region INQ
             string inq = Enums.Stage.INQ.ToString();
@@ -239,13 +238,15 @@ namespace RevenuePlanner.Controllers
             }
 
             double inqPercentageDifference = WaterfallGetPercentageDifference(overAllMQLActual, overAllMQLProjected, overAllInqActual, overAllInqProjected);
+            objSummaryReportModel.INQPerValue = inqPercentageDifference;
             if (inqPercentageDifference < 0)
             {
-                objSummaryReportModel.ISQsStatus = string.Format("{0}% {1}", Math.Abs(inqPercentageDifference).ToString("#0.##", CultureInfo.InvariantCulture), belowPlan);
+                objSummaryReportModel.ISQsStatus = belowPlan;
+                //.ToString("#0.##", CultureInfo.InvariantCulture) //  Comment by bhavesh to include format
             }
             else
             {
-                objSummaryReportModel.ISQsStatus = string.Format("{0}% {1}", inqPercentageDifference.ToString("#0.##", CultureInfo.InvariantCulture), abovePlan);
+                objSummaryReportModel.ISQsStatus = abovePlan;
             }
             #endregion
 
@@ -262,32 +263,32 @@ namespace RevenuePlanner.Controllers
                 overAllCWProjected = CwProjectedList.Sum(mr => mr.Field<double>(ColumnValue));
             }
 
-            overAllMQLPercentage = WaterfallGetPercentageDifference(overAllCWActual, overAllCWProjected, overAllMQLActual, overAllMQLProjected);
-            if (overAllMQLPercentage < 0)
+            objSummaryReportModel.MQLPerValue = WaterfallGetPercentageDifference(overAllCWActual, overAllCWProjected, overAllMQLActual, overAllMQLProjected);
+            if (objSummaryReportModel.MQLPerValue < 0)
             {
-                objSummaryReportModel.MQLsStatus = string.Format("{0}% {1}", Math.Abs(overAllMQLPercentage).ToString("#0.##", CultureInfo.InvariantCulture), belowPlan);
+                objSummaryReportModel.MQLsStatus = belowPlan;
             }
             else
             {
-                objSummaryReportModel.MQLsStatus = string.Format("{0}% {1}", overAllMQLPercentage.ToString("#0.##", CultureInfo.InvariantCulture), abovePlan);
+                objSummaryReportModel.MQLsStatus = abovePlan;
             }
             #endregion
 
-            #region CW
-            double cwPercentageDifference = WaterfallGetPercentageDifference(overAllCWActual, overAllCWProjected, overAllMQLActual, overAllMQLProjected);
-            //GetPercentageDifference(overAllCWActual, overAllCWProjected);
-            if (cwPercentageDifference < 0)
-            {
-                objSummaryReportModel.OverallConversionPlanStatus = belowPlan;
-                objSummaryReportModel.CWsStatus = string.Format("{0}% {1}", Math.Abs(cwPercentageDifference).ToString("#0.##", CultureInfo.InvariantCulture), belowPlan);
-            }
-            else
-            {
-                objSummaryReportModel.OverallConversionPlanStatus = abovePlan;
-                objSummaryReportModel.CWsStatus = string.Format("{0}% {1}", cwPercentageDifference.ToString("#0.##", CultureInfo.InvariantCulture), abovePlan);
-            }
+            //#region CW
+            //double cwPercentageDifference = WaterfallGetPercentageDifference(overAllCWActual, overAllCWProjected, overAllMQLActual, overAllMQLProjected);
+            ////GetPercentageDifference(overAllCWActual, overAllCWProjected);
+            //if (cwPercentageDifference < 0)
+            //{
+            //    objSummaryReportModel.OverallConversionPlanStatus = belowPlan;
+            //    objSummaryReportModel.CWsStatus = string.Format("{0}% {1}", Math.Abs(cwPercentageDifference).ToString("#0.##", CultureInfo.InvariantCulture), belowPlan);
+            //}
+            //else
+            //{
+            //    objSummaryReportModel.OverallConversionPlanStatus = abovePlan;
+            //    objSummaryReportModel.CWsStatus = string.Format("{0}% {1}", cwPercentageDifference.ToString("#0.##", CultureInfo.InvariantCulture), abovePlan);
+            //}
 
-            #endregion
+            //#endregion
 
             #region Chart
             List<WaterfallConversionSummaryChart> chart = new List<WaterfallConversionSummaryChart>();
@@ -368,36 +369,6 @@ namespace RevenuePlanner.Controllers
                 percentage = ((mql / inq) / (mqlProjected / inqProjected)) * 100;
             }
             return percentage;
-        }
-
-        /// <summary>
-        /// Function to get formated number.
-        /// </summary>
-        /// <param name="revenue">Number</param>
-        /// <returns>Returns formated number.</returns>
-        private string FormatNumber(double number)
-        {
-            //double value = 1234567890;
-            if (number < 9999)
-            {
-                // Displays 1,234,567,890   
-                return number.ToString();
-            }
-            else if (number <= 999999)
-            {
-                //// Displays 1,234,568K
-                return number.ToString("#,##0,.##k", CultureInfo.InvariantCulture);
-            }
-            else if (number <= 999999999)
-            {
-                // Displays 1,235M
-                return number.ToString("#,##0,,.##M", CultureInfo.InvariantCulture);
-            }
-            else
-            {
-                //// Displays 1B
-                return number.ToString("#,##0,,,.##B", CultureInfo.InvariantCulture);
-            }
         }
 
         #endregion
@@ -503,7 +474,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="BusinessUnitId"></param>
         /// <returns></returns>
-        public JsonResult GetPlansListFromBusinessUnitId(string BusinessUnitId)
+        public JsonResult GetPlansListFromBusinessUnitId(string BusinessUnitId, bool isBusinessUnit = false)
         {
             List<SelectListItem> lstPlan = new List<SelectListItem>();
             string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
@@ -521,10 +492,12 @@ namespace RevenuePlanner.Controllers
                     lstPlan = Common.GetPlan().Where(pl => pl.Model.BusinessUnitId == BUId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
                     Sessions.BusinessUnitId = BUId;
                 }
-
+                if (!isBusinessUnit)
+                {
                 if (Sessions.ReportPlanId != 0)
                 {
                     lstPlan.Where(lp => Convert.ToString(lp.Value) == Convert.ToString(Sessions.ReportPlanId)).ToList().ForEach(lp => lp.Selected = true);
+                    }
                 }
             }
             return Json(new { lstPlan }, JsonRequestBehavior.AllowGet);
@@ -2955,7 +2928,8 @@ namespace RevenuePlanner.Controllers
             html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/dhtmlxchart.css"));
             
             html += "</head>";
-            html += "<body>";
+            html += "<body style='background: none repeat scroll 0 0 #FFFFFF; font-size: 14px;'>";
+            //style='background: none repeat scroll 0 0 #FFFFFF; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 14px;'
             html += htmlOfCurrentView;
             html += "</body>";
             html += "</html>";

@@ -192,6 +192,7 @@
                 url: '@Url.Content("~/Report/GetPlansListFromBusinessUnitId/")',
                 data: {
                     BusinessUnitId: SelectedBUId,
+                    isBusinessUnit: isBusinessUnit
                 },
                 success: function (r) {
                     populateNF(r.lstPlan, "reportSummry2");
@@ -206,6 +207,7 @@
         function loadTimeframeAndPlan() {
             isBusinessUnit = false;
             if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()') {
+                isBusinessUnit = true;
                 loadPlanFromBusinessUnit();
             }
             else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()') {
@@ -260,6 +262,7 @@
                 leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
                 RemoveAllActiveItem();
                 $(this).addClass('active');
+                isBusinessUnit = false;
                     loadPlanFromBusinessUnit();
                 //if (SelectedPlanId == 0) {
                     
@@ -378,13 +381,18 @@
             });
         }
 
-        function loadBasedOnPlan() {
-            if (SelectedPlanId == 0) {
-               $("#BtnAddActual").attr("disabled", "disabled");
+        function loadBasedOnPlan() {	   
+			 var isActualVisible = "@ViewBag.TacticActualsAddEdit"
+            if(isActualVisible.toString().toLowerCase() == 'true')
+            {
+                if (SelectedPlanId == 0) {
+                   $("#BtnAddActual").attr("disabled", "disabled");
+                }
+                else {
+                    $("#BtnAddActual").removeAttr("disabled");
+                }
             }
-            else {
-                $("#BtnAddActual").removeAttr("disabled");
-            }
+
             if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()') {
                 LoadSummary();
             }
