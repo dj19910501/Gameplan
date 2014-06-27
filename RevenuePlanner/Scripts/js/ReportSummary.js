@@ -71,5 +71,30 @@
             border: false
         });
         barChart.parse(data, "json");
+
+        // added by dharmraj for ticket #348
+        $("#chartDiv .dhx_canvas_text.dhx_axis_item_y").each(function (index, element) {
+            var newText = GetAbberiviatedValue(element.innerHTML.toString().replace(/\,/g, ''));
+
+            if (newText.indexOf('.') > 0) {
+                var arr = newText.toString().split('.');
+                newText = arr[0];
+                newText = newText.concat(arr[1].substr(arr[1].length - 1, 1));
+
+                $(element).attr('title', newText);
+                $(element).html(newText);
+            }
+            else {
+                $(element).attr('title', newText);
+                $(element).html(newText);
+            }
+        });
+
+        $('.dhx_canvas_text').each(function () {
+            $(this).css("font-size", "12px");
+        });
+           
     }
+
+     
 });

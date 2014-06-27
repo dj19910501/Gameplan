@@ -262,7 +262,13 @@ function FormatNumber(value, isPercentage) {
 
     if (isPercentage) {
         //// Modified By: Maninder Singh to address TFS Bug 149.
+        var absValue = Math.abs(parseFloat(value));
+        if (absValue < 1000) {
         value = numberWithCommas(Math.round(parseFloat(value) * 10) / 10);
+        }
+        else {
+            value = GetAbberiviatedValue(value);
+        }
         return value + '%'
     }
     else {

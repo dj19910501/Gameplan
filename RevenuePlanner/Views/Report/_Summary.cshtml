@@ -15,13 +15,13 @@
             <div class="info">
                 <h6>@Html.LabelForMQL("MQL")</h6>
                 <h3 id="h3MQLActual" class="truncate">@Model.MQLs</h3>
-                @if (Convert.ToDouble(Model.MQLsPercentage) < 0)
+                @if (Model.MQLsPercentage < 0)
                 {
-                    <h4 class="red-value truncate">@Model.MQLsPercentage%</h4>    
+                    <h4 class="red-value truncate percentageFormat">@Model.MQLsPercentage</h4>    
                 }
                 else
                 {
-                    <h4 class="green-value truncate">@Model.MQLsPercentage%</h4>    
+                    <h4 class="green-value truncate percentageFormat">@Model.MQLsPercentage</h4>    
                 }
 
             </div>
@@ -29,13 +29,13 @@
                 <h6>Revenue</h6>
                 <h3 id="h3Revenue" class="truncate">@Model.Revenue</h3>
 
-                @if (Convert.ToDouble(Model.RevenuePercentage) < 0)
+                @if (Model.RevenuePercentage < 0)
                 {
-                    <h4 class="red-value truncate">@Model.RevenuePercentage%</h4>    
+                    <h4 class="red-value truncate percentageFormat">@Model.RevenuePercentage%</h4>    
                 }
                 else
                 {
-                    <h4 class="green-value truncate">@Model.RevenuePercentage%</h4>    
+                    <h4 class="green-value truncate percentageFormat">@Model.RevenuePercentage%</h4>    
                 }
             </div>
         </div>
@@ -43,7 +43,7 @@
     <div class="report-info">
         <h4>Revenue Summary</h4>
         <p>
-            You are <strong>@Model.PlanStatus</strong> plan to close <strong>$@Model.ProjectedRevenue</strong> this year.
+            You are <strong>@Model.PlanStatus</strong> plan to close <strong class="dollarFormat">@Model.ProjectedRevenue</strong> this year.
         </p>
         <a id="AViewDetailReportRevenue" class="CursorHand">View Details<span></span></a>
     </div>
@@ -63,8 +63,8 @@
         <h4>Waterfall Conversion Summary</h4>
         <p>
             @*Your overall conversion is <strong>@Model.OverallConversionPlanStatus.</strong><br />*@
-            @Html.LabelForINQ("INQ") : <strong>@Model.ISQsStatus.</strong><br />
-            @Html.LabelForMQL("MQL") : <strong>@Model.MQLsStatus.</strong><br />
+            @Html.LabelForINQ("INQ") : <strong class="percentageFormat">@Model.INQPerValue</strong><strong> @Model.ISQsStatus.</strong><br />
+            @Html.LabelForMQL("MQL") : <strong class="percentageFormat">@Model.MQLPerValue</strong><strong> @Model.MQLsStatus.</strong><br />
           @*  @Html.LabelForCW("CW") : <strong>@Model.CWsStatus.</strong><br />*@
         </p>
         <a id="AViewDetailReportConversion" class="CursorHand" >View Details<span></span></a>
@@ -94,6 +94,14 @@
         $('#AViewDetailReportConversionChart').click(function()
         {
             $("#liConversion").focus().click();
+        }); 
+
+        $(".percentageFormat").each(function(){
+            $(this).html(FormatNumber(parseFloat($(this).html()),true));
+        });
+
+        $(".dollarFormat").each(function(){
+            $(this).html(FormatNumber(parseFloat($(this).html()),false));
         }); 
 
         ShowHideReport();

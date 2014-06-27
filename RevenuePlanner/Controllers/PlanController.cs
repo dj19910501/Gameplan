@@ -996,13 +996,16 @@ namespace RevenuePlanner.Controllers
                 Status = t.Status       //// Added by Sohel on 19/05/2014 for PL #425 to Show status of tactics on ApplyToCalender screen
             });
 
+            // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
+            List<UserCustomRestrictionModel> lstUserCustomRestriction = Common.GetUserCustomRestriction();
+
             var taskDataTactic = db.Plan_Campaign_Program_Tactic.Where(p => p.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId) &&
                                                                             p.IsDeleted.Equals(false))
                                                                 .ToList()
                                                                 .Where(p => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
                                                                                                                         CalendarEndDate,
                                                                                                                         p.StartDate,
-                                                                                                                        p.EndDate).Equals(false))
+                                                                                                                        p.EndDate).Equals(false) && Common.GetRightsForTacticVisibility(lstUserCustomRestriction, p.VerticalId, p.GeographyId))
                                                                 .Select(t => new
                                                                 {
                                                                     id = string.Format("C{0}_P{1}_T{2}", t.Plan_Campaign_Program.PlanCampaignId, t.Plan_Campaign_Program.PlanProgramId, t.PlanTacticId),
@@ -1465,6 +1468,8 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Json Result.</returns>
         public JsonResult GetCampaign()
         {
+            // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
+            List<UserCustomRestrictionModel> lstUserCustomRestriction = Common.GetUserCustomRestriction();
             var campaign = db.Plan_Campaign.ToList().Where(pc => pc.PlanId.Equals(Sessions.PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
             var campaignobj = campaign.Select(p => new
             {
@@ -1486,7 +1491,7 @@ namespace RevenuePlanner.Controllers
                     //inqs = pcpj.INQs.HasValue ? pcpj.INQs : 0,
                     mqls = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcpj.PlanProgramId && t.IsDeleted == false).ToList(), true).Sum(tm => tm.MQL),
                     isOwner = Sessions.User.UserId == pcpj.CreatedBy ? 0 : 1,
-                    tactics = (db.Plan_Campaign_Program_Tactic.ToList().Where(pcpt => pcpt.PlanProgramId.Equals(pcpj.PlanProgramId) && pcpt.IsDeleted.Equals(false)).Select(pcpt => pcpt).ToList()).Select(pcptj => new
+                    tactics = (db.Plan_Campaign_Program_Tactic.ToList().Where(pcpt => pcpt.PlanProgramId.Equals(pcpj.PlanProgramId) && pcpt.IsDeleted.Equals(false) && Common.GetRightsForTacticVisibility(lstUserCustomRestriction, pcpt.VerticalId, pcpt.GeographyId)).Select(pcpt => pcpt).ToList()).Select(pcptj => new
                     {
                         id = pcptj.PlanTacticId,
                         title = pcptj.Title,
@@ -1496,7 +1501,8 @@ namespace RevenuePlanner.Controllers
                         mqls = GetTacticMQL(pcptj),
                         /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
                          changed by : Nirav Shah on 13 feb 2014*/
-                        isOwner = Sessions.User.UserId == pcptj.CreatedBy ? 0 : 1,
+                        // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
+                        isOwner = Sessions.User.UserId == pcptj.CreatedBy ? (Common.GetRightsForTactic(lstUserCustomRestriction,pcptj.VerticalId,pcptj.GeographyId) ? 0 : 1) : 1,
                     }).Select(pcptj => pcptj).Distinct().OrderBy(pcptj => pcptj.id)
                 }).Select(pcpj => pcpj).Distinct().OrderBy(pcpj => pcpj.id)
             }).Select(p => p).Distinct().OrderBy(p => p.id);
@@ -2309,13 +2315,24 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Tactic.</returns>
         public PartialViewResult CreateTactic(int id = 0)
         {
+            // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
+            List<UserCustomRestrictionModel> lstUserCustomRestriction = Common.GetUserCustomRestriction();
+
             // Dropdown for Verticals
             //ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false);
             //ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false);
             /* clientID add by Nirav shah on 15 jan 2014 for get verical and audience by client wise*/
-            ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
+            // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
+            ViewBag.Verticals = (from v in db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId).ToList()
+                                 join lu in lstUserCustomRestriction on v.VerticalId.ToString() equals lu.CustomFieldId
+                                 where lu.CustomField == Enums.CustomRestrictionType.Verticals.ToString() && lu.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit
+                                 select v).ToList();
             ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
-            ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
+            // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
+            ViewBag.Geography = (from g in db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId).ToList()
+                                join lu in lstUserCustomRestriction on g.GeographyId.ToString() equals lu.CustomFieldId
+                                 where lu.CustomField == Enums.CustomRestrictionType.Geography.ToString() && lu.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit
+                                select g).ToList();
             ViewBag.Tactics = from t in db.TacticTypes
                               join p in db.Plans on t.ModelId equals p.ModelId
                               where p.PlanId == Sessions.PlanId && (t.IsDeleted == null || t.IsDeleted == false)
@@ -2347,6 +2364,9 @@ namespace RevenuePlanner.Controllers
             //pcptm.VerticalId = pcp.VerticalId;
             //pcptm.AudienceId = pcp.AudienceId;
             ViewBag.IsOwner = true;/*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
+            
+            // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
+            ViewBag.IsAllowCustomRestriction = true;
             ViewBag.RedirectType = false;
             return PartialView("TacticAssortment", pcptm);
         }
@@ -2360,13 +2380,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Tactic.</returns>
         public PartialViewResult EditTactic(int id = 0, string RedirectType = "")
         {
-            // Dropdown for Verticals
-            //ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false);
-            //ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false);
-            /* clientID add by Nirav shah on 15 jan 2014 for get verical and audience by client wise*/
-            ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
-            ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
-            ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
+           
             var tList = from t in db.TacticTypes
                               join p in db.Plans on t.ModelId equals p.ModelId
                               where p.PlanId == Sessions.PlanId && (t.IsDeleted == null || t.IsDeleted == false)
@@ -2388,6 +2402,38 @@ namespace RevenuePlanner.Controllers
                 return null;
             }
 
+            // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
+            List<UserCustomRestrictionModel> lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            bool isallowrestriction = Common.GetRightsForTactic(lstUserCustomRestriction, pcpt.VerticalId, pcpt.GeographyId);
+            ViewBag.IsAllowCustomRestriction = isallowrestriction;
+            // Dropdown for Verticals
+            /* clientID add by Nirav shah on 15 jan 2014 for get verical and audience by client wise*/
+            // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
+            if (isallowrestriction)
+            {
+                ViewBag.Verticals = (from v in db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId).ToList()
+                                     join lu in lstUserCustomRestriction on v.VerticalId.ToString() equals lu.CustomFieldId
+                                     where lu.CustomField == Enums.CustomRestrictionType.Verticals.ToString() && lu.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit
+                                     select v).ToList();
+            }
+            else
+            {
+                ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId);
+            }
+            ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
+
+            // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
+            if (isallowrestriction)
+            {
+                ViewBag.Geography = (from g in db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId).ToList()
+                                     join lu in lstUserCustomRestriction on g.GeographyId.ToString() equals lu.CustomFieldId
+                                     where lu.CustomField == Enums.CustomRestrictionType.Geography.ToString() && lu.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit
+                                     select g).ToList();
+            }
+            else
+            {
+                ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
+            }
             // added by Dharmraj for ticket #435 MAP/CRM Integration - Tactic Creation
             if (pcpt.TacticType.Model.IntegrationInstanceId != null)
             {
