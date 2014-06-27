@@ -35,7 +35,10 @@
 
         <div class="wraper-btns cf">
             <div class="span6">
+                @if ((bool)ViewBag.TacticActualsAddEdit) // Added by Sohel Pathan on 27/06/2014 for PL ticket #537 to implement user permission Logic
+                {
                     <button id="BtnAddActual" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("AddActual", "Home")'">Add Actuals</button>    
+                }
                  @*   <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" disabled="disabled" type="button">Add Actuals</button>*@
             </div>
             <div class="span6">
