@@ -2088,9 +2088,10 @@ function addRowTactic(index, id, text, projectedStageValue, mqls, cws, cost, isD
                     '<td class="sm">' + displayTacticMQL(projectedStageValue) + '</td>' +
                     '<td class="sm">' + displayTacticMQL(mqls) + '</td>' +
                     '<td class="sm">' + FormatCurrency(cws, false) + '</td>' +
-                    '<td class="border-r sm">' + FormatCurrency(cost, false) + '</td>' +
-                    '<td><span class="reject-icon active"></span><span class="accept-icon"></span></td>' +
-                '</tr>';
+                    '<td class="border-r sm">' + FormatCurrency(cost, false) + '</td>';
+        $html += '<td><span class="reject-icon active"></span><span class="accept-icon"></span></td>';
+        
+        $html += '</tr>';
     } else if (isSubmitted) {
         $html += '<tr class="pending"  id="' + id + '" data-index="' + index + '">' +
                     '<td class="border-r sm">'
@@ -2103,9 +2104,9 @@ function addRowTactic(index, id, text, projectedStageValue, mqls, cws, cost, isD
                     '<td class="sm">' + displayTacticMQL(projectedStageValue) + '</td>' +
                     '<td class="sm">' + displayTacticMQL(mqls) + '</td>' +
                     '<td class="sm">' + FormatCurrency(cws, false) + '</td>' +
-                    '<td class="border-r sm">' + FormatCurrency(cost, false) + '</td>' +
-                    '<td><span class="reject-icon"></span><span class="accept-icon"></span></td>' +
-                '</tr>';
+                    '<td class="border-r sm">' + FormatCurrency(cost, false) + '</td>';
+        $html += '<td><span class="reject-icon"></span><span class="accept-icon"></span></td>';
+        $html += '</tr>';
     }
 
     $activitiesTable.append($html);

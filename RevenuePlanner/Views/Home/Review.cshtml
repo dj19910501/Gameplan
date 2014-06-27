@@ -2,6 +2,7 @@
 @{
     var tacticReview = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
     bool ShowMQL = (bool)ViewBag.ShowMQL;
+    bool IsTacticEditable = (bool)ViewBag.IsTacticEditable;
 }
 <div class="span5 width360" id="inspect-modal-right-div" style="width: 420px !important;">
     <div class="font-size18">Overview</div>
@@ -110,7 +111,12 @@
 
         <img class="avatar-user vertical-aligntop" src="@Url.Action("LoadUserImage", "User", new { id = RevenuePlanner.Helpers.Sessions.User.UserId })" alt="User avatar" />
         @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment" })
+        
+        @if(IsTacticEditable)
+        {
         <button id="btnComment" class="btn btn-blue text-shadow-blue source-sans-proregular new-comment-buttom " type="button">Comment</button>
+        }
+
     </div>
     @* Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic*@
     }
@@ -122,12 +128,13 @@
     }
     @* End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic*@
     <div class="cf pull-left">
-
+        @if (IsTacticEditable)
+        {
         <div style="float: right; margin-top: 10px;">
             <button class="btn btn-blue text-shadow-blue source-sans-proregular  button-inspect-result-modal pull-right  resize-button margin-left20 btn-blue share-tactic-icon" id="BtnShareTactic" type="button" style="width: 80px;"><span class="flag-icon"></span>Share </button>
         </div>
 
-        @{
+        
             string Submit = "Submit for Approval";
             string Approve = "Approve";
             string Reject = "Reject";
@@ -307,6 +314,7 @@
             </div> 
             }            
             
+        
         }
     </div>
 </div>

@@ -1741,7 +1741,7 @@ namespace RevenuePlanner.Helpers
                 isImprovement = true,
                 IsHideDragHandleLeft = improvementTactic.EffectiveDate < calendarStartDate,
                 IsHideDragHandleRight = true,
-                Status = improvementTactic.Status,      //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home, Plan and ApplyToCalender screen
+                Status = improvementTactic.Status      //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home, Plan and ApplyToCalender screen
             }).OrderBy(t => t.text);
 
             return taskDataImprovementTactic.ToList<object>();
@@ -3134,6 +3134,72 @@ namespace RevenuePlanner.Helpers
 
         #endregion
 
+        #region Subordinares and peers
+
+        /// <summary>
+        /// Function to get all own and peers subordinates of current user
+        /// Added By Dharmraj for ticket #538, 23-06-2014
+        /// </summary>
+        /// <returns></returns>
+        public static List<Guid> GetSubOrdinatesWithPeers()
+        {
+            //Get all subordinates of current user
+            BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
+            List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
+            lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+            var lstSubOrdinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId)
+                                                        .ToList()
+                                                        .Select(u => u.UserId)
+                                                        .ToList();
+            var ManagerId = lstUserHierarchy.FirstOrDefault(u => u.UserId == Sessions.User.UserId).ManagerId;
+            if (ManagerId != null)
+            {
+                var lstPeersId = lstUserHierarchy.Where(u => u.ManagerId == ManagerId)
+                                                        .ToList()
+                                                        .Select(u => u.UserId)
+                                                        .ToList();
+                if (lstPeersId.Count > 0)
+                {
+                    var lstPeersSubOrdinatesId = lstUserHierarchy.Where(u => lstPeersId.Contains(u.ManagerId.GetValueOrDefault(Guid.Empty)))
+                                                            .ToList()
+                                                            .Select(u => u.UserId)
+                                                            .ToList();
+
+                    // Get current user permission for Tactic ApproveForPeers.
+                    bool IsTacticApproveForPeersAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticApproveForPeers);
+
+                    if (IsTacticApproveForPeersAuthorized)
+                    {
+                        lstSubOrdinates = lstSubOrdinates.Concat(lstPeersSubOrdinatesId).ToList();
+                    }
+                }
+            }
+
+            return lstSubOrdinates;
+        }
+
+        #endregion
+
+        #region Custom Restriction
+
+        /// <summary>
+        /// Returns all custom restrictions for current user.
+        /// Added By Dharmraj mangukiya, #538
+        /// </summary>
+        /// <returns></returns>
+        public static List<UserCustomRestrictionModel> GetUserCustomRestriction()
+        {
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSServiceClient();
+            return objBDSServiceClient.GetUserCustomRestrictionList(Sessions.User.UserId, Sessions.ApplicationId).Select(c => new UserCustomRestrictionModel
+                                                                                                                        {
+                                                                                                                            CustomField = c.CustomField,
+                                                                                                                            CustomFieldId = c.CustomFieldId,
+                                                                                                                            Permission = c.Permission
+                                                                                                                        }).ToList();
+
+        }
+
+        #endregion
         
     }
 

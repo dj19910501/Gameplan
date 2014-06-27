@@ -1,6 +1,7 @@
 ﻿@using RevenuePlanner.Helpers
 @{
     var tacticActual = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
+    bool IsTacticEditable = (bool)ViewBag.IsTacticEditable;
 }
 <div id="panel-656352" class="content-panel-tab">
     <div class="cf" id="divActualInner">
@@ -158,7 +159,10 @@
         <div class="cf ">
             <div class="btn-container without-border-top pull-left">
                 @* <button class="btn btn-blue text-shadow-blue source-sans-proregular share-tactic-icon button-inspect-result-modal pull-right" type="button"><span class="flag-icon"></span>Share Tactic</button>*@
+                @if (IsTacticEditable)
+                {
                 <button id="btnUploadResult" class="btn btn-blue text-shadow-blue source-sans-proregular button-inspect-result-modal pull-right margin-right20 padding-side30" type="button">Update Actuals</button>
+                }
             </div>
             <div class="pull-left">
                 <label id="last-updated" class="pull-left last-updated">@ViewBag.UpdatedBy</label>

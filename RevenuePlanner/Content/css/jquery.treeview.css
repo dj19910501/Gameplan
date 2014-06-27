@@ -95,3 +95,7 @@ background-position: 0 -683px;
 .treeview .no-nesting.last.first {
     background-position: 0 -683px;
 }
+
+.treeview li ul li ul li.collapsable.lastCollapsable {
+    background-position: 0px -698px;
+}

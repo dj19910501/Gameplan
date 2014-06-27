@@ -671,7 +671,7 @@
                         if (isShow) {
                             indexValue = indexValue + 1;
                             isFilterFound = true;
-                            addRowActual(indexValue, actuals[i].id, actuals[i].title, actuals[i].projectedStageValue, actuals[i].projectedStageValueActual, actuals[i].mqlProjected, actuals[i].mqlActual, actuals[i].cwProjected, actuals[i].cwActual, actuals[i].revenueProjected, actuals[i].revenueActual, actuals[i].costProjected, actuals[i].costActual, actuals[i].roiProjected, actuals[i].roiActual, actuals[i].actualData, actuals[i].modifiedBy, actuals[i].LastSync, actuals[i].stageTitle, actuals[i].tacticStageId, actuals[i].tacticStageTitle);
+                            addRowActual(indexValue, actuals[i].id, actuals[i].title, actuals[i].projectedStageValue, actuals[i].projectedStageValueActual, actuals[i].mqlProjected, actuals[i].mqlActual, actuals[i].cwProjected, actuals[i].cwActual, actuals[i].revenueProjected, actuals[i].revenueActual, actuals[i].costProjected, actuals[i].costActual, actuals[i].roiProjected, actuals[i].roiActual, actuals[i].actualData, actuals[i].modifiedBy, actuals[i].LastSync, actuals[i].stageTitle, actuals[i].tacticStageId, actuals[i].tacticStageTitle, actuals[i].IsTacticEditable);
                         }
                     }
                     if (!isFilterFound) {
@@ -696,7 +696,7 @@
         }
 
         //add row in actuals table
-        function addRowActual(_index, _id, _title, _projectedStageValue, _projectedStageValueActual, _mqlProjected, _mqlActual, _cwProjected, _cwActual, _revenueProjected, _revenueActual, _costProjected, _costActual, _roiProjected, _roiActual, _actualData, _modifiedBy, _LastSync, stageTitle, tacticStageId, tacticStageTitle) {
+        function addRowActual(_index, _id, _title, _projectedStageValue, _projectedStageValueActual, _mqlProjected, _mqlActual, _cwProjected, _cwActual, _revenueProjected, _revenueActual, _costProjected, _costActual, _roiProjected, _roiActual, _actualData, _modifiedBy, _LastSync, stageTitle, tacticStageId, tacticStageTitle, IsTacticEditable) {
             var $tableActuals = $('.accordion-actuals');
             var num = parseInt(_index);
             var updateBy = '', stat;
@@ -860,14 +860,18 @@
                             '<div class="wrapper-toogle-actual-buttons">' +
                             '<div class="pull-left" style="width:300px;">' +
                             '<label id="last-synced" class="pull-left margin-top6 margin-bottom0" style="line-height:10px;">' + _LastSync + '</label>' +
-                            '<label id="last-updated" class="pull-left margin-bottom0">' + updateBy + '</label></div>' +
-                                '<button id="BtnShareTactic' + _id + '" tacticId="' + _id + '" class="btn btn-blue text-shadow-blue source-sans-proregular share-tactic-icon button-inspect-result-modal pull-right" type="button"><span class="flag-icon"></span>Share Tactic</button>' +
-                                '<button id="UpdateResult" stageId="' + tacticStageId + '" tacticId="' + _id + '" class="btn btn-blue text-shadow-blue source-sans-proregular button-inspect-result-modal pull-right margin-right20" type="button"><span class="flag-icon"></span>Update Actuals</button>' +
-                            '</div>' +
-                        '</div>' +
-                        '</div>' +
-                    '</div>' +
-                  '</div>';
+                            '<label id="last-updated" class="pull-left margin-bottom0">' + updateBy + '</label></div>';
+
+            if (IsTacticEditable) {
+                $html += '<button id="BtnShareTactic' + _id + '" tacticId="' + _id + '" class="btn btn-blue text-shadow-blue source-sans-proregular share-tactic-icon button-inspect-result-modal pull-right" type="button"><span class="flag-icon"></span>Share Tactic</button>' +
+                         '<button id="UpdateResult" stageId="' + tacticStageId + '" tacticId="' + _id + '" class="btn btn-blue text-shadow-blue source-sans-proregular button-inspect-result-modal pull-right margin-right20" type="button"><span class="flag-icon"></span>Update Actuals</button>';
+            }
+
+            $html += '</div>' +
+                       '</div>' +
+                       '</div>' +
+                   '</div>' +
+                 '</div>';
             $tableActuals.append($html);
 
         }//addRowActual
