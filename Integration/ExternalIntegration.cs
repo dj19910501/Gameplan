@@ -100,9 +100,24 @@ namespace Integration
             {
                 SyncCampaing();
             }
+            else if (EntityType.ImprovementTactic.Equals(_entityType))//new code added for #532 by uday
+            {
+                SyncImprovementTactic();
+            }
             else
             {
                 SyncInstance();
+            }
+        }
+
+        private void SyncImprovementTactic()//new code added for #532 by uday
+        {
+            /// Write query to get integration instance id and integration type.
+            _integrationInstanceId = db.Plan_Improvement_Campaign_Program_Tactic.Single(t => t.ImprovementPlanTacticId == _id).Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.IntegrationInstanceId;
+            if (_integrationInstanceId.HasValue)
+            {
+                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Title;
+                IdentifyIntegration();
             }
         }
 

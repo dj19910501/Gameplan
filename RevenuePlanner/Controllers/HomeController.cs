@@ -15,6 +15,7 @@ using RevenuePlanner.BDSService;
 using System.Web.Routing;
 using System.Reflection;
 using System.Web;
+using Integration;
 
 /*
  *  Author: Manoj Limbachiya
@@ -1965,6 +1966,13 @@ namespace RevenuePlanner.Controllers
                                     if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
                                     {
                                         result = Common.InsertChangeLog(improvementPlanTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, 0, planTacticId, improvementPlanTactic.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved);
+                                        //added by uday for #532
+                                        if (improvementPlanTactic.IsDeployedToIntegration == true)
+                                        {
+                                            ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, new Guid(), EntityType.ImprovementTactic);
+                                            externalIntegration.Sync();
+                                        }
+                                        //added by uday for #532
                                     }
                                     else if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
                                     {
@@ -2001,6 +2009,13 @@ namespace RevenuePlanner.Controllers
                                     if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
                                     {
                                         result = Common.InsertChangeLog(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, 0, planTacticId, tactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved);
+                                        //// added by uday for #532
+                                        if (tactic.IsDeployedToIntegration == true)
+                                        {
+                                            ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, new Guid(), EntityType.Tactic);
+                                            externalIntegration.Sync();
+                                        }
+                                        //// End by uday for #532
                                     }
                                     else if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
                                     {
@@ -3091,6 +3106,13 @@ namespace RevenuePlanner.Controllers
                                         if (tactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
                                         {
                                             result = Common.InsertChangeLog(Sessions.PlanId, null, planTacticId, tactic.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
+                                            //added by uday for #532 
+                                            if (tactic.IsDeployedToIntegration == true)
+                                            {
+                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, new Guid(), EntityType.Tactic);
+                                                externalIntegration.Sync();
+                                            }
+                                            //end
                                         }
                                         else if (tactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
                                         {
@@ -3125,6 +3147,13 @@ namespace RevenuePlanner.Controllers
                                         if (tactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
                                         {
                                             result = Common.InsertChangeLog(Sessions.PlanId, null, planTacticId, tactic.Title.ToString(), Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
+                                            //added by uday for #532
+                                            if (tactic.IsDeployedToIntegration == true)
+                                            {
+                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, new Guid(), EntityType.ImprovementTactic);
+                                                externalIntegration.Sync();
+                                            }
+                                            //end by uday for #532
                                         }
                                         else if (tactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
                                         {
