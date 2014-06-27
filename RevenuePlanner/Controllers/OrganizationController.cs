@@ -18,13 +18,11 @@ namespace RevenuePlanner.Controllers
         private BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
         private MRPEntities db = new MRPEntities();
 
-        [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult Hierarchy()
         {
             List<OrganizationModel> listorganizationmodel = new List<OrganizationModel>();
@@ -273,7 +271,6 @@ namespace RevenuePlanner.Controllers
         /// Organization Hierarchy
         /// </summary>
         /// <returns></returns>
-        [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult OrganizationHierarchy()
         {
             // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
@@ -358,7 +355,6 @@ namespace RevenuePlanner.Controllers
         /// Added By: Mitesh Vaishnav for PL ticket #521
         /// View/Edit user permission.
         /// </summary>
-        [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult ViewEditPermission(string Id, string Mode)
         {
             // Start - Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
