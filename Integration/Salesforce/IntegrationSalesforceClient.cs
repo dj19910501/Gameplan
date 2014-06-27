@@ -1291,7 +1291,7 @@ namespace Integration.Salesforce
                         //Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
                         Plan_Improvement_Campaign_Program_Tactic_Comment objImpTacticComment = new Plan_Improvement_Campaign_Program_Tactic_Comment();
                         objImpTacticComment.ImprovementPlanTacticId = planIMPTactic.ImprovementPlanTacticId;
-                        objImpTacticComment.Comment = Common.TacticSyncedComment + Integration.Helper.Enums.IntegrationType.Salesforce.ToString();
+                        objImpTacticComment.Comment = Common.ImprovementTacticSyncedComment + Integration.Helper.Enums.IntegrationType.Salesforce.ToString();
                         objImpTacticComment.CreatedDate = DateTime.Now;
                         ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
                         if (Common.IsAutoSync)
