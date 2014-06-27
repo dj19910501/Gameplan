@@ -38,7 +38,7 @@ namespace RevenuePlanner.Controllers
         private const string Campaign_InspectPopup_Flag_Color = "C6EBF3";
         private const string Program_InspectPopup_Flag_Color = "3DB9D3";
         ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
-        private const string GameplanAdmin = "Gameplan Admin";
+        private const string GameplanIntegrationService = "Gameplan Integration Service";
         #endregion
 
         #region "Index"
@@ -2260,7 +2260,7 @@ namespace RevenuePlanner.Controllers
                                        PlanTacticId = Convert.ToInt32(tc.PlanTacticId),
                                        Comment = tc.Comment,
                                        CommentDate = tc.CreatedDate,
-                                       CommentedBy = userName.Where(u => u.UserId == tc.CreatedBy).Any() ? userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.FirstName).FirstOrDefault() + " " + userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.LastName).FirstOrDefault() : GameplanAdmin,
+                                       CommentedBy = userName.Where(u => u.UserId == tc.CreatedBy).Any() ? userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.FirstName).FirstOrDefault() + " " + userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.LastName).FirstOrDefault() : GameplanIntegrationService,
                                        CreatedBy = tc.CreatedBy
                                    }).ToList();
 
@@ -4463,7 +4463,7 @@ namespace RevenuePlanner.Controllers
                                        PlanTacticId = Convert.ToInt32(tc.ImprovementPlanTacticId),
                                        Comment = tc.Comment,
                                        CommentDate = tc.CreatedDate,
-                                       CommentedBy = userName.Where(u => u.UserId == tc.CreatedBy).Any() ? userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.FirstName).FirstOrDefault() + " " + userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.LastName).FirstOrDefault() : GameplanAdmin,
+                                       CommentedBy = userName.Where(u => u.UserId == tc.CreatedBy).Any() ? userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.FirstName).FirstOrDefault() + " " + userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.LastName).FirstOrDefault() : GameplanIntegrationService,
                                        CreatedBy = tc.CreatedBy
                                    }).ToList();
 
