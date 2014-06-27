@@ -1683,6 +1683,7 @@ namespace BDSService
             else
             {
                 return new List<BDSEntities.CustomRestriction>();
+
             }
 
         }
