@@ -450,7 +450,8 @@ else
                         </span>
                         <span class="link-btn">
                             <a href="#" class="btn-link" id="ResetRoleDefualt">Reset to Role Defaults</a>
-                            <a href="#">
+
+                            <a href="#" class="help" title="Click on the Manage Roles tab up top to configure default role permissions" original-title="Click on the Manage Roles tab up top to configure default role permissions">
                                 <img src="../Content/images/help-icon.png" alt=""></a>
                         </span>
                     </div>
@@ -462,11 +463,38 @@ else
     </div>
     
 }
+<style type="text/css">
+
+    .tipsy-arrow {
+    display: none;
+}
+.tipsy-inner {
+    background: none repeat scroll 0 0 #3EA9F5;
+    font-family: 'source_sans_proregular',Arial,"sans-serif" !important;
+    font-size: 14px;
+    max-width: 196px;
+    padding: 12px;
+    text-align: left;
+}
+</style>
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/check.js")"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         $('.director').css('background-color', '@ViewBag.RoleColorCode');
         $(".check_signup").dgStyle();
+        function addShowText() {
+            $('.tipsy').addClass('blue-tipsy');
+
+            var tipsyOffset = $('.tipsy').offset();
+            //alert(tipsyOffset.top);
+            $('.tipsy').css('top', tipsyOffset.top - 38);
+        };
+
+        function addHideText() {
+            $('.tipsy').removeClass('blue-tipsy');
+        };
+
+        $('.help').tipsy({ gravity: 's', opacity: 1, onShow: addShowText, onHide: addHideText });
     });
     $('#backbtn').click(function () {
         var url = '';
