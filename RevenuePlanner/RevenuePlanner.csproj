@@ -711,7 +711,9 @@
     <Content Include="Views\Model\_modeloverview.cshtml" />
     <Content Include="Views\Model\_contactinquiry.cshtml" />
     <Content Include="Views\Home\ShareTactic.cshtml" />
-    <Content Include="Web.Config" />
+    <Content Include="Web.Config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Views\Boost\BestInClass.cshtml" />
     <Content Include="Views\Boost\CreateImprovementTactic.cshtml" />
     <Content Include="Views\Boost\Index.cshtml" />
