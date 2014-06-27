@@ -1621,6 +1621,10 @@ namespace BDSService
 
         #endregion
 
+        // <summary>
+        ///Added by Mitesh Vaishnav : User Permission Edit/View Pl ticket 521 
+        /// </summary>
+       
         #region "Application Activity"
 
         public List<BDSEntities.ApplicationActivity> GetAllApplicationActivity(Guid applicationId)
@@ -1671,11 +1675,15 @@ namespace BDSService
                 CreatedDate = crl.CreatedDate,
                 CreatedBy = crl.CreatedBy
             }).ToList();
-            if (usercustomRestrictionList.Count > 0)
+
+            if (usercustomRestrictionList != null && usercustomRestrictionList.Count > 0)
             {
                 return usercustomRestrictionList;
             }
-            return null;
+            else
+            {
+                return new List<BDSEntities.CustomRestriction>();
+            }
 
         }
         public int DeleteUserActivityPermission(Guid userId, Guid applicationId)
