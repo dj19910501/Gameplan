@@ -2405,19 +2405,30 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IsTacticEditable = false;
             }
 
-            //// Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
+            // Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
             //bool IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
-            //bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
-            //bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+            bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+            bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+            if (IsPlanEditAllAuthorized)
+            {
+                ViewBag.IsDeployToIntegrationVisible = true;
+            }
+            else if (IsPlanEditOwnAndSubordinatesAuthorized)
+            {
+                if (lstSubOrdinates.Contains(im.OwnerId))
+                {
+                    ViewBag.IsDeployToIntegrationVisible = true;
+                }
+                else
+                {
+                    ViewBag.IsDeployToIntegrationVisible = false;
+                }
+            }
+            else
+            {
+                ViewBag.IsDeployToIntegrationVisible = false;
+            }
 
-            //if ((IsPlanEditAllAuthorized || IsPlanEditOwnAndSubordinatesAuthorized) && IsIntegrationCredentialCreateEditAuthorized)
-            //{
-            //    ViewBag.IsDeployToIntegrationVisible = true;
-            //}
-            //else
-            //{
-            //    ViewBag.IsDeployToIntegrationVisible = false;
-            //}
 
             return PartialView("Review");
         }
@@ -3532,6 +3543,30 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IsProgramEditable = true;
             }
 
+            // Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
+            //bool IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+            bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+            if (IsPlanEditAllAuthorized)
+            {
+                ViewBag.IsDeployToIntegrationVisible = true;
+            }
+            else if (IsPlanEditOwnAndSubordinatesAuthorized)
+            {
+                if (lstSubOrdinates.Contains(im.OwnerId))
+                {
+                    ViewBag.IsDeployToIntegrationVisible = true;
+                }
+                else
+                {
+                    ViewBag.IsDeployToIntegrationVisible = false;
+                }
+            }
+            else
+            {
+                ViewBag.IsDeployToIntegrationVisible = false;
+            }
+
             return PartialView("_ReviewProgram");
         }
 
@@ -3698,6 +3733,30 @@ namespace RevenuePlanner.Controllers
             else
             {
                 ViewBag.IsCampaignEditable = true;
+            }
+
+            // Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
+            //bool IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+            bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+            if (IsPlanEditAllAuthorized)
+            {
+                ViewBag.IsDeployToIntegrationVisible = true;
+            }
+            else if (IsPlanEditOwnAndSubordinatesAuthorized)
+            {
+                if (lstSubOrdinates.Contains(im.OwnerId))
+                {
+                    ViewBag.IsDeployToIntegrationVisible = true;
+                }
+                else
+                {
+                    ViewBag.IsDeployToIntegrationVisible = false;
+                }
+            }
+            else
+            {
+                ViewBag.IsDeployToIntegrationVisible = false;
             }
 
             return PartialView("_ReviewCampaign");
@@ -4685,6 +4744,30 @@ namespace RevenuePlanner.Controllers
             if ((bool)ViewBag.IsCommentsViewEditAuthorized == false)
                 ViewBag.UnauthorizedCommentSection = Common.objCached.UnauthorizedCommentSection;
             // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+
+            // Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
+            //bool IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+            bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+            if (IsPlanEditAllAuthorized)
+            {
+                ViewBag.IsDeployToIntegrationVisible = true;
+            }
+            else if (IsPlanEditOwnAndSubordinatesAuthorized)
+            {
+                if (lstSubOrdinates.Contains(im.OwnerId))
+                {
+                    ViewBag.IsDeployToIntegrationVisible = true;
+                }
+                else
+                {
+                    ViewBag.IsDeployToIntegrationVisible = false;
+                }
+            }
+            else
+            {
+                ViewBag.IsDeployToIntegrationVisible = false;
+            }
 
             return PartialView("_ReviewImprovementTactic");
         }

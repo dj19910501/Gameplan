@@ -3,6 +3,7 @@
     var tacticReview = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
     bool ShowMQL = (bool)ViewBag.ShowMQL;
     bool IsTacticEditable = (bool)ViewBag.IsTacticEditable;
+    bool IsDeployToIntegrationVisible = (bool)ViewBag.IsDeployToIntegrationVisible;
 }
 <div class="span5 width360" id="inspect-modal-right-div" style="width: 420px !important;">
     <div class="font-size18">Overview</div>
@@ -272,7 +273,7 @@
                 }
             }
 
-            if(IsTacticEditable)
+            if (IsDeployToIntegrationVisible)
             {
             if ((bool)ViewBag.IsModelDeploy)
             {
