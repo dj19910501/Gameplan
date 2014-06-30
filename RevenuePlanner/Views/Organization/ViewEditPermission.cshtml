@@ -86,7 +86,7 @@
                         }
                         @if ((bool)ViewBag.IsUserAdminAuthorized)   // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
                         {
-                            <li><a href="#">Manage Users</a></li>
+                            @*<li><a href="#">Manage Users</a></li>*@
                             <li><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
                         }
                     </ul>
@@ -216,7 +216,7 @@ else
                     <ul class="nav nav-pills nav-stacked width216">
                         <li><a href='@ViewPermissionURL'>My Permissions</a></li>
                         <li class="active"><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
-                        <li><a href="#">Manage Users</a></li>
+                       @* <li><a href="#">Manage Users</a></li>*@
                         <li><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
                     </ul>
                 </div>
