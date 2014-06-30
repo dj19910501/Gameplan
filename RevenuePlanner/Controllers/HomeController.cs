@@ -239,8 +239,15 @@ namespace RevenuePlanner.Controllers
                     List<SelectListItem> UpcomingActivityList = Common.GetUpcomingActivity().Select(p => new SelectListItem() { Text = p.Text, Value = p.Value.ToString(), Selected = p.Selected }).ToList();
                     planmodel.objplanhomemodelheader.UpcomingActivity = UpcomingActivityList;
 
+                    // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
+                    var lstUserCustomRestriction = Common.GetUserCustomRestriction();
+                    int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
+                    int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                    var lstAllowedGeography = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
+                    List<Guid> lstAllowedGeographyId = new List<Guid>();
+                    lstAllowedGeography.ForEach(g => lstAllowedGeographyId.Add(Guid.Parse(g)));
                     //Start Maninder Singh Wadhva : 11/25/2013 - Getting list of geographies and individuals.
-                    planmodel.objGeography = db.Geographies.Where(g => g.IsDeleted.Equals(false) && g.ClientId.Equals(Sessions.User.ClientId)).Select(g => g).OrderBy(g => g.Title).ToList();
+                    planmodel.objGeography = db.Geographies.Where(g => g.IsDeleted.Equals(false) && g.ClientId.Equals(Sessions.User.ClientId) && lstAllowedGeographyId.Contains(g.GeographyId)).Select(g => g).OrderBy(g => g.Title).ToList();
 
                     Sessions.PlanId = planmodel.PlanId;
 
@@ -276,16 +283,18 @@ namespace RevenuePlanner.Controllers
             //objHomePlan.IsDirector = Sessions.IsDirector;
             //objHomePlan.IsClientAdmin = Sessions.IsClientAdmin;
             // Set the flag (IsManager) if current user have sub ordinates, By Dharmraj Mangukiya, #538
-            var lstUserHierarchy = objBDSUserRepository.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
-            var lstSubordinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId).ToList();
+            //var lstUserHierarchy = objBDSUserRepository.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+            //var lstSubordinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId).ToList();
+            var lstSubordinates = Common.GetSubOrdinatesWithPeers();
             if (lstSubordinates.Count > 0)
             {
                 objHomePlan.IsManager = true;
             }
             else
             {
-                objHomePlan.IsManager = true;
+                objHomePlan.IsManager = false;
             }
+
             List<SelectListItem> planList;
             if (Bid == "false")
             {
@@ -508,13 +517,33 @@ namespace RevenuePlanner.Controllers
                                                                                       improveTactic.IsDeleted.Equals(false) &&
                                                                                       (improveTactic.EffectiveDate > CalendarEndDate).Equals(false))
                                                                                .Select(improveTactic => improveTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
+
+            // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
+            var lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
+            int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+            var lstAllowedVertical = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
+            var lstAllowedGeography = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
+            tactic = tactic.Where(t => lstAllowedVertical.Contains(t.VerticalId.ToString()) && lstAllowedGeography.Contains(t.GeographyId.ToString())).ToList();
+
+            var lstSubordinatesWithPeers = Common.GetSubOrdinatesWithPeers();
+            var subordinatesTactic = tactic.Where(t => lstSubordinatesWithPeers.Contains(t.CreatedBy)).ToList();
+            var subordinatesImprovementTactic = improvementTactic.Where(t => lstSubordinatesWithPeers.Contains(t.CreatedBy)).ToList(); 
+
             string tacticStatus = Enums.TacticStatusValues.Single(s => s.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value;
-            //// Modified By Maninder Singh Wadhva PL Ticket#47
-            string requestCount = Convert.ToString(tactic.Where(t => t.Status.Equals(tacticStatus)).Count() + improvementTactic.Where(improveTactic => improveTactic.Status.Equals(tacticStatus)).Count());
+            //// Modified By Maninder Singh Wadhva PL Ticket#47, Modofied by Dharmraj #538
+            //string requestCount = Convert.ToString(tactic.Where(t => t.Status.Equals(tacticStatus)).Count() + improvementTactic.Where(improveTactic => improveTactic.Status.Equals(tacticStatus)).Count());
+            string requestCount = Convert.ToString(subordinatesTactic.Where(t => t.Status.Equals(tacticStatus)).Count() + subordinatesImprovementTactic.Where(improveTactic => improveTactic.Status.Equals(tacticStatus)).Count());
 
             GanttTabs currentGanttTab = (GanttTabs)type;
-
             Enums.ActiveMenu objactivemenu = Common.GetKey<Enums.ActiveMenu>(Enums.ActiveMenuValues, activeMenu.ToLower());
+
+            // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
+            if (currentGanttTab.Equals(GanttTabs.Request))
+            {
+                tactic = tactic.Where(t => lstSubordinatesWithPeers.Contains(t.CreatedBy)).ToList();
+                improvementTactic = improvementTactic.Where(t => lstSubordinatesWithPeers.Contains(t.CreatedBy)).ToList(); 
+            }
 
             // Added by Dharmraj Ticket #364,#365,#366
             if (objactivemenu.Equals(Enums.ActiveMenu.Plan))
@@ -2076,32 +2105,36 @@ namespace RevenuePlanner.Controllers
                 bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
                 bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
                 var objPlan = db.Plans.FirstOrDefault(p => p.PlanId == Sessions.PlanId);
-
+                bool IsPlanEditable = false;
                 if (IsPlanEditAllAuthorized)
                 {
-                    ViewBag.IsPlanEditable = true;
+                    IsPlanEditable = true;//ViewBag.IsPlanEditable = true;
                 }
                 else if (IsPlanEditOwnAndSubordinatesAuthorized)
                 {
                     if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy))
                     {
-                        ViewBag.IsPlanEditable = true;
+                        IsPlanEditable = true;
                     }
                     else
                     {
-                        ViewBag.IsPlanEditable = false;
+                        IsPlanEditable = false;
                     }
                 }
                 else
                 {
-                    ViewBag.IsPlanEditable = false;
+                    IsPlanEditable = false;
                 }
 
                 if (Convert.ToString(section) != "")
                 {
+                    string verticalId = string.Empty;
+                    string GeographyId = string.Empty;
                     if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
                         Plan_Campaign_Program_Tactic objPlan_Campaign_Program_Tactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(id)).SingleOrDefault();
+                        verticalId = objPlan_Campaign_Program_Tactic.VerticalId.ToString();
+                        GeographyId = objPlan_Campaign_Program_Tactic.GeographyId.ToString();
                         DateTime todaydate = DateTime.Now;
                         if (Common.CheckAfterApprovedStatus(objPlan_Campaign_Program_Tactic.Status))
                         {
@@ -2121,6 +2154,8 @@ namespace RevenuePlanner.Controllers
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
                     {
                         Plan_Campaign_Program objPlan_Campaign_Program = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(id)).SingleOrDefault();
+                        verticalId = objPlan_Campaign_Program.VerticalId == null ? string.Empty : objPlan_Campaign_Program.VerticalId.ToString();
+                        GeographyId = objPlan_Campaign_Program.GeographyId == null ? string.Empty : objPlan_Campaign_Program.GeographyId.ToString();
                         DateTime todaydate = DateTime.Now;
                         if (Common.CheckAfterApprovedStatus(objPlan_Campaign_Program.Status))
                         {
@@ -2140,6 +2175,8 @@ namespace RevenuePlanner.Controllers
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
                     {
                         Plan_Campaign objPlan_Campaign = db.Plan_Campaign.Where(pcpobjw => pcpobjw.PlanCampaignId.Equals(id)).SingleOrDefault();
+                        verticalId = objPlan_Campaign.VerticalId == null ? string.Empty : objPlan_Campaign.VerticalId.ToString();
+                        GeographyId = objPlan_Campaign.GeographyId == null ? string.Empty : objPlan_Campaign.GeographyId.ToString();
                         DateTime todaydate = DateTime.Now;
                         if (Common.CheckAfterApprovedStatus(objPlan_Campaign.Status))
                         {
@@ -2156,7 +2193,30 @@ namespace RevenuePlanner.Controllers
                             int result = db.SaveChanges();
                         }
                     }
+
+                    if (IsPlanEditable && Convert.ToString(section).Trim().ToLower() != Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                    {
+                        // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
+                        var lstUserCustomRestriction = Common.GetUserCustomRestriction();
+                        int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                        var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
+                        var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
+
+                        if (GeographyId != string.Empty && verticalId != string.Empty)
+                        {
+                            if (lstAllowedGeography.Contains(GeographyId) && lstAllowedVertical.Contains(verticalId))
+                            {
+                                IsPlanEditable = true;
+                            }
+                            else
+                            {
+                                IsPlanEditable = false;
+                            }
+                        }
+                    }
                 }
+
+                ViewBag.IsPlanEditable = IsPlanEditable;
             }
             catch (Exception e)
             {
@@ -2280,7 +2340,7 @@ namespace RevenuePlanner.Controllers
             if (im.StageLevel < MQLStageLevel)
             {
                 ViewBag.ShowMQL = true;
-                im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.ProjectedStageValue),im.StartDate,im.PlanTacticId,Convert.ToInt32(im.StageId));
+                im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.ProjectedStageValue), im.StartDate, im.PlanTacticId, Convert.ToInt32(im.StageId));
             }
             else
             {
@@ -2294,7 +2354,7 @@ namespace RevenuePlanner.Controllers
                                      where bun.BusinessUnitId == im.BusinessUnitId
                                      select bun.Title).FirstOrDefault();
             ViewBag.BudinessUnitTitle = businessunittitle.ToString();
-            
+
             bool isValidOwner = false;
             if (im.OwnerId == Sessions.User.UserId)
             {
@@ -2315,7 +2375,7 @@ namespace RevenuePlanner.Controllers
             /*End Added by Mitesh Vaishnav on 13/06/2014 to address changes related to #498 Customized Target Stage - Publish model */
 
             // To get permission status for Approve tactic , By dharmraj PL #538
-            var lstSubOrdinates = GetSubOrdinatesWithPeers();
+            var lstSubOrdinates = Common.GetSubOrdinatesWithPeers();
 
             bool isValidManagerUser = false;
             if (lstSubOrdinates.Contains(im.OwnerId))
@@ -2326,9 +2386,49 @@ namespace RevenuePlanner.Controllers
 
             // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
             ViewBag.IsCommentsViewEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.CommentsViewEdit);
-            if((bool)ViewBag.IsCommentsViewEditAuthorized == false)
+            if ((bool)ViewBag.IsCommentsViewEditAuthorized == false)
                 ViewBag.UnauthorizedCommentSection = Common.objCached.UnauthorizedCommentSection;
             // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+
+            // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
+            var lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+            var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
+            var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
+
+            if (lstAllowedGeography.Contains(pcpt.GeographyId.ToString()) && lstAllowedVertical.Contains(pcpt.VerticalId.ToString()))
+            {
+                ViewBag.IsTacticEditable = true;
+            }
+            else
+            {
+                ViewBag.IsTacticEditable = false;
+            }
+
+            // Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
+            //bool IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+            bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+            if (IsPlanEditAllAuthorized)
+            {
+                ViewBag.IsDeployToIntegrationVisible = true;
+            }
+            else if (IsPlanEditOwnAndSubordinatesAuthorized)
+            {
+                if (lstSubOrdinates.Contains(im.OwnerId))
+                {
+                    ViewBag.IsDeployToIntegrationVisible = true;
+                }
+                else
+                {
+                    ViewBag.IsDeployToIntegrationVisible = false;
+                }
+            }
+            else
+            {
+                ViewBag.IsDeployToIntegrationVisible = false;
+            }
+
 
             return PartialView("Review");
         }
@@ -2716,6 +2816,22 @@ namespace RevenuePlanner.Controllers
             else
             {
                 ViewBag.LastSync = string.Empty;
+            }
+
+            // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
+            var objPlanTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(p => p.PlanTacticId == id);
+            var lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+            var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
+            var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
+
+            if (lstAllowedGeography.Contains(objPlanTactic.GeographyId.ToString()) && lstAllowedVertical.Contains(objPlanTactic.VerticalId.ToString()))
+            {
+                ViewBag.IsTacticEditable = true;
+            }
+            else
+            {
+                ViewBag.IsTacticEditable = false;
             }
 
             return PartialView("Actual");
@@ -3389,7 +3505,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
 
             //To get permission status for Approve campaign , By dharmraj PL #538
-            var lstSubOrdinates = GetSubOrdinatesWithPeers();
+            var lstSubOrdinates = Common.GetSubOrdinatesWithPeers();
 
             bool isValidManagerUser = false;
             if (lstSubOrdinates.Contains(im.OwnerId))
@@ -3403,6 +3519,53 @@ namespace RevenuePlanner.Controllers
             if ((bool)ViewBag.IsCommentsViewEditAuthorized == false)
                 ViewBag.UnauthorizedCommentSection = Common.objCached.UnauthorizedCommentSection;
             // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+
+            // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
+            var objPlanProgram = db.Plan_Campaign_Program.FirstOrDefault(p => p.PlanProgramId == id);
+            var lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+            var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
+            var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
+
+            if (objPlanProgram.VerticalId != null && objPlanProgram.GeographyId != null)
+            {
+                if (lstAllowedGeography.Contains(objPlanProgram.GeographyId.ToString()) && lstAllowedVertical.Contains(objPlanProgram.VerticalId.ToString()))
+                {
+                    ViewBag.IsProgramEditable = true;
+                }
+                else
+                {
+                    ViewBag.IsProgramEditable = false;
+                }
+            }
+            else
+            {
+                ViewBag.IsProgramEditable = true;
+            }
+
+            // Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
+            //bool IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+            bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+            if (IsPlanEditAllAuthorized)
+            {
+                ViewBag.IsDeployToIntegrationVisible = true;
+            }
+            else if (IsPlanEditOwnAndSubordinatesAuthorized)
+            {
+                if (lstSubOrdinates.Contains(im.OwnerId))
+                {
+                    ViewBag.IsDeployToIntegrationVisible = true;
+                }
+                else
+                {
+                    ViewBag.IsDeployToIntegrationVisible = false;
+                }
+            }
+            else
+            {
+                ViewBag.IsDeployToIntegrationVisible = false;
+            }
 
             return PartialView("_ReviewProgram");
         }
@@ -3534,7 +3697,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
 
             //To get permission status for Approve campaign , By dharmraj PL #538
-            var lstSubOrdinates = GetSubOrdinatesWithPeers();
+            var lstSubOrdinates = Common.GetSubOrdinatesWithPeers();
 
             bool isValidManagerUser = false;
             if (lstSubOrdinates.Contains(im.OwnerId))
@@ -3548,6 +3711,53 @@ namespace RevenuePlanner.Controllers
             if ((bool)ViewBag.IsCommentsViewEditAuthorized == false)
                 ViewBag.UnauthorizedCommentSection = Common.objCached.UnauthorizedCommentSection;
             // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+
+            // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
+            var objPlanCampaign = db.Plan_Campaign.FirstOrDefault(p => p.PlanCampaignId == id);
+            var lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+            var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
+            var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
+
+            if (objPlanCampaign.VerticalId != null && objPlanCampaign.GeographyId != null)
+            {
+                if (lstAllowedGeography.Contains(objPlanCampaign.GeographyId.ToString()) && lstAllowedVertical.Contains(objPlanCampaign.VerticalId.ToString()))
+                {
+                    ViewBag.IsCampaignEditable = true;
+                }
+                else
+                {
+                    ViewBag.IsCampaignEditable = false;
+                }
+            }
+            else
+            {
+                ViewBag.IsCampaignEditable = true;
+            }
+
+            // Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
+            //bool IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+            bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+            if (IsPlanEditAllAuthorized)
+            {
+                ViewBag.IsDeployToIntegrationVisible = true;
+            }
+            else if (IsPlanEditOwnAndSubordinatesAuthorized)
+            {
+                if (lstSubOrdinates.Contains(im.OwnerId))
+                {
+                    ViewBag.IsDeployToIntegrationVisible = true;
+                }
+                else
+                {
+                    ViewBag.IsDeployToIntegrationVisible = false;
+                }
+            }
+            else
+            {
+                ViewBag.IsDeployToIntegrationVisible = false;
+            }
 
             return PartialView("_ReviewCampaign");
         }
@@ -4014,7 +4224,15 @@ namespace RevenuePlanner.Controllers
         public ActionResult AddActual()
         {
             HomePlanModel planmodel = new Models.HomePlanModel();
-            planmodel.objGeography = db.Geographies.Where(g => g.IsDeleted.Equals(false) && g.ClientId == Sessions.User.ClientId).Select(g => g).OrderBy(g => g.Title).ToList();
+
+            // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
+            var lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
+            int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+            var lstAllowedGeography = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
+            List<Guid> lstAllowedGeographyId = new List<Guid>();
+            lstAllowedGeography.ForEach(g => lstAllowedGeographyId.Add(Guid.Parse(g)));
+            planmodel.objGeography = db.Geographies.Where(g => g.IsDeleted.Equals(false) && g.ClientId == Sessions.User.ClientId && lstAllowedGeographyId.Contains(g.GeographyId)).Select(g => g).OrderBy(g => g.Title).ToList();
             List<string> tacticStatus = Common.GetStatusListAfterApproved();
             BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
             var individuals = bdsUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
@@ -4054,6 +4272,15 @@ namespace RevenuePlanner.Controllers
                 TacticList = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId && tacticStatus.Contains(t.Status) && t.IsDeleted == false).ToList();
 
             }
+
+            // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
+            var lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
+            int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+            var lstAllowedVertical = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
+            var lstAllowedGeography = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
+            TacticList = TacticList.Where(t => lstAllowedVertical.Contains(t.VerticalId.ToString()) && lstAllowedGeography.Contains(t.GeographyId.ToString())).ToList();
+
             List<int> TacticIds = TacticList.Select(t => t.PlanTacticId).ToList();
             var dtTactic = (from pt in db.Plan_Campaign_Program_Tactic_Actual
                             where TacticIds.Contains(pt.PlanTacticId)
@@ -4079,6 +4306,9 @@ namespace RevenuePlanner.Controllers
             string TitleMQL = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
             string TitleRevenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
             List<Plan_Campaign_Program_Tactic_Actual> lstTacticActual = db.Plan_Campaign_Program_Tactic_Actual.Where(a => TacticIds.Contains(a.PlanTacticId)).ToList();
+            // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
+            var lstEditableVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
+            var lstEditableGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
 
             var tacticObj = TacticList.Select(t => new
             {
@@ -4113,7 +4343,8 @@ namespace RevenuePlanner.Controllers
                 tacticStageId = t.Stage.StageId,
                 tacticStageTitle = t.Stage.Title,
                 projectedStageValue = t.ProjectedStageValue,
-                projectedStageValueActual = lstTacticActual.Where(a => a.PlanTacticId == t.PlanTacticId && a.StageTitle == TitleProjectedStageValue).Sum(a => a.Actualvalue)
+                projectedStageValueActual = lstTacticActual.Where(a => a.PlanTacticId == t.PlanTacticId && a.StageTitle == TitleProjectedStageValue).Sum(a => a.Actualvalue),
+                IsTacticEditable = (lstEditableGeography.Contains(t.GeographyId.ToString()) && lstEditableVertical.Contains(t.VerticalId.ToString()))
             }).Select(t => t).Distinct().OrderBy(t => t.id);
 
             var lstTactic = tacticObj.Select(t => new
@@ -4140,7 +4371,8 @@ namespace RevenuePlanner.Controllers
                 tacticStageId = t.tacticStageId,
                 tacticStageTitle = t.tacticStageTitle,
                 projectedStageValue = t.projectedStageValue,
-                projectedStageValueActual = t.projectedStageValueActual
+                projectedStageValueActual = t.projectedStageValueActual,
+                IsTacticEditable = t.IsTacticEditable
             });
 
             var opens = lstTactic.Where(x => x.actualData.ToList().Count == 0).OrderBy(t => t.title);
@@ -4498,7 +4730,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsValidOwner = isValidOwner;
 
             //To get permission status for Approve campaign , By dharmraj PL #538
-            var lstSubOrdinates = GetSubOrdinatesWithPeers();
+            var lstSubOrdinates = Common.GetSubOrdinatesWithPeers();
 
             bool isValidManagerUser = false;
             if (lstSubOrdinates.Contains(im.OwnerId))
@@ -4512,6 +4744,30 @@ namespace RevenuePlanner.Controllers
             if ((bool)ViewBag.IsCommentsViewEditAuthorized == false)
                 ViewBag.UnauthorizedCommentSection = Common.objCached.UnauthorizedCommentSection;
             // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+
+            // Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
+            //bool IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+            bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+            if (IsPlanEditAllAuthorized)
+            {
+                ViewBag.IsDeployToIntegrationVisible = true;
+            }
+            else if (IsPlanEditOwnAndSubordinatesAuthorized)
+            {
+                if (lstSubOrdinates.Contains(im.OwnerId))
+                {
+                    ViewBag.IsDeployToIntegrationVisible = true;
+                }
+                else
+                {
+                    ViewBag.IsDeployToIntegrationVisible = false;
+                }
+            }
+            else
+            {
+                ViewBag.IsDeployToIntegrationVisible = false;
+            }
 
             return PartialView("_ReviewImprovementTactic");
         }

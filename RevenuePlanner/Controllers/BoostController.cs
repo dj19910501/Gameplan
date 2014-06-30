@@ -26,10 +26,10 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Best In Class
         /// </summary>
-        [AuthorizeUser(Enums.ApplicationActivity.BoostBestInClassNumberEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+        [AuthorizeUser(Enums.ApplicationActivity.BoostBestInClassNumberEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult BestInClass()
         {
-            // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsBoostBestInClassNumberEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostBestInClassNumberEdit);
             ViewBag.IsBoostImprovementTacticCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit);
 
@@ -155,7 +155,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         public ActionResult Index()
         {
-            // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
             var IsBoostImprovementTacticCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit);
             var IsBoostBestInClassNumberEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostBestInClassNumberEdit);
             if (IsBoostImprovementTacticCreateEditAuthorized == false && IsBoostBestInClassNumberEditAuthorized == true)
@@ -169,7 +169,7 @@ namespace RevenuePlanner.Controllers
             
             ViewBag.IsBoostImprovementTacticCreateEditAuthorized = IsBoostImprovementTacticCreateEditAuthorized;
             ViewBag.IsBoostBestInClassNumberEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BoostBestInClassNumberEdit);
-            // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
 
             //if (Sessions.IsPlanner)
             //{
@@ -294,6 +294,7 @@ namespace RevenuePlanner.Controllers
         /// Added By: Nirav Shah.
         /// Action to save Improvement Tactics Details in respective tables.
         /// </summary>
+        [AuthorizeUser(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult saveImprovementTacticData(int improvementId, string improvementDetails, bool status, double cost, string desc, string title, bool deployToIntegrationStatus, string UserId = "")
         {
             string successMessage = string.Empty;
@@ -487,6 +488,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="improvementId"></param>
         /// <returns></returns>
         [HttpPost]
+        [AuthorizeUser(Enums.ApplicationActivity.BoostImprovementTacticCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult deleteImprovementTactic(int improvementId)
         {
             // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic

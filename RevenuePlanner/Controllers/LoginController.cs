@@ -338,6 +338,9 @@ namespace RevenuePlanner.Controllers
                         //// For actions other than Index.
                         return RedirectToAction(currentMenuOfUrl.ActionName, currentMenuOfUrl.ControllerName);
                     }
+                case Enums.ActiveMenu.Organization:
+                    //// For actions with organization controller 06/30/2014 Added By Maninder Singh Wadhva to handle return URL view.
+                    return RedirectToAction("ViewEditPermission", currentMenuOfUrl.ControllerName, new { id= Sessions.User.UserId, Mode="MyPermission" });
                 default:
                     return RedirectToAction(currentMenuOfUrl.ActionName, currentMenuOfUrl.ControllerName);
             }

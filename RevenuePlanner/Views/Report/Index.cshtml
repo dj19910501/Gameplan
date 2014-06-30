@@ -35,7 +35,10 @@
 
         <div class="wraper-btns cf">
             <div class="span6">
+                @if ((bool)ViewBag.TacticActualsAddEdit) // Added by Sohel Pathan on 27/06/2014 for PL ticket #537 to implement user permission Logic
+                {
                     <button id="BtnAddActual" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("AddActual", "Home")'">Add Actuals</button>    
+                }
                  @*   <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" disabled="disabled" type="button">Add Actuals</button>*@
             </div>
             <div class="span6">
@@ -189,6 +192,7 @@
                 url: '@Url.Content("~/Report/GetPlansListFromBusinessUnitId/")',
                 data: {
                     BusinessUnitId: SelectedBUId,
+                    isBusinessUnit: isBusinessUnit
                 },
                 success: function (r) {
                     populateNF(r.lstPlan, "reportSummry2");
@@ -203,6 +207,7 @@
         function loadTimeframeAndPlan() {
             isBusinessUnit = false;
             if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()') {
+                isBusinessUnit = true;
                 loadPlanFromBusinessUnit();
             }
             else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()') {
@@ -257,6 +262,7 @@
                 leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
                 RemoveAllActiveItem();
                 $(this).addClass('active');
+                isBusinessUnit = false;
                     loadPlanFromBusinessUnit();
                 //if (SelectedPlanId == 0) {
                     
@@ -375,13 +381,18 @@
             });
         }
 
-        function loadBasedOnPlan() {
-            if (SelectedPlanId == 0) {
-               $("#BtnAddActual").attr("disabled", "disabled");
+        function loadBasedOnPlan() {	   
+			 var isActualVisible = "@ViewBag.TacticActualsAddEdit"
+            if(isActualVisible.toString().toLowerCase() == 'true')
+            {
+                if (SelectedPlanId == 0) {
+                   $("#BtnAddActual").attr("disabled", "disabled");
+                }
+                else {
+                    $("#BtnAddActual").removeAttr("disabled");
+                }
             }
-            else {
-                $("#BtnAddActual").removeAttr("disabled");
-            }
+
             if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()') {
                 LoadSummary();
             }

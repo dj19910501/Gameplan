@@ -62,10 +62,10 @@ namespace RevenuePlanner.Controllers
             return View(listorganizationmodel.AsEnumerable());
         }
 
-        [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
+        [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult ManageRoles()
         {
-            // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
+            // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
             ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
 
@@ -115,10 +115,10 @@ namespace RevenuePlanner.Controllers
             //return RedirectToAction("Edit", "Organization");
         }
 
-
+        [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult Edit(Guid roleId)
         {
-            // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
+            // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
             ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
 
@@ -162,6 +162,7 @@ namespace RevenuePlanner.Controllers
             return View();
         }
 
+        [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult Delete(Guid roleid, string selectedrole)
         {
 
@@ -308,7 +309,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult OrganizationHierarchy()
         {
-            // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
+            // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
             ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
 
@@ -392,7 +393,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         public ActionResult ViewEditPermission(string Id, string Mode)
         {
-            // Start - Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
+            // Start - Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
             ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
 
@@ -400,7 +401,7 @@ namespace RevenuePlanner.Controllers
             {
                 return RedirectToAction("Index", "NoAccess");
             }
-            // End - Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
+            // End - Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
 
             ViewBag.PermissionMode = Mode;
             Guid UserId = Guid.Parse(Id);
@@ -411,7 +412,8 @@ namespace RevenuePlanner.Controllers
             ViewBag.Name = userDetails.FirstName + " " + userDetails.LastName;
             ViewBag.RoleName = userDetails.RoleTitle;
             var clientVerticals = db.Verticals.Where(ver => ver.ClientId == Sessions.User.ClientId).ToList();
-            var clientGeography = db.Geographies.Where(ver => ver.ClientId == Sessions.User.ClientId).ToList();
+            var clientGeography = db.Geographies.Where(geo => geo.ClientId == Sessions.User.ClientId).ToList();
+            var clientBusinessUnit = db.BusinessUnits.Where(bu => bu.ClientId == Sessions.User.ClientId).ToList();
             var userCustomRestrictionList = objBDSServiceClient.GetUserCustomRestrictionList(UserId, Sessions.ApplicationId);
             var allAtctivity = objBDSServiceClient.GetAllApplicationActivity(Sessions.ApplicationId);
             var userActivity = objBDSServiceClient.GetUserActivity(UserId, Sessions.ApplicationId);
@@ -425,19 +427,19 @@ namespace RevenuePlanner.Controllers
                 uapobj.CreatedDate = item.CreatedDate;
                 uapobj.ParentId = item.ParentId;
                 uapobj.Title = item.ActivityTitle;
-                uapobj.Permission = "No";
+                uapobj.Permission = Enums.UserActivityPermissionType.No.ToString();
                 if (userActivity != null)
                 {
                     if (userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).ToList().Count > 0)
                     {
-                        uapobj.Permission = "Yes";
+                        uapobj.Permission = Enums.UserActivityPermissionType.Yes.ToString();
                         uapobj.UserCreatedBy = userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).FirstOrDefault().CreatedBy;
                         uapobj.UserCreatedDate = userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).FirstOrDefault().CreatedDate;
                         uapobj.UserId = userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).FirstOrDefault().UserId;
                     }
                     else
                     {
-                        uapobj.Permission = "No";
+                        uapobj.Permission = Enums.UserActivityPermissionType.No.ToString();
                     }
                 }
                 userActivityPermissionList.Add(uapobj);
@@ -447,9 +449,9 @@ namespace RevenuePlanner.Controllers
             {
                 CustomRestrictionModel cRestrictionobj = new CustomRestrictionModel();
                 cRestrictionobj.Title = item.Title;
-                cRestrictionobj.CustomField = "Verticals";
+                cRestrictionobj.CustomField =Enums.CustomRestrictionType.Verticals.ToString();
                 cRestrictionobj.CustomFieldId = item.VerticalId.ToString();
-                var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId == item.VerticalId.ToString()).FirstOrDefault() : null;
+                var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId == item.VerticalId.ToString() && ucr.CustomField==Enums.CustomRestrictionType.Verticals.ToString()).FirstOrDefault() : null;
                 if (IsUserRestrictionExist != null)
                 {
                     string permission = ((Enums.CustomRestrictionPermission)Enum.Parse(typeof(Enums.CustomRestrictionPermission), IsUserRestrictionExist.Permission.ToString())).ToString();
@@ -468,9 +470,30 @@ namespace RevenuePlanner.Controllers
             {
                 CustomRestrictionModel cRestrictionobj = new CustomRestrictionModel();
                 cRestrictionobj.Title = item.Title;
-                cRestrictionobj.CustomField = "Geography";
+                cRestrictionobj.CustomField = Enums.CustomRestrictionType.Geography.ToString();
                 cRestrictionobj.CustomFieldId = item.GeographyId.ToString();
-                var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId == item.GeographyId.ToString()).FirstOrDefault() : null;
+                var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId == item.GeographyId.ToString() && ucr.CustomField==Enums.CustomRestrictionType.Geography.ToString()).FirstOrDefault() : null;
+                if (IsUserRestrictionExist != null)
+                {
+                    string permission = ((Enums.CustomRestrictionPermission)Enum.Parse(typeof(Enums.CustomRestrictionPermission), IsUserRestrictionExist.Permission.ToString())).ToString();
+                    cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(permission)).Value;
+                    cRestrictionobj.Permission = IsUserRestrictionExist.Permission;
+                }
+                else
+                {
+                    string none = Enums.CustomRestrictionPermission.None.ToString();
+                    cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(none)).Value;
+                    cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.None;
+                }
+                customRestrictionList.Add(cRestrictionobj);
+            }
+            foreach (var item in clientBusinessUnit)
+            {
+                CustomRestrictionModel cRestrictionobj = new CustomRestrictionModel();
+                cRestrictionobj.Title = item.Title;
+                cRestrictionobj.CustomField = Enums.CustomRestrictionType.BusinessUnit.ToString();
+                cRestrictionobj.CustomFieldId = item.BusinessUnitId.ToString();
+                var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId == item.BusinessUnitId.ToString() && ucr.CustomField==Enums.CustomRestrictionType.BusinessUnit.ToString()).FirstOrDefault() : null;
                 if (IsUserRestrictionExist != null)
                 {
                     string permission = ((Enums.CustomRestrictionPermission)Enum.Parse(typeof(Enums.CustomRestrictionPermission), IsUserRestrictionExist.Permission.ToString())).ToString();

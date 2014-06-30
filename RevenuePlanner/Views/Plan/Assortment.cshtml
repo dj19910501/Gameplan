@@ -870,7 +870,7 @@
                                             '</div>';
                 */
                                     $html += '<div id="' + _programs[i].tactics[k].id + '" class="accordion-body collapse in">' +
-                                            '<div id="divTactic" class="accordion-inner tactic" index="' + _programs[i].tactics[k].id + '" data-slidepanel="panel">';
+                                            '<div id="divTactic" class="accordion-inner tactic CursorHand" index="' + _programs[i].tactics[k].id + '" data-slidepanel="panel">';
                                     if (_programs[i].tactics[k].isOwner == 0) {
                                         $html += '<span class="delete-program width5" id="delTactic"></span>';
                                     }
@@ -885,7 +885,7 @@
                                 }
                             }
                             $html += '<div class="accordion-body collapse in" data-id-program="' + pid + '" >' +
-                                        '<div id="divTactic" class="accordion-inner" index="0">' +
+                                        '<div id="divTactic" class="accordion-inner CursorHand" index="0">' +
                                             '<span class="underline">Select Tactic</span>' +
                                         '</div>' +
                                     '</div>';

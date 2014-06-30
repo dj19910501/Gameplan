@@ -1204,6 +1204,7 @@ namespace BDSService
                     applactlist.CreatedDate = item.CreatedDate;
                     applactlist.ActivityTitle = item.ActivityTitle;
                     applactlist.ParentId = Convert.ToInt32(item.ParentId);
+                    applactlist.Code = item.Code;
                     ApplicationActivityList.Add(applactlist);
                 }
             }
@@ -1621,6 +1622,10 @@ namespace BDSService
 
         #endregion
 
+        // <summary>
+        ///Added by Mitesh Vaishnav : User Permission Edit/View Pl ticket 521 
+        /// </summary>
+       
         #region "Application Activity"
 
         public List<BDSEntities.ApplicationActivity> GetAllApplicationActivity(Guid applicationId)
@@ -1671,11 +1676,16 @@ namespace BDSService
                 CreatedDate = crl.CreatedDate,
                 CreatedBy = crl.CreatedBy
             }).ToList();
-            if (usercustomRestrictionList.Count > 0)
+
+            if (usercustomRestrictionList != null && usercustomRestrictionList.Count > 0)
             {
                 return usercustomRestrictionList;
             }
-            return null;
+            else
+            {
+                return new List<BDSEntities.CustomRestriction>();
+
+            }
 
         }
         public int DeleteUserActivityPermission(Guid userId, Guid applicationId)
@@ -1723,7 +1733,6 @@ namespace BDSService
                 DeleteUserCustomrestriction(userId, applicationId);
                 foreach (var item in permissions)
                 {
-
                     if (item.ToLower().Contains("yes"))
                     {
                         string[] splitpermissions = item.Split('_');
@@ -1753,6 +1762,21 @@ namespace BDSService
                         retVal = 1;
                     }
                     else if (item.ToLower().Contains("geography"))
+                    {
+                        string[] splitpermissions = item.Split('_');
+                        CustomRestriction obj = new CustomRestriction();
+                        obj.UserId = userId;
+                        obj.CustomFieldId = splitpermissions[2];
+                        obj.CustomField = splitpermissions[1];
+                        obj.Permission = Convert.ToInt16(splitpermissions[0]);
+                        obj.CreatedDate = System.DateTime.Now;
+                        obj.CreatedBy = CreatorId;
+                        db.Entry(obj).State = EntityState.Added;
+                        db.CustomRestrictions.Add(obj);
+                        db.SaveChanges();
+                        retVal = 1;
+                    }
+                    else if (item.ToLower().Contains("businessunit"))
                     {
                         string[] splitpermissions = item.Split('_');
                         CustomRestriction obj = new CustomRestriction();

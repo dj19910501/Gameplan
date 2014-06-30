@@ -13,6 +13,7 @@ namespace Integration.Helper
         public static string UnableToUpdate = "Unable to update";
         public static string UnableToDelete = "Unable to delete";
         public static string TacticSyncedComment = "Tactic synced with ";
+        public static string ImprovementTacticSyncedComment = "Improvement Tactic synced with ";
         ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
         public static bool IsAutoSync = false;
         /// <summary>

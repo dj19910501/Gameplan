@@ -156,6 +156,7 @@
       <xs:element minOccurs="0" name="ActivityTitle" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="ApplicationActivityId" type="xs:int" />
       <xs:element minOccurs="0" name="ApplicationId" type="ser:guid" />
+      <xs:element minOccurs="0" name="Code" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="CreatedDate" nillable="true" type="xs:dateTime" />
       <xs:element minOccurs="0" name="ParentId" nillable="true" type="xs:int" />
     </xs:sequence>

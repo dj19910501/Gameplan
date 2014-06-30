@@ -33,4 +33,18 @@ namespace RevenuePlanner.Models
 
         public string Permission { get; set; }
     }
+
+    /// <summary>
+    /// Added By: Dharmraj Mangukiya
+    /// Addressed PL Ticket: 538
+    /// Class for User's custom restriction.
+    /// </summary>
+    public class UserCustomRestrictionModel
+    {
+        public string CustomField { get; set; }
+
+        public string CustomFieldId { get; set; }
+
+        public int Permission { get; set; }
+    }
 }

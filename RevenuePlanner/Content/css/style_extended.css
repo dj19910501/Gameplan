@@ -2278,8 +2278,8 @@ a {
 
 /* Added by Sohel on 27 March 2014 for #334 */
 #ddlIsDeletedSelectBox {
-    width: 105px; /* Modified by :- Sohel Pathan on 17/06/2014 for PL ticket #517 */
-    margin-left: 5px; /* Modified by :- Sohel Pathan on 17/06/2014 for PL ticket #517 */
+    width: 116px; /* Modified by :- Sohel Pathan on 17/06/2014 for PL ticket #517 */
+    margin-left: 8px; /* Modified by :- Sohel Pathan on 17/06/2014 for PL ticket #517 */
     margin-top: 10px;
     float:left;     /* Added by Sohel Pathan on 26/06/2014 for PL ticket #517 */
 }
@@ -2702,14 +2702,14 @@ label {
 
 #ddlNewManagerIdSelectBox {
     float: right;
-    width: 105px;
+    width: 116px;
     margin-top: 5px;
 }
 
 #divNewManager label {
     display: inline-block;
     line-height: 22px;
-    padding-left: 21px !important;
+    padding-left: 5px !important;
     text-align: right;
     width: 44%;
     float: left;

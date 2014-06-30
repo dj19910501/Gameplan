@@ -21,6 +21,8 @@ namespace BDSService.BDSEntities
         [DataMember]
         public string ActivityTitle { get; set; }
         [DataMember]
+        public string Code { get; set; }
+        [DataMember]
         public DateTime? CreatedDate { get; set; }
 
     }

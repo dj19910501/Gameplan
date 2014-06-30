@@ -13,7 +13,7 @@
         @* TFS Point 253,206 : Model/Plan - sidebars - integrate gear icon with feature to delete/duplicate tactic
     Added by Nirav Shah on 17 feb 2014
  *@
-        @if (!(bool)ViewBag.IsCreated)
+        @if (!(bool)ViewBag.IsCreated && (bool)ViewBag.IsAllowCustomRestriction)
         {
             <div class="btn-group pull-right gear-dropdown">
                 <span class="gear-sidebar dropdown-toggle" data-toggle="dropdown"></span>
@@ -156,7 +156,7 @@
             }
         </div>
         <!--end content dark-->
-            if ((bool)ViewBag.IsOwner)
+        if ((bool)ViewBag.IsOwner && (bool)ViewBag.IsAllowCustomRestriction)
             {
         <div class="wraper-btns cf">
             <div class="span6">
@@ -268,7 +268,8 @@
         });
 
         var isOwner = "@ViewBag.IsOwner";
-        if (isOwner == 'False') {
+        var isAllowRestriction = "@ViewBag.IsAllowCustomRestriction";
+        if (isOwner == 'False' || isAllowRestriction == 'False') {
             $('form').find(".sbSelector").each(function () {
                 $(this).unbind("click");
                 $(this).removeAttr("href");

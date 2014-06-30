@@ -46,6 +46,7 @@ namespace RevenuePlanner.Controllers
         /// Default view for listing models
         /// </summary>
         /// <returns></returns>
+        [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult Index()
         {
             return View();
@@ -55,6 +56,7 @@ namespace RevenuePlanner.Controllers
         /// Create view for model for current year, business unit of logged-in user
         /// </summary>
         /// <returns></returns>
+        [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult Create(int id = 0)
         {
             // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
@@ -245,6 +247,7 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         //public ActionResult Create(FormCollection collection, ICollection<string> hdnSTAGEMCR, ICollection<string> txtMCR, ICollection<string> hdnSTAGEMSV, ICollection<string> txtMSV, ICollection<string> hdnSTAGETCR, ICollection<string> txtTCR, ICollection<string> hdnSTAGETSV, ICollection<string> txtTSV, ICollection<string> hdnSTAGESCR, ICollection<string> txtSCR, ICollection<string> hdnSTAGESSV, ICollection<string> txtSSV, ICollection<string> txtMarketing, ICollection<string> txtTeleprospecting, ICollection<string> txtSales)
         /*changed by Nirav Shah on 2 APR 2013*/
+        [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult Create(FormCollection collection, ICollection<string> txtStageId, ICollection<string> txtTargetStage, ICollection<string> txtMCR, ICollection<string> txtMSV, ICollection<string> txtMarketing, ICollection<string> txtTeleprospecting, ICollection<string> txtSales)
         {
             int intFunnelMarketing = 0;
@@ -962,6 +965,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="title"></param>
         /// <param name="BusinessUnitId"></param>
         /// <returns></returns>
+        [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult LoadModelOverview(string title, string BusinessUnitId, int ModelId)
         {
             ModelOverView m = new ModelOverView();
@@ -986,6 +990,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="SSize"></param>
         /// <returns></returns>
         /// modified datatype of MSize,TSize and SSize from int to double
+        [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult LoadContactInquiry(int AC, int MLeads, double MSize, int TLeads, double TSize, int SLeads, double SSize)
         {
             var FunnelList = db.Funnels.Where(c => c.IsDeleted == false && c.Title == "Marketing").ToDictionary(c => c.FunnelId, c => c.Description);
@@ -1077,6 +1082,7 @@ namespace RevenuePlanner.Controllers
         /// Modified By Maninder Singh Wadhva to address TFS Bug#239
         /// </summary>
         /// <returns></returns>
+        [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult Audience(int id = 0, int modelvid = 0)
         {
             //Common.Permission permission = Common.GetPermission(ActionItem.Model);
@@ -1178,6 +1184,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="collection"></param>
         /// <returns></returns>
         [HttpPost]
+        [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult Audience(AudiencePlanModel form, FormCollection collection)
         {
             string qtr = "";
@@ -2012,6 +2019,7 @@ namespace RevenuePlanner.Controllers
         /// Action to show Results.
         /// </summary>
 
+        [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult Results(int mid1, int mid2)
         {
             bool noDataForModel1 = false;
@@ -2581,6 +2589,7 @@ namespace RevenuePlanner.Controllers
         /// Added By: Nirav Shah
         /// Action to show Tactics screen.
         /// </summary>
+        [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult Tactics(int id = 0)
         {
             //Common.Permission permission = Common.GetPermission(ActionItem.Model);
@@ -2822,6 +2831,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId"></param>  Added by Sohel Pathan on 19/06/2014 for PL ticket #536
         /// <returns></returns>
         [HttpPost]
+        [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult DeleteTactic(int id = 0, string UserId = "")
         {
             // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #536
@@ -2904,6 +2914,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         ///   //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
         [HttpPost]
+        [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult SaveTactic(string Title, string Description, int? StageId, double ProjectedStageValue, double ProjectedRevenue, int TacticTypeId, string modelID, bool isDeployedToIntegration, bool isDeployedToModel)
         {
             try
@@ -3038,6 +3049,7 @@ namespace RevenuePlanner.Controllers
         /// Action to Save all checked Tactic data .
         /// </summary>
         [HttpPost]
+        [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult saveAllTactic(string ids, string rejids, int ModelId, bool isModelPublished, string EffectiveDate)
         {
             string errorMessage = string.Empty, successMessage = string.Empty;
@@ -3452,6 +3464,7 @@ namespace RevenuePlanner.Controllers
         /// Added By: Dharmraj Mangukiya
         /// Action to show model integration screen.
         /// </summary>
+        [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult Integration(int id = 0)
         {
             // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
@@ -3595,6 +3608,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="title"></param>
         /// <param name="BusinessUnitId"></param>
         /// <returns></returns>
+        [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult LoadChangeLog(int objectId)
         {
             List<ChangeLog_ViewModel> lst_changelog = new List<ChangeLog_ViewModel>();

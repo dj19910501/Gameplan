@@ -4455,7 +4455,7 @@ span.red-arrow-down-icon {
     }
 
 .report-chart1 {
-    width: 310px !important;
+    width: 320px !important;
     height: 220px !important;
     font-family: 'source_sans_prolight', Arial, "sans-serif" !important;
     font-size: 10px !important;
@@ -4477,6 +4477,7 @@ span.red-arrow-down-icon {
 }
 .report-chart1 .dhx_chart_legend {
         left: 260px !important;
+        padding-right: 12px;
 }
 
 /*chart 2*/

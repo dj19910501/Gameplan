@@ -97,6 +97,8 @@
     <!--  Revenue Realization-->
     <div class="title-header-reports">
         <h4>Revenue Realization</h4>
+        
+    </div>
         <div>
             <span class="selectBox" id="ddlBusinessUnitSelectBox">
                 @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId != Guid.Empty)
@@ -127,7 +129,6 @@
             </span>
 
         </div>
-    </div>
     <table id="table_reports3" class="table table-striped3">
         <thead>
             <tr>
@@ -1934,13 +1935,13 @@
             }
             perTotalRevenue = (Math.round(perTotalRevenue * 100) / 100)
             if (perTotalRevenue < 0) {
-                htmlLastRow += '<td class="total-row border-r red-value"><span class="red-arrow-down-icon"></span><span>' + perTotalRevenue.toString().replace('-', '') + '%</span></td>';
+                htmlLastRow += '<td class="total-row border-r red-value"><span class="red-arrow-down-icon"></span><span>' + FormatNumber(Math.abs(perTotalRevenue), true) + '</span></td>';
             }
             else if (perTotalRevenue > 0) {
-                htmlLastRow += '<td class="total-row border-r green-value"><span class="green-arrow-up-icon"></span><span>' + perTotalRevenue + '%</span></td>';
+                htmlLastRow += '<td class="total-row border-r green-value"><span class="green-arrow-up-icon"></span><span>' + FormatNumber(perTotalRevenue, true) + '</span></td>';
             }
             else {
-                htmlLastRow += '<td class="total-row border-r"><span>' + perTotalRevenue + '%</span></td>';
+                htmlLastRow += '<td class="total-row border-r"><span>' + FormatNumber(perTotalRevenue, true) + '</span></td>';
             }
             //'<td class="total-row border-r green-value"><span class="green-arrow-up-icon"></span><span class="pull-left">0</span></td>' +
             htmlLastRow += '<td class="total-row">' + FormatNumber(planCostTotal, false) + '</td>' +
