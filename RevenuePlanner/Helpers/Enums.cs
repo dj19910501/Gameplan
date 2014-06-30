@@ -236,6 +236,7 @@ namespace RevenuePlanner.Helpers
             Report = 4,
             Pref = 5,
             ExternalService,
+            Organization,
             None = 999
         }
 
@@ -283,7 +284,8 @@ namespace RevenuePlanner.Helpers
             {ActiveMenu.Boost.ToString().ToLower(), "boost"},
             {ActiveMenu.Report.ToString().ToLower(), "report"},
             {ActiveMenu.Pref.ToString().ToLower(), "user"},
-            {ActiveMenu.ExternalService.ToString().ToLower(), "externalservice"}
+            {ActiveMenu.ExternalService.ToString().ToLower(), "externalservice"},
+            {ActiveMenu.Organization.ToString().ToLower(), "organization"}
         };
 
         #endregion
