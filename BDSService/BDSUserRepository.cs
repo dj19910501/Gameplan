@@ -1732,7 +1732,6 @@ namespace BDSService
                 DeleteUserCustomrestriction(userId, applicationId);
                 foreach (var item in permissions)
                 {
-
                     if (item.ToLower().Contains("yes"))
                     {
                         string[] splitpermissions = item.Split('_');
@@ -1762,6 +1761,21 @@ namespace BDSService
                         retVal = 1;
                     }
                     else if (item.ToLower().Contains("geography"))
+                    {
+                        string[] splitpermissions = item.Split('_');
+                        CustomRestriction obj = new CustomRestriction();
+                        obj.UserId = userId;
+                        obj.CustomFieldId = splitpermissions[2];
+                        obj.CustomField = splitpermissions[1];
+                        obj.Permission = Convert.ToInt16(splitpermissions[0]);
+                        obj.CreatedDate = System.DateTime.Now;
+                        obj.CreatedBy = CreatorId;
+                        db.Entry(obj).State = EntityState.Added;
+                        db.CustomRestrictions.Add(obj);
+                        db.SaveChanges();
+                        retVal = 1;
+                    }
+                    else if (item.ToLower().Contains("businessunit"))
                     {
                         string[] splitpermissions = item.Split('_');
                         CustomRestriction obj = new CustomRestriction();

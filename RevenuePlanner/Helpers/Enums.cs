@@ -303,7 +303,13 @@ namespace RevenuePlanner.Helpers
         public enum CustomRestrictionType
         {
             Verticals,
-            Geography
+            Geography,
+            BusinessUnit
+        }
+        public enum UserActivityPermissionType
+        {
+            Yes,
+            No
         }
         /* End Added by Mitesh Vaishnav for PL ticket #521 */
 
