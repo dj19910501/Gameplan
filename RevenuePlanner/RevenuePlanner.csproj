@@ -794,6 +794,7 @@
     <Content Include="Views\Organization\OrganizationHierarchy.cshtml" />
     <Content Include="Views\Organization\_userHierarchy.cshtml" />
     <Content Include="Views\Organization\ViewEditPermission.cshtml" />
+    <Content Include="Views\Organization\CheckPermission.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

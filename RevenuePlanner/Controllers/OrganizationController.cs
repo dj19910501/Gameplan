@@ -198,6 +198,42 @@ namespace RevenuePlanner.Controllers
             return PartialView("Delete");
         }
 
+        public ActionResult CheckPermission(Guid roleid, string permission)
+        {
+            List<User> user_list = new List<User>();
+            var user_role_mapping = objBDSServiceClient.GetRoleMemberList(Sessions.ApplicationId, roleid);
+            //var user_activity_mapping = objBDSServiceClient.GetUserActivityPermission(Sessions.ApplicationId,)
+            var activitylist = objBDSServiceClient.GetApplicationactivitylist(Sessions.ApplicationId);
+            List<int> idsList = new List<int>();
+            foreach (string id in permission.Split(','))
+            {
+                idsList.Add(Convert.ToInt32(id));
+            }
+
+            var activity_CodeList = activitylist.Where(activity => idsList.Contains(activity.ApplicationActivityId)).ToList();
+            try
+            {
+
+                foreach (var user_role_map in user_role_mapping)
+                {
+                    List<string> user_activity_mapping = objBDSServiceClient.GetUserActivityPermission(user_role_map.UserId, Sessions.ApplicationId);
+                    if (activity_CodeList.Where(activity => user_activity_mapping.Contains(activity.Code)).ToList().Count() > 0)
+                    {
+                        user_list.Add(user_role_map);
+                    }
+                }
+
+                ViewData["users"] = user_list;
+
+                ViewData["apptitle"] = activity_CodeList.Select(listt => listt.ActivityTitle).ToList();
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            return PartialView("CheckPermission");
+        }
 
         [HttpPost]
         public JsonResult DeleteRole(Guid delroleid, Guid? reassignroleid)

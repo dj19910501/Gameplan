@@ -1,0 +1,64 @@
+﻿@using RevenuePlanner.BDSService;
+@using RevenuePlanner.Helpers;
+@{
+    var lstUsers = ViewData["users"] == null ? new List<User>() : (List<User>)ViewData["users"];
+    var lstpermissions = ViewData["apptitle"] == null ? new List<string>() : (List<string>)ViewData["apptitle"];
+}
+@Html.Hidden("SuccMsg", TempData["SuccessMessage"])
+<!--success message-->
+<div id="successMessage" class="alert hide alert-success message-position">
+    <a class="close">×</a>
+    <div id="cSuccess"><strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))</div>
+</div>
+
+<!--div to display pop up for Delete role-->
+<div id="DivPartialShareTacticCheck">
+    <div class="all-height DivResetDefaults" id="DivShareTacticPopupMainDel">
+        <div class="calc-height">
+            <div class="span12">
+                <div id="DivDeleteRolePopup" class="form-inspect-share hide fade in height-auto popup" role="dialog" style="display: block;">
+                    <div style="padding-bottom: 20px;" class="login-wrapper">
+                        <h4 class="source-sans-prolight">You are about to remove the permission:</h4>
+                        @*<h4 id="selectedrole" class="source-sans-prolight">@permissions</h4>*@
+                         @if (lstpermissions.Count > 0)//change for validation
+                         {
+                             <div class="affected-list">
+                                    <ul class="source-sans-proregular">
+                                        @foreach (var item in lstpermissions)
+                                        {
+                                            <li>@item</li>                           
+                                        }
+                                    </ul>
+                                </div>
+                         }
+                        @if (lstUsers.Count > 0)//change for validation
+                        {
+                            <div class="affected-area">
+                                <h5 class="source-sans-prosemibold">The users below will be affected:</h5>
+                                <div class="affected-list">
+                                    <ul class="source-sans-proregular">
+                                        @foreach (var item in lstUsers)
+                                        {
+                                            var displayname = item.LastName + ',' + item.FirstName;
+                                            <li>@displayname</li>                           
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                            <br />
+                        }
+                        <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" value="Submit" id="okbtn">Ok</button>
+                        <button class="cancel-btn btn-link text-shadow-black" type="button" id="cancelbtn">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="DivBackgroundShareTacticDel" class="modal-backdrop fade in" style="z-index: 9999"></div>
+</div>
+<script src="~/Scripts/js/Select2/select2.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        loadCheckPermissionScript();
+    });
+</script>
