@@ -128,13 +128,13 @@
     }
     @* End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic*@
     <div class="cf pull-left">
-        @if (IsTacticEditable)
-        {
+       
         <div style="float: right; margin-top: 10px;">
             <button class="btn btn-blue text-shadow-blue source-sans-proregular  button-inspect-result-modal pull-right  resize-button margin-left20 btn-blue share-tactic-icon" id="BtnShareTactic" type="button" style="width: 80px;"><span class="flag-icon"></span>Share </button>
         </div>
 
-        
+            @{    
+
             string Submit = "Submit for Approval";
             string Approve = "Approve";
             string Reject = "Reject";
@@ -233,8 +233,8 @@
                 {
                     string firstStatus = aryStatus[0];
                 
-            <div class="margin-top10" style="float: right;">
-                <div id="btn_change_status" class="btn-group dropup">
+                    <div class="margin-top10" style="float: right;">
+                    <div id="btn_change_status" class="btn-group dropup">
                     <button id="btnApproved" data-toggle="dropdown" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular margin-left20" style="width: 125px;">
                         <span class="flag-icon approve-icon-dropdown"></span>
                         <span id="spanTactic">@firstStatus</span>
@@ -272,10 +272,11 @@
                 }
             }
 
-
+            if(IsTacticEditable)
+            {
             if ((bool)ViewBag.IsModelDeploy)
             {
-            <div class="margin-top10" style="float: right;">
+                <div class="margin-top10" style="float: right;">
                 <div id="btn_sync_status" class="btn-group dropup">
                     <button id="btnSync" data-toggle="dropdown" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 65px;">
                         <span class="flag-icon sync-icon-dropdown"></span>
@@ -312,10 +313,12 @@
                     </ul>
                 </div>
             </div> 
-            }            
+            }     
+            }
             
-        
-        }
+        } 
+                  
+
     </div>
 </div>
 <div id="DivPartialShareTactic">

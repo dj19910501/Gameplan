@@ -2340,7 +2340,7 @@ namespace RevenuePlanner.Controllers
             if (im.StageLevel < MQLStageLevel)
             {
                 ViewBag.ShowMQL = true;
-                im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.ProjectedStageValue),im.StartDate,im.PlanTacticId,Convert.ToInt32(im.StageId));
+                im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.ProjectedStageValue), im.StartDate, im.PlanTacticId, Convert.ToInt32(im.StageId));
             }
             else
             {
@@ -2354,7 +2354,7 @@ namespace RevenuePlanner.Controllers
                                      where bun.BusinessUnitId == im.BusinessUnitId
                                      select bun.Title).FirstOrDefault();
             ViewBag.BudinessUnitTitle = businessunittitle.ToString();
-            
+
             bool isValidOwner = false;
             if (im.OwnerId == Sessions.User.UserId)
             {
@@ -2386,7 +2386,7 @@ namespace RevenuePlanner.Controllers
 
             // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
             ViewBag.IsCommentsViewEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.CommentsViewEdit);
-            if((bool)ViewBag.IsCommentsViewEditAuthorized == false)
+            if ((bool)ViewBag.IsCommentsViewEditAuthorized == false)
                 ViewBag.UnauthorizedCommentSection = Common.objCached.UnauthorizedCommentSection;
             // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
 
@@ -2404,6 +2404,20 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.IsTacticEditable = false;
             }
+
+            //// Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
+            //bool IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            //bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+            //bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+
+            //if ((IsPlanEditAllAuthorized || IsPlanEditOwnAndSubordinatesAuthorized) && IsIntegrationCredentialCreateEditAuthorized)
+            //{
+            //    ViewBag.IsDeployToIntegrationVisible = true;
+            //}
+            //else
+            //{
+            //    ViewBag.IsDeployToIntegrationVisible = false;
+            //}
 
             return PartialView("Review");
         }
