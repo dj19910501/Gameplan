@@ -292,7 +292,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                objHomePlan.IsManager = true;
+                objHomePlan.IsManager = false;
             }
 
             List<SelectListItem> planList;
