@@ -1403,6 +1403,9 @@ namespace RevenuePlanner.BDSService {
         private System.Guid ApplicationIdField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string CodeField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
         private System.Nullable<System.DateTime> CreatedDateField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
@@ -1453,6 +1456,19 @@ namespace RevenuePlanner.BDSService {
                 if ((this.ApplicationIdField.Equals(value) != true)) {
                     this.ApplicationIdField = value;
                     this.RaisePropertyChanged("ApplicationId");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Code {
+            get {
+                return this.CodeField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.CodeField, value) != true)) {
+                    this.CodeField = value;
+                    this.RaisePropertyChanged("Code");
                 }
             }
         }

@@ -1204,6 +1204,7 @@ namespace BDSService
                     applactlist.CreatedDate = item.CreatedDate;
                     applactlist.ActivityTitle = item.ActivityTitle;
                     applactlist.ParentId = Convert.ToInt32(item.ParentId);
+                    applactlist.Code = item.Code;
                     ApplicationActivityList.Add(applactlist);
                 }
             }
