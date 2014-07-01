@@ -180,7 +180,7 @@ INSERT INTO [dbo].[Application_Activity]
            ('11',
            '1C10D4B9-7931-4A7C-99E9-A158CE158951'
            ,'7'
-           ,'Edit All Plans - *Subject to restrictions Below'
+           ,'Edit All Plans <br><em> *Subject to restrictions Below</em>'
 		   ,'PlanEditAll'
            ,GETDATE())
 

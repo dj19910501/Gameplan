@@ -121,6 +121,8 @@
 
 
                     <h4 class="extra-space">*Custom Restrictions</h4>
+                    @if (cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Count()>0)
+                    {
                     <dl>
                         <dt>Verticals</dt>
                         <dd>
@@ -135,6 +137,10 @@
                             }
                         </dd>
                     </dl>
+                    }
+
+                    @if (cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Count()>0)
+                    {
                     <dl>
                         <dt>Geography</dt>
                         <dd>
@@ -149,7 +155,11 @@
                             }
                         </dd>
                     </dl>
-                    @*<dl>
+                    }
+                    
+                    @*@if (cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Count()>0)
+                    {
+                    <dl>
                         <dt>Business Units</dt>
                         <dd>
                             @foreach (var item in cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()))
@@ -162,7 +172,8 @@
                            
                             }
                         </dd>
-                    </dl>*@
+                    </dl>
+                    }*@
                     <div class="bottom-btns">
                         <span class="btn-group">
                             <button class="btn btn-grey text-shadow-white source-sans-proregular" id="backbtn">Back</button>
@@ -277,6 +288,8 @@ else
                     }
 
                     <h4 class="extra-space">*Custom Restrictions</h4>
+                    @if (cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Count()>0)
+                    {
                     <dl>
                         <dt>Verticals</dt>
                         <dd>
@@ -314,13 +327,14 @@ else
                                                 None
                                                 </span>
                                             <span class="check_signup">
-                                                <input type="radio" name="radio_verticals_@item.CustomFieldId" id="2_@Enums.CustomRestrictionType.Verticals.ToString()_@item.CustomFieldId"  autocomplete="off"  />
-                                                View/Edit
-                                                </span>
-                                            <span class="check_signup">
                                                 <input type="radio" name="radio_verticals_@item.CustomFieldId" id="1_@Enums.CustomRestrictionType.Verticals.ToString()_@item.CustomFieldId" checked="checked"  autocomplete="off" />
                                                 View Only
                                                 </span>
+                                            <span class="check_signup">
+                                                <input type="radio" name="radio_verticals_@item.CustomFieldId" id="2_@Enums.CustomRestrictionType.Verticals.ToString()_@item.CustomFieldId"  autocomplete="off"  />
+                                                View/Edit
+                                        </span>  
+                                           
                                         </span>  
                                     }
                                     else if (@item.Permission == 2)
@@ -347,7 +361,10 @@ else
                             }
                         </dd>
                     </dl>
+                    }
 
+                    @if (cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Count()>0)
+                    {
                     <dl>
                         <dt>Geography</dt>
                         <dd>
@@ -420,8 +437,11 @@ else
 
                         </dd>
                     </dl>
+                    }
 
-                    @*  <dl>
+                    @*  @if(cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Count()>0)
+                    {   
+                    <dl>
                         <dt>Business Units</dt>
                         <dd>
                             @foreach (var item in cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()))
@@ -491,7 +511,8 @@ else
                                 </div>
                             }
                         </dd>
-                    </dl>*@
+                    </dl>
+                    }*@
                     <div id="divpartialsharetactic" class="hide">
                         <div id="divsharetacticpopupmain" class="container-fluid all-height DivResetDefaults">
                             <div class="row-fluid calc-height">
@@ -570,6 +591,7 @@ else
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/check.js")"></script>
 <script type="text/javascript">
     $(document).ready(function () {
+        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
         $('.director').css('background-color', '@ViewBag.RoleColorCode');
         $(".check_signup").dgStyle();
         function addShowText() {
