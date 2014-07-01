@@ -268,11 +268,11 @@ namespace RevenuePlanner.Controllers
         }
 
         [HttpPost]
-        public JsonResult Save(string roledesc, string checkbox, string colorcode, Guid roleid)
+        public JsonResult Save(string roledesc, string checkbox, string colorcode, Guid roleid, string delpermission)
         {
             string permissionID = checkbox.ToString();
 
-            int retval = objBDSServiceClient.CreateRole(roledesc, permissionID, colorcode, Sessions.ApplicationId, Sessions.User.UserId, roleid);
+            int retval = objBDSServiceClient.CreateRole(roledesc, permissionID, colorcode, Sessions.ApplicationId, Sessions.User.UserId, roleid, delpermission);
             if (retval == 1)
             {
                 return Json(true, JsonRequestBehavior.AllowGet);
