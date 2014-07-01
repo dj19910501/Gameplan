@@ -2375,10 +2375,9 @@ namespace RevenuePlanner.Controllers
             /*End Added by Mitesh Vaishnav on 13/06/2014 to address changes related to #498 Customized Target Stage - Publish model */
 
             // To get permission status for Approve tactic , By dharmraj PL #538
-            var lstSubOrdinates = Common.GetSubOrdinatesWithPeers();
-
+            var lstSubOrdinatesPeers = Common.GetSubOrdinatesWithPeers();
             bool isValidManagerUser = false;
-            if (lstSubOrdinates.Contains(im.OwnerId))
+            if (lstSubOrdinatesPeers.Contains(im.OwnerId))
             {
                 isValidManagerUser = true;
             }
@@ -2395,40 +2394,42 @@ namespace RevenuePlanner.Controllers
             int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
             var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
             var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
-
+            bool IsTacticEditable = false;
             if (lstAllowedGeography.Contains(pcpt.GeographyId.ToString()) && lstAllowedVertical.Contains(pcpt.VerticalId.ToString()))
             {
-                ViewBag.IsTacticEditable = true;
+                IsTacticEditable = true;
             }
             else
             {
-                ViewBag.IsTacticEditable = false;
+                IsTacticEditable = false;
             }
 
+            ViewBag.IsTacticEditable = IsTacticEditable;
+
             // Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
-            //bool IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
             bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
             bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+            var lstSubOrdinates = Common.GetSubordinates(Sessions.User.UserId);
+            lstSubOrdinates.Add(Sessions.User.UserId);
+            bool IsDeployToIntegrationVisible = false;
             if (IsPlanEditAllAuthorized)
             {
-                ViewBag.IsDeployToIntegrationVisible = true;
+                if (IsTacticEditable)
+                {
+                    IsDeployToIntegrationVisible = true;
+                }
             }
             else if (IsPlanEditOwnAndSubordinatesAuthorized)
             {
                 if (lstSubOrdinates.Contains(im.OwnerId))
                 {
-                    ViewBag.IsDeployToIntegrationVisible = true;
-                }
-                else
-                {
-                    ViewBag.IsDeployToIntegrationVisible = false;
+                    if (IsTacticEditable)
+                    {
+                        IsDeployToIntegrationVisible = true;
+                    }
                 }
             }
-            else
-            {
-                ViewBag.IsDeployToIntegrationVisible = false;
-            }
-
+            ViewBag.IsDeployToIntegrationVisible = IsDeployToIntegrationVisible;
 
             return PartialView("Review");
         }
@@ -3505,10 +3506,10 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
 
             //To get permission status for Approve campaign , By dharmraj PL #538
-            var lstSubOrdinates = Common.GetSubOrdinatesWithPeers();
+            var lstSubOrdinatesPeers = Common.GetSubOrdinatesWithPeers();
 
             bool isValidManagerUser = false;
-            if (lstSubOrdinates.Contains(im.OwnerId))
+            if (lstSubOrdinatesPeers.Contains(im.OwnerId))
             {
                 isValidManagerUser = true;
             }
@@ -3519,53 +3520,25 @@ namespace RevenuePlanner.Controllers
             if ((bool)ViewBag.IsCommentsViewEditAuthorized == false)
                 ViewBag.UnauthorizedCommentSection = Common.objCached.UnauthorizedCommentSection;
             // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
-
-            // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
-            var objPlanProgram = db.Plan_Campaign_Program.FirstOrDefault(p => p.PlanProgramId == id);
-            var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-            int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-            var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
-            var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
-
-            if (objPlanProgram.VerticalId != null && objPlanProgram.GeographyId != null)
-            {
-                if (lstAllowedGeography.Contains(objPlanProgram.GeographyId.ToString()) && lstAllowedVertical.Contains(objPlanProgram.VerticalId.ToString()))
-                {
-                    ViewBag.IsProgramEditable = true;
-                }
-                else
-                {
-                    ViewBag.IsProgramEditable = false;
-                }
-            }
-            else
-            {
-                ViewBag.IsProgramEditable = true;
-            }
-
+            
             // Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
-            //bool IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
             bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
             bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+            var lstSubOrdinates = Common.GetSubordinates(Sessions.User.UserId);
+            lstSubOrdinates.Add(Sessions.User.UserId);
+            bool IsProgramEditable = false;
             if (IsPlanEditAllAuthorized)
             {
-                ViewBag.IsDeployToIntegrationVisible = true;
+                IsProgramEditable = true;
             }
             else if (IsPlanEditOwnAndSubordinatesAuthorized)
             {
                 if (lstSubOrdinates.Contains(im.OwnerId))
                 {
-                    ViewBag.IsDeployToIntegrationVisible = true;
-                }
-                else
-                {
-                    ViewBag.IsDeployToIntegrationVisible = false;
+                    IsProgramEditable = true;
                 }
             }
-            else
-            {
-                ViewBag.IsDeployToIntegrationVisible = false;
-            }
+            ViewBag.IsProgramEditable = IsProgramEditable;
 
             return PartialView("_ReviewProgram");
         }
@@ -3697,10 +3670,9 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
 
             //To get permission status for Approve campaign , By dharmraj PL #538
-            var lstSubOrdinates = Common.GetSubOrdinatesWithPeers();
-
+            var lstSubOrdinatesPeers = Common.GetSubOrdinatesWithPeers();
             bool isValidManagerUser = false;
-            if (lstSubOrdinates.Contains(im.OwnerId))
+            if (lstSubOrdinatesPeers.Contains(im.OwnerId))
             {
                 isValidManagerUser = true;
             }
@@ -3712,52 +3684,25 @@ namespace RevenuePlanner.Controllers
                 ViewBag.UnauthorizedCommentSection = Common.objCached.UnauthorizedCommentSection;
             // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
 
-            // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
-            var objPlanCampaign = db.Plan_Campaign.FirstOrDefault(p => p.PlanCampaignId == id);
-            var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-            int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-            var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
-            var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
-
-            if (objPlanCampaign.VerticalId != null && objPlanCampaign.GeographyId != null)
-            {
-                if (lstAllowedGeography.Contains(objPlanCampaign.GeographyId.ToString()) && lstAllowedVertical.Contains(objPlanCampaign.VerticalId.ToString()))
-                {
-                    ViewBag.IsCampaignEditable = true;
-                }
-                else
-                {
-                    ViewBag.IsCampaignEditable = false;
-                }
-            }
-            else
-            {
-                ViewBag.IsCampaignEditable = true;
-            }
-
             // Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
-            //bool IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
             bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
             bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+            var lstSubOrdinates = Common.GetSubordinates(Sessions.User.UserId);
+            lstSubOrdinates.Add(Sessions.User.UserId);
+            bool IsCampaignEditable = false;
             if (IsPlanEditAllAuthorized)
             {
-                ViewBag.IsDeployToIntegrationVisible = true;
+                IsCampaignEditable = true;
             }
             else if (IsPlanEditOwnAndSubordinatesAuthorized)
             {
                 if (lstSubOrdinates.Contains(im.OwnerId))
                 {
-                    ViewBag.IsDeployToIntegrationVisible = true;
-                }
-                else
-                {
-                    ViewBag.IsDeployToIntegrationVisible = false;
+                    IsCampaignEditable = true;
                 }
             }
-            else
-            {
-                ViewBag.IsDeployToIntegrationVisible = false;
-            }
+
+            ViewBag.IsCampaignEditable = IsCampaignEditable;
 
             return PartialView("_ReviewCampaign");
         }
@@ -4730,10 +4675,9 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsValidOwner = isValidOwner;
 
             //To get permission status for Approve campaign , By dharmraj PL #538
-            var lstSubOrdinates = Common.GetSubOrdinatesWithPeers();
-
+            var lstSubOrdinatesPeers = Common.GetSubOrdinatesWithPeers();
             bool isValidManagerUser = false;
-            if (lstSubOrdinates.Contains(im.OwnerId))
+            if (lstSubOrdinatesPeers.Contains(im.OwnerId))
             {
                 isValidManagerUser = true;
             }
@@ -4746,28 +4690,24 @@ namespace RevenuePlanner.Controllers
             // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
 
             // Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
-            //bool IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
             bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
             bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+            var lstSubOrdinates = Common.GetSubordinates(Sessions.User.UserId);
+            lstSubOrdinates.Add(Sessions.User.UserId);
+            bool IsDeployToIntegrationVisible = false;
             if (IsPlanEditAllAuthorized)
             {
-                ViewBag.IsDeployToIntegrationVisible = true;
+                IsDeployToIntegrationVisible = true;
             }
             else if (IsPlanEditOwnAndSubordinatesAuthorized)
             {
                 if (lstSubOrdinates.Contains(im.OwnerId))
                 {
-                    ViewBag.IsDeployToIntegrationVisible = true;
-                }
-                else
-                {
-                    ViewBag.IsDeployToIntegrationVisible = false;
+                    IsDeployToIntegrationVisible = true;
                 }
             }
-            else
-            {
-                ViewBag.IsDeployToIntegrationVisible = false;
-            }
+
+            ViewBag.IsDeployToIntegrationVisible = IsDeployToIntegrationVisible;
 
             return PartialView("_ReviewImprovementTactic");
         }

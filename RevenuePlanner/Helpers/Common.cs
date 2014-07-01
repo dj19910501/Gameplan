@@ -3178,6 +3178,54 @@ namespace RevenuePlanner.Helpers
             return lstSubOrdinates;
         }
 
+        /// <summary>
+        /// Function to get all subirdinates upto n level
+        /// Added by dharmraj, 1-7-2014
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public static List<Guid> GetAllSubordinates(Guid userId)
+        {
+            BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
+            List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
+            lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+            List<Guid> lstUserId = new List<Guid>();
+
+            List<Guid> lstSubordinates = lstUserHierarchy.Where(u => u.ManagerId == userId)
+                                                         .ToList()
+                                                         .Select(u => u.UserId).ToList();
+
+
+            while (lstSubordinates.Count > 0)
+            {
+                lstSubordinates.ForEach(u => lstUserId.Add(u));
+
+                lstSubordinates = lstUserHierarchy.Where(u => lstSubordinates.Contains(u.ManagerId.GetValueOrDefault(Guid.Empty))).ToList().Select(u => u.UserId).ToList();
+            }
+
+
+            return lstUserId;
+        }
+
+        /// <summary>
+        /// Function to get immediate subirdinates
+        /// Added by dharmraj, 1-7-2014
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public static List<Guid> GetSubordinates(Guid userId)
+        {
+            BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
+            List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
+            lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+
+            var lstSubordinates = lstUserHierarchy.Where(u => u.ManagerId == userId)
+                                                          .ToList()
+                                                          .Select(u => u.UserId).ToList();
+            return lstSubordinates;
+
+        }
+
         #endregion
 
         #region Custom Restriction

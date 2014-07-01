@@ -3,7 +3,6 @@
     var campaignReview = (RevenuePlanner.Models.InspectModel)ViewBag.CampaignDetail;
     var db = new RevenuePlanner.Models.MRPEntities();
     bool IsCampaignEditable = (bool)ViewBag.IsCampaignEditable;
-    bool IsDeployToIntegrationVisible = (bool)ViewBag.IsDeployToIntegrationVisible;
 }
 <div class="span5 width360" id="inspect-modal-right-div" style="width:420px !important;">
     <div class="font-size18">Overview</div>
@@ -298,7 +297,7 @@
                 }
             }
 
-            if (IsDeployToIntegrationVisible)
+                if (IsCampaignEditable)
             {
             if ((bool)ViewBag.IsModelDeploy)
             {
