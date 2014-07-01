@@ -339,6 +339,11 @@
             $("#spanMessage").text(value);
             return false;
         }
+        /* Added by Mitesh Vaishnav on 01-07-2014 for PL ticket #548 Special characters should be allowed in tactic descriptions*/
+        $('form').find('input[type=text], textarea').each(function () {
+            ValidationForCustomTextarea(this);
+        });
+        /*End: Added by Mitesh Vaishnav for PL ticket #548 Special characters should be allowed in tactic descriptions*/
 
         TruncateMetricName();    @* Added By :- Sohel on 21/04/2014 for PL ticket #160 to display unwrapped text. *@
     });

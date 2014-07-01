@@ -253,5 +253,11 @@
             $('#email-confirmation').html(email);
             $('#modal-container-confirmation').modal('show');
         }
+
+        /* Added by Mitesh Vaishnav on 01-07-2014 for PL ticket #548 Special characters should be allowed in tactic descriptions*/
+       
+        ValidationForCustomTextarea($('#TxtOptionalMessage'));
+       
+        /*End: Added by Mitesh Vaishnav for PL ticket #548 Special characters should be allowed in tactic descriptions*/
     });
 </script>

@@ -299,7 +299,7 @@
             $(this).remove();
         });
         $('form').find('input[type=text], textarea').each(function () {
-            ValidationForTitle(this);
+            ValidationForCustomTextarea(this);////Modified by Mitesh Vaishnav on 01-07-2014 for pl ticket #548
         });
         $('form').find('input[type=text], select, textarea').each(function () {
             $(this).change(function () {

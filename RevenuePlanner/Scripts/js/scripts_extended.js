@@ -617,3 +617,15 @@ function ValidationForTitle(r) {
         //}
     });
 }
+/*Added by Mitesh Vaishnav on 30/06/2014 for PL ticket #548 : : Special characters should be allowed in tactic descriptions */
+function ValidationForCustomTextarea(r) {
+    $(r).bind('keypress', function (e) {
+
+        var ret = ((e.charCode == 62 || e.charCode == 60 || e.charCode == 125 || e.charCode == 123 || e.charCode == 91 || e.charCode == 93 || e.charCode == 47 || e.charCode == 61 || e.charCode == 43))
+        if (ret) {
+            e.preventDefault();
+            return false;
+        }
+    });
+}
+/*End :Added by Mitesh Vaishnav on 30/06/2014 for PL ticket #548 : : Special characters should be allowed in tactic descriptions */
