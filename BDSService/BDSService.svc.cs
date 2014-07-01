@@ -230,10 +230,10 @@ namespace BDSService
         }
 
         /// added by uday for #513
-        public int CreateRole(string roledesc, string permissionID, string colorcode, Guid applicationid, Guid createdby, Guid roleid)
+        public int CreateRole(string roledesc, string permissionID, string colorcode, Guid applicationid, Guid createdby, Guid roleid, string delpermission)
         {
             BDSUserRepository obj = new BDSUserRepository();
-            return obj.CreateRole(roledesc, permissionID, colorcode, applicationid, createdby, roleid);
+            return obj.CreateRole(roledesc, permissionID, colorcode, applicationid, createdby, roleid, delpermission);
         }
 
         /// added by uday for #513

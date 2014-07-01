@@ -129,7 +129,7 @@ namespace BDSService
 
         /// added by uday for #513
         [OperationContract]
-        int CreateRole(string roledesc, string permissionID, string colorcode, Guid applicationid, Guid createdby, Guid roleid);
+        int CreateRole(string roledesc, string permissionID, string colorcode, Guid applicationid, Guid createdby, Guid roleid, string delpermission);
 
         /// added by uday for #513
         [OperationContract]

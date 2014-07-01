@@ -1302,7 +1302,7 @@ namespace BDSService
         /// </summary>
         /// <param name="role id">role id</param>
         /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
-        public int CreateRole(string roledesc, string permissionID, string colorcode, Guid applicationid, Guid createdby, Guid roleid)
+        public int CreateRole(string roledesc, string permissionID, string colorcode, Guid applicationid, Guid createdby, Guid roleid, string delpermission)
         {
             int retVal = 0;
             Guid NewRoleId = Guid.NewGuid();
@@ -1365,12 +1365,10 @@ namespace BDSService
                     var objdelete = db.Role_Activity_Permission.Where(roleapp => roleapp.RoleId == roleid).ToList();
                     if (objdelete.Count > 0)
                     {
-                        foreach (var item in objdelete)
-                        {
-                            db.Entry(item).State = EntityState.Deleted;
-                            db.SaveChanges();
-                        }
+                        objdelete.ForEach(objdel => db.Entry(objdel).State = EntityState.Deleted);
+                        db.SaveChanges();             
                     }
+                    List<int> allowPermissionList = new List<int>();
                     string[] id = permissionID.Split(',');
                     if (id.Length > 0)
                     {
@@ -1379,17 +1377,50 @@ namespace BDSService
                             string[] strarr = id[i].Split('_');
                             if (strarr.Contains("true"))
                             {
-                                Role_Activity_Permission objactivitypermission = new Role_Activity_Permission();
-                                objactivitypermission.ApplicationActivityId = Convert.ToInt32(strarr[1]);
-                                objactivitypermission.RoleId = roleid;
-                                objactivitypermission.CreatedBy = createdby;
-                                objactivitypermission.CreatedDate = DateTime.Now;
-                                db.Entry(objactivitypermission).State = EntityState.Added;
-                                db.Role_Activity_Permission.Add(objactivitypermission);
-                                db.SaveChanges();
-
+                                allowPermissionList.Add(Convert.ToInt32(strarr[1]));
                             }
                         }
+                    }
+
+                    foreach (int applicationActivityId in allowPermissionList)
+                    {
+                        Role_Activity_Permission objactivitypermission = new Role_Activity_Permission();
+                        objactivitypermission.ApplicationActivityId = applicationActivityId;
+                        objactivitypermission.RoleId = roleid;
+                        objactivitypermission.CreatedBy = createdby;
+                        objactivitypermission.CreatedDate = DateTime.Now;
+                        db.Entry(objactivitypermission).State = EntityState.Added;
+                        db.Role_Activity_Permission.Add(objactivitypermission);
+                    }
+                    db.SaveChanges();
+
+                    List<int> checkdelid = new List<int>();
+                    if (delpermission.ToString() != string.Empty)
+                    {
+                        checkdelid = delpermission.Split(',').Select(int.Parse).ToList<int>();
+                    }
+
+                    List<Guid> userList = db.User_Application.Where(userApp => userApp.RoleId == roleid && userApp.ApplicationId == applicationid).Select(userApp => userApp.UserId).ToList();
+                    var userPermissionList = db.User_Activity_Permission.Where(permission => userList.Contains(permission.UserId)).ToList();
+                    foreach (var userid in userList)
+                    {
+                        var userActivityList = userPermissionList.Where(permission => permission.UserId == userid).ToList();
+                        foreach (int applicationActivityId in allowPermissionList)
+                        {
+                            if (userActivityList.Where(userActivity => userActivity.ApplicationActivityId == applicationActivityId).Count() == 0)
+                            {
+                                User_Activity_Permission objUser_Activity_Permission = new User_Activity_Permission();
+                                objUser_Activity_Permission.UserId = userid;
+                                objUser_Activity_Permission.ApplicationActivityId = applicationActivityId;
+                                objUser_Activity_Permission.CreatedBy = createdby;
+                                objUser_Activity_Permission.CreatedDate = DateTime.Now;
+                                db.Entry(objUser_Activity_Permission).State = EntityState.Added;
+                                db.User_Activity_Permission.Add(objUser_Activity_Permission);
+                            }
+                        }
+
+                        userActivityList.Where(userActivity => checkdelid.Contains(userActivity.ApplicationActivityId)).ToList().ForEach(useractivity => db.Entry(useractivity).State = EntityState.Deleted);
+                        db.SaveChanges();
                     }
                 }
                 else

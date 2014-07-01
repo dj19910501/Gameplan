@@ -151,7 +151,19 @@ namespace RevenuePlanner.Controllers
                 var filterlist = bdsuserrepository.GetRoleactivitypermissions(roleId);
                 ViewData["permissionlist"] = filterlist;
                 ViewData["activitylist"] = activitylist;
-
+                string ids = string.Empty;
+                for (int i = 0; i < filterlist.Count; i++)
+                {
+                    if (i == 0)
+                    {
+                        ids += "role_" + filterlist[i].ApplicationActivityId.ToString();
+                    }
+                    else
+                    {
+                        ids += ',' + "role_" + filterlist[i].ApplicationActivityId.ToString();
+                    }
+                }
+                ViewData["permissionids"] = ids.ToString();
                 TempData["RoleList"] = new SelectList(RoleList, "Value", "Text", RoleList.First());
             }
             catch (Exception e)

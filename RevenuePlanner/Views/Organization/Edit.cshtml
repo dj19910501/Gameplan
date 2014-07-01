@@ -179,6 +179,7 @@
     var colorCode = "#3fa9f5";
     var selectedRoleId;
     var globalids = [];
+    var globaldeleteids = [];//new
     $(document).ready(function () {
 
         $(".check_signup_checkbox").dgStyle();
@@ -275,7 +276,6 @@
 
 
         $('#savebtn').click(function () {
-
             var checked = [];
             var ids = [];
             globalids = [];
@@ -308,30 +308,35 @@
                 }
                 if (count > 0) {
                     //start uday for uncheck other validation                
-                    var permissions = '@ViewData["permissionids"]';
+                var permissions = '@ViewData["permissionids"]';
                 var originalpermissions = [];
                 var match = [];
                 var unmatch = [];
-                var strsa = permissions.split(",");
-                for (var i = 0; i < strsa.length; i++) {
-                    var split = [];
-                    split = strsa[i].split("_");
-                    originalpermissions.push(split[1]);
-                }
-                for (i in originalpermissions) {
-                    var ismatch = false;
-                    for (j in truecheck) {
-                        if (originalpermissions[i] == truecheck[j]) {
-                            ismatch = true;
-                            break;
-                        }
+                if (permissions != '') {
+
+                    var strsa = permissions.split(",");
+                    for (var i = 0; i < strsa.length; i++) {
+                        var split = [];
+                        split = strsa[i].split("_");
+                        originalpermissions.push(split[1]);
                     }
-                    if (!ismatch) {
-                        unmatch.push(originalpermissions[i].toString());
+                    if (originalpermissions.length > 0) {
+                        for (i in originalpermissions) {
+                            var ismatch = false;
+                            for (j in truecheck) {
+                                if (originalpermissions[i] == truecheck[j]) {
+                                    ismatch = true;
+                                    break;
+                                }
+                            }
+                            if (!ismatch) {
+                                unmatch.push(originalpermissions[i].toString());
+                            }
+                        }
                     }
                 }
                 if (unmatch.length > 0) {
-
+                    globaldeleteids = unmatch;
                     var url = '';
                     url = '@Url.Content("~/Organization/CheckPermission/")';
                     //window.location.href = url + "?roleId=" + '@ViewBag.roleid' + "&permission=" + unmatch.toString();
@@ -352,9 +357,6 @@
 
     });
 
-
-
-
     });
 
 function saveRoleActivity() {
@@ -367,7 +369,8 @@ function saveRoleActivity() {
                 roledesc: roledesc,
                 checkbox: globalids.toString(),
                 colorcode: colorCode,
-                roleid: roleid
+                roleid: roleid,
+                delpermission: globaldeleteids.toString()
             },
             type: 'POST',
             cache: false,
