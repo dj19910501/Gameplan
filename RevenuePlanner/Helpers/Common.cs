@@ -3250,14 +3250,20 @@ namespace RevenuePlanner.Helpers
         public static bool GetRightsForTactic(List<UserCustomRestrictionModel> lstUserCustomRestriction, int verticalId, Guid geographyId)
         {
             bool returnValue = true;
-            if (lstUserCustomRestriction.Single(r => r.CustomField == Enums.CustomRestrictionType.Geography.ToString() && r.CustomFieldId == geographyId.ToString()).Permission != (int)Enums.CustomRestrictionPermission.ViewEdit)
+            if (lstUserCustomRestriction.Where(r => r.CustomField.ToLower() == Enums.CustomRestrictionType.Geography.ToString().ToLower() && r.CustomFieldId.ToLower() == geographyId.ToString().ToLower()).Count() > 0)
+            {
+                if (lstUserCustomRestriction.Single(r => r.CustomField.ToLower() == Enums.CustomRestrictionType.Geography.ToString().ToLower() && r.CustomFieldId.ToLower() == geographyId.ToString().ToLower()).Permission != (int)Enums.CustomRestrictionPermission.ViewEdit)
             {
                 returnValue = false;
+                }
             }
 
-            if (lstUserCustomRestriction.Single(r => r.CustomField == Enums.CustomRestrictionType.Verticals.ToString() && r.CustomFieldId == verticalId.ToString()).Permission != (int)Enums.CustomRestrictionPermission.ViewEdit)
+            if (lstUserCustomRestriction.Where(r => r.CustomField.ToLower() == Enums.CustomRestrictionType.Verticals.ToString().ToLower() && r.CustomFieldId.ToLower() == verticalId.ToString().ToLower()).Count() > 0)
+            {
+                if (lstUserCustomRestriction.Single(r => r.CustomField.ToLower() == Enums.CustomRestrictionType.Verticals.ToString().ToLower() && r.CustomFieldId == verticalId.ToString().ToLower()).Permission != (int)Enums.CustomRestrictionPermission.ViewEdit)
             {
                 returnValue = false;
+                }
             }
 
             return returnValue;
@@ -3266,14 +3272,19 @@ namespace RevenuePlanner.Helpers
         public static bool GetRightsForTacticVisibility(List<UserCustomRestrictionModel> lstUserCustomRestriction, int verticalId, Guid geographyId)
         {
             bool returnValue = true;
-            if (lstUserCustomRestriction.Single(r => r.CustomField == Enums.CustomRestrictionType.Geography.ToString() && r.CustomFieldId == geographyId.ToString()).Permission == (int)Enums.CustomRestrictionPermission.None)
+            if (lstUserCustomRestriction.Where(r => r.CustomField.ToLower() == Enums.CustomRestrictionType.Geography.ToString().ToLower() && r.CustomFieldId.ToLower() == geographyId.ToString().ToLower()).Count() > 0)
+            {
+                if (lstUserCustomRestriction.Single(r => r.CustomField.ToLower() == Enums.CustomRestrictionType.Geography.ToString().ToLower() && r.CustomFieldId.ToLower() == geographyId.ToString()).Permission == (int)Enums.CustomRestrictionPermission.None)
             {
                 returnValue = false;
             }
-
-            if (lstUserCustomRestriction.Single(r => r.CustomField == Enums.CustomRestrictionType.Verticals.ToString() && r.CustomFieldId == verticalId.ToString()).Permission == (int)Enums.CustomRestrictionPermission.None)
+            }
+            if (lstUserCustomRestriction.Where(r => r.CustomField.ToLower() == Enums.CustomRestrictionType.Verticals.ToString().ToLower() && r.CustomFieldId.ToLower() == verticalId.ToString().ToLower()).Count() > 0)
+            {
+                if (lstUserCustomRestriction.Single(r => r.CustomField.ToLower() == Enums.CustomRestrictionType.Verticals.ToString().ToLower() && r.CustomFieldId.ToLower() == verticalId.ToString().ToLower()).Permission == (int)Enums.CustomRestrictionPermission.None)
             {
                 returnValue = false;
+                }
             }
 
             return returnValue;
