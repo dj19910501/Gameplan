@@ -542,8 +542,7 @@ namespace RevenuePlanner.Controllers
                 htmltextview.LinkedResources.Add(item);
             }
 
-            //var success = Common.sendMail(Common.SupportMail, Common.FromSupportMail, emailBody, emailSubject, string.Empty, Common.FromAlias, string.Empty, true, alternativeView); //email will be sent to Support email Id defined in web.config
-            var success = Common.sendMail("kalpesh.sharma@indusa.com", Common.FromSupportMail, emailBody, emailSubject, string.Empty, Common.FromAlias, string.Empty, true, htmltextview); 
+            var success = Common.sendMail(Common.SupportMail, Common.FromSupportMail, emailBody, emailSubject, string.Empty, Common.FromAlias, string.Empty, true, htmltextview); //email will be sent to Support email Id defined in web.config
             if (success == 1)
             {
                 return Json(true, JsonRequestBehavior.AllowGet);
