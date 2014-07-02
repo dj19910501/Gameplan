@@ -795,15 +795,9 @@ namespace RevenuePlanner.Controllers
         public JsonResult GetCurrentPlanPermissionDetail(int planId)
         {
             // To get permission status for Plan Edit , By dharmraj PL #519
-            //Get all subordinates of current user
+            //Get all subordinates of current user upto n level
             bool IsPlanEditable = true;
-            BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
-            List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
-            lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
-            var lstOwnAndSubOrdinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId)
-                                                        .ToList()
-                                                        .Select(u => u.UserId)
-                                                        .ToList();
+            var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
             lstOwnAndSubOrdinates.Add(Sessions.User.UserId);
             // Get current user permission for edit own and subordinates plans.
             bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
@@ -2092,14 +2086,8 @@ namespace RevenuePlanner.Controllers
             {
                 // To get permission status for Add/Edit Actual, By dharmraj PL #519
                 ViewBag.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
-                //Get all subordinates of current user
-                BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
-                List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
-                lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
-                var lstOwnAndSubOrdinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId)
-                                                            .ToList()
-                                                            .Select(u => u.UserId)
-                                                            .ToList();
+                //Get all subordinates of current user upto n level
+                var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
                 lstOwnAndSubOrdinates.Add(Sessions.User.UserId);
                 // Get current user permission for edit own and subordinates plans.
                 bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
@@ -2409,7 +2397,8 @@ namespace RevenuePlanner.Controllers
             // Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
             bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
             bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
-            var lstSubOrdinates = Common.GetSubordinates(Sessions.User.UserId);
+            //Get all subordinates of current user upto n level
+            var lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
             lstSubOrdinates.Add(Sessions.User.UserId);
             bool IsDeployToIntegrationVisible = false;
             if (IsPlanEditAllAuthorized)
@@ -3524,7 +3513,8 @@ namespace RevenuePlanner.Controllers
             // Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
             bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
             bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
-            var lstSubOrdinates = Common.GetSubordinates(Sessions.User.UserId);
+            //Get all subordinates of current user upto n level
+            var lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
             lstSubOrdinates.Add(Sessions.User.UserId);
             bool IsProgramEditable = false;
             if (IsPlanEditAllAuthorized)
@@ -3687,7 +3677,8 @@ namespace RevenuePlanner.Controllers
             // Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
             bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
             bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
-            var lstSubOrdinates = Common.GetSubordinates(Sessions.User.UserId);
+            //Get all subordinates of current user upto n level
+            var lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
             lstSubOrdinates.Add(Sessions.User.UserId);
             bool IsCampaignEditable = false;
             if (IsPlanEditAllAuthorized)
@@ -4692,7 +4683,8 @@ namespace RevenuePlanner.Controllers
             // Added by Dharmraj Mangukiya for Deploy to integration button restrictions PL ticket #537
             bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
             bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
-            var lstSubOrdinates = Common.GetSubordinates(Sessions.User.UserId);
+            //Get all subordinates of current user upto n level
+            var lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
             lstSubOrdinates.Add(Sessions.User.UserId);
             bool IsDeployToIntegrationVisible = false;
             if (IsPlanEditAllAuthorized)

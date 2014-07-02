@@ -11,8 +11,6 @@ using System.Data.Objects;
 using System.IO;
 using RevenuePlanner.BDSService;
 
-
-
 namespace RevenuePlanner.Controllers
 {
     public class PlanController : CommonController
@@ -45,6 +43,34 @@ namespace RevenuePlanner.Controllers
             if (id == 0 && !IsPlanCreateAuthorized)
             {
                 return AuthorizeUserAttribute.RedirectToNoAccess();
+            }
+
+            if (id > 0)
+            {
+                // Added by Dharmraj Mangukiya for edit authentication of plan, PL ticket #519
+                var objplan = db.Plans.FirstOrDefault(m => m.PlanId == id && m.IsDeleted == false);
+                bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+                bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+                //Get all subordinates of current user upto n level
+                var lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
+                lstSubOrdinates.Add(Sessions.User.UserId);
+                bool IsPlanEditable = false;
+                if (IsPlanEditAllAuthorized)
+                {
+                    IsPlanEditable = true;
+                }
+                else if (IsPlanEditOwnAndSubordinatesAuthorized)
+                {
+                    if (lstSubOrdinates.Contains(objplan.CreatedBy))
+                    {
+                        IsPlanEditable = true;
+                    }
+                }
+
+                if (!IsPlanEditable)
+                {
+                    return AuthorizeUserAttribute.RedirectToNoAccess();
+                }
             }
 
             PlanModel objPlanModel = new PlanModel();
@@ -542,6 +568,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region "Apply To Calendar"
+
         /// <summary>
         /// Function to return ApplyToCalendar view.
         /// Added By: Maninder Singh Wadhva.
@@ -568,14 +595,8 @@ namespace RevenuePlanner.Controllers
             //}
 
             // To get permission status for Plan Edit , By dharmraj PL #519
-            //Get all subordinates of current user
-            BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
-            List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
-            lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
-            var lstOwnAndSubOrdinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId)
-                                                        .ToList()
-                                                        .Select(u => u.UserId)
-                                                        .ToList();
+            //Get all subordinates of current user upto n level
+            var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
             lstOwnAndSubOrdinates.Add(Sessions.User.UserId);
             // Get current user permission for edit own and subordinates plans.
             bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
@@ -671,6 +692,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.isError = isError;
             return View(planModel);
         }
+
         public ActionResult PlanList(string Bid)
         {
             HomePlan objHomePlan = new HomePlan();
@@ -897,7 +919,6 @@ namespace RevenuePlanner.Controllers
             }, JsonRequestBehavior.AllowGet);
             #endregion
         }
-
 
         /// <summary>
         /// Added By: Maninder Singh Wadhva.
@@ -1403,6 +1424,33 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;
 
             Plan plan = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId));
+            if (plan != null)
+            {
+                // Added by Dharmraj Mangukiya for edit authentication of plan, PL ticket #519
+                bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+                bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+                //Get all subordinates of current user upto n level
+                var lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
+                lstSubOrdinates.Add(Sessions.User.UserId);
+                bool IsPlanEditable = false;
+                if (IsPlanEditAllAuthorized)
+                {
+                    IsPlanEditable = true;
+                }
+                else if (IsPlanEditOwnAndSubordinatesAuthorized)
+                {
+                    if (lstSubOrdinates.Contains(plan.CreatedBy))
+                    {
+                        IsPlanEditable = true;
+                    }
+                }
+
+                if (!IsPlanEditable)
+                {
+                    return AuthorizeUserAttribute.RedirectToNoAccess();
+                }
+            }
+
             ViewBag.PlanId = plan.PlanId;
             PlanModel pm = new PlanModel();
             pm.ModelTitle = plan.Model.Title + " " + plan.Model.Version;
@@ -3266,14 +3314,8 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult GetPlanSelectorData(string Year, string BusinessUnit)
         {
-            //Get all subordinates of current user
-            BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
-            List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
-            lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
-            var lstOwnAndSubOrdinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId)
-                                                        .ToList()
-                                                        .Select(u => u.UserId)
-                                                        .ToList();
+            //Get all subordinates of current user upto n level
+            var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
             lstOwnAndSubOrdinates.Add(Sessions.User.UserId);
             // Get current user permission for edit own and subordinates plans.
             bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
