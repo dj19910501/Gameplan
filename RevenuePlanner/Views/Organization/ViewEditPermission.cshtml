@@ -376,9 +376,12 @@ else
 
                                 <div class="dd-row">
                                     <label>@item.Title</label>
+                                        @if (ViewBag.userGeography != item.CustomFieldId)
+                                        {
+                                            if (@item.Permission == 0)
+                                            {
 
-                                    @if (@item.Permission == 0)
-                                    {
+
 
                                         <span class="radioGrp">
                                             <span class="check_signup">
@@ -434,6 +437,26 @@ else
                                                 </span>
                                                 </span>
                                     }
+                                        }
+                                        else
+                                        {
+
+                                            <span class="radioGrp">
+                                                <span class="check_signup">
+                                                    <input type="radio" name="radio_geography_@item.CustomFieldId" id="0_@Enums.CustomRestrictionType.Geography.ToString()_@item.CustomFieldId" value="radio" disabled="disabled" onclick="alert('hi'); return false;"/>
+                                                    None
+                                                </span>
+
+                                                <span class="check_signup">
+                                                    <input type="radio" name="radio_geography_@item.CustomFieldId" id="1_@Enums.CustomRestrictionType.Geography.ToString()_@item.CustomFieldId" value="radio" disabled="disabled"  />
+                                                    View Only
+                                                </span>
+                                                <span class="check_signup">
+                                                    <input type="radio" name="radio_geography_@item.CustomFieldId" id="2_@Enums.CustomRestrictionType.Geography.ToString()_@item.CustomFieldId" value="radio" checked="checked" disabled="disabled" />
+                                                    View/Edit
+                                                </span>
+                                            </span>
+                                        }
 
                                 </div>
                             }
@@ -452,7 +475,8 @@ else
 
                                 <div class="dd-row">
                                     <label>@item.Title</label>
-
+                                      @if (ViewBag.userGeography != item.CustomFieldId)
+                                      {
                                     @if (@item.Permission == 0)
                                     {
 
@@ -510,6 +534,25 @@ else
                                                 </span>
                                         </span>
                                     }
+                                      }
+                                      else
+                                      {
+                                         <span class="radioGrp">
+                                            <span class="check_signup">
+                                                <input type="radio" name="radio_BusinessUnit_@item.CustomFieldId" id="0_@Enums.CustomRestrictionType.BusinessUnit.ToString()_@item.CustomFieldId" autocomplete="off" disabled="disabled" />
+                                                None
+                                                </span>
+                                            
+                                            <span class="check_signup">
+                                                <input type="radio" name="radio_BusinessUnit_@item.CustomFieldId" id="1_@Enums.CustomRestrictionType.BusinessUnit.ToString()_@item.CustomFieldId"  autocomplete="off" disabled="disabled" />
+                                                View Only
+                                                </span>
+                                            <span class="check_signup">
+                                                <input type="radio" name="radio_BusinessUnit_@item.CustomFieldId" id="2_@Enums.CustomRestrictionType.BusinessUnit.ToString()_@item.CustomFieldId" autocomplete="off" checked="checked" disabled="disabled" />
+                                                View/Edit
+                                                </span>
+                                        </span>  
+                                      }
 
                                 </div>
                             }
@@ -594,8 +637,7 @@ else
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/check.js")"></script>
 <script type="text/javascript">
     $(document).ready(function () {
-        if('@TempData["SuccessMessage"]'!='')
-        {
+        if ('@TempData["SuccessMessage"]' != '') {
             var msgspan = "Model inputs successfully saved.";
             $("#spanSuccessMessage").text(msgspan);
             $("#successMessage").slideDown(600);
