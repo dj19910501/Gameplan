@@ -129,41 +129,44 @@ namespace BDSService
         /// </summary>
         /// <param name="roleCodes">comma seperated list of role codes</param>
         /// <returns>Returns client list for sepcific role codes.</returns>
-        public List<BDSEntities.Role> GetRoleList(string roleCodes)
-        {
-            List<BDSEntities.Role> roleList = new List<BDSEntities.Role>();
-            List<Role> lstRole = new List<Role>();
-            List<string> roles = roleCodes.Split(',').ToList<string>();
+        //Modified By : Kalpesh Sharma
+        //Role logical deletion and Application id in Custom restrication
+        //Changes : Currenlty we are not use this method that's why we are commnet it . 
 
-            if (roleCodes != string.Empty)
-            {
-                lstRole = db.Roles.Where(r => roles.Contains(r.Code) && r.IsDeleted == false).OrderBy(q => q.Title).ToList();
-            }
-            else
-            {
-                lstRole = db.Roles.Where(r => r.IsDeleted == false).OrderBy(q => q.Title).ToList();
-            }
+        //public List<BDSEntities.Role> GetRoleList(string roleCodes)
+        //{
+        //    List<BDSEntities.Role> roleList = new List<BDSEntities.Role>();
+        //    List<Role> lstRole = new List<Role>();
+        //    List<string> roles = roleCodes.Split(',').ToList<string>();
 
-            if (lstRole.Count > 0)
-            {
-                foreach (var role in lstRole)
-                {
-                    BDSEntities.Role roleEntity = new BDSEntities.Role();
-                    roleEntity.RoleId = role.RoleId;
-                    roleEntity.Code = role.Code;
-                    roleEntity.Title = role.Title;
-                    roleEntity.Description = role.Description;
-                    roleEntity.IsDeleted = role.IsDeleted;
-                    roleEntity.CreatedBy = role.CreatedBy;
-                    roleEntity.CreatedDate = role.CreatedDate;
-                    roleEntity.ModifiedBy = role.ModifiedBy;
-                    roleEntity.ModifiedDate = role.ModifiedDate;
-                    roleList.Add(roleEntity);
-                }
-            }
-            return roleList;
-        }
+        //    if (roleCodes != string.Empty)
+        //    {
+        //        lstRole = db.Roles.Where(r => roles.Contains(r.Code) && r.IsDeleted == false).OrderBy(q => q.Title).ToList();
+        //    }
+        //    else
+        //    {
+        //        lstRole = db.Roles.Where(r => r.IsDeleted == false).OrderBy(q => q.Title).ToList();
+        //    }
 
+        //    if (lstRole.Count > 0)
+        //    {
+        //        foreach (var role in lstRole)
+        //        {
+        //            BDSEntities.Role roleEntity = new BDSEntities.Role();
+        //            roleEntity.RoleId = role.RoleId;
+        //            roleEntity.Code = role.Code;
+        //            roleEntity.Title = role.Title;
+        //            roleEntity.Description = role.Description;
+        //            roleEntity.IsDeleted = role.IsDeleted;
+        //            roleEntity.CreatedBy = role.CreatedBy;
+        //            roleEntity.CreatedDate = role.CreatedDate;
+        //            roleEntity.ModifiedBy = role.ModifiedBy;
+        //            roleEntity.ModifiedDate = role.ModifiedDate;
+        //            roleList.Add(roleEntity);
+        //        }
+        //    }
+        //    return roleList;
+        //}
         #endregion
 
         #region Get Team Member Details
@@ -796,9 +799,15 @@ namespace BDSService
             string userRoleCode = string.Empty;
             if (id != null && applicationId != null)
             {
+                //Modified By : Kalpesh Sharma
+                //Role logical deletion and Application id in Custom restrication
+                //Changes : Check approle.Isdeleted flag is flase in below query  
+
                 userRoleCode = (from r in db.Roles
                                 join ua in db.User_Application on r.RoleId equals ua.RoleId
-                                where ua.UserId == id && ua.ApplicationId == applicationId
+                                join appRole in db.Application_Role on r.RoleId equals appRole.RoleId
+                                where ua.UserId == id && ua.ApplicationId == applicationId && ua.IsDeleted == false
+                                && appRole.ApplicationId == applicationId && appRole.IsDeleted == false
                                 select (r.Code)).FirstOrDefault();
             }
             return userRoleCode;
@@ -1154,10 +1163,18 @@ namespace BDSService
             List<Role> rolelist = new List<Role>();
 
             //rolelist = db.Roles.Where(role => role.IsDeleted == false).ToList();
+            //rolelist = (from role in db.Roles
+            //            join approle in db.Application_Role on role.RoleId equals approle.RoleId
+            //            where approle.ApplicationId == applicationid && role.IsDeleted == false
+            //            select role).OrderBy(role => role.Title).ToList();//change review point order by clause
+
+            //Change By : Kalpesh Sharma
+            //Role logical deletion and Application id in Custom restrication
             rolelist = (from role in db.Roles
                         join approle in db.Application_Role on role.RoleId equals approle.RoleId
-                        where approle.ApplicationId == applicationid && role.IsDeleted == false
+                        where approle.ApplicationId == applicationid && approle.IsDeleted == false
                         select role).OrderBy(role => role.Title).ToList();//change review point order by clause
+
             if (rolelist.Count > 0)
             {
                 foreach (var role in rolelist)
@@ -1228,10 +1245,14 @@ namespace BDSService
             int retVal = 0;
             try
             {
+                //Modified By : Kalpesh Sharma
+                //Role logical deletion and Application id in Custom restrication
+                //Changes : Check approle.Isdeleted flag in below query  
                 var objDuplicateCheck = (from roles in db.Roles
                                          join approle in db.Application_Role on roles.RoleId equals approle.RoleId
-                                         where approle.ApplicationId == applicationid && roles.Title == role.Title
+                                         where approle.ApplicationId == applicationid && roles.Title == role.Title && approle.IsDeleted == false
                                          select roles.Title).FirstOrDefault();
+
                 if (objDuplicateCheck != null)
                 {
                     retVal = -1;
@@ -1309,14 +1330,20 @@ namespace BDSService
             try
             {
                 //Insert in Role
+                //Modified By : Kalpesh Sharma
+                //Role logical deletion and Application id in Custom restrication
+                //Changes : Check approle.Isdeleted flag is flase in below query  
                 var obj = (from roles in db.Roles
                            join approle in db.Application_Role on roles.RoleId equals approle.RoleId
-                           where approle.ApplicationId == applicationid && roles.RoleId == roleid
+                           where approle.ApplicationId == applicationid && roles.RoleId == roleid && approle.IsDeleted == false
                            select roles).FirstOrDefault();
 
+                //Modified By : Kalpesh Sharma
+                //Role logical deletion and Application id in Custom restrication
+                //Changes : Check approle.Isdeleted flag is flase in below query  
                 var objnew = (from roles in db.Roles
                               join approle in db.Application_Role on roles.RoleId equals approle.RoleId
-                              where approle.ApplicationId == applicationid && roles.RoleId == roleid
+                              where approle.ApplicationId == applicationid && roles.RoleId == roleid && approle.IsDeleted == false
                               select approle).FirstOrDefault();
 
                 if (obj != null)
@@ -1522,7 +1549,9 @@ namespace BDSService
                         db.SaveChanges();
                     }
 
-                    obj.IsDeleted = true;
+                    //Change By : Kalpesh Sharma
+                    //Role logical deletion and Application id in Custom restrication
+                    //obj.IsDeleted = true;
                     db.Entry(obj).State = EntityState.Modified;
                     db.SaveChanges();
                     retVal = 1;
@@ -1552,10 +1581,14 @@ namespace BDSService
             {
                 //Insert in Role
 
+                //Modified By : Kalpesh Sharma
+                //Role logical deletion and Application id in Custom restrication
+                //Changes : Check approle.Isdeleted flag is flase in below query  
                 var objrole = (from roles in db.Roles
                                join approle in db.Application_Role on roles.RoleId equals approle.RoleId
-                               where approle.ApplicationId == applicationid && roles.RoleId == originalid
+                               where approle.ApplicationId == applicationid && roles.RoleId == originalid && approle.IsDeleted == false
                                select roles).FirstOrDefault();
+
                 Role objrolenew;
 
                 Guid NewRoleId = Guid.Empty;
@@ -1865,11 +1898,18 @@ namespace BDSService
         /// <returns></returns>
         public List<BDSEntities.UserHierarchy> GetUserHierarchy(Guid clientId, Guid applicationId)
         {
+            //Modified By : Kalpesh Sharma
+            //Role logical deletion and Application id in Custom restrication
+            //Changes : Check Isdeleted flag is flase in Application Role and User Application table  
+
             List<BDSEntities.UserHierarchy> lstUserHierarchy = (
-                            from u in db.Users
-                            join ua in db.User_Application on u.UserId equals ua.UserId
-                            join r in db.Roles on ua.RoleId equals r.RoleId
-                            where u.IsDeleted == false && u.ClientId == clientId && ua.ApplicationId == applicationId
+                           from u in db.Users
+                           join ua in db.User_Application on u.UserId equals ua.UserId
+                           join r in db.Roles on ua.RoleId equals r.RoleId
+                           join appRole in db.Application_Role on r.RoleId equals appRole.RoleId
+                           where u.IsDeleted == false && u.ClientId == clientId && ua.ApplicationId == applicationId && ua.IsDeleted == false
+                           && appRole.ApplicationId == applicationId && appRole.IsDeleted == false
+
                             select new BDSEntities.UserHierarchy
                             {
                                 UserId = u.UserId,
