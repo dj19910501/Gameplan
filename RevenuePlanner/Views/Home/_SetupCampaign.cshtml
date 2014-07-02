@@ -51,7 +51,7 @@
         <p>@Html.Raw("Business Unit")</p>
         @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
         <p>@Html.Raw("Cost")</p>
-        @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true", title = campaign.Cost })
+        @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })
     </div>
                                         
     <span class="flag-icon"></span>
@@ -62,5 +62,6 @@
     $(document).ready(
       function () {
           $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+          $('#txtCost').attr("title", $('#txtCost').val()); //added by uday for internal point 2-7-2014
       });
 </script>

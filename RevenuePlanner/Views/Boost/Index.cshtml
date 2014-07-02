@@ -102,6 +102,13 @@
         });
     }
 
+    //added by uday for internal point 2-7-2014
+    function AssignDefaultValue() {
+        $('#slidepanel-container').find("input[type=text],textarea,select").each(function () {
+            $(this).attr("title", $(this).val());
+        });
+    }
+
     $("#create_new_tactic").click(function () {
         $("#slidepanel").css("display", "block");
         var url = '@Url.Content("~/Boost/DetailImprovementTacticData")';
@@ -113,7 +120,7 @@
         var id = $(this).attr("id");
         $("#slidepanel").css("display", "block");
         var url = '@Url.Content("~/Boost/DetailImprovementTacticData")';
-        $('#slidepanel-container').load(url + '?id=' + id);
+        $('#slidepanel-container').load(url + '?id=' + id, AssignDefaultValue);//added by uday for internal point 2-7-2014);
         $("#slidepanel").css("right", "0px");
     });
 
