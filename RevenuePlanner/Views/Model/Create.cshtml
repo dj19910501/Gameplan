@@ -23,6 +23,10 @@
     @Html.Hidden("PublishedMsg", PublishedMsg);
     @Html.Hidden("Planflag", flag);
                                   var currentdate = System.DateTime.Today.ToShortDateString();
+    // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+    string IsViewEditBusinessUnit = Convert.ToString(ViewBag.IsViewEditBusinessUnit);   
+    @Html.Hidden("IsViewEditBusinessUnit", IsViewEditBusinessUnit);
+    // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
 }
 
 @section nlFormContent{
@@ -54,7 +58,7 @@
                             <a href="#">Create New</a>
                         </li>
                         @* Show Duplicate option only in Edit mode and only for latest version of model. *@
-                        @if(Convert.ToString(ViewBag.ModelId) != "" && Convert.ToString(ViewBag.ModelId) != "0" && Model.lstmodelstage.Count() > 0)
+                        @if (Convert.ToString(ViewBag.ModelId) != "" && Convert.ToString(ViewBag.ModelId) != "0" && Model.lstmodelstage.Count() > 0 && Convert.ToString(ViewBag.IsViewEditBusinessUnit) == "True")  // Modified by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                         {
                             <li id="liDuplicate">
                                 <a href="#">Duplicate</a>
@@ -323,9 +327,12 @@
                     @{ 
         if (Model.lstmodelstage.Count() > 0)
         {
+            if (Convert.ToString(ViewBag.IsViewEditBusinessUnit) == "True")  // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    {
                         <input id="btnsave" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Save Current Version & Continue" />
                         <input id="button-save" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Create New Version & Continue" />
         }
+                    }
                     }
                 </div>
                 @Html.Hidden("isPublishButton")
@@ -403,6 +410,12 @@
     });
 
     $(".targetStageclick").click(function () {
+        // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+        if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'false')
+        {
+            return false;
+        }
+        // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
         var val = $(this).text();
         var astageid = $(this).attr('id');
         var id = $(this).attr('id').replace('TargetStage_', '');
@@ -477,6 +490,16 @@ $(".leftnav").click(function () {
     }
 });
 $(document).ready(function () {
+        // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+        if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'false') {
+            $('#form1 :input').each(function () {
+                if ($(this).attr('type') == 'text' || $(this).attr('type') == 'textarea' || $(this).attr('type') == 'select') {
+                    $(this).attr('readonly', 'readonly');
+                }
+            });
+        }
+        // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+    
     $('#DivBackgroundModel').css("display", "none");
     $('#DivPublishModelPopup').css("display", "none");
     $('#form1').bind("keyup keypress", function (e) {
@@ -564,7 +587,8 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
 
     if (modelId == $("#latestModelId").val()) {
         $("#button-save").show();
-        $("#btnsave").show();
+        if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'true') // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+            $("#btnsave").show();
         MakeEditable();
         $('#BtnGroup').html('New Model');   //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219
         $('#liDuplicate').show();           //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219 to show Duplicate option only in Edit mode and only for latest version of model. 
@@ -572,7 +596,8 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
     }
     else {
         $("#button-save").hide();
-        $("#btnsave").hide();
+        if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'true') // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+            $("#btnsave").hide();
         MakeViewOnly();//Bug 17:Should not be able to edit a published model
         $('#BtnGroup').html('New Model');   //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219
         $('#liDuplicate').hide();           //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219 to show Duplicate option only in Edit mode and only for latest version of model. 
@@ -638,7 +663,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
          modelStatus = obj.Status;/* changed by Nirav shah for TFS Point :252 editing a published model*/
          _AddressableContract = obj.AddressableContacts;
          if (modelId == $("#latestModelId").val()) {
-             if (obj.Status.toString().toLocaleLowerCase() == 'draft') {
+             if (obj.Status.toString().toLocaleLowerCase() == 'draft' && $('#IsViewEditBusinessUnit').val().toLowerCase() == 'true') {  // Modified by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                  $("#publishModelDisabled").hide();
                  $("#publishModel").show();
                  $("#publishModel").attr('ModelId', obj.ModelId);
@@ -1058,7 +1083,8 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
             }
         }
         $('#isPublishButton').val('publish');
-        $('#btnsave').click();
+        if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'true')     // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+            $('#btnsave').click();
         $('#isPublishButton').val('');
     });
 

@@ -13,7 +13,7 @@
     int CurrentPlanId = Sessions.PlanId;/*changed by Nirav for plan consistency on 14 apr 2014*/
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
-
+    bool IsBusinessUnitEditable = (bool)ViewBag.IsBusinessUnitEditable;
 }
 
 @Html.Hidden("IsViewOnly")
@@ -24,6 +24,8 @@
 <!--Modified By Maninder Singh Wadhva PL Ticket#47-->
 @Html.Hidden("hdnIsImprovement", isImprovement)
 @Html.Hidden("CurrentPlanId", CurrentPlanId)
+@Html.Hidden("IsTacticActualsAddEditAuthorized", IsTacticActualsAddEditAuthorized)
+@Html.Hidden("IsBusinessUnitEditable", IsBusinessUnitEditable)
 
 
 <script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
@@ -257,12 +259,12 @@
     <div class="padding-content padding-bottom0" id="DivButtonsHome">
         <h4 class="text-shadow-black source-sans-prolight">Planning Review</h4>
             <div class="wraper-btns cf">
-                @if (IsTacticActualsAddEditAuthorized)
+                @*@if (IsTacticActualsAddEditAuthorized)
                 {
-                    <div class="span6">
+                    *@<div class="span6" id="divAddActuals">
                         <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("AddActual", "Home")'">Add Actuals</button>
                     </div>    
-                }
+                @*}*@
                 <div class="span6" id="divPlanEditButtonHome">
                     <!-- change by kunal for edit plan  -->
                     <!-- start -->
@@ -1319,9 +1321,12 @@
                     switch ($('#ActiveMenu').val().toLowerCase()) {
                         case 'home':
                             $("#divPlanEditButtonHome").show();
+                            if ($("#IsTacticActualsAddEditAuthorized").val().toLowerCase() == 'true')
+                                $("#divAddActuals").show();
                             break;
                         case 'plan':
                             $("#divPlanEditButtonPlan").show();
+                            $("#divAddActuals").hide();
                             break;
                     }
                     $("#isViewOnly").val(true);
@@ -1330,6 +1335,7 @@
                     switch ($('#ActiveMenu').val().toLowerCase()) {
                         case 'home':
                             $("#divPlanEditButtonHome").hide();
+                            $("#divAddActuals").hide();
                             break;
                         case 'plan':
                             $("#divPlanEditButtonPlan").hide();

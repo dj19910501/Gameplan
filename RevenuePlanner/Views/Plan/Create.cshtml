@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     string strPlanid = Convert.ToString(Model.PlanId);
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
-    
+    bool IsBusinessUnitEditable = (bool)ViewBag.IsBusinessUnitEditable;    
 }
 
 @section nlFormContent{
@@ -15,6 +15,7 @@
 }
 
 @Html.Hidden("hdnPlanId", strPlanid, new { id = "hdnPlanId" })
+@Html.Hidden("IsBusinessUnitEditable", IsBusinessUnitEditable)
 
 @section Sidebar
 {
@@ -35,7 +36,7 @@
                         <li>
                             <a href="#">Create New</a>
                         </li>
-                        @if (Sessions.PlanId != 0)
+                        @if (Sessions.PlanId != 0 && (bool)ViewBag.IsBusinessUnitEditable == true)
                         {
                             <li>
                                 <a href="#">Duplicate</a>
@@ -144,8 +145,16 @@
                         model to create a new plan called						
 														@Html.TextBoxFor(model => model.Title, new { placeholder = @Model.Title, datasubline = "For example: <em>2014 North American Events</em>", datadefault = "Title", maxlength = "50", @class = "myValue" })
                         in
+                        @{
+                        if(strPlanid == "" || strPlanid == "0"  || (bool)ViewBag.IsBusinessUnitEditable == true)
+                        {
                          @Html.DropDownListFor(m => m.Year, (SelectList)TempData["selectYearList"], new { placeholder = @Model.Year, @class = "myValue" })
-
+                        }
+                        else
+                        {
+                            <span id="spandef">@Model.Year</span>
+                        }
+                        }
                         that generates 
 														@Html.TextBoxFor(model => model.MQls, new { placeholder = @Model.MQls, datasubline = "For example: <em>200</em>", datadefault = "MQL", datamask = "ddd-dddd", id = "txtMQL", formatType = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @class = "myValueFormat" })
                         @Html.LabelForMQL("MQL") with a budget of
@@ -155,6 +164,15 @@
                         <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
                         <script>
                             var nlform = new NLForm(document.getElementById('nl-form'));
+                            // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
+                            if ($('#IsBusinessUnitEditable').val().toLowerCase() == 'false') {
+                                $('#nl-form :input').each(function () {
+                                    if ($(this).attr('type') == 'text') {
+                                        $(this).attr('readonly', 'readonly');
+                                    }
+                                });
+                            }
+                            // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
                         </script>
                     </div>
                 </td>
@@ -184,6 +202,19 @@
               var url = '@Url.Content("~/Home/LoadChangeLog")';
               $('.changes').load(url + '?objectId=' + "@RevenuePlanner.Helpers.Sessions.PlanId");
           }
+          // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+          if ($('#IsBusinessUnitEditable').val().toLowerCase() == 'false') {
+              $('#form1 :input').each(function () {
+                  if ($(this).attr('type') == 'text' || $(this).attr('type') == 'textarea' || $(this).attr('type') == 'select') {
+                      $(this).attr('readonly', 'readonly');
+                  }
+              });
+              $("#button-save").hide();
+          }
+          else {
+              $("#button-save").show();
+          }
+          // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
 
           $('#BtnGroup').click(function (e) {
               var url = '@Url.Content("~/Plan/Create/0")';

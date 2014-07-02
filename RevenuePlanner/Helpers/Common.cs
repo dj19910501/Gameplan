@@ -1022,7 +1022,17 @@ namespace RevenuePlanner.Helpers
             }
             else
             {
+                // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
+                if (lstAllowedBusinessUnits.Count > 0)
+                {
+                    lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
+                }
+                else
+                {
                 businessUnitIds.Add(Sessions.User.BusinessUnitId);
+                }
+                // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             }
 
             //// Getting active model of above business unit. 
@@ -1498,7 +1508,17 @@ namespace RevenuePlanner.Helpers
                 }
                 else
                 {
+                    // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
+                    if (lstAllowedBusinessUnits.Count > 0)
+                    {
+                        lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
+                    }
+                    else
+                    {
                     businessUnitIds.Add(Sessions.User.BusinessUnitId);
+                    }
+                    // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 }
                 string modelPublished = Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Published.ToString())).Value;
                 string modelDraft = Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Draft.ToString())).Value;
@@ -3298,6 +3318,45 @@ namespace RevenuePlanner.Helpers
 
             return returnValue;
         }
+
+        #region Get list of Busieness Unit with ViewOnly and View/Edit rights
+        /// <summary>
+        /// Get list of Busieness Units with ViewOnly and View/Edit rights 
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy>
+        /// <CreatedDate>30/06/2014</CreatedDate>
+        /// <returns>List of Business units</returns>
+        public static List<string> GetViewEditBusinessUnitList()
+        {
+            var lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
+            int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+            return lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId).ToList();
+        }
+        #endregion
+
+        #region Check ViewEdit rights on businessUnit
+        /// <summary>
+        /// Check wheather ViewEdit rights on businessUnit is given otr not - for custo restriction
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy>
+        /// <CreatedDate>02/07/2014</CreatedDate>
+        /// <param name="businessUnitId"></param>
+        /// <returns></returns>
+        public static bool IsBusinessUnitEditable(Guid businessUnitId)
+        {
+            var lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+            var lstAllowedBusinessUnits = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId).ToList();
+            if (lstAllowedBusinessUnits.Count > 0)
+            {
+                List<Guid> lstViewEditBusinessUnits = new List<Guid>();
+                lstAllowedBusinessUnits.ForEach(g => lstViewEditBusinessUnits.Add(Guid.Parse(g)));
+                return lstViewEditBusinessUnits.Contains(businessUnitId);
+            }
+            return true;
+        }
+        #endregion
 
         #endregion
 

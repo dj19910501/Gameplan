@@ -45,6 +45,12 @@ namespace RevenuePlanner.Controllers
                 return AuthorizeUserAttribute.RedirectToNoAccess();
             }
 
+            // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+            bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(db.Plans.Where(a => a.PlanId == id).Select(a => a.Model.BusinessUnitId).FirstOrDefault());
+            if (id != 0 && !IsBusinessUnitEditable)
+                return AuthorizeUserAttribute.RedirectToNoAccess();
+            // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+
             if (id > 0)
             {
                 // Added by Dharmraj Mangukiya for edit authentication of plan, PL ticket #519
@@ -119,14 +125,14 @@ namespace RevenuePlanner.Controllers
                         TempData["selectYearList"] = new SelectList(year);
                     }
                     #endregion
-
+                    ViewBag.IsBusinessUnitEditable = Common.IsBusinessUnitEditable(db.Models.Where(b => b.ModelId == objplan.ModelId).Select(b => b.BusinessUnitId).FirstOrDefault());  // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 }
                 else
                 {
                     objPlanModel.Title = "Plan Title";
                     objPlanModel.MQls = "0";
                     objPlanModel.Budget = 0;
-
+                    ViewBag.IsBusinessUnitEditable = false; // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 }
                 //end
             }
@@ -482,7 +488,19 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
+                    // Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
+                    if (lstAllowedBusinessUnits.Count > 0)
+                    {
+                        List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
+                        lstAllowedBusinessUnits.ForEach(g => lstAllowedBusinessUnitIds.Add(Guid.Parse(g)));
+                        objBusinessUnit = db.BusinessUnits.Where(bu => lstAllowedBusinessUnitIds.Contains(bu.BusinessUnitId) && bu.IsDeleted == false).Select(bu => bu.BusinessUnitId).ToList();
+                    }
+                    else
+                    { 
                     objBusinessUnit = db.BusinessUnits.Where(bu => bu.BusinessUnitId == Sessions.User.BusinessUnitId && bu.IsDeleted == false).Select(bu => bu.BusinessUnitId).ToList();
+                }
+                    // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 }
                 //fetch published models by businessunitid
                 string strPublish = Convert.ToString(Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Published.ToString())).Value);
@@ -577,6 +595,12 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns view as action result.</returns>
         public ActionResult ApplyToCalendar(string ismsg = "", bool isError = false)
         {
+            // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+            bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(db.Plans.Where(a => a.PlanId == Sessions.PlanId).Select(a => a.Model.BusinessUnitId).FirstOrDefault());
+            if (!IsBusinessUnitEditable)
+                return AuthorizeUserAttribute.RedirectToNoAccess();
+            // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+
             //if (Sessions.RolePermission != null)
             //{
             //    Common.Permission permission = Common.GetPermission(ActionItem.Plan);
@@ -672,8 +696,25 @@ namespace RevenuePlanner.Controllers
                 //// Getting all business unit for client of director.
                 planModel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId);
                 //Added by Nirav for Custom Dropdown - 388
-                ViewBag.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId);
+                ViewBag.BusinessUnitIds = planModel.BusinessUnitIds; // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 ViewBag.showBid = true;
+            }
+            else
+            {
+                // Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
+                if (lstAllowedBusinessUnits.Count > 0)
+                {
+                    List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
+                    lstAllowedBusinessUnits.ForEach(g => lstAllowedBusinessUnitIds.Add(Guid.Parse(g)));
+                    var list = db.BusinessUnits.Where(s => lstAllowedBusinessUnitIds.Contains(s.BusinessUnitId) && s.IsDeleted == false).ToList().Select(u => new SelectListItem
+                    {
+                        Text = u.Title,
+                        Value = u.BusinessUnitId.ToString()
+                    });
+                    List<SelectListItem> items = new List<SelectListItem>(list);
+                    planModel.BusinessUnitIds = items;
+                    ViewBag.BusinessUnitIds = items;
             }
             else
             {
@@ -686,6 +727,8 @@ namespace RevenuePlanner.Controllers
                 List<SelectListItem> items = new List<SelectListItem>(list);
                 planModel.BusinessUnitIds = items;
                 ViewBag.BusinessUnitIds = items;
+                }
+                // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 ViewBag.showBid = true;
             }
             ViewBag.Msg = ismsg;
@@ -1423,6 +1466,12 @@ namespace RevenuePlanner.Controllers
             bool IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
             ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;
 
+            // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+            bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(db.Plans.Where(a => a.PlanId == Sessions.PlanId).Select(a => a.Model.BusinessUnitId).FirstOrDefault());
+            if (!IsBusinessUnitEditable)
+                return AuthorizeUserAttribute.RedirectToNoAccess();
+            // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+
             Plan plan = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId));
             if (plan != null)
             {
@@ -1505,7 +1554,7 @@ namespace RevenuePlanner.Controllers
                 mqlStage = MQLStageLabel;
             }
             ViewBag.MQLLabel = mqlStage;
-
+            ViewBag.IsBusinessUnitEditable = Common.IsBusinessUnitEditable(plan.Model.BusinessUnitId);  // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             return View("Assortment");
         }
 
@@ -3359,12 +3408,15 @@ namespace RevenuePlanner.Controllers
                         objPlanSelector.Budget = (item.Budget).ToString("#,##0");
                         objPlanSelector.Status = item.Status;
 
+                        // Start - Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                        bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BUId);
+                        
                         // Added to check edit status for current user by dharmraj for #538
-                        if (IsPlanEditAllAuthorized)
+                        if (IsPlanEditAllAuthorized && IsBusinessUnitEditable)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                         {
                             objPlanSelector.IsPlanEditable = true;
                         }
-                        else if (IsPlanEditOwnAndSubordinatesAuthorized)
+                        else if (IsPlanEditOwnAndSubordinatesAuthorized && IsBusinessUnitEditable)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                         {
                             if (lstOwnAndSubOrdinates.Contains(item.CreatedBy))
                             {
@@ -3379,6 +3431,8 @@ namespace RevenuePlanner.Controllers
                         {
                             objPlanSelector.IsPlanEditable = false;
                         }
+
+                        // End - Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
 
                         lstPlanSelector.Add(objPlanSelector);
                     }
@@ -3419,23 +3473,44 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult GetBUTab()
         {
+            if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))   // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+            {
             var returnDataGuid = (db.BusinessUnits.ToList().Where(bu => bu.ClientId.Equals(Sessions.User.ClientId) && bu.IsDeleted.Equals(false)).Select(bu => bu).ToList()).Select(b => new
             {
                 id = b.BusinessUnitId,
                 title = b.Title
             }).Select(b => b).Distinct().OrderBy(b => b.title); /* Modified by Sohel on 08/04/2014 for PL #424 to Show The business unit tabs sorted in alphabetic order. */
 
+                return Json(returnDataGuid, JsonRequestBehavior.AllowGet);
+            }
+            else
             // Modified by Dharmraj, For #537
-            if (!AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))//if (Sessions.IsPlanner)
+            //if (!AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))//if (Sessions.IsPlanner)
             {
-                returnDataGuid = (db.BusinessUnits.ToList().Where(bu => bu.ClientId.Equals(Sessions.User.ClientId) && bu.BusinessUnitId.Equals(Sessions.User.BusinessUnitId) && bu.IsDeleted.Equals(false)).Select(bu => bu).ToList()).Select(b => new
+                // Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
+                if (lstAllowedBusinessUnits.Count > 0)
+                {
+                    List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
+                    lstAllowedBusinessUnits.ForEach(g => lstAllowedBusinessUnitIds.Add(Guid.Parse(g)));
+                    var returnDataGuid = (db.BusinessUnits.ToList().Where(bu => lstAllowedBusinessUnitIds.Contains(bu.BusinessUnitId) && bu.IsDeleted.Equals(false)).Select(bu => bu).ToList()).Select(b => new
                 {
                     id = b.BusinessUnitId,
                     title = b.Title
                 }).Select(b => b).Distinct().OrderBy(b => b.title); /* Modified by Sohel on 08/04/2014 for PL #424 to Show The business unit tabs sorted in alphabetic order. */
-            }
-
             return Json(returnDataGuid, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    var returnDataGuid = (db.BusinessUnits.ToList().Where(bu => bu.ClientId.Equals(Sessions.User.ClientId) && bu.BusinessUnitId.Equals(Sessions.User.BusinessUnitId) && bu.IsDeleted.Equals(false)).Select(bu => bu).ToList()).Select(b => new
+                    {
+                        id = b.BusinessUnitId,
+                        title = b.Title
+                    }).Select(b => b).Distinct().OrderBy(b => b.title); /* Modified by Sohel on 08/04/2014 for PL #424 to Show The business unit tabs sorted in alphabetic order. */
+                    return Json(returnDataGuid, JsonRequestBehavior.AllowGet);
+                }
+                // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+            }
         }
 
 

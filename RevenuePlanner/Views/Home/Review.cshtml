@@ -113,7 +113,7 @@
         <img class="avatar-user vertical-aligntop" src="@Url.Action("LoadUserImage", "User", new { id = RevenuePlanner.Helpers.Sessions.User.UserId })" alt="User avatar" />
         @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment" })
         
-        @if(IsTacticEditable)
+        @if (IsTacticEditable && (bool)ViewBag.IsBusinessUnitEditable)
         {
         <button id="btnComment" class="btn btn-blue text-shadow-blue source-sans-proregular new-comment-buttom " type="button">Comment</button>
         }
