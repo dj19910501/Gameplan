@@ -308,6 +308,7 @@ namespace RevenuePlanner.Helpers
 
         /// <summary>
         /// Send an email
+        /// Modified By : Kalpesh Sharma
         /// </summary>
         /// <param name="emailid"></param>
         /// <param name="fromemailid"></param>
@@ -317,7 +318,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="CustomAlias"></param>
         /// <param name="ReplyTo"></param>
         /// <param name="isSupportMail"></param>
-        public static int sendMail(string emailid, string fromemailid, string strMsg, string Subject, string Priority, string CustomAlias = "", string ReplyTo = "", bool isSupportMail = false)
+        public static int sendMail(string emailid, string fromemailid, string strMsg, string Subject, string Priority, string CustomAlias = "", string ReplyTo = "", bool isSupportMail = false, AlternateView htmltextview = null)
         {
             int retval = 0;
             MailMessage objEmail = new MailMessage();
@@ -340,6 +341,14 @@ namespace RevenuePlanner.Helpers
                 if (ReplyTo != "")
                     objEmail.ReplyToList.Add(new MailAddress(ReplyTo));
                 objEmail.Priority = MailPriority.Normal;
+
+                // Modified BY : Kalpesh Sharma
+                // #453: Support request Issue field needs to be bigger
+                // Send image in Email template 
+                if (htmltextview.LinkedResources.Count > 0)
+                {
+                    objEmail.AlternateViews.Add(htmltextview);
+                }
 
                 //Get appropriate SmtpSection for mail sending
                 SmtpSection smtpSection = GetSmtpSection(isSupportMail);
@@ -3291,7 +3300,47 @@ namespace RevenuePlanner.Helpers
         }
 
         #endregion
+
+        #region Genrate Random Numbers
         
+        /// <summary>
+        /// Added By : Kalpesh Sharma 
+        /// Generate a Random numbers 
+        /// #453: Support request Issue field needs to be bigger
+        /// </summary>
+        /// <returns></returns>
+
+        public static string GenerateRandomNumber()
+        {
+            Random rnd = new Random();
+            int number1 = rnd.Next(1, 156000);
+            int number2 = rnd.Next(1, 3562452);
+            Int64 n = Int64.Parse(DateTime.Now.ToString("yyyymmddhhMMss"));
+            return Convert.ToString(number1 + number2 + n);
+        }
+
+        #endregion
+
+        //Created By : Kalpesh Sharma
+        //Get the specific char from the string based upon it's index.
+        //#453: Support request Issue field needs to be bigger
+        public static int GetNthIndex(string s, char t, int n)
+        {
+            int count = 0;
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (s[i] == t)
+                {
+                    count++;
+                    if (count == n)
+                    {
+                        return i;
+                    }
+                }
+            }
+            return -1;
+        }
+
     }
 
     ////Start Manoj PL #490 Date:27May2014

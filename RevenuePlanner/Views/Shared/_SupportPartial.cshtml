@@ -199,10 +199,10 @@
     @* Start - Added by :- uday on 27/05/2014 for PL #453 *@
     $('#summernote').summernote({
         height: 150,                 // set editor height
-
-        minHeight: null,             // set minimum height of editor
-        maxHeight: null,             // set maximum height of editor
-
+        // Change By : Kalpesh Sharma
+        // #453 Fix the height and width of the editor , so user can't extend it.
+        minHeight: 150,    // set minimum height of editor
+        maxHeight: 150,    // set maximum height of editor
         focus: true,                 // set focus to editable area after initializing summernote
         toolbar: [
 //[groupname, [button list]]

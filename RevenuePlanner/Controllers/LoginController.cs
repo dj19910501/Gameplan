@@ -8,6 +8,10 @@ using System.Web.Mvc;
 using System.Web.Security;
 using System.Configuration;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Net.Mail;
+using System.Net.Mime;
+using System.IO;
 
 /*
  *  Author: Manoj Limbachiya
@@ -468,6 +472,15 @@ namespace RevenuePlanner.Controllers
             return RedirectToAction("Index", "Login");
         }
 
+        /// <summary>
+        /// Modified BY : Kalpesh Sharma
+        /// #453: Support request Issue field needs to be bigger
+        /// Send image in Email template 
+        /// </summary>
+        /// <param name="emailId"></param>
+        /// <param name="CompanyName"></param>
+        /// <param name="Issue"></param>
+        /// <returns></returns>
         public JsonResult ContactSupport(string emailId, string CompanyName, string Issue)
         {
             string notificationContactSupport = Enums.Custom_Notification.ContactSupport.ToString();
@@ -475,8 +488,62 @@ namespace RevenuePlanner.Controllers
             Notification notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationContactSupport));
             //this is to decode the html content which we have encoded into text on client side.added by uday on 28-5-2014 for editor in contact support.
             Issue = HttpUtility.UrlDecode(Issue, System.Text.Encoding.Default);
+
+            //Added for send the images in the Email section
+            //Added By : Kalpesh Sharma
+            // #453: Support request Issue field needs to be bigger
+
+            MatchCollection mc = Regex.Matches(Issue, @"\<img(.*?)\"">");
+
+            AlternateView tempAlternateView = AlternateView.CreateAlternateViewFromString((""), null, "text/html");
+
+            for (int i = 0; i < mc.Count; i++)
+            {
+                var extractBase64String = mc[i].Groups[0].Value;
+
+                if (!string.IsNullOrEmpty(extractBase64String))
+                {
+                    string RandomNumber = Common.GenerateRandomNumber();
+
+                    Issue = Issue.Replace(extractBase64String, "<img src='cid:" + RandomNumber + "'>");
+
+                    var metadataStart = extractBase64String.IndexOf("base64,");
+
+                    // Remove the string if match is found.
+                    extractBase64String = extractBase64String.Remove(0, metadataStart + 7);
+
+                    int lastPosition = Common.GetNthIndex(extractBase64String, '"', 1);
+
+                    if (lastPosition == extractBase64String.Length)
+                    {
+                        extractBase64String = extractBase64String.Remove(lastPosition, 1);
+                    }
+                    else
+                    {
+                        extractBase64String = extractBase64String.Remove(lastPosition, (extractBase64String.Length - lastPosition));
+                    }
+
+                    byte[] imageBytes = Convert.FromBase64String(extractBase64String);
+
+                    LinkedResource linkedResource = new LinkedResource(new MemoryStream(imageBytes));
+                    linkedResource.ContentId = RandomNumber;
+                    linkedResource.TransferEncoding = TransferEncoding.Base64;
+                    tempAlternateView.LinkedResources.Add(linkedResource);
+                }
+            }
+
+            //End : Added for send the images in the Email section
+
             string emailBody = notification.EmailContent.Replace("[EmailToBeReplaced]", emailId).Replace("[IssueToBeReplaced]", Issue);
-            var success = Common.sendMail(Common.SupportMail, Common.FromSupportMail, emailBody, emailSubject, string.Empty, Common.FromAlias, string.Empty, true); //email will be sent to Support email Id defined in web.config
+            AlternateView htmltextview = AlternateView.CreateAlternateViewFromString(("<html><body>" + emailBody + "</body></html>"), null, "text/html");
+
+            foreach (LinkedResource item in tempAlternateView.LinkedResources)
+            {
+                htmltextview.LinkedResources.Add(item);
+            }
+
+            //var success = Common.sendMail(Common.SupportMail, Common.FromSupportMail, emailBody, emailSubject, string.Empty, Common.FromAlias, string.Empty, true, alternativeView); //email will be sent to Support email Id defined in web.config
+            var success = Common.sendMail("kalpesh.sharma@indusa.com", Common.FromSupportMail, emailBody, emailSubject, string.Empty, Common.FromAlias, string.Empty, true, htmltextview); 
             if (success == 1)
             {
                 return Json(true, JsonRequestBehavior.AllowGet);
