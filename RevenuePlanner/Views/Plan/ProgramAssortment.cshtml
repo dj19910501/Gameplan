@@ -23,7 +23,8 @@
                 <span class="gear-sidebar dropdown-toggle" data-toggle="dropdown"></span>
                 <ul class="dropdown-menu">
                     <li><a id="spanDuplicate">Duplicate Program</a></li>
-                    @if ((bool)ViewBag.IsOwner && !(bool)ViewBag.IsCreated)
+                    @*Modified by Dharmraj to ckeck ProgramDeletable flag before showing delete button*@
+                    @if ((bool)ViewBag.IsOwner && !(bool)ViewBag.IsCreated && (bool)ViewBag.IsProgramDeleteble)
                     {
                         <li><a id="deleteProgram">Delete Program</a></li>                        
                     }

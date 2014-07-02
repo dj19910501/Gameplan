@@ -1604,7 +1604,41 @@ namespace RevenuePlanner.Controllers
                 }).Select(pcpj => pcpj).Distinct().OrderBy(pcpj => pcpj.id)
             }).Select(p => p).Distinct().OrderBy(p => p.id);
 
-            return Json(campaignobj, JsonRequestBehavior.AllowGet);
+            //Start : Check isOwner flag for program and campaign based on tactics custom restrictions, Ticket #577, By Dharmraj
+            var lstCampaignTmp = campaignobj.Select(c => new
+            {
+                id = c.id,
+                title = c.title,
+                description = c.description,
+                cost = c.cost,
+                mqls = c.mqls,
+                isOwner = c.isOwner,
+                programs = c.programs.Select(p => new
+                {
+                    id = p.id,
+                    title = p.title,
+                    description = p.description,
+                    cost = p.cost,
+                    mqls = p.mqls,
+                    isOwner = p.isOwner == 0 ? (p.tactics.Any(t => t.isOwner == 1) ? 1 : 0) : 1,
+                    tactics = p.tactics
+                })
+            });
+
+            var lstCampaign = lstCampaignTmp.Select(c => new
+            {
+                id = c.id,
+                title = c.title,
+                description = c.description,
+                cost = c.cost,
+                mqls = c.mqls,
+                isOwner = c.isOwner == 0 ? (c.programs.Any(p => p.isOwner == 1) ? 1 : 0) : 1,
+                programs = c.programs
+            });
+
+            //return Json(campaignobj, JsonRequestBehavior.AllowGet);
+            return Json(lstCampaign, JsonRequestBehavior.AllowGet);
+            //End : Check isOwner flag for program and campaign based on custom restrictions, Ticket #577, By Dharmraj
         }
 
         /// <summary>
@@ -1751,10 +1785,38 @@ namespace RevenuePlanner.Controllers
             if (Sessions.User.UserId == pc.CreatedBy)
             {
                 ViewBag.IsOwner = true;
+
+                // Added by Dharmraj Mangukiya to hide/show delete program as per custom restrictions PL ticket #577
+                var AllTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == pc.PlanCampaignId && t.IsDeleted == false).ToList();
+                bool IsCampaignDeleteble = true;
+                if (AllTactic.Count > 0)
+                {
+                    var OthersTactic = AllTactic.Where(t => t.CreatedBy != Sessions.User.UserId).ToList();
+                    if (OthersTactic.Count > 0)
+                    {
+                        IsCampaignDeleteble = false;
+                    }
+                    else
+                    {
+                        var lstUserCustomRestriction = Common.GetUserCustomRestriction();
+                        int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                        var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
+                        var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
+                        var lstAllowedBusinessUnit = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId).ToList();
+                        var a = AllTactic.Where(t => t.CreatedBy == Sessions.User.UserId && (!lstAllowedGeography.Contains(t.GeographyId.ToString()) || !lstAllowedVertical.Contains(t.VerticalId.ToString()) || !lstAllowedBusinessUnit.Contains(t.BusinessUnitId.ToString()))).ToList();
+                        if (AllTactic.Where(t => t.CreatedBy == Sessions.User.UserId && (!lstAllowedGeography.Contains(t.GeographyId.ToString()) || !lstAllowedVertical.Contains(t.VerticalId.ToString()) || !lstAllowedBusinessUnit.Contains(t.BusinessUnitId.ToString()))).ToList().Count > 0)
+                        {
+                            IsCampaignDeleteble = false;
+                        }
+                    }
+                }
+
+                ViewBag.IsCampaignDeleteble = IsCampaignDeleteble;
             }
             else
             {
                 ViewBag.IsOwner = false;
+                ViewBag.IsCampaignDeleteble = false;
             }
             ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
             return PartialView("CampaignAssortment", pcm);
@@ -2133,10 +2195,38 @@ namespace RevenuePlanner.Controllers
             if (Sessions.User.UserId == pcp.CreatedBy)
             {
                 ViewBag.IsOwner = true;
+
+                // Added by Dharmraj Mangukiya to hide/show delete program as per custom restrictions PL ticket #577
+                var AllTactic = pcp.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted.Equals(false)).ToList();
+                bool IsProgramDeleteble = true;
+                if (AllTactic.Count > 0)
+                {
+                    var OthersTactic = AllTactic.Where(t => t.CreatedBy != Sessions.User.UserId).ToList();
+                    if (OthersTactic.Count > 0)
+                    {
+                        IsProgramDeleteble = false;
+                    }
+                    else
+                    {
+                        var lstUserCustomRestriction = Common.GetUserCustomRestriction();
+                        int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                        var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
+                        var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
+                        var lstAllowedBusinessUnit = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId).ToList();
+                        var a = AllTactic.Where(t => t.CreatedBy == Sessions.User.UserId && (!lstAllowedGeography.Contains(t.GeographyId.ToString()) || !lstAllowedVertical.Contains(t.VerticalId.ToString()) || !lstAllowedBusinessUnit.Contains(t.BusinessUnitId.ToString()))).ToList();
+                        if (AllTactic.Where(t => t.CreatedBy == Sessions.User.UserId && (!lstAllowedGeography.Contains(t.GeographyId.ToString()) || !lstAllowedVertical.Contains(t.VerticalId.ToString()) || !lstAllowedBusinessUnit.Contains(t.BusinessUnitId.ToString()))).ToList().Count > 0)
+                        {
+                            IsProgramDeleteble = false;
+                        }
+                    }
+                }
+
+                ViewBag.IsProgramDeleteble = IsProgramDeleteble;
             }
             else
             {
                 ViewBag.IsOwner = false;
+                ViewBag.IsProgramDeleteble = false;
             }
             ViewBag.Campaign = pcp.Plan_Campaign.Title;
             ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;

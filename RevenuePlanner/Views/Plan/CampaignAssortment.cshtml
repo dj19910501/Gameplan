@@ -19,7 +19,7 @@
                 <span class="gear-sidebar dropdown-toggle" data-toggle="dropdown"></span>
                 <ul class="dropdown-menu">
                     <li><a id="spanDuplicate">Duplicate Campaign</a></li>
-                    @if ((bool)ViewBag.IsOwner && !(bool)ViewBag.IsCreated)
+                    @if ((bool)ViewBag.IsOwner && !(bool)ViewBag.IsCreated && (bool)ViewBag.IsCampaignDeleteble)
                     {
                         <li><a id="deleteCampaign">Delete Campaign</a></li>                        
                     }
