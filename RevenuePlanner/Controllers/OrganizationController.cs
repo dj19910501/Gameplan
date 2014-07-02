@@ -409,7 +409,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
             ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
 
-            if ((bool)ViewBag.IsUserAdminAuthorized == false && Mode.ToLower() != "view" && Mode.ToLower() != "mypermission")
+            if ((bool)ViewBag.IsUserAdminAuthorized == false && Mode.ToLower() != Enums.UserPermissionMode.View.ToString().ToLower() && Mode.ToLower() != Enums.UserPermissionMode.MyPermission.ToString().ToLower())
             {
                 return RedirectToAction("Index", "NoAccess");
             }
@@ -557,6 +557,7 @@ namespace RevenuePlanner.Controllers
                 Guid UserId = Guid.Parse(userId);
                 Guid creatorId = Sessions.User.UserId;
                 int i = objBDSServiceClient.resetToRoleDefault(UserId, creatorId, Sessions.ApplicationId);
+                TempData["Successmessage"] = "Model inputs successfully saved.";
                 return true;
             }
             catch
