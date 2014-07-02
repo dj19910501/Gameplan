@@ -72,6 +72,9 @@
 .treeview li > ul li ul li > span .hitarea{
 	background: url(../images/arrow-expand2.gif) right top no-repeat;
 }
+.treeview li > ul li ul li > span .hitarea.collapsable-hitarea{
+	background: url(../images/arrow-collapse2.gif) right top no-repeat !important;
+}
 .treeview li > ul li li{
 	margin-bottom:10px;
 	padding-bottom:5px;
