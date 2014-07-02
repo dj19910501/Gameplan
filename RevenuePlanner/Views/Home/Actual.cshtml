@@ -120,36 +120,36 @@
                         if (s == Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString())
                         {
                             <tr class="height42">
-                                <th id="inqP" class="text-align-right  projected font908D88">@tacticActual.ProjectedStageValue</th>
-                                <th id="lblTotalProjectedStageValue" class="border-r font3F3F3F text-align-right">@tacticActual.ProjectedStageValueActual
+                                <th id="inqP" class="text-align-right  projected font908D88 ActualsFormater">@tacticActual.ProjectedStageValue</th>
+                                <th id="lblTotalProjectedStageValue" class="border-r font3F3F3F text-align-right ActualsFormater">@tacticActual.ProjectedStageValueActual
                                 </th>
                             </tr>
                         }
                         else if (s.ToLower() == Common.StageCodeMQL)
                         {
                             <tr class="height42">
-                                <th id="mqlP" class="text-align-right  projected font908D88">@tacticActual.MQLs</th>
-                                <th id="lblTotalMQL" class="border-r font3F3F3F text-align-right ">@tacticActual.MQLsActual</th>
+                                <th id="mqlP" class="text-align-right  projected font908D88 ActualsFormater">@tacticActual.MQLs</th>
+                                <th id="lblTotalMQL" class="border-r font3F3F3F text-align-right ActualsFormater ">@tacticActual.MQLsActual</th>
                             </tr>
                         }
                     }
 
                     <tr class="height42">
-                        <th id="cwP" class="text-align-right  projected font908D88">@tacticActual.CWs</th>
-                        <th id="lblTotalCW" class="border-r font3F3F3F text-align-right">@tacticActual.CWsActual</th>
+                        <th id="cwP" class="text-align-right  projected font908D88 ActualsFormater">@tacticActual.CWs</th>
+                        <th id="lblTotalCW" class="border-r font3F3F3F text-align-right ActualsFormater">@tacticActual.CWsActual</th>
                     </tr>
                     <tr class="height42">
-                        <th id="rP" class="text-align-right projected font908D88">@tacticActual.Revenues</th>
-                        <th id="lblTotalRevenue" class="border-r font3F3F3F text-align-right">@tacticActual.RevenuesActual</th>
+                        <th id="rP" class="text-align-right projected font908D88 ActualsFormater">@tacticActual.Revenues</th>
+                        <th id="lblTotalRevenue" class="border-r font3F3F3F text-align-right ActualsFormater">@tacticActual.RevenuesActual</th>
                     </tr>
                     <tr class="height42">
-                        <th id="cP" class="text-align-right projected font908D88">@tacticActual.Cost</th>
+                        <th id="cP" class="text-align-right projected font908D88 ActualsFormater">@tacticActual.Cost</th>
                         <th class="border-r font3F3F3F text-align-right">
                             <input id="cT" class="backgroundC6EBF3 font3F3F3F text-align-right width75px currency_dollar" placeholder="- - -" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" value="@tacticActual.CostActual"></th>
                     </tr>
                     <tr class="height42">
-                        <th id="roiP" class="text-align-right height22 projected padding-bottom9 font908D88">@tacticActual.ROI</th>
-                        <th id="roiT" class="border-r font3F3F3F text-align-right">@tacticActual.ROIActual</th>
+                        <th id="roiP" class="text-align-right height22 projected padding-bottom9 font908D88 ActualsFormater">@tacticActual.ROI</th>
+                        <th id="roiT" class="border-r font3F3F3F text-align-right ActualsFormater">@tacticActual.ROIActual</th>
                     </tr>
                 </tbody>
             </table>
@@ -202,6 +202,14 @@
                     TacticActual = r;
                     fillTacticActualTable();
                     getLoadActual();
+
+                    //Fetch all the row values from the tables
+                    $('.ActualsFormater').each(function () {
+                        //Added By : Kalpesh Sharma
+                        //PL #508 Set Currency formatter for label & tool tip.
+                        SetLabelFormaterWithTipsy($(this));
+                    });
+
                 },
                 error: function () {
                     $("#errorMessage").css("display", "block");

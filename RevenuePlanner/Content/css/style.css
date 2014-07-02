@@ -7253,3 +7253,10 @@ background-color: #ffffff; padding:20px; margin-top:1px; border-radius: 5px 5px 
     border-bottom: 1px solid #A8A8A8;
 }
 /* End - Added By Sohel Pathan on 25/06/2014 for PL ticket #537 */
+
+
+ /* Start - Added By Kalpesh Sharma on 27/06/2014 for PL ticket #508 */
+#inspect-modal-right-div .size65x38 .font_size30 {
+    font-size : 21px !important;
+}
+/* End - Added By Kalpesh Sharma on 27/06/2014 for PL ticket #508 */

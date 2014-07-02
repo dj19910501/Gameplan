@@ -427,6 +427,14 @@
                         */
                         addRowTactic(i, tactic[i].id, tactic[i].clientid, tactic[i].modelId, tactic[i].title, tactic[i].Stage,/* tactic[i].inquiries,*/ tactic[i].ProjectedStageValue, tactic[i].revenue, tactic[i].IsDeployedToIntegration, tactic[i].IsTargetStageOfModel); // parameter _IsTargetStageOfModel Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
                     }
+
+                    //Fetch all the row values from the tables
+                    $('.projectedcost').each(function () {
+                        //Added By : Kalpesh Sharma
+                        //PL #508 Set format for label in tool tip
+                        SetLabelFormaterWithTipsy($(this));
+                    });
+
                 } else {
                     $('#table_tactics > tbody').append('<tr><td colspan="9" class="gray">No saved tactics to display.</td></tr>');
                 }
@@ -452,7 +460,7 @@
                           //'<td   class="sm" id="' + _id + '">' + FormatCommas(_inquiries.toString(), false) + '</td>' +
                            //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
                           '<td   class="sm" id="' + _id + '">' + FormatCommas(_ProjectedStageValue.toString(), false) + '</td>' +
-                          '<td  class="border-r sm" id="' + _id + '">$' + FormatCommas(_revenue.toString(), false) + '</td>' +
+                          '<td  class="border-r sm projectedcost" id="' + _id + '">$' + FormatCommas(_revenue.toString(), false) + '</td>' +
                           '<td class="border-r"><span class="circle-check-icon-gray circle-check-icon-blue"  id = "' + "rej" + _id + '"></span></td>';
 
                 if ($("#IsModelIntegrated").val() == 'True') {
@@ -468,7 +476,7 @@
                             //'<td  id="' + _id + '" class="sm">' + FormatCommas(_inquiries.toString(), false) + '</td>' +
                              //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
                             '<td  id="' + _id + '" class="sm">' + FormatCommas(_ProjectedStageValue.toString(), false) + '</td>' +
-                            '<td id="' + _id + '" class="border-r sm">$' + FormatCommas(_revenue.toString(), false) + '</td>' +
+                            '<td id="' + _id + '" class="border-r sm projectedcost">$' + FormatCommas(_revenue.toString(), false) + '</td>' +
                             '<td class="border-r"><span class="circle-check-icon-gray"  id = "' + "rej" + _id + '"></span></td>';
 
                 if ($("#IsModelIntegrated").val() == 'True') {

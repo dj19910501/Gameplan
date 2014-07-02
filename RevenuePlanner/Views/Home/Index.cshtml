@@ -2062,6 +2062,14 @@ function FillTacticsTable() {
                     activities.data[i].mqls, activities.data[i].cws, activities.data[i].cost, activities.data[i].isDeclined, activities.data[i].isSubmitted, activities.data[i].isImprovement);
             }
         }
+
+        //Fetch all the row values from the tables
+        $('.ActivitiesFormater').each(function () {
+            //Added By : Kalpesh Sharma
+            //PL #508 Set format for label in tool tip
+            SetLabelFormaterWithTipsy($(this));
+        });
+
     }
 }
 
@@ -2087,8 +2095,8 @@ function addRowTactic(index, id, text, projectedStageValue, mqls, cws, cost, isD
         $html += '<span class="title-baseline-model">' + text + '</span><span class="search-icon"></span></td>' +
                     '<td class="sm">' + displayTacticMQL(projectedStageValue) + '</td>' +
                     '<td class="sm">' + displayTacticMQL(mqls) + '</td>' +
-                    '<td class="sm">' + FormatCurrency(cws, false) + '</td>' +
-                    '<td class="border-r sm">' + FormatCurrency(cost, false) + '</td>';
+                    '<td class="sm ActivitiesFormater">' + FormatCurrency(cws, false) + '</td>' +
+                    '<td class="border-r sm ActivitiesFormater">' + FormatCurrency(cost, false) + '</td>';
         $html += '<td><span class="reject-icon active"></span><span class="accept-icon"></span></td>';
         
         $html += '</tr>';
@@ -2103,8 +2111,8 @@ function addRowTactic(index, id, text, projectedStageValue, mqls, cws, cost, isD
         $html += '<span class="title-baseline-model">' + text + '</span><span class="search-icon"></span></td>' +
                     '<td class="sm">' + displayTacticMQL(projectedStageValue) + '</td>' +
                     '<td class="sm">' + displayTacticMQL(mqls) + '</td>' +
-                    '<td class="sm">' + FormatCurrency(cws, false) + '</td>' +
-                    '<td class="border-r sm">' + FormatCurrency(cost, false) + '</td>';
+                    '<td class="sm ActivitiesFormater">' + FormatCurrency(cws, false) + '</td>' +
+                    '<td class="border-r sm ActivitiesFormater">' + FormatCurrency(cost, false) + '</td>';
         $html += '<td><span class="reject-icon"></span><span class="accept-icon"></span></td>';
         $html += '</tr>';
     }

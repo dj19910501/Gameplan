@@ -349,7 +349,10 @@
     $(document).ready(
       function () {
 
-          SetFormatForLabel("#inq-id", 5);
+          //Added By : Kalpesh Sharma
+          //PL #508 Set format for label in tool tip
+          SetLabelFormaterWithTipsy("#inq-id");
+
           SetFormatForLabel("#mqls-id", 5);
           $("#BtnShareTactic").click(function () {
               $("#DivPartialShareTactic").empty();

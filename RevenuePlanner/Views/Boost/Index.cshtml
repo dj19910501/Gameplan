@@ -240,6 +240,14 @@
                 $('#table_boost > tbody').append('<tr><td colspan="8" class="gray">No saved improvement tactics to display.</td></tr>');
             }
         }
+
+        //Fetch all the row values from the tables
+        $('.FormaterBoostCost').each(function () {
+            //Added By : Kalpesh Sharma
+            //PL #508 Set format for label in tool tip
+            SetLabelFormaterWithTipsy($(this));
+        });
+
     }
     //add row in tactics table
     function addRowTactic(_index, _id, _Title, _Cost, _TargetStage, _IsDeployed, _IsDeployedToIntegration) {
@@ -272,7 +280,7 @@
             $html += '<span class="improve-trget">ADS</span>';
         }
         $html += '</td>';
-        $html += ' <td class="border-r tipsyclass">$' + FormatCommas(_Cost.toString(), false) + '</td>';
+        $html += ' <td class="border-r tipsyclass FormaterBoostCost">$' + FormatCommas(_Cost.toString(), false) + '</td>';
         if (_IsDeployed != true) {
             $html += '<td class="border-r"><span class="circle-check-icon-gray" id="spnStatus_' + _id + '"></span></td>';
         }

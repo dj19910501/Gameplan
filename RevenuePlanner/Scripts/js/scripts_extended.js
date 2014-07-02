@@ -127,9 +127,12 @@ function SetBudget(idName) {
     //$(idName).html("$ " + number_format($(idName).html(), 0, '.', ','));
     var budgetValue = $(idName).html();
     if (budgetValue.length >= 5) {
-        $(idName).html(SetFormatForLabel(idName, 5)); //$(idName).html($(idName).html().substring(0, 7) + ".."); change by dharmraj for ticket #479 : to accommodate large number
+        $(idName).html(SetFormatForLabelExtended(idName)); //$(idName).html($(idName).html().substring(0, 7) + ".."); change by dharmraj for ticket #479 : to accommodate large number
         $(idName).html('$ ' + $(idName).html());
-        $(idName).prop('title', budgetValue);
+        //Added By : Kalpesh Sharma
+        //PL #508 Set format for label in tool tip
+        //$(idName).prop('title', budgetValue);
+        $(idName).prop('title', "$" + number_format(budgetValue.toString(), 0, '.', ','));
         $(idName).addClass('north');
         $('.north').tipsy({ gravity: 'n' });
     }
@@ -139,6 +142,75 @@ function SetBudget(idName) {
         $(idName).removeClass('north');
     }
 }
+
+//PL #508 Label formater with tipsy 
+//Added By Kalpesh Sharma 
+//This function is responsible for remove the sepcial char from the string and make it in such a way that we can use that string in our further process.
+function RemoveExtraCharactersFromString(value) {
+    //Check that string consider a $ sign , if yes then we have remove the sign from the string .
+    if (value.indexOf("$") != -1) {
+        value = value.replace("$", "");
+    }
+
+    //Remove the sepcial character such as (,) from the string ..
+    value = value.replace(/[\,]+/g, "")
+
+    return value;
+}
+
+//PL #508 Label formater with tipsy 
+//Added By Kalpesh Sharma 
+function SetLabelFormaterWithTipsy(idName) {
+    var budgetValue = $(idName).html();
+
+    if (budgetValue) { //Check whether the number is empty or not
+        budgetValue = RemoveExtraCharactersFromString(budgetValue); //Function that remove the special char from the string 
+        if (budgetValue.length >= 5) {
+            //SetFormatForLabel(idName, 5);
+            SetFormatForLabelExtended(idName);
+            $(idName).html('$' + $(idName).html());
+
+            //Here we store floating value from the string after format of our string , we will added into end of the string.  
+            var remNumber = '';
+            if (budgetValue.indexOf(".") != -1) {
+                remNumber = budgetValue.substr(budgetValue.indexOf('.'));
+            }
+
+            //Add tipsy for the current label.
+            $(idName).attr('title', budgetValue);
+            $(idName).prop('title', "$" + number_format(budgetValue.toString(), 0, '.', ',') + remNumber);
+            $(idName).addClass('north');
+            $('.north').tipsy({ gravity: 'n' });
+        }
+    }
+
+}
+
+
+//PL #508 Add tipsy on Html control
+//Added By Kalpesh Sharma 
+function addTipsy(idName) {
+    $(idName).attr('title', $(idName).val());
+    $(idName).prop('title', "$" + number_format($(idName).val().toString(), 0, '.', ','));
+    $(idName).addClass('north');
+    $('.north').tipsy({ gravity: 'n' });
+}
+
+
+//PL #508 Label formater for Numbers with tipsy 
+//Added By Kalpesh Sharma 
+function SetLabelFormaterWithTipsyNumbers(idName) {
+    var budgetValue = $(idName).text();
+    if (budgetValue) {
+        if (budgetValue.length >= 5) {
+            SetFormatForLabelExtended(idName);
+            $(idName).prop('title', number_format(budgetValue.toString(), 0, '.', ','));
+            $(idName).addClass('north');
+            $('.north').tipsy({ gravity: 'n' });
+        }
+    }
+}
+
 
 function SetPriceValue(idName) {
     $(idName).html(number_format($(idName).html(), 0, '.', ','));
@@ -158,6 +230,23 @@ function SetPriceValue(idName) {
 function getblurvalue(sender) {
 
     $(".nl-field-go").click();
+}
+
+//Added By : Kalpesh Sharma
+//Date : 06/26/2014
+//PL #508 Extended method for Set formatter for label
+function SetFormatForLabelExtended(lableId) {
+    var txtvalue = $(lableId).text();
+    if (txtvalue) {
+        txtvalue = RemoveExtraCharactersFromString(txtvalue); //Function that remove the special char from the string 
+        if (txtvalue.indexOf('.') != -1) {
+            txtvalue = txtvalue.substring(0, txtvalue.indexOf('.'))
+        }
+        $(lableId).text(GetAbberiviatedValue(txtvalue));
+        $(lableId).attr('title', txtvalue);
+        $(lableId).addClass('north');
+        $('.north').tipsy({ gravity: 's' });
+    }
 }
 
 function SetFormatForLabel(lableId, maxSize) {

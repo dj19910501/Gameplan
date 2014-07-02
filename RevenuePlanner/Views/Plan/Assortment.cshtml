@@ -171,6 +171,11 @@
     ProgramID = @ViewBag.ProgramID
     ImprovementPlanProgramId = @ViewBag.ImprovementPlanProgramId
     $("#spanMQl").text(FormatCommas($("#spanMQl").text(), false));
+
+    //Added By : Kalpesh Sharma
+    //PL #508 Set format for label in tool tip
+    SetLabelFormaterWithTipsy("#spanBudget");
+
     $("#spanBudget").text(FormatCurrency($("#spanBudget").text(), false));
     var spantitle = $("#spanTitle").html();
     if (spantitle.length >= 70) {
@@ -767,7 +772,7 @@
                                 '<div class="height40 pull-right width50px"></div>' +
                                 //'<div class="total height40 pull-right width3"></div>' +
                                 '<div class="total markTotal pull-right width100px text-right">' + FormatCommas(programTotal.toString(), false) + '</div>' +
-                                '<div class="total markTotal pull-right width150px text-right tipsyclass">$' + FormatCommas(costTotal.toString(), false) + '</div>' +
+                                '<div class="total markTotal pull-right width150px text-right tipsyclass costAssotment">$' + FormatCommas(costTotal.toString(), false) + '</div>' +
                                 '<div class="total markTotal pull-right width100px text-right tipsyclass">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
                             '</div>';
 
@@ -776,6 +781,14 @@
                 $tableCampaigns.append($html);
 
                 addEventTriggerSlidepanel();
+
+                //Fetch all the row values from the tables
+                $('.costAssotment').each(function () {
+                    //Added By : Kalpesh Sharma
+                    //PL #508 Set format for label in tool tip
+                    SetLabelFormaterWithTipsy($(this));
+                });
+
             }
         }
 
@@ -805,7 +818,7 @@
             $html += '<span class="pull-left width55"><span class="pull-left font-black">' + num + '.</span><span class="blue-bg-text campaign-name campaign-name-span tipsyclassTitle">' + _title + '</span></span>' +
                                '<span class="pull-right width50px"><div class="add-icon campaign" ></div></span>' +
                                 '<span class="pull-right width100px text-right font-black ">' + FormatCommas(_programCount.toString(), false) + '</span>' +
-                                '<span class="pull-right width150px text-right font-black tipsyclass">$' + FormatCommas(_cost.toString(), false) + '</span>' +
+                                '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_cost.toString(), false) + '</span>' +
                                 '<span class="pull-right width100px text-right font-black tipsyclass">' + FormatCommas(_mqls.toString(), false) + '</span>' +
                             '</a>' +
                         '</div>' +
@@ -838,7 +851,7 @@
                         $html += '<span class="pull-left width55"><span class="gray-bg-text campaign-name campaign-name-span tipsyclassTitle">' + _programs[i].title + '</span></span>' +
                          '<span class="pull-right width50px"><div class="add-icon program" ></div></span>' +
                          '<span class="pull-right width100px text-right font-black">-</span>' +
-                         '<span class="pull-right width150px text-right font-black tipsyclass">$' + FormatCommas(_programs[i].cost.toString(), false) + '</span>' +
+                         '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].cost.toString(), false) + '</span>' +
                          '<span class="pull-right width100px text-right font-black tipsyclass">' + FormatCommas(_programs[i].mqls.toString(), false) + '</span>' +
                      '</a>' +
                  '</div>' +
@@ -877,7 +890,7 @@
                                     $html += '<span class="underline tipsyclassTitle">' + _programs[i].tactics[k].title + '</span>' +
                                                     '<span class="pull-right width50px text-right font-black">&nbsp;</span>' +
                                               '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
-                                              '<span class="pull-right width150px text-right font-black tipsyclass">$' + FormatCommas(_programs[i].tactics[k].cost.toString(), false) + '</span>' +
+                                              '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].tactics[k].cost.toString(), false) + '</span>' +
                                               '<span class="pull-right width100px text-right font-black tipsyclass">' + displayTacticMQL(_programs[i].tactics[k].mqls.toString()) + '</span>' +
                                                 '</div>' +
                                             '</div>';
@@ -969,7 +982,7 @@
                                 //'<div class="pull-left width55"></div>' +
                                 //'<div class="height40 pull-right width50px"></div>' +
                                 '<div class="total improvementTotal pull-right width100px text-right tipsyclass">' + FormatCommas(programTotal.toString(), false) + '</div>' +
-                                '<div class="total improvementTotal pull-right width150px text-right tipsyclass">$' + FormatCommas(costTotal.toString(), false) + '</div>' +
+                                '<div class="total improvementTotal pull-right width150px text-right tipsyclass Cost_Improvement_Activities">$' + FormatCommas(costTotal.toString(), false) + '</div>' +
                                 '<div class="total improvementTotal pull-right width100px text-right border-cf-left" id="DivImprovementTotal">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
                                 '<div class="gray-add-container border-cf" id="grayImprovementContainer"></div>' +
                                 '<div class="grey-container-full" id="grayFullContainer">' +
@@ -985,6 +998,13 @@
                     });
                 }
                 addEventTriggerSlidepanel();
+
+            //Fetch all the row values from the tables
+                $('.Cost_Improvement_Activities').each(function () {
+                    //Added By : Kalpesh Sharma
+                    //PL #508 Set format for label in tool tip
+                    SetLabelFormaterWithTipsy($(this));
+                });
             
         }
 
@@ -1044,7 +1064,7 @@
             $html += '<span class="pull-left width55" id="divPanelImp"><span class="pull-left font-black"></span><span class="font-black underline">' + _title + '</span></span>' +
                                 '<span class="pull-right width50px"><div class="add-icon impTactic" data-slidepanel="panel"></div></span>' +
                                 '<span class="pull-right width100px text-right font-black tipsyclass">&nbsp;</span>' +
-                                '<span class="pull-right width150px text-right font-black tipsyclass">$' + FormatCommas(_cost.toString(), false) + '</span>' +
+                                '<span id="spncostAssotment" class="pull-right width150px text-right font-black tipsyclass Cost_Improvement_Activities">$' + FormatCommas(_cost.toString(), false) + '</span>' +
                                 '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
                             '</a>' +
                         '</div>';
@@ -1091,6 +1111,11 @@
 
                         var withImprovedMQL = mqlTotal + mqlValue;
                         $('#DivImprovementTotal').html(FormatCommas(withImprovedMQL.toString(), false))
+
+
+                        //Added by : Kalpesh Sharma
+                        SetLabelFormaterWithTipsyNumbers("#DivImprovementTotal");
+
                         var mqltext = "@ViewBag.MQLLabel"
                         $html += ' ' + mqltext +' yielding <strong>';
                         var cwValue = parseFloat(data.CW);
@@ -1134,20 +1159,26 @@
                         
                         var revenueValue = parseFloat(data.Revenue);
                         if (revenueValue < 0) {
-                            $html += '-' + FormatCurrency(Math.abs(revenueValue).toString(), true);
+                            //Modified by : Kalpesh Sharma
+                            //PL #508 Set format for label in tool tip
+                            $html += '<span id="spanRevenueImpact" >' + '-' + FormatCurrency(Math.abs(revenueValue).toString(), true) + '</span>';
+                            //$html += '-' + FormatCurrency(Math.abs(revenueValue).toString(), true);
                         }
                         else {
-                            $html += '' + FormatCurrency(revenueValue.toString(), true);
+                            $html += '<span id="spanRevenueImpact" >' + '' + FormatCurrency(revenueValue.toString(), true) + '</span>';
+                            //$html += '' + FormatCurrency(revenueValue.toString(), true);
                         }
 
                         $html += '<br> on ';
-                        
+
                         var costValue = parseFloat(data.Cost);
                         if (costValue < 0) {
-                            $html += FormatCurrency(Math.abs(costValue).toString(), false) + ' decreased';
+                            //$html += FormatCurrency(Math.abs(costValue).toString(), false) + ' decreased';
+                            $html += '<span id="spanRevenuecostValue" >' + '-' + FormatCurrency(Math.abs(costValue).toString(), false) + '</span>' + ' decreased';
                         }
                         else {
-                            $html += FormatCurrency(costValue.toString(), false) + ' increased';
+                            $html += '<span id="spanRevenuecostValue" >' + FormatCurrency(costValue.toString(), false) + '</span>' + ' decreased';
+                            //$html += FormatCurrency(costValue.toString(), false) + ' increased';
                         }
 
                         $html += ' spend.</p>';
@@ -1155,6 +1186,13 @@
                         var $ContainerImprovement = $('#grayImprovementContainer');
 
                         $ContainerImprovement.append($html);
+
+                        //Fetch all the row values from the tables
+                        //Added By : Kalpesh Sharma
+                        //PL #508 Set format for label in tool tip
+                        SetLabelFormaterWithTipsy("#spanRevenuecostValue");
+                        SetLabelFormaterWithTipsy("#spanRevenueImpact");
+
                     }
 
                 }
@@ -1208,6 +1246,14 @@
                 LoadScriptForADS(1);
             }
 
+            //Fetch all the row values from the tables
+            $('.SuggestedSection').each(function () {
+                //Added By : Kalpesh Sharma
+                //PL #508 Set format for label in tool tip
+                SetLabelFormaterWithTipsy($(this));
+            });
+
+
         }
 
         // Added By Bhavesh
@@ -1219,10 +1265,10 @@
                 $html += ' class="added"';
             }
             $html += '><td data-column="1" class="left-text">' + ImprovementTacticTypeTitle + '</td>'
-                                + '	<td data-column="2"';
+                                + '	<td class="SuggestedSection" data-column="2"';
             
             if (!isADS) {
-                $html += ' class="noRightBorder"';
+                $html += ' class="noRightBorder SuggestedSection"';
             }
             $html += ' >$' + FormatCommas(Cost.toString(), false) + '</td>';
             var isDashedDisplay = false;
@@ -1237,8 +1283,8 @@
                                 + '	<td data-column="4" >---  </td>';
             }
             else {
-                $html += '<td data-column="3" class="noRightBorder">$' + FormatCommas(ProjectedRevenueWithoutTactic.toString(), true) + '</td>'
-                             + '	<td data-column="4" >$' + FormatCommas(ProjectedRevenueWithTactic.toString(), true) + '</td>';
+                $html += '<td data-column="3" class="noRightBorder SuggestedSection">$' + FormatCommas(ProjectedRevenueWithoutTactic.toString(), true) + '</td>'
+                             + '	<td class="SuggestedSection" data-column="4" >$' + FormatCommas(ProjectedRevenueWithTactic.toString(), true) + '</td>';
             }
 
             $html += '	<td data-column="5">' + ProjectedRevenueLift + '%</td>'
@@ -1482,6 +1528,16 @@
             }
             LoadScriptForConversion();
             LoadScriptForADS();
+
+
+            //Fetch all the row values from the tables
+            $('.SuggestedSection').each(function () {
+                //Added By : Kalpesh Sharma
+                //PL #508 Set format for label in tool tip
+                SetLabelFormaterWithTipsy($(this));
+            });
+
+
         }
 
         // Added By Bhavesh
@@ -1492,7 +1548,7 @@
                 htmlInner += ' class="added"';
             }
             htmlInner += '><td data-column="1" class="left-text">' + ImprovementTacticTypeTitle + '</td>'
-                                 + '	<td data-column="2">$' + FormatCommas(Cost.toString(), false) + '</td>';
+                                 + '	<td class="SuggestedSection" data-column="2">$' + FormatCommas(Cost.toString(), false) + '</td>';
             if (typeof MetricList != 'undefined') {
 
                 if (MetricList.length > 0) {
