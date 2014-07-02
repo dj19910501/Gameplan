@@ -32,7 +32,7 @@
     </ul>
 }
 
-@if (ViewBag.PermissionMode == "View" || ViewBag.PermissionMode == "MyPermission")
+@if (ViewBag.PermissionMode == Enums.UserPermissionMode.View.ToString() || ViewBag.PermissionMode == Enums.UserPermissionMode.MyPermission.ToString())
 {
    
     <!--success message-->
@@ -70,7 +70,7 @@
             <div class="span2 myaccount-colum">
                 <div class="width216">
                     <ul class="nav nav-pills nav-stacked width216">
-                        @if (ViewBag.PermissionMode == "View")
+                        @if (ViewBag.PermissionMode == Enums.UserPermissionMode.View.ToString())
                         {
 
                             <li><a href='@ViewPermissionURL'>My Permissions</a></li>
@@ -175,9 +175,12 @@
                     </dl>
                     }*@
                     <div class="bottom-btns">
+                        @if (ViewBag.PermissionMode == Enums.UserPermissionMode.View.ToString())
+                        {
                         <span class="btn-group">
                             <button class="btn btn-grey text-shadow-white source-sans-proregular" id="backbtn">Back</button>
                         </span>
+                        }
                     </div>
 
                 </div>
@@ -514,8 +517,8 @@ else
                     </dl>
                     }*@
                     <div id="divpartialsharetactic" class="hide">
-                        <div id="divsharetacticpopupmain" class="container-fluid all-height DivResetDefaults">
-                            <div class="row-fluid calc-height">
+                        <div id="divsharetacticpopupmain" class="all-height DivResetDefaults">
+                            <div class="calc-height">
                                 <div class="span12">
 
                                     <div style="display: block; z-index: 10500; height: auto; width: 320px;" aria-hidden="true" aria-labelledby="mymodallabel" role="dialog" class="form-inspect-share hide fade in height-auto" id="divsharetacticpopup">
@@ -533,11 +536,11 @@ else
                         <div style="z-index: 9999" class="modal-backdrop fade in" id="divbackgroundsharetactic"></div>
                     </div>
                     <div id="divpartialsharetactic1" class="hide">
-                        <div id="divsharetacticpopupmain1" class="container-fluid all-height DivResetDefaults">
-                            <div class="row-fluid calc-height">
+                        <div id="divsharetacticpopupmain1" class="all-height DivResetDefaults">
+                            <div class="calc-height">
                                 <div class="span12">
 
-                                    <div style="display: block; z-index: 10500; height: auto; width: 320px;" aria-hidden="true" aria-labelledby="mymodallabel" role="dialog" class="form-inspect-share hide fade in height-auto" id="divsharetacticpopup">
+                                    <div style="display: block; z-index: 10500; height: auto; width: 320px;" aria-hidden="true" aria-labelledby="mymodallabel" role="dialog" class="form-inspect-share hide fade in height-auto" id="divsharetacticpopup1">
 
                                         <div class="login-wrapper" style="padding-bottom: 20px;">
                                             <h2 class="primary-title source-sans-proregular without-text-shadow">Permissions Saved</h2>
@@ -591,6 +594,16 @@ else
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/check.js")"></script>
 <script type="text/javascript">
     $(document).ready(function () {
+        if('@TempData["SuccessMessage"]'!='')
+        {
+            var msgspan = "Model inputs successfully saved.";
+            $("#spanSuccessMessage").text(msgspan);
+            $("#successMessage").slideDown(600);
+            $("#successMessage").slideUp(1200).promise().always(function () {
+                close_popup();
+            });
+        }
+       
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
         $('.director').css('background-color', '@ViewBag.RoleColorCode');
         $(".check_signup").dgStyle();
@@ -665,12 +678,12 @@ else
             success: function (result) {
                 if (result == 'True') {
                     var msgspan = "Model inputs successfully saved.";
-                    $("#spanSuccessMessage").text(msgspan);
-                    $("#successMessage").slideDown(1200);
-                    $("#successMessage").slideUp(2500).promise().always(function () {
-                        close_popup();
-                    });
-                    url = '@Url.Content("~/Organization/OrganizationHierarchy")';
+                    //$("#spanSuccessMessage").text(msgspan);
+                    //$("#successMessage").slideDown(600);
+                    //$("#successMessage").slideUp(1200).promise().always(function () {
+                    //    close_popup();
+                    //});
+                    url = '@Url.Content("~/Organization/ViewEditPermission?Id="+ViewBag.UserId+"&Mode=Edit")';
                     window.location.href = url;
                 }
                 else {

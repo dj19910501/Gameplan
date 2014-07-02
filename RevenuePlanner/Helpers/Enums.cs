@@ -313,6 +313,12 @@ namespace RevenuePlanner.Helpers
             Yes,
             No
         }
+        public enum UserPermissionMode
+        {
+            View,
+            Edit,
+            MyPermission
+        }
         /* End Added by Mitesh Vaishnav for PL ticket #521 */
 
         #region Notification
