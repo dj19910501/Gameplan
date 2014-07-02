@@ -423,6 +423,8 @@ namespace RevenuePlanner.Controllers
             ViewBag.RoleColorCode = roleColorCode;
             ViewBag.Name = userDetails.FirstName + " " + userDetails.LastName;
             ViewBag.RoleName = userDetails.RoleTitle;
+            ViewBag.userGeography = userDetails.GeographyId.ToString();
+            ViewBag.userBusinessUnit = userDetails.BusinessUnitId;
             var clientVerticals = db.Verticals.Where(ver => ver.ClientId == Sessions.User.ClientId).ToList();
             var clientGeography = db.Geographies.Where(geo => geo.ClientId == Sessions.User.ClientId).ToList();
             var clientBusinessUnit = db.BusinessUnits.Where(bu => bu.ClientId == Sessions.User.ClientId).ToList();
@@ -484,6 +486,8 @@ namespace RevenuePlanner.Controllers
                 cRestrictionobj.Title = item.Title;
                 cRestrictionobj.CustomField = Enums.CustomRestrictionType.Geography.ToString();
                 cRestrictionobj.CustomFieldId = item.GeographyId.ToString();
+                if (userDetails.GeographyId != item.GeographyId)
+                {
                 var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId == item.GeographyId.ToString() && ucr.CustomField==Enums.CustomRestrictionType.Geography.ToString()).FirstOrDefault() : null;
                 if (IsUserRestrictionExist != null)
                 {
@@ -497,6 +501,13 @@ namespace RevenuePlanner.Controllers
                     cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(none)).Value;
                     cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.None;
                 }
+                }
+                else
+                {
+                    string ViewEdit = Enums.CustomRestrictionPermission.ViewEdit.ToString();
+                    cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(ViewEdit)).Value;
+                    cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                }
                 customRestrictionList.Add(cRestrictionobj);
             }
             foreach (var item in clientBusinessUnit)
@@ -505,6 +516,8 @@ namespace RevenuePlanner.Controllers
                 cRestrictionobj.Title = item.Title;
                 cRestrictionobj.CustomField = Enums.CustomRestrictionType.BusinessUnit.ToString();
                 cRestrictionobj.CustomFieldId = item.BusinessUnitId.ToString();
+                if (userDetails.BusinessUnitId != item.BusinessUnitId)
+                {
                 var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId == item.BusinessUnitId.ToString() && ucr.CustomField==Enums.CustomRestrictionType.BusinessUnit.ToString()).FirstOrDefault() : null;
                 if (IsUserRestrictionExist != null)
                 {
@@ -517,6 +530,13 @@ namespace RevenuePlanner.Controllers
                     string none = Enums.CustomRestrictionPermission.None.ToString();
                     cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(none)).Value;
                     cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.None;
+                }
+                }
+                else
+                {
+                    string ViewEdit = Enums.CustomRestrictionPermission.ViewEdit.ToString();
+                    cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(ViewEdit)).Value;
+                    cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.ViewEdit;
                 }
                 customRestrictionList.Add(cRestrictionobj);
             }
