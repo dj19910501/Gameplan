@@ -35,11 +35,14 @@ namespace BDSService
             return obj.GetClientList();
         }
 
-        public List<BDSEntities.Role> GetRoleList(string roleCodes)
-        {
-            BDSUserRepository obj = new BDSUserRepository();
-            return obj.GetRoleList(roleCodes);
-        }
+        //Modified By : Kalpesh Sharma
+        //Role logical deletion and Application id in Custom restrication
+        //Changes : Currenlty we are not use this method that's why we are commnet it . 
+        //public List<BDSEntities.Role> GetRoleList(string roleCodes)
+        //{
+        //    BDSUserRepository obj = new BDSUserRepository();
+        //    return obj.GetRoleList(roleCodes);
+        //}
 
         public List<BDSEntities.User> GetMultipleTeamMemberDetails(string userIdList, Guid applicationId)
         {

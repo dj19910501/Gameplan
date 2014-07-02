@@ -23,8 +23,11 @@ namespace BDSService
         [OperationContract]
         List<BDSEntities.Client> GetClientList();
 
-        [OperationContract]
-        List<BDSEntities.Role> GetRoleList(string roleCodes);
+        //Modified By : Kalpesh Sharma
+        //Role logical deletion and Application id in Custom restrication
+        //Changes : Currenlty we are not use this method that's why we are commnet it .
+        //[OperationContract]
+        //List<BDSEntities.Role> GetRoleList(string roleCodes);
 
         [OperationContract]
         List<BDSEntities.User> GetMultipleTeamMemberDetails(string userIdList, Guid applicationId);
