@@ -413,6 +413,7 @@
     function AssignDefaultValue() {
         $('#slidepanel-container').find("input[type=text],textarea,select").each(function () {
             $(this).attr("myValue", $(this).val());
+            $(this).attr("title", $(this).val());//uday 2-7-2014 for internal point tooltip
         });
     }
 

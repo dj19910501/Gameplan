@@ -385,6 +385,7 @@
         function AssignDefaultValue() {
             $('#slidepanel').find("input[type=text],textarea,select").each(function () {
                 $(this).attr("myValue", $(this).val());
+                $(this).attr("title", $(this).val());//uday 2-7-2014
             });
         }
         //function to check myValue attribute values and input values that any changes made?
