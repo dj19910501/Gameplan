@@ -45,37 +45,51 @@ namespace RevenuePlanner.Controllers
                 return AuthorizeUserAttribute.RedirectToNoAccess();
             }
 
-            // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(db.Plans.Where(a => a.PlanId == id).Select(a => a.Model.BusinessUnitId).FirstOrDefault());
-            if (id != 0 && !IsBusinessUnitEditable)
-                return AuthorizeUserAttribute.RedirectToNoAccess();
-            // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-
-            if (id > 0)
+            try
             {
-                // Added by Dharmraj Mangukiya for edit authentication of plan, PL ticket #519
-                var objplan = db.Plans.FirstOrDefault(m => m.PlanId == id && m.IsDeleted == false);
-                bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
-                bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
-                //Get all subordinates of current user upto n level
-                var lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
-                lstSubOrdinates.Add(Sessions.User.UserId);
-                bool IsPlanEditable = false;
-                if (IsPlanEditAllAuthorized)
+                // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(db.Plans.Where(a => a.PlanId == id).Select(a => a.Model.BusinessUnitId).FirstOrDefault());
+                if (id != 0 && !IsBusinessUnitEditable)
+                    return AuthorizeUserAttribute.RedirectToNoAccess();
+                // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+
+                if (id > 0)
                 {
-                    IsPlanEditable = true;
-                }
-                else if (IsPlanEditOwnAndSubordinatesAuthorized)
-                {
-                    if (lstSubOrdinates.Contains(objplan.CreatedBy))
+                    // Added by Dharmraj Mangukiya for edit authentication of plan, PL ticket #519
+                    var objplan = db.Plans.FirstOrDefault(m => m.PlanId == id && m.IsDeleted == false);
+                    bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+                    bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+                    //Get all subordinates of current user upto n level
+                    var lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
+                    lstSubOrdinates.Add(Sessions.User.UserId);
+                    bool IsPlanEditable = false;
+                    if (IsPlanEditAllAuthorized)
                     {
                         IsPlanEditable = true;
                     }
-                }
+                    else if (IsPlanEditOwnAndSubordinatesAuthorized)
+                    {
+                        if (lstSubOrdinates.Contains(objplan.CreatedBy))
+                        {
+                            IsPlanEditable = true;
+                        }
+                    }
 
-                if (!IsPlanEditable)
+                    if (!IsPlanEditable)
+                    {
+                        return AuthorizeUserAttribute.RedirectToNoAccess();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
                 {
-                    return AuthorizeUserAttribute.RedirectToNoAccess();
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
                 }
             }
 
@@ -595,55 +609,69 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns view as action result.</returns>
         public ActionResult ApplyToCalendar(string ismsg = "", bool isError = false)
         {
-            // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(db.Plans.Where(a => a.PlanId == Sessions.PlanId).Select(a => a.Model.BusinessUnitId).FirstOrDefault());
-            if (!IsBusinessUnitEditable)
-                return AuthorizeUserAttribute.RedirectToNoAccess();
-            // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-
-            //if (Sessions.RolePermission != null)
-            //{
-            //    Common.Permission permission = Common.GetPermission(ActionItem.Plan);
-            //    switch (permission)
-            //    {
-            //        case Common.Permission.FullAccess:
-            //            break;
-            //        case Common.Permission.NoAccess:
-            //            return RedirectToAction("Homezero", "Home");
-            //        case Common.Permission.NotAnEntity:
-            //            break;
-            //        case Common.Permission.ViewOnly:
-            //            ViewBag.IsViewOnly = "true";
-            //            break;
-            //    }
-            //}
-
-            // To get permission status for Plan Edit , By dharmraj PL #519
-            //Get all subordinates of current user upto n level
-            var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
-            lstOwnAndSubOrdinates.Add(Sessions.User.UserId);
-            // Get current user permission for edit own and subordinates plans.
-            bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
-            bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
-            var objPlan = db.Plans.FirstOrDefault(p => p.PlanId == Sessions.PlanId);
-            if (IsPlanEditAllAuthorized)
+            try
             {
-                ViewBag.IsPlanEditable = true;
-            }
-            else if (IsPlanEditOwnAndSubordinatesAuthorized)
-            {
-                if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy))
+                // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(db.Plans.Where(a => a.PlanId == Sessions.PlanId).Select(a => a.Model.BusinessUnitId).FirstOrDefault());
+                if (!IsBusinessUnitEditable)
+                    return AuthorizeUserAttribute.RedirectToNoAccess();
+                // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+
+                //if (Sessions.RolePermission != null)
+                //{
+                //    Common.Permission permission = Common.GetPermission(ActionItem.Plan);
+                //    switch (permission)
+                //    {
+                //        case Common.Permission.FullAccess:
+                //            break;
+                //        case Common.Permission.NoAccess:
+                //            return RedirectToAction("Homezero", "Home");
+                //        case Common.Permission.NotAnEntity:
+                //            break;
+                //        case Common.Permission.ViewOnly:
+                //            ViewBag.IsViewOnly = "true";
+                //            break;
+                //    }
+                //}
+
+                // To get permission status for Plan Edit , By dharmraj PL #519
+                //Get all subordinates of current user upto n level
+                var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
+                lstOwnAndSubOrdinates.Add(Sessions.User.UserId);
+                // Get current user permission for edit own and subordinates plans.
+                bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+                bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+                var objPlan = db.Plans.FirstOrDefault(p => p.PlanId == Sessions.PlanId);
+                if (IsPlanEditAllAuthorized)
                 {
                     ViewBag.IsPlanEditable = true;
+                }
+                else if (IsPlanEditOwnAndSubordinatesAuthorized)
+                {
+                    if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy))
+                    {
+                        ViewBag.IsPlanEditable = true;
+                    }
+                    else
+                    {
+                        ViewBag.IsPlanEditable = false;
+                    }
                 }
                 else
                 {
                     ViewBag.IsPlanEditable = false;
                 }
             }
-            else
+            catch (Exception e)
             {
-                ViewBag.IsPlanEditable = false;
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
             }
 
             // Added by dharmraj to check user activity permission
@@ -701,34 +729,49 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                // Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
-                if (lstAllowedBusinessUnits.Count > 0)
+                try
                 {
-                    List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
-                    lstAllowedBusinessUnits.ForEach(g => lstAllowedBusinessUnitIds.Add(Guid.Parse(g)));
-                    var list = db.BusinessUnits.Where(s => lstAllowedBusinessUnitIds.Contains(s.BusinessUnitId) && s.IsDeleted == false).ToList().Select(u => new SelectListItem
+                    // Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
+                    if (lstAllowedBusinessUnits.Count > 0)
                     {
-                        Text = u.Title,
-                        Value = u.BusinessUnitId.ToString()
-                    });
-                    List<SelectListItem> items = new List<SelectListItem>(list);
-                    planModel.BusinessUnitIds = items;
-                    ViewBag.BusinessUnitIds = items;
-            }
-            else
-            {
-                //Added by Nirav for Custom Dropdown - 388
-                var list = db.BusinessUnits.Where(s => s.BusinessUnitId == Sessions.User.BusinessUnitId && s.IsDeleted == false).ToList().Select(u => new SelectListItem
-                {
-                    Text = u.Title,
-                    Value = u.BusinessUnitId.ToString()
-                });
-                List<SelectListItem> items = new List<SelectListItem>(list);
-                planModel.BusinessUnitIds = items;
-                ViewBag.BusinessUnitIds = items;
+                        List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
+                        lstAllowedBusinessUnits.ForEach(g => lstAllowedBusinessUnitIds.Add(Guid.Parse(g)));
+                        var list = db.BusinessUnits.Where(s => lstAllowedBusinessUnitIds.Contains(s.BusinessUnitId) && s.IsDeleted == false).ToList().Select(u => new SelectListItem
+                        {
+                            Text = u.Title,
+                            Value = u.BusinessUnitId.ToString()
+                        });
+                        List<SelectListItem> items = new List<SelectListItem>(list);
+                        planModel.BusinessUnitIds = items;
+                        ViewBag.BusinessUnitIds = items;
+                    }
+                    else
+                    {
+                        //Added by Nirav for Custom Dropdown - 388
+                        var list = db.BusinessUnits.Where(s => s.BusinessUnitId == Sessions.User.BusinessUnitId && s.IsDeleted == false).ToList().Select(u => new SelectListItem
+                        {
+                            Text = u.Title,
+                            Value = u.BusinessUnitId.ToString()
+                        });
+                        List<SelectListItem> items = new List<SelectListItem>(list);
+                        planModel.BusinessUnitIds = items;
+                        ViewBag.BusinessUnitIds = items;
+                    }
+                    // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 }
-                // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                catch (Exception e)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(e);
+
+                    //To handle unavailability of BDSService
+                    if (e is System.ServiceModel.EndpointNotFoundException)
+                    {
+                        TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                        return RedirectToAction("Index", "Login");
+                    }
+                }
+
                 ViewBag.showBid = true;
             }
             ViewBag.Msg = ismsg;

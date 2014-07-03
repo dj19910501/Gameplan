@@ -149,6 +149,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Improvement Tactic
+
         /// <summary>
         /// Added By: Nirav Shah.
         /// Action to show Improvement Tactic list.
@@ -177,6 +178,7 @@ namespace RevenuePlanner.Controllers
             //}
             return View();
         }
+
         /// <summary>
         /// Added By: Nirav Shah.
         /// Action to show Improvement Tactic list.

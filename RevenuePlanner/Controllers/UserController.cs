@@ -325,15 +325,32 @@ namespace RevenuePlanner.Controllers
         public ActionResult SecurityQuestion()
         {
             // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit); 
-
-            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-            var lstSecurityQuestion = objBDSServiceClient.GetSecurityQuestion();
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
 
             SecurityQuestionListModel objSecurityQuestionListModel = new SecurityQuestionListModel();
-            objSecurityQuestionListModel.Answer = Common.Decrypt(Sessions.User.Answer);
-            objSecurityQuestionListModel.SecurityQuestionId = Convert.ToInt32(Sessions.User.SecurityQuestionId);
-            objSecurityQuestionListModel.SecurityQuestionList = GetQuestionList(lstSecurityQuestion);
+            try
+            {
+                // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
+                ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                var lstSecurityQuestion = objBDSServiceClient.GetSecurityQuestion();
+
+                objSecurityQuestionListModel.Answer = Common.Decrypt(Sessions.User.Answer);
+                objSecurityQuestionListModel.SecurityQuestionId = Convert.ToInt32(Sessions.User.SecurityQuestionId);
+                objSecurityQuestionListModel.SecurityQuestionList = GetQuestionList(lstSecurityQuestion);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
+            }
 
             return View(objSecurityQuestionListModel);
         }

@@ -2275,6 +2275,7 @@ namespace RevenuePlanner.Controllers
                     TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
                     return RedirectToAction("Index", "Login");
                 }
+               
             }
             im.Owner = (userName.FirstName + " " + userName.LastName).ToString();
             ViewBag.TacticDetail = im;
@@ -4202,27 +4203,43 @@ namespace RevenuePlanner.Controllers
         {
             HomePlanModel planmodel = new Models.HomePlanModel();
 
-            // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
-            var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-            int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
-            int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-            var lstAllowedGeography = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
-            List<Guid> lstAllowedGeographyId = new List<Guid>();
-            lstAllowedGeography.ForEach(g => lstAllowedGeographyId.Add(Guid.Parse(g)));
-            planmodel.objGeography = db.Geographies.Where(g => g.IsDeleted.Equals(false) && g.ClientId == Sessions.User.ClientId && lstAllowedGeographyId.Contains(g.GeographyId)).Select(g => g).OrderBy(g => g.Title).ToList();
-            List<string> tacticStatus = Common.GetStatusListAfterApproved();
-            BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
-            var individuals = bdsUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
-            planmodel.objIndividuals = individuals.OrderBy(i => string.Format("{0} {1}", i.FirstName, i.LastName)).ToList();
-            List<TacticType> objTacticType = new List<TacticType>();
+            try
+            {
+                // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
+                var lstUserCustomRestriction = Common.GetUserCustomRestriction();
+                int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
+                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                var lstAllowedGeography = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
+                List<Guid> lstAllowedGeographyId = new List<Guid>();
+                lstAllowedGeography.ForEach(g => lstAllowedGeographyId.Add(Guid.Parse(g)));
+                planmodel.objGeography = db.Geographies.Where(g => g.IsDeleted.Equals(false) && g.ClientId == Sessions.User.ClientId && lstAllowedGeographyId.Contains(g.GeographyId)).Select(g => g).OrderBy(g => g.Title).ToList();
+                List<string> tacticStatus = Common.GetStatusListAfterApproved();
+                BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
+                var individuals = bdsUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
+                planmodel.objIndividuals = individuals.OrderBy(i => string.Format("{0} {1}", i.FirstName, i.LastName)).ToList();
+                List<TacticType> objTacticType = new List<TacticType>();
 
-            //// Modified By: Maninder Singh for TFS Bug#282: Extra Tactics Displaying in Add Actual Screen
-            objTacticType = (from t in db.Plan_Campaign_Program_Tactic
-                             where t.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId
-                             && tacticStatus.Contains(t.Status) && t.IsDeleted == false
-                             select t.TacticType).Distinct().ToList();
+                //// Modified By: Maninder Singh for TFS Bug#282: Extra Tactics Displaying in Add Actual Screen
+                objTacticType = (from t in db.Plan_Campaign_Program_Tactic
+                                 where t.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId
+                                 && tacticStatus.Contains(t.Status) && t.IsDeleted == false
+                                 select t.TacticType).Distinct().ToList();
 
-            ViewBag.TacticTypeList = objTacticType;
+                ViewBag.TacticTypeList = objTacticType;
+
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+
+                //To handle unavailability of BDSService
+                if (ex is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
+            }
+
             return View(planmodel);
         }
 

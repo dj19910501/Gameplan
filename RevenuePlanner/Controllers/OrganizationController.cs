@@ -55,10 +55,22 @@ namespace RevenuePlanner.Controllers
                     listorganizationmodel.Add(obj);
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                ErrorSignal.FromCurrentContext().Raise(ex);
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
+                }
             }
+
             return View(listorganizationmodel.AsEnumerable());
         }
 
@@ -83,10 +95,22 @@ namespace RevenuePlanner.Controllers
                     listrolemodel.Add(role);
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                ErrorSignal.FromCurrentContext().Raise(ex);
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
+                }
             }
+
             return View(listrolemodel.AsEnumerable());
         }
 
@@ -163,6 +187,17 @@ namespace RevenuePlanner.Controllers
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
+                }
             }
 
             return View();

@@ -379,11 +379,27 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult SetSecurityQuestion()
         {
-            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-            var lstSecurityQuestion = objBDSServiceClient.GetSecurityQuestion();
-
             SecurityQuestionListModel objSecurityQuestionListModel = new SecurityQuestionListModel();
-            objSecurityQuestionListModel.SecurityQuestionList = GetQuestionList(lstSecurityQuestion);
+
+            try
+            {
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                var lstSecurityQuestion = objBDSServiceClient.GetSecurityQuestion();
+
+                
+                objSecurityQuestionListModel.SecurityQuestionList = GetQuestionList(lstSecurityQuestion);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
+            }
 
             return View(objSecurityQuestionListModel);
         }

@@ -99,14 +99,28 @@ namespace RevenuePlanner.Controllers
                 ViewBag.Flag = chekckParentPublishModel(id);
             }
             // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-            int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-            var lstAllowedBusinessUnits = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId).ToList();
-            if (lstAllowedBusinessUnits.Count > 0)
+            try
             {
-                List<Guid> lstViewEditBusinessUnits = new List<Guid>();
-                lstAllowedBusinessUnits.ForEach(g => lstViewEditBusinessUnits.Add(Guid.Parse(g)));
-                ViewBag.IsViewEditBusinessUnit = lstViewEditBusinessUnits.Contains(businessunit);
+                var lstUserCustomRestriction = Common.GetUserCustomRestriction();
+                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                var lstAllowedBusinessUnits = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId).ToList();
+                if (lstAllowedBusinessUnits.Count > 0)
+                {
+                    List<Guid> lstViewEditBusinessUnits = new List<Guid>();
+                    lstAllowedBusinessUnits.ForEach(g => lstViewEditBusinessUnits.Add(Guid.Parse(g)));
+                    ViewBag.IsViewEditBusinessUnit = lstViewEditBusinessUnits.Contains(businessunit);
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
             }
             // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             return View(objBaselineModel);
@@ -533,14 +547,28 @@ namespace RevenuePlanner.Controllers
                 ViewBag.Flag = chekckParentPublishModel(currentModelId);
             }
             // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-            int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-            var lstAllowedBusinessUnits = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId).ToList();
-            if (lstAllowedBusinessUnits.Count > 0)
+            try
             {
-                List<Guid> lstViewEditBusinessUnits = new List<Guid>();
-                lstAllowedBusinessUnits.ForEach(g => lstViewEditBusinessUnits.Add(Guid.Parse(g)));
-                ViewBag.IsViewEditBusinessUnit = lstViewEditBusinessUnits.Contains(tempBU);
+                var lstUserCustomRestriction = Common.GetUserCustomRestriction();
+                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                var lstAllowedBusinessUnits = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId).ToList();
+                if (lstAllowedBusinessUnits.Count > 0)
+                {
+                    List<Guid> lstViewEditBusinessUnits = new List<Guid>();
+                    lstAllowedBusinessUnits.ForEach(g => lstViewEditBusinessUnits.Add(Guid.Parse(g)));
+                    ViewBag.IsViewEditBusinessUnit = lstViewEditBusinessUnits.Contains(tempBU);
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
             }
             // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             BaselineModel objBaselineModel = FillInitialData(currentModelId, tempBU);
@@ -906,7 +934,15 @@ namespace RevenuePlanner.Controllers
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
             }
+
             return View();
         }
 
@@ -2715,14 +2751,28 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.TargetStageNotAssociatedWithModelMsg = string.Format(Common.objCached.TargetStageNotAssociatedWithModelMsg);    // Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
             // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-            int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-            var lstAllowedBusinessUnits = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId).ToList();
-            if (lstAllowedBusinessUnits.Count > 0)
+            try
             {
-                List<Guid> lstViewEditBusinessUnits = new List<Guid>();
-                lstAllowedBusinessUnits.ForEach(g => lstViewEditBusinessUnits.Add(Guid.Parse(g)));
-                ViewBag.IsViewEditBusinessUnit = lstViewEditBusinessUnits.Contains(objModel.BusinessUnitId);
+                var lstUserCustomRestriction = Common.GetUserCustomRestriction();
+                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                var lstAllowedBusinessUnits = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId).ToList();
+                if (lstAllowedBusinessUnits.Count > 0)
+                {
+                    List<Guid> lstViewEditBusinessUnits = new List<Guid>();
+                    lstAllowedBusinessUnits.ForEach(g => lstViewEditBusinessUnits.Add(Guid.Parse(g)));
+                    ViewBag.IsViewEditBusinessUnit = lstViewEditBusinessUnits.Contains(objModel.BusinessUnitId);
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
             }
             // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             return View(objTacticTypeModel);
@@ -3593,14 +3643,28 @@ namespace RevenuePlanner.Controllers
                 ViewBag.Flag = chekckParentPublishModel(id);
             }
             // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-            int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-            var lstAllowedBusinessUnits = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId).ToList();
-            if (lstAllowedBusinessUnits.Count > 0)
+            try
             {
-                List<Guid> lstViewEditBusinessUnits = new List<Guid>();
-                lstAllowedBusinessUnits.ForEach(g => lstViewEditBusinessUnits.Add(Guid.Parse(g)));
-                ViewBag.IsViewEditBusinessUnit = lstViewEditBusinessUnits.Contains(businessunit);
+                var lstUserCustomRestriction = Common.GetUserCustomRestriction();
+                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                var lstAllowedBusinessUnits = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId).ToList();
+                if (lstAllowedBusinessUnits.Count > 0)
+                {
+                    List<Guid> lstViewEditBusinessUnits = new List<Guid>();
+                    lstAllowedBusinessUnits.ForEach(g => lstViewEditBusinessUnits.Add(Guid.Parse(g)));
+                    ViewBag.IsViewEditBusinessUnit = lstViewEditBusinessUnits.Contains(businessunit);
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
             }
             // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             return View(objBaselineModel);
