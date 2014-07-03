@@ -485,6 +485,9 @@ function numberWithCommas(value) {
 //// Added By Bhavesh Dobariya
 //// Date 1/29/2014
 //// Function to add Tooltip with format to the value.
+//// Modified By : Kalpesh Sharma
+//// Date 3/07/2014
+//// Changes in number formater function PL#508.
 function setLabelToolTip(lableId, value, maxSize, iscurrency) {
     var roundValue = (Math.round(parseFloat(value) * 100) / 100);
     var splitvalue = roundValue.toString().split(".");
@@ -492,11 +495,15 @@ function setLabelToolTip(lableId, value, maxSize, iscurrency) {
     if (lengthvalue > maxSize) {
         if (iscurrency) {
             $(lableId).text("$" + GetAbberiviatedValue(value));
-            $(lableId).attr('title', "$" + numberWithCommas(roundValue));
+
+            //$(lableId).attr('title', "$" + numberWithCommas(roundValue));
+            $(lableId).attr('title', "$" + number_format(roundValue, 0, '.', ','));
+
         }
         else {
             $(lableId).text(GetAbberiviatedValue(value));
-            $(lableId).attr('title', numberWithCommas(roundValue));
+            //$(lableId).attr('title', numberWithCommas(roundValue));
+            $(lableId).attr('title',number_format(roundValue, 0, '.', ','));
         }
         $(lableId).addClass('north');
         $('.north').tipsy({ gravity: 's' });
@@ -505,10 +512,12 @@ function setLabelToolTip(lableId, value, maxSize, iscurrency) {
         $(lableId).removeAttr('original-title');
         $(lableId).removeClass('north');
         if (iscurrency) {
-            $(lableId).text("$" + numberWithCommas(roundValue));
+            //$(lableId).text("$" + numberWithCommas(roundValue));
+              $(lableId).text("$" + number_format(roundValue, 0, '.', ','));
         }
         else {
-            $(lableId).text(numberWithCommas(roundValue));
+            //$(lableId).text(numberWithCommas(roundValue));
+              $(lableId).text(number_format(roundValue, 0, '.', ','));
         }
     }
 }
