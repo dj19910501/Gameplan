@@ -373,14 +373,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                                     {*@
                                         @Html.Label("Reassign Subordinates to")
                                         <div class="selectBox" id="ddlNewManagerIdSelectBox">
-                                            @if (ViewData["ManagerList"] != null)
-                                            {
-                                                @Html.DropDownListFor(c => c.NewManagerId, new SelectList((System.Collections.IEnumerable)ViewData["ManagerList"], "ManagerId", "ManagerName"), "Please Select", new { style = "width:54px; height:23px;float:right;margin-top:10px;margin-right:12px;" })
-                                            }
-                                            else
-                                            {
                                                 @Html.DropDownListFor(c => c.NewManagerId, Enumerable.Empty<SelectListItem>(), "Please Select")
-                                            }
                                         </div>
                                     @*}*@
                                 </div>
@@ -583,6 +576,13 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
             if (clientId != "") {
                 loadBusinessUnit(clientId);
                 loadGeography(clientId);
+
+                // Start - Added by Sohel Pathan on 03/07/2014 for Functional review points.
+                loadManagers(clientId);
+                if ($('#IsDeleted').val().toLowerCase() == 'yes')
+                    loadNewManagers(clientId);
+                // End - Added by Sohel Pathan on 03/07/2014 for Functional review points.
+
                 // Start - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                 $('#lblClientIdRequired').hide();
                 $('#lblBusinessUnitIdRequired').hide();
@@ -648,7 +648,33 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
             });
             }
         }
+        // Start - Added by Sohel Pathan on 03/07/2014 for Functional review points.
+        function loadManagers(clientId) {
+            if (clientId != "" && clientId != "0" && clientId != "null") {
+                $.getJSON("@Url.Content("~/User/GetManagers")", { id: clientId, UserId: $('#UserId').val() },
+                function (managerData) {
+                    var select = $("#ManagerId");
+                    select.empty();
+                    $.each(managerData, function (index, itemData) {
+                        select.append($('<option/>', {
+                            value: itemData.ManagerId,
+                            text: itemData.ManagerName
+                        }));
+                    });
+                    if ($("#ManagerId option").eq(0).val() != "") {
+                        $("#ManagerId option").eq(0).before($("<option></option>").val("").text("Please select"));
+                    }
+                    if ($("#ManagerId option").eq(0).val() == undefined) {
+                        $("#ManagerId").append($("<option></option>").val("").text("Please select"));
+                    }
+                    $("#ManagerId").val("");
 
+                    $(".selectBox select").selectbox('detach');
+                    $(".selectBox select").selectbox("attach");
+                });
+            }
+        }
+        // End - Added by Sohel Pathan on 03/07/2014 for Functional review points.
         // Added by :- Sohel Pathan on 1/5/2014 for PL #430 to setup integration screen
         $('#aIntegrations').click(function () {
             var url = '';
@@ -799,11 +825,44 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
     //    }
     //});
 
+    // Start - Added by Sohel Pathan on 03/07/2014 for Functional review points.
+    function loadNewManagers(clientId) {
+        if (clientId != "" && clientId != "0" && clientId != "null") {
+            $.getJSON("@Url.Content("~/User/GetManagers")", { id: clientId, UserId: $('#UserId').val() },
+                function (managerData) {
+                    var select = $("#NewManagerId");
+                    select.empty();
+                    $.each(managerData, function (index, itemData) {
+                        select.append($('<option/>', {
+                            value: itemData.ManagerId,
+                            text: itemData.ManagerName
+                        }));
+                    });
+                    if ($("#NewManagerId option").eq(0).val() != "") {
+                        $("#NewManagerId option").eq(0).before($("<option></option>").val("").text("Please select"));
+                    }
+                    if ($("#NewManagerId option").eq(0).val() == undefined) {
+                        $("#NewManagerId").append($("<option></option>").val("").text("Please select"));
+                    }
+                    $("#NewManagerId").val("");
+
+                    $(".selectBox select").selectbox('detach');
+                    $(".selectBox select").selectbox("attach");
+                });
+            }
+    }
+    // End - Added by Sohel Pathan on 03/07/2014 for Functional review points.
+
     $('#IsDeleted').change(function () {
         //if ($('#hdnLoggedInUserRole').val().toUpperCase() == 'SA' || $('#hdnLoggedInUserRole').val().toUpperCase() == 'CA') {
             if ($('#IsManager').val().toLowerCase() == 'true') {
-                if ($(this).val().toLowerCase() == 'yes')
+                if ($(this).val().toLowerCase() == 'yes') {
                     $('#divNewManager').show();
+                    // Start - Added by Sohel Pathan on 03/07/2014 for Functional review points.
+                    var ClientId = $('#ClientId').val();
+                    loadNewManagers(ClientId);
+                    // End - Added by Sohel Pathan on 03/07/2014 for Functional review points.
+                }
                 else {
                     $('#divNewManager').hide();
                     $('#lblNewManagerIdRequired').hide();   // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
