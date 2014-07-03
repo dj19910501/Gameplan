@@ -26,7 +26,7 @@
                                     <ul class="source-sans-proregular">
                                         @foreach (var item in lstpermissions)
                                         {
-                                            <li>@item</li>                           
+                                            <li>@Html.Raw(item)</li>//name change by uday for functional review point...3-7-2014                            
                                         }
                                     </ul>
                                 </div>

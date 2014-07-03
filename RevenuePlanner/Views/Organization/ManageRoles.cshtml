@@ -238,7 +238,7 @@
                 var msgspan = "Special character are not allowed, try again.";
                 $("#errorMessage").css("display", "block");
                 $("#newrole").addClass("error");
-                $(".input-block-level").removeClass("error");
+                //$(".input-block-level").removeClass("error");commented by uday for functional review point...3-7-2014
                 $("#spanErrorMessageRole").text(msgspan);//review point
             }
             else {
@@ -252,7 +252,7 @@
                     cache: false,
                     success: function (result) {
                         if (result == true) {
-                            url = '@Url.Content("~/Organization/Edit")';
+                            url = '@Url.Content("~/Organization/RoleEdit")';//name change by uday for functional review point...3-7-2014
                             window.location.href = url + "?roleId=" + '@emptyGuidId';
                         }
                         else {
@@ -290,7 +290,7 @@
                 var msgspan = "Special character are not allowed, try again.";
                 $("#errorMessagecopy").css("display", "block");
                 $("#copyroledesc").addClass("error");
-                $(".input-block-level").removeClass("error");
+                //$(".input-block-level").removeClass("error");commented by uday for functional review point...3-7-2014
                 $("#spanErrorMessageRolecopy").text(msgspan);//review point
             }
             else {
@@ -338,15 +338,16 @@ $('#aMyProfile').click(function () {
 
     $('.btnEdit').click(function () {
         var id = $(this).next().val(); @*<!--this is used to pass values like to know the id of clicked row like selected value in combobox*@
-    var url = '@Url.Content("~/Organization/Edit/")';
+        var url = '@Url.Content("~/Organization/RoleEdit/")';//name change by uday for functional review point...3-7-2014
     window.location.href = url + "?roleId=" + id;
 });
 
 $('.delete-temp-program').click(function () {
     $('#errorMessagedel').css("display", "none");
+    $('.selectBox').removeClass("error");//added by uday for functional review point...3-7-2014
     var id = $(this).children().val();
     var roleselected = $("#rolelabel" + id).html();
-    var url = '@Url.Content("~/Organization/Delete/")';
+    var url = '@Url.Content("~/Organization/RoleDelete/")';//name change by uday for functional review point...3-7-2014
         //how to load partial view....
         $("#loaddiv").load(url + "?roleId=" + id, "&selectedrole=" + roleselected);
     });
