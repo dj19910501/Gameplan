@@ -2145,6 +2145,14 @@ namespace RevenuePlanner.Controllers
                 ViewBag.ExtIntService = string.Empty;
             }
 
+            Plan_Campaign pcp = db.Plan_Campaign.Where(pcpobj => pcpobj.PlanCampaignId.Equals(id) && pcpobj.IsDeleted.Equals(false)).SingleOrDefault();
+            if (pcp == null)
+            {
+                return null;
+            }//uday PL Ticket #550 3-7-2014
+
+            ViewBag.Campaign = pcp.Title;//uday PL Ticket #550 3-7-2014
+
             Plan_Campaign_ProgramModel pcpm = new Plan_Campaign_ProgramModel();
             pcpm.PlanCampaignId = id;
             pcpm.IsDeployedToIntegration = false;
@@ -2583,6 +2591,11 @@ namespace RevenuePlanner.Controllers
                 ViewBag.ExtIntService = string.Empty;
             }
 
+            Plan_Campaign_Program pcpt = db.Plan_Campaign_Program.Where(pcpobj => pcpobj.PlanProgramId.Equals(id)).SingleOrDefault();
+            if (pcpt == null)
+            {
+                return null;
+            }//uday PL Ticket #550 3-7-2014
 
             Plan_Campaign_Program_TacticModel pcptm = new Plan_Campaign_Program_TacticModel();
             pcptm.PlanProgramId = id;
@@ -2597,6 +2610,8 @@ namespace RevenuePlanner.Controllers
             
             // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
             ViewBag.IsAllowCustomRestriction = true;
+            ViewBag.Program = pcpt.Title;//uday PL Ticket #550 3-7-2014
+            ViewBag.Campaign = pcpt.Plan_Campaign.Title; //uday PL Ticket #550 3-7-2014
             ViewBag.RedirectType = false;
             return PartialView("TacticAssortment", pcptm);
         }

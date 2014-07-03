@@ -46,6 +46,10 @@
                 $(".verticalIdSelectBox select").selectbox();
             });
         </script>
+         <div class="top-title">
+            <p>Campaign</p>
+            <span title="@ViewBag.Campaign" class="displaytitle">@ViewBag.Campaign</span>@*uday*@
+        </div>// uday PL Ticket #550 3-7-2014
         <div class="content">
             @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
             @Html.HiddenFor(model => model.PlanCampaignId, new { id = "hdnPlanCampaignId" })
@@ -524,6 +528,6 @@
             $('#dp_start').datepicker('hide');
         })
 
-
+        NumberFormatterTipsyTitle(".displaytitle", 31);// uday PL Ticket #550 3-7-2014
     });
 </script>

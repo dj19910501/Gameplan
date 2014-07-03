@@ -42,13 +42,13 @@
             });
         </script>
         <div class="top-title">
-                <p>Campaign</p>
-                <span>ERP V10 Product Launch</span>
-            </div>
-         <div class="top-title">
-                <p>Campaign</p>
-                <span>ERP V10 Product Launch</span>
-            </div>
+            <p>Campaign</p>
+            <span title="@ViewBag.Campaign" class="displaytitle">@ViewBag.Campaign</span>
+        </div>// uday PL Ticket #550 3-7-2014
+        <div class="top-title">
+            <p>Program</p>
+            <span title="@ViewBag.Program" class="displaytitle">@ViewBag.Program</span>@*uday*@
+        </div>// uday PL Ticket #550 3-7-2014
         <div class="content">
             @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
             @Html.HiddenFor(model => model.PlanTacticId, new { id = "hdnPlanTacticId" })
@@ -602,6 +602,6 @@
             $('#dp_end').datepicker('show');
 
         })
-
+        NumberFormatterTipsyTitle(".displaytitle", 31);// uday PL Ticket #550 3-7-2014
     });
 </script>
