@@ -146,7 +146,7 @@ namespace RevenuePlanner.Controllers
                     objPlanModel.Title = "Plan Title";
                     objPlanModel.MQls = "0";
                     objPlanModel.Budget = 0;
-                    ViewBag.IsBusinessUnitEditable = false; // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    ViewBag.IsBusinessUnitEditable = true; // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 }
                 //end
             }

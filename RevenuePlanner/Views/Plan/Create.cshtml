@@ -165,13 +165,13 @@
                         <script>
                             var nlform = new NLForm(document.getElementById('nl-form'));
                             // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
-                            if ($('#IsBusinessUnitEditable').val().toLowerCase() == 'false') {
-                                $('#nl-form :input').each(function () {
-                                    if ($(this).attr('type') == 'text') {
-                                        $(this).attr('readonly', 'readonly');
-                                    }
-                                });
-                            }
+                            //if ($('#IsBusinessUnitEditable').val().toLowerCase() == 'false') {
+                            //    $('#nl-form :input').each(function () {
+                            //        if ($(this).attr('type') == 'text') {
+                            //            $(this).attr('readonly', 'readonly');
+                            //        }
+                            //    });
+                            //}
                             // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
                         </script>
                     </div>

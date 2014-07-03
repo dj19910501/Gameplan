@@ -157,7 +157,7 @@
                     </dl>
                     }
                     
-                    @*@if (cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Count()>0)
+                    @if (cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Count()>0)
                     {
                     <dl>
                         <dt>Business Units</dt>
@@ -173,7 +173,7 @@
                             }
                         </dd>
                     </dl>
-                    }*@
+                    }
                     <div class="bottom-btns">
                         @if (ViewBag.PermissionMode == Enums.UserPermissionMode.View.ToString())
                         {
@@ -465,7 +465,7 @@ else
                     </dl>
                     }
 
-                    @*  @if(cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Count()>0)
+                      @if(cRestrictionList.Where(crl => crl.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Count()>0)
                     {   
                     <dl>
                         <dt>Business Units</dt>
@@ -477,7 +477,7 @@ else
                                     <label>@item.Title</label>
                                       @if (ViewBag.userGeography != item.CustomFieldId)
                                       {
-                                    @if (@item.Permission == 0)
+                                    if (@item.Permission == 0)
                                     {
 
                                         <span class="radioGrp">
@@ -558,7 +558,7 @@ else
                             }
                         </dd>
                     </dl>
-                    }*@
+                    }
                     <div id="divpartialsharetactic" class="hide">
                         <div id="divsharetacticpopupmain" class="all-height DivResetDefaults">
                             <div class="calc-height">
