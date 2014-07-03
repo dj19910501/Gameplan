@@ -21,8 +21,10 @@ namespace BDSService
         public short Permission { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
+        public Nullable<System.Guid> ApplicationId { get; set; }
     
         public virtual User User { get; set; }
         public virtual User User1 { get; set; }
+        public virtual Application Application { get; set; }
     }
 }

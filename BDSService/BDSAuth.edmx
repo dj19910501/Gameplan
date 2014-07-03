@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="BDSAuthModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="BDSAuthModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityContainer Name="BDSAuthModelStoreContainer">
           <EntitySet Name="Application" EntityType="BDSAuthModel.Store.Application" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Application_Activity" EntityType="BDSAuthModel.Store.Application_Activity" store:Type="Tables" Schema="dbo" />
@@ -20,6 +20,10 @@
           <EntitySet Name="User" EntityType="BDSAuthModel.Store.User" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="User_Activity_Permission" EntityType="BDSAuthModel.Store.User_Activity_Permission" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="User_Application" EntityType="BDSAuthModel.Store.User_Application" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="ApplicationId_fk" Association="BDSAuthModel.Store.ApplicationId_fk">
+            <End Role="Application" EntitySet="Application" />
+            <End Role="CustomRestriction" EntitySet="CustomRestriction" />
+          </AssociationSet>
           <AssociationSet Name="FK_Application_Activity_Application" Association="BDSAuthModel.Store.FK_Application_Activity_Application">
             <End Role="Application" EntitySet="Application" />
             <End Role="Application_Activity" EntitySet="Application_Activity" />
@@ -175,6 +179,7 @@
           <Property Name="Permission" Type="smallint" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ApplicationId" Type="uniqueidentifier" />
         </EntityType>
         <EntityType Name="Menu_Application">
           <Key>
@@ -301,6 +306,18 @@
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
           <Property Name="ManagerId" Type="uniqueidentifier" />
         </EntityType>
+        <Association Name="ApplicationId_fk">
+          <End Role="Application" Type="BDSAuthModel.Store.Application" Multiplicity="0..1" />
+          <End Role="CustomRestriction" Type="BDSAuthModel.Store.CustomRestriction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Application">
+              <PropertyRef Name="ApplicationId" />
+            </Principal>
+            <Dependent Role="CustomRestriction">
+              <PropertyRef Name="ApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Application_Activity_Application">
           <End Role="Application" Type="BDSAuthModel.Store.Application" Multiplicity="1" />
           <End Role="Application_Activity" Type="BDSAuthModel.Store.Application_Activity" Multiplicity="*" />
@@ -553,8 +570,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="BDSAuthModel" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -657,6 +673,10 @@
             <End Role="User" EntitySet="Users" />
             <End Role="User_Application" EntitySet="User_Application" />
           </AssociationSet>
+          <AssociationSet Name="ApplicationId_fk" Association="BDSAuthModel.ApplicationId_fk">
+            <End Role="Application" EntitySet="Applications" />
+            <End Role="CustomRestriction" EntitySet="CustomRestrictions" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Application">
           <Key>
@@ -676,6 +696,7 @@
           <NavigationProperty Name="Application_Role" Relationship="BDSAuthModel.FK_Application_Role_Application" FromRole="Application" ToRole="Application_Role" />
           <NavigationProperty Name="Menu_Application" Relationship="BDSAuthModel.FK_Menu_Application_Application" FromRole="Application" ToRole="Menu_Application" />
           <NavigationProperty Name="User_Application" Relationship="BDSAuthModel.FK_User_Application_Application" FromRole="Application" ToRole="User_Application" />
+          <NavigationProperty Name="CustomRestrictions" Relationship="BDSAuthModel.ApplicationId_fk" FromRole="Application" ToRole="CustomRestriction" />
         </EntityType>
         <EntityType Name="Application_Activity">
           <Key>
@@ -740,6 +761,8 @@
           <Property Name="CreatedBy" Type="Guid" Nullable="false" />
           <NavigationProperty Name="User" Relationship="BDSAuthModel.FK_CustomRestriction_User" FromRole="CustomRestriction" ToRole="User" />
           <NavigationProperty Name="User1" Relationship="BDSAuthModel.FK_CustomRestriction_User1" FromRole="CustomRestriction" ToRole="User" />
+          <Property Type="Guid" Name="ApplicationId" />
+          <NavigationProperty Name="Application" Relationship="BDSAuthModel.ApplicationId_fk" FromRole="CustomRestriction" ToRole="Application" />
         </EntityType>
         <EntityType Name="Menu_Application">
           <Key>
@@ -1148,6 +1171,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="ApplicationId_fk">
+          <End Type="BDSAuthModel.Application" Role="Application" Multiplicity="0..1" />
+          <End Type="BDSAuthModel.CustomRestriction" Role="CustomRestriction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Application">
+              <PropertyRef Name="ApplicationId" />
+            </Principal>
+            <Dependent Role="CustomRestriction">
+              <PropertyRef Name="ApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1220,6 +1255,7 @@
           <EntitySetMapping Name="CustomRestrictions">
             <EntityTypeMapping TypeName="BDSAuthModel.CustomRestriction">
               <MappingFragment StoreEntitySet="CustomRestriction">
+                <ScalarProperty Name="ApplicationId" ColumnName="ApplicationId" />
                 <ScalarProperty Name="CustomRestrictionId" ColumnName="CustomRestrictionId" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="CustomField" ColumnName="CustomField" />
