@@ -205,7 +205,7 @@
                 }
             });
             if (selectedRoleId != "") {
-                var url = '@Url.Content("~/Organization/Edit/")';
+                var url = '@Url.Content("~/Organization/RoleEdit/")';//change by uday
                 window.location.href = url + "?roleId=" + selectedRoleId;
             }
         });

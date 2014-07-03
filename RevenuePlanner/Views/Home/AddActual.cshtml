@@ -454,6 +454,17 @@
                 $(this).attr('title', txtvalue);
             });
 
+            $('.priceValue').each(function () {
+                var txtvalue = $(this).val();
+                $(this).attr('title', txtvalue);//uday 2-7-2014 internal poinmt to add tooltip title...
+            });
+
+            $('.currency_dollar').each(function () {
+                var txtvalue = $(this).val();
+                $(this).attr('title', txtvalue);//uday 3-7-2014 internal poinmt to add tooltip title...
+            });
+
+
             $('.currency_dollarCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
             $('.accordion').find('input').each(function () {
 
