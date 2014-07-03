@@ -125,7 +125,7 @@ namespace BDSService
 
         /// added by uday for #513
         [OperationContract]
-        int DeleteRoleAndReassign(Guid delroleid, Guid? reassignroleid, Guid applicationid);
+        int DeleteRoleAndReassign(Guid delroleid, Guid? reassignroleid, Guid applicationid, Guid modifiedBy);
 
         /// added by uday for #513
         [OperationContract]

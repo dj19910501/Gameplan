@@ -2169,10 +2169,10 @@ namespace RevenuePlanner.BDSService {
         System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetRoleMemberListAsync(System.Guid applicationId, System.Guid roleid);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/DeleteRoleAndReassign", ReplyAction="http://tempuri.org/IBDSService/DeleteRoleAndReassignResponse")]
-        int DeleteRoleAndReassign(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid);
+        int DeleteRoleAndReassign(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid, System.Guid modifiedBy);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/DeleteRoleAndReassign", ReplyAction="http://tempuri.org/IBDSService/DeleteRoleAndReassignResponse")]
-        System.Threading.Tasks.Task<int> DeleteRoleAndReassignAsync(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid);
+        System.Threading.Tasks.Task<int> DeleteRoleAndReassignAsync(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid, System.Guid modifiedBy);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/CreateRole", ReplyAction="http://tempuri.org/IBDSService/CreateRoleResponse")]
         int CreateRole(string roledesc, string permissionID, string colorcode, System.Guid applicationid, System.Guid createdby, System.Guid roleid, string delpermission);
@@ -2562,12 +2562,12 @@ namespace RevenuePlanner.BDSService {
             return base.Channel.GetRoleMemberListAsync(applicationId, roleid);
         }
         
-        public int DeleteRoleAndReassign(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid) {
-            return base.Channel.DeleteRoleAndReassign(delroleid, reassignroleid, applicationid);
+        public int DeleteRoleAndReassign(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid, System.Guid modifiedBy) {
+            return base.Channel.DeleteRoleAndReassign(delroleid, reassignroleid, applicationid, modifiedBy);
         }
         
-        public System.Threading.Tasks.Task<int> DeleteRoleAndReassignAsync(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid) {
-            return base.Channel.DeleteRoleAndReassignAsync(delroleid, reassignroleid, applicationid);
+        public System.Threading.Tasks.Task<int> DeleteRoleAndReassignAsync(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid, System.Guid modifiedBy) {
+            return base.Channel.DeleteRoleAndReassignAsync(delroleid, reassignroleid, applicationid, modifiedBy);
         }
         
         public int CreateRole(string roledesc, string permissionID, string colorcode, System.Guid applicationid, System.Guid createdby, System.Guid roleid, string delpermission) {

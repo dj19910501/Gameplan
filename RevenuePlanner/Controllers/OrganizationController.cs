@@ -250,7 +250,7 @@ namespace RevenuePlanner.Controllers
             {
                 reassignroleid = Guid.Empty;
             }
-            int retval = objBDSServiceClient.DeleteRoleAndReassign(delroleid, reassignroleid.Value, Sessions.ApplicationId);
+            int retval = objBDSServiceClient.DeleteRoleAndReassign(delroleid, reassignroleid.Value, Sessions.ApplicationId, Sessions.User.UserId);
             if (retval == 1)
             {
                 TempData["SuccessMessage"] = "Role Deleted Successfully.";
