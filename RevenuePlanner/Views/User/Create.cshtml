@@ -395,6 +395,7 @@
             if (clientId != "") {
                 loadBusinessUnit(clientId);
                 loadGeography(clientId);
+                loadManagers(clientId);     // Added by Sohel Pathan on 03/07/2014 for Functional review points.
                 $('#lblClientIdRequired').hide();
                 $('#lblBusinessUnitIdRequired').hide();
                 $('#lblGeographyIdRequired').hide();
@@ -460,6 +461,34 @@
                 });
             }
         }
+
+        // Start - Added by Sohel Pathan on 03/07/2014 for Functional review points.
+        function loadManagers(clientId) {
+            if (clientId != "" && clientId != "0" && clientId != "null") {
+                $.getJSON("@Url.Content("~/User/GetManagers")", { id: clientId },
+                function (managerData) {
+                    var select = $("#ManagerId");
+                    select.empty();
+                    $.each(managerData, function (index, itemData) {
+                        select.append($('<option/>', {
+                            value: itemData.ManagerId,
+                            text: itemData.ManagerName
+                        }));
+                    });
+                    if ($("#ManagerId option").eq(0).val() != "") {
+                        $("#ManagerId option").eq(0).before($("<option></option>").val("").text("Please select"));
+                    }
+                    if ($("#ManagerId option").eq(0).val() == undefined) {
+                        $("#ManagerId").append($("<option></option>").val("").text("Please select"));
+                    }
+                    $("#ManagerId").val("");
+
+                    $(".selectBox select").selectbox('detach');
+                    $(".selectBox select").selectbox("attach");
+                });
+            }
+        }
+        // End - Added by Sohel Pathan on 03/07/2014 for Functional review points.
     });
     $('#Email').keyup(function () {
         $('#isEmailExist').html('');

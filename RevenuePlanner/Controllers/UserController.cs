@@ -508,11 +508,19 @@ namespace RevenuePlanner.Controllers
             //    default:
             //        break;
             //}
+            var IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
             if (!String.IsNullOrWhiteSpace(clientId))
             {
                 Guid userClientId = Guid.Parse(clientId);
                 ViewData["BusinessUnits"] = db.BusinessUnits.Where(bu => bu.ClientId == userClientId && bu.IsDeleted == false).OrderBy(q => q.Title).ToList();
                 ViewData["Geographies"] = db.Geographies.Where(r => r.IsDeleted == false && r.ClientId == userClientId).OrderBy(q => q.Title).ToList();
+                // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                if (IsUserAdminAuthorized)
+                {
+                    // Get All User List for Manager
+                    ViewData["ManagerList"] = GetManagersList(Guid.Empty, userClientId);
+                }
+                // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
             }
             else
             {
@@ -523,7 +531,7 @@ namespace RevenuePlanner.Controllers
             ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId);
             ViewBag.CurrClientId = Sessions.User.ClientId;
             ViewBag.CurrClient = Sessions.User.Client;
-            var IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
+            
             if (IsUserAdminAuthorized)//Sessions.IsSystemAdmin)
             {
                 //ViewBag.IsSysAdmin = true;
@@ -533,13 +541,7 @@ namespace RevenuePlanner.Controllers
             {
                 //ViewBag.IsSysAdmin = false;
             }
-            // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
-            if (IsUserAdminAuthorized)
-            {
-                // Get All User List for Manager
-                ViewData["ManagerList"] = GetManagersList(Guid.Empty);
-            }
-            // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+            
         }
 
         /// <summary>
@@ -898,10 +900,10 @@ namespace RevenuePlanner.Controllers
                     //}
                     LoadEditModeComponents(objUserModel.ClientId, src);
                     // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
-                    if ((bool)ViewBag.IsUserAdminAuthorized && Sessions.User.UserId != objUser.UserId)
+                    if ((bool)ViewBag.IsUserAdminAuthorized && Sessions.User.UserId != objUser.UserId && objUserModel.ClientId != Guid.Empty)
                     {
                         // Get All User List for Manager
-                        ViewData["ManagerList"] = GetManagersList(objUser.UserId);
+                        ViewData["ManagerList"] = GetManagersList(objUser.UserId, objUserModel.ClientId);
                     }
                     else
                     {
@@ -1025,12 +1027,6 @@ namespace RevenuePlanner.Controllers
                         if (objRole != null)
                         {
                             objUser.RoleCode = objRole.Code;
-                            // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
-                            if ((bool)ViewBag.IsUserAdminAuthorized && Sessions.User.UserId != objUser.UserId)
-                            {
-                                // Get All User List for Manager
-                                ViewData["ManagerList"] = GetManagersList(objUser.UserId);
-                            }
                             //if (objUser.RoleCode == Enums.RoleCodes.CA.ToString() || objUser.RoleCode == Enums.RoleCodes.SA.ToString())
                             //{
                             //    objUser.ManagerId = null;
@@ -1042,6 +1038,7 @@ namespace RevenuePlanner.Controllers
                             // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
                         }
                     }
+                    
                     int retVal = objBDSServiceClient.UpdateUser(objUser, Sessions.ApplicationId, Sessions.User.UserId);
                     if (retVal == 1)
                     {
@@ -1083,6 +1080,14 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     LoadEditModeComponents(form.ClientId, "myteam");
+
+                    // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
+                    if ((bool)ViewBag.IsUserAdminAuthorized && form.ClientId != Guid.Empty)
+                    {
+                        // Get All User List for Manager
+                        ViewData["ManagerList"] = GetManagersList(form.UserId, form.ClientId);
+                    }
+                    // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
                 }
             }
             catch (Exception e)
@@ -1408,6 +1413,34 @@ namespace RevenuePlanner.Controllers
             return Json(geographyData, JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// Get list of managers for selected client. 
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy>
+        /// <CreatedDate>03/07/2014</CreatedDate>
+        /// <param name="id">client</param>
+        [AcceptVerbs(HttpVerbs.Get)]
+        public JsonResult GetManagers(string id = null, string UserId = null)
+        {
+            Guid clientId = new Guid();
+            if (id != null)
+            {
+                Guid.TryParse(id, out clientId);
+            }
+            
+            List<UserModel> managerList = new List<UserModel>();
+            if (UserId != null)
+            {
+                managerList = GetManagersList(Guid.Parse(UserId), clientId);
+            }
+            else
+            {
+                managerList = GetManagersList(Guid.Empty, clientId);
+            }
+
+            return Json(managerList, JsonRequestBehavior.AllowGet);
+        }
+
         #endregion
 
         #region Userdefined Functions
@@ -1418,12 +1451,14 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <CreatedBy>Sohel Pathan</CreatedBy>
         /// <CreatedDate>11.06.2014</CreatedDate>
+        /// <param name="UserId"></param>
+        /// <param name="ClientId"></param>
         /// <returns>List<UserModel></returns>
-        public List<UserModel> GetManagersList(Guid UserId)
+        public List<UserModel> GetManagersList(Guid UserId, Guid ClientId)
         {
-            if (Sessions.ApplicationId != Guid.Empty && Sessions.ApplicationId != null && Sessions.User.UserId != Guid.Empty && Sessions.User.UserId != null)
+            if (Sessions.ApplicationId != Guid.Empty && Sessions.ApplicationId != null)
             {
-                var UserList = objBDSServiceClient.GetManagerList(Sessions.User.ClientId, Sessions.ApplicationId, UserId);
+                var UserList = objBDSServiceClient.GetManagerList(ClientId, Sessions.ApplicationId, UserId);
                 var ManagerList = UserList.Select(a => new UserModel { ManagerId = a.UserId, ManagerName = a.ManagerName }).ToList();
                 return ManagerList.OrderBy(a => a.ManagerName).ToList();
             }
