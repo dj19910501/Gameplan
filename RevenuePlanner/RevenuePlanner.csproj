@@ -759,8 +759,8 @@
     <Content Include="Views\ExternalService\Edit.cshtml" />
     <Content Include="Views\Model\Integration.cshtml" />
     <Content Include="Views\ExternalService\MapDataTypes.cshtml" />
-    <Content Include="Views\Organization\Delete.cshtml" />
-    <Content Include="Views\Organization\Edit.cshtml" />
+    <Content Include="Views\Organization\RoleDelete.cshtml" />
+    <Content Include="Views\Organization\RoleEdit.cshtml" />
     <Content Include="Views\Organization\ManageRoles.cshtml" />
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.ApplicationActivity.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
@@ -845,7 +845,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>59094</DevelopmentServerPort>
+          <DevelopmentServerPort>52082</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:51115/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

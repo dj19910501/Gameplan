@@ -98,8 +98,8 @@ namespace RevenuePlanner.Controllers
                 BDSService.Role objrole = new BDSService.Role();
                 objrole.Description = roledesc.Trim();
                 objrole.Title = roledesc.Trim();
-                Session["session"] = objrole;
-
+                //Session["session"] = objrole;commented by uday for functional review point...3-7-2014
+                TempData["objrole"] = objrole;
                 int retval = objBDSServiceClient.DuplicateRoleCheck(objrole, Sessions.ApplicationId);
                 if (retval == 1)
                 {
@@ -116,7 +116,7 @@ namespace RevenuePlanner.Controllers
         }
 
         [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
-        public ActionResult Edit(Guid roleId)
+        public ActionResult RoleEdit(Guid roleId)//changed by uday for functional review point...3-7-2014;
         {
             // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
@@ -126,9 +126,9 @@ namespace RevenuePlanner.Controllers
             {
                 BDSService.BDSServiceClient bdsuserrepository = new BDSServiceClient();
                 var rolelist = bdsuserrepository.GetAllRoleList(Sessions.ApplicationId);
-                if (roleId == Guid.Parse("00000000-0000-0000-0000-000000000000"))
+                if (roleId == Guid.Empty)//changed by uday for functional review point...3-7-2014;
                 {
-                    var prevrole = (Role)Session["session"];
+                    var prevrole = (Role)TempData["objrole"];//changed by uday for functional review point...3-7-2014;
                     if (prevrole != null)
                     {
                         ViewBag.current = prevrole.Description;
@@ -152,16 +152,20 @@ namespace RevenuePlanner.Controllers
                 ViewData["permissionlist"] = filterlist;
                 ViewData["activitylist"] = activitylist;
                 string ids = string.Empty;
-                for (int i = 0; i < filterlist.Count; i++)
+                //for (int i = 0; i < filterlist.Count; i++)
+                //{
+                //    if (i == 0)
+                //    {
+                //        ids += "role_" + filterlist[i].ApplicationActivityId.ToString();
+                //    }
+                //    else
+                //    {
+                //        ids += ',' + "role_" + filterlist[i].ApplicationActivityId.ToString();
+                //    }
+                //}commented by uday for functional review point...3-7-2014
+                if (filterlist.Count > 0)
                 {
-                    if (i == 0)
-                    {
-                        ids += "role_" + filterlist[i].ApplicationActivityId.ToString();
-                    }
-                    else
-                    {
-                        ids += ',' + "role_" + filterlist[i].ApplicationActivityId.ToString();
-                    }
+                    ids = string.Join(",", filterlist.Select(filter => filter.ApplicationActivityId.ToString()).ToArray());
                 }
                 ViewData["permissionids"] = ids.ToString();
                 TempData["RoleList"] = new SelectList(RoleList, "Value", "Text", RoleList.First());
@@ -175,29 +179,20 @@ namespace RevenuePlanner.Controllers
         }
 
         [AuthorizeUser(Enums.ApplicationActivity.UserAdmin)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
-        public ActionResult Delete(Guid roleid, string selectedrole)
+        public ActionResult RoleDelete(Guid roleid, string selectedrole)
         {
 
             ViewData["users"] = objBDSServiceClient.GetRoleMemberList(Sessions.ApplicationId, roleid);
-            List<RoleModel> listrolemodel = new List<RoleModel>();
+            //changed by uday for functional review point...3-7-2014;
             try
             {
                 BDSService.BDSServiceClient bdsuserrepository = new BDSServiceClient();
-                var memberlist = bdsuserrepository.GetAllRoleList(Sessions.ApplicationId);
-                memberlist = memberlist.Where(rolelist => rolelist.RoleId != roleid).ToList();//bug point
-                foreach (var item in memberlist)
+                
+                var rolelistData = bdsuserrepository.GetAllRoleList(Sessions.ApplicationId).Where(rolelist => rolelist.RoleId != roleid).ToList().Select(role => new SelectListItem()
                 {
-                    RoleModel role = new RoleModel();
-                    role.RoleTitle = item.Title;
-                    role.RoleCode = item.Code;
-                    role.RoleId = item.RoleId;
-                    listrolemodel.Add(role);
-                }
-                var rolelistData = listrolemodel.Select(role => new SelectListItem()
-                {
-                    Text = role.RoleTitle,
+                    Text = role.Title,
                     Value = Convert.ToString(role.RoleId),
-                }).OrderBy(t => t.Text);
+                }).OrderBy(role => role.Text);
 
                 ViewData["roles"] = rolelistData;
                 ViewData["roleselected"] = selectedrole;
@@ -208,7 +203,7 @@ namespace RevenuePlanner.Controllers
                 ErrorSignal.FromCurrentContext().Raise(ex);
             }
 
-            return PartialView("Delete");
+            return PartialView("RoleDelete");//name change by uday for functional review point...3-7-2014
         }
 
         public ActionResult CheckPermission(Guid roleid, string permission)
