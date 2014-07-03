@@ -2977,6 +2977,14 @@ label {
     overflow: auto;
 }
 
+/*added by uday 7-3-2014*/
+ .affected-list ul li {
+        text-align: left;
+        font-size: 14px;
+        line-height: 25px;
+    }
+ /*end*/
+
 .affected-area ul {
     margin-left: 50px;
     margin-right: 10px;

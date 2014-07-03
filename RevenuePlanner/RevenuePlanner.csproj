@@ -759,8 +759,8 @@
     <Content Include="Views\ExternalService\Edit.cshtml" />
     <Content Include="Views\Model\Integration.cshtml" />
     <Content Include="Views\ExternalService\MapDataTypes.cshtml" />
-    <Content Include="Views\Organization\Delete.cshtml" />
-    <Content Include="Views\Organization\Edit.cshtml" />
+    <Content Include="Views\Organization\RoleDelete.cshtml" />
+    <Content Include="Views\Organization\RoleEdit.cshtml" />
     <Content Include="Views\Organization\ManageRoles.cshtml" />
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.ApplicationActivity.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
