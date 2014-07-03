@@ -1492,7 +1492,7 @@ namespace BDSService
         /// </summary>
         /// <param name="role id">role id</param>
         /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
-        public int DeleteRoleAndReassign(Guid delroleid, Guid? reassignroleid, Guid applicationid)
+        public int DeleteRoleAndReassign(Guid delroleid, Guid? reassignroleid, Guid applicationid, Guid modifiedBy)
         {
             int retVal = 0;
             try
@@ -1531,9 +1531,56 @@ namespace BDSService
                         foreach (var item in objuser)
                         {
                             item.RoleId = reassignroleid.Value;
-
                             db.Entry(item).State = EntityState.Modified;
                             db.SaveChanges();
+
+                            // Start Added by dharmraj When delete any role then we reassign other role for existing user then it not update permission for user as per new role: ticket #513
+                            //-- List of old rights of user role(old user role).
+                            var lstUserOldRights = db.User_Activity_Permission.Where(a => a.UserId == item.UserId).ToList().Select(a => a.ApplicationActivityId).ToList();
+                            //-- List of rights for role before role changes (old role).
+                            var lstOldRights = db.Role_Activity_Permission.Where(a => a.RoleId == delroleid).ToList().Select(a => a.ApplicationActivityId).ToList();
+                            //-- List of rights for role that has to be updated (new role).
+                            var lstNewRights = db.Role_Activity_Permission.Where(a => a.RoleId == reassignroleid).ToList().Select(a => a.ApplicationActivityId).ToList();
+                            //-- List of remaining rights from old user rights that needs to be stay with user as it is.
+                            var lstUserRemainingRights = lstUserOldRights.Where(a => !lstOldRights.Contains(a)).ToList();
+                            //-- List of rights of new roles that needs to be inserted as new role assigns.
+                            var lstRightsToInsert = lstNewRights.Where(a => !lstUserRemainingRights.Contains(a)).ToList();
+                            //-- Delete old rights
+                            if (lstOldRights != null)
+                            {
+                                if (lstOldRights.Count > 0)
+                                {
+                                    foreach (var objItem in lstOldRights)
+                                    {
+                                        var objUser_Activity_Permission = db.User_Activity_Permission.Where(a => a.UserId == item.UserId && a.ApplicationActivityId == objItem).FirstOrDefault();
+                                        if (objUser_Activity_Permission != null)
+                                        {
+                                            db.Entry(objUser_Activity_Permission).State = EntityState.Deleted;
+                                            db.User_Activity_Permission.Remove(objUser_Activity_Permission);
+                                            db.SaveChanges();
+                                        }
+                                    }
+                                }
+                            }
+                            //-- Insert new rights
+                            if (lstRightsToInsert != null)
+                            {
+                                if (lstRightsToInsert.Count > 0)
+                                {
+                                    foreach (var objItem in lstRightsToInsert)
+                                    {
+                                        User_Activity_Permission objUser_Activity_Permission = new User_Activity_Permission();
+                                        objUser_Activity_Permission.ApplicationActivityId = objItem;
+                                        objUser_Activity_Permission.CreatedBy = modifiedBy;
+                                        objUser_Activity_Permission.CreatedDate = DateTime.Now;
+                                        objUser_Activity_Permission.UserId = item.UserId;
+                                        db.Entry(objUser_Activity_Permission).State = EntityState.Added;
+                                        db.User_Activity_Permission.Add(objUser_Activity_Permission);
+                                        db.SaveChanges();
+                                    }
+                                }
+                            }
+                            // End Added by dharmraj When delete any role then we reassign other role for existing user then it not update permission for user as per new role: ticket #513
                         }
                     }
 

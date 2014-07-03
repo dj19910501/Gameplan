@@ -32,12 +32,6 @@
   <wsdl:message name="IBDSService_GetClientList_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetClientListResponse" />
   </wsdl:message>
-  <wsdl:message name="IBDSService_GetRoleList_InputMessage">
-    <wsdl:part name="parameters" element="tns:GetRoleList" />
-  </wsdl:message>
-  <wsdl:message name="IBDSService_GetRoleList_OutputMessage">
-    <wsdl:part name="parameters" element="tns:GetRoleListResponse" />
-  </wsdl:message>
   <wsdl:message name="IBDSService_GetMultipleTeamMemberDetails_InputMessage">
     <wsdl:part name="parameters" element="tns:GetMultipleTeamMemberDetails" />
   </wsdl:message>
@@ -319,10 +313,6 @@
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetClientList" message="tns:IBDSService_GetClientList_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetClientListResponse" message="tns:IBDSService_GetClientList_OutputMessage" />
     </wsdl:operation>
-    <wsdl:operation name="GetRoleList">
-      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetRoleList" message="tns:IBDSService_GetRoleList_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetRoleListResponse" message="tns:IBDSService_GetRoleList_OutputMessage" />
-    </wsdl:operation>
     <wsdl:operation name="GetMultipleTeamMemberDetails">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetMultipleTeamMemberDetails" message="tns:IBDSService_GetMultipleTeamMemberDetails_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetMultipleTeamMemberDetailsResponse" message="tns:IBDSService_GetMultipleTeamMemberDetails_OutputMessage" />
@@ -531,15 +521,6 @@
     </wsdl:operation>
     <wsdl:operation name="GetClientList">
       <soap:operation soapAction="http://tempuri.org/IBDSService/GetClientList" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="GetRoleList">
-      <soap:operation soapAction="http://tempuri.org/IBDSService/GetRoleList" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

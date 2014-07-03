@@ -54,10 +54,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLLs\HelperSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Integration, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Integration\bin\Debug\Integration.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -576,26 +572,20 @@
     <Content Include="Scripts\js\ReportRevenue.js" />
     <Content Include="Scripts\js\ReportSummary.js" />
     <Content Include="Scripts\summernote.min.js" />
-    <Content Include="Service References\BDSService\BDSService1.wsdl" />
-    <None Include="Service References\BDSService\BDSService4.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\BDSService\BDSService41.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\BDSService\BDSService42.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\BDSService\BDSService43.xsd">
-      <SubType>Designer</SubType>
-    </None>
+    <Content Include="Properties\DataSources\Integration.BDSService.Client.datasource" />
+    <Content Include="Properties\DataSources\Integration.BDSService.Menu.datasource" />
+    <Content Include="Properties\DataSources\Integration.BDSService.PasswordResetRequest.datasource" />
+    <Content Include="Properties\DataSources\Integration.BDSService.Permission.datasource" />
+    <Content Include="Properties\DataSources\Integration.BDSService.Role.datasource" />
+    <Content Include="Properties\DataSources\Integration.BDSService.SecurityQuestion.datasource" />
+    <Content Include="Properties\DataSources\Integration.BDSService.User.datasource" />
+    <None Include="Service References\BDSService\BDSService.disco" />
     <None Include="Service References\BDSService\configuration91.svcinfo" />
     <None Include="Service References\BDSService\configuration.svcinfo" />
     <None Include="Service References\BDSService\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
-    <Content Include="Service References\BDSService\BDSService1.disco" />
     <Content Include="Views\Plan\PlanSelector.cshtml">
       <SubType>Code</SubType>
     </Content>
@@ -762,6 +752,23 @@
     <Content Include="Views\Organization\RoleDelete.cshtml" />
     <Content Include="Views\Organization\RoleEdit.cshtml" />
     <Content Include="Views\Organization\ManageRoles.cshtml" />
+    <Content Include="Views\Organization\OrganizationHierarchy.cshtml" />
+    <Content Include="Views\Organization\_userHierarchy.cshtml" />
+    <Content Include="Views\Organization\ViewEditPermission.cshtml" />
+    <Content Include="Views\Organization\CheckPermission.cshtml" />
+    <None Include="Service References\BDSService\BDSService.wsdl" />
+    <None Include="Service References\BDSService\BDSService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\BDSService1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\BDSService2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\BDSService3.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.ApplicationActivity.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
@@ -795,10 +802,6 @@
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.User.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
-    <Content Include="Views\Organization\OrganizationHierarchy.cshtml" />
-    <Content Include="Views\Organization\_userHierarchy.cshtml" />
-    <Content Include="Views\Organization\ViewEditPermission.cshtml" />
-    <Content Include="Views\Organization\CheckPermission.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>
@@ -821,13 +824,17 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadataStorage Include="Service References\BDSService\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Entities\Entities.csproj">
       <Project>{c7aa3463-8e84-4280-a893-c6e7d38ea8d2}</Project>
       <Name>Entities</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Integration\Integration.csproj">
+      <Project>{b312ef9a-c33a-4e44-8bd6-b141080302e0}</Project>
+      <Name>Integration</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\BDSService\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
