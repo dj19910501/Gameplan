@@ -777,195 +777,6 @@ namespace RevenuePlanner.BDSService {
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="Role", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
-    [System.SerializableAttribute()]
-    public partial class Role : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-        
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string CodeField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string ColorCodeField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Nullable<System.Guid> CreatedByField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Nullable<System.DateTime> CreatedDateField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string DescriptionField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private bool IsDeletedField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Nullable<System.Guid> ModifiedByField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Nullable<System.DateTime> ModifiedDateField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Guid RoleIdField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string TitleField;
-        
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-            get {
-                return this.extensionDataField;
-            }
-            set {
-                this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Code {
-            get {
-                return this.CodeField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.CodeField, value) != true)) {
-                    this.CodeField = value;
-                    this.RaisePropertyChanged("Code");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string ColorCode {
-            get {
-                return this.ColorCodeField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.ColorCodeField, value) != true)) {
-                    this.ColorCodeField = value;
-                    this.RaisePropertyChanged("ColorCode");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Nullable<System.Guid> CreatedBy {
-            get {
-                return this.CreatedByField;
-            }
-            set {
-                if ((this.CreatedByField.Equals(value) != true)) {
-                    this.CreatedByField = value;
-                    this.RaisePropertyChanged("CreatedBy");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Nullable<System.DateTime> CreatedDate {
-            get {
-                return this.CreatedDateField;
-            }
-            set {
-                if ((this.CreatedDateField.Equals(value) != true)) {
-                    this.CreatedDateField = value;
-                    this.RaisePropertyChanged("CreatedDate");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Description {
-            get {
-                return this.DescriptionField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.DescriptionField, value) != true)) {
-                    this.DescriptionField = value;
-                    this.RaisePropertyChanged("Description");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public bool IsDeleted {
-            get {
-                return this.IsDeletedField;
-            }
-            set {
-                if ((this.IsDeletedField.Equals(value) != true)) {
-                    this.IsDeletedField = value;
-                    this.RaisePropertyChanged("IsDeleted");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Nullable<System.Guid> ModifiedBy {
-            get {
-                return this.ModifiedByField;
-            }
-            set {
-                if ((this.ModifiedByField.Equals(value) != true)) {
-                    this.ModifiedByField = value;
-                    this.RaisePropertyChanged("ModifiedBy");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Nullable<System.DateTime> ModifiedDate {
-            get {
-                return this.ModifiedDateField;
-            }
-            set {
-                if ((this.ModifiedDateField.Equals(value) != true)) {
-                    this.ModifiedDateField = value;
-                    this.RaisePropertyChanged("ModifiedDate");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Guid RoleId {
-            get {
-                return this.RoleIdField;
-            }
-            set {
-                if ((this.RoleIdField.Equals(value) != true)) {
-                    this.RoleIdField = value;
-                    this.RaisePropertyChanged("RoleId");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Title {
-            get {
-                return this.TitleField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.TitleField, value) != true)) {
-                    this.TitleField = value;
-                    this.RaisePropertyChanged("Title");
-                }
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
     [System.Runtime.Serialization.DataContractAttribute(Name="Menu", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
     [System.SerializableAttribute()]
     public partial class Menu : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
@@ -1200,6 +1011,195 @@ namespace RevenuePlanner.BDSService {
                 if ((this.PermissionCodeField.Equals(value) != true)) {
                     this.PermissionCodeField = value;
                     this.RaisePropertyChanged("PermissionCode");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="Role", Namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities")]
+    [System.SerializableAttribute()]
+    public partial class Role : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string CodeField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string ColorCodeField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Nullable<System.Guid> CreatedByField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Nullable<System.DateTime> CreatedDateField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string DescriptionField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private bool IsDeletedField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Nullable<System.Guid> ModifiedByField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Nullable<System.DateTime> ModifiedDateField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Guid RoleIdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string TitleField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Code {
+            get {
+                return this.CodeField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.CodeField, value) != true)) {
+                    this.CodeField = value;
+                    this.RaisePropertyChanged("Code");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string ColorCode {
+            get {
+                return this.ColorCodeField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.ColorCodeField, value) != true)) {
+                    this.ColorCodeField = value;
+                    this.RaisePropertyChanged("ColorCode");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Nullable<System.Guid> CreatedBy {
+            get {
+                return this.CreatedByField;
+            }
+            set {
+                if ((this.CreatedByField.Equals(value) != true)) {
+                    this.CreatedByField = value;
+                    this.RaisePropertyChanged("CreatedBy");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Nullable<System.DateTime> CreatedDate {
+            get {
+                return this.CreatedDateField;
+            }
+            set {
+                if ((this.CreatedDateField.Equals(value) != true)) {
+                    this.CreatedDateField = value;
+                    this.RaisePropertyChanged("CreatedDate");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Description {
+            get {
+                return this.DescriptionField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.DescriptionField, value) != true)) {
+                    this.DescriptionField = value;
+                    this.RaisePropertyChanged("Description");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool IsDeleted {
+            get {
+                return this.IsDeletedField;
+            }
+            set {
+                if ((this.IsDeletedField.Equals(value) != true)) {
+                    this.IsDeletedField = value;
+                    this.RaisePropertyChanged("IsDeleted");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Nullable<System.Guid> ModifiedBy {
+            get {
+                return this.ModifiedByField;
+            }
+            set {
+                if ((this.ModifiedByField.Equals(value) != true)) {
+                    this.ModifiedByField = value;
+                    this.RaisePropertyChanged("ModifiedBy");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Nullable<System.DateTime> ModifiedDate {
+            get {
+                return this.ModifiedDateField;
+            }
+            set {
+                if ((this.ModifiedDateField.Equals(value) != true)) {
+                    this.ModifiedDateField = value;
+                    this.RaisePropertyChanged("ModifiedDate");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Guid RoleId {
+            get {
+                return this.RoleIdField;
+            }
+            set {
+                if ((this.RoleIdField.Equals(value) != true)) {
+                    this.RoleIdField = value;
+                    this.RaisePropertyChanged("RoleId");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Title {
+            get {
+                return this.TitleField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.TitleField, value) != true)) {
+                    this.TitleField = value;
+                    this.RaisePropertyChanged("Title");
                 }
             }
         }
@@ -1976,12 +1976,6 @@ namespace RevenuePlanner.BDSService {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetClientList", ReplyAction="http://tempuri.org/IBDSService/GetClientListResponse")]
         System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.Client>> GetClientListAsync();
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetRoleList", ReplyAction="http://tempuri.org/IBDSService/GetRoleListResponse")]
-        System.Collections.Generic.List<RevenuePlanner.BDSService.Role> GetRoleList(string roleCodes);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetRoleList", ReplyAction="http://tempuri.org/IBDSService/GetRoleListResponse")]
-        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.Role>> GetRoleListAsync(string roleCodes);
-        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetMultipleTeamMemberDetails", ReplyAction="http://tempuri.org/IBDSService/GetMultipleTeamMemberDetailsResponse")]
         System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetMultipleTeamMemberDetails(string userIdList, System.Guid applicationId);
         
@@ -2169,10 +2163,10 @@ namespace RevenuePlanner.BDSService {
         System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetRoleMemberListAsync(System.Guid applicationId, System.Guid roleid);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/DeleteRoleAndReassign", ReplyAction="http://tempuri.org/IBDSService/DeleteRoleAndReassignResponse")]
-        int DeleteRoleAndReassign(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid);
+        int DeleteRoleAndReassign(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid, System.Guid modifiedBy);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/DeleteRoleAndReassign", ReplyAction="http://tempuri.org/IBDSService/DeleteRoleAndReassignResponse")]
-        System.Threading.Tasks.Task<int> DeleteRoleAndReassignAsync(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid);
+        System.Threading.Tasks.Task<int> DeleteRoleAndReassignAsync(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid, System.Guid modifiedBy);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/CreateRole", ReplyAction="http://tempuri.org/IBDSService/CreateRoleResponse")]
         int CreateRole(string roledesc, string permissionID, string colorcode, System.Guid applicationid, System.Guid createdby, System.Guid roleid, string delpermission);
@@ -2304,14 +2298,6 @@ namespace RevenuePlanner.BDSService {
         
         public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.Client>> GetClientListAsync() {
             return base.Channel.GetClientListAsync();
-        }
-        
-        public System.Collections.Generic.List<RevenuePlanner.BDSService.Role> GetRoleList(string roleCodes) {
-            return base.Channel.GetRoleList(roleCodes);
-        }
-        
-        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.Role>> GetRoleListAsync(string roleCodes) {
-            return base.Channel.GetRoleListAsync(roleCodes);
         }
         
         public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetMultipleTeamMemberDetails(string userIdList, System.Guid applicationId) {
@@ -2562,12 +2548,12 @@ namespace RevenuePlanner.BDSService {
             return base.Channel.GetRoleMemberListAsync(applicationId, roleid);
         }
         
-        public int DeleteRoleAndReassign(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid) {
-            return base.Channel.DeleteRoleAndReassign(delroleid, reassignroleid, applicationid);
+        public int DeleteRoleAndReassign(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid, System.Guid modifiedBy) {
+            return base.Channel.DeleteRoleAndReassign(delroleid, reassignroleid, applicationid, modifiedBy);
         }
         
-        public System.Threading.Tasks.Task<int> DeleteRoleAndReassignAsync(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid) {
-            return base.Channel.DeleteRoleAndReassignAsync(delroleid, reassignroleid, applicationid);
+        public System.Threading.Tasks.Task<int> DeleteRoleAndReassignAsync(System.Guid delroleid, System.Nullable<System.Guid> reassignroleid, System.Guid applicationid, System.Guid modifiedBy) {
+            return base.Channel.DeleteRoleAndReassignAsync(delroleid, reassignroleid, applicationid, modifiedBy);
         }
         
         public int CreateRole(string roledesc, string permissionID, string colorcode, System.Guid applicationid, System.Guid createdby, System.Guid roleid, string delpermission) {
