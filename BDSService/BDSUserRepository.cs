@@ -680,26 +680,37 @@ namespace BDSService
                             //-- Insert User_Activity_Permission data
                             if (oldRoleId != null && oldRoleId != Guid.Empty && newRoleId != null && newRoleId != Guid.Empty && oldRoleId != newRoleId && user.IsDeleted == false)
                             {
+                                ////-- List of rights for role before role changes (old role).
+                                //var lstOldRights = db.Role_Activity_Permission.Where(a => a.RoleId == oldRoleId).ToList();
+
+                                ////-- List of rights for role that has to be updated (new role).
+                                //var lstNewRights = db.Role_Activity_Permission.Where(a => a.RoleId == newRoleId).ToList();
+
+                                ////-- List of rights of old roles that needs to be deleted as new role assigns.
+                                //var lstRightsToDelete = lstOldRights.Where(a => !lstNewRights.Select(b => b.ApplicationActivityId).Contains(a.ApplicationActivityId)).ToList();
+
+                                ////-- List of rights of new roles that needs to be inserted as new role assigns.
+                                //var lstRightsToInsert = lstNewRights.Where(a => !lstOldRights.Select(b => b.ApplicationActivityId).Contains(a.ApplicationActivityId)).ToList();
+
+                                //-- List of old rights of user role(old user role).
+                                var lstUserOldRights = db.User_Activity_Permission.Where(a => a.UserId == user.UserId).ToList().Select(a => a.ApplicationActivityId).ToList();
                                 //-- List of rights for role before role changes (old role).
-                                var lstOldRights = db.Role_Activity_Permission.Where(a => a.RoleId == oldRoleId).ToList();
-
+                                var lstOldRights = db.Role_Activity_Permission.Where(a => a.RoleId == oldRoleId).ToList().Select(a => a.ApplicationActivityId).ToList();
                                 //-- List of rights for role that has to be updated (new role).
-                                var lstNewRights = db.Role_Activity_Permission.Where(a => a.RoleId == newRoleId).ToList();
-
-                                //-- List of rights of old roles that needs to be deleted as new role assigns.
-                                var lstRightsToDelete = lstOldRights.Where(a => !lstNewRights.Select(b => b.ApplicationActivityId).Contains(a.ApplicationActivityId)).ToList();
-
+                                var lstNewRights = db.Role_Activity_Permission.Where(a => a.RoleId == newRoleId).ToList().Select(a => a.ApplicationActivityId).ToList();
+                                //-- List of remaining rights from old user rights that needs to be stay with user as it is.
+                                var lstUserRemainingRights = lstUserOldRights.Where(a => !lstOldRights.Contains(a)).ToList();
                                 //-- List of rights of new roles that needs to be inserted as new role assigns.
-                                var lstRightsToInsert = lstNewRights.Where(a => !lstOldRights.Select(b => b.ApplicationActivityId).Contains(a.ApplicationActivityId)).ToList();
+                                var lstRightsToInsert = lstNewRights.Where(a => !lstUserRemainingRights.Contains(a)).ToList();
 
                                 //-- Delete old rights
-                                if (lstRightsToDelete != null)
+                                if (lstOldRights != null)
                                 {
-                                    if (lstRightsToDelete.Count > 0)
+                                    if (lstOldRights.Count > 0)
                                     {
-                                        foreach (var item in lstRightsToDelete)
+                                        foreach (var item in lstOldRights)
                                         {
-                                            var objUser_Activity_Permission = db.User_Activity_Permission.Where(a => a.UserId == user.UserId && a.ApplicationActivityId == item.ApplicationActivityId).FirstOrDefault();
+                                            var objUser_Activity_Permission = db.User_Activity_Permission.Where(a => a.UserId == user.UserId && a.ApplicationActivityId == item).FirstOrDefault();
                                             if (objUser_Activity_Permission != null)
                                             {
                                                 db.Entry(objUser_Activity_Permission).State = EntityState.Deleted;
@@ -718,7 +729,7 @@ namespace BDSService
                                         foreach (var item in lstRightsToInsert)
                                         {
                                             User_Activity_Permission objUser_Activity_Permission = new User_Activity_Permission();
-                                            objUser_Activity_Permission.ApplicationActivityId = item.ApplicationActivityId;
+                                            objUser_Activity_Permission.ApplicationActivityId = item;
                                             objUser_Activity_Permission.CreatedBy = modifiedBy;
                                             objUser_Activity_Permission.CreatedDate = DateTime.Now;
                                             objUser_Activity_Permission.UserId = user.UserId;
