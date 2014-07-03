@@ -40,6 +40,7 @@
         <AssociationConnector Association="BDSAuthModel.FK_User_Activity_Permission_User1" ManuallyRouted="false" />
         <AssociationConnector Association="BDSAuthModel.FK_User_Application_User" ManuallyRouted="false" />
         <AssociationConnector Association="BDSAuthModel.FK_User_Application_User_ManagerId" ManuallyRouted="false" />
+        <AssociationConnector Association="BDSAuthModel.ApplicationId_fk" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -1731,7 +1731,10 @@ namespace BDSService
 
         public List<BDSEntities.CustomRestriction> GetUserCustomRestrictionList(Guid userId, Guid applicationId)
         {
-            var usercustomRestrictionList = db.CustomRestrictions.Where(crl => crl.UserId == userId).Select(crl => new BDSEntities.CustomRestriction
+            // Modified By : Kalpesh Sharma
+            // Added new field into the Custom Restriction table , now all the Custom Restriction will be fetched by UserID and Application ID. 
+            // I have added the following line into the below query && crl.ApplicationId == applicationId
+            var usercustomRestrictionList = db.CustomRestrictions.Where(crl => crl.UserId == userId && crl.ApplicationId == applicationId).Select(crl => new BDSEntities.CustomRestriction
             {
                 UserId = crl.UserId,
                 CustomField = crl.CustomField,
@@ -1773,7 +1776,12 @@ namespace BDSService
         public int DeleteUserCustomrestriction(Guid userId, Guid applicationId)
         {
             int retVal = 0;
-            var userCustomrestrictionList = db.CustomRestrictions.Where(usr => usr.UserId == userId).ToList();
+
+            // Modified By : Kalpesh Sharma
+            // Added new field into the Custom Restriction table , now all the Custom Restriction will be fetched by UserID and Application ID.
+            //I have added the following line into the below query (&& usr.ApplicationId == applicationId)
+            
+            var userCustomrestrictionList = db.CustomRestrictions.Where(usr => usr.UserId == userId && usr.ApplicationId == applicationId).ToList();
             if (userCustomrestrictionList.Count > 0)
             {
                 foreach (var customRestriction in userCustomrestrictionList)
@@ -1820,6 +1828,10 @@ namespace BDSService
                         obj.Permission = Convert.ToInt16(splitpermissions[0]);
                         obj.CreatedDate = System.DateTime.Now;
                         obj.CreatedBy = CreatorId;
+                        // Modified By : Kalpesh Sharma
+                        // Added new field into the Custom Restriction table , now all the Custom Restriction will be fetched by UserID and Application ID.
+                        obj.ApplicationId = applicationId;
+                        //Modification end
                         db.Entry(obj).State = EntityState.Added;
                         db.CustomRestrictions.Add(obj);
                         db.SaveChanges();
@@ -1835,6 +1847,10 @@ namespace BDSService
                         obj.Permission = Convert.ToInt16(splitpermissions[0]);
                         obj.CreatedDate = System.DateTime.Now;
                         obj.CreatedBy = CreatorId;
+                        // Modified By : Kalpesh Sharma
+                        // Added new field into the Custom Restriction table , now all the Custom Restriction will be fetched by UserID and Application ID.
+                        obj.ApplicationId = applicationId;
+                        //Modification end
                         db.Entry(obj).State = EntityState.Added;
                         db.CustomRestrictions.Add(obj);
                         db.SaveChanges();
@@ -1850,6 +1866,10 @@ namespace BDSService
                         obj.Permission = Convert.ToInt16(splitpermissions[0]);
                         obj.CreatedDate = System.DateTime.Now;
                         obj.CreatedBy = CreatorId;
+                        // Modified By : Kalpesh Sharma
+                        // Added new field into the Custom Restriction table , now all the Custom Restriction will be fetched by UserID and Application ID.
+                        obj.ApplicationId = applicationId;
+                        //Modification end
                         db.Entry(obj).State = EntityState.Added;
                         db.CustomRestrictions.Add(obj);
                         db.SaveChanges();
