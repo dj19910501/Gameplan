@@ -114,7 +114,7 @@ else
         if ($('#cSuccess').html() != '') {
             $('#cSuccess').html('<strong>Success.</strong> ' + $('#cSuccess').html())
             $("#successMessage").slideDown(1200); // Show the Alert
-            $("#successMessage").slideUp(3000);
+            //$("#successMessage").slideUp(3000);
         }
         @* added by Nirav Shah  on 14 feb 2014 *@
         if ($('#cError').html() != '') {
@@ -162,7 +162,7 @@ else
                                 $('#successMessage').css("display", "block");
                                 $('#cSuccess').html('<strong>Success.</strong> ' + data.successmsg)
                                 $("#successMessage").slideDown(1200); // Show the Alert
-                                $("#successMessage").slideUp(3000);
+                                //$("#successMessage").slideUp(3000);
                                 $('#errorMessage').css("display", "none");
                                 $('#' + id).css("display", "none");
                             }

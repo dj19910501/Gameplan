@@ -641,9 +641,9 @@ else
             var msgspan = "@Common.objCached.UserPermissionsResetToDefault";
             $("#spanSuccessMessage").text(msgspan);
             $("#successMessage").slideDown(600);
-            $("#successMessage").slideUp(1200).promise().always(function () {
-                close_popup();
-            });
+            //$("#successMessage").slideUp(1200).promise().always(function () {
+            //    close_popup();
+            //});
         }
        
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");

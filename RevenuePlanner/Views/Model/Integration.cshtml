@@ -180,7 +180,7 @@
         if ($('#cSuccess').html() != '') {
             $('#cSuccess').html('<strong>Success.</strong> ' + $('#cSuccess').html())
             $("#successMessage").slideDown(1200);
-            $("#successMessage").slideUp(3000);
+           // $("#successMessage").slideUp(3000);
         }
         if ($('#cError').html() != '') {
             $("#errorMessage").slideDown(1200);
@@ -520,7 +520,7 @@
                             $('#successMessage').css("display", "block");
                             $('#cSuccess').html('<strong>Success.</strong> ' + r.message)
                             $("#successMessage").slideDown(1200); // Show the Alert
-                            $("#successMessage").slideUp(3000);
+                            //$("#successMessage").slideUp(3000);
                             $('#errorMessage').css("display", "none");
 
                             $.ajax({

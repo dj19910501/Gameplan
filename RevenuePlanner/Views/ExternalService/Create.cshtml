@@ -326,7 +326,7 @@
                             $("#cSuccess").html('');
                             $('#cSuccess').append("<strong>Success. </strong>" + data.SuccessMessage.toString());
                             $("#successMessage").slideDown(1200);
-                            $("#successMessage").slideUp(3000);
+                           // $("#successMessage").slideUp(3000);
                             $("#errorMessage").slideUp(1);
 
                             $('#integrationStatus').val("Active");
@@ -389,7 +389,7 @@
     }
     else {
         $("#successMessage").slideDown(1200);
-        $("#successMessage").slideUp(3000);
+       // $("#successMessage").slideUp(3000);
     }
     if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
         $("#errorMessage").slideUp(400);

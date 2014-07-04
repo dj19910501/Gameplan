@@ -95,7 +95,7 @@
         if ($('#cSuccess').html() != '') {
             $('#cSuccess').html('<strong>Success.</strong> ' + $('#cSuccess').html())
             $("#successMessage").slideDown(1200); // Show the Alert
-            $("#successMessage").slideUp(3000);
+           // $("#successMessage").slideUp(3000);
         }
         if ($('#cError').html() != '') {
             $('#cError').html('<strong>Error.</strong> ' + $('#cError').html())
@@ -168,7 +168,7 @@
                                 $('#successMessage').css("display", "block");
                                 $('#cSuccess').html('<strong>Success.</strong> ' + data.successmsg)
                                 $("#successMessage").slideDown(1200); // Show the Alert
-                                $("#successMessage").slideUp(3000);
+                               // $("#successMessage").slideUp(3000);
                                 $('#errorMessage').css("display", "none");
                             }
                             TabClick();
