@@ -446,7 +446,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.Name = userDetails.FirstName + " " + userDetails.LastName;
             ViewBag.RoleName = userDetails.RoleTitle;
             ViewBag.userGeography = userDetails.GeographyId.ToString();
-            ViewBag.userBusinessUnit = userDetails.BusinessUnitId;
+            ViewBag.userBusinessUnit = userDetails.BusinessUnitId.ToString();
             var clientVerticals = db.Verticals.Where(ver => ver.ClientId == Sessions.User.ClientId).ToList();
             var clientGeography = db.Geographies.Where(geo => geo.ClientId == Sessions.User.ClientId).ToList();
             var clientBusinessUnit = db.BusinessUnits.Where(bu => bu.ClientId == Sessions.User.ClientId).ToList();
