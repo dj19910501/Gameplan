@@ -424,6 +424,9 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         public ActionResult ViewEditPermission(string Id, string Mode)
         {
+            List<UserActivityPermissionModel> userActivityPermissionList = new List<UserActivityPermissionModel>();
+            try
+            {
             // Start - Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
             ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
@@ -451,7 +454,7 @@ namespace RevenuePlanner.Controllers
             var allAtctivity = objBDSServiceClient.GetAllApplicationActivity(Sessions.ApplicationId);
             var userActivity = objBDSServiceClient.GetUserActivity(UserId, Sessions.ApplicationId);
 
-            List<UserActivityPermissionModel> userActivityPermissionList = new List<UserActivityPermissionModel>();
+                
             foreach (var item in allAtctivity)
             {
                 UserActivityPermissionModel uapobj = new UserActivityPermissionModel();
@@ -560,6 +563,22 @@ namespace RevenuePlanner.Controllers
                 customRestrictionList.Add(cRestrictionobj);
             }
             ViewData["CustomRestriction"] = customRestrictionList;
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
+                    return RedirectToAction("Index", "Login");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
+                }
+            }
             return View(userActivityPermissionList);
         }
 
@@ -576,12 +595,27 @@ namespace RevenuePlanner.Controllers
                 Guid UserId = Guid.Parse(userId);
                 Guid CurrentUserID = Sessions.User.UserId;
                 int i = objBDSServiceClient.AddUserActivityPermissions(UserId, CurrentUserID, arrPermissionId.ToList(), Sessions.ApplicationId);
+                if (i == 1)
+                {
                 return true;
             }
-            catch
+            }
+            catch (Exception e)
             {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
                 return false;
             }
+                else
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -596,13 +630,28 @@ namespace RevenuePlanner.Controllers
                 Guid UserId = Guid.Parse(userId);
                 Guid creatorId = Sessions.User.UserId;
                 int i = objBDSServiceClient.resetToRoleDefault(UserId, creatorId, Sessions.ApplicationId);
-                TempData["Successmessage"] = "Model inputs successfully saved.";
+                if (i == 1)
+                {
+                    TempData["SuccessMessage"] = Common.objCached.UserPermissionsResetToDefault;
                 return true;
             }
-            catch
+            }
+            catch (Exception e)
             {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
                 return false;
             }
+                else
+                {
+                    TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
+                }
+            }
+            return false;
         }
     }
 }

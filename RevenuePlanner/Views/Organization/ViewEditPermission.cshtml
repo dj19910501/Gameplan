@@ -39,7 +39,7 @@
 
     <div id="successMessage" class="alert hide alert-success message-position">
         <a class="close">×</a>
-        <strong>Success.</strong> Model inputs successfully saved.
+        <strong>Success.</strong><span id="spanSuccessMessage"></span>
        
     </div>
 
@@ -49,7 +49,7 @@
 
     <div id="errorMessage" class="alert hide alert-error message-position">
         <a class="close">×</a>
-        <strong>Error!</strong> Make sure all fields are filled and try again.
+       <strong>Error!</strong><span id="spanErrorMessage"></span>
        
     </div>
 
@@ -475,7 +475,7 @@ else
 
                                 <div class="dd-row">
                                     <label>@item.Title</label>
-                                      @if (ViewBag.userGeography != item.CustomFieldId)
+                                      @if (ViewBag.userBusinessUnit != item.CustomFieldId)
                                       {
                                     if (@item.Permission == 0)
                                     {
@@ -638,7 +638,7 @@ else
 <script type="text/javascript">
     $(document).ready(function () {
         if ('@TempData["SuccessMessage"]' != '') {
-            var msgspan = "User's permissions have been reset to the role default permissions.";
+            var msgspan = "@Common.objCached.UserPermissionsResetToDefault";
             $("#spanSuccessMessage").text(msgspan);
             $("#successMessage").slideDown(600);
             $("#successMessage").slideUp(1200).promise().always(function () {
@@ -719,12 +719,6 @@ else
             cache: false,
             success: function (result) {
                 if (result == 'True') {
-                    var msgspan = "Model inputs successfully saved.";
-                    //$("#spanSuccessMessage").text(msgspan);
-                    //$("#successMessage").slideDown(600);
-                    //$("#successMessage").slideUp(1200).promise().always(function () {
-                    //    close_popup();
-                    //});
                     url = '@Url.Content("~/Organization/ViewEditPermission?Id="+ViewBag.UserId+"&Mode=Edit")';
                     window.location.href = url;
                 }

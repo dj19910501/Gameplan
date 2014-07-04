@@ -239,12 +239,12 @@
 		<value>Model duplicated.</value>
 	</Field>
 	<!-- End - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #219 to clone a model. -->
-  <!-- Start - Added by :- Sohel Pathan on 10/06/2014 for PL ticket #516. -->
-  <Field>
-    <Name>TargetStageNotAssociatedWithModelMsg</Name>
-    <value>Target stage of selected tactic type is not associated with target stages of selected model.</value>
-  </Field>
-  <!-- End - Added by :- Sohel Pathan on 10/06/2014 for PL ticket #516. -->
+	<!-- Start - Added by :- Sohel Pathan on 10/06/2014 for PL ticket #516. -->
+	<Field>
+		<Name>TargetStageNotAssociatedWithModelMsg</Name>
+		<value>Target stage of selected tactic type is not associated with target stages of selected model.</value>
+	</Field>
+	<!-- End - Added by :- Sohel Pathan on 10/06/2014 for PL ticket #516. -->
 	<Field>
 		<Name>PlanDeleteSuccessful</Name>
 		<value>Plan {0} deleted successfully.</value>
@@ -433,22 +433,28 @@
 		<Name>LoginWithSameSession</Name>
 		<value>Another user is logged in with the same session.</value>
 	</Field>
-  <!-- Start - Added By Sohel Pathan on 16/06/2014 for PL ticket #528 -->
-  <Field>
-    <Name>ChangeTargetStageMsg</Name>
-    <value>You are about to modify target stage of a tactic of published model, Do you want to continue?</value>
-  </Field>
-  <!-- End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528 -->
-  <!-- Start - Added By Sohel Pathan on 25/06/2014 for PL ticket #537 -->
-  <Field>
-    <Name>UnauthorizedCommentSection</Name>
-    <value>You are not authorized to view/add comments.</value>
-  </Field>
-  <!-- End - Added By Sohel Pathan on 25/06/2014 for PL ticket #537 -->
-  <!-- Start - Added By Sohel Pathan on 26/06/2014 for PL ticket #517 -->
-  <Field>
-    <Name>NotifyBeforeManagerDeletion</Name>
-    <value>Before deleting the user, you would have to re-assign the corresponding subordinates to another manager.</value>
-  </Field>
-  <!-- End - Added By Sohel Pathan on 26/06/2014 for PL ticket #517 -->
+	<!-- Start - Added By Sohel Pathan on 16/06/2014 for PL ticket #528 -->
+	<Field>
+		<Name>ChangeTargetStageMsg</Name>
+		<value>You are about to modify target stage of a tactic of published model, Do you want to continue?</value>
+	</Field>
+	<!-- End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528 -->
+	<!-- Start - Added By Sohel Pathan on 25/06/2014 for PL ticket #537 -->
+	<Field>
+		<Name>UnauthorizedCommentSection</Name>
+		<value>You are not authorized to view/add comments.</value>
+	</Field>
+	<!-- End - Added By Sohel Pathan on 25/06/2014 for PL ticket #537 -->
+	<!-- Start - Added By Sohel Pathan on 26/06/2014 for PL ticket #517 -->
+	<Field>
+		<Name>NotifyBeforeManagerDeletion</Name>
+		<value>Before deleting the user, you would have to re-assign the corresponding subordinates to another manager.</value>
+	</Field>
+	<!-- End - Added By Sohel Pathan on 26/06/2014 for PL ticket #517 -->
+	<!-- Start - Added By Mitesh Vaishnav on 04/07/2014 for PL ticket #521 -->
+	<Field>
+		<Name>UserPermissionsResetToDefault</Name>
+		<value>Users permissions have been reset to the role default permissions.</value>
+	</Field>
+	<!-- End - Added By Mitesh Vaishnav on 04/07/2014 for PL ticket #521 -->
 </Messages>

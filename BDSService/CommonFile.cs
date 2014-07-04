@@ -32,6 +32,18 @@ namespace BDSService
 
             return (T)Enum.Parse(typeof(T), key, true);
         }
+        /// <summary>
+        /// Added By: Mitesh Vaishnav.
+        /// Date: 07/04/2014
+        /// Enum to get common custom restriction type.
+        /// </summary>
+        /// <typeparam >Enum</typeparam>
+        public enum CustomRestrictionType
+        {
+            Verticals,
+            Geography,
+            BusinessUnit
+        }
         #endregion
 
     }

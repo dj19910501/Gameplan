@@ -1336,6 +1336,21 @@ namespace RevenuePlanner.Helpers
             }
         }
         // End - Added By Sohel Pathan on 26/06/2014 for PL ticket #517
+
+        // Start - Added By Mitesh Vaishnav on 04/07/2014 for PL ticket #521
+        private string _UserPermissionsResetToDefault;
+        public string UserPermissionsResetToDefault
+        {
+            get
+            {
+                return _UserPermissionsResetToDefault;
+            }
+            set
+            {
+                _UserPermissionsResetToDefault = value;
+            }
+        }
+        // End - Added By Mitesh Vaishnav on 04/07/2014 for PL ticket #521
         #endregion
 
 
@@ -1748,6 +1763,11 @@ namespace RevenuePlanner.Helpers
                                             _NotifyBeforeManagerDeletion = strMsgValue;
                                             break;
                                         // End - Added By Sohel Pathan on 25/06/2014 for PL ticket #537
+                                        // Start - Added By Mitesh Vaishnav on 04/07/2014 for PL ticket #521
+                                        case "UserPermissionsResetToDefault":
+                                            _UserPermissionsResetToDefault = strMsgValue;
+                                            break;
+                                        // End - Added By Mitesh Vaishnav on 04/07/2014 for PL ticket #521
                                     }
                                 }
                                 i = i + 1;
