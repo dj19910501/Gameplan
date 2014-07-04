@@ -108,7 +108,15 @@ namespace RevenuePlanner.Controllers
                 {
                     List<Guid> lstViewEditBusinessUnits = new List<Guid>();
                     lstAllowedBusinessUnits.ForEach(g => lstViewEditBusinessUnits.Add(Guid.Parse(g)));
-                    ViewBag.IsViewEditBusinessUnit = lstViewEditBusinessUnits.Contains(businessunit);
+                    //// Modified By Maninder on 07/04/2014 Added if...else...to allow user to add model when it is create mode.
+                    if (businessunit == Guid.Empty && id == 0)
+                    {
+                        ViewBag.IsViewEditBusinessUnit = true;
+                    }
+                    else
+                    {
+                        ViewBag.IsViewEditBusinessUnit = lstViewEditBusinessUnits.Contains(businessunit);
+                    }
                 }
             }
             catch (Exception e)
