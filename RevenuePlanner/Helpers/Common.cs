@@ -3208,6 +3208,57 @@ namespace RevenuePlanner.Helpers
         }
 
         /// <summary>
+        /// Function to get all own upto n level and peers subordinates of current user
+        /// Added By Dharmraj for ticket #573, 4-07-2014
+        /// </summary>
+        /// <returns></returns>
+        public static List<Guid> GetSubOrdinatesWithPeersNLevel()
+        {
+            //Get all subordinates of current user
+            BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
+            List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
+            lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
+            List<Guid> lstSubordinaresId = new List<Guid>();
+            List<Guid> lstSubOrdinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId)
+                                                         .ToList()
+                                                         .Select(u => u.UserId).ToList();
+
+            while (lstSubOrdinates.Count > 0)
+            {
+                lstSubOrdinates.ForEach(u => lstSubordinaresId.Add(u));
+
+                lstSubOrdinates = lstUserHierarchy.Where(u => lstSubOrdinates.Contains(u.ManagerId.GetValueOrDefault(Guid.Empty))).ToList().Select(u => u.UserId).ToList();
+            }
+
+
+            var ManagerId = lstUserHierarchy.FirstOrDefault(u => u.UserId == Sessions.User.UserId).ManagerId;
+            if (ManagerId != null)
+            {
+                var lstPeersId = lstUserHierarchy.Where(u => u.ManagerId == ManagerId)
+                                                        .ToList()
+                                                        .Select(u => u.UserId)
+                                                        .ToList();
+                if (lstPeersId.Count > 0)
+                {
+                    var lstPeersSubOrdinatesId = lstUserHierarchy.Where(u => lstPeersId.Contains(u.ManagerId.GetValueOrDefault(Guid.Empty)))
+                                                            .ToList()
+                                                            .Select(u => u.UserId)
+                                                            .ToList();
+
+                    // Get current user permission for Tactic ApproveForPeers.
+                    bool IsTacticApproveForPeersAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticApproveForPeers);
+
+                    if (IsTacticApproveForPeersAuthorized)
+                    {
+                        lstSubordinaresId = lstSubordinaresId.Concat(lstPeersSubOrdinatesId).ToList();
+                    }
+                }
+            }
+
+            return lstSubordinaresId;
+        }
+
+        /// <summary>
         /// Function to get all subirdinates upto n level
         /// Added by dharmraj, 1-7-2014
         /// </summary>

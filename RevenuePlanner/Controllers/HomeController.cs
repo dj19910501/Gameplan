@@ -300,7 +300,7 @@ namespace RevenuePlanner.Controllers
             // Set the flag (IsManager) if current user have sub ordinates, By Dharmraj Mangukiya, #538
             //var lstUserHierarchy = objBDSUserRepository.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
             //var lstSubordinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId).ToList();
-            var lstSubordinates = Common.GetSubOrdinatesWithPeers();
+            var lstSubordinates = Common.GetSubOrdinatesWithPeersNLevel();
             if (lstSubordinates.Count > 0)
             {
                 objHomePlan.IsManager = true;
@@ -541,7 +541,7 @@ namespace RevenuePlanner.Controllers
             var lstAllowedGeography = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
             tactic = tactic.Where(t => lstAllowedVertical.Contains(t.VerticalId.ToString()) && lstAllowedGeography.Contains(t.GeographyId.ToString())).ToList();
 
-            var lstSubordinatesWithPeers = Common.GetSubOrdinatesWithPeers();
+            var lstSubordinatesWithPeers = Common.GetSubOrdinatesWithPeersNLevel();
             var subordinatesTactic = tactic.Where(t => lstSubordinatesWithPeers.Contains(t.CreatedBy)).ToList();
             var subordinatesImprovementTactic = improvementTactic.Where(t => lstSubordinatesWithPeers.Contains(t.CreatedBy)).ToList(); 
 
@@ -2381,7 +2381,7 @@ namespace RevenuePlanner.Controllers
             /*End Added by Mitesh Vaishnav on 13/06/2014 to address changes related to #498 Customized Target Stage - Publish model */
 
             // To get permission status for Approve tactic , By dharmraj PL #538
-            var lstSubOrdinatesPeers = Common.GetSubOrdinatesWithPeers();
+            var lstSubOrdinatesPeers = Common.GetSubOrdinatesWithPeersNLevel();
             bool isValidManagerUser = false;
             if (lstSubOrdinatesPeers.Contains(im.OwnerId))
             {
@@ -3521,7 +3521,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
 
             //To get permission status for Approve campaign , By dharmraj PL #538
-            var lstSubOrdinatesPeers = Common.GetSubOrdinatesWithPeers();
+            var lstSubOrdinatesPeers = Common.GetSubOrdinatesWithPeersNLevel();
 
             bool isValidManagerUser = false;
             if (lstSubOrdinatesPeers.Contains(im.OwnerId))
@@ -3694,7 +3694,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
 
             //To get permission status for Approve campaign , By dharmraj PL #538
-            var lstSubOrdinatesPeers = Common.GetSubOrdinatesWithPeers();
+            var lstSubOrdinatesPeers = Common.GetSubOrdinatesWithPeersNLevel();
             bool isValidManagerUser = false;
             if (lstSubOrdinatesPeers.Contains(im.OwnerId))
             {
@@ -3738,48 +3738,6 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsCampaignEditable = IsCampaignEditable;
 
             return PartialView("_ReviewCampaign");
-        }
-
-        /// <summary>
-        /// Function to get all own and peers subordinates of current user
-        /// Added By Dharmraj for ticket #538, 23-06-2014
-        /// </summary>
-        /// <returns></returns>
-        public List<Guid> GetSubOrdinatesWithPeers()
-        {
-            //Get all subordinates of current user
-            BDSService.BDSServiceClient objBDSService = new BDSServiceClient();
-            List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
-            lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
-            var lstSubOrdinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId)
-                                                        .ToList()
-                                                        .Select(u => u.UserId)
-                                                        .ToList();
-            var ManagerId = lstUserHierarchy.FirstOrDefault(u => u.UserId == Sessions.User.UserId).ManagerId;
-            if (ManagerId != null)
-            {
-                var lstPeersId = lstUserHierarchy.Where(u => u.ManagerId == ManagerId)
-                                                        .ToList()
-                                                        .Select(u => u.UserId)
-                                                        .ToList();
-                if (lstPeersId.Count > 0)
-                {
-                    var lstPeersSubOrdinatesId = lstUserHierarchy.Where(u => lstPeersId.Contains(u.ManagerId.GetValueOrDefault(Guid.Empty)))
-                                                            .ToList()
-                                                            .Select(u => u.UserId)
-                                                            .ToList();
-
-                    // Get current user permission for Tactic ApproveForPeers.
-                    bool IsTacticApproveForPeersAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticApproveForPeers);
-
-                    if (IsTacticApproveForPeersAuthorized)
-                    {
-                        lstSubOrdinates = lstSubOrdinates.Concat(lstPeersSubOrdinatesId).ToList();
-                    }
-                }
-            }
-
-            return lstSubOrdinates;
         }
 
         #endregion
@@ -4724,7 +4682,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsValidOwner = isValidOwner;
 
             //To get permission status for Approve campaign , By dharmraj PL #538
-            var lstSubOrdinatesPeers = Common.GetSubOrdinatesWithPeers();
+            var lstSubOrdinatesPeers = Common.GetSubOrdinatesWithPeersNLevel();
             bool isValidManagerUser = false;
             if (lstSubOrdinatesPeers.Contains(im.OwnerId))
             {
