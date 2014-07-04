@@ -1,0 +1,3 @@
+--Execute this script on MRP Database--
+
+update Notification set EmailContent='Dear Admin,<br/><br/>Please note that following issue has been submitted.<br><br><table><tr><td>Submitted by</td><td>:</td><td>[EmailToBeReplaced]</td></tr><tr><td valign="top">Issue</td><td valign="top">:</td><td>[IssueToBeReplaced]</td></tr></table><br><br>Thank You<br>' where NotificationInternalUseOnly='ContactSupport'
