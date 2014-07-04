@@ -1743,12 +1743,11 @@ namespace BDSService
         }
 
         #endregion
-
+        #region Application Activity
         // <summary>
         ///Added by Mitesh Vaishnav : User Permission Edit/View Pl ticket 521 
         /// </summary>
        
-        #region "Application Activity"
 
         public List<BDSEntities.ApplicationActivity> GetAllApplicationActivity(Guid applicationId)
         {
@@ -1816,6 +1815,8 @@ namespace BDSService
         public int DeleteUserActivityPermission(Guid userId, Guid applicationId)
         {
             int retVal = 0;
+            try
+            {
             var userActivityList = db.User_Activity_Permission.Where(usr => usr.UserId == userId).ToList();
             if (userActivityList.Count > 0)
             {
@@ -1823,10 +1824,16 @@ namespace BDSService
                 {
                     db.Entry(activity).State = EntityState.Deleted;
                     db.User_Activity_Permission.Remove(activity);
+
+                    }
                     db.SaveChanges();
                     retVal = 1;
-                }
                 return retVal;
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
             }
             return retVal;
         }
@@ -1838,7 +1845,8 @@ namespace BDSService
             // Modified By : Kalpesh Sharma
             // Added new field into the Custom Restriction table , now all the Custom Restriction will be fetched by UserID and Application ID.
             //I have added the following line into the below query (&& usr.ApplicationId == applicationId)
-            
+            try
+            {
             var userCustomrestrictionList = db.CustomRestrictions.Where(usr => usr.UserId == userId && usr.ApplicationId == applicationId).ToList();
             if (userCustomrestrictionList.Count > 0)
             {
@@ -1846,10 +1854,15 @@ namespace BDSService
                 {
                     db.Entry(customRestriction).State = EntityState.Deleted;
                     db.CustomRestrictions.Remove(customRestriction);
+                    }
                     db.SaveChanges();
                     retVal = 1;
-                }
                 return retVal;
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
             }
             return retVal;
         }
@@ -1857,10 +1870,14 @@ namespace BDSService
         public int AddUserActivityPermissions(Guid userId, Guid CreatorId, string[] permissions, Guid applicationId)
         {
             int retVal = 0;
+            try
+            {
             if (permissions.Length > 0)
             {
-                DeleteUserActivityPermission(userId, applicationId);
-                DeleteUserCustomrestriction(userId, applicationId);
+                    int retDelUserActivity = DeleteUserActivityPermission(userId, applicationId);
+                    int retDelUserCustomRestriction = DeleteUserCustomrestriction(userId, applicationId);
+                    if (retDelUserActivity == 1 && retDelUserCustomRestriction == 1)
+                    {
                 foreach (var item in permissions)
                 {
                     if (item.ToLower().Contains("yes"))
@@ -1873,10 +1890,8 @@ namespace BDSService
                         obj.CreatedDate = System.DateTime.Now;
                         db.Entry(obj).State = EntityState.Added;
                         db.User_Activity_Permission.Add(obj);
-                        db.SaveChanges();
-                        retVal = 1;
-                    }
-                    else if (item.ToLower().Contains("verticals"))
+                            }
+                            else if (item.ToLower().Contains(CommonFile.CustomRestrictionType.Verticals.ToString().ToLower()))
                     {
                         string[] splitpermissions = item.Split('_');
                         CustomRestriction obj = new CustomRestriction();
@@ -1892,10 +1907,8 @@ namespace BDSService
                         //Modification end
                         db.Entry(obj).State = EntityState.Added;
                         db.CustomRestrictions.Add(obj);
-                        db.SaveChanges();
-                        retVal = 1;
-                    }
-                    else if (item.ToLower().Contains("geography"))
+                            }
+                            else if (item.ToLower().Contains(CommonFile.CustomRestrictionType.Geography.ToString().ToLower()))
                     {
                         string[] splitpermissions = item.Split('_');
                         CustomRestriction obj = new CustomRestriction();
@@ -1911,10 +1924,8 @@ namespace BDSService
                         //Modification end
                         db.Entry(obj).State = EntityState.Added;
                         db.CustomRestrictions.Add(obj);
-                        db.SaveChanges();
-                        retVal = 1;
-                    }
-                    else if (item.ToLower().Contains("businessunit"))
+                            }
+                            else if (item.ToLower().Contains(CommonFile.CustomRestrictionType.BusinessUnit.ToString().ToLower()))
                     {
                         string[] splitpermissions = item.Split('_');
                         CustomRestriction obj = new CustomRestriction();
@@ -1930,11 +1941,18 @@ namespace BDSService
                         //Modification end
                         db.Entry(obj).State = EntityState.Added;
                         db.CustomRestrictions.Add(obj);
-                        db.SaveChanges();
-                        retVal = 1;
-                    }
-                }
 
+                            }
+                        }
+                        db.SaveChanges();
+                        retVal = 1;
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
             }
             return retVal;
         }
@@ -1942,11 +1960,15 @@ namespace BDSService
         public int resetToRoleDefault(Guid userId, Guid CreatorId, Guid applicationId)
         {
             int retVal = 0;
+            try
+            {
             var roleId = db.User_Application.Where(usr => usr.UserId == userId && usr.ApplicationId == applicationId).FirstOrDefault().RoleId;
             var DefaultActivities = db.Role_Activity_Permission.Where(rap => rap.RoleId == roleId).ToList();
             if (DefaultActivities.Count > 0)
             {
-                DeleteUserActivityPermission(userId, applicationId);
+                   int retDelUserActivity= DeleteUserActivityPermission(userId, applicationId);
+                   if (retDelUserActivity == 1)
+                   {
                 foreach (var item in DefaultActivities)
                 {
 
@@ -1957,9 +1979,15 @@ namespace BDSService
                     obj.CreatedDate = System.DateTime.Now;
                     db.Entry(obj).State = EntityState.Added;
                     db.User_Activity_Permission.Add(obj);
+                       }
                     db.SaveChanges();
                     retVal = 1;
                 }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
             }
             return retVal;
         }
