@@ -484,7 +484,7 @@ namespace RevenuePlanner.Controllers
                 cRestrictionobj.Title = item.Title;
                 cRestrictionobj.CustomField =Enums.CustomRestrictionType.Verticals.ToString();
                 cRestrictionobj.CustomFieldId = item.VerticalId.ToString();
-                var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId == item.VerticalId.ToString() && ucr.CustomField==Enums.CustomRestrictionType.Verticals.ToString()).FirstOrDefault() : null;
+                var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId.ToLower() == item.VerticalId.ToString().ToLower() && ucr.CustomField==Enums.CustomRestrictionType.Verticals.ToString()).FirstOrDefault() : null;
                 if (IsUserRestrictionExist != null)
                 {
                     string permission = ((Enums.CustomRestrictionPermission)Enum.Parse(typeof(Enums.CustomRestrictionPermission), IsUserRestrictionExist.Permission.ToString())).ToString();
@@ -507,7 +507,7 @@ namespace RevenuePlanner.Controllers
                 cRestrictionobj.CustomFieldId = item.GeographyId.ToString();
                 if (userDetails.GeographyId != item.GeographyId)
                 {
-                var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId == item.GeographyId.ToString() && ucr.CustomField==Enums.CustomRestrictionType.Geography.ToString()).FirstOrDefault() : null;
+                var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId.ToLower() == item.GeographyId.ToString().ToLower() && ucr.CustomField==Enums.CustomRestrictionType.Geography.ToString()).FirstOrDefault() : null;
                 if (IsUserRestrictionExist != null)
                 {
                     string permission = ((Enums.CustomRestrictionPermission)Enum.Parse(typeof(Enums.CustomRestrictionPermission), IsUserRestrictionExist.Permission.ToString())).ToString();
@@ -537,7 +537,7 @@ namespace RevenuePlanner.Controllers
                 cRestrictionobj.CustomFieldId = item.BusinessUnitId.ToString();
                 if (userDetails.BusinessUnitId != item.BusinessUnitId)
                 {
-                var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId == item.BusinessUnitId.ToString() && ucr.CustomField==Enums.CustomRestrictionType.BusinessUnit.ToString()).FirstOrDefault() : null;
+                var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId.ToLower() == item.BusinessUnitId.ToString().ToLower() && ucr.CustomField==Enums.CustomRestrictionType.BusinessUnit.ToString()).FirstOrDefault() : null;
                 if (IsUserRestrictionExist != null)
                 {
                     string permission = ((Enums.CustomRestrictionPermission)Enum.Parse(typeof(Enums.CustomRestrictionPermission), IsUserRestrictionExist.Permission.ToString())).ToString();
