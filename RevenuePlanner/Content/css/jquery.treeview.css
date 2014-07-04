@@ -88,17 +88,17 @@
 .hitarea{font-family: 'source_sans_proregular', Arial, "sans-serif" !important;}
 .treeview .hover { color: #333; cursor: pointer; }
 .treeview .expandable-hitarea { background-position: left top; }
-.treeview li.last { background-position: 0 -698px}
+.treeview li.last { background-position: 0 -2475px}
 .treeview .collapsable.lastCollapsable.first {
-background-position: 0 -683px;
+background-position: 0 -2460px;
 }
 .treeview > li > ul > li:last-child {
-    background-position: 0 -689px;
+    background-position: 0 -2472px;
 }
 .treeview .no-nesting.last.first {
-    background-position: 0 -683px;
+    background-position: 0 -2460px;
 }
 
 .treeview li ul li ul li.collapsable.lastCollapsable {
-    background-position: 0px -698px;
+    background-position: 0 -2475px;
 }

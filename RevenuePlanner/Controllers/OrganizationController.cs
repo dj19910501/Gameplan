@@ -349,7 +349,8 @@ namespace RevenuePlanner.Controllers
             {
                 List<BDSService.UserHierarchy> lstUserHierarchy = new List<BDSService.UserHierarchy>();
                 lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
-
+                // To sort all users by role title, by Dharmraj, #579
+                lstUserHierarchy = lstUserHierarchy.OrderBy(u => u.RoleTitle).ToList();
                 List<BDSService.UserHierarchy> lstManagerUserHierarchy = lstUserHierarchy.Where(u => u.ManagerId == null).ToList();
 
                 var result = lstManagerUserHierarchy.Select(u => CreateUserHierarchy(lstUserHierarchy, u)).ToList();
