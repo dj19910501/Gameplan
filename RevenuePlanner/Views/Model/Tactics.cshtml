@@ -5,7 +5,7 @@
     ViewBag.Title = "Tactic Selection";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Model;
     Layout = "~/Views/Shared/_Layout.cshtml";
-    //string isViewOnly = ViewBag.IsViewOnly;
+    //string isViewOnly = ViewBag.IsViewOnly; 
     string ShowModelResultsTab = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ShowModelResultsTab"]);
     @Html.Hidden("hdnShowModelResultsTab", ShowModelResultsTab);
                                                                string PublishedMsg = ViewBag.ModelPublishComfirmation;

@@ -12,7 +12,7 @@
     string ShowModelResultsTab = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ShowModelResultsTab"]);
     @Html.Hidden("hdnShowModelResultsTab", ShowModelResultsTab);
                                                                string PublishedMsg = ViewBag.ModelPublishComfirmation;
-    @Html.Hidden("PublishedMsg", PublishedMsg);
+    @Html.Hidden("PublishedMsg", PublishedMsg); 
                                               bool PublisheStatus = ViewBag.Flag;
     @Html.Hidden("PublisheStatus", PublisheStatus);
                                                   var currentdate = System.DateTime.Today.ToShortDateString();
