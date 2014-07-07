@@ -142,19 +142,19 @@
                     @Html.LabelFor(model => model.ClientId)
                     @*@if (isSysAdmin)
                     {*@
-                        @*Modified by :- Sohel on 27 March 2014 for ticket #334*@
+                        @*Modified by :- Sohel on 27 March 2014 for ticket #334
                         <div class="selectBox UserProfile" id="ddlClientIdSelectBox">
                             @Html.DropDownListFor(c => c.ClientId, new SelectList((System.Collections.IEnumerable)ViewData["Clients"], "ClientId", "Name"), "Please Select")
                         </div>
                         @Html.ValidationMessageFor(model => model.ClientId)    
                         @Html.Label("", "The Organization field is required.", new { @class = "field-validation-error selectbox-validation-message", id = "lblClientIdRequired" })
-                    @*}
-                    else
-                    {
+                        *@
+                    
+                       @*Modified by Dharmraj for ticket #583 on 7th July 2014 *@
                         @Html.Hidden("ClientId", clientId)
                         @Html.Hidden("Client", client)
                         @Html.TextBox("txtClient", client, new { style = "background:#F2F2F2;", @readonly = "true", title = client })
-                    }*@
+                    
                 </div>
 
                 <div class="cf inputs-aligned-horizontal">

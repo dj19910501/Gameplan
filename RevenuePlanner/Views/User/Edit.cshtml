@@ -224,6 +224,8 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                 }
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.ClientId)
+                    @*Start Modified by Dharmraj for ticket #583 on 7th July 2014 *@
+                    @*
                     @if ((bool)ViewBag.IsUserAdminAuthorized && currentUserId != Convert.ToString(Model.UserId)) //Model.IsSystemAdmin)
                     {
                         //Modified by :- Sohel on 27 March 2014 for ticket #334
@@ -234,11 +236,14 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                         @Html.Label("", "The Organization field is required.", new { @class = "field-validation-error selectbox-validation-message", id = "lblClientIdRequired" })  // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                     }
                     else
-                    {
+                    {*@
+
                         @Html.HiddenFor(model => model.ClientId)
                         @Html.HiddenFor(model => model.Client)
                         @Html.TextBox("txtClient", Model.Client, new { style = "background:#F2F2F2;", @readonly = "true", title = Model.Client })
-                    }
+
+                    @*}*@
+                    @*End Modified by Dharmraj for ticket #583 on 7th July 2014 *@
                 </div>
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.BusinessUnitId)
