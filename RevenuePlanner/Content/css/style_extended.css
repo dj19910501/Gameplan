@@ -672,7 +672,7 @@ textarea[readonly] {
     padding: 15px 20px 5px;
     position: fixed;
     text-align: center;
-    top: 20%;
+    top: 13%;/*changed 4m 20 to 13 by uday 7-7-14 #453s*/
     width: 354px;
     z-index: 2002;
 }
@@ -2662,7 +2662,7 @@ label {
 #DivContactSupportPopup.form-contact-support {
     /*width: 400px;*/
     width: auto;
-    height: 495px;
+    height: 570px;/*changed 4m 495 to 570 by uday #453s*/
 }
 
 .note-editor {
@@ -3386,9 +3386,5 @@ font-family: 'source_sans_proregular', Arial, "sans-serif" !important; color:#ff
 }*/
 /*End : Kalpesh Sharma*/
 
-/*Added By : Kalpesh Sharma Functional & code review points 34 */
-.FormatingBlock {
-    color: #4D4D4D !important;
-    font-size: 16px !important;
-}
-/*END : Functional & code review points 34*/
+
+/*End : Kalpesh Sharma*/
