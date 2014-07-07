@@ -972,12 +972,12 @@ namespace RevenuePlanner.Controllers
         /// <param name="file">user photo</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult Edit(UserModel form, HttpPostedFileBase file)
+        public ActionResult Edit(UserModel form, HttpPostedFileBase file, FormCollection formcollection)//formcollection added by uday) for PL ticket #555
         {
             // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
             ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
-
+            var flag = formcollection["removeflag"];//added by uday
             // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
             ViewBag.isForDelete = "false";
 
@@ -1033,9 +1033,21 @@ namespace RevenuePlanner.Controllers
                             objUser.ProfilePhoto = data;
                         }
                     }
-                    else
+                    else if (flag != null && flag != "false" && flag != "" && flag != string.Empty)//added by uday for PL ticket #555
                     {
                         objUser.ProfilePhoto = null;
+                    }
+                    else
+                    {
+                        //add uday for PL ticket #555
+                        BDSService.User objUsernew = objBDSServiceClient.GetTeamMemberDetails(form.UserId, Sessions.ApplicationId);
+                        if (objUsernew != null)
+                        {
+                            // objUser.ProfilePhoto = form.ProfilePhoto;
+                            objUser.ProfilePhoto = objUsernew.ProfilePhoto;
+                        }
+                        //end add udayfor PL ticket #555
+                        //objUser.ProfilePhoto = null;
                     }
                     objUser.ClientId = form.ClientId;
                     objUser.BusinessUnitId = form.BusinessUnitId;
