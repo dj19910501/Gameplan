@@ -2091,13 +2091,13 @@ namespace BDSService
 
             List<User> lstAppUser = (from u in db.Users
                                      join ua in db.User_Application on u.UserId equals ua.UserId
-                                     where u.ClientId == clientId && ua.ApplicationId == applicationId && u.IsDeleted == false
+                                     where u.ClientId == clientId && ua.ApplicationId == applicationId && u.IsDeleted == false && ua.IsDeleted == false
                                      select u).OrderBy(q => q.FirstName).ToList();
             List<string> emails = lstAppUser.Select(l => l.Email).ToList();
 
             List<User> lstUser = (from u in db.Users
-                                  join ua in db.User_Application on u.UserId equals ua.UserId
-                                  where u.ClientId == clientId && ua.ApplicationId != applicationId && u.IsDeleted == false
+                                  //join ua in db.User_Application on u.UserId equals ua.UserId
+                                  where u.ClientId == clientId && u.IsDeleted == false
                                   select u).OrderBy(q => q.FirstName).ToList();
             lstUser = lstUser.Where(l => !emails.Contains(l.Email)).ToList();
             if (lstUser.Count > 0)
