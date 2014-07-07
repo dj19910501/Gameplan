@@ -117,6 +117,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public PartialViewResult LoadSupportPartial()
         {
+            ViewBag.login = "login";//uday for #453 7-7-14
             return PartialView("_SupportPartial");
         }
     }
