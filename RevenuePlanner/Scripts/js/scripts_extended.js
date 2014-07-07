@@ -490,7 +490,7 @@ function numberWithCommas(value) {
 //// Function to add Tooltip with format to the value.
 //// Modified By : Kalpesh Sharma
 //// Date 3/07/2014
-//// Changes in number formater function PL#508.
+//// Changes in number formater function PL#508. 
 function setLabelToolTip(lableId, value, maxSize, iscurrency) {
     var roundValue = (Math.round(parseFloat(value) * 100) / 100);
     var splitvalue = roundValue.toString().split(".");
