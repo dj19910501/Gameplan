@@ -2075,5 +2075,137 @@ namespace BDSService
         }
 
         #endregion
+
+        #region Get Other Application Users
+        /// <summary>
+        /// Get other application user
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <param name="applicationId"></param>
+        /// <author>Manoj</author>
+        /// <createdate>04Jul2014</createdate>
+        /// <returns></returns>
+        public List<BDSEntities.User> GetOtherApplicationUsers(Guid clientId, Guid applicationId)
+        {
+            List<BDSEntities.User> teamMemberList = new List<BDSEntities.User>();
+
+            List<User> lstAppUser = (from u in db.Users
+                                     join ua in db.User_Application on u.UserId equals ua.UserId
+                                     where u.ClientId == clientId && ua.ApplicationId == applicationId && u.IsDeleted == false
+                                     select u).OrderBy(q => q.FirstName).ToList();
+            List<string> emails = lstAppUser.Select(l => l.Email).ToList();
+
+            List<User> lstUser = (from u in db.Users
+                                  join ua in db.User_Application on u.UserId equals ua.UserId
+                                  where u.ClientId == clientId && ua.ApplicationId != applicationId && u.IsDeleted == false
+                                  select u).OrderBy(q => q.FirstName).ToList();
+            lstUser = lstUser.Where(l => !emails.Contains(l.Email)).ToList();
+            if (lstUser.Count > 0)
+            {
+                foreach (var user in lstUser)
+                {
+                    BDSEntities.User userEntity = new BDSEntities.User();
+                    userEntity.UserId = user.UserId;
+                    userEntity.ClientId = user.ClientId;
+                    userEntity.BusinessUnitId = user.BusinessUnitId;
+                    userEntity.GeographyId = user.GeographyId;
+                    userEntity.Client = db.Clients.Where(cl => cl.ClientId == user.ClientId).Select(c => c.Name).FirstOrDefault();
+                    userEntity.DisplayName = user.DisplayName;
+                    userEntity.Email = user.Email;
+                    userEntity.FirstName = user.FirstName;
+                    userEntity.JobTitle = user.JobTitle;
+                    userEntity.LastName = user.LastName;
+                    userEntity.Password = user.Password;
+                    userEntity.ProfilePhoto = user.ProfilePhoto;
+                    userEntity.RoleId = db.User_Application.Where(ua => ua.ApplicationId == applicationId && ua.UserId == user.UserId).Select(u => u.RoleId).FirstOrDefault();
+                    userEntity.RoleCode = db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Code).FirstOrDefault();
+                    userEntity.RoleTitle = db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r =>r.Title).FirstOrDefault();
+
+                    userEntity.IsManager = db.User_Application.Where(a => a.IsDeleted.Equals(false) && a.ManagerId == user.UserId && a.ApplicationId == applicationId).Any();
+
+                    teamMemberList.Add(userEntity);
+
+                }
+            }
+            return teamMemberList;
+        }
+
+        #endregion
+
+        #region Assign User
+        /// <summary>
+        /// Assgin user to the application from other application
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <param name="RoleId"></param>
+        /// <param name="applicationId"></param>
+        /// <param name="createdBy"></param>
+        /// <Author>Manoj</Author>
+        /// <CreatedDate>04Jul2014</CreatedDate>
+        /// <returns></returns>
+        public int AssignUser(Guid UserId, Guid RoleId, Guid applicationId, Guid createdBy)
+        {
+            int retVal = 0;
+            try
+            {
+                using (TransactionScope scope = new TransactionScope())     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                {
+                    var objDuplicateCheck = db.User_Application.Where(u => u.UserId == UserId && u.IsDeleted == false && u.ApplicationId == applicationId).FirstOrDefault();
+                    if (objDuplicateCheck != null)
+                    {
+                        retVal = -1;
+                    }
+                    else
+                    {
+                        //Insert in User_Application
+                        User_Application objUser_Application = new User_Application();
+                        objUser_Application.UserId = UserId;
+                        objUser_Application.ApplicationId = applicationId;
+                        objUser_Application.RoleId = RoleId;
+                        objUser_Application.CreatedDate = DateTime.Now;
+                        objUser_Application.CreatedBy = createdBy;
+                        db.Entry(objUser_Application).State = EntityState.Added;
+                        db.User_Application.Add(objUser_Application);
+                        int res = db.SaveChanges();
+
+                        // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                        //-- Insert User_Activity_Permission data
+                        if (RoleId != null && RoleId != Guid.Empty)
+                        {
+                            var lstDefaultRights = db.Role_Activity_Permission.Where(a => a.RoleId == RoleId).ToList();
+
+                            if (lstDefaultRights != null)
+                            {
+                                if (lstDefaultRights.Count > 0)
+                                {
+                                    foreach (var item in lstDefaultRights)
+                                    {
+                                        User_Activity_Permission objUser_Activity_Permission = new User_Activity_Permission();
+                                        objUser_Activity_Permission.UserId = UserId;
+                                        objUser_Activity_Permission.ApplicationActivityId = item.ApplicationActivityId;
+                                        objUser_Activity_Permission.CreatedBy = createdBy;
+                                        objUser_Activity_Permission.CreatedDate = DateTime.Now;
+                                        db.Entry(objUser_Activity_Permission).State = EntityState.Added;
+                                        db.User_Activity_Permission.Add(objUser_Activity_Permission);
+                                        db.SaveChanges();
+                                    }
+                                }
+                            }
+                        }
+                        // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                        retVal = 1;
+                    }
+                    scope.Complete();       // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return retVal;
+        }
+
+        #endregion
+
     }
 }
