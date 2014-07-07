@@ -523,6 +523,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
         $("#aRemoveImage").click(function () {
             var src = $(this).attr('prop');
             $('#userImage').attr('src', 'data:image/jpg;base64,' + src);
+            $("<input/>", { type: 'hidden', name: 'removeflag', id: 'removeflagid' }).val("true").appendTo("#btnSubmit");//added by uday #555
         });
 
         $('#btnSubmit').click(function () {
