@@ -784,7 +784,7 @@
             e.stopPropagation();
             e.preventDefault();
             $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
-            $(this).closest(".alert").slideUp(400);
+            $(this).closest(".alert").slideUp(300);/*SlideUp value change 400 to 300 by Mitesh Vaishnav on 04 july 2014*/
         });
 
         $("#errorMessageDuplicatePlan").find(".close").click(function (e) {
@@ -795,14 +795,14 @@
         });
 
         if ($('#cSuccessDuplicatePlan').html() == '') {
-            $("#successMessageDuplicatePlan").slideUp(400);
+            $("#successMessageDuplicatePlan").slideUp(300);/*SlideUp value change 400 to 300 by Mitesh Vaishnav on 04 july 2014*/
         }
         else {
             $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
             $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + $('#cSuccessDuplicatePlan').html())
             $("#successMessageDuplicatePlan").slideDown(3000);
              //$("#successMessageDuplicatePlan").slideUp(1200, function () { $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height"); });
-            $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
+           
         }
 
         if ($('#cErrorDuplicatePlan').html() == '') {

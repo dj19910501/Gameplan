@@ -233,13 +233,13 @@
     $("#successMessageDuplicatePlan").find(".close").click(function (e) {
         e.stopPropagation();
         e.preventDefault();
-        $(this).closest(".alert").slideUp(1200);   /*SlideUp value change 400 to 1200 by Nirav Shah on 6 jan 2014*/
+        $(this).closest(".alert").slideUp(300);   /*SlideUp value change 1200 to 300 by Mitesh Vaishnav on 07 july 2014*/
     });
 
     $("#errorMessageDuplicatePlan").find(".close").click(function (e) {
         e.stopPropagation();
         e.preventDefault();
-        $(this).closest(".alert").slideUp(1200);/*SlideUp value change 400 to 1200 by Nirav Shah on 6 jan 2014*/
+        $(this).closest(".alert").slideUp(300);/*SlideUp value change 1200 to 300 by Mitesh Vaishnav on 07 july 2014*/
     });
 
     function DuplicatePlan() {
@@ -724,7 +724,7 @@
                 else {
                     $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + ismsg);
                     $("#successMessageDuplicatePlan").slideDown(3000);
-                    $("#successMessageDuplicatePlan").slideUp(1200);
+                    //$("#successMessageDuplicatePlan").slideUp(1200);
                 }
             }
         }

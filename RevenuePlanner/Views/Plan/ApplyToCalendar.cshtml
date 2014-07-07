@@ -527,20 +527,20 @@
            else {
                $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + ismsg);
                $("#successMessageDuplicatePlan").slideDown(3000);
-               $("#successMessageDuplicatePlan").slideUp(1200);
+               //$("#successMessageDuplicatePlan").slideUp(1200);
            }
        }
        /*close x event on message*/
        $("#successMessageDuplicatePlan").find(".close").click(function (e) {
            e.stopPropagation();
            e.preventDefault();
-           $(this).closest(".alert").slideUp(400);
+           $(this).closest(".alert").slideUp(300);/*SlideUp value change 400 to 300 by Mitesh Vaishnav on 07 july 2014*/
        });
 
        $("#errorMessageDuplicatePlan").find(".close").click(function (e) {
            e.stopPropagation();
            e.preventDefault();
-           $(this).closest(".alert").slideUp(400);
+           $(this).closest(".alert").slideUp(300);/*SlideUp value change 400 to 300 by Mitesh Vaishnav on 07 july 2014*/
        });
 
        //// Function to sort alphabetically.
