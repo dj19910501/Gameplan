@@ -60,7 +60,7 @@
                         <img class="avatar-user" src="@Url.Action("LoadUserImage", "User", new { id = item.CreatedBy })" alt="User avatar" /></div>
                     <div style="float: left; width: 90%;">
                         <span class="bold">@item.CommentedBy</span>
-                        <span>@item.Comment</span><br />
+                        <span>@Html.Raw(item.Comment)</span><br />
                         <span class="font_size10" style="clear: both;">@item.CommentDate.ToString("MMM dd") at @item.CommentDate.ToString("hh:mmtt")</span>
                     </div>
                     <div style="clear: both;"></div>
