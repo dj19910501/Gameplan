@@ -3386,5 +3386,9 @@ font-family: 'source_sans_proregular', Arial, "sans-serif" !important; color:#ff
 }*/
 /*End : Kalpesh Sharma*/
 
-
-/*End : Kalpesh Sharma*/
+/*Added By : Kalpesh Sharma Functional & code review points 34 */
+.FormatingBlock {
+    color: #4D4D4D !important;
+    font-size: 16px !important;
+}
+/*END : Functional & code review points 34*/
