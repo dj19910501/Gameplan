@@ -591,14 +591,17 @@ namespace RevenuePlanner.Controllers
                 //    }
                 //}
 
-                if ((bool)ViewBag.IsUserAdminAuthorized)
-                {
-                    LoadCreateModeComponents();
-                }
-                else
-                {
-                    LoadCreateModeComponents(Convert.ToString(Sessions.User.ClientId));
-                }
+                // Start: Modofied by Dharmraj, For ticket #583
+                //if ((bool)ViewBag.IsUserAdminAuthorized)
+                //{
+                //    LoadCreateModeComponents();
+                //}
+                //else
+                //{
+                //    LoadCreateModeComponents(Convert.ToString(Sessions.User.ClientId));
+                //}
+                LoadCreateModeComponents(Convert.ToString(Sessions.User.ClientId));
+                // End: Modofied by Dharmraj, For ticket #583
             }
             catch (Exception e)
             {
