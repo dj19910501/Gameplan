@@ -68,7 +68,7 @@
 
                 <div>
                     <span class="btn-group">
-                        <button class="btn btn-blue btn-primary source-sans-proregular add-role-icon" title="Add a role" id="addrole"><span></span>Add a Role</button>
+                        <button class="btn btn-blue btn-primary source-sans-proregular add-role-icon" title="Add a Role" id="addrole"><span></span>Add a Role</button>
                     </span>
                 </div>
 
@@ -182,6 +182,7 @@
         $(".newrole").removeClass("error");
         $('#errorMessage').css("display", "none");
         $('#DivPartialShareTactic').show();
+        $('#newrole').focus();//uday functional review point
     });
 
     $('#cancelbtn').click(function () {
@@ -202,6 +203,7 @@
         originalid = $(this).next().val();
         $('#original').html(roleselected + '.');
         $('#DivPartialShareTacticcopy').show();
+        $('#copyroledesc').focus();//uday functional review point
     });
 
     function close_popup() {
