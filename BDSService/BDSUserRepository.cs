@@ -1812,9 +1812,9 @@ namespace BDSService
             }
 
         }
-        public int DeleteUserActivityPermission(Guid userId, Guid applicationId)
+        public bool DeleteUserActivityPermission(Guid userId, Guid applicationId)
         {
-            int retVal = 0;
+            bool retVal = false;
             try
             {
             var userActivityList = db.User_Activity_Permission.Where(usr => usr.UserId == userId).ToList();
@@ -1826,10 +1826,10 @@ namespace BDSService
                     db.User_Activity_Permission.Remove(activity);
 
                     }
-                    db.SaveChanges();
-                    retVal = 1;
-                return retVal;
                 }
+                    db.SaveChanges();
+                retVal = true;
+                return retVal;
             }
             catch (Exception ex)
             {
@@ -1838,9 +1838,9 @@ namespace BDSService
             return retVal;
         }
 
-        public int DeleteUserCustomrestriction(Guid userId, Guid applicationId)
+        public bool DeleteUserCustomrestriction(Guid userId, Guid applicationId)
         {
-            int retVal = 0;
+            bool retVal = false;
 
             // Modified By : Kalpesh Sharma
             // Added new field into the Custom Restriction table , now all the Custom Restriction will be fetched by UserID and Application ID.
@@ -1855,10 +1855,10 @@ namespace BDSService
                     db.Entry(customRestriction).State = EntityState.Deleted;
                     db.CustomRestrictions.Remove(customRestriction);
                     }
-                    db.SaveChanges();
-                    retVal = 1;
-                return retVal;
                 }
+                    db.SaveChanges();
+                retVal = true;
+                return retVal;
             }
             catch (Exception ex)
             {
@@ -1870,13 +1870,16 @@ namespace BDSService
         public int AddUserActivityPermissions(Guid userId, Guid CreatorId, string[] permissions, Guid applicationId)
         {
             int retVal = 0;
+
             try
+            {
+                using (TransactionScope scope = new TransactionScope())     // Added by :- Mitesh Vaishnav on 07/07/2014 for PL ticket #521
             {
             if (permissions.Length > 0)
             {
-                    int retDelUserActivity = DeleteUserActivityPermission(userId, applicationId);
-                    int retDelUserCustomRestriction = DeleteUserCustomrestriction(userId, applicationId);
-                    if (retDelUserActivity == 1 && retDelUserCustomRestriction == 1)
+                        bool retDelUserActivity = DeleteUserActivityPermission(userId, applicationId);
+                        bool retDelUserCustomRestriction = DeleteUserCustomrestriction(userId, applicationId);
+                        if (retDelUserActivity && retDelUserCustomRestriction)
                     {
                 foreach (var item in permissions)
                 {
@@ -1944,10 +1947,11 @@ namespace BDSService
 
                             }
                         }
-                        db.SaveChanges();
-                        retVal = 1;
+                            retVal = db.SaveChanges();
                     }
 
+                    }
+                    scope.Complete();
                 }
             }
             catch (Exception ex)
@@ -1962,12 +1966,14 @@ namespace BDSService
             int retVal = 0;
             try
             {
+                using (TransactionScope scope = new TransactionScope())     // Added by :- Mitesh Vaishnav on 07/07/2014 for PL ticket #521
+                {
             var roleId = db.User_Application.Where(usr => usr.UserId == userId && usr.ApplicationId == applicationId).FirstOrDefault().RoleId;
             var DefaultActivities = db.Role_Activity_Permission.Where(rap => rap.RoleId == roleId).ToList();
             if (DefaultActivities.Count > 0)
             {
-                   int retDelUserActivity= DeleteUserActivityPermission(userId, applicationId);
-                   if (retDelUserActivity == 1)
+                        bool retDelUserActivity = DeleteUserActivityPermission(userId, applicationId);
+                        if (retDelUserActivity)
                    {
                 foreach (var item in DefaultActivities)
                 {
@@ -1980,9 +1986,10 @@ namespace BDSService
                     db.Entry(obj).State = EntityState.Added;
                     db.User_Activity_Permission.Add(obj);
                        }
-                    db.SaveChanges();
-                    retVal = 1;
-                }
+                            retVal = db.SaveChanges();
+                        }
+                    }
+                    scope.Complete();
                 }
             }
             catch (Exception ex)

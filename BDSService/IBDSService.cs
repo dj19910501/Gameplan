@@ -156,10 +156,10 @@ namespace BDSService
         int AddUserActivityPermissions(Guid userId, Guid CreatorId, string[] permissions, Guid applicationId);
 
         [OperationContract]
-        int DeleteUserActivityPermission(Guid userId, Guid applicationId);
+        bool DeleteUserActivityPermission(Guid userId, Guid applicationId);
 
         [OperationContract]
-        int DeleteUserCustomrestriction(Guid userId, Guid applicationId);
+        bool DeleteUserCustomrestriction(Guid userId, Guid applicationId);
 
         [OperationContract]
         int resetToRoleDefault(Guid userId, Guid CretorId, Guid applicationId);

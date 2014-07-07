@@ -284,12 +284,12 @@ namespace BDSService
             return obj.AddUserActivityPermissions(userId, CreatorId, permissions, applicationId);
         }
 
-        public int DeleteUserActivityPermission(Guid userId, Guid applicationId)
+        public bool DeleteUserActivityPermission(Guid userId, Guid applicationId)
         {
             BDSUserRepository obj = new BDSUserRepository();
             return obj.DeleteUserActivityPermission(userId, applicationId);
         }
-        public int DeleteUserCustomrestriction(Guid userId, Guid applicationId)
+        public bool DeleteUserCustomrestriction(Guid userId, Guid applicationId)
         {
             BDSUserRepository obj = new BDSUserRepository();
             return obj.DeleteUserCustomrestriction(userId, applicationId);

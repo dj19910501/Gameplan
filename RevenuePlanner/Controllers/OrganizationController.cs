@@ -596,7 +596,7 @@ namespace RevenuePlanner.Controllers
                 Guid UserId = Guid.Parse(userId);
                 Guid CurrentUserID = Sessions.User.UserId;
                 int i = objBDSServiceClient.AddUserActivityPermissions(UserId, CurrentUserID, arrPermissionId.ToList(), Sessions.ApplicationId);
-                if (i == 1)
+                if (i >= 1)
                 {
                 return true;
             }
@@ -631,7 +631,7 @@ namespace RevenuePlanner.Controllers
                 Guid UserId = Guid.Parse(userId);
                 Guid creatorId = Sessions.User.UserId;
                 int i = objBDSServiceClient.resetToRoleDefault(UserId, creatorId, Sessions.ApplicationId);
-                if (i == 1)
+                if (i >= 1)
                 {
                     TempData["SuccessMessage"] = Common.objCached.UserPermissionsResetToDefault;
                 return true;
