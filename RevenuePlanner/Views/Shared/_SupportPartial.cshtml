@@ -38,12 +38,12 @@
                 @*<textarea id="issue" name="issue" class="input-block-level source-sans-prolight inputs-login" required />*@
 
                 <button class="button-contact-support btn btn-large" id="submit_issue" type="submit" value="Submit">Submit</button>
-                <button id="close_popup" class="button-contact-support btn btn-large" type="button">Cancel</button>
+                <button id="close_popup" class="btn-link contactsupport" type="button">Cancel</button>@*class changed by uday for #453 7-7-2014*@
 
             </form>
             @if (IsDisable == false)
             {
-                <div style="margin-top: 50px;"></div>
+                @*<div style="margin-top: 50px;"></div>*@//uday for #453 7-7-2014
                         
                 <div class="icon-contact-support conv_helveticaltstd-light">
                     <a href='@Url.Action("Index", "Login")'>
@@ -60,6 +60,13 @@
 }
 
 <script type="text/javascript">
+    $(document).ready(function () {
+        var value = '@ViewBag.login';
+        if (value == "login") {
+            document.getElementById("DivContactSupportPopup").style.height = "500px";
+        }
+    });//uday for #453 7-7-2014
+
     $(function () {
 
         $("#errorMessageContactSupportPopup").find(".close").on("click", function (e) {

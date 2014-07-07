@@ -3388,3 +3388,11 @@ font-family: 'source_sans_proregular', Arial, "sans-serif" !important; color:#ff
 
 
 /*End : Kalpesh Sharma*/
+
+/*added by uday for contact support.*/
+.contactsupport {
+    font-size: 18px !important;
+    font-family: 'Conv_ProximaNova-Light', Arial, "sans-serif" !important;
+    color: #FFFFFF !important;
+    margin-top : 18px;
+}
