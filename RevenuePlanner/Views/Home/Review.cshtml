@@ -333,8 +333,9 @@
         //Added By : Kalpesh Sharma
         // PL #508 : Set the formater to label and it's tipsy
         SetLabelFormaterWithTipsy("#inq-id");
+        SetLabelFormaterWithTipsy("#mqls-id");
 
-        SetFormatForLabel("#mqls-id", 5);
+        //SetFormatForLabel("#mqls-id", 5);
         $("#BtnShareTactic").click(function () {
             $("#DivPartialShareTactic").empty();
             var url = '@Url.Content("~/Home/ShowShareTactic/")';

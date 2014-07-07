@@ -128,7 +128,7 @@ function SetBudget(idName) {
     var budgetValue = $(idName).html();
     if (budgetValue.length >= 5) {
         $(idName).html(SetFormatForLabelExtended(idName)); //$(idName).html($(idName).html().substring(0, 7) + ".."); change by dharmraj for ticket #479 : to accommodate large number
-        $(idName).html('$ ' + $(idName).html());
+        $(idName).html('$' + $(idName).html());
         //Added By : Kalpesh Sharma
         //PL #508 Set format for label in tool tip
         //$(idName).prop('title', budgetValue);
@@ -137,7 +137,9 @@ function SetBudget(idName) {
         $('.north').tipsy({ gravity: 'n' });
     }
     else {
-        $(idName).html('$ ' + $(idName).html());
+        //Modified By : Kalpesh Sharma
+        //PL #508 Set the comma sperater format for those values who is less then 5 digits ($2500) ==> $2,500
+        $(idName).html('$' + number_format(budgetValue.toString(), 0, '.', ','));
         $(idName).removeAttr('original-title');
         $(idName).removeClass('north');
     }
@@ -202,6 +204,7 @@ function addTipsy(idName) {
 function SetLabelFormaterWithTipsyNumbers(idName) {
     var budgetValue = $(idName).text();
     if (budgetValue) {
+        budgetValue = RemoveExtraCharactersFromString(budgetValue); //Function that remove the special char from the string 
         if (budgetValue.length >= 5) {
             SetFormatForLabelExtended(idName);
             $(idName).prop('title', number_format(budgetValue.toString(), 0, '.', ','));
@@ -492,7 +495,8 @@ function setLabelToolTip(lableId, value, maxSize, iscurrency) {
     var roundValue = (Math.round(parseFloat(value) * 100) / 100);
     var splitvalue = roundValue.toString().split(".");
     var lengthvalue = splitvalue[0].toString().length;
-    if (lengthvalue > maxSize) {
+    //if (lengthvalue > maxSize) {
+    if (lengthvalue >= maxSize) {
         if (iscurrency) {
             $(lableId).text("$" + GetAbberiviatedValue(value));
 

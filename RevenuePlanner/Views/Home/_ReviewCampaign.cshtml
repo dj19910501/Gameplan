@@ -352,8 +352,8 @@
           //Added By : Kalpesh Sharma
           //PL #508 Set format for label in tool tip
           SetLabelFormaterWithTipsy("#inq-id");
-
-          SetFormatForLabel("#mqls-id", 5);
+          SetLabelFormaterWithTipsy("#mqls-id");
+          //SetFormatForLabel("#mqls-id", 5);
           $("#BtnShareTactic").click(function () {
               $("#DivPartialShareTactic").empty();
               var url = '@Url.Content("~/Home/ShowShareTactic/")';
