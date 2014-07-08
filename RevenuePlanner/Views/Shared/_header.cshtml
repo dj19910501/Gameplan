@@ -3,17 +3,17 @@
     @Html.Partial("_nav")
     @if (Sessions.User != null)
     {
-        <span class="title text-shadow-black source-sans-prolight">@Sessions.User.Client</span>
+        <span class="title source-sans-prolight">@Sessions.User.Client</span>/*changed - added by uday #559*/
     }
     else
     {
-        <span class="title text-shadow-black source-sans-prolight">Bulldog @Sessions.ApplicationName™</span>
+        <span class="title source-sans-prolight">Bulldog @Sessions.ApplicationName™</span>/*changed - added by uday #559*/
     }
     <div class="mrp-logo"></div>
     @if (Sessions.User != null)
     {
-        <div class="info-user cf">
-            <p class="text-shadow-black source-sans-prolight user-drop-down">@Sessions.User.FirstName @Sessions.User.LastName<span class="divider"> | </span>@Sessions.User.JobTitle
+        <div class="info-user cf">/*changed - added by uday #559*/
+            <p class="source-sans-prolight user-drop-down">@Sessions.User.FirstName @Sessions.User.LastName<span class="divider"> | </span>@Sessions.User.JobTitle
             </p>
             @*<img class="avatar-user" src="@Url.Content("~/Content/images/photo-user.jpg")" alt="User avatar" />*@
             <img class="avatar-user" src="@Url.Action("UserPhoto", "Home")" alt="User avatar" />
