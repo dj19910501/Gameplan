@@ -280,6 +280,7 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         //public ActionResult Create(FormCollection collection, ICollection<string> hdnSTAGEMCR, ICollection<string> txtMCR, ICollection<string> hdnSTAGEMSV, ICollection<string> txtMSV, ICollection<string> hdnSTAGETCR, ICollection<string> txtTCR, ICollection<string> hdnSTAGETSV, ICollection<string> txtTSV, ICollection<string> hdnSTAGESCR, ICollection<string> txtSCR, ICollection<string> hdnSTAGESSV, ICollection<string> txtSSV, ICollection<string> txtMarketing, ICollection<string> txtTeleprospecting, ICollection<string> txtSales)
         /*changed by Nirav Shah on 2 APR 2013*/
+        // Modified By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult Create(FormCollection collection, ICollection<string> txtStageId, ICollection<string> txtTargetStage, ICollection<string> txtMCR, ICollection<string> txtMSV, ICollection<string> txtMarketing, ICollection<string> txtTeleprospecting, ICollection<string> txtSales)
         {
@@ -303,38 +304,11 @@ namespace RevenuePlanner.Controllers
                 {
                     using (var scope = new TransactionScope())
                     {
-
-
                         Model objModel = new Model();
                         objModel.Title = Convert.ToString(collection["Title"]);
                         if (mode == "version")
                         {
-                            //title condition added by uday for review point on 5-6-2014 bcoz version clashes when two users are creating version of same buisiness unit.
-                            var version = db.Models.Where(m => m.IsDeleted == false && m.BusinessUnitId == tempBU && m.Title == objModel.Title).OrderByDescending(t => t.CreatedDate).Select(s => s.Version).FirstOrDefault();
-                            if (version != null && version != "")
-                            {
-                                objModel.Version = Convert.ToString((Convert.ToDouble(version) + 0.1));
-                            }
-                            else
-                            {
-                                objModel.Version = "1.0";
-                            }
-                            //Start Model versioning change 02-Jan-2014
-                            objModel.ParentModelId = currentModelId;
-                            //End Model versioning change 02-Jan-2014
-                            objModel.Year = DateTime.Now.Year;
-                            objModel.AddressableContacts = 0;//Modified by Mitesh Vaishnav for PL Ticket #534
-                            objModel.Status = Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Draft.ToString())).Value;
-                            objModel.BusinessUnitId = Guid.Parse(collection["BusinessUnitId"]);
-                            objModel.IsActive = true;
-                            objModel.IsDeleted = false;
-                            objModel.CreatedDate = DateTime.Now;
-                            objModel.CreatedBy = Sessions.User.UserId;
-                            objModel.IsBenchmarked = IsBenchmarked;
-                            db.Models.Add(objModel);
-                            int resModel = db.SaveChanges();
-                            intModelid = objModel.ModelId;
-
+                            OtherModelEntries(currentModelId, true, Convert.ToString(collection["Title"]), Convert.ToString(collection["BusinessUnitId"]), IsBenchmarked, ref intModelid);
                         }
                         else
                         {
@@ -412,9 +386,6 @@ namespace RevenuePlanner.Controllers
                             intFunnelMarketing = objmfunnel.ModelFunnelId;
                         }
 
-
-
-
                         if (IsBenchmarked == false)
                         {
                             /*changed by Nirav Shah on 2 APR 2013*/
@@ -466,7 +437,8 @@ namespace RevenuePlanner.Controllers
                         if (mode == "version")
                         {
                             ObjectParameter returnValue = new ObjectParameter("ReturnValue", 0);
-                            db.SaveModelInboundOutboundEvent(currentModelId, intModelid, DateTime.Now, Sessions.User.UserId, returnValue);
+                            //Modified By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
+                            //db.SaveModelInboundOutboundEvent(currentModelId, intModelid, DateTime.Now, Sessions.User.UserId, returnValue);
                         }
 
                         /* Bug 18:Model - results screen does not show for some models */
@@ -2749,6 +2721,12 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.Flag = chekckParentPublishModel(id);
             }
+
+            // Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
+            var businessunit = db.Models.Where(b => b.ModelId == id && b.IsDeleted == false).OrderByDescending(c => c.CreatedDate).Select(u => u.BusinessUnitId).FirstOrDefault();
+            ViewBag.BusinessUnitId = Convert.ToString(businessunit);
+            //End  :: Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
+
             string StageType = Enums.StageType.CR.ToString();
             string ModelTitle = db.Models.Where(m => m.IsDeleted == false && m.ModelId == Modelid).Select(s => s.Title).FirstOrDefault();
             string Marketing = Convert.ToString(Enums.Funnel.Marketing).ToLower();
@@ -3967,210 +3945,72 @@ namespace RevenuePlanner.Controllers
         /// <CreatedDate>06.06.2014</CreatedDate>
         /// <param name="modelId">modelId of the Model to be cloned.</param>
         /// <returns>Success or Error message in JSON result format</returns>
+
+        // Modified By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
         [HttpPost]
-        public JsonResult DuplicateModel(int modelId)
+        public JsonResult DuplicateModel(int modelId, string title)
         {
             if (modelId > 0)
             {
+                int NewModelID = 0;
+
                 try
                 {
                     using (MRPEntities mrp = new MRPEntities())
                     {
                         using (TransactionScope scope = new TransactionScope())
                         {
-                            var oldModel = mrp.Models.Where(m => m.ModelId == modelId && m.IsDeleted.Equals(false)).FirstOrDefault();
+                            // Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
+                            OtherModelEntries(modelId, false, title, string.Empty, false, ref NewModelID);
 
-                            if (oldModel != null)
+                            #region Clone Model_Funnel table entries
+                            var oldModel_Funnel = mrp.Model_Funnel.Where(m => m.ModelId == modelId).ToList();
+
+                            if (oldModel_Funnel != null)
                             {
-                                string currentTimeStamp = Common.GetTimeStamp();
-
-                                #region Clone Model table entries
-                                Model newModel = new Model();
-                                newModel = oldModel;
-                                newModel.Title = oldModel.Title + currentTimeStamp;
-                                newModel.Version = "1.0";
-                                newModel.Status = "Draft";
-                                newModel.CreatedDate = DateTime.Now;
-                                newModel.CreatedBy = Sessions.User.UserId;
-                                newModel.ModifiedBy = null;
-                                newModel.ModifiedDate = null;
-                                newModel.IntegrationInstanceId = null;
-                                newModel.ParentModelId = null;
-                                mrp.Models.Add(newModel);
-                                mrp.SaveChanges();
-
-                                int newModelId = newModel.ModelId;
-                                #endregion
-
-                                #region Clone Model_Audience_Event table entries
-                                var oldModel_Audience_Event = mrp.Model_Audience_Event.Where(m => m.ModelId == modelId).ToList();
-
-                                if (oldModel_Audience_Event != null)
+                                if (oldModel_Funnel.Count > 0)
                                 {
-                                    if (oldModel_Audience_Event.Count > 0)
+                                    foreach (var item in oldModel_Funnel)
                                     {
-                                        foreach (var item in oldModel_Audience_Event)
+                                        int oldModelFunnelId = item.ModelFunnelId;
+                                        Model_Funnel newModel_Funnel = new Model_Funnel();
+
+                                        newModel_Funnel = item;
+                                        newModel_Funnel.ModelId = NewModelID;
+                                        newModel_Funnel.CreatedDate = DateTime.Now;
+                                        newModel_Funnel.CreatedBy = Sessions.User.UserId;
+                                        newModel_Funnel.ModifiedBy = null;
+                                        newModel_Funnel.ModifiedDate = null;
+                                        mrp.Model_Funnel.Add(newModel_Funnel);
+                                        mrp.SaveChanges();
+
+                                        #region Clone Model_Funnel_Stage table entries
+                                        var oldModel_Funnel_Stage = mrp.Model_Funnel_Stage.Where(m => m.ModelFunnelId == oldModelFunnelId).ToList();
+
+                                        if (oldModel_Funnel_Stage != null)
                                         {
-                                            Model_Audience_Event newModel_Audience_Event = new Model_Audience_Event();
-
-                                            newModel_Audience_Event = item;
-                                            newModel_Audience_Event.ModelId = newModelId;
-                                            newModel_Audience_Event.CreatedDate = DateTime.Now;
-                                            newModel_Audience_Event.CreatedBy = Sessions.User.UserId;
-                                            newModel_Audience_Event.ModifiedBy = null;
-                                            newModel_Audience_Event.ModifiedDate = null;
-                                            mrp.Model_Audience_Event.Add(newModel_Audience_Event);
-                                            mrp.SaveChanges();
-                                        }
-                                    }
-                                }
-                                #endregion
-
-                                #region Clone Model_Audience_Inbound table entries
-                                var oldModel_Audience_Inbound = mrp.Model_Audience_Inbound.Where(m => m.ModelId == modelId).ToList();
-
-                                if (oldModel_Audience_Inbound != null)
-                                {
-                                    if (oldModel_Audience_Inbound.Count > 0)
-                                    {
-                                        foreach (var item in oldModel_Audience_Inbound)
-                                        {
-                                            Model_Audience_Inbound newModel_Audience_Inbound = new Model_Audience_Inbound();
-
-                                            newModel_Audience_Inbound = item;
-                                            newModel_Audience_Inbound.ModelId = newModelId;
-                                            newModel_Audience_Inbound.CreatedDate = DateTime.Now;
-                                            newModel_Audience_Inbound.CreatedBy = Sessions.User.UserId;
-                                            newModel_Audience_Inbound.ModifiedBy = null;
-                                            newModel_Audience_Inbound.ModifiedDate = null;
-                                            mrp.Model_Audience_Inbound.Add(newModel_Audience_Inbound);
-                                            mrp.SaveChanges();
-                                        }
-                                    }
-                                }
-                                #endregion
-
-                                #region Clone Model_Audience_Outbound table entries
-                                var oldModel_Audience_Outbound = mrp.Model_Audience_Outbound.Where(m => m.ModelId == modelId).ToList();
-
-                                if (oldModel_Audience_Outbound != null)
-                                {
-                                    if (oldModel_Audience_Outbound.Count > 0)
-                                    {
-                                        foreach (var item in oldModel_Audience_Outbound)
-                                        {
-                                            Model_Audience_Outbound newModel_Audience_Outbound = new Model_Audience_Outbound();
-
-                                            newModel_Audience_Outbound = item;
-                                            newModel_Audience_Outbound.ModelId = newModelId;
-                                            newModel_Audience_Outbound.CreatedDate = DateTime.Now;
-                                            newModel_Audience_Outbound.CreatedBy = Sessions.User.UserId;
-                                            newModel_Audience_Outbound.ModifiedBy = null;
-                                            newModel_Audience_Outbound.ModifiedDate = null;
-                                            mrp.Model_Audience_Outbound.Add(newModel_Audience_Outbound);
-                                            mrp.SaveChanges();
-                                        }
-                                    }
-                                }
-                                #endregion
-
-                                #region Clone TacticTypes table entries
-                                var oldTacticTypes = mrp.TacticTypes.Where(m => m.ModelId == modelId && (m.IsDeleted == null ? false : m.IsDeleted) == false).ToList();
-
-                                if (oldTacticTypes != null)
-                                {
-                                    if (oldTacticTypes.Count > 0)
-                                    {
-                                        foreach (var item in oldTacticTypes)
-                                        {
-                                            TacticType newTacticTypes = new TacticType();
-
-                                            newTacticTypes = item;
-                                            newTacticTypes.ModelId = newModelId;
-                                            newTacticTypes.CreatedDate = DateTime.Now;
-                                            newTacticTypes.CreatedBy = Sessions.User.UserId;
-                                            newTacticTypes.ModifiedBy = null;
-                                            newTacticTypes.ModifiedDate = null;
-                                            mrp.TacticTypes.Add(newTacticTypes);
-                                            mrp.SaveChanges();
-                                        }
-                                    }
-                                }
-                                #endregion
-
-                                #region Clone Model_Funnel table entries
-                                var oldModel_Funnel = mrp.Model_Funnel.Where(m => m.ModelId == modelId).ToList();
-
-                                if (oldModel_Funnel != null)
-                                {
-                                    if (oldModel_Funnel.Count > 0)
-                                    {
-                                        foreach (var item in oldModel_Funnel)
-                                        {
-                                            int oldModelFunnelId = item.ModelFunnelId;
-                                            Model_Funnel newModel_Funnel = new Model_Funnel();
-
-                                            newModel_Funnel = item;
-                                            newModel_Funnel.ModelId = newModelId;
-                                            newModel_Funnel.CreatedDate = DateTime.Now;
-                                            newModel_Funnel.CreatedBy = Sessions.User.UserId;
-                                            newModel_Funnel.ModifiedBy = null;
-                                            newModel_Funnel.ModifiedDate = null;
-                                            mrp.Model_Funnel.Add(newModel_Funnel);
-                                            mrp.SaveChanges();
-
-                                            #region Clone Model_Funnel_Stage table entries
-                                            var oldModel_Funnel_Stage = mrp.Model_Funnel_Stage.Where(m => m.ModelFunnelId == oldModelFunnelId).ToList();
-
-                                            if (oldModel_Funnel_Stage != null)
+                                            if (oldModel_Funnel_Stage.Count > 0)
                                             {
-                                                if (oldModel_Funnel_Stage.Count > 0)
+                                                foreach (var childItem in oldModel_Funnel_Stage)
                                                 {
-                                                    foreach (var childItem in oldModel_Funnel_Stage)
-                                                    {
-                                                        Model_Funnel_Stage newModel_Funnel_Stage = new Model_Funnel_Stage();
+                                                    Model_Funnel_Stage newModel_Funnel_Stage = new Model_Funnel_Stage();
 
-                                                        newModel_Funnel_Stage = childItem;
-                                                        newModel_Funnel_Stage.ModelFunnelId = newModel_Funnel.ModelFunnelId;
-                                                        newModel_Funnel_Stage.CreatedDate = DateTime.Now;
-                                                        newModel_Funnel_Stage.CreatedBy = Sessions.User.UserId;
-                                                        newModel_Funnel_Stage.ModifiedBy = null;
-                                                        newModel_Funnel_Stage.ModifiedDate = null;
-                                                        mrp.Model_Funnel_Stage.Add(newModel_Funnel_Stage);
-                                                        mrp.SaveChanges();
-                                                    }
+                                                    newModel_Funnel_Stage = childItem;
+                                                    newModel_Funnel_Stage.ModelFunnelId = newModel_Funnel.ModelFunnelId;
+                                                    newModel_Funnel_Stage.CreatedDate = DateTime.Now;
+                                                    newModel_Funnel_Stage.CreatedBy = Sessions.User.UserId;
+                                                    newModel_Funnel_Stage.ModifiedBy = null;
+                                                    newModel_Funnel_Stage.ModifiedDate = null;
+                                                    mrp.Model_Funnel_Stage.Add(newModel_Funnel_Stage);
+                                                    mrp.SaveChanges();
                                                 }
                                             }
-                                            #endregion
-
-                                            #region Clone ModelReviews table entries
-                                            var oldModelReviews = mrp.ModelReviews.Where(m => m.ModelFunnelId == oldModelFunnelId).ToList();
-
-                                            if (oldModelReviews != null)
-                                            {
-                                                if (oldModelReviews.Count > 0)
-                                                {
-                                                    foreach (var childItem in oldModelReviews)
-                                                    {
-                                                        ModelReview newModelReview = new ModelReview();
-
-                                                        newModelReview = childItem;
-                                                        newModelReview.ModelFunnelId = newModel_Funnel.ModelFunnelId;
-                                                        newModelReview.CreatedDate = DateTime.Now;
-                                                        newModelReview.CreatedBy = Sessions.User.UserId;
-                                                        newModelReview.ModifiedBy = null;
-                                                        newModelReview.ModifiedDate = null;
-                                                        mrp.ModelReviews.Add(newModelReview);
-                                                        mrp.SaveChanges();
-                                                    }
-                                                }
-                                            }
-                                            #endregion
                                         }
+                                        #endregion
                                     }
                                 }
-                                #endregion
                             }
+                            #endregion
 
                             scope.Complete();
                         }
@@ -4191,6 +4031,230 @@ namespace RevenuePlanner.Controllers
                 return Json(new { status = 0, msg = "Invalid model Id." }, JsonRequestBehavior.AllowGet);
             }
         }
+
+        /// <summary>
+        /// Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
+        /// When Duplicate model popup will be open at that time we have to set default value in textbox (Old Model Name + TImestamp value) 
+        /// </summary>
+        /// <param name="modelId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult GetDefaultDuplicateModelName(int modelId)
+        {
+            string result = string.Empty;
+            int StatusOpt = 0;
+            string ModelName = string.Empty;
+
+            if (modelId > 0)
+            {
+                using (MRPEntities mrp = new MRPEntities())
+                {
+                    var oldModel = mrp.Models.Where(m => m.ModelId == modelId && m.IsDeleted.Equals(false)).FirstOrDefault();
+
+                    if (oldModel != null)
+                    {
+                        result = oldModel.Title + Common.GetTimeStamp();
+                        ModelName = oldModel.Title;
+                        StatusOpt = 1;
+                    }
+                }
+            }
+            else
+            {
+                StatusOpt = 0;
+                result = "Invalid model id";
+            }
+            return Json(new { status = StatusOpt, msg = result, name = ModelName }, JsonRequestBehavior.AllowGet);
+        }
+
+        // Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
+        // Clone the other model tables based upon old Model , This function is replace the SaveModelInboundOutboundEvent Store Procedure.  
+        public void OtherModelEntries(int OldModelID, bool IsVersion, string Title, string BusinessUntiID, bool IsBenchmarked, ref int newModelId)
+        {
+            using (MRPEntities mrp = new MRPEntities())
+            {
+                using (TransactionScope scope = new TransactionScope())
+                {
+                    #region Clone Model table entries
+
+                    Model newModel = new Model();
+
+                    if (!IsVersion)
+                    {
+                        var oldModel = mrp.Models.Where(m => m.ModelId == OldModelID && m.IsDeleted.Equals(false)).FirstOrDefault();
+
+                        if (oldModel != null)
+                        {
+                            newModel = oldModel;
+                            newModel.Version = "1.0";
+                            newModel.ParentModelId = null;
+                            newModel.IntegrationInstanceId = null;
+                            newModel.EffectiveDate = null;
+                        }
+                    }
+                    else
+                    {
+                        Guid tmpGuid = Guid.Parse(BusinessUntiID);
+                        newModel.ParentModelId = OldModelID;
+                        newModel.IsActive = true;
+                        newModel.IsDeleted = false;
+                        newModel.Year = DateTime.Now.Year;
+                        newModel.AddressableContacts = 0;//Modified by Mitesh Vaishnav for PL Ticket #534
+                        newModel.BusinessUnitId = tmpGuid;
+                        newModel.IsBenchmarked = IsBenchmarked;
+                        //title condition added by uday for review point on 5-6-2014 bcoz version clashes when two users are creating version of same buisiness unit.
+                        var version = db.Models.Where(m => m.IsDeleted == false && m.BusinessUnitId == tmpGuid && m.Title == Title).OrderByDescending(t => t.CreatedDate).Select(s => s.Version).FirstOrDefault();
+                        if (version != null && version != "")
+                        {
+                            newModel.Version = Convert.ToString((Convert.ToDouble(version) + 0.1));
+                        }
+                        else
+                        {
+                            newModel.Version = "1.0";
+                        }
+                    }
+
+                    newModel.Title = Title;
+                    newModel.Status = Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Draft.ToString())).Value;
+                    newModel.CreatedDate = DateTime.Now;
+                    newModel.CreatedBy = Sessions.User.UserId;
+                    newModel.ModifiedBy = null;
+                    newModel.ModifiedDate = null;
+
+                    mrp.Models.Add(newModel);
+                    mrp.SaveChanges();
+                    newModelId = newModel.ModelId;
+                    #endregion
+
+                    #region Clone TacticTypes table entries
+                    var oldTacticTypes = mrp.TacticTypes.Where(m => m.ModelId == OldModelID && (m.IsDeleted == null ? false : m.IsDeleted) == false).ToList();
+
+                    if (oldTacticTypes != null)
+                    {
+                        if (oldTacticTypes.Count > 0)
+                        {
+                            foreach (var item in oldTacticTypes)
+                            {
+                                TacticType newTacticTypes = new TacticType();
+
+                                newTacticTypes = item;
+                                newTacticTypes.ModelId = newModelId;
+                                newTacticTypes.CreatedDate = DateTime.Now;
+                                newTacticTypes.CreatedBy = Sessions.User.UserId;
+                                newTacticTypes.ModifiedBy = null;
+                                newTacticTypes.ModifiedDate = null;
+                                mrp.TacticTypes.Add(newTacticTypes);
+                                mrp.SaveChanges();
+                            }
+                        }
+                    }
+                    #endregion
+                    scope.Complete();
+                }
+            }
+        }
+
+        #endregion
+        
+        #region Commted Code#
+
+        //#region Clone Model_Audience_Event table entries
+        //var oldModel_Audience_Event = mrp.Model_Audience_Event.Where(m => m.ModelId == OldModel).ToList();
+
+        //if (oldModel_Audience_Event != null)
+        //{
+        //    if (oldModel_Audience_Event.Count > 0)
+        //    {
+        //        foreach (var item in oldModel_Audience_Event)
+        //        {
+        //            Model_Audience_Event newModel_Audience_Event = new Model_Audience_Event();
+
+        //            newModel_Audience_Event = item;
+        //            newModel_Audience_Event.ModelId = NewModelID;
+        //            newModel_Audience_Event.CreatedDate = DateTime.Now;
+        //            newModel_Audience_Event.CreatedBy = Sessions.User.UserId;
+        //            newModel_Audience_Event.ModifiedBy = null;
+        //            newModel_Audience_Event.ModifiedDate = null;
+        //            mrp.Model_Audience_Event.Add(newModel_Audience_Event);
+        //            mrp.SaveChanges();
+        //        }
+        //    }
+        //}
+        //#endregion
+
+        //#region Clone Model_Audience_Inbound table entries
+        //var oldModel_Audience_Inbound = mrp.Model_Audience_Inbound.Where(m => m.ModelId == OldModel).ToList();
+
+        //if (oldModel_Audience_Inbound != null)
+        //{
+        //    if (oldModel_Audience_Inbound.Count > 0)
+        //    {
+        //        foreach (var item in oldModel_Audience_Inbound)
+        //        {
+        //            Model_Audience_Inbound newModel_Audience_Inbound = new Model_Audience_Inbound();
+
+        //            newModel_Audience_Inbound = item;
+        //            newModel_Audience_Inbound.ModelId = NewModelID;
+        //            newModel_Audience_Inbound.CreatedDate = DateTime.Now;
+        //            newModel_Audience_Inbound.CreatedBy = Sessions.User.UserId;
+        //            newModel_Audience_Inbound.ModifiedBy = null;
+        //            newModel_Audience_Inbound.ModifiedDate = null;
+        //            mrp.Model_Audience_Inbound.Add(newModel_Audience_Inbound);
+        //            mrp.SaveChanges();
+        //        }
+        //    }
+        //}
+        //#endregion
+
+        //#region Clone Model_Audience_Outbound table entries
+        //var oldModel_Audience_Outbound = mrp.Model_Audience_Outbound.Where(m => m.ModelId == OldModel).ToList();
+
+        //if (oldModel_Audience_Outbound != null)
+        //{
+        //    if (oldModel_Audience_Outbound.Count > 0)
+        //    {
+        //        foreach (var item in oldModel_Audience_Outbound)
+        //        {
+        //            Model_Audience_Outbound newModel_Audience_Outbound = new Model_Audience_Outbound();
+
+        //            newModel_Audience_Outbound = item;
+        //            newModel_Audience_Outbound.ModelId = NewModelID;
+        //            newModel_Audience_Outbound.CreatedDate = DateTime.Now;
+        //            newModel_Audience_Outbound.CreatedBy = Sessions.User.UserId;
+        //            newModel_Audience_Outbound.ModifiedBy = null;
+        //            newModel_Audience_Outbound.ModifiedDate = null;
+        //            mrp.Model_Audience_Outbound.Add(newModel_Audience_Outbound);
+        //            mrp.SaveChanges();
+        //        }
+        //    }
+        //}
+
+        //#endregion
+
+        //#region Clone ModelReviews table entries
+        //     var oldModelReviews = mrp.ModelReviews.Where(m => m.ModelFunnelId == oldModelFunnelId).ToList();
+
+        //      if (oldModelReviews != null)
+        //    {
+        //       if (oldModelReviews.Count > 0)
+        //    {
+        //       foreach (var childItem in oldModelReviews)
+        //    {
+        //       ModelReview newModelReview = new ModelReview();
+
+        //       newModelReview = childItem;
+        //       newModelReview.ModelFunnelId = newModel_Funnel.ModelFunnelId;
+        //       newModelReview.CreatedDate = DateTime.Now;
+        //       newModelReview.CreatedBy = Sessions.User.UserId;
+        //       newModelReview.ModifiedBy = null;
+        //       newModelReview.ModifiedDate = null;
+        //       mrp.ModelReviews.Add(newModelReview);
+        //       mrp.SaveChanges();
+        //     }
+        //   }
+        // }
+        //#endregion
+
         #endregion
 
     }

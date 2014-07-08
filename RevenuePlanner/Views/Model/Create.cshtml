@@ -347,6 +347,37 @@
             </div>
         </div>
     </div>
+    
+    
+    
+      <!--div to display pop up for copying role-->
+        <div id="DivPartialShareModelDuplicate" style="display: none;">
+            <div class="all-height DivResetDefaults" id="DivShareModelDuplicatePopupMaincopy">
+                <div class="calc-height">
+                    <div class="span12">
+
+                        <div id="DivModelDuplicatePopupcopy" class="form-inspect-share hide fade in height-auto popup" role="dialog" style="display: block;">
+
+                            <div style="padding-bottom: 20px;" class="login-wrapper">
+                                <h2 class="primary-title source-sans-proregular without-text-shadow">Duplicate a Model</h2>
+                                <h4 class="source-sans-prolight">Please create a new model as 
+                                <strong id="original"></strong></h4>@*review point*@
+                                <input type="text" value="" placeholder="Enter new model" name="textfield" maxlength="255" id="copymodeldesc" class="input-block-level source-sans-proregular copyroledesc">
+                                <!--error message-->
+                                <div id="errorMessagecopy" class="alert hide alert-error message-position">
+                                    <a class="close">×</a>
+                                    <strong></strong><span id="spanErrorMessageModelcopy"></span>
+                                </div>
+                                <!--error message-->
+                                <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" title="Save" value="Submit" id="copymodelbtn">Save</button>
+                                <button class="cancel-btn btn-link text-shadow-black" type="button" id="cancelbtncopy">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="DivBackgroundShareModelDuplicatecopy" class="modal-backdrop fade in" style="z-index: 1500"></div>
+        </div>
 }
 <script type="text/javascript">
     var lastModelId;
@@ -372,6 +403,54 @@
             $("#ContactsandInquiries").removeClass("active");
         }
     });
+
+    // Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
+    $('#copymodelbtn').click(function () {
+        $(".copymodeldesc").removeClass("error");
+        var flag = 0;
+        
+            if ($("#copymodeldesc").val() == "") {
+                $("#copymodeldesc").addClass("error");
+                flag = 1;
+            }
+    
+        if (flag == 1) {
+            var msgspan = "Please enter value in the above field.";
+            $("#errorMessagecopy").css("display", "block");
+            $("#spanErrorMessageModelcopy").text(msgspan);
+        } else {
+            var modeltitle = $('#copymodeldesc').val();
+            if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test($("#copymodeldesc").val())) {
+                var msgspan = "Special character are not allowed, try again.";
+                $("#errorMessagecopy").css("display", "block");
+                $("#copymodeldesc").addClass("error");
+                $("#spanErrorMessageModelcopy").text(msgspan);//review point
+            }
+            else {
+            $.ajax(
+            {
+              type: "GET",
+              cache: false,
+              url: '@Url.Content("~/Model/CheckDuplicateModelTitle")',
+                data: { Title: $('#copymodeldesc').val(), BusinessUnitId: '@BusinessUnitId' },
+                dataType: "json",
+                success: function (data) {
+                    if (data == 'exist') {
+                        var msgspan = "Model is already exists.";
+                        $("#errorMessagecopy").css("display", "block");
+                        $("#spanErrorMessageModelcopy").text(msgspan);
+                    }
+                    else {
+                        $('#DivPartialShareModelDuplicate').hide();
+                        DuplicateModel();
+                    }
+                }
+            });
+            }
+        }
+        return false;
+    });
+
     $("#divcontactInquiry").click(function () {
         if ($("#ConversionRates").hasClass("active")) {
             $("#ConversionRates").removeClass("active");
@@ -1114,10 +1193,29 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
 
     }
 
+    
     //// Start - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #219 to clone a model.
+    // Modified By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
     $('#BtnGroup').click(function (e) {
         if ($(this).html().toLowerCase() == "duplicate") {
-            DuplicateModel();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Model/GetDefaultDuplicateModelName/")',
+            data: { modelId: $('#ModelId').val() },
+            dataType: "json",
+            success: function (data) {
+                if (data.status == 1) {
+                    $("#copymodeldesc").val(data.msg);
+                    $("#original").text(data.name);
+                    $('#DivPartialShareModelDuplicate').show();
+                }
+                else {
+                    $("#cError").html('<strong>Error! </strong>' + data.msg)
+                    $("#errorMessage").slideDown(400);
+                    $("html, body").animate({ scrollTop: 0 }, 1000);
+                }
+               }
+             });
         }
         else {
             var url = '@Url.Content("~/Model/Create")';
@@ -1125,11 +1223,19 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
             }
     });
 
+    // Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
+    // Close or hide the Duplicate popup on Cancel click . 
+    $('#cancelbtncopy').click(function () {
+        $('#DivPartialShareModelDuplicate').hide();
+    });
+
+    // Modified By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
+    //Pass extra paramter model title from the model duplicate popup.
     function DuplicateModel() {
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Model/DuplicateModel/")',
-            data: { modelId: $('#ModelId').val() },
+            data: { modelId: $('#ModelId').val(), title: $('#copymodeldesc').val() },
             dataType: "json",
             success: function (data) {
                 if (data.status == 1) {
