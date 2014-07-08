@@ -61,7 +61,7 @@ namespace RevenuePlanner.Controllers
         {
             // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
-
+            
             //Common.Permission permission = Common.GetPermission(ActionItem.Model);
             //switch (permission)
             //{
@@ -97,6 +97,12 @@ namespace RevenuePlanner.Controllers
             if (id != 0)
             {
                 ViewBag.Flag = chekckParentPublishModel(id);
+                ViewBag.IsOwner = db.Models.Where(a => a.IsDeleted.Equals(false) && a.ModelId == id && a.CreatedBy == Sessions.User.UserId).Any(); // Added by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
+            }
+            else
+            {
+                // For create mode.
+                ViewBag.IsOwner = true; // Added by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
             }
             // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             try
@@ -808,7 +814,12 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public List<BaselineModel> GetBusinessUnitsByClient()
         {
-            if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))   // Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+            var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
+            List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
+            if (lstAllowedBusinessUnits.Count > 0)
+                lstAllowedBusinessUnits.ForEach(g => lstAllowedBusinessUnitIds.Add(Guid.Parse(g)));
+
+            if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnitIds.Count == 0)   // Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             {
                 return (from c in db.BusinessUnits.Where(c => c.IsDeleted == false && c.ClientId == Sessions.User.ClientId).ToList()
                         select new BaselineModel
@@ -820,14 +831,8 @@ namespace RevenuePlanner.Controllers
             else
             {
                 // Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
-                var lstAllowedBusinessUnits = lstUserCustomRestriction.Where(r => (r.Permission == ViewEditPermission || r.Permission == ViewOnlyPermission) && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId).ToList();
-                if (lstAllowedBusinessUnits.Count > 0)
+                if (lstAllowedBusinessUnitIds.Count > 0)
                 {
-                    List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
-                    lstAllowedBusinessUnits.ForEach(g => lstAllowedBusinessUnitIds.Add(Guid.Parse(g)));
                     return (from c in db.BusinessUnits.Where(c => c.IsDeleted == false && lstAllowedBusinessUnitIds.Contains(c.BusinessUnitId)).ToList()
                             select new BaselineModel
                             {
@@ -905,7 +910,11 @@ namespace RevenuePlanner.Controllers
                 if (Sessions.User != null)
                 {
                     Model objModel = new Model();
-                    if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))// Sessions.IsSystemAdmin || Sessions.IsClientAdmin || Sessions.IsDirector)
+                    var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
+                    List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
+                    if (lstAllowedBusinessUnits.Count > 0)
+                        lstAllowedBusinessUnits.ForEach(g => lstAllowedBusinessUnitIds.Add(Guid.Parse(g)));
+                    if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnitIds.Count == 0)// Sessions.IsSystemAdmin || Sessions.IsClientAdmin || Sessions.IsDirector)
                     {
                         Guid clientId = Sessions.User.ClientId;
                         objModel = (from m in db.Models
@@ -916,11 +925,8 @@ namespace RevenuePlanner.Controllers
                     else
                     {
                         // Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                        var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
-                        if (lstAllowedBusinessUnits.Count > 0)
+                        if (lstAllowedBusinessUnitIds.Count > 0)
                         {
-                            List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
-                            lstAllowedBusinessUnits.ForEach(g => lstAllowedBusinessUnitIds.Add(Guid.Parse(g)));
                             objModel = db.Models.Where(m => lstAllowedBusinessUnitIds.Contains(m.BusinessUnitId) && m.IsDeleted == false).FirstOrDefault();
                         }
                         else
@@ -1005,28 +1011,24 @@ namespace RevenuePlanner.Controllers
         public JsonResult GetModelList(string listType)
         {
             List<Model> objModelList = new List<Model>();
-            List<string> lstViewOnlyBusinessUnits = new List<string>(); // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+            var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
+            List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
+            if(lstAllowedBusinessUnits.Count > 0)
+                lstAllowedBusinessUnits.ForEach(g => lstAllowedBusinessUnitIds.Add(Guid.Parse(g)));
             try
             {
                 if (!String.IsNullOrWhiteSpace(listType))
                 {
                     Guid clientId = Sessions.User.ClientId;
                     List<Guid> objBusinessUnit = new List<Guid>();
-                    if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin)) //Sessions.IsSystemAdmin || Sessions.IsClientAdmin || Sessions.IsDirector)
+                    if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnitIds.Count == 0) //Sessions.IsSystemAdmin || Sessions.IsClientAdmin || Sessions.IsDirector)
                     {
                         objBusinessUnit = db.BusinessUnits.Where(bu => bu.ClientId == clientId && bu.IsDeleted == false).Select(bu => bu.BusinessUnitId).ToList();
                     }
                     else
                     {
                         // Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                        var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-                        int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
-                        int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                        var lstAllowedBusinessUnits = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId).ToList();
-                        lstViewOnlyBusinessUnits = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission) && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId.ToUpper()).ToList();
-                        List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
-                        lstAllowedBusinessUnits.ForEach(g => lstAllowedBusinessUnitIds.Add(Guid.Parse(g)));
-                        if (lstAllowedBusinessUnits.Count > 0)
+                        if (lstAllowedBusinessUnitIds.Count > 0)
                         {
                             objBusinessUnit = db.BusinessUnits.Where(bu => lstAllowedBusinessUnitIds.Contains(bu.BusinessUnitId) && bu.IsDeleted == false).Select(bu => bu.BusinessUnitId).ToList();
                         }
@@ -1073,6 +1075,7 @@ namespace RevenuePlanner.Controllers
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
             }
+            //var IsUserAdmin = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin); // Added by Sohel Pathan on 07/07/2014 for Internal Review Points to apply custom restriction logic on Business Units
             var lstModel = objModelList.Select(p => new
             {
                 id = p.ModelId,
@@ -1080,9 +1083,9 @@ namespace RevenuePlanner.Controllers
                 businessUnit = p.BusinessUnit.Title,
                 version = p.Version,
                 status = p.Status,
-                isOwner = (Sessions.User.UserId == p.CreatedBy || (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))) ? 0 : 1,/*added by Nirav Shah  on 14 feb 2014  for 256:Model list - add delete option for model and -	Delete option will be available for owner or director or system admin or client Admin */
+                // Modified by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
+                isOwner = (Sessions.User.UserId == p.CreatedBy || Common.IsBusinessUnitEditable(p.BusinessUnitId)) ? 0 : 1,/*added by Nirav Shah  on 14 feb 2014  for 256:Model list - add delete option for model and -	Delete option will be available for owner or director or system admin or client Admin */
                 effectiveDate = p.EffectiveDate.HasValue == true ? p.EffectiveDate.Value.Date.ToString("M/d/yy") : "",  /* Added by Sohel on 08/04/2014 for PL #424 to show Effective Date Column*/
-                isViewOnly = lstViewOnlyBusinessUnits.Contains(Convert.ToString(p.BusinessUnitId.ToString().ToUpper()))     // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             }).OrderBy(p => p.title);
             return Json(lstModel, JsonRequestBehavior.AllowGet);
         }
@@ -2748,6 +2751,11 @@ namespace RevenuePlanner.Controllers
             if (id != 0)
             {
                 ViewBag.Flag = chekckParentPublishModel(id);
+                ViewBag.IsOwner = db.Models.Where(a => a.IsDeleted.Equals(false) && a.ModelId == id && a.CreatedBy == Sessions.User.UserId).Any();  // Added by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
+            }
+            else 
+            {
+                ViewBag.IsOwner = true; // Added by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
             }
             string StageType = Enums.StageType.CR.ToString();
             string ModelTitle = db.Models.Where(m => m.IsDeleted == false && m.ModelId == Modelid).Select(s => s.Title).FirstOrDefault();
@@ -3649,6 +3657,11 @@ namespace RevenuePlanner.Controllers
             if (id != 0)
             {
                 ViewBag.Flag = chekckParentPublishModel(id);
+                ViewBag.IsOwner = db.Models.Where(a => a.IsDeleted.Equals(false) && a.ModelId == id && a.CreatedBy == Sessions.User.UserId).Any();  // Added by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
+            }
+            else
+            {
+                ViewBag.IsOwner = true; // Added by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
             }
             // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             try

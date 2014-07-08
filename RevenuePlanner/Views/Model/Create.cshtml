@@ -26,6 +26,8 @@
     // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
     string IsViewEditBusinessUnit = Convert.ToString(ViewBag.IsViewEditBusinessUnit);   
     @Html.Hidden("IsViewEditBusinessUnit", IsViewEditBusinessUnit);
+    string IsOwner = Convert.ToString(ViewBag.IsOwner);
+    @Html.Hidden("IsOwner", IsOwner);
     // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
 }
 
@@ -58,7 +60,8 @@
                             <a href="#">Create New</a>
                         </li>
                         @* Show Duplicate option only in Edit mode and only for latest version of model. *@
-                        @if (Convert.ToString(ViewBag.ModelId) != "" && Convert.ToString(ViewBag.ModelId) != "0" && Model.lstmodelstage.Count() > 0 && Convert.ToString(ViewBag.IsViewEditBusinessUnit) == "True")  // Modified by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                        @if (Convert.ToString(ViewBag.ModelId) != "" && Convert.ToString(ViewBag.ModelId) != "0" && Model.lstmodelstage.Count() > 0 
+                            && (Convert.ToString(ViewBag.IsOwner) == "True" || Convert.ToString(ViewBag.IsViewEditBusinessUnit) == "True"))  // Modified by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                         {
                             <li id="liDuplicate">
                                 <a href="#">Duplicate</a>
@@ -325,13 +328,13 @@
                 <br />
                 <div class="container-button">
                     @{ 
-        if (Model.lstmodelstage.Count() > 0)
-        {
-            if (Convert.ToString(ViewBag.IsViewEditBusinessUnit) == "True")  // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    if (Model.lstmodelstage.Count() > 0)
                     {
-                        <input id="btnsave" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Save Current Version & Continue" />
-                        <input id="button-save" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Create New Version & Continue" />
-        }
+                        if (Convert.ToString(ViewBag.IsOwner) == "True" || Convert.ToString(ViewBag.IsViewEditBusinessUnit) == "True")  // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                        {
+                            <input id="btnsave" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Save Current Version & Continue" />
+                            <input id="button-save" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Create New Version & Continue" />
+                        }
                     }
                     }
                 </div>
@@ -411,7 +414,7 @@
 
     $(".targetStageclick").click(function () {
         // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-        if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'false')
+        if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'false' && $('#IsOwner').val().toLowerCase() == 'false')
         {
             return false;
         }
@@ -491,7 +494,7 @@ $(".leftnav").click(function () {
 });
 $(document).ready(function () {
         // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-        if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'false') {
+    if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'false' && $('#IsOwner').val().toLowerCase() == 'false') {
             $('#form1 :input').each(function () {
                 if ($(this).attr('type') == 'text' || $(this).attr('type') == 'textarea' || $(this).attr('type') == 'select') {
                     $(this).attr('readonly', 'readonly');
@@ -587,7 +590,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
 
     if (modelId == $("#latestModelId").val()) {
         $("#button-save").show();
-        if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'true') // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+        if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'true' || $('#IsOwner').val().toLowerCase() == 'true') // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             $("#btnsave").show();
         MakeEditable();
         $('#BtnGroup').html('New Model');   //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219
@@ -596,7 +599,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
     }
     else {
         $("#button-save").hide();
-        if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'true') // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+        if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'true' || $('#IsOwner').val().toLowerCase() == 'true') // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             $("#btnsave").hide();
         MakeViewOnly();//Bug 17:Should not be able to edit a published model
         $('#BtnGroup').html('New Model');   //// Added by :- Sohel Pathan on 09/06/2014 for PL ticket #219
@@ -663,7 +666,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
          modelStatus = obj.Status;/* changed by Nirav shah for TFS Point :252 editing a published model*/
          _AddressableContract = obj.AddressableContacts;
          if (modelId == $("#latestModelId").val()) {
-             if (obj.Status.toString().toLocaleLowerCase() == 'draft' && $('#IsViewEditBusinessUnit').val().toLowerCase() == 'true') {  // Modified by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+             if (obj.Status.toString().toLocaleLowerCase() == 'draft' && ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'true' || $('#IsOwner').val().toLowerCase() == 'true')) {  // Modified by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                  $("#publishModelDisabled").hide();
                  $("#publishModel").show();
                  $("#publishModel").attr('ModelId', obj.ModelId);
@@ -1083,7 +1086,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
             }
         }
         $('#isPublishButton').val('publish');
-        if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'true')     // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+        if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'true' || $('#IsOwner').val().toLowerCase() == 'true')     // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             $('#btnsave').click();
         $('#isPublishButton').val('');
     });

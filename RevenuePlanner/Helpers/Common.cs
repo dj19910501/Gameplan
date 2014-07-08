@@ -1013,8 +1013,12 @@ namespace RevenuePlanner.Helpers
             MRPEntities db = new MRPEntities();
             List<Guid> businessUnitIds = new List<Guid>();
 
+            var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
+            if (lstAllowedBusinessUnits.Count > 0)
+                lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
+            
             // Modified by Dharmraj, For #537
-            if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))//if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
+            if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnits.Count == 0)//if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
             {
                 //// Getting all business unit for client of director.
                 var clientBusinessUnit = db.BusinessUnits.Where(b => b.ClientId.Equals(Sessions.User.ClientId)).Select(b => b.BusinessUnitId).ToList<Guid>();
@@ -1023,14 +1027,13 @@ namespace RevenuePlanner.Helpers
             else
             {
                 // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
                 if (lstAllowedBusinessUnits.Count > 0)
                 {
                     lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
                 }
                 else
                 {
-                businessUnitIds.Add(Sessions.User.BusinessUnitId);
+                    businessUnitIds.Add(Sessions.User.BusinessUnitId);
                 }
                 // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             }
@@ -1501,7 +1504,10 @@ namespace RevenuePlanner.Helpers
                 //    var clientBusinessUnit = mydb.BusinessUnits.Where(b => b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
                 //    businessUnitIds = clientBusinessUnit.ToList();
                 //}
-                if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))//else if (Sessions.IsDirector || Sessions.IsClientAdmin)
+                var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
+                if (lstAllowedBusinessUnits.Count > 0)
+                    lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
+                if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnits.Count == 0)//else if (Sessions.IsDirector || Sessions.IsClientAdmin)
                 {
                     var clientBusinessUnit = mydb.BusinessUnits.Where(b => b.ClientId.Equals(Sessions.User.ClientId) && b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
                     businessUnitIds = clientBusinessUnit.ToList();
@@ -1509,14 +1515,13 @@ namespace RevenuePlanner.Helpers
                 else
                 {
                     // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                    var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
                     if (lstAllowedBusinessUnits.Count > 0)
                     {
                         lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
                     }
                     else
                     {
-                    businessUnitIds.Add(Sessions.User.BusinessUnitId);
+                        businessUnitIds.Add(Sessions.User.BusinessUnitId);
                     }
                     // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 }
