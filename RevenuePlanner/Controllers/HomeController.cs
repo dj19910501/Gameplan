@@ -109,7 +109,7 @@ namespace RevenuePlanner.Controllers
                 businessUnitIds = clientBusinessUnit.ToList();
                 planmodel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId); //commented due to not used any where
                 ViewBag.BusinessUnitIds = planmodel.BusinessUnitIds;//Added by Nirav for Custom Dropdown - 388
-                if (lstAllowedBusinessUnits.Count > 1)
+                if (businessUnitIds.Count > 1)
                     ViewBag.showBid = true;
                 else
                     ViewBag.showBid = false;
