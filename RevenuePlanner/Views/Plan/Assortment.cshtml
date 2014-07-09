@@ -36,7 +36,7 @@
             </div>
              }
             <div class="span6">
-                <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Assortment", "Plan")'">Add Activity</button>
+                <button id="LeftNavAddActivity" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Add Activity</button>
             </div>
         </div>
     </div>
@@ -367,7 +367,10 @@
         $(document).on("click", ".blue-bg-text", function (e) {
             e.stopPropagation();
             $.ajaxSetup({ cache: false });
-            $("#slidepanel").css("display", "block");
+            var idCampaing = $(this).parent().parent().attr('id');
+            displayconfirmForCampaignEvent(idCampaing);
+
+            @*$("#slidepanel").css("display", "block");
             var idCampaing = $(this).parent().parent().attr('id');
             if (idCampaing == 0) {
                 $('#slidepanel-container').load('@Url.Content("~/Plan/CreateCampaign")', AssignDefaultValue);
@@ -378,9 +381,43 @@
                 $('#slidepanel-container').load(url + '?id=' + idCampaing + '&RedirectType=' + Assortment, AssignDefaultValue);
             }
             $("#slidepanel").css("right", "0px");
-            myApp.hidePleaseWait();
+            myApp.hidePleaseWait();*@
             e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
         });
+
+
+        //Dharmraj Start 8July2014 Common function to handle tactic click event
+        function campaignCommonClick(id) {
+            $("#slidepanel").css("display", "block");
+            if (id == 0) {
+                $('#slidepanel-container').load('@Url.Content("~/Plan/CreateCampaign")', AssignDefaultValue);
+            }
+            else {
+                var url = '@Url.Content("~/Plan/EditCampaign")';
+                //$('#slidepanel').load(url + '?id=' + idCampaing + '&RedirectType=' + Assortment);
+                $('#slidepanel-container').load(url + '?id=' + id + '&RedirectType=' + Assortment, AssignDefaultValue);
+            }
+            $("#slidepanel").css("right", "0px");
+            myApp.hidePleaseWait();
+        }
+
+        //Dharmraj Start 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
+        function displayconfirmForCampaignEvent(id) {
+            if (isDataChanged()) {
+                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+                $("#errorMessageDuplicatePlan").slideDown(3000);
+                $("#btnConfirmOK").click(function () {
+                    //alert(id);
+                    $('#cErrorDuplicatePlan').html("");
+                    $("#errorMessageDuplicatePlan").hide();
+                    campaignCommonClick(id);
+                });
+            }
+            else {
+                campaignCommonClick(id);
+            }
+        }
+
         //Manoj Start 28Jan2014 : Bug-12 (User can lose data via navigation in application)
         function AssignDefaultValue() {
             $('#slidepanel').find("input[type=text],textarea,select").each(function () {
@@ -408,6 +445,23 @@
         $(document).on("click", "#LeftNavInput", function (e) {
             displayconfirm('@Url.Action("Create", "Plan", new { id = Planid })');
         });
+        $(document).on("click", "#LeftNavAddActivity", function (e) {
+            displayconfirm('@Url.Action("Assortment", "Plan")');
+        });
+
+        //Dharmraj Start 7July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
+        $("#header a").not("#ContactSupport").click(function () {
+            //alert($(this).attr('href'));
+            if (isDataChanged()) {
+                displayconfirm($(this).attr('href'));
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+        //Dharmraj End 7July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
+
         function displayconfirm(strURL) {
             if (isDataChanged()) {
                 $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a style='font-weight:bold;color:gray;' href='" + strURL + "'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
@@ -418,12 +472,21 @@
             }
         }
         //Manoj End 28Jan2014 : Bug-12 (User can lose data via navigation in application)
+
+        //Modified by Dharmraj 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
         $(document).on("click", ".gray-bg-text", function (e) {
             e.stopPropagation();
             $.ajaxSetup({ cache: false });
-            $("#slidepanel").css("display", "block");
+            //$("#slidepanel").css("display", "block");
             var idProgram = $(this).parent().parent().attr('id');
+
             if (idProgram == 0) {
+                $("a#0 span.gray-bg-text").removeClass('1');
+                $(this).addClass('1');
+            }
+
+            displayconfirmForProgramEvent(idProgram);
+            @*if (idProgram == 0) {
                 var idCampaing = $(this).parent().parent().attr('data-id-campaing');
                 var url = '@Url.Content("~/Plan/CreateProgram")';
                 //$('#slidepanel').load(url + '?id=' + idCampaing);
@@ -435,9 +498,44 @@
                 $('#slidepanel-container').load(url + '?id=' + idProgram + '&RedirectType=' + Assortment, AssignDefaultValue);
             }
             $("#slidepanel").css("right", "0px");
-            myApp.hidePleaseWait();
+            myApp.hidePleaseWait();*@
             e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
         });
+
+        //Dharmraj Start 8July2014 Common function to handle tactic click event
+        function programCommonClick(id) {
+            $("#slidepanel").css("display", "block");
+            if (id == 0) {
+                var idCampaing = $("a#" + id + " span.gray-bg-text.1").parent().parent().attr('data-id-campaing');
+                var url = '@Url.Content("~/Plan/CreateProgram")';
+                //$('#slidepanel').load(url + '?id=' + idCampaing);
+                $('#slidepanel-container').load(url + '?id=' + idCampaing, AssignDefaultValue);
+            }
+            else {
+                var url = '@Url.Content("~/Plan/EditProgram")';
+                //$('#slidepanel').load(url + '?id=' + idProgram + '&RedirectType=' + Assortment);
+                $('#slidepanel-container').load(url + '?id=' + id + '&RedirectType=' + Assortment, AssignDefaultValue);
+            }
+            $("#slidepanel").css("right", "0px");
+            myApp.hidePleaseWait();
+        }
+
+        //Dharmraj Start 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
+        function displayconfirmForProgramEvent(id) {
+            if (isDataChanged()) {
+                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+                $("#errorMessageDuplicatePlan").slideDown(3000);
+                $("#btnConfirmOK").click(function () {
+                    //alert(id);
+                    $('#cErrorDuplicatePlan').html("");
+                    $("#errorMessageDuplicatePlan").hide();
+                    programCommonClick(id);
+                });
+            }
+            else {
+                programCommonClick(id);
+            }
+        }
 
         $(document).on("click", ".add-icon.program", function (e) {
             var idCampaing = $(this).parent().parent().attr('data-id-campaing');
@@ -452,11 +550,19 @@
             e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
         });
 
+        //Modified by Dharmraj 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
         $(document).on("click", "#divTactic", function (e) {
             e.stopPropagation();
             $.ajaxSetup({ cache: false });
             var idTactic = $(this).attr("index");
-            $("#slidepanel").css("display", "block");
+            if (idTactic == 0) {
+                $('div[index=0]').removeClass('1');
+                $(this).addClass('1');
+            }
+            
+            displayconfirmForTacticEvent(idTactic);
+
+            @*$("#slidepanel").css("display", "block");
             if (idTactic == 0) {
                 var idProgram = $(this).parent().attr('data-id-program');
                 var url = '@Url.Content("~/Plan/CreateTactic")';
@@ -467,15 +573,55 @@
                 $('#slidepanel-container').load(url + '?id=' + idTactic + '&RedirectType=' + Assortment, AssignDefaultValue);
             }
             $("#slidepanel").css("right", "0px");
-            myApp.hidePleaseWait();
+            myApp.hidePleaseWait();*@
         });
+
+        //Dharmraj Start 8July2014 Common function to handle tactic click event
+        function tacticCommonClick(id) {
+            $("#slidepanel").css("display", "block");
+            if (id == 0) {
+                var idProgram = $('div.1[index=' + id + ']').parent().attr('data-id-program');
+                var url = '@Url.Content("~/Plan/CreateTactic")';
+                $('#slidepanel-container').load(url + '?id=' + idProgram, AssignDefaultValue);
+            }
+            else {
+                var url = '@Url.Content("~/Plan/EditTactic")';
+                $('#slidepanel-container').load(url + '?id=' + id + '&RedirectType=' + Assortment, AssignDefaultValue);
+            }
+            $("#slidepanel").css("right", "0px");
+            myApp.hidePleaseWait();
+        }
+
+        //Dharmraj Start 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
+        function displayconfirmForTacticEvent(id) {
+            if (isDataChanged()) {
+                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+                $("#errorMessageDuplicatePlan").slideDown(3000);
+                $("#btnConfirmOK").click(function () {
+                    //alert(id);
+                    $('#cErrorDuplicatePlan').html("");
+                    $("#errorMessageDuplicatePlan").hide();
+                    tacticCommonClick(id);
+                });
+            }
+            else {
+                tacticCommonClick(id);
+            }
+        }
 
         /*
           Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
           changed by : Nirav Shah on 13 feb 2014
         */
+        // Change by Dharmraj to handle Warning of data loss during campaign deletion, #547
         $(document).on('click', '#delCampaign', function (e) {
-            var uId = $(window).attr('name');
+
+            e.stopPropagation();
+            var idCampaing = $(this).parent().attr('id');
+            displayconfirmForDeleteEvent(idCampaing, 'campaign');
+            e.stopPropagation();
+
+            @*var uId = $(window).attr('name');
             if (confirm('Are you sure you want to delete this campaign?')) {
                 var idCampaing = $(this).parent().attr('id');
                 $.ajax({
@@ -505,14 +651,22 @@
             }
             else {
                 return false;
-            }
+            }*@
         });
+        
+        // Change by Dharmraj to handle Warning of data loss during program deletion, #547
         $(document).on('click', '.program-level a.accordion-toggle .delete-program', function (e) {
             //CheckUserSession(".program-level a.accordion-toggle .delete-program", true);
             //if (reason == 'user') {
             //    return false;
             //}
-            var uId = $(window).attr('name');
+
+            e.stopPropagation();
+            var idProgram = $(this).parent().attr('id');
+            displayconfirmForDeleteEvent(idProgram, 'program');
+            e.stopPropagation();
+
+            @*var uId = $(window).attr('name');
             if (confirm('Are you sure you want to delete this program?')) {
                 e.stopPropagation();
                 var idProgram = $(this).parent().attr('id');
@@ -541,17 +695,22 @@
             }
             else {
                 return false;
-            }
+            }*@
         });
         /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
           changed by : Nirav Shah on 13 feb 2014
         */
+        // Change by Dharmraj to handle Warning of data loss during tactic deletion, #547
         $(document).on('click', '.tactic-level #divTactic .delete-program', function (e) {
             //CheckUserSession(".tactic-level #divTactic .delete-program", true);
             //if (reason == 'user') {
             //    return false;
             //}
-            var uId = $(window).attr('name');
+            e.stopPropagation();
+            var idTactic = $(this).parent().attr('index');
+            displayconfirmForDeleteEvent(idTactic, 'tactic');
+            e.stopPropagation();
+            @*var uId = $(window).attr('name');
             if (confirm('Are you sure you want to delete this tactic?')) {
                 e.stopPropagation();
                 var idTactic = $(this).parent().attr('index');
@@ -584,22 +743,172 @@
                 $("#slidepanel").css("display", "none");
                 e.stopPropagation();
                 return false;
-            }
+            }*@
         });
       
         // Added By Bhavesh for Delete Improvement Tactic: Date 13-March-2014
+        // Change by Dharmraj to handle Warning of data loss during imp tactic deletion, #547
         $(document).on('click', '#divimpTactic #delimpTactic', function (e) {
             //CheckUserSession("#divimpTactic #delimpTactic", true);
             //if (reason == 'user') {
             //    return false;
             //}
+
+            e.stopPropagation();
             var idTactic = $(this).parent().attr('index');
+            displayconfirmForDeleteEvent(idTactic, 'impTactic');
+            e.stopPropagation();
+
+            @*var idTactic = $(this).parent().attr('index');
             var AssortmentType = true;
             $("#DivPartialViewForDeleteImpTactic").empty();
             $("#divBackground").css("display", "block");
             var url = '@Url.Content("~/Plan/ShowDeleteImprovementTactic/")';
-            $("#DivPartialViewForDeleteImpTactic").load(url + '?id=' + idTactic + '&AssortmentType=' + AssortmentType + '&RedirectType=' + false);
+            $("#DivPartialViewForDeleteImpTactic").load(url + '?id=' + idTactic + '&AssortmentType=' + AssortmentType + '&RedirectType=' + false);*@
         });
+
+
+
+        //Dharmraj Start 8July2014 Common function to handle tactic/program/campaign delete event
+        function deleteCommonClick(id, type) {
+            if (type == "tactic") {
+                //alert("tactic");
+                var uId = $(window).attr('name');
+                if (confirm('Are you sure you want to delete this tactic?')) {
+                    //var idTactic = $(this).parent().attr('index');
+                    var idTactic = id;
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/Plan/DeleteTactic")',
+                        data: {
+                            ID: idTactic,
+                            RedirectType: false, UserId: uId
+                        },
+                        success: function (data) {
+                            if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                                window.location = '@Url.Content("~/Login/Index")';
+                            }
+                            else {
+                                if (data.redirect) {
+                                    window.location.href = data.redirect;
+                                    return;
+                                }
+                                if (data.errormsg) {
+                                    alert(data.errormsg);
+                                    return;
+                                }
+                            }
+                        }
+                    });
+                    $("#slidepanel").css("display", "none");
+                }
+                else {
+                    $("#slidepanel").css("display", "none");
+                    return false;
+                }
+            }
+
+            if (type == "program") {
+                var uId = $(window).attr('name');
+                if (confirm('Are you sure you want to delete this program?')) {
+                    e.stopPropagation();
+                    //var idProgram = $(this).parent().attr('id');
+                    var idProgram = id;
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/Plan/DeleteProgram")',
+                        data: {
+                            ID: idProgram, UserId: uId
+                        },
+                        success: function (data) {
+                            if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                                window.location = '@Url.Content("~/Login/Index")';
+                            }
+                            else {
+                                if (data.redirect) {
+                                    window.location.href = data.redirect;
+                                    return;
+                                }
+                                if (data.errormsg) {
+                                    alert(data.errormsg);
+                                    return;
+                                }
+                            }
+                        }
+                    });
+                }
+                else {
+                    return false;
+                }
+            }
+
+            if (type == "campaign") {
+                var uId = $(window).attr('name');
+                if (confirm('Are you sure you want to delete this campaign?')) {
+                    //var idCampaing = $(this).parent().attr('id');
+                    var idCampaing = id;
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/Plan/DeleteCampaign")',
+                        data: {
+                            ID: idCampaing,
+                            RedirectType: false,
+                            UserId: uId
+                        },
+                        success: function (data) {
+                            if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                                window.location = '@Url.Content("~/Login/Index")';
+                            }
+                            else {
+                                if (data.redirect) {
+                                    window.location.href = data.redirect;
+                                    return;
+                                }
+                                if (data.errormsg) {
+                                    ShowError(data.errormsg);
+                                    return;
+                                }
+                            }
+                        }
+                    });
+                }
+                else {
+                    return false;
+                }
+            }
+
+            if (type == "impTactic") {
+                //var idTactic = $(this).parent().attr('index');
+                var idTactic = id;
+                var AssortmentType = true;
+                $("#DivPartialViewForDeleteImpTactic").empty();
+                $("#divBackground").css("display", "block");
+                var url = '@Url.Content("~/Plan/ShowDeleteImprovementTactic/")';
+                $("#DivPartialViewForDeleteImpTactic").load(url + '?id=' + idTactic + '&AssortmentType=' + AssortmentType + '&RedirectType=' + false);
+            }
+        }
+
+        //Dharmraj Start 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign deletion)
+        function displayconfirmForDeleteEvent(id, type) {
+            if (isDataChanged()) {
+                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+                $("#errorMessageDuplicatePlan").slideDown(3000);
+                $("#btnConfirmOK").click(function () {
+                    //alert(id);
+                    //$("#slidepanel").is(':visible')
+                    $('#cErrorDuplicatePlan').html("");
+                    $("#errorMessageDuplicatePlan").hide();
+                    $("#slidepanel").css("display", "none");
+                    $("#slidepanel-container").empty();
+                    deleteCommonClick(id, type);
+                });
+            }
+            else {
+                deleteCommonClick(id, type);
+            }
+        }
+
+
 
         $.ajax({
             type: 'POST',
@@ -691,6 +1000,7 @@
             myApp.hidePleaseWait();
         });
 
+        //Modified by Dharmraj 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
         $(document).on("click", "#divimpTactic #divPanelImp", function (e) {
             if (!isMarketingTacticExits) {
                 ismsg = 'Before adding any improvement tactic please add marketing activities.';
@@ -701,8 +1011,15 @@
             e.stopPropagation();
             $.ajaxSetup({ cache: false });
             var idTactic = $(this).parent().attr("index");
-            $("#slidepanel").css("display", "block");
+            //$("#slidepanel").css("display", "block");
+
             if (idTactic == 0) {
+                $("a#divimpTactic").removeClass('1');
+                $(this).parent().addClass('1');
+            }
+            displayconfirmForImpTacticEvent(idTactic);
+
+            @*if (idTactic == 0) {
                 var idProgram = $(this).parent().attr('data-id-program');
                 var url = '@Url.Content("~/Plan/CreateImprovementTactic")';
                 $('#slidepanel-container').load(url + '?id=' + idProgram, AssignDefaultValue);
@@ -711,9 +1028,42 @@
                 var url = '@Url.Content("~/Plan/EditImprovementTactic")';
                 $('#slidepanel-container').load(url + '?id=' + idTactic + '&RedirectType=' + Assortment, AssignDefaultValue);
             }
-             $("#slidepanel").css("right", "0px");
-             myApp.hidePleaseWait();
+             $("#slidepanel").css("right", "0px");*@
+             //myApp.hidePleaseWait();
         });
+
+        //Dharmraj Start 8July2014 Common function to handle tactic click event
+        function impTacticCommonClick(id) {
+            $("#slidepanel").css("display", "block");
+            if (id == 0) {
+                var idProgram = $("a#divimpTactic.1").attr('data-id-program');
+                var url = '@Url.Content("~/Plan/CreateImprovementTactic")';
+                $('#slidepanel-container').load(url + '?id=' + idProgram, AssignDefaultValue);
+            }
+            else {
+                var url = '@Url.Content("~/Plan/EditImprovementTactic")';
+                $('#slidepanel-container').load(url + '?id=' + id + '&RedirectType=' + Assortment, AssignDefaultValue);
+            }
+            $("#slidepanel").css("right", "0px");
+            myApp.hidePleaseWait();
+        }
+
+        //Dharmraj Start 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
+        function displayconfirmForImpTacticEvent(id) {
+            if (isDataChanged()) {
+                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+                $("#errorMessageDuplicatePlan").slideDown(3000);
+                $("#btnConfirmOK").click(function () {
+                    //alert(id);
+                    $('#cErrorDuplicatePlan').html("");
+                    $("#errorMessageDuplicatePlan").hide();
+                    impTacticCommonClick(id);
+                });
+            }
+            else {
+                impTacticCommonClick(id);
+            }
+        }
 
         function Showmsg() {
             if (ismsg != '') {

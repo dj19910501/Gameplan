@@ -262,7 +262,7 @@
             @if (IsPlanEditable)
             {
                 <div class="span6">
-                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Assortment", "Plan")'">Add Activity</button>
+                    <button id="LeftNavAddActivity" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Add Activity</button>
                 </div>
         }
         </div>
@@ -429,6 +429,24 @@
     $(document).on("click", "#LeftNavInput", function (e) {
         displayconfirm('@Url.Action("Create", "Plan", new { id = Planid })');
     });
+
+    $(document).on("click", "#LeftNavAddActivity", function (e) {
+        displayconfirm('@Url.Action("Assortment", "Plan")');
+    });
+
+    //Dharmraj Start 7July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
+    $("#header a").not("#ContactSupport").click(function () {
+        //alert($(this).attr('href'));
+        if (isDataChanged()) {
+            displayconfirm($(this).attr('href'));
+            return false;
+        }
+        else {
+            return true;
+        }
+    });
+    //Dharmraj End 7July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
+
     //function to check myValue attribute values and input values that any changes made?
     function isDataChanged() {
         var changed = false;

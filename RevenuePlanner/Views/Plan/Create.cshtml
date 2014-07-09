@@ -367,4 +367,18 @@
         }
     }
     //Manoj End 28Jan2014 : Bug-12 (User can lose data via navigation in application)
+
+    //Dharmraj Start 7July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
+    $("#header a").not("#ContactSupport").click(function () {
+        //alert($(this).attr('href'));
+        if (isDataChanged()) {
+            displayconfirm($(this).attr('href'));
+            return false;
+        }
+        else {
+            return true;
+        }
+    });
+    //Dharmraj End 7July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
+
 </script>
