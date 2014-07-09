@@ -2566,9 +2566,9 @@ namespace RevenuePlanner.Controllers
                                  where lu.CustomField == Enums.CustomRestrictionType.Verticals.ToString() && lu.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit
                                  select v).ToList();
             ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId);
-            // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
+            // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction // Modified by dharmraj for Geography dropdown issue
             ViewBag.Geography = (from g in db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId).ToList()
-                                join lu in lstUserCustomRestriction on g.GeographyId.ToString() equals lu.CustomFieldId
+                                join lu in lstUserCustomRestriction on g.GeographyId.ToString().ToLower() equals lu.CustomFieldId.ToLower()
                                  where lu.CustomField == Enums.CustomRestrictionType.Geography.ToString() && lu.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit
                                 select g).ToList();
             ViewBag.Tactics = from t in db.TacticTypes
