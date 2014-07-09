@@ -4,7 +4,8 @@
     {
         <div class="change"> 
             <span class="title">
-                @item.ComponentTitle
+
+                @Html.Raw(item.ComponentTitle) @*Added by mitesh vaishnav on 09/07/2014 for PL #584*@
             </span>
             <span class="type">
                 @item.ComponentType
@@ -12,16 +13,16 @@
             <span class="action">
                 @item.Action
             </span> 
-            @if(!string.IsNullOrEmpty(item.ActionSuffix))
+            @if(!string.IsNullOrEmpty(item.ActionSuffix))   
             {
                 <span>from</span>
                 <span class="title">
-                    @item.ActionSuffix
+                    @Html.Raw(item.ActionSuffix) @*Added by mitesh vaishnav on 09/07/2014 for PL #584*@
                 </span>
             }
             by 
             <span class="author">
-                @item.User
+                @Html.Raw(item.User) @*Added by mitesh vaishnav on 09/07/2014 for PL #584*@
             </span>. 
             <br> 
             <span class="datetime">
