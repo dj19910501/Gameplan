@@ -100,26 +100,33 @@ namespace RevenuePlanner.Controllers
             //    ViewBag.BusinessUnitIds = planmodel.BusinessUnitIds;//Added by Nirav for Custom Dropdown - 388
             //    ViewBag.showBid = true;
             //}
-            if(AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))//else if (Sessions.IsDirector || Sessions.IsClientAdmin)
+            var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
+            if (lstAllowedBusinessUnits.Count > 0)
+                lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
+            if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnits.Count == 0) //else if (Sessions.IsDirector || Sessions.IsClientAdmin)
             {
                 var clientBusinessUnit = db.BusinessUnits.Where(b => b.ClientId.Equals(Sessions.User.ClientId) && b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
                 businessUnitIds = clientBusinessUnit.ToList();
                 planmodel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId); //commented due to not used any where
                 ViewBag.BusinessUnitIds = planmodel.BusinessUnitIds;//Added by Nirav for Custom Dropdown - 388
-                ViewBag.showBid = true;
-
+                if (businessUnitIds.Count > 1)
+                    ViewBag.showBid = true;
+                else
+                    ViewBag.showBid = false;
             }
             else
             {
                 // Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
                 if (lstAllowedBusinessUnits.Count > 0)
                 {
                     lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
                     var lstClientBusinessUnits = Common.GetBussinessUnitIds(Sessions.User.ClientId);
                     planmodel.BusinessUnitIds = lstClientBusinessUnits;
                     ViewBag.BusinessUnitIds = lstClientBusinessUnits.Where(a => businessUnitIds.Contains(Guid.Parse(a.Value)));
-                    ViewBag.showBid = true;
+                    if (lstAllowedBusinessUnits.Count > 1)
+                        ViewBag.showBid = true;
+                    else
+                        ViewBag.showBid = false;
                 }
                 else
                 {

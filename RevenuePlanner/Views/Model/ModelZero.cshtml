@@ -237,8 +237,7 @@ function fillBaselineTable() {
             $('#table_baseline tr').not(function () { if ($(this).has('th').length) { return true } }).remove(); //clear table
             for (i in baselinesModels) {
                 @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to Show effective date column next to status column, effectiveDate parameter has been added. *@
-                @* Modified by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added *@
-                addRowBaseline(i, baselinesModels[i].id, baselinesModels[i].title, baselinesModels[i].businessUnit, baselinesModels[i].version, baselinesModels[i].status, baselinesModels[i].isOwner, baselinesModels[i].effectiveDate, baselinesModels[i].isViewOnly);
+                addRowBaseline(i, baselinesModels[i].id, baselinesModels[i].title, baselinesModels[i].businessUnit, baselinesModels[i].version, baselinesModels[i].status, baselinesModels[i].isOwner, baselinesModels[i].effectiveDate);
                 @* added by Nirav Shah  on 14 feb 2014  for 256:Model list - add delete option for model *@
             }
         }
@@ -247,8 +246,7 @@ function fillBaselineTable() {
 
     //add row in baselinesModels table
     @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to Show effective date column next to status column, effectiveDate parameter has been added. *@
-    @* Modified by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added *@
-    function addRowBaseline(_index, _id, _title, _businessUnit, _version, _status, _isOwner, _effectiveDate, _isViewOnly) {
+    function addRowBaseline(_index, _id, _title, _businessUnit, _version, _status, _isOwner, _effectiveDate) {
         var $baselineTable = $('#table_baseline > tbody');
         var $html = "";
         var status = "Draft";
@@ -259,7 +257,7 @@ function fillBaselineTable() {
             $html += '<tr id="' + _id + '" index="' + _index + '"><td>';
         }
      @* added by Nirav Shah  on 14 feb 2014  for 256:Model list - add delete option for model *@
-        if (_isOwner == 0 || _isViewOnly != true) { // Modified by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+        if (_isOwner == 0) {
         $html += '<span class="delete-temp-program width5 float-left-margin-top4-margin-right10"></span>';
         }
         else {
