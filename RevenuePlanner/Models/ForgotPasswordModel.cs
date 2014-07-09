@@ -66,6 +66,7 @@ namespace RevenuePlanner.Models
 
         public int SecurityQuestionId { get; set; }
 
+        [AllowHtml]
         [Display(Name = "Answer")]
         public string Answer { get; set; }
     }

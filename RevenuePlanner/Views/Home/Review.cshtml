@@ -7,8 +7,8 @@
 }
 <div class="span5 width360" id="inspect-modal-right-div" style="width: 420px !important;">
     <div class="font-size18">Overview</div>
-    <div id="campaign-title" class="bold padding-top16 font-size18">@tacticReview.CampaignTitle</div>
-    <div id="program-title" class="font-size18">@tacticReview.ProgramTitle</div>
+    <div id="campaign-title" class="bold padding-top16 font-size18">@Html.Raw(tacticReview.CampaignTitle)</div>
+    <div id="program-title" class="font-size18">@Html.Raw(tacticReview.ProgramTitle)</div>
     <div class="cf source-sans-proregular padding-top32">
         <div class="chart-gray pull-left size65x38 without-padding">
             <div class="padding-top16"><span id="startDay-id" class="font_size30" style="line-height: 24px;">@tacticReview.StartDate.ToString("dd")</span></div>
@@ -396,7 +396,7 @@
         $("#btnComment").click(function () {
             $("#successMessage").css("display", "none");
             $("#errorMessage").css("display", "none");
-            var commentText = $('#txtAreaComment').val();
+            var commentText = htmlEncode($('#txtAreaComment').val());
             if (commentText == '') {
                 var msgspan = "Make sure all fields are filled and valid,try again.";
                 $("#errorMessage").css("display", "block");
@@ -519,9 +519,5 @@
             });
 
         });
-
-        /* Added by Mitesh Vaishnav on 01-07-2014 for PL ticket #548 Special characters should be allowed in tactic descriptions*/
-        ValidationForCustomTextarea($('#txtAreaComment'));
-        /*End: Added by Mitesh Vaishnav for PL ticket #548 Special characters should be allowed in tactic descriptions*/
     });
 </script>

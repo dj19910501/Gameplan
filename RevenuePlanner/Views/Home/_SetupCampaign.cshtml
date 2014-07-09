@@ -10,7 +10,7 @@
     <div class="span7" id="inspect-modal-right-div">
         <div id="nl-form" class="nl-form nl-form-modal">
             @Html.Raw("I'm running campaign called") 
-            <span id="tactic-name" class="color5693B3">@campaign.CampaignTitle</span>
+            <span id="tactic-name" class="color5693B3">@Html.Raw(campaign.CampaignTitle)</span>
             @Html.Raw("from")
            <span id="start-date" class="color5693B3">@campaign.StartDate.ToShortDateString()</span>
             @Html.Raw("to")
@@ -34,7 +34,7 @@
                                        
     <div class="span2" id="inspect-modal-left-column1">
          <p>@Html.Raw("Description")</p>
-         @Html.TextAreaFor(model => model.Description, new { @class = "span12 text-area-size truncate", style = "background:#F2F2F2;height:92px;", @readonly = "true" })
+        @Html.TextArea("txtDescription",HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size truncate", style = "background:#F2F2F2;height:92px;", @readonly = "true" })
         <p style="width:110%;">@Html.Raw("Deployed to Integration")</p>
             @Html.TextBox("txtDeployStatus",deployStatus,new {@class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true"})
         <div style="clear: both; width: 250%;">

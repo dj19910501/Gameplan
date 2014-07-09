@@ -10,6 +10,7 @@ using System.Transactions;
 using System.Data.Objects;
 using System.IO;
 using RevenuePlanner.BDSService;
+using System.Web;
 
 namespace RevenuePlanner.Controllers
 {
@@ -1794,8 +1795,8 @@ namespace RevenuePlanner.Controllers
 
             Plan_CampaignModel pcm = new Plan_CampaignModel();
             pcm.PlanCampaignId = pc.PlanCampaignId;
-            pcm.Title = pc.Title;
-            pcm.Description = pc.Description;
+            pcm.Title = HttpUtility.HtmlDecode(pc.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+            pcm.Description = HttpUtility.HtmlDecode(pc.Description);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             pcm.IsDeployedToIntegration = pc.IsDeployedToIntegration;
             ViewBag.IsDeployedToIntegration = pcm.IsDeployedToIntegration;
             /* changed by Nirav on 11 APR for PL 322*/
@@ -2226,8 +2227,8 @@ namespace RevenuePlanner.Controllers
             Plan_Campaign_ProgramModel pcpm = new Plan_Campaign_ProgramModel();
             pcpm.PlanProgramId = pcp.PlanProgramId;
             pcpm.PlanCampaignId = pcp.PlanCampaignId;
-            pcpm.Title = pcp.Title;
-            pcpm.Description = pcp.Description;
+            pcpm.Title = HttpUtility.HtmlDecode(pcp.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+            pcpm.Description = HttpUtility.HtmlDecode(pcp.Description);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             /* changed by Nirav on 11 APR for PL 322*/
             //pcpm.VerticalId = pcp.VerticalId;
             //pcpm.AudienceId = pcp.AudienceId;
@@ -2292,7 +2293,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IsOwner = false;
                 ViewBag.IsProgramDeleteble = false;
             }
-            ViewBag.Campaign = pcp.Plan_Campaign.Title;
+            ViewBag.Campaign = HttpUtility.HtmlDecode(pcp.Plan_Campaign.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
             return PartialView("ProgramAssortment", pcpm);
         }
@@ -2601,11 +2602,18 @@ namespace RevenuePlanner.Controllers
                                 join lu in lstUserCustomRestriction on g.GeographyId.ToString().ToLower() equals lu.CustomFieldId.ToLower()
                                  where lu.CustomField == Enums.CustomRestrictionType.Geography.ToString() && lu.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit
                                 select g).ToList();
-            ViewBag.Tactics = from t in db.TacticTypes
+            ////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+            var tactics = from t in db.TacticTypes
                               join p in db.Plans on t.ModelId equals p.ModelId
                               where p.PlanId == Sessions.PlanId && (t.IsDeleted == null || t.IsDeleted == false)
                               orderby t.Title
                               select t;
+            foreach (var item in tactics)
+            {
+                item.Title = HttpUtility.HtmlDecode(item.Title);
+            }
+            ViewBag.Tactics = tactics;
+            ////End :Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             ViewBag.IsCreated = true;
 
             // added by Dharmraj for ticket #435 MAP/CRM Integration - Tactic Creation
@@ -2640,8 +2648,8 @@ namespace RevenuePlanner.Controllers
             
             // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
             ViewBag.IsAllowCustomRestriction = true;
-            ViewBag.Program = pcpt.Title;//uday PL Ticket #550 3-7-2014
-            ViewBag.Campaign = pcpt.Plan_Campaign.Title; //uday PL Ticket #550 3-7-2014
+            ViewBag.Program = HttpUtility.HtmlDecode(pcpt.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+            ViewBag.Campaign = HttpUtility.HtmlDecode(pcpt.Plan_Campaign.Title); ////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             ViewBag.RedirectType = false;
             // Start - Added by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
             pcptm.StartDate = GetCurrentDateBasedOnPlan();
@@ -2666,6 +2674,12 @@ namespace RevenuePlanner.Controllers
                               where p.PlanId == Sessions.PlanId && (t.IsDeleted == null || t.IsDeleted == false)
                               orderby t.Title
                               select t;
+            /*Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584*/
+            foreach (var item in tList)
+            {
+                item.Title = HttpUtility.HtmlDecode(item.Title);
+            }
+            /*End :Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584*/
             ViewBag.IsCreated = false;
             if (RedirectType == "Assortment")
             {
@@ -2732,8 +2746,8 @@ namespace RevenuePlanner.Controllers
             pcptm.PlanProgramId = pcpt.PlanProgramId;
             pcptm.PlanTacticId = pcpt.PlanTacticId;
             pcptm.TacticTypeId = pcpt.TacticTypeId;
-            pcptm.Title = pcpt.Title;
-            pcptm.Description = pcpt.Description;
+            pcptm.Title = HttpUtility.HtmlDecode(pcpt.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+            pcptm.Description = HttpUtility.HtmlDecode(pcpt.Description);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             pcptm.VerticalId = pcpt.VerticalId;
             pcptm.AudienceId = pcpt.AudienceId;
             pcptm.GeographyId = pcpt.GeographyId;
@@ -2809,8 +2823,8 @@ namespace RevenuePlanner.Controllers
                 
             }
             ViewBag.Tactics = tnewList.OrderBy(t => t.Title);
-            ViewBag.Program = pcpt.Plan_Campaign_Program.Title;
-            ViewBag.Campaign = pcpt.Plan_Campaign_Program.Plan_Campaign.Title;
+            ViewBag.Program = HttpUtility.HtmlDecode(pcpt.Plan_Campaign_Program.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+            ViewBag.Campaign = HttpUtility.HtmlDecode(pcpt.Plan_Campaign_Program.Plan_Campaign.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
             return PartialView("TacticAssortment", pcptm);
         }
@@ -3932,11 +3946,18 @@ namespace RevenuePlanner.Controllers
         public PartialViewResult EditImprovementTactic(int id = 0, string RedirectType = "")
         {
             List<int> impTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(it => it.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == Sessions.PlanId && it.IsDeleted == false && it.ImprovementPlanTacticId != id).Select(it => it.ImprovementTacticTypeId).ToList();
-            ViewBag.Tactics = from t in db.ImprovementTacticTypes
+            /*Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584  */
+            var tactics = from t in db.ImprovementTacticTypes
                               where t.ClientId == Sessions.User.ClientId && t.IsDeployed == true && !impTacticList.Contains(t.ImprovementTacticTypeId)
                               && t.IsDeleted == false       //// Added by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
                               orderby t.Title
                               select t;
+            foreach (var item in tactics)
+            {
+                item.Title = HttpUtility.HtmlDecode(item.Title);
+            }
+            ViewBag.Tactics = tactics;
+            /*End: Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584  */
             ViewBag.IsCreated = false;
             if (RedirectType == "Assortment")
             {
@@ -3971,8 +3992,8 @@ namespace RevenuePlanner.Controllers
             pcptm.ImprovementPlanProgramId = pcpt.ImprovementPlanProgramId;
             pcptm.ImprovementPlanTacticId = pcpt.ImprovementPlanTacticId;
             pcptm.ImprovementTacticTypeId = pcpt.ImprovementTacticTypeId;
-            pcptm.Title = pcpt.Title;
-            pcptm.Description = pcpt.Description;
+            pcptm.Title = HttpUtility.HtmlDecode(pcpt.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+            pcptm.Description = HttpUtility.HtmlDecode(pcpt.Description);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             pcptm.EffectiveDate = pcpt.EffectiveDate;
             pcptm.Cost = pcpt.Cost;
             pcptm.IsDeployedToIntegration = pcpt.IsDeployedToIntegration;
@@ -3985,8 +4006,8 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.IsOwner = false;
             }
-            ViewBag.Program = pcpt.Plan_Improvement_Campaign_Program.Title;
-            ViewBag.Campaign = pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Title;
+            ViewBag.Program = HttpUtility.HtmlDecode(pcpt.Plan_Improvement_Campaign_Program.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+            ViewBag.Campaign = HttpUtility.HtmlDecode(pcpt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
             return PartialView("ImprovementTactic", pcptm);
         }

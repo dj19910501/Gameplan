@@ -202,9 +202,6 @@
             return false;
         }
 
-        $('form').find('input[type=text], textarea').each(function () {
-            ValidationForCustomTextarea(this);////Modified by Mitesh Vaishnav on 01-07-2014 for pl ticket #548
-        });
         $('form').find('input[type=text], select, textarea').each(function () {
             $(this).change(function () {
                 if ($(this).attr('require') == 'true') {
@@ -274,6 +271,8 @@
             if (reason == 'user') {
                 return false;
             }
+            document.getElementById("Title").value = htmlEncode($('#Title').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+            document.getElementById("Description").value = htmlEncode($('#Description').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/SaveImprovementTactic")',

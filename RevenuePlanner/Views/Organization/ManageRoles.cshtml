@@ -235,15 +235,7 @@
             $("#errorMessage").css("display", "block");
             $("#spanErrorMessageRole").text(msgspan);
         } else {
-            var roledescription = $('#newrole').val();
-            if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test($("#newrole").val())) {
-                var msgspan = "Special character are not allowed, try again.";
-                $("#errorMessage").css("display", "block");
-                $("#newrole").addClass("error");
-                $("#spanErrorMessageRole").text(msgspan);//review point
-            }
-            else {
-
+            var roledescription =htmlEncode($('#newrole').val());
                 $.ajax({
                     url: '@Url.Content("~/Organization/AddRole/")',
                     data: {
@@ -263,7 +255,7 @@
                         }
                     }
                 });
-            }
+
         }
         return false;
     });
@@ -271,7 +263,7 @@
 
     $('#copyrolebtn').click(function () {
 
-        var copyroledescription = $('#copyroledesc').val();
+         var copyroledescription = htmlEncode($('#copyroledesc').val());
 
         $(".copyroledesc").removeClass("error");
         var flag = 0;
@@ -287,18 +279,10 @@
             $("#errorMessagecopy").css("display", "block");
             $("#spanErrorMessageRolecopy").text(msgspan);
         } else {
-            if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test($("#copyroledesc").val())) {
-                var msgspan = "Special character are not allowed, try again.";
-                $("#errorMessagecopy").css("display", "block");
-                $("#copyroledesc").addClass("error");
-                $("#spanErrorMessageRolecopy").text(msgspan);//review point
-            }
-            else {
-
                 $.ajax({
                     url: '@Url.Content("~/Organization/CopyRole/")',
                     data: {
-                        copyroledesc: copyroledescription,
+                        copyroledesc:escape(copyroledescription),
                         originalroleid: originalid
                     },
                     type: 'POST',
@@ -317,7 +301,7 @@
                     }
                 }
                 });
-        }
+
     }
         return false;
     });

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace RevenuePlanner.Models
 {
@@ -11,13 +12,16 @@ namespace RevenuePlanner.Models
         [Key]
         public Guid UserId { get; set; }
 
-        [RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in First Name.")]
+        //[RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in First Name.")]
+        [AllowHtml]
         [Display(Name = "First Name")]
         [MaxLength(50, ErrorMessage = "Maximum 50 characters are allowed in First Name.")]
         [Required]
+        
         public string FirstName { get; set; }
 
-        [RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in Last Name.")]
+        //[RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in Last Name.")]
+        [AllowHtml]
         [Display(Name = "Last Name")]
         [MaxLength(50, ErrorMessage = "Maximum 50 characters are allowed in Last Name.")]
         [Required]
@@ -62,13 +66,14 @@ namespace RevenuePlanner.Models
         public byte[] ProfilePhoto { get; set; }
 
         [Display(Name = "Display Name")]
-        [RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in Display Name.")]
+        //[RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in Display Name.")]
         [MaxLength(255, ErrorMessage = "Display Name cannot contain more than 255 characters.")]
         public string DisplayName { get; set; }
 
+        [AllowHtml]
         [Required]
         [Display(Name = "Job Title")]
-        [RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in Job Title.")]
+        //[RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in Job Title.")]
         [MaxLength(50, ErrorMessage = "Job Title cannot contain more than 50 characters.")]
         public string JobTitle { get; set; }
 

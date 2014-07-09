@@ -120,8 +120,8 @@ namespace RevenuePlanner.Controllers
             if (roledesc != null && roledesc != string.Empty)
             {
                 BDSService.Role objrole = new BDSService.Role();
-                objrole.Description = roledesc.Trim();
-                objrole.Title = roledesc.Trim();
+                objrole.Description =HttpUtility.HtmlDecode(roledesc);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+                objrole.Title =HttpUtility.HtmlDecode(roledesc);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
                 //Session["session"] = objrole;commented by uday for functional review point...3-7-2014
                 TempData["objrole"] = objrole;
 
@@ -596,7 +596,7 @@ namespace RevenuePlanner.Controllers
                 Guid UserId = Guid.Parse(userId);
                 Guid CurrentUserID = Sessions.User.UserId;
                 int i = objBDSServiceClient.AddUserActivityPermissions(UserId, CurrentUserID, arrPermissionId.ToList(), Sessions.ApplicationId);
-                if (i == 1)
+                if (i >= 1)
                 {
                 return true;
             }
@@ -631,7 +631,7 @@ namespace RevenuePlanner.Controllers
                 Guid UserId = Guid.Parse(userId);
                 Guid creatorId = Sessions.User.UserId;
                 int i = objBDSServiceClient.resetToRoleDefault(UserId, creatorId, Sessions.ApplicationId);
-                if (i == 1)
+                if (i >= 1)
                 {
                     TempData["SuccessMessage"] = Common.objCached.UserPermissionsResetToDefault;
                 return true;

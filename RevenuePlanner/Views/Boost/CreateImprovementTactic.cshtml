@@ -308,12 +308,13 @@
             if ($("#t_integration_status").hasClass("icon-check-blue")) {
                 isDeployedToIntegration = true;
             }
-
+            var title = htmlEncode($("#hdntitle").val());/*Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584*/
+            var description = htmlEncode($("#hdndesc").val());/*Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584*/
             $.ajax({
                 type: 'post',
                 url: '@Url.Content("~/Boost/saveImprovementTacticData")',
-                data: 'improvementId=' + $("#ImprovementTacticTypeId").val() + '&improvementDetails=' + ids.substr(0, ids.length - 1) + ']' + '&status=' + status + '&cost=' + ReplaceCC($("#hdnCost").val()) + '&desc=' + $("#hdndesc").val()
-                       + '&title=' + $("#hdntitle").val() + '&deployToIntegrationStatus=' + isDeployedToIntegration,
+                data: 'improvementId=' + $("#ImprovementTacticTypeId").val() + '&improvementDetails=' + ids.substr(0, ids.length - 1) + ']' + '&status=' + status + '&cost=' + ReplaceCC($("#hdnCost").val()) + '&desc=' + escape(description)
+                       + '&title=' + escape(title) + '&deployToIntegrationStatus=' + isDeployedToIntegration,
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
                         window.location = '@Url.Content("~/Login/Index")';
@@ -339,12 +340,6 @@
             $("#spanMessage").text(value);
             return false;
         }
-        /* Added by Mitesh Vaishnav on 01-07-2014 for PL ticket #548 Special characters should be allowed in tactic descriptions*/
-        $('form').find('input[type=text], textarea').each(function () {
-            ValidationForCustomTextarea(this);
-        });
-        /*End: Added by Mitesh Vaishnav for PL ticket #548 Special characters should be allowed in tactic descriptions*/
-
         TruncateMetricName();    @* Added By :- Sohel on 21/04/2014 for PL ticket #160 to display unwrapped text. *@
     });
 

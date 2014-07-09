@@ -13,7 +13,7 @@
 @Html.Hidden("hdnCampaignStatus", campaignMaster.Status, new { id = "hdnCampaignStatus" })
 <div>
     <span class="icon-flag bg-purple" style="background-color:#@campaignMaster.ColorCode !important;"></span>
-    <h2 class="title-simple source-sans-prolight">@campaignMaster.CampaignTitle
+    <h2 class="title-simple source-sans-prolight">@Html.Raw(campaignMaster.CampaignTitle)
     @if (IsPlanEditable)
     {
         @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = campaignMaster.PlanCampaignId, programId = 0 , tacticId = 0, EditObject = "Campaign", ismsg = "" }, new { @class = "edit-icon"})

@@ -17,18 +17,18 @@ namespace RevenuePlanner.Models
         [Display(Name = "Instance Name")]
         [Required]
         [MaxLength(250, ErrorMessage = "Instance name cannot be more than 250 characters.")]
-        [RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in Instance Name.")]
+        //[RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in Instance Name.")]
         public string Instance { get; set; }
 
         [Display(Name = "User ID")]
         [Required]
-        [RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in Username.")]
+        //[RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in Username.")]
         [MaxLength(250, ErrorMessage = "Username cannot be more than 250 characters.")]
         public string Username { get; set; }
 
         [Display(Name = "Password")]
         [Required]
-        [RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in Password.")]
+        //[RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in Password.")]
         [MaxLength(250, ErrorMessage = "Password cannot be more than 250 characters.")]
         public string Password { get; set; }
 

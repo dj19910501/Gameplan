@@ -124,6 +124,12 @@ function ProfileAttachToolTip() {
         $(this).find('.profile-tooltip').toggle();
     });
 };
+/*Added by Mitesh Vaishnav for PL Ticket #584*/
+function htmlEncode(value) {
+    var retVal = $('<div/>').text(value).html();
+    return retVal;
+};
+/*End: Added by Mitesh Vaishnav for PL Ticket #584*/
 
 
 

@@ -13,7 +13,7 @@ namespace RevenuePlanner.Models
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
-        [RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in password")]
+        //[RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in password")]
         [MaxLength(50, ErrorMessage = "Password cannot be more than 50 characters.")]
         //[MinLength(8, ErrorMessage = "Password should be atleast 8 characters.")]
         public string Password { get; set; }

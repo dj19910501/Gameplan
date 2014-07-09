@@ -471,8 +471,8 @@
                 return false;
             }
 
-            var Title = $("#Title").val();
-            var Description = $("#Description").val();
+            var Title = htmlEncode($("#Title").val());////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+            var Description = htmlEncode($("#Description").val());////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             var StageId = $("#StageId").val();
             if (StageId == '' || StageId == 'Undefined') {
                 StageId = 'null';
@@ -508,7 +508,7 @@
                         $.ajax({
                             type: 'POST',
                             url: '@Url.Content("~/Model/SaveTactic/")',
-                            data: 'Title=' + Title + '&Description=' + Description + '&StageId=' + StageId + '&ProjectedStageValue=' + ProjectedStageValue
+                            data: 'Title=' + escape(Title) + '&Description=' + escape(Description) + '&StageId=' + StageId + '&ProjectedStageValue=' + ProjectedStageValue
                             + '&ProjectedRevenue=' + ProjectedRevenue + '&TacticTypeId=' + TacticTypeId
                            + '&modelID=' + modelID + '&isDeployedToIntegration=' + isDeployedToIntegration
                             + '&isDeployedToModel=' + isDeployedToModel,
@@ -541,12 +541,5 @@
             $("#spanMessage").empty();
             $("#spanMessage").text(value);
         }
-        /* Added by Mitesh Vaishnav on 01-07-2014 for PL ticket #548 Special characters should be allowed in tactic descriptions*/
-        $('form').find('input[type=text], textarea').each(function () {
-            ValidationForCustomTextarea(this);
-        });
-        /*End: Added by Mitesh Vaishnav for PL ticket #548 Special characters should be allowed in tactic descriptions*/
-
-
     });
 </script>

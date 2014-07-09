@@ -14,7 +14,7 @@
 @Html.Hidden("hdnTacticStatus", tacticMaster.Status, new { id = "hdnTacticStatus" })
 <div>
     <span class="icon-flag bg-purple" style="background-color:#@tacticMaster.ColorCode !important;"></span>
-    <h2 class="title-simple source-sans-prolight">@tacticMaster.TacticTitle
+    <h2 class="title-simple source-sans-prolight">@Html.Raw(tacticMaster.TacticTitle)
     @if (IsPlanEditable)
     {
         @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = tacticMaster.PlanCampaignId, programId = tacticMaster.PlanProgramId, tacticId = tacticMaster.PlanTacticId, EditObject = "Tactic", ismsg = "" }, new { @class = "edit-icon"})   

@@ -224,8 +224,8 @@ namespace RevenuePlanner.Controllers
             if (id != 0)
             {
                 ImprovementTacticType ittobj = db.ImprovementTacticTypes.Where(itt => itt.IsDeleted == false && itt.ImprovementTacticTypeId == id).FirstOrDefault();
-                bittobj.Title = ittobj.Title;
-                bittobj.Description = ittobj.Description;
+                bittobj.Title = System.Web.HttpUtility.HtmlDecode(ittobj.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+                bittobj.Description = System.Web.HttpUtility.HtmlDecode(ittobj.Description);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
                 bittobj.Cost = ittobj.Cost;
                 bittobj.IsDeployed = ittobj.IsDeployed;
                 bittobj.ImprovementTacticTypeId = id;

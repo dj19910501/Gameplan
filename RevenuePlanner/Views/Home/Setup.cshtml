@@ -10,9 +10,9 @@
     <div class="span7" id="inspect-modal-right-div">
         <div id="nl-form" class="nl-form nl-form-modal">
             I'm running 
-                <span id="tactic-type" class="color5693B3">@tactic.TacticTypeTitle</span>
+                <span id="tactic-type" class="color5693B3">@Html.Raw(tactic.TacticTypeTitle)</span>
             tactic called 
-                <span id="tactic-name" class="color5693B3">@tactic.TacticTitle</span>
+                <span id="tactic-name" class="color5693B3">@Html.Raw(tactic.TacticTitle)</span>
             from
                 <span id="start-date" class="color5693B3">@tactic.StartDate.ToShortDateString()</span>
             to
@@ -36,11 +36,11 @@
                                        
     <div class="span2" id="inspect-modal-left-column1">
         <p>Parent Campaign</p>
-            @Html.TextBox("txtCampaign", tactic.CampaignTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.CampaignTitle })
+            @Html.TextBox("txtCampaign",HttpUtility.HtmlDecode(tactic.CampaignTitle), new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.CampaignTitle })
         <p>Parent Program</p>
-            @Html.TextBox("txtProgram", tactic.ProgramTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.ProgramTitle })
+            @Html.TextBox("txtProgram",HttpUtility.HtmlDecode(tactic.ProgramTitle), new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.ProgramTitle })
         <p>Description</p>
-            @Html.TextAreaFor(model => model.Description, new { @class = "span12 text-area-size truncate", style = "background:#F2F2F2;", @readonly = "true" })
+            @Html.TextArea("txtDescription",HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size truncate", style = "background:#F2F2F2;", @readonly = "true" })
 
     </div>
     <div class="span2" id="inspect-modal-left-column2">

@@ -2886,9 +2886,9 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IsCreated = false;
                 TacticType mtp = db.TacticTypes.Where(m => m.TacticTypeId.Equals(id)).FirstOrDefault();
                 tm.TacticTypeId = mtp.TacticTypeId;
-                tm.Title = mtp.Title;
+                tm.Title = System.Web.HttpUtility.HtmlDecode(mtp.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
                 tm.ClientId = mtp.ClientId;
-                tm.Description = mtp.Description;
+                tm.Description = System.Web.HttpUtility.HtmlDecode(mtp.Description);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
                 /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
                 /*changed by Nirav Shah on 2 APR 2013*/
                 //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue

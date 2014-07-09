@@ -81,6 +81,7 @@
                 <div class="manage-roles-header clearfix">
                     <div class="pull-left">
                         <div id="nl-form" class="nl-form-plan-title without-margin">
+                           
                             @Html.DropDownList("ddlRoles", new SelectList((System.Collections.IEnumerable)TempData["RoleList"], "Value", "Text"), (string)ViewBag.Current, new { require = "true" })
                             <div class="nl-overlay"></div>
                         </div>

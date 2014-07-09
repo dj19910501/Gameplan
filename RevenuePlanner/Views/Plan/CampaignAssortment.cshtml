@@ -298,9 +298,6 @@
             $(this).prev().remove();
             $(this).remove();
         });
-        $('form').find('input[type=text], textarea').each(function () {
-            ValidationForCustomTextarea(this);////Modified by Mitesh Vaishnav on 01-07-2014 for pl ticket #548
-        });
         $('form').find('input[type=text], select, textarea').each(function () {
             $(this).change(function () {
                 if ($(this).attr('require') == 'true') {
@@ -409,7 +406,7 @@
             var _programs = $("#frm_campaigns #c_programs input");
             for (var l = 0; l < _programs.length; l++) {
                 var ptitle = $(_programs[l]).val();
-                arProgram[l] = ptitle;
+                arProgram[l] = htmlEncode(ptitle);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             }
             var isAssortment = $("#hdnRedirectType").val();
             var arrClosedTaskString = null;
@@ -420,11 +417,15 @@
             //if (reason == 'user') {
             //    return false;
             //}
+            
+            document.getElementById("txtTitle").value = htmlEncode($('#txtTitle').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+            document.getElementById("Description").value = htmlEncode($('#Description').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+            var formData = $("form").serialize();////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             var uId = $(window).attr('name');
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/SaveCampaign")',
-                data: $("form").serialize() + '&programs=' + arProgram + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId,
+                data: formData + '&programs=' +escape(arProgram) + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId,
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
                         window.location = '@Url.Content("~/Login/Index")';

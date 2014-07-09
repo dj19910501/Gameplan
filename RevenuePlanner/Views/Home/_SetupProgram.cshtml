@@ -10,7 +10,7 @@
     <div class="span7" id="inspect-modal-right-div">
         <div id="nl-form" class="nl-form nl-form-modal">
             @Html.Raw("I'm running program called")
-            <span id="tactic-name" class="color5693B3">@program.ProgramTitle</span>
+            <span id="tactic-name" class="color5693B3">@Html.Raw(program.ProgramTitle)</span>
             @Html.Raw("from")
             <span id="start-date" class="color5693B3">@program.StartDate.ToShortDateString()</span>
             @Html.Raw("to")
@@ -34,9 +34,9 @@
                                        
     <div class="span2" id="inspect-modal-left-column1">
         <p>@Html.Raw("Parent Campaign")</p>
-        @Html.TextBox("txtCampaign", program.CampaignTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = program.CampaignTitle })
+        @Html.TextBox("txtCampaign",HttpUtility.HtmlDecode(program.CampaignTitle), new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = program.CampaignTitle })
         <p>@Html.Raw("Description")</p>
-        @Html.TextAreaFor(model => model.Description, new { @class = "span12 text-area-size truncate", style = "background:#F2F2F2;", @readonly = "true" })
+        @Html.TextArea("txtDescription",HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size truncate", style = "background:#F2F2F2;", @readonly = "true" })
         <div style="clear: both; width: 250%;">
             <br />
             <br />
