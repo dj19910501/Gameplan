@@ -483,31 +483,30 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public List<PlanModel> GetModelName()
         {
-
             // Customer DropDown
             List<PlanModel> lstPlanModel = new List<PlanModel>();
             //List<Model> lstmodel = new List<Model>();
-
 
             List<Model> objModelList = new List<Model>();
             List<Model> lstModels = new List<Model>();
             try
             {
-
                 Guid clientId = Sessions.User.ClientId;
                 List<Guid> objBusinessUnit = new List<Guid>();
-                if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))//if (Sessions.IsSystemAdmin || Sessions.IsClientAdmin || Sessions.IsDirector)
+
+                var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
+                List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
+                if (lstAllowedBusinessUnits.Count > 0)
+                    lstAllowedBusinessUnits.ForEach(g => lstAllowedBusinessUnitIds.Add(Guid.Parse(g)));
+                if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnitIds.Count == 0)//if (Sessions.IsSystemAdmin || Sessions.IsClientAdmin || Sessions.IsDirector)
                 {
                     objBusinessUnit = db.BusinessUnits.Where(bu => bu.ClientId == clientId && bu.IsDeleted == false).Select(bu => bu.BusinessUnitId).ToList();
                 }
                 else
                 {
                     // Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                    var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
-                    if (lstAllowedBusinessUnits.Count > 0)
+                    if (lstAllowedBusinessUnitIds.Count > 0)
                     {
-                        List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
-                        lstAllowedBusinessUnits.ForEach(g => lstAllowedBusinessUnitIds.Add(Guid.Parse(g)));
                         objBusinessUnit = db.BusinessUnits.Where(bu => lstAllowedBusinessUnitIds.Contains(bu.BusinessUnitId) && bu.IsDeleted == false).Select(bu => bu.BusinessUnitId).ToList();
                     }
                     else
@@ -719,7 +718,11 @@ namespace RevenuePlanner.Controllers
                 }
             }
             //planModel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId);
-            if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))//if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
+            var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
+            List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
+            if (lstAllowedBusinessUnits.Count > 0)
+                lstAllowedBusinessUnits.ForEach(g => lstAllowedBusinessUnitIds.Add(Guid.Parse(g)));
+            if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnitIds.Count == 0)//if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
             {
                 //// Getting all business unit for client of director.
                 planModel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId);
@@ -732,11 +735,8 @@ namespace RevenuePlanner.Controllers
                 try
                 {
                     // Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                    var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
-                    if (lstAllowedBusinessUnits.Count > 0)
+                    if (lstAllowedBusinessUnitIds.Count > 0)
                     {
-                        List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
-                        lstAllowedBusinessUnits.ForEach(g => lstAllowedBusinessUnitIds.Add(Guid.Parse(g)));
                         var list = db.BusinessUnits.Where(s => lstAllowedBusinessUnitIds.Contains(s.BusinessUnitId) && s.IsDeleted == false).ToList().Select(u => new SelectListItem
                         {
                             Text = u.Title,
@@ -1738,7 +1738,13 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsCreated = true;
             ViewBag.RedirectType = false;
             ViewBag.IsOwner = true;
-            return PartialView("CampaignAssortment");
+            // Start - Added by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
+            Plan_CampaignModel pc = new Plan_CampaignModel();
+            pc.StartDate = GetCurrentDateBasedOnPlan();
+            pc.EndDate = GetCurrentDateBasedOnPlan(true);
+            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
+            // End - Added by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
+            return PartialView("CampaignAssortment", pc);   // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
         }
 
         /// <summary>
@@ -1798,8 +1804,8 @@ namespace RevenuePlanner.Controllers
             //pcm.GeographyId = pc.GeographyId;
             pcm.StartDate = pc.StartDate;
             pcm.EndDate = pc.EndDate;
-            if (RedirectType != "Assortment")
-            {
+            //if (RedirectType != "Assortment") // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
+            //{
                 var psd = (from p in db.Plan_Campaign_Program where p.PlanCampaignId == id && p.IsDeleted.Equals(false) select p);
                 if (psd.Count() > 0)
                 {
@@ -1821,7 +1827,7 @@ namespace RevenuePlanner.Controllers
                 {
                     pcm.TEndDate = (from oted in ted select oted.EndDate).Max();
                 }
-            }
+            //}
             //pcm.INQs = pc.INQs;
             pcm.MQLs = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == pc.PlanCampaignId && t.IsDeleted == false).ToList()).Sum(tm => tm.MQL);
             pcm.Cost = Common.CalculateCampaignCost(pc.PlanCampaignId); //pc.Cost; // Modified for PL#440 by Dharmraj
@@ -1927,8 +1933,8 @@ namespace RevenuePlanner.Controllers
                                 //pcobj.GeographyId = form.GeographyId;
                                 //pcobj.INQs = 0;
                                 //pcobj.Cost = 0;
-                                pcobj.StartDate = GetCurrentDateBasedOnPlan();
-                                pcobj.EndDate = GetCurrentDateBasedOnPlan(true);
+                                pcobj.StartDate = form.StartDate;   // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
+                                pcobj.EndDate = form.EndDate;   // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
                                 pcobj.CreatedBy = Sessions.User.UserId;
                                 pcobj.CreatedDate = DateTime.Now;
                                 pcobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(); // status field in Plan_Campaign table 
@@ -1955,8 +1961,8 @@ namespace RevenuePlanner.Controllers
                                             //pcpobj.GeographyId = form.GeographyId;
                                             //pcpobj.INQs = 0;
                                             //pcpobj.Cost = 0;
-                                            pcpobj.StartDate = GetCurrentDateBasedOnPlan();
-                                            pcpobj.EndDate = GetCurrentDateBasedOnPlan(true);
+                                            pcpobj.StartDate = form.StartDate;  // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
+                                            pcpobj.EndDate = form.EndDate;  // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
                                             pcpobj.CreatedBy = Sessions.User.UserId;
                                             pcpobj.CreatedDate = DateTime.Now;
                                             pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(); // status field in Plan_Campaign_Program table 
@@ -1997,11 +2003,11 @@ namespace RevenuePlanner.Controllers
                                 //pcobj.VerticalId = form.VerticalId;
                                 //pcobj.AudienceId = form.AudienceId;
                                 //pcobj.GeographyId = form.GeographyId;
-                                if (RedirectType)
-                                {
+                                //if (RedirectType) // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
+                                //{
                                     pcobj.StartDate = form.StartDate;
                                     pcobj.EndDate = form.EndDate;
-                                }
+                                //}
                                 //pcobj.INQs = (form.INQs == null ? 0 : form.INQs);
                                 //pcobj.Cost = (form.Cost == null ? 0 : form.Cost);
                                 pcobj.ModifiedBy = Sessions.User.UserId;
@@ -2163,6 +2169,13 @@ namespace RevenuePlanner.Controllers
             //pcpm.AudienceId = pc.AudienceId;
             ViewBag.IsOwner = true;      /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
             ViewBag.RedirectType = false;
+            // Start - Added by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
+            pcpm.StartDate = GetCurrentDateBasedOnPlan();
+            pcpm.EndDate = GetCurrentDateBasedOnPlan(true);
+            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
+            pcpm.CStartDate = pcp.StartDate;
+            pcpm.CEndDate = pcp.EndDate;
+            // End - Added by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
             return PartialView("ProgramAssortment", pcpm);
         }
 
@@ -2221,8 +2234,8 @@ namespace RevenuePlanner.Controllers
             //pcpm.GeographyId = pcp.GeographyId;
             pcpm.StartDate = pcp.StartDate;
             pcpm.EndDate = pcp.EndDate;
-            if (RedirectType != "Assortment")
-            {
+            //if (RedirectType != "Assortment") // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
+            //{
                 pcpm.CStartDate = pcp.Plan_Campaign.StartDate;
                 pcpm.CEndDate = pcp.Plan_Campaign.EndDate;
                 var tsd = (from t in db.Plan_Campaign_Program_Tactic where t.PlanProgramId == id select t);
@@ -2235,7 +2248,7 @@ namespace RevenuePlanner.Controllers
                 {
                     pcpm.TEndDate = (from oted in ted select oted.EndDate).Max();
                 }
-            }
+            //}
             //pcpm.INQs = pcp.INQs;
             pcpm.MQLs = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcp.PlanProgramId && t.IsDeleted == false).ToList()).Sum(tm => tm.MQL);
             pcpm.Cost = Common.CalculateProgramCost(pcp.PlanProgramId); //pcp.Cost; modified for PL #440 by dharmraj 
@@ -2331,8 +2344,8 @@ namespace RevenuePlanner.Controllers
                                 //pcpobj.VerticalId = form.VerticalId;
                                 //pcpobj.AudienceId = form.AudienceId;
                                 //pcpobj.GeographyId = form.GeographyId;
-                                pcpobj.StartDate = GetCurrentDateBasedOnPlan();
-                                pcpobj.EndDate = GetCurrentDateBasedOnPlan(true);
+                                pcpobj.StartDate = form.StartDate;  // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
+                                pcpobj.EndDate = form.EndDate;  // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
                                 pcpobj.CreatedBy = Sessions.User.UserId;
                                 pcpobj.CreatedDate = DateTime.Now;
                                 pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(); //status field added for Plan_Campaign_Program table
@@ -2341,6 +2354,23 @@ namespace RevenuePlanner.Controllers
                                 db.Entry(pcpobj).State = EntityState.Added;
                                 int result = db.SaveChanges();
                                 int programid = pcpobj.PlanProgramId;
+                                // Start - Added by Sohel Pathan on 09/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
+                                Plan_Campaign pcp = db.Plan_Campaign.Where(pcobj => pcobj.PlanCampaignId.Equals(pcpobj.PlanCampaignId) && pcobj.IsDeleted.Equals(false)).SingleOrDefault();
+                                if (pcp != null)
+                                {
+                                    if (pcp.StartDate > form.StartDate)
+                                    {
+                                        pcp.StartDate = form.StartDate;
+                                    }
+
+                                    if (form.EndDate > pcp.EndDate)
+                                    {
+                                        pcp.EndDate = form.EndDate;
+                                    }
+                                    db.Entry(pcp).State = EntityState.Modified;
+                                    result = db.SaveChanges();
+                                }
+                                // End - Added by Sohel Pathan on 09/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
                                 result = Common.InsertChangeLog(Sessions.PlanId, null, programid, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                                 if (tactics != string.Empty)
                                 {
@@ -2365,8 +2395,8 @@ namespace RevenuePlanner.Controllers
                                         //pcptobj.GeographyId = form.GeographyId;
                                         //pcptobj.INQs = mt.ProjectedInquiries == null ? 0 : Convert.ToInt32(mt.ProjectedInquiries);
                                         pcptobj.Cost = mt.ProjectedRevenue == null ? 0 : Convert.ToDouble(mt.ProjectedRevenue);
-                                        pcptobj.StartDate = GetCurrentDateBasedOnPlan();
-                                        pcptobj.EndDate = GetCurrentDateBasedOnPlan(true);
+                                        pcptobj.StartDate = form.StartDate; // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
+                                        pcptobj.EndDate = form.EndDate; // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
                                         pcptobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
                                         pcptobj.BusinessUnitId = (from m in db.Models
                                                                   join p in db.Plans on m.ModelId equals p.ModelId
@@ -2420,8 +2450,8 @@ namespace RevenuePlanner.Controllers
                                 //pcpobj.VerticalId = form.VerticalId;
                                 //pcpobj.AudienceId = form.AudienceId;
                                 //pcpobj.GeographyId = form.GeographyId;
-                                if (RedirectType)
-                                {
+                                //if (RedirectType) // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
+                                //{
                                     pcpobj.StartDate = form.StartDate;
                                     pcpobj.EndDate = form.EndDate;
                                     if (form.CStartDate > form.StartDate)
@@ -2433,7 +2463,7 @@ namespace RevenuePlanner.Controllers
                                     {
                                         pcpobj.Plan_Campaign.EndDate = form.EndDate;
                                     }
-                                }
+                                //}
                                 //pcpobj.INQs = (form.INQs == null ? 0 : form.INQs);
                                 //pcpobj.MQLs = (form.MQLs == null ? 0 : form.MQLs);
                                 //pcpobj.Cost = (form.Cost == null ? 0 : form.Cost);
@@ -2613,6 +2643,11 @@ namespace RevenuePlanner.Controllers
             ViewBag.Program = pcpt.Title;//uday PL Ticket #550 3-7-2014
             ViewBag.Campaign = pcpt.Plan_Campaign.Title; //uday PL Ticket #550 3-7-2014
             ViewBag.RedirectType = false;
+            // Start - Added by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
+            pcptm.StartDate = GetCurrentDateBasedOnPlan();
+            pcptm.EndDate = GetCurrentDateBasedOnPlan(true);
+            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
+            // End - Added by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
             return PartialView("TacticAssortment", pcptm);
         }
 
@@ -2704,13 +2739,13 @@ namespace RevenuePlanner.Controllers
             pcptm.GeographyId = pcpt.GeographyId;
             pcptm.StartDate = pcpt.StartDate;
             pcptm.EndDate = pcpt.EndDate;
-            if (RedirectType != "Assortment")
-            {
+            //if (RedirectType != "Assortment") // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
+            //{
                 pcptm.PStartDate = pcpt.Plan_Campaign_Program.StartDate;
                 pcptm.PEndDate = pcpt.Plan_Campaign_Program.EndDate;
                 pcptm.CStartDate = pcpt.Plan_Campaign_Program.Plan_Campaign.StartDate;
                 pcptm.CEndDate = pcpt.Plan_Campaign_Program.Plan_Campaign.EndDate;
-            }
+            //}
 
             //pcptm.INQs = pcpt.INQs;
 
@@ -2832,8 +2867,8 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.GeographyId = form.GeographyId;
                                 //pcpobj.INQs = form.INQs;
                                 pcpobj.Cost = form.Cost;
-                                pcpobj.StartDate = GetCurrentDateBasedOnPlan();
-                                pcpobj.EndDate = GetCurrentDateBasedOnPlan(true);
+                                pcpobj.StartDate = form.StartDate;  // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
+                                pcpobj.EndDate = form.EndDate;  // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
                                 pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
                                 pcpobj.BusinessUnitId = (from m in db.Models
                                                          join p in db.Plans on m.ModelId equals p.ModelId
@@ -2956,8 +2991,8 @@ namespace RevenuePlanner.Controllers
                                     pcpobj.GeographyId = form.GeographyId;
                                     if (!isDirectorLevelUser) isReSubmission = true;
                                 }
-                                if (RedirectType)
-                                {
+                                //if (RedirectType) // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
+                                //{
 
                                     DateTime todaydate = DateTime.Now;
 
@@ -3003,7 +3038,7 @@ namespace RevenuePlanner.Controllers
                                         pcpobj.Plan_Campaign_Program.Plan_Campaign.EndDate = form.EndDate;
                                     }
 
-                                }
+                                //}
                                 if (pcpobj.ProjectedStageValue != form.ProjectedStageValue)
                                 {
                                     pcpobj.ProjectedStageValue = form.ProjectedStageValue;
@@ -3621,7 +3656,11 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult GetBUTab()
         {
-            if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))   // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+            var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
+            List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
+            if (lstAllowedBusinessUnits.Count > 0)
+                lstAllowedBusinessUnits.ForEach(g => lstAllowedBusinessUnitIds.Add(Guid.Parse(g)));
+            if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnitIds.Count == 0)   // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             {
             var returnDataGuid = (db.BusinessUnits.ToList().Where(bu => bu.ClientId.Equals(Sessions.User.ClientId) && bu.IsDeleted.Equals(false)).Select(bu => bu).ToList()).Select(b => new
             {
@@ -3636,11 +3675,8 @@ namespace RevenuePlanner.Controllers
             //if (!AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin))//if (Sessions.IsPlanner)
             {
                 // Start - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
-                if (lstAllowedBusinessUnits.Count > 0)
+                if (lstAllowedBusinessUnitIds.Count > 0)
                 {
-                    List<Guid> lstAllowedBusinessUnitIds = new List<Guid>();
-                    lstAllowedBusinessUnits.ForEach(g => lstAllowedBusinessUnitIds.Add(Guid.Parse(g)));
                     var returnDataGuid = (db.BusinessUnits.ToList().Where(bu => lstAllowedBusinessUnitIds.Contains(bu.BusinessUnitId) && bu.IsDeleted.Equals(false)).Select(bu => bu).ToList()).Select(b => new
                 {
                     id = b.BusinessUnitId,

@@ -96,9 +96,9 @@
             <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>*@
 
             @Html.Hidden("hdnRedirect", (bool)ViewBag.RedirectType, new { id = "hdnRedirectType" })
-            @if ((bool)ViewBag.RedirectType)
+            @*@if ((bool)ViewBag.RedirectType)  // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
             {
-                <div class="cf margin-top10 margin-left-4">
+                *@<div class="cf margin-top10 margin-left-4">
                     <div class="pull-left width50">
                         <label class="padding-left4">Start date</label>
                         <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.dateFormat">
@@ -118,7 +118,7 @@
                     </div>
 
                 </div>
-            }
+            @*}*@
         </div>
         <!--End content-->
         <div class="content dark inline-ellipsis">
@@ -182,10 +182,10 @@
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
-        if (isredirect == 'True') {
+        //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
             $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
             $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
-        }
+        //}
 
         //// Added by :- Sohel Pathan on 24/04/2014 for internal review point to stop form posting on ENTERKEY (Keycode = 13) press event for Title textBox
         $("#txtTitle").keypress(function (e) {
@@ -231,13 +231,13 @@
             e.preventDefault();
             $(this).closest(".alert").slideUp(400);
         });
-        if (isredirect == 'True') {
+        //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
             $('.datepicker.dropdown-menu').css("display", "none");
-        }
+        //}
         $('.close-form', this.$panel).click(function (e) {
-            if (isredirect == 'True') {
+            //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
                 $('.datepicker.dropdown-menu').css("display", "none");
-            }
+            //}
             $("#slidepanel").css("display", "none");
             $("#slidepanel-container").empty();
         });
@@ -376,7 +376,7 @@
                 return false;
             }
 
-            if (isredirect == 'True') {
+            //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
                 sdate = $('#t_startdate').val();
                 edate = $('#t_enddate').val();
                 //var csdate = $('#hdnCStartDate').val();
@@ -399,7 +399,7 @@
                 if (!validateDateCompare(sdate, tsdate, "@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate")) return false;
                 if (!validateDateCompare(tedate, edate, "@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate")) return false;
                
-            }
+            //}
 
             var arTactic = [];
             var _Tactics = $("#frm_campaigns #c_tactics select");

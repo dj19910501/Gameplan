@@ -103,9 +103,9 @@
             }
 
             @Html.Hidden("hdnRedirect", (bool)ViewBag.RedirectType, new { id = "hdnRedirectType" })
-            @if ((bool)ViewBag.RedirectType)
+            @*@if ((bool)ViewBag.RedirectType)  // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
             {
-                <div class="cf margin-top10 margin-left-4">
+                *@<div class="cf margin-top10 margin-left-4">
                     <div class="pull-left width50">
                         <label class="padding-left4">Start date</label>
                         <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.dateFormat">
@@ -125,7 +125,7 @@
                     </div>
 
                 </div>
-            }
+            @*}*@
         </div>
         <!--End content-->
         <div class="content dark inline-ellipsis">
@@ -200,10 +200,10 @@
 
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
-        if (isredirect == 'True') {
+        //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
             $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
             $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
-        }
+        //}
         $("span.tool-tip").tooltip();
 
         $(".alert").find(".close").on("click", function (e) {
@@ -212,13 +212,13 @@
             e.preventDefault();
             $(this).closest(".alert").slideUp(400);
         });
-        if (isredirect == 'True') {
+        //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
             $('.datepicker.dropdown-menu').css("display", "none");
-        }
+        //}
         $('.close-form', this.$panel).click(function (e) {
-            if (isredirect == 'True') {
+            //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
                 $('.datepicker.dropdown-menu').css("display", "none");
-            }
+            //}
             $("#slidepanel").css("display", "none");
             $("#slidepanel-container").empty();
         });
@@ -397,7 +397,7 @@
                 ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
                 return false;
             }
-            if (isredirect == 'True') {
+            //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
                 var sdate = $('#t_startdate').val();
                 var edate = $('#t_enddate').val();
                 if (!isDate(sdate)) {
@@ -421,7 +421,7 @@
                 //if (!validateDateCompare(edate, cedate, "Campaign End Date")) return false;
 
 
-            }
+            //}
 
             $("#txtProjectedStageValue").val(ReplaceCC($("#txtProjectedStageValue").val()));
             if ($("#txtmql").val() == 'N/A') {
