@@ -91,10 +91,10 @@ namespace BDSService
             return obj.GetUserDetails(userEmail);
         }
 
-        public int DeleteUser(Guid userId)
+        public int DeleteUser(Guid userId,Guid applicationId)
         {
             BDSUserRepository obj = new BDSUserRepository();
-            return obj.DeleteUser(userId);
+            return obj.DeleteUser(userId,applicationId);
         }
 
         public int CreateUser(BDSEntities.User user, Guid applicationId, Guid createdBy)

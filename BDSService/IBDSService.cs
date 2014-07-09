@@ -51,7 +51,7 @@ namespace BDSService
         bool CheckEmail(string email);
 
         [OperationContract]
-        int DeleteUser(Guid userId);
+        int DeleteUser(Guid userId,Guid applicationId);
 
         [OperationContract]
         BDSEntities.User GetUserDetails(string userEmail);

@@ -33,10 +33,11 @@ namespace BDSService
         /// <returns>Returns team member list for specific client & application.</returns>
         public List<BDSEntities.User> GetTeamMemberList(Guid clientId, Guid applicationId, Guid userId, bool isSystemAdmin)
         {
+           ////Modified by Mitesh Vaishnav on 09-07-2014 for internal point #40 user should delete application wise
             List<BDSEntities.User> teamMemberList = new List<BDSEntities.User>();
             List<User> lstUser = (from u in db.Users
                                   join ua in db.User_Application on u.UserId equals ua.UserId
-                                  where u.ClientId == clientId && ua.ApplicationId == applicationId && u.IsDeleted == false && u.UserId != userId
+                                  where u.ClientId == clientId && ua.ApplicationId == applicationId && u.IsDeleted == false && u.UserId != userId && ua.IsDeleted==false
                                   select u).OrderBy(q => q.FirstName).ToList();
             if (lstUser.Count > 0)
             {
@@ -486,13 +487,14 @@ namespace BDSService
         /// </summary>
         /// <param name="userId">user</param>
         /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
-        public int DeleteUser(Guid userId)
+        /// Modified by Mitesh Vaishnav on 09-07-2014 for internal review points # 40.User should be deleted application wise.
+        public int DeleteUser(Guid userId,Guid applicationId)
         {
             int retVal = 0;
             try
             {
                 User user = db.Users.Where(u => u.IsDeleted == false && u.UserId == userId).SingleOrDefault();
-                user.IsDeleted = true;
+                user.User_Application.Where(u => u.ApplicationId == applicationId && u.UserId == userId).FirstOrDefault().IsDeleted = true;////Added by Mitesh Vaishnav on 09-07-2014 for internal review points # 40.
                 db.Entry(user).State = EntityState.Modified;
                 db.SaveChanges();
                 retVal = 1;
@@ -662,7 +664,6 @@ namespace BDSService
                             {
                                 obj.ProfilePhoto = null;
                             }
-                            obj.IsDeleted = user.IsDeleted;
                             db.Entry(obj).State = EntityState.Modified;
                             db.SaveChanges();
 
@@ -1315,10 +1316,11 @@ namespace BDSService
         /// <returns>Returns Get List Of Users for particular role.</returns>
         public List<BDSEntities.User> GetRoleMemberList(Guid applicationId, Guid roleid)
         {
+            ////Modified by Mitesh Vaishnav on 09-07-2014 for internal point #40 user should delete application wise
             List<BDSEntities.User> roleMemberList = new List<BDSEntities.User>();
             List<User> lstUser = (from user in db.Users
                                   join ua in db.User_Application on user.UserId equals ua.UserId
-                                  where ua.RoleId == roleid && ua.ApplicationId == applicationId && user.IsDeleted == false
+                                  where ua.RoleId == roleid && ua.ApplicationId == applicationId && user.IsDeleted == false && ua.IsDeleted==false
                                   select user).OrderBy(q => q.FirstName).ToList();
             if (lstUser.Count > 0)
             {
@@ -2074,10 +2076,11 @@ namespace BDSService
         /// <returns>Returns manager list for specific user, client & application.</returns>
         public List<BDSEntities.User> GetManagerList(Guid clientId, Guid applicationId, Guid userId)
         {
+            ////Modified by Mitesh Vaishnav on 09-07-2014 for internal point #40 user should delete application wise
             List<BDSEntities.User> managerList = new List<BDSEntities.User>();
             List<User> lstManager = (from u in db.Users
                                   join ua in db.User_Application on u.UserId equals ua.UserId
-                                  where u.ClientId == clientId && ua.ApplicationId == applicationId && u.IsDeleted == false && (userId == Guid.Empty ? true : u.UserId != userId)
+                                  where u.ClientId == clientId && ua.ApplicationId == applicationId && u.IsDeleted == false && (userId == Guid.Empty ? true : u.UserId != userId) && ua.IsDeleted==false
                                   select u).ToList();
             if (lstManager.Count > 0)
             {

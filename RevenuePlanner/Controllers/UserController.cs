@@ -472,7 +472,7 @@ namespace RevenuePlanner.Controllers
                     //        }
                     //        break;
                     //}
-                    int retVal = objBDSServiceClient.DeleteUser(id);
+                    int retVal = objBDSServiceClient.DeleteUser(id,Sessions.ApplicationId);
                     if (retVal == 1)
                         TempData["SuccessMessage"] = Common.objCached.UserDeleted;
                 }
@@ -1063,6 +1063,12 @@ namespace RevenuePlanner.Controllers
                     int retVal = objBDSServiceClient.UpdateUser(objUser, Sessions.ApplicationId, Sessions.User.UserId);
                     if (retVal == 1)
                     {
+                        //Start Added by Mitesh Vaishnav for internal point #40 on 09-07-2014
+                        if (Convert.ToString(form.IsDeleted).ToLower() == "yes")
+                        {
+                            int retDelete = objBDSServiceClient.DeleteUser(form.UserId, Sessions.ApplicationId);
+                        }
+                        //End Added by Mitesh Vaishnav for internal point #40 on 09-07-2014
                         TempData["SuccessMessage"] = Common.objCached.UserEdited;
                         if (form.UserId == Sessions.User.UserId)
                         {
