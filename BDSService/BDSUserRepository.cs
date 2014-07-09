@@ -59,9 +59,11 @@ namespace BDSService
                     userEntity.RoleCode = db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Code).FirstOrDefault();
                     userEntity.RoleTitle = db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Title).FirstOrDefault();
                     
+                    //Start Manoj 08Jul2014 PL # 34 (Measure)
                     // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
-                    userEntity.IsManager = db.User_Application.Where(a => a.IsDeleted.Equals(false) && a.ManagerId == user.UserId && a.ApplicationId == applicationId).Any();
-
+                    //userEntity.IsManager = db.User_Application.Where(a => a.IsDeleted.Equals(false) && a.ManagerId == user.UserId && a.ApplicationId == applicationId).Any();
+                    userEntity.IsManager = db.Users.Where(a => a.IsDeleted.Equals(false) && a.ManagerId == user.UserId).Any();
+                    //End Manoj 08Jul2014 PL # 34 (Measure)
                     //if (!isSystemAdmin)
                     //{
                     //    if (userEntity.RoleCode != null)
@@ -202,12 +204,18 @@ namespace BDSService
                 userObj.SecurityQuestionId = user.SecurityQuestionId;
                 userObj.SecurityQuestion = db.SecurityQuestions.Where(sq => sq.SecurityQuestionId == user.SecurityQuestionId).Select(s => s.SecurityQuestion1).FirstOrDefault();
                 userObj.Answer = user.Answer;
+                //Start Manoj 08Jul2014 PL # 34 (Measure)
                 // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
-                userObj.IsManager = db.User_Application.Where(a => a.IsDeleted.Equals(false) && a.ManagerId == userId && a.ApplicationId == applicationId).Any();
-                userObj.ManagerId = db.User_Application.Where(a => a.IsDeleted.Equals(false) && a.UserId == userId && a.ApplicationId == applicationId).Select(a => a.ManagerId).FirstOrDefault();
+                //userObj.IsManager = db.User_Application.Where(a => a.IsDeleted.Equals(false) && a.ManagerId == userId && a.ApplicationId == applicationId).Any();
+                //userObj.ManagerId = db.User_Application.Where(a => a.IsDeleted.Equals(false) && a.UserId == userId && a.ApplicationId == applicationId).Select(a => a.ManagerId).FirstOrDefault();
+                //if (userObj.ManagerId != null && userObj.ManagerId != Guid.Empty)
+                //    userObj.ManagerName = db.Users.Where(a => a.IsDeleted.Equals(false) && a.UserId == userObj.ManagerId).Select(a => a.FirstName + " " + a.LastName).FirstOrDefault();
+                // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                userObj.IsManager = db.Users.Where(a => a.IsDeleted.Equals(false) && a.ManagerId == userId).Any();
+                userObj.ManagerId = user.ManagerId;
                 if (userObj.ManagerId != null && userObj.ManagerId != Guid.Empty)
                     userObj.ManagerName = db.Users.Where(a => a.IsDeleted.Equals(false) && a.UserId == userObj.ManagerId).Select(a => a.FirstName + " " + a.LastName).FirstOrDefault();
-                // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                //End Manoj 08Jul2014 PL # 34 (Measure)
             }
             return userObj;
         }
@@ -536,6 +544,9 @@ namespace BDSService
                         obj.Password = FinalPwd;
                         obj.Email = user.Email;
                         obj.Phone = user.Phone;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                        //Start Manoj 08Jul2014 PL # 34 (Measure)
+                        obj.ManagerId = user.ManagerId;
+                        //End Manoj 08Jul2014 PL # 34 (Measure)
                         obj.JobTitle = user.JobTitle;
                         obj.ClientId = user.ClientId;
                         if (user.ProfilePhoto != null)
@@ -556,7 +567,7 @@ namespace BDSService
                         objUser_Application.RoleId = user.RoleId;
                         objUser_Application.CreatedDate = DateTime.Now;
                         objUser_Application.CreatedBy = createdBy;
-                        objUser_Application.ManagerId = user.ManagerId;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                        //objUser_Application.ManagerId = user.ManagerId;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                         db.Entry(objUser_Application).State = EntityState.Added;
                         db.User_Application.Add(objUser_Application);
                         res = db.SaveChanges();
@@ -636,6 +647,9 @@ namespace BDSService
                             obj.LastName = user.LastName;
                             obj.Email = user.Email;
                             obj.Phone = user.Phone;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                            //Start Manoj 08Jul2014 PL # 34 (Measure)
+                            obj.ManagerId = user.ManagerId;
+                            //End Manoj 08Jul2014 PL # 34 (Measure)
                             obj.JobTitle = user.JobTitle;
                             obj.ClientId = user.ClientId;
                             obj.BusinessUnitId = user.BusinessUnitId;
@@ -665,7 +679,9 @@ namespace BDSService
                             objUser_Application.RoleId = user.RoleId;
                             objUser_Application.ModifiedDate = DateTime.Now;
                             objUser_Application.ModifiedBy = modifiedBy;
-                            objUser_Application.ManagerId = user.ManagerId;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                            //Start Manoj 08Jul2014 PL # 34 (Measure)
+                            //objUser_Application.ManagerId = user.ManagerId;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                            //End Manoj 08Jul2014 PL # 34 (Measure)
                             db.Entry(objUser_Application).State = EntityState.Modified;
                             db.SaveChanges();
 
@@ -770,7 +786,10 @@ namespace BDSService
         {
             try
             {
-                var lstSubOrdinated = db.User_Application.Where(a => a.ManagerId == UserId && a.IsDeleted.Equals(false)).ToList();
+                //Start Manoj 08Jul2014 PL # 34 (Measure)
+                //var lstSubOrdinated = db.User_Application.Where(a => a.ManagerId == UserId && a.IsDeleted.Equals(false)).ToList();
+                var lstSubOrdinated = db.Users.Where(a => a.ManagerId == UserId && a.IsDeleted.Equals(false)).ToList();
+                //End Manoj 08Jul2014 PL # 34 (Measure)
 
                 if (lstSubOrdinated != null)
                 {
@@ -779,8 +798,10 @@ namespace BDSService
                         foreach (var item in lstSubOrdinated)
                         {
                             item.ManagerId = NewManagerId;
-                            item.ModifiedDate = DateTime.Now;
-                            item.ModifiedBy = modifiedBy;
+                            //Start Manoj 08Jul2014 PL # 34 (Measure)
+                            //item.ModifiedDate = DateTime.Now;
+                            //item.ModifiedBy = modifiedBy;
+                            //End Manoj 08Jul2014 PL # 34 (Measure)
                             db.Entry(item).State = EntityState.Modified;
                             db.SaveChanges();
                         }
@@ -2028,7 +2049,10 @@ namespace BDSService
                                 JobTitle = u.JobTitle,
                                 GeographyId = u.GeographyId,
                                 Phone = u.Phone,
-                                ManagerId = ua.ManagerId
+                                //Start Manoj 08Jul2014 PL # 34 (Measure)
+                                //ManagerId = ua.ManagerId
+                                ManagerId = u.ManagerId
+                                //End Manoj 08Jul2014 PL # 34 (Measure)
                             }
                           ).ToList();
 
@@ -2063,7 +2087,10 @@ namespace BDSService
                     userEntity.UserId = user.UserId;
                     userEntity.ClientId = user.ClientId;
                     userEntity.ManagerName = (user.FirstName + " " + user.LastName).Trim();
-                    userEntity.ManagerId = user.User_Application.Where(a => a.UserId == user.UserId && a.IsDeleted.Equals(false) && a.ApplicationId == applicationId).Select(a => a.ManagerId).FirstOrDefault();
+                    //Start Manoj 08Jul2014 PL # 34 (Measure)
+                    //userEntity.ManagerId = user.User_Application.Where(a => a.UserId == user.UserId && a.IsDeleted.Equals(false) && a.ApplicationId == applicationId).Select(a => a.ManagerId).FirstOrDefault();
+                    userEntity.ManagerId = user.ManagerId;
+                    //End Manoj 08Jul2014 PL # 34 (Measure)
                     managerList.Add(userEntity);
                 }
             }
@@ -2072,6 +2099,137 @@ namespace BDSService
                 managerList = managerList.Where(a => a.ManagerId != userId).ToList();
 
             return managerList.OrderBy(a => a.ManagerName).ToList();
+        }
+
+        #endregion
+
+        #region Get Other Application Users
+        /// <summary>
+        /// Get other application user
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <param name="applicationId"></param>
+        /// <author>Manoj</author>
+        /// <createdate>04Jul2014</createdate>
+        /// <returns></returns>
+        public List<BDSEntities.User> GetOtherApplicationUsers(Guid clientId, Guid applicationId)
+        {
+            List<BDSEntities.User> teamMemberList = new List<BDSEntities.User>();
+
+            List<User> lstAppUser = (from u in db.Users
+                                     join ua in db.User_Application on u.UserId equals ua.UserId
+                                     where u.ClientId == clientId && ua.ApplicationId == applicationId && u.IsDeleted == false && ua.IsDeleted == false
+                                     select u).OrderBy(q => q.FirstName).ToList();
+            List<string> emails = lstAppUser.Select(l => l.Email).ToList();
+
+            List<User> lstUser = (from u in db.Users
+                                  where u.ClientId == clientId && u.IsDeleted == false
+                                  select u).OrderBy(q => q.FirstName).ToList();
+            lstUser = lstUser.Where(l => !emails.Contains(l.Email)).ToList();
+            if (lstUser.Count > 0)
+            {
+                foreach (var user in lstUser)
+                {
+                    BDSEntities.User userEntity = new BDSEntities.User();
+                    userEntity.UserId = user.UserId;
+                    userEntity.ClientId = user.ClientId;
+                    userEntity.BusinessUnitId = user.BusinessUnitId;
+                    userEntity.GeographyId = user.GeographyId;
+                    userEntity.Client = db.Clients.Where(cl => cl.ClientId == user.ClientId).Select(c => c.Name).FirstOrDefault();
+                    userEntity.DisplayName = user.DisplayName;
+                    userEntity.Email = user.Email;
+                    userEntity.FirstName = user.FirstName;
+                    userEntity.JobTitle = user.JobTitle;
+                    userEntity.LastName = user.LastName;
+                    userEntity.Password = user.Password;
+                    userEntity.ProfilePhoto = user.ProfilePhoto;
+                    userEntity.RoleId = db.User_Application.Where(ua => ua.ApplicationId == applicationId && ua.UserId == user.UserId).Select(u => u.RoleId).FirstOrDefault();
+                    userEntity.RoleCode = db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Code).FirstOrDefault();
+                    userEntity.RoleTitle = db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Title).FirstOrDefault();
+                    //Start Manoj 08Jul2014 PL # 34 (Measure)
+                    //userEntity.IsManager = db.User_Application.Where(a => a.IsDeleted.Equals(false) && a.ManagerId == user.UserId && a.ApplicationId == applicationId).Any();
+                    userEntity.IsManager = db.Users.Where(a => a.IsDeleted.Equals(false) && a.ManagerId == user.UserId).Any();
+                    //End Manoj 08Jul2014 PL # 34 (Measure)
+
+                    teamMemberList.Add(userEntity);
+
+                }
+            }
+            return teamMemberList;
+        }
+
+        #endregion
+        #region Assign User
+        /// <summary>
+        /// Assgin user to the application from other application
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <param name="RoleId"></param>
+        /// <param name="applicationId"></param>
+        /// <param name="createdBy"></param>
+        /// <Author>Manoj</Author>
+        /// <CreatedDate>04Jul2014</CreatedDate>
+        /// <returns></returns>
+        public int AssignUser(Guid UserId, Guid RoleId, Guid applicationId, Guid createdBy)
+        {
+            int retVal = 0;
+            try
+            {
+                using (TransactionScope scope = new TransactionScope())     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                {
+                    var objDuplicateCheck = db.User_Application.Where(u => u.UserId == UserId && u.IsDeleted == false && u.ApplicationId == applicationId).FirstOrDefault();
+                    if (objDuplicateCheck != null)
+                    {
+                        retVal = -1;
+                    }
+                    else
+                    {
+                        //Insert in User_Application
+                        User_Application objUser_Application = new User_Application();
+                        objUser_Application.UserId = UserId;
+                        objUser_Application.ApplicationId = applicationId;
+                        objUser_Application.RoleId = RoleId;
+                        objUser_Application.CreatedDate = DateTime.Now;
+                        objUser_Application.CreatedBy = createdBy;
+                        db.Entry(objUser_Application).State = EntityState.Added;
+                        db.User_Application.Add(objUser_Application);
+                        int res = db.SaveChanges();
+
+                        // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                        //-- Insert User_Activity_Permission data
+                        if (RoleId != null && RoleId != Guid.Empty)
+                        {
+                            var lstDefaultRights = db.Role_Activity_Permission.Where(a => a.RoleId == RoleId).ToList();
+
+                            if (lstDefaultRights != null)
+                            {
+                                if (lstDefaultRights.Count > 0)
+                                {
+                                    foreach (var item in lstDefaultRights)
+                                    {
+                                        User_Activity_Permission objUser_Activity_Permission = new User_Activity_Permission();
+                                        objUser_Activity_Permission.UserId = UserId;
+                                        objUser_Activity_Permission.ApplicationActivityId = item.ApplicationActivityId;
+                                        objUser_Activity_Permission.CreatedBy = createdBy;
+                                        objUser_Activity_Permission.CreatedDate = DateTime.Now;
+                                        db.Entry(objUser_Activity_Permission).State = EntityState.Added;
+                                        db.User_Activity_Permission.Add(objUser_Activity_Permission);
+                                        db.SaveChanges();
+                                    }
+                                }
+                            }
+                        }
+                        // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                        retVal = 1;
+                    }
+                    scope.Complete();       // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return retVal;
         }
 
         #endregion

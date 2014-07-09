@@ -311,6 +311,16 @@ namespace BDSService
             BDSUserRepository obj = new BDSUserRepository();
             return obj.GetManagerList(clientId, applicationId, userId);
         }
+        public List<BDSEntities.User> GetOtherApplicationUsers(Guid clientId, Guid applicationId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetOtherApplicationUsers(clientId, applicationId);
+        }
+        public int AssignUser(Guid UserId, Guid RoleId, Guid applicationId, Guid createdBy)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.AssignUser(UserId, RoleId, applicationId, createdBy);
+        }
     }
 
 }

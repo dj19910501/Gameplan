@@ -171,5 +171,11 @@ namespace BDSService
 
         [OperationContract]
         List<BDSEntities.User> GetManagerList(Guid clientId, Guid applicationId, Guid userId);
+
+        [OperationContract]
+        List<BDSEntities.User> GetOtherApplicationUsers(Guid clientId, Guid applicationId);
+
+        [OperationContract]
+        int AssignUser(Guid UserId, Guid RoleId, Guid applicationId, Guid createdBy);
     }
 }

@@ -24,6 +24,7 @@ namespace BDSService
             this.User_Activity_Permission1 = new HashSet<User_Activity_Permission>();
             this.User_Application = new HashSet<User_Application>();
             this.User_Application1 = new HashSet<User_Application>();
+            this.User1 = new HashSet<User>();
         }
     
         public System.Guid UserId { get; set; }
@@ -42,6 +43,7 @@ namespace BDSService
         public Nullable<int> SecurityQuestionId { get; set; }
         public string Answer { get; set; }
         public string Phone { get; set; }
+        public Nullable<System.Guid> ManagerId { get; set; }
     
         public virtual Client Client { get; set; }
         public virtual ICollection<CustomRestriction> CustomRestrictions { get; set; }
@@ -53,5 +55,7 @@ namespace BDSService
         public virtual ICollection<User_Activity_Permission> User_Activity_Permission1 { get; set; }
         public virtual ICollection<User_Application> User_Application { get; set; }
         public virtual ICollection<User_Application> User_Application1 { get; set; }
+        public virtual ICollection<User> User1 { get; set; }
+        public virtual User User2 { get; set; }
     }
 }
