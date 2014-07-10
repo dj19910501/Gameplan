@@ -9,29 +9,24 @@
     var cRestrictionList = ViewData["CustomRestriction"] as List<RevenuePlanner.Models.CustomRestrictionModel>;
     string varUrl = Url.Action("vieweditpermission", "Organization");
     string ViewPermissionURL = varUrl + "?Id=" + Sessions.User.UserId + "&Mode=MyPermission"; 
+    //Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
+    string PageTitle = "";
+    if (ViewBag.PermissionMode == Enums.UserPermissionMode.MyPermission.ToString())
+    {
+        ViewBag.PageTitle = "MyPermission";
+    }
+    else
+    {
+        ViewBag.PageTitle = "OrganizationHierarchy";
+    }
+    ViewBag.ModuleTitle = "Organization";
+    //End Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
 }
 
 
 @section Sidebar {
-    <div class="padding-content"> 
-        <h4 class="text-shadow-black source-sans-prolight">Preferences</h4>
-    </div>
-    <ul class="nav nav-list nav-gray">
-        <li class="item">
-            <a class="source-sans-probold inputs" href="#" id="aMyProfile"><span></span>MY PROFILE</a>
-        </li>
-        <li class="item active">
-            <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
-        </li>
-        @if ((bool)ViewBag.IsIntegrationCredentialCreateEditAuthorized)   // Modified by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
-        {
-            <li class="item">
-                <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
-            </li>
-        }
-    </ul>
+    @Html.Partial("~/Views/shared/_Sidebar.cshtml")
 }
-
 @if (ViewBag.PermissionMode == Enums.UserPermissionMode.View.ToString() || ViewBag.PermissionMode == Enums.UserPermissionMode.MyPermission.ToString())
 {
    
@@ -67,30 +62,8 @@
 
     <div class="padding-content cf source-sans-proregular">
         <div class="row">
-            <div class="span2 myaccount-colum">
-                <div class="width216">
-                    <ul class="nav nav-pills nav-stacked width216">
-                        @if (ViewBag.PermissionMode == Enums.UserPermissionMode.View.ToString())
-                        {
-
-                            <li><a href='@ViewPermissionURL'>My Permissions</a></li>
-
-                            <li class="active"><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
-                        }
-                        else
-                        {
-
-                            <li class="active"><a href='@ViewPermissionURL'>My Permissions</a></li>
-
-                            <li><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
-                        }
-                        @if ((bool)ViewBag.IsUserAdminAuthorized)   // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
-                        {
-                            @*<li><a href="#">Manage Users</a></li>*@
-                            <li><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
-                        }
-                    </ul>
-                </div>
+            <div id="internalLink" class="span2 myaccount-colum">
+                 @Html.Partial("~/Views/Organization/_organization.cshtml")
             </div>
 
             <div class="span9">
@@ -225,15 +198,8 @@ else
 
     <div class="padding-content cf source-sans-proregular">
         <div class="row">
-            <div class="span2 myaccount-colum">
-                <div class="width216">
-                    <ul class="nav nav-pills nav-stacked width216">
-                        <li><a href='@ViewPermissionURL'>My Permissions</a></li>
-                        <li class="active"><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
-                       @* <li><a href="#">Manage Users</a></li>*@
-                        <li><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
-                    </ul>
-                </div>
+            <div id="internalLink" class="span2 myaccount-colum">
+                
             </div>
 
             <div class="span9">
@@ -637,6 +603,7 @@ else
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/check.js")"></script>
 <script type="text/javascript">
     $(document).ready(function () {
+       
         if ('@TempData["SuccessMessage"]' != '') {
             var msgspan = "@Common.objCached.UserPermissionsResetToDefault";
             $("#spanSuccessMessage").text(msgspan);

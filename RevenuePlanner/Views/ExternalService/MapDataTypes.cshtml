@@ -4,6 +4,8 @@
     ViewBag.Title = "Map Data Types";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.PageTitle = "MapDataType";////Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
+    ViewBag.ModuleTitle = "Integration";////Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
 }
 @section nlFormContent{
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
@@ -12,21 +14,7 @@
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
 }
 @section Sidebar {
-    <div class="padding-content2">
-        <h4 class="text-shadow-black source-sans-prolight">Preferences</h4>
-    </div>
-    <ul class="nav nav-list nav-gray">
-        <li class="item">
-            <a class="source-sans-probold inputs" href="#" id="aMyProfile"><span></span>MY PROFILE</a>
-        </li>
-         <li class="item">@*uday for new screen*@
-            <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
-        </li>
-        <li class="item active">
-            <a class="source-sans-probold integrations" href="#"><span></span>INTEGRATIONS</a>
-        </li>
-         
-    </ul>
+    @Html.Partial("~/Views/shared/_Sidebar.cshtml")
 }
 @using (Html.BeginForm(new { id = ViewBag.IntegrationInstanceId }))
 {
@@ -52,15 +40,8 @@
     <a class="link-gray" style="margin-top:5px;" href="@Url.Action("Index", "ExternalService")">« BACK TO LIST</a>
     <div class="padding-content cf source-sans-proregular">
         <div class="row">
-            <div class="span2 myaccount-colum">
-                <div class="width216">
-                    <ul class="nav nav-pills nav-stacked width216">
-                        <li><a href="@Url.Content("~/ExternalService/Edit/")@ViewBag.IntegrationInstanceId.ToString()">Integration Credentials</a></li>
-                        <li class="active"><a href="#">Map Data Types</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="span9 content-colum-mapDataTypes">
+           @Html.Partial("~/Views/ExternalService/_integration.cshtml")
+            <div class="span8 content-colum-mapDataTypes">
                 <p>@Html.Raw("Please indicate which variables in Gameplan sync to the respective counterpart in " + Convert.ToString(ViewBag.IntegrationTypeName) + ". Changing these variables can significantly impact the utility of your Gameplan integration.")</p>
                 <table id="table_integrations" class="table table-striped table-hover">
                     <thead>

@@ -805,6 +805,10 @@
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.User.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
+    <Content Include="Views\ExternalService\_integration.cshtml" />
+    <Content Include="Views\Organization\_organization.cshtml" />
+    <Content Include="Views\User\_myprofile.cshtml" />
+    <Content Include="Views\Shared\_Sidebar.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

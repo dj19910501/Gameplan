@@ -13,6 +13,8 @@
     Guid clientId = Guid.Parse(Convert.ToString(ViewBag.CurrClientId));
     string client = (string)ViewBag.CurrClient;
     @Html.Hidden("hdnLoggedInUserRole", Sessions.User.RoleCode.ToString());     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
+    ViewBag.ModuleTitle = "MyProfile";
+    
 }
 
 @*@Html.Hidden("IsViewOnly", isViewOnly)*@
@@ -20,26 +22,7 @@
 @Html.Hidden("ErrMsg", TempData["ErrorMessage"]) 
 
 @section Sidebar {
-    <div class="padding-content">
-        <h4 class="text-shadow-black source-sans-prolight">Preferences</h4>
-    </div>
-    <ul class="nav nav-list nav-gray">
-        <li class="item active">
-            <a class="source-sans-probold inputs" href="#"><span></span>MY PROFILE</a>
-        </li>
-        @if ((bool)ViewBag.IsUserAdminAuthorized)   // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
-        {
-         <li class="item">@*uday for new screen*@
-            <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
-        </li>
-        }
-        @if ((bool)ViewBag.IsIntegrationCredentialCreateEditAuthorized)   // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
-        {
-            <li class="item">
-                <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
-            </li>
-        }
-    </ul>
+    @Html.Partial("~/Views/shared/_Sidebar.cshtml")
 }
 
 <!--success message-->

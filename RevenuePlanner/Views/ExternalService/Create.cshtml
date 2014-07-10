@@ -16,24 +16,12 @@
     ViewBag.Title = "Add New External Service Integrations";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.PageTitle = "Create";  ////Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
+    ViewBag.ModuleTitle = "Integration";////Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
 }
 
 @section Sidebar {
-    <div class="padding-content">
-        <h4 class="text-shadow-black source-sans-prolight">Preferences</h4>
-    </div>
-    <ul class="nav nav-list nav-gray">
-        <li class="item">
-            <a class="source-sans-probold inputs" href="#" id="aMyProfile"><span></span>MY PROFILE</a>
-        </li>
-          <li class="item">@*uday for new screen*@
-            <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
-        </li>
-        <li class="item active">
-            <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
-        </li>
-         
-    </ul>
+    @Html.Partial("~/Views/shared/_Sidebar.cshtml")
 }
 
 <!--success message-->
@@ -57,18 +45,7 @@
 
 <div class="padding-content cf source-sans-proregular" id="content" style="padding-bottom:0px !important">
     <div class="row">
-        <div class="span2 myaccount-colum">
-            <div class="width216">
-                <ul class="nav nav-pills nav-stacked width216">
-                    <li class="active">
-                        <a href="#">Integration Credentials</a>
-                    </li>
-                    <li class="disabled">
-                        <a href="#">Map Data Types</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
+        @Html.Partial("~/Views/ExternalService/_integration.cshtml")
         <div class="span10 content-colum-info-user">
         @using (Html.BeginForm("Create", "ExternalService", FormMethod.Post, new { style = "margin-bottom:5px !important;" }))
         {

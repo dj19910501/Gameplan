@@ -19,11 +19,13 @@
         ViewBag.Title = "My Account";
     }
 
-
+    ViewBag.PageTitle = "Edit";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref; 
     Layout = "~/Views/Shared/_Layout.cshtml";
     //string isViewOnly = ViewBag.IsViewOnly;
     @Html.Hidden("hdnLoggedInUserRole", currentUserRole);   // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
+    ViewBag.ModuleTitle = "MyProfile";//Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
+                                                        
 }
 
 @*@Html.Hidden("IsViewOnly", isViewOnly)*@
@@ -31,23 +33,7 @@
 @Html.Hidden("ErrMsg", TempData["ErrorMessage"])
 
 @section Sidebar {
-    <div class="padding-content">
-        <h4 class="text-shadow-black source-sans-prolight">Preferences</h4>
-    </div>
-    <ul class="nav nav-list nav-gray">
-        <li class="item active">
-            <a class="source-sans-probold inputs" href="#"><span></span>MY PROFILE</a>
-        </li>
-            <li class="item">@*uday for new screen*@
-            <a class="source-sans-probold organization" href="#" id="aOrganization"><span></span>ORGANIZATION</a>
-        </li>
-         @if ((bool)ViewBag.IsIntegrationCredentialCreateEditAuthorized)   // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
-         {
-            <li class="item">
-                <a class="source-sans-probold integrations" href="#" id="aIntegrations"><span></span>INTEGRATIONS</a>
-            </li>
-         }
-    </ul>
+    @Html.Partial("~/Views/shared/_Sidebar.cshtml")
 }
 
 @if (TempData["SuccessMessage"] != null)
@@ -98,26 +84,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
 
 <div class="padding-content cf source-sans-proregular" id="content">
     <div class="row">
-        @if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myteam")
-        {
-            <div class="span2 content-colum-left content-img-user">
-                <img src="@Url.Action("LoadUserImage", "User", new { id = Model.UserId, width = 60, height = 60 })" class="img-user" style="height:140px; width:140px;">
-            </div>
-        }
-        else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
-        {
-            <div class="span2 myaccount-colum">
-                <div class="padding-right70">
-                    <ul class="nav nav-pills nav-stacked width216">
-                        <li class="active"><a href="@Url.Action("Edit", "User", new { usrid = Model.UserId, src = "myaccount" })">Account</a></li>
-                        <li><a href="@Url.Action("Index", "User")">Team Members</a></li>
-                        <li><a href="@Url.Action("Notifications", "User")">Notifications</a></li>
-                        <li><a href="@Url.Action("SecurityQuestion", "User")">Security Question</a></li>
-                        <li><a href="@Url.Action("ChangePassword", "User")">Change Password</a></li>
-                    </ul>
-                </div>
-            </div>
-        }
+        @Html.Partial("~/Views/User/_myprofile.cshtml")
 
         <div class="span10 content-colum-info-user">
             @using (Html.BeginForm("Edit", "User", FormMethod.Post, new { enctype = "multipart/form-data" }))
