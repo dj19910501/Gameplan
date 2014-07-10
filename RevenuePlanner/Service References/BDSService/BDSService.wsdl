@@ -296,6 +296,18 @@
   <wsdl:message name="IBDSService_GetManagerList_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetManagerListResponse" />
   </wsdl:message>
+  <wsdl:message name="IBDSService_GetOtherApplicationUsers_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetOtherApplicationUsers" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetOtherApplicationUsers_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetOtherApplicationUsersResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_AssignUser_InputMessage">
+    <wsdl:part name="parameters" element="tns:AssignUser" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_AssignUser_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AssignUserResponse" />
+  </wsdl:message>
   <wsdl:portType name="IBDSService">
     <wsdl:operation name="ValidateUser">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/ValidateUser" message="tns:IBDSService_ValidateUser_InputMessage" />
@@ -488,6 +500,14 @@
     <wsdl:operation name="GetManagerList">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetManagerList" message="tns:IBDSService_GetManagerList_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetManagerListResponse" message="tns:IBDSService_GetManagerList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetOtherApplicationUsers">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetOtherApplicationUsers" message="tns:IBDSService_GetOtherApplicationUsers_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetOtherApplicationUsersResponse" message="tns:IBDSService_GetOtherApplicationUsers_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AssignUser">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/AssignUser" message="tns:IBDSService_AssignUser_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/AssignUserResponse" message="tns:IBDSService_AssignUser_OutputMessage" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="BasicHttpBinding_IBDSService" type="tns:IBDSService">
@@ -917,6 +937,24 @@
     </wsdl:operation>
     <wsdl:operation name="GetManagerList">
       <soap:operation soapAction="http://tempuri.org/IBDSService/GetManagerList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetOtherApplicationUsers">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/GetOtherApplicationUsers" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AssignUser">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/AssignUser" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

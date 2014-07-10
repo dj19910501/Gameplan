@@ -1785,7 +1785,7 @@ span.requests-logo-icon {
         pages content
 -----------------------------*/
 .padding-content .row .content-colum-left {
-    width: 40% !important;
+    width: 30% !important;          /* Modified by Sohel Pathan on 10/07/2014 for PL ticket #586 */
     float: left;
 }
 
@@ -1794,7 +1794,7 @@ span.requests-logo-icon {
 }
 
 .padding-content .row .content-colum-right {
-    width: 60% !important;
+    width: 70% !important;      /* Modified by Sohel Pathan on 10/07/2014 for PL ticket #586 */
     float: left;
 }
 
@@ -7276,4 +7276,16 @@ background-color: #ffffff; padding:20px; margin-top:1px; border-radius: 5px 5px 
       .nav-tabs > .active > a, .nav-tabs > .active > a:hover, .nav-tabs > .active > a:focus {
     color: #555555 !important;
     text-decoration: none !important;
-}/*#585*/
+}/*#585*/ 
+
+/* Start - Added by Sohel Pathan on 10/07/2014 for PL ticket #586 */
+#ddlAssignRole {
+    width: 100%;
+}
+.assignUser {
+    cursor:pointer;
+}
+.myteam .sbHolder {
+    z-index:auto !important;
+}
+/* End - Added by Sohel Pathan on 10/07/2014 for PL ticket #586 */

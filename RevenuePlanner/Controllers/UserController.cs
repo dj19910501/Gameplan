@@ -67,11 +67,12 @@ namespace RevenuePlanner.Controllers
             //string permRoleCodesForDel = string.Empty;
             List<UserModel> teamMemberList = new List<UserModel>();
             List<BDSService.User> lstUser = null;
+            List<BDSService.User> lstOtherUser = new List<BDSService.User>();   /* Added by Sohel Pathan on 10/07/2014 for PL ticket #586 */
             try
             {
                 //if (Sessions.IsSystemAdmin)
                 //{
-                    lstUser = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
+                lstUser = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
                 //}
                 //else
                 //{
@@ -124,6 +125,9 @@ namespace RevenuePlanner.Controllers
                 //    default:
                 //        break;
                 //}
+                /* Added by Sohel Pathan on 10/07/2014 for PL ticket #586 */
+                if ((bool)ViewBag.IsUserAdminAuthorized)
+                    lstOtherUser = objBDSServiceClient.GetOtherApplicationUsers(Sessions.User.ClientId, Sessions.ApplicationId);
             }
             catch (Exception e)
             {
@@ -140,6 +144,25 @@ namespace RevenuePlanner.Controllers
                     TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
                 }
             }
+            /* Start - Added by Sohel Pathan on 10/07/2014 for PL ticket #586 */
+            if (lstOtherUser != null)
+            {
+                if (lstOtherUser.Count > 0)
+                {
+                    lstOtherUser.ForEach(a => a.DisplayName = a.FirstName + a.LastName);
+                    ViewBag.OtherUsers = lstOtherUser.OrderBy(a => a.DisplayName).ToList();
+                    ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId);
+                }
+                else
+                {
+                    ViewBag.OtherUsers = lstOtherUser;
+                }
+            }
+            else
+            {
+                ViewBag.OtherUsers = lstOtherUser;
+            }
+            /* End - Added by Sohel Pathan on 10/07/2014 for PL ticket #586 */
             //ViewBag.PermRoleCodesForDel = permRoleCodesForDel;
             return View(teamMemberList.AsEnumerable());
         }
@@ -155,7 +178,7 @@ namespace RevenuePlanner.Controllers
         public ActionResult ChangePassword()
         {
             // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit); 
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
 
             //if (Sessions.RolePermission != null)
             //{
@@ -186,7 +209,7 @@ namespace RevenuePlanner.Controllers
         {
             // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
-            
+
             try
             {
                 if (ModelState.IsValid)
@@ -472,7 +495,7 @@ namespace RevenuePlanner.Controllers
                     //        }
                     //        break;
                     //}
-                    int retVal = objBDSServiceClient.DeleteUser(id,Sessions.ApplicationId);
+                    int retVal = objBDSServiceClient.DeleteUser(id, Sessions.ApplicationId);
                     if (retVal == 1)
                         TempData["SuccessMessage"] = Common.objCached.UserDeleted;
                 }
@@ -548,7 +571,7 @@ namespace RevenuePlanner.Controllers
             ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId);
             ViewBag.CurrClientId = Sessions.User.ClientId;
             ViewBag.CurrClient = Sessions.User.Client;
-            
+
             if (IsUserAdminAuthorized)//Sessions.IsSystemAdmin)
             {
                 //ViewBag.IsSysAdmin = true;
@@ -558,7 +581,7 @@ namespace RevenuePlanner.Controllers
             {
                 //ViewBag.IsSysAdmin = false;
             }
-            
+
         }
 
         /// <summary>
@@ -600,7 +623,7 @@ namespace RevenuePlanner.Controllers
                 //{
                 //    LoadCreateModeComponents(Convert.ToString(Sessions.User.ClientId));
                 //}
-                    LoadCreateModeComponents(Convert.ToString(Sessions.User.ClientId));
+                LoadCreateModeComponents(Convert.ToString(Sessions.User.ClientId));
                 // End: Modofied by Dharmraj, For ticket #583
             }
             catch (Exception e)
@@ -840,7 +863,7 @@ namespace RevenuePlanner.Controllers
             // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
             ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
-            
+
             // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
             ViewBag.isForDelete = isForDelete;
 
@@ -972,7 +995,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="file">user photo</param>
         /// <returns></returns>
         [HttpPost]
-		[ValidateInput(false)]////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+        [ValidateInput(false)]////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
         public ActionResult Edit(UserModel form, HttpPostedFileBase file)
         {
             // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
@@ -1054,12 +1077,12 @@ namespace RevenuePlanner.Controllers
                             //}
                             //else
                             //{
-                                objUser.ManagerId = form.ManagerId;
+                            objUser.ManagerId = form.ManagerId;
                             //}
                             // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
                         }
                     }
-                    
+
                     int retVal = objBDSServiceClient.UpdateUser(objUser, Sessions.ApplicationId, Sessions.User.UserId);
                     if (retVal == 1)
                     {
@@ -1147,7 +1170,7 @@ namespace RevenuePlanner.Controllers
         {
             // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
-            ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin); 
+            ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
 
             //if (Sessions.RolePermission != null)
             //{
@@ -1454,7 +1477,7 @@ namespace RevenuePlanner.Controllers
             {
                 Guid.TryParse(id, out clientId);
             }
-            
+
             List<UserModel> managerList = new List<UserModel>();
             if (UserId != null)
             {
@@ -1492,7 +1515,44 @@ namespace RevenuePlanner.Controllers
             return null;
         }
         #endregion
-        
+
+        #endregion
+
+        #region Assign Other Application User
+
+        #region Assign User Method
+        /// <summary>
+        /// Add other application user into current application with selected role. 
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy>
+        /// <CreatedDate>10/07/2014</CreatedDate>
+        /// <param name="UserId"></param>
+        /// <param name="RoleId"></param>
+        /// <returns></returns>
+        public ActionResult AssignUser(string UserId, string RoleId)
+        {
+            try
+            {
+                int res = objBDSServiceClient.AssignUser(Guid.Parse(UserId), Guid.Parse(RoleId), Sessions.ApplicationId, Sessions.User.UserId);
+                TempData["SuccessMessage"] = Common.objCached.UserAdded;
+                return Json("success", JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    return Json(Common.objCached.ServiceUnavailableMessage, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(Common.objCached.ErrorOccured, JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
+        #endregion
+
         #endregion
     }
 }

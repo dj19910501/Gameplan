@@ -2239,6 +2239,18 @@ namespace RevenuePlanner.BDSService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetManagerList", ReplyAction="http://tempuri.org/IBDSService/GetManagerListResponse")]
         System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetManagerListAsync(System.Guid clientId, System.Guid applicationId, System.Guid userId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetOtherApplicationUsers", ReplyAction="http://tempuri.org/IBDSService/GetOtherApplicationUsersResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetOtherApplicationUsers(System.Guid clientId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetOtherApplicationUsers", ReplyAction="http://tempuri.org/IBDSService/GetOtherApplicationUsersResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetOtherApplicationUsersAsync(System.Guid clientId, System.Guid applicationId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/AssignUser", ReplyAction="http://tempuri.org/IBDSService/AssignUserResponse")]
+        int AssignUser(System.Guid UserId, System.Guid RoleId, System.Guid applicationId, System.Guid createdBy);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/AssignUser", ReplyAction="http://tempuri.org/IBDSService/AssignUserResponse")]
+        System.Threading.Tasks.Task<int> AssignUserAsync(System.Guid UserId, System.Guid RoleId, System.Guid applicationId, System.Guid createdBy);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -2650,6 +2662,22 @@ namespace RevenuePlanner.BDSService {
         
         public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetManagerListAsync(System.Guid clientId, System.Guid applicationId, System.Guid userId) {
             return base.Channel.GetManagerListAsync(clientId, applicationId, userId);
+        }
+        
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetOtherApplicationUsers(System.Guid clientId, System.Guid applicationId) {
+            return base.Channel.GetOtherApplicationUsers(clientId, applicationId);
+        }
+        
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetOtherApplicationUsersAsync(System.Guid clientId, System.Guid applicationId) {
+            return base.Channel.GetOtherApplicationUsersAsync(clientId, applicationId);
+        }
+        
+        public int AssignUser(System.Guid UserId, System.Guid RoleId, System.Guid applicationId, System.Guid createdBy) {
+            return base.Channel.AssignUser(UserId, RoleId, applicationId, createdBy);
+        }
+        
+        public System.Threading.Tasks.Task<int> AssignUserAsync(System.Guid UserId, System.Guid RoleId, System.Guid applicationId, System.Guid createdBy) {
+            return base.Channel.AssignUserAsync(UserId, RoleId, applicationId, createdBy);
         }
     }
 }

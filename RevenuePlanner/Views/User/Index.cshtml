@@ -154,11 +154,64 @@
                 </p>
             }
         </div>
+        @* Start - Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
+        @if ((bool)ViewBag.IsUserAdminAuthorized)
+        {
+            <div class="span2 content-colum-left">
+            </div>
+            <div class="span10 content-colum-right">
+                @if ((List<RevenuePlanner.BDSService.User>)ViewBag.OtherUsers != null)
+                {
+                    if (((List<RevenuePlanner.BDSService.User>)ViewBag.OtherUsers).Count > 0)
+                    {
+                    <table class="table table-striped table-hover myteam">
+                        <thead>
+                            <tr>
+                                <th colspan="4">
+                                    <h4>Following users are not available in Gameplan, please assign to Gameplan by selecting role and assign link </h4>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th title="First Name">First Name</th>
+                                <th title="Last Name">Last Name</th>
+                                <th title="Role">Role</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in (List<RevenuePlanner.BDSService.User>)ViewBag.OtherUsers)
+                            {
+                                <tr id="@item.UserId">
+                                    <td class="Inactive" title="@item.FirstName">
+                                        @Html.DisplayFor(model => item.FirstName)
+                                    </td>
+                                    <td class="Inactive border-r" title="@item.LastName" >
+                                        @Html.DisplayFor(model => item.LastName)
+                                    </td>
+                                    <td class="Inactive">
+                                        <div class="selectBox" id="ddlAssignRole">
+                                            @Html.DropDownListFor(model => item.RoleId, new SelectList((System.Collections.IEnumerable)ViewData["Roles"], "RoleId", "Title"), "Please Select")
+                                        </div>
+                                    </td>
+                                    <td class="Inactive" id="tdAssign ">
+                                        <a class="assignUser"><span>Assign</span></a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    }
+                }
+            </div>
+        }
+        @* End- Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
     </div>
 </div>
 
 <script type="text/javascript">
     $(document).ready(function () {
+
+        $(".selectBox select").selectbox(); @* Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
 
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
 
@@ -201,7 +254,7 @@
         }
     }
     else {
-        if (tdClass.toString().toLowerCase() == 'userdelete') {
+                if (tdClass.toString().toLowerCase() == 'userdelete' || tdClass.toString().toLowerCase() == 'Inactive') {   @* Modified by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
             return;
         }
     }
@@ -228,6 +281,44 @@
         url = '@Url.Action("ViewEditPermission", "Organization", new { Id = Sessions.User.UserId, Mode = "MyPermission" })';
         window.location.href = url;
     });
+
+    @* Start - Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
+    $('.assignUser').click(function () {
+
+        $('.sbHolder').each(function () {
+            if ($(this).hasClass("selectBoxError")) {
+                $(this).removeClass("selectBoxError");
+            }
+        });
+
+        var row = $(this).parent().parent();
+        var UserId = row.attr('id'); //row.find('#item_UserId').val();
+        var ddlRoleId = row.find('#item_RoleId').val();
+        if (ddlRoleId == '') {
+            row.find('.sbHolder').addClass("selectBoxError");
+            return false;
+        }
+        else {
+            row.find('.sbHolder').removeClass("selectBoxError");
+        }
+
+        $.ajax(
+        {
+            type: "GET",
+            cache: false,
+            url: '@Url.Content("~/User/AssignUser")',
+            data: { UserId: UserId, RoleId: ddlRoleId },
+            success: function (data) {
+                if (data == 'success') {
+                    window.location.reload(true);
+                }
+                else {
+                    alert(data);
+                }
+            }
+        });
+    });
+    @* End - Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
 </script>
 
 @*@section Scripts {
