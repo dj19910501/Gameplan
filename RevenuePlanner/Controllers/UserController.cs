@@ -1083,18 +1083,13 @@ namespace RevenuePlanner.Controllers
                         }
                     }
 
+                    // Added by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #50
+                    if (form.ManagerId == null)
+                        form.ManagerName = "N/A";
+
                     int retVal = objBDSServiceClient.UpdateUser(objUser, Sessions.ApplicationId, Sessions.User.UserId);
                     if (retVal == 1)
                     {
-                        //Start Added by Mitesh Vaishnav for internal point #40 on 09-07-2014
-                        if (form.IsDeleted != null)
-                        {
-                            if (Convert.ToString(form.IsDeleted).ToLower() == "yes")
-                            {
-                                int retDelete = objBDSServiceClient.DeleteUser(form.UserId, Sessions.ApplicationId);
-                            }
-                        }
-                        //End Added by Mitesh Vaishnav for internal point #40 on 09-07-2014
                         TempData["SuccessMessage"] = Common.objCached.UserEdited;
                         if (form.UserId == Sessions.User.UserId)
                         {
@@ -1110,7 +1105,19 @@ namespace RevenuePlanner.Controllers
                         System.Web.HttpContext.Current.Cache.Remove(form.UserId + "_name");
                         System.Web.HttpContext.Current.Cache.Remove(form.UserId + "_bu");//uday #416
                         System.Web.HttpContext.Current.Cache.Remove(form.UserId + "_jtitle");//uday #416
-                        return RedirectToAction("Index");
+                        
+                        //Start Added by Mitesh Vaishnav for internal point #40 on 09-07-2014
+                        if (form.IsDeleted != null)
+                        {
+                            if (Convert.ToString(form.IsDeleted).ToLower() == "yes")
+                            {
+                                int retDelete = objBDSServiceClient.DeleteUser(form.UserId, Sessions.ApplicationId);
+                                return RedirectToAction("Index");   // Added by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #50
+                            }
+                        }
+                        //End Added by Mitesh Vaishnav for internal point #40 on 09-07-2014
+
+                        //return RedirectToAction("Index");     // Commented by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #50
                     }
                     else if (retVal == -2)
                     {
@@ -1128,7 +1135,12 @@ namespace RevenuePlanner.Controllers
                 }
                 if (form.UserId == Sessions.User.UserId)
                 {
-                    LoadEditModeComponents(form.ClientId, "myaccount");
+                    //LoadEditModeComponents(form.ClientId, "myaccount");   // Commented by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #50
+                    // Start - Added by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #50
+                    ViewBag.SourceValue = "myaccount";
+                    ViewBag.CurrentUserId = Convert.ToString(Sessions.User.UserId);
+                    ViewBag.CurrentUserRole = Convert.ToString(Sessions.User.RoleCode);
+                    // End - Added by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #50
                 }
                 else
                 {

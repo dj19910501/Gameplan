@@ -124,20 +124,10 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                 <div class="cf inputs-aligned-horizontal">
                     @Html.Hidden("CurrEmail", Model.Email)
                     @Html.LabelFor(model => model.Email)
-                    @if (Convert.ToString(Model.UserId) == currentUserId || (bool)ViewBag.IsUserAdminAuthorized)
-                    //@if (permRoleCodesForDel.Contains(Model.RoleCode))
-                    //@if ((Convert.ToString(Model.UserId) == currentUserId) || permRoleCodesForDel.Contains(Model.RoleCode))
-                    {
-                        @Html.TextBoxFor(model => model.Email)
-                        <span class="field-validation-error" id="isEmailExist"></span>
-                        @Html.ValidationMessageFor(model => model.Email)
-                    }
-
-                    else
-                    {
+                    @* Start - Modified by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #51 *@
                         @Html.HiddenFor(model => model.Email)
                         @Html.TextBox("txtEmail", Model.Email, new { style = "background:#F2F2F2;", @readonly = "true", title = Model.Email })
-                    }
+                    @* End - Modified by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #51 *@
                 </div>
                  
                 // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
@@ -299,6 +289,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                         {
                             @Html.Label("Manager")
                             @Html.HiddenFor(model => model.ManagerId)
+                            @Html.HiddenFor(model => model.ManagerName)     // Added by Sohel Pathan on 10/07/2014 for Internal Functional Review Points #50
                             @Html.TextBox("txtManager", Model.ManagerName, new { style = "background:#F2F2F2;", @readonly = "true", title = Model.ManagerName })
                         }
                     @*}
@@ -318,7 +309,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                         <div class="cf inputs-aligned-horizontal" style="margin-left: 179px;" id="divUserDelete">
                             <div class="delete-container">
                             <div>
-                            @Html.LabelFor(model => model.IsDeleted, new { style = "float:left;padding-left:45px;padding-top:2px;" })
+                            @Html.LabelFor(model => model.IsDeleted, new { style = "float:left;padding-left:44px;padding-top:2px;" })   @* Modified by Sohel Pathan on 10/07/2014 for PL ticket #589 *@
                             @{
                                 var items = new List<System.Web.UI.WebControls.ListItem> { new System.Web.UI.WebControls.ListItem { Text = "No", Value = "No" }, new System.Web.UI.WebControls.ListItem { Text = "Yes", Value = "Yes" } };
                                 // Start - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
