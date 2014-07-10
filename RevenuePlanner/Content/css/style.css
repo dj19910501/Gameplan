@@ -63,8 +63,9 @@ body.gradient {
 }
 
 #header {
-    background: url("../images/gradient-header.jpg") repeat;
-    height: 82px;
+    background: none repeat scroll 0 0 #2384B8;/*changed - added by uday #559*/
+    border-bottom: 4px solid #144D6B;/*changed - added by uday #559*/
+    height: 78px;/*changed - added by uday #559*/
     position: relative;
     z-index: 1500; /*min-width: 1200px;*/
 }
@@ -130,7 +131,7 @@ body.gradient {
 }*/
 
 .mrp-logo {
-    background: url('../images/mrp-logo.png') no-repeat;
+    background: url("../images/game-plan-logo.png") no-repeat scroll center 16px rgba(0, 0, 0, 0);/*uday 8 -7-2014 #559*/
     width: 58px;
     height: 78px;
     float: right;
@@ -140,12 +141,12 @@ body.gradient {
 .info-user {
     height: 58px;
     float: right;
-    margin-right: 22px;
+    margin-right: 10px;/*change 4m 22 to 10 uday 8 -7-2014 #559*/
     padding: 20px 10px 0 10px;
 }
 
     .info-user p {
-        background: url("../images/arrow-down-header.png") no-repeat 0 16px;
+        background: url("../images/arrow-down-head.png") no-repeat 0 16px;/*changed - added by uday #559*/
         cursor: pointer;
         padding-left: 20px;
         color: #fff;
@@ -192,7 +193,7 @@ div[id*="modal-container"] { /*top: 100px;*/
 div.dropdown-info-user {
     position: absolute;
     z-index: 2000;
-    right: 95px;
+    right: 83px;/*changed - added by uday #559*/
     top: 78px;
     float: left;
 }
@@ -415,7 +416,7 @@ body {
         }
 
         .main-nav ul li a .icon {
-            background: url("../images/sprite-items-menu.png") no-repeat;
+            background: url("../images/sprite-items-menu2.png") no-repeat;/*changed - added by uday #559*/
             width: 34px;
             height: 30px;
             margin: 0 12px;

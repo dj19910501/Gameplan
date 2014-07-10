@@ -296,6 +296,7 @@
     <Content Include="Content\images\arrow-d-icon-blue.png" />
     <Content Include="Content\images\arrow-d-icon.png" />
     <Content Include="Content\images\arrow-down-accordion.png" />
+    <Content Include="Content\images\arrow-down-head.png" />
     <Content Include="Content\images\arrow-down-header-white.png" />
     <Content Include="Content\images\arrow-down-header.png" />
     <Content Include="Content\images\arrow-down-results.png" />
@@ -353,6 +354,7 @@
     <Content Include="Content\images\filter-icon.png" />
     <Content Include="Content\images\flag-icon.png" />
     <Content Include="Content\images\flag.png" />
+    <Content Include="Content\images\game-plan-logo.png" />
     <Content Include="Content\images\gear-icon-sidebar.png" />
     <Content Include="Content\images\gear.png" />
     <Content Include="Content\images\glyphicons-halflings-white.png" />
@@ -413,6 +415,7 @@
     <Content Include="Content\images\simple-accordion-x.png" />
     <Content Include="Content\images\sprite-icons-modal.png" />
     <Content Include="Content\images\sprite-items-menu.png" />
+    <Content Include="Content\images\sprite-items-menu2.png" />
     <Content Include="Content\images\squares.png" />
     <Content Include="Content\images\status-approved.gif" />
     <Content Include="Content\images\status-created.gif" />
