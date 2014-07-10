@@ -259,12 +259,12 @@
     <div class="padding-content padding-bottom0" id="DivButtonsHome">
         <h4 class="text-shadow-black source-sans-prolight">Planning Review</h4>
             <div class="wraper-btns cf">
-                @*@if (IsTacticActualsAddEditAuthorized)
+                @if (IsTacticActualsAddEditAuthorized)
                 {
-                    *@<div class="span6" id="divAddActuals">
+                    <div class="span6" id="divAddActuals">
                         <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("AddActual", "Home")'">Add Actuals</button>
                     </div>    
-                @*}*@
+                }
                 <div class="span6" id="divPlanEditButtonHome">
                     <!-- change by kunal for edit plan  -->
                     <!-- start -->

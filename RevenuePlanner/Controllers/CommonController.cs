@@ -76,8 +76,9 @@ namespace RevenuePlanner.Controllers
             }
             #endregion
 
-            //Redirect users logging in for the first time to the change password module
-            if (!(Request.RawUrl.ToLower().Contains("userphoto")) && !(Request.RawUrl.ToLower().Contains("changepassword")) && (string.Compare(entity.Trim(), "login", true) != 0)) //Check of request is not for login page then redirect user to login page
+            //Redirect users logging in for the first time to the change password module 
+            // Modified by Dharmraj for issue with support popup when first time login on change password screen
+            if (!(Request.RawUrl.ToLower().Contains("loadsupportpartial")) && !(Request.RawUrl.ToLower().Contains("userphoto")) && !(Request.RawUrl.ToLower().Contains("changepassword")) && (string.Compare(entity.Trim(), "login", true) != 0)) //Check of request is not for login page then redirect user to login page
             {
                 if (Sessions.User != null)
                 {

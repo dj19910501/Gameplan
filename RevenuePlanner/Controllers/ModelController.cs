@@ -2824,13 +2824,15 @@ namespace RevenuePlanner.Controllers
             var deletedTacticTitle = deletedTacticlist.Select(s => s.Title).Distinct().ToList();
 
             //returns all models of the client
-            var objTacticList = deletedTacticlist.Union(lstModelsTactic).ToList();
+            // Modified to distinct all tactics of model, Dharmraj 10-7-2014
+            var objTacticList = deletedTacticlist.Union(lstModelsTactic.Distinct()).ToList();
 
             //returns master list of matched tactics
             var lstMstaerTactic = from f in db.TacticTypes where !lstDistinctModelTacticTitle.Contains(f.Title) && !deletedTacticTitle.Contains(f.Title) && f.ClientId == null && (f.IsDeleted == null || f.IsDeleted == false) select f;
 
             //returns all tactics
-            objTacticList = objTacticList.Union(lstMstaerTactic).ToList();
+            // Modified to distinct all master tactics of model, Dharmraj 10-7-2014
+            objTacticList = objTacticList.Union(lstMstaerTactic.Distinct()).ToList();
 
             // Start - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
             string Marketing = Convert.ToString(Enums.Funnel.Marketing).ToLower();
@@ -3198,8 +3200,12 @@ namespace RevenuePlanner.Controllers
                 string Title = string.Empty;
                 TacticType objtactic = new TacticType();
                 string[] id = ids.Split(',');
+                // added by Dharmraj to distinct id array, 10-7-2014
+                id = id.Distinct().ToArray();
                 int result;
                 string[] rejid = rejids.Split(',');
+                // added by Dharmraj to distinct id array, 10-7-2014
+                rejid = rejid.Distinct().ToArray();
                 bool msgshow = false;
                 if (rejid.Length > 0)
                 {

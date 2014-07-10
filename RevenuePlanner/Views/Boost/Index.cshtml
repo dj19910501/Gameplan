@@ -118,10 +118,12 @@
 
     $(document).on('click', '#table_boost tbody tr', function (e) {
         var id = $(this).attr("id");
-        $("#slidepanel").css("display", "block");
-        var url = '@Url.Content("~/Boost/DetailImprovementTacticData")';
-        $('#slidepanel-container').load(url + '?id=' + id, AssignDefaultValue);//added by uday for internal point 2-7-2014);
-        $("#slidepanel").css("right", "0px");
+        if (typeof id != "undefined") {
+            $("#slidepanel").css("display", "block");
+            var url = '@Url.Content("~/Boost/DetailImprovementTacticData")';
+            $('#slidepanel-container').load(url + '?id=' + id, AssignDefaultValue);//added by uday for internal point 2-7-2014);
+            $("#slidepanel").css("right", "0px");
+        }
     });
 
 
