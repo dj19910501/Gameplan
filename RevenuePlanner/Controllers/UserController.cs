@@ -1087,9 +1087,12 @@ namespace RevenuePlanner.Controllers
                     if (retVal == 1)
                     {
                         //Start Added by Mitesh Vaishnav for internal point #40 on 09-07-2014
-                        if (Convert.ToString(form.IsDeleted).ToLower() == "yes")
+                        if (form.IsDeleted != null)
                         {
-                            int retDelete = objBDSServiceClient.DeleteUser(form.UserId, Sessions.ApplicationId);
+                            if (Convert.ToString(form.IsDeleted).ToLower() == "yes")
+                            {
+                                int retDelete = objBDSServiceClient.DeleteUser(form.UserId, Sessions.ApplicationId);
+                            }
                         }
                         //End Added by Mitesh Vaishnav for internal point #40 on 09-07-2014
                         TempData["SuccessMessage"] = Common.objCached.UserEdited;
