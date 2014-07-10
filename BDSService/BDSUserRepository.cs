@@ -33,14 +33,19 @@ namespace BDSService
         /// <returns>Returns team member list for specific client & application.</returns>
         public List<BDSEntities.User> GetTeamMemberList(Guid clientId, Guid applicationId, Guid userId, bool isSystemAdmin)
         {
-           ////Modified by Mitesh Vaishnav on 09-07-2014 for internal point #40 user should delete application wise
+            ////Modified by Mitesh Vaishnav on 09-07-2014 for internal point #40 user should delete application wise
             List<BDSEntities.User> teamMemberList = new List<BDSEntities.User>();
             List<User> lstUser = (from u in db.Users
                                   join ua in db.User_Application on u.UserId equals ua.UserId
-                                  where u.ClientId == clientId && ua.ApplicationId == applicationId && u.IsDeleted == false && u.UserId != userId && ua.IsDeleted==false
+                                  where u.ClientId == clientId && ua.ApplicationId == applicationId && u.IsDeleted == false && u.UserId != userId && ua.IsDeleted == false
                                   select u).OrderBy(q => q.FirstName).ToList();
             if (lstUser.Count > 0)
             {
+                // Modified by Dharmraj to optimize below code, 10-7-2014
+                var lstClient = db.Clients.Where(c => c.IsDeleted == false);
+                var lstUserApplication = db.User_Application.Where(ua => ua.ApplicationId == applicationId && ua.IsDeleted == false);
+                var lstRole = db.Roles.Where(r => r.IsDeleted == false);
+
                 foreach (var user in lstUser)
                 {
                     BDSEntities.User userEntity = new BDSEntities.User();
@@ -48,7 +53,7 @@ namespace BDSService
                     userEntity.ClientId = user.ClientId;
                     userEntity.BusinessUnitId = user.BusinessUnitId;
                     userEntity.GeographyId = user.GeographyId;
-                    userEntity.Client = db.Clients.Where(cl => cl.ClientId == user.ClientId).Select(c => c.Name).FirstOrDefault();
+                    userEntity.Client = lstClient.FirstOrDefault(c => c.ClientId == user.ClientId).Name; //db.Clients.Where(cl => cl.ClientId == user.ClientId).Select(c => c.Name).FirstOrDefault();
                     userEntity.DisplayName = user.DisplayName;
                     userEntity.Email = user.Email;
                     userEntity.FirstName = user.FirstName;
@@ -56,10 +61,10 @@ namespace BDSService
                     userEntity.LastName = user.LastName;
                     userEntity.Password = user.Password;
                     userEntity.ProfilePhoto = user.ProfilePhoto;
-                    userEntity.RoleId = db.User_Application.Where(ua => ua.ApplicationId == applicationId && ua.UserId == user.UserId).Select(u => u.RoleId).FirstOrDefault();
-                    userEntity.RoleCode = db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Code).FirstOrDefault();
-                    userEntity.RoleTitle = db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Title).FirstOrDefault();
-                    
+                    userEntity.RoleId = lstUserApplication.FirstOrDefault(u => u.UserId == user.UserId).RoleId; //db.User_Application.Where(ua => ua.ApplicationId == applicationId && ua.UserId == user.UserId).Select(u => u.RoleId).FirstOrDefault();
+                    userEntity.RoleCode = lstRole.FirstOrDefault(rl => rl.RoleId == userEntity.RoleId).Code; //db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Code).FirstOrDefault();
+                    userEntity.RoleTitle = lstRole.FirstOrDefault(rl => rl.RoleId == userEntity.RoleId).Title; //db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Title).FirstOrDefault();
+
                     //Start Manoj 08Jul2014 PL # 34 (Measure)
                     // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                     //userEntity.IsManager = db.User_Application.Where(a => a.IsDeleted.Equals(false) && a.ManagerId == user.UserId && a.ApplicationId == applicationId).Any();
@@ -78,7 +83,7 @@ namespace BDSService
                     //}
                     //else
                     //{
-                                teamMemberList.Add(userEntity);
+                    teamMemberList.Add(userEntity);
                     //}
                 }
             }
@@ -95,31 +100,52 @@ namespace BDSService
         /// <returns>Returns client list.</returns>
         public List<BDSEntities.Client> GetClientList()
         {
-            List<BDSEntities.Client> clientList = new List<BDSEntities.Client>();
-            List<Client> lstClient = db.Clients.Where(c => c.IsDeleted == false).OrderBy(q => q.Name).ToList();
-            if (lstClient.Count > 0)
-            {
-                foreach (var client in lstClient)
-                {
-                    BDSEntities.Client clientEntity = new BDSEntities.Client();
-                    clientEntity.Address1 = client.Address1;
-                    clientEntity.Address2 = client.Address2;
-                    clientEntity.City = client.City;
-                    clientEntity.ClientId = client.ClientId;
-                    clientEntity.Code = client.Code;
-                    clientEntity.Country = client.Country;
-                    clientEntity.IsDeleted = client.IsDeleted;
-                    clientEntity.Logo = Convert.ToString(client.Logo);
-                    clientEntity.Name = client.Name;
-                    clientEntity.State = client.State;
-                    clientEntity.ZipCode = client.ZipCode;
-                    clientEntity.CreatedBy = client.CreatedBy;
-                    clientEntity.CreatedDate = client.CreatedDate;
-                    clientEntity.ModifiedBy = client.ModifiedBy;
-                    clientEntity.ModifiedDate = client.ModifiedDate;
-                    clientList.Add(clientEntity);
-                }
-            }
+            //List<BDSEntities.Client> clientList = new List<BDSEntities.Client>();
+            //List<Client> lstClient = db.Clients.Where(c => c.IsDeleted == false).OrderBy(q => q.Name).ToList();
+            //if (lstClient.Count > 0)
+            //{
+            //    foreach (var client in lstClient)
+            //    {
+            //        BDSEntities.Client clientEntity = new BDSEntities.Client();
+            //        clientEntity.Address1 = client.Address1;
+            //        clientEntity.Address2 = client.Address2;
+            //        clientEntity.City = client.City;
+            //        clientEntity.ClientId = client.ClientId;
+            //        clientEntity.Code = client.Code;
+            //        clientEntity.Country = client.Country;
+            //        clientEntity.IsDeleted = client.IsDeleted;
+            //        clientEntity.Logo = Convert.ToString(client.Logo);
+            //        clientEntity.Name = client.Name;
+            //        clientEntity.State = client.State;
+            //        clientEntity.ZipCode = client.ZipCode;
+            //        clientEntity.CreatedBy = client.CreatedBy;
+            //        clientEntity.CreatedDate = client.CreatedDate;
+            //        clientEntity.ModifiedBy = client.ModifiedBy;
+            //        clientEntity.ModifiedDate = client.ModifiedDate;
+            //        clientList.Add(clientEntity);
+            //    }
+            //}
+
+            List<BDSEntities.Client> clientList = db.Clients.Where(c => c.IsDeleted == false).OrderBy(q => q.Name).ToList()
+                                                            .Select(c => new BDSEntities.Client
+                                                            {
+                                                                Address1 = c.Address1,
+                                                                Address2 = c.Address2,
+                                                                City = c.City,
+                                                                ClientId = c.ClientId,
+                                                                Code = c.Code,
+                                                                Country = c.Country,
+                                                                IsDeleted = c.IsDeleted,
+                                                                Logo = Convert.ToString(c.Logo),
+                                                                Name = c.Name,
+                                                                State = c.State,
+                                                                ZipCode = c.ZipCode,
+                                                                CreatedBy = c.CreatedBy,
+                                                                CreatedDate = c.CreatedDate,
+                                                                ModifiedBy = c.ModifiedBy,
+                                                                ModifiedDate = c.ModifiedDate
+                                                            }).ToList();
+
             return clientList;
         }
 
@@ -182,6 +208,7 @@ namespace BDSService
         /// <returns>Returns details of specific user for specific user & application.</returns>
         public BDSEntities.User GetTeamMemberDetails(Guid userId, Guid applicationId)
         {
+            // Modified below code for optimization by dharmraj, 10-7-2014
             BDSEntities.User userObj = new BDSEntities.User();
             User user = db.Users.Where(usr => usr.UserId == userId).FirstOrDefault();
             if (user != null)
@@ -190,7 +217,7 @@ namespace BDSService
                 userObj.BusinessUnitId = user.BusinessUnitId;
                 userObj.GeographyId = user.GeographyId;
                 userObj.ClientId = user.ClientId;
-                userObj.Client = db.Clients.Where(cl => cl.ClientId == user.ClientId).Select(c => c.Name).FirstOrDefault();
+                userObj.Client = user.Client.Name; //db.Clients.Where(cl => cl.ClientId == user.ClientId).Select(c => c.Name).FirstOrDefault();
                 userObj.DisplayName = user.DisplayName;
                 userObj.Email = user.Email;
                 userObj.Phone = user.Phone;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
@@ -200,8 +227,10 @@ namespace BDSService
                 userObj.Password = user.Password;
                 userObj.ProfilePhoto = user.ProfilePhoto;
                 userObj.RoleId = db.User_Application.Where(ua => ua.ApplicationId == applicationId && ua.UserId == user.UserId).Select(u => u.RoleId).FirstOrDefault();
-                userObj.RoleCode = db.Roles.Where(rl => rl.RoleId == userObj.RoleId).Select(r => r.Code).FirstOrDefault();
-                userObj.RoleTitle = db.Roles.Where(rl => rl.RoleId == userObj.RoleId).Select(r => r.Title).FirstOrDefault();
+
+                var objRole = db.Roles.FirstOrDefault(rl => rl.RoleId == userObj.RoleId);
+                userObj.RoleCode = objRole.Code; //db.Roles.Where(rl => rl.RoleId == userObj.RoleId).Select(r => r.Code).FirstOrDefault();
+                userObj.RoleTitle = objRole.Title; //db.Roles.Where(rl => rl.RoleId == userObj.RoleId).Select(r => r.Title).FirstOrDefault();
                 userObj.SecurityQuestionId = user.SecurityQuestionId;
                 userObj.SecurityQuestion = db.SecurityQuestions.Where(sq => sq.SecurityQuestionId == user.SecurityQuestionId).Select(s => s.SecurityQuestion1).FirstOrDefault();
                 userObj.Answer = user.Answer;
@@ -325,8 +354,9 @@ namespace BDSService
                         {
                             user.Password = Hash_NewPassword;
                             db.Entry(user).State = EntityState.Modified;
-                            db.SaveChanges();
-                            retVal = 1;
+                            int res = db.SaveChanges();
+                            if (res > 0)
+                                retVal = 1;
                         }
                     }
                 }
@@ -364,8 +394,9 @@ namespace BDSService
                     {
                         user.Password = FinalHash_NewPassword;
                         db.Entry(user).State = EntityState.Modified;
-                        var res = db.SaveChanges();
-                        retVal = 1;
+                        int res = db.SaveChanges();
+                        if (res > 0)
+                            retVal = 1;
                     }
                 }
             }
@@ -496,8 +527,9 @@ namespace BDSService
                 User user = db.Users.Where(u => u.IsDeleted == false && u.UserId == userId).SingleOrDefault();
                 user.User_Application.Where(u => u.ApplicationId == applicationId && u.UserId == userId).FirstOrDefault().IsDeleted = true;////Added by Mitesh Vaishnav on 09-07-2014 for internal review points # 40.
                 db.Entry(user).State = EntityState.Modified;
-                db.SaveChanges();
-                retVal = 1;
+                int res = db.SaveChanges();
+                if (res > 0)
+                    retVal = 1;
             }
             catch (Exception ex)
             {
@@ -599,8 +631,8 @@ namespace BDSService
                             }
                         }
                         // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
-
-                        retVal = 1;
+                        if (res > 0)
+                            retVal = 1;
                     }
                     scope.Complete();       // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                 }
@@ -684,9 +716,9 @@ namespace BDSService
                             //objUser_Application.ManagerId = user.ManagerId;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                             //End Manoj 08Jul2014 PL # 34 (Measure)
                             db.Entry(objUser_Application).State = EntityState.Modified;
-                            db.SaveChanges();
-
-                            retVal = 1;
+                            int res = db.SaveChanges();
+                            if (res > 0)
+                                retVal = 1;
 
                             // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                             //-- When delete a Manager, re-assign the subordinates to other manager.
@@ -774,6 +806,7 @@ namespace BDSService
         #endregion
 
         #region Re-assign manager
+
         /// <summary>
         /// When a manager profile get deleted, re-assign the subordinates to other manager.
         /// </summary>
@@ -803,9 +836,9 @@ namespace BDSService
                             //item.ModifiedDate = DateTime.Now;
                             //item.ModifiedBy = modifiedBy;
                             //End Manoj 08Jul2014 PL # 34 (Measure)
-                            db.Entry(item).State = EntityState.Modified;
-                            db.SaveChanges();
+                            db.Entry(item).State = EntityState.Modified;   
                         }
+                        db.SaveChanges();
                     }
                 }
 
@@ -817,6 +850,7 @@ namespace BDSService
                 return -1;
             }
         }
+
         #endregion
 
         #region Get User Role
@@ -978,8 +1012,9 @@ namespace BDSService
                     obj.ModifiedBy = userId;
                     obj.ModifiedDate = DateTime.Now;
                     db.Entry(obj).State = EntityState.Modified;
-                    db.SaveChanges();
-                    retVal = 1;
+                    int res = db.SaveChanges();
+                    if (res > 0)
+                        retVal = 1;
                 }
             }
             catch (Exception ex)
@@ -1143,9 +1178,9 @@ namespace BDSService
                     obj.Answer = user.Answer;
 
                     db.Entry(obj).State = EntityState.Modified;
-                    db.SaveChanges();
-
-                    retVal = 1;
+                    int res = db.SaveChanges();
+                    if (res > 0)
+                        retVal = 1;
 
                 }
             }
@@ -1208,25 +1243,42 @@ namespace BDSService
                         where approle.ApplicationId == applicationid && approle.IsDeleted == false
                         select role).OrderBy(role => role.Title).ToList();//change review point order by clause
 
-            if (rolelist.Count > 0)
+            //if (rolelist.Count > 0)
+            //{
+            //    foreach (var role in rolelist)
+            //    {
+            //        BDSEntities.Role roleEntity = new BDSEntities.Role();
+            //        roleEntity.RoleId = role.RoleId;
+            //        roleEntity.Code = role.Code;
+            //        roleEntity.Title = role.Title;
+            //        roleEntity.ColorCode = role.ColorCode;
+            //        roleEntity.Description = role.Description;
+            //        roleEntity.IsDeleted = role.IsDeleted;
+            //        roleEntity.CreatedBy = role.CreatedBy;
+            //        roleEntity.CreatedDate = role.CreatedDate;
+            //        roleEntity.ModifiedBy = role.ModifiedBy;
+            //        roleEntity.ModifiedDate = role.ModifiedDate;
+            //        roleList.Add(roleEntity);
+            //    }
+            //}
+            //return roleList;
+            // Added by dharmraj to optimize above commented code, 10-7-2014
+            roleList = rolelist.Select(r => new BDSEntities.Role
             {
-                foreach (var role in rolelist)
-                {
-                    BDSEntities.Role roleEntity = new BDSEntities.Role();
-                    roleEntity.RoleId = role.RoleId;
-                    roleEntity.Code = role.Code;
-                    roleEntity.Title = role.Title;
-                    roleEntity.ColorCode = role.ColorCode;
-                    roleEntity.Description = role.Description;
-                    roleEntity.IsDeleted = role.IsDeleted;
-                    roleEntity.CreatedBy = role.CreatedBy;
-                    roleEntity.CreatedDate = role.CreatedDate;
-                    roleEntity.ModifiedBy = role.ModifiedBy;
-                    roleEntity.ModifiedDate = role.ModifiedDate;
-                    roleList.Add(roleEntity);
-                }
-            }
+                RoleId = r.RoleId,
+                Code = r.Code,
+                Title = r.Title,
+                ColorCode = r.ColorCode,
+                Description = r.Description,
+                IsDeleted = r.IsDeleted,
+                CreatedBy = r.CreatedBy,
+                CreatedDate = r.CreatedDate,
+                ModifiedBy = r.ModifiedBy,
+                ModifiedDate = r.ModifiedDate
+            }).ToList();
+
             return roleList;
+
         }
 
         #endregion
@@ -1241,23 +1293,33 @@ namespace BDSService
         public List<BDSEntities.ApplicationActivity> GetApplicationactivitylist(Guid applicationid)
         {
             List<BDSEntities.ApplicationActivity> ApplicationActivityList = new List<BDSEntities.ApplicationActivity>();
-            List<Application_Activity> ApplicationActivity = new List<Application_Activity>();
+            //List<Application_Activity> ApplicationActivity = new List<Application_Activity>();
 
-            ApplicationActivity = db.Application_Activity.Where(application => application.ApplicationId == applicationid).ToList();
-            if (ApplicationActivity.Count > 0)
+            var ApplicationActivity = db.Application_Activity.Where(application => application.ApplicationId == applicationid).ToList();
+            //if (ApplicationActivity.Count > 0)
+            //{
+            //    foreach (var item in ApplicationActivity)
+            //    {
+            //        BDSEntities.ApplicationActivity applactlist = new BDSEntities.ApplicationActivity();
+            //        applactlist.ApplicationActivityId = item.ApplicationActivityId;
+            //        applactlist.ApplicationId = item.ApplicationId;
+            //        applactlist.CreatedDate = item.CreatedDate;
+            //        applactlist.ActivityTitle = item.ActivityTitle;
+            //        applactlist.ParentId = Convert.ToInt32(item.ParentId);
+            //        applactlist.Code = item.Code;
+            //        ApplicationActivityList.Add(applactlist);
+            //    }
+            //}
+            // Added by dharmraj to optimize above commented code, 10-7-2014
+            ApplicationActivityList = ApplicationActivity.Select(a => new BDSEntities.ApplicationActivity
             {
-                foreach (var item in ApplicationActivity)
-                {
-                    BDSEntities.ApplicationActivity applactlist = new BDSEntities.ApplicationActivity();
-                    applactlist.ApplicationActivityId = item.ApplicationActivityId;
-                    applactlist.ApplicationId = item.ApplicationId;
-                    applactlist.CreatedDate = item.CreatedDate;
-                    applactlist.ActivityTitle = item.ActivityTitle;
-                    applactlist.ParentId = Convert.ToInt32(item.ParentId);
-                    applactlist.Code = item.Code;
-                    ApplicationActivityList.Add(applactlist);
-                }
-            }
+                ApplicationActivityId = a.ApplicationActivityId,
+                ApplicationId = a.ApplicationId,
+                CreatedDate = a.CreatedDate,
+                ActivityTitle = a.ActivityTitle,
+                ParentId = Convert.ToInt32(a.ParentId),
+                Code = a.Code
+            }).ToList();
 
             return ApplicationActivityList;
         }
@@ -1403,11 +1465,8 @@ namespace BDSService
                     db.SaveChanges();
                 }
 
-                //Insert in Application_role
-                if (objnew != null)
-                {
-                }
-                else
+                //Insert in Application_role // Modified by Dharmraj to optimize code, 10-7-2014
+                if (objnew == null)
                 {
                     Application_Role objApplication_Role = new Application_Role();
                     objApplication_Role.ApplicationId = applicationid;
@@ -1610,8 +1669,9 @@ namespace BDSService
                                         objUser_Activity_Permission.UserId = item.UserId;
                                         db.Entry(objUser_Activity_Permission).State = EntityState.Added;
                                         db.User_Activity_Permission.Add(objUser_Activity_Permission);
-                                        db.SaveChanges();
+                                        //db.SaveChanges();
                                     }
+                                    db.SaveChanges();
                                 }
                             }
                             // End Added by dharmraj When delete any role then we reassign other role for existing user then it not update permission for user as per new role: ticket #513
@@ -1766,15 +1826,16 @@ namespace BDSService
         }
 
         #endregion
-        #region Application Activity
-        // <summary>
-        ///Added by Mitesh Vaishnav : User Permission Edit/View Pl ticket 521 
-        /// </summary>
-       
 
+        #region Application Activity
+
+        /// <summary>
+        /// Returns list of all activities by applicationId
+        /// </summary>
+        /// <param name="applicationId"></param>
+        /// <returns></returns>
         public List<BDSEntities.ApplicationActivity> GetAllApplicationActivity(Guid applicationId)
         {
-
             var appActivity = db.Application_Activity.Where(act => act.ApplicationId == applicationId).Select(act => new BDSEntities.ApplicationActivity
             {
                 ApplicationActivityId = act.ApplicationActivityId,
@@ -1791,6 +1852,12 @@ namespace BDSService
             return null;
         }
 
+        /// <summary>
+        /// Returns list of user activity permissions based on userId and applicationId 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="applicationId"></param>
+        /// <returns></returns>
         public List<BDSEntities.UserApplicationPermission> GetUserActivity(Guid userId, Guid applicationId)
         {
             var userActivity = db.User_Activity_Permission.Where(usr => usr.UserId == userId).Select(usr => new BDSEntities.UserApplicationPermission
@@ -1809,6 +1876,12 @@ namespace BDSService
 
         }
 
+        /// <summary>
+        /// Rerurns list of user'scustom restrictions by userId and applicationId
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="applicationId"></param>
+        /// <returns></returns>
         public List<BDSEntities.CustomRestriction> GetUserCustomRestrictionList(Guid userId, Guid applicationId)
         {
             // Modified By : Kalpesh Sharma
@@ -1835,23 +1908,32 @@ namespace BDSService
             }
 
         }
+
+        /// <summary>
+        /// To Delete user activity permission
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="applicationId"></param>
+        /// <returns>Return 1 if success otherwise 0</returns>
         public int DeleteUserActivityPermission(Guid userId, Guid applicationId)
         {
             int retVal = 0;
             try
             {
-            var userActivityList = db.User_Activity_Permission.Where(usr => usr.UserId == userId).ToList();
-            if (userActivityList.Count > 0)
-            {
-                foreach (var activity in userActivityList)
+                var userActivityList = db.User_Activity_Permission.Where(usr => usr.UserId == userId).ToList();
+                if (userActivityList.Count > 0)
                 {
-                    db.Entry(activity).State = EntityState.Deleted;
-                    db.User_Activity_Permission.Remove(activity);
+                    foreach (var activity in userActivityList)
+                    {
+                        db.Entry(activity).State = EntityState.Deleted;
+                        db.User_Activity_Permission.Remove(activity);
 
                     }
-                    db.SaveChanges();
-                    retVal = 1;
-                return retVal;
+                    int res = db.SaveChanges();
+                    if (res > 0)
+                        retVal = 1;
+
+                    return retVal;
                 }
             }
             catch (Exception ex)
@@ -1861,6 +1943,12 @@ namespace BDSService
             return retVal;
         }
 
+        /// <summary>
+        /// To Delete user custom restrictions
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="applicationId"></param>
+        /// <returns>Return 1 if success otherwise 0</returns>
         public int DeleteUserCustomrestriction(Guid userId, Guid applicationId)
         {
             int retVal = 0;
@@ -1870,17 +1958,19 @@ namespace BDSService
             //I have added the following line into the below query (&& usr.ApplicationId == applicationId)
             try
             {
-            var userCustomrestrictionList = db.CustomRestrictions.Where(usr => usr.UserId == userId && usr.ApplicationId == applicationId).ToList();
-            if (userCustomrestrictionList.Count > 0)
-            {
-                foreach (var customRestriction in userCustomrestrictionList)
+                var userCustomrestrictionList = db.CustomRestrictions.Where(usr => usr.UserId == userId && usr.ApplicationId == applicationId).ToList();
+                if (userCustomrestrictionList.Count > 0)
                 {
-                    db.Entry(customRestriction).State = EntityState.Deleted;
-                    db.CustomRestrictions.Remove(customRestriction);
+                    foreach (var customRestriction in userCustomrestrictionList)
+                    {
+                        db.Entry(customRestriction).State = EntityState.Deleted;
+                        db.CustomRestrictions.Remove(customRestriction);
                     }
-                    db.SaveChanges();
-                    retVal = 1;
-                return retVal;
+                    int res = db.SaveChanges();
+                    if (res > 0)
+                        retVal = 1;
+
+                    return retVal;
                 }
             }
             catch (Exception ex)
@@ -1890,87 +1980,95 @@ namespace BDSService
             return retVal;
         }
 
+        /// <summary>
+        /// To add user's activity permission
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="CreatorId"></param>
+        /// <param name="permissions"></param>
+        /// <param name="applicationId"></param>
+        /// <returns>Return 1 if success otherwise 0</returns>
         public int AddUserActivityPermissions(Guid userId, Guid CreatorId, string[] permissions, Guid applicationId)
         {
             int retVal = 0;
             try
             {
-            if (permissions.Length > 0)
-            {
+                if (permissions.Length > 0)
+                {
                     int retDelUserActivity = DeleteUserActivityPermission(userId, applicationId);
                     int retDelUserCustomRestriction = DeleteUserCustomrestriction(userId, applicationId);
                     if (retDelUserActivity == 1 && retDelUserCustomRestriction == 1)
                     {
-                foreach (var item in permissions)
-                {
-                    if (item.ToLower().Contains("yes"))
-                    {
-                        string[] splitpermissions = item.Split('_');
-                        User_Activity_Permission obj = new User_Activity_Permission();
-                        obj.UserId = userId;
-                        obj.ApplicationActivityId = Convert.ToInt32(splitpermissions[2]);
-                        obj.CreatedBy = CreatorId;
-                        obj.CreatedDate = System.DateTime.Now;
-                        db.Entry(obj).State = EntityState.Added;
-                        db.User_Activity_Permission.Add(obj);
+                        foreach (var item in permissions)
+                        {
+                            if (item.ToLower().Contains("yes"))
+                            {
+                                string[] splitpermissions = item.Split('_');
+                                User_Activity_Permission obj = new User_Activity_Permission();
+                                obj.UserId = userId;
+                                obj.ApplicationActivityId = Convert.ToInt32(splitpermissions[2]);
+                                obj.CreatedBy = CreatorId;
+                                obj.CreatedDate = System.DateTime.Now;
+                                db.Entry(obj).State = EntityState.Added;
+                                db.User_Activity_Permission.Add(obj);
                             }
                             else if (item.ToLower().Contains(CommonFile.CustomRestrictionType.Verticals.ToString().ToLower()))
-                    {
-                        string[] splitpermissions = item.Split('_');
-                        CustomRestriction obj = new CustomRestriction();
-                        obj.UserId = userId;
-                        obj.CustomFieldId = splitpermissions[2];
-                        obj.CustomField = splitpermissions[1];
-                        obj.Permission = Convert.ToInt16(splitpermissions[0]);
-                        obj.CreatedDate = System.DateTime.Now;
-                        obj.CreatedBy = CreatorId;
-                        // Modified By : Kalpesh Sharma
-                        // Added new field into the Custom Restriction table , now all the Custom Restriction will be fetched by UserID and Application ID.
-                        obj.ApplicationId = applicationId;
-                        //Modification end
-                        db.Entry(obj).State = EntityState.Added;
-                        db.CustomRestrictions.Add(obj);
+                            {
+                                string[] splitpermissions = item.Split('_');
+                                CustomRestriction obj = new CustomRestriction();
+                                obj.UserId = userId;
+                                obj.CustomFieldId = splitpermissions[2];
+                                obj.CustomField = splitpermissions[1];
+                                obj.Permission = Convert.ToInt16(splitpermissions[0]);
+                                obj.CreatedDate = System.DateTime.Now;
+                                obj.CreatedBy = CreatorId;
+                                // Modified By : Kalpesh Sharma
+                                // Added new field into the Custom Restriction table , now all the Custom Restriction will be fetched by UserID and Application ID.
+                                obj.ApplicationId = applicationId;
+                                //Modification end
+                                db.Entry(obj).State = EntityState.Added;
+                                db.CustomRestrictions.Add(obj);
                             }
                             else if (item.ToLower().Contains(CommonFile.CustomRestrictionType.Geography.ToString().ToLower()))
-                    {
-                        string[] splitpermissions = item.Split('_');
-                        CustomRestriction obj = new CustomRestriction();
-                        obj.UserId = userId;
-                        obj.CustomFieldId = splitpermissions[2];
-                        obj.CustomField = splitpermissions[1];
-                        obj.Permission = Convert.ToInt16(splitpermissions[0]);
-                        obj.CreatedDate = System.DateTime.Now;
-                        obj.CreatedBy = CreatorId;
-                        // Modified By : Kalpesh Sharma
-                        // Added new field into the Custom Restriction table , now all the Custom Restriction will be fetched by UserID and Application ID.
-                        obj.ApplicationId = applicationId;
-                        //Modification end
-                        db.Entry(obj).State = EntityState.Added;
-                        db.CustomRestrictions.Add(obj);
+                            {
+                                string[] splitpermissions = item.Split('_');
+                                CustomRestriction obj = new CustomRestriction();
+                                obj.UserId = userId;
+                                obj.CustomFieldId = splitpermissions[2];
+                                obj.CustomField = splitpermissions[1];
+                                obj.Permission = Convert.ToInt16(splitpermissions[0]);
+                                obj.CreatedDate = System.DateTime.Now;
+                                obj.CreatedBy = CreatorId;
+                                // Modified By : Kalpesh Sharma
+                                // Added new field into the Custom Restriction table , now all the Custom Restriction will be fetched by UserID and Application ID.
+                                obj.ApplicationId = applicationId;
+                                //Modification end
+                                db.Entry(obj).State = EntityState.Added;
+                                db.CustomRestrictions.Add(obj);
                             }
                             else if (item.ToLower().Contains(CommonFile.CustomRestrictionType.BusinessUnit.ToString().ToLower()))
-                    {
-                        string[] splitpermissions = item.Split('_');
-                        CustomRestriction obj = new CustomRestriction();
-                        obj.UserId = userId;
-                        obj.CustomFieldId = splitpermissions[2];
-                        obj.CustomField = splitpermissions[1];
-                        obj.Permission = Convert.ToInt16(splitpermissions[0]);
-                        obj.CreatedDate = System.DateTime.Now;
-                        obj.CreatedBy = CreatorId;
-                        // Modified By : Kalpesh Sharma
-                        // Added new field into the Custom Restriction table , now all the Custom Restriction will be fetched by UserID and Application ID.
-                        obj.ApplicationId = applicationId;
-                        //Modification end
-                        db.Entry(obj).State = EntityState.Added;
-                        db.CustomRestrictions.Add(obj);
+                            {
+                                string[] splitpermissions = item.Split('_');
+                                CustomRestriction obj = new CustomRestriction();
+                                obj.UserId = userId;
+                                obj.CustomFieldId = splitpermissions[2];
+                                obj.CustomField = splitpermissions[1];
+                                obj.Permission = Convert.ToInt16(splitpermissions[0]);
+                                obj.CreatedDate = System.DateTime.Now;
+                                obj.CreatedBy = CreatorId;
+                                // Modified By : Kalpesh Sharma
+                                // Added new field into the Custom Restriction table , now all the Custom Restriction will be fetched by UserID and Application ID.
+                                obj.ApplicationId = applicationId;
+                                //Modification end
+                                db.Entry(obj).State = EntityState.Added;
+                                db.CustomRestrictions.Add(obj);
 
                             }
                         }
-                        db.SaveChanges();
-                        retVal = 1;
+                        int res = db.SaveChanges();
+                        if (res > 0)
+                            retVal = 1;
                     }
-
                 }
             }
             catch (Exception ex)
@@ -1980,32 +2078,39 @@ namespace BDSService
             return retVal;
         }
 
+        /// <summary>
+        /// To reset user's permissions to role default permissions
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="CreatorId"></param>
+        /// <param name="applicationId"></param>
+        /// <returns>Return 1 if success otherwise 0</returns>
         public int resetToRoleDefault(Guid userId, Guid CreatorId, Guid applicationId)
         {
             int retVal = 0;
             try
             {
-            var roleId = db.User_Application.Where(usr => usr.UserId == userId && usr.ApplicationId == applicationId).FirstOrDefault().RoleId;
-            var DefaultActivities = db.Role_Activity_Permission.Where(rap => rap.RoleId == roleId).ToList();
-            if (DefaultActivities.Count > 0)
-            {
-                   int retDelUserActivity= DeleteUserActivityPermission(userId, applicationId);
-                   if (retDelUserActivity == 1)
-                   {
-                foreach (var item in DefaultActivities)
+                var roleId = db.User_Application.Where(usr => usr.UserId == userId && usr.ApplicationId == applicationId).FirstOrDefault().RoleId;
+                var DefaultActivities = db.Role_Activity_Permission.Where(rap => rap.RoleId == roleId).ToList();
+                if (DefaultActivities.Count > 0)
                 {
+                    int retDelUserActivity = DeleteUserActivityPermission(userId, applicationId);
+                    if (retDelUserActivity == 1)
+                    {
+                        foreach (var item in DefaultActivities)
+                        {
 
-                    User_Activity_Permission obj = new User_Activity_Permission();
-                    obj.UserId = userId;
-                    obj.ApplicationActivityId = item.ApplicationActivityId;
-                    obj.CreatedBy = CreatorId;
-                    obj.CreatedDate = System.DateTime.Now;
-                    db.Entry(obj).State = EntityState.Added;
-                    db.User_Activity_Permission.Add(obj);
-                       }
-                    db.SaveChanges();
-                    retVal = 1;
-                }
+                            User_Activity_Permission obj = new User_Activity_Permission();
+                            obj.UserId = userId;
+                            obj.ApplicationActivityId = item.ApplicationActivityId;
+                            obj.CreatedBy = CreatorId;
+                            obj.CreatedDate = System.DateTime.Now;
+                            db.Entry(obj).State = EntityState.Added;
+                            db.User_Activity_Permission.Add(obj);
+                        }
+
+                        retVal = db.SaveChanges();
+                    }
                 }
             }
             catch (Exception ex)
@@ -2014,6 +2119,7 @@ namespace BDSService
             }
             return retVal;
         }
+
         #endregion
 
         #region User hierarchy
@@ -2082,21 +2188,29 @@ namespace BDSService
                                   join ua in db.User_Application on u.UserId equals ua.UserId
                                   where u.ClientId == clientId && ua.ApplicationId == applicationId && u.IsDeleted == false && (userId == Guid.Empty ? true : u.UserId != userId) && ua.IsDeleted==false
                                   select u).ToList();
-            if (lstManager.Count > 0)
+            //if (lstManager.Count > 0)
+            //{
+            //    foreach (var user in lstManager)
+            //    {
+            //        BDSEntities.User userEntity = new BDSEntities.User();
+            //        userEntity.UserId = user.UserId;
+            //        userEntity.ClientId = user.ClientId;
+            //        userEntity.ManagerName = (user.FirstName + " " + user.LastName).Trim();
+            //        //Start Manoj 08Jul2014 PL # 34 (Measure)
+            //        //userEntity.ManagerId = user.User_Application.Where(a => a.UserId == user.UserId && a.IsDeleted.Equals(false) && a.ApplicationId == applicationId).Select(a => a.ManagerId).FirstOrDefault();
+            //        userEntity.ManagerId = user.ManagerId;
+            //        //End Manoj 08Jul2014 PL # 34 (Measure)
+            //        managerList.Add(userEntity);
+            //    }
+            //}
+            // Optimized above commented code By dharmraj, 10-7-2014
+            lstManager.ForEach(m => managerList.Add(new BDSEntities.User()
             {
-                foreach (var user in lstManager)
-                {
-                    BDSEntities.User userEntity = new BDSEntities.User();
-                    userEntity.UserId = user.UserId;
-                    userEntity.ClientId = user.ClientId;
-                    userEntity.ManagerName = (user.FirstName + " " + user.LastName).Trim();
-                    //Start Manoj 08Jul2014 PL # 34 (Measure)
-                    //userEntity.ManagerId = user.User_Application.Where(a => a.UserId == user.UserId && a.IsDeleted.Equals(false) && a.ApplicationId == applicationId).Select(a => a.ManagerId).FirstOrDefault();
-                    userEntity.ManagerId = user.ManagerId;
-                    //End Manoj 08Jul2014 PL # 34 (Measure)
-                    managerList.Add(userEntity);
-                }
-            }
+                UserId = m.UserId,
+                ClientId = m.ClientId,
+                ManagerName = (m.FirstName + " " + m.LastName).Trim(),
+                ManagerId = m.ManagerId
+            }));
             
             if (userId != Guid.Empty)
                 managerList = managerList.Where(a => a.ManagerId != userId).ToList();
@@ -2162,7 +2276,9 @@ namespace BDSService
         }
 
         #endregion
+
         #region Assign User
+
         /// <summary>
         /// Assgin user to the application from other application
         /// </summary>

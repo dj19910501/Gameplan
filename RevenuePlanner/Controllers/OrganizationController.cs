@@ -86,14 +86,22 @@ namespace RevenuePlanner.Controllers
             {
                 BDSService.BDSServiceClient bdsuserrepository = new BDSServiceClient();
                 var memberlist = bdsuserrepository.GetAllRoleList(Sessions.ApplicationId);
-                foreach (var item in memberlist)
-                {
-                    RoleModel role = new RoleModel();
-                    role.RoleTitle = item.Title;
-                    role.RoleCode = item.Code;
-                    role.RoleId = item.RoleId;
-                    listrolemodel.Add(role);
-                }
+                //foreach (var item in memberlist)
+                //{
+                //    RoleModel role = new RoleModel();
+                //    role.RoleTitle = item.Title;
+                //    role.RoleCode = item.Code;
+                //    role.RoleId = item.RoleId;
+                //    listrolemodel.Add(role);
+                //}
+                // Added by dharmraj to remove above foreach loop, 10-7-2014
+                listrolemodel = memberlist.Select(r => new RoleModel
+                                                 {
+                                                     RoleTitle = r.Title,
+                                                     RoleCode = r.Code,
+                                                     RoleId = r.RoleId
+                                                 }).ToList();
+
             }
             catch (Exception e)
             {

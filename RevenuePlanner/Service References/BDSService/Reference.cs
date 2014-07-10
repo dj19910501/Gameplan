@@ -2019,10 +2019,10 @@ namespace RevenuePlanner.BDSService {
         System.Threading.Tasks.Task<bool> CheckEmailAsync(string email);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/DeleteUser", ReplyAction="http://tempuri.org/IBDSService/DeleteUserResponse")]
-        int DeleteUser(System.Guid userId);
+        int DeleteUser(System.Guid userId, System.Guid applicationId);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/DeleteUser", ReplyAction="http://tempuri.org/IBDSService/DeleteUserResponse")]
-        System.Threading.Tasks.Task<int> DeleteUserAsync(System.Guid userId);
+        System.Threading.Tasks.Task<int> DeleteUserAsync(System.Guid userId, System.Guid applicationId);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetUserDetails", ReplyAction="http://tempuri.org/IBDSService/GetUserDetailsResponse")]
         RevenuePlanner.BDSService.User GetUserDetails(string userEmail);
@@ -2368,12 +2368,12 @@ namespace RevenuePlanner.BDSService {
             return base.Channel.CheckEmailAsync(email);
         }
         
-        public int DeleteUser(System.Guid userId) {
-            return base.Channel.DeleteUser(userId);
+        public int DeleteUser(System.Guid userId, System.Guid applicationId) {
+            return base.Channel.DeleteUser(userId, applicationId);
         }
         
-        public System.Threading.Tasks.Task<int> DeleteUserAsync(System.Guid userId) {
-            return base.Channel.DeleteUserAsync(userId);
+        public System.Threading.Tasks.Task<int> DeleteUserAsync(System.Guid userId, System.Guid applicationId) {
+            return base.Channel.DeleteUserAsync(userId, applicationId);
         }
         
         public RevenuePlanner.BDSService.User GetUserDetails(string userEmail) {
