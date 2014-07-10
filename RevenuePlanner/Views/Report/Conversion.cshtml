@@ -3,14 +3,14 @@
     <li class="source-sans-proregular">
         <h2 class="title-header">Conversion Summary</h2>
     </li>
-    <li class="disabled pull-right">
-        <a>@RevenuePlanner.Helpers.Common.Vertical</a>
+    <li class="pull-right">
+        <a>@RevenuePlanner.Helpers.Common.Vertical</a>@*#585*@
     </li>
-    <li class="disabled pull-right">
-        <a>@RevenuePlanner.Helpers.Common.Geography</a>
+    <li class="pull-right">
+        <a>@RevenuePlanner.Helpers.Common.Geography</a>@*#585*@
     </li>
-    <li class="disabled pull-right">
-        <a>@RevenuePlanner.Helpers.Common.Audience</a>
+    <li class="pull-right">
+        <a>@RevenuePlanner.Helpers.Common.Audience</a>@*#585*@
     </li>
     @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
     {
@@ -53,13 +53,13 @@
         <li class="source-sans-proregular">
             <h4 class="title-header">@Html.LabelForMQL("MQL") Conversion Plan</h4>
         </li>
-        <li class="disabled pull-right" id="@RevenuePlanner.Helpers.Common.Vertical">
+        <li class="pull-right" id="@RevenuePlanner.Helpers.Common.Vertical">@*#585*@
             <a>@RevenuePlanner.Helpers.Common.Vertical</a>
         </li>
-        <li class="disabled pull-right" id="@RevenuePlanner.Helpers.Common.Geography">
+        <li class="pull-right" id="@RevenuePlanner.Helpers.Common.Geography">@*#585*@
             <a>@RevenuePlanner.Helpers.Common.Geography</a>
         </li>
-        <li class="disabled pull-right" id="@RevenuePlanner.Helpers.Common.Audience">
+        <li class="pull-right" id="@RevenuePlanner.Helpers.Common.Audience">@*#585*@
             <a>@RevenuePlanner.Helpers.Common.Audience</a>
         </li>
         @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
@@ -94,10 +94,10 @@
         <li class="active pull-right">
             <a  id="@RevenuePlanner.Helpers.Common.Actuals">@RevenuePlanner.Helpers.Common.Actuals</a>
         </li>
-        <li class="disabled pull-right">
+        <li class="pull-right">
             <a  id="@RevenuePlanner.Helpers.Common.Trend">@RevenuePlanner.Helpers.Common.Trend</a>
         </li>
-        <li class="disabled pull-right">
+        <li class="pull-right">
             <a  id="@RevenuePlanner.Helpers.Common.Plan">@RevenuePlanner.Helpers.Common.Plan</a>
         </li>
     </ul>
@@ -180,8 +180,8 @@
 
         }
 
-        $("#ParentULMQLConversion").find('li:last').removeClass('disabled').addClass('active'); // this will add active class to first tab in MQL conversion plan report
-        $('#ParentULConversionSummary').find('li:last').removeClass('disabled').addClass('active'); // this will add active class to first tab in MQL conversion plan report
+        $("#ParentULMQLConversion").find('li:last').addClass('active'); // this will add active class to first tab in MQL conversion plan report@*#585*@
+        $('#ParentULConversionSummary').find('li:last').addClass('active'); // this will add active class to first tab in MQL conversion plan report@*#585*@
 
         //---------------- Code related to Conversion summary child tab --------------------//
         var parentSummaryTab = $('#ParentULConversionSummary li.active').children().text();
@@ -192,8 +192,7 @@
             if (selectParent != "Conversion Summary") {
                 $('#ActivityName').html(selectParent);
                 RemoveTabClassParentULConversionSummary();
-                $(this).removeClass("disabled");
-                $(this).addClass("active");
+                $(this).addClass("active");@*#585*@
                 parentSummaryTab = selectParent;
                 LoadConversionSummaryData();
             }
@@ -202,8 +201,7 @@
         function RemoveTabClassParentULConversionSummary() {
             $('#ParentULConversionSummary').children().each(function () {
                 if ($(this).hasClass('active')) {
-                    $(this).removeClass("active");
-                    $(this).addClass("disabled");
+                    $(this).removeClass("active");@*#585*@
                 }
             });
         }
@@ -244,8 +242,7 @@
             var selectParent = $(this).children().text();
             if (selectParent != "MQL Conversion Plan") {
                 RemoveTabClassParentULMQLConversion();
-                $(this).removeClass("disabled");
-                $(this).addClass("active");
+                $(this).addClass("active");@*#585*@
                 parentTab = selectParent;
                 LoadChildData();
             }
@@ -254,8 +251,7 @@
         function RemoveTabClassParentULMQLConversion() {
             $('#ParentULMQLConversion').children().each(function () {
                 if ($(this).hasClass('active')) {
-                    $(this).removeClass("active");
-                    $(this).addClass("disabled");
+                    $(this).removeClass("active");//removed disabled class everywherefor PL Ticket@*#585*@
                 }
             });
         }
@@ -264,7 +260,6 @@
             $('#ChildULMQLConversion').children().each(function () {
                 if ($(this).hasClass('active')) {
                     $(this).removeClass("active");
-                    $(this).addClass("disabled");
                 }
             });
         }
@@ -288,9 +283,8 @@
                 $("#ChildULMQLConversion").empty();
                 if (childLabel.length) {
                     for (i in childLabel) {
-                        $("#ChildULMQLConversion").append('<li class="disabled pull-left" id="' + childLabel[i].id + '"><a >' + childLabel[i].title + '</a></li>');
+                        $("#ChildULMQLConversion").append('<li class="pull-left" id="' + childLabel[i].id + '"><a >' + childLabel[i].title + '</a></li>');//#585
                     }
-                    $("#ChildULMQLConversion").find('li:first').removeClass("disabled");
                     $("#ChildULMQLConversion").find('li:first').addClass("active");
                 }
                 else {
@@ -302,7 +296,6 @@
         function LoadChildClick() {
             $("#ChildULMQLConversion li").click(function () {
                 RemoveTabClassChildULMQLConversion();
-                $(this).removeClass("disabled");
                 $(this).addClass("active");
                 var selectParent = $(this).children().text();
                 var selectId = $(this).attr("id");
@@ -571,7 +564,6 @@
             var selectParent = $(this).children().text();
             if (selectParent != "MQL Performance") {
                 RemoveTabClassMQLPerformance();
-                $(this).removeClass("disabled");
                 $(this).addClass("active");
                 parentTab = selectParent;
                 LoadPerformanceData(parentTab);
@@ -582,7 +574,6 @@
             $('#MQLPerformance').children().each(function () {
                 if ($(this).hasClass('active')) {
                     $(this).removeClass("active");
-                    $(this).addClass("disabled");
                 }
             });
         }

@@ -127,7 +127,7 @@
     <li id="liOpen" class="active pull-right">
         <a href="#">Open</a>
     </li>
-    <li id="liAll" class="disabled pull-right">
+    <li id="liAll" class="pull-right">
         <a href="#">All Tactics</a>
     </li>
 </ul>
@@ -160,8 +160,8 @@
         CallAjax();
         $("#liOpen a").click(function () {
             Status = 0;
-            $("#liOpen").removeClass('disabled').addClass('active');
-            $("#liAll").removeClass('active').addClass('disabled');
+            $("#liOpen").addClass('active');
+            $("#liAll").removeClass('active');
             $("#errorMessage").css("display", "none");
             $("#successMessage").css("display", "none");
             $("#div-user-Note").hide();
@@ -171,8 +171,8 @@
 
         $("#liAll a").click(function () {
             Status = 1;
-            $("#liOpen").removeClass('active').addClass('disabled');
-            $("#liAll").addClass('active').removeClass('disabled');
+            $("#liOpen").removeClass('active');
+            $("#liAll").addClass('active');//#585
             $("#errorMessage").css("display", "none");
             $("#successMessage").css("display", "none");
             $("#div-user-Note").show();

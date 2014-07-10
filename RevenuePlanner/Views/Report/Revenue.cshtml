@@ -5,16 +5,16 @@
     </li>
     @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
     {
-        <li class="disabled pull-right">
+        <li class="pull-right">
             <a>@RevenuePlanner.Helpers.Common.RevenueBusinessUnit</a>
         </li>
     }
-    <li class="disabled pull-right">
+    <li class="pull-right">
         <a>@RevenuePlanner.Helpers.Common.RevenueGeography</a>
     </li>
     @if (RevenuePlanner.Helpers.Sessions.ReportPlanId == 0)
     {
-        <li class="disabled pull-right">
+        <li class="pull-right">
             <a>@RevenuePlanner.Helpers.Common.RevenuePlans</a>
         </li>
     }
@@ -49,18 +49,18 @@
         <li class="active pull-right">
             <a>@RevenuePlanner.Helpers.Common.RevenueOrganization</a>
         </li>
-        <li class="disabled pull-right">
+        <li class="pull-right">
             <a>@RevenuePlanner.Helpers.Common.RevenueVertical</a>
         </li>
-        <li class="disabled pull-right">
+        <li class="pull-right">
             <a>@RevenuePlanner.Helpers.Common.RevenueGeography</a>
         </li>
-        <li class="disabled pull-right">
+        <li class="pull-right">
             <a>@RevenuePlanner.Helpers.Common.RevenueAudience</a>
         </li>
         @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
         {
-            <li class="disabled pull-right">
+            <li class="pull-right">
                 <a>@RevenuePlanner.Helpers.Common.RevenueBusinessUnit</a>
             </li>
         }
@@ -183,18 +183,18 @@
         <li class="active pull-right">
             <a>@RevenuePlanner.Helpers.Common.RevenueCampaign</a>
         </li>
-        <li class="disabled pull-right">
+        <li class="pull-right">
             <a>@RevenuePlanner.Helpers.Common.RevenueVertical</a>
         </li>
-        <li class="disabled pull-right">
+        <li class="pull-right">
             <a>@RevenuePlanner.Helpers.Common.RevenueGeography</a>
         </li>
-        <li class="disabled pull-right">
+        <li class="pull-right">
             <a>@RevenuePlanner.Helpers.Common.RevenueAudience</a>
         </li>
         @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
         {
-            <li class="disabled pull-right">
+            <li class="pull-right">
                 <a>@RevenuePlanner.Helpers.Common.RevenueBusinessUnit</a>
             </li>
         }
@@ -318,14 +318,13 @@
 
         /* First Revenue Summary */
         var reportTableInfo;
-        $('#ParentULRevenueSummary').find('li:nth-child(2)').removeClass('disabled').addClass('active');
+        $('#ParentULRevenueSummary').find('li:nth-child(2)').addClass('active');
         var parentLabel = $('#ParentULRevenueSummary').find('li:nth-child(2)').children().text();
         LoadChildData();
         $("#ParentULRevenueSummary li").click(function () {
             var selectParent = $(this).children().text();
             if (selectParent != "Revenue Summary") {
                 RemoveTabClassParentULRevenueSummary();
-                $(this).removeClass("disabled");
                 $(this).addClass("active");
                 parentLabel = selectParent;
                 LoadChildData();
@@ -336,7 +335,6 @@
             $('#ParentULRevenueSummary').children().each(function () {
                 if ($(this).hasClass('active')) {
                     $(this).removeClass("active");
-                    $(this).addClass("disabled");
                 }
             });
         }
@@ -363,9 +361,8 @@
                 $("#ChildULRevenueSummary").empty();
                 if (childLabel.length) {
                     for (i in childLabel) {
-                        $("#ChildULRevenueSummary").append('<li class="disabled pull-left" id="' + childLabel[i].id + '"><a>' + childLabel[i].title + '</a></li>');
+                        $("#ChildULRevenueSummary").append('<li class="pull-left" id="' + childLabel[i].id + '"><a>' + childLabel[i].title + '</a></li>');
                     }
-                    $("#ChildULRevenueSummary").find('li:first').removeClass("disabled");
                     $("#ChildULRevenueSummary").find('li:first').addClass("active");
                 }
                 else {
@@ -377,7 +374,6 @@
         function LoadChildClick() {
             $("#ChildULRevenueSummary li").click(function () {
                 RemoveTabClassChildULRevenueSummary();
-                $(this).removeClass("disabled");
                 $(this).addClass("active");
                 var selectParent = $(this).children().text();
                 var selectId = $(this).attr("id");
@@ -391,8 +387,6 @@
         function RemoveTabClassChildULRevenueSummary() {
             $('#ChildULRevenueSummary').children().each(function () {
                 $(this).removeClass("active");
-                $(this).removeClass("disabled");
-                $(this).addClass("disabled");
             });
         }
 
@@ -727,7 +721,6 @@
             var selectParent = $(this).children().text();
             if (selectParent != "Revenue to Plan") {
                 RemoveTabClassParentULRevenueToPlan();
-                $(this).removeClass("disabled");
                 $(this).addClass("active");
                 parentLabelRevenueToPLan = selectParent;
                 LoadChildDataRevenueToPlan();
@@ -737,7 +730,6 @@
         function LoadChildClickRevenueToPlan() {
             $("#ChildULRevenueToPlan li").click(function () {
                 RemoveTabClassChildULRevenueToPlan();
-                $(this).removeClass("disabled");
                 $(this).addClass("active");
                 var selectParent = $(this).children().text();
                 var selectId = $(this).attr("id");
@@ -755,7 +747,6 @@
             $('#ParentULRevenueToPlan').children().each(function () {
                 if ($(this).hasClass('active')) {
                     $(this).removeClass("active");
-                    $(this).addClass("disabled");
                 }
             });
         }
@@ -763,8 +754,6 @@
         function RemoveTabClassChildULRevenueToPlan() {
             $('#ChildULRevenueToPlan').children().each(function () {
                 $(this).removeClass("active");
-                $(this).removeClass("disabled");
-                $(this).addClass("disabled");
             });
         }
 
@@ -773,9 +762,8 @@
                 $("#ChildULRevenueToPlan").empty();
                 if (childLabel.length) {
                     for (i in childLabel) {
-                        $("#ChildULRevenueToPlan").append('<li class="disabled pull-left" id="' + childLabel[i].id + '"><a>' + childLabel[i].title + '</a></li>');
+                        $("#ChildULRevenueToPlan").append('<li class="pull-left" id="' + childLabel[i].id + '"><a>' + childLabel[i].title + '</a></li>');
                     }
-                    $("#ChildULRevenueToPlan").find('li:first').removeClass("disabled");
                     $("#ChildULRevenueToPlan").find('li:first').addClass("active");
                 }
                 else {
@@ -1822,7 +1810,6 @@
             var selectParent = $(this).children().text();
             if (selectParent != "Revenue Contribution") {
                 RemoveTabClassParentULRevenueContribution();
-                $(this).removeClass("disabled");
                 $(this).addClass("active");
                 parentLabelContribution = selectParent;
                 if (parentLabelContribution == "@RevenuePlanner.Helpers.Common.RevenueBusinessUnit") {
@@ -1840,7 +1827,6 @@
             $("#ParentULRevenueContribution").children().each(function () {
                 if ($(this).hasClass('active')) {
                     $(this).removeClass("active");
-                    $(this).addClass("disabled");
                 }
             });
         }

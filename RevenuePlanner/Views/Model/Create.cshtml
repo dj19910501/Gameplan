@@ -169,20 +169,20 @@
                 <h2 id="lblTitle">@v.Title <span class="gray source-sans-prolight" title="@v.Status">@v.Status</span></h2>
 
             </li>
-            <li id="ver_@v.ModelId" class="disabled pull-right" title="@v.Version">
+            <li id="ver_@v.ModelId" class="active pull-right" title="@v.Version">
                 <a href="#" onclick="LoadModelData(@v.ModelId,'@v.BusinessUnitId', true)">@Html.Raw("v")@v.Version</a>
             </li>
                 }
                 else
                 {
-            <li id="ver_@v.ModelId" class="disabled pull-right" title="@v.Version">
+            <li id="ver_@v.ModelId" class="pull-right" title="@v.Version">
                 <a href="#" onclick="LoadModelData(@v.ModelId,'@v.BusinessUnitId',false)">@Html.Raw("v")@v.Version</a>
             </li>
                 }
             }
             if (Model.Versions.Count == 1)
             {
-            <li class="disabled pull-right">
+            <li class="pull-right">
                 <a href="#">@Html.Raw("No Saved Versions")</a>
             </li>
             }
@@ -194,7 +194,7 @@
             <li class="active pull-right" title="1.0">
                 <a href="#">@Html.Raw("v")1.0</a>
             </li>
-            <li class="disabled pull-right">
+            <li class="pull-right">
                 <a href="#">@Html.Raw("No Saved Versions")</a>
             </li>
             }
@@ -229,7 +229,7 @@
                         <h2>3. Conversion Rates</h2>
 
                     </li>
-                    <li id="benchmarked-option" class="disabled pull-right">
+                    <li id="benchmarked-option" class="pull-right">
                         <a>Benchmarked</a>
                     </li>
                     <li id="advanced-option" class="active pull-right">
@@ -636,16 +636,16 @@ $(document).ready(function () {
         $('#inputs-group').hide();
         $('#benchmarked').show();
         $("#IsBenchmarked").val(true);
-        $('#benchmarked-option').removeClass('disabled pull-right');
+        $('#benchmarked-option').removeClass('pull-right');
         $('#benchmarked-option').addClass('active pull-right');
         $('#advanced-option').removeClass('active pull-right');
-        $('#advanced-option').addClass('disabled pull-right');
+        $('#advanced-option').addClass('pull-right');
     }
     function advanced() {
-        $('#advanced-option').removeClass('disabled pull-right');
+        $('#advanced-option').removeClass('pull-right');//#585
         $('#advanced-option').addClass('active pull-right');
         $('#benchmarked-option').removeClass('active pull-right');
-        $('#benchmarked-option').addClass('disabled pull-right');
+        $('#benchmarked-option').addClass('pull-right');
         $('#inputs-group').show();
         $('#benchmarked').hide();
         $("#IsBenchmarked").val(false);
@@ -688,11 +688,11 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
         $("#btnsave").show();
         MakeEditable();//Bug 17:Should not be able to edit a published model
     }
-    $('#ver_' + modelId).removeClass('disabled pull-right');
+    $('#ver_' + modelId).removeClass('pull-right');
     $('#ver_' + modelId).addClass('active pull-right');
-    if (lastModelId != null) {
+    if (lastModelId != null && lastModelId != modelId) {
         $('#ver_' + lastModelId).removeClass('active pull-right');
-        $('#ver_' + lastModelId).addClass('disabled pull-right');
+        $('#ver_' + lastModelId).addClass('pull-right');
     }
     lastModelId = modelId;
 

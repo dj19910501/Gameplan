@@ -1741,9 +1741,9 @@ span.requests-logo-icon {
     font-size: 12px;
 }
 
-    .nav-tabs li a {
+    /*.nav-tabs li a {
         color: #555555 !important;
-    }
+    }for # 585*/
 
     .nav-tabs li.disabled a {
         color: #D4D4D4 !important;
@@ -7260,3 +7260,20 @@ background-color: #ffffff; padding:20px; margin-top:1px; border-radius: 5px 5px 
     font-size : 21px !important;
 }
 /* End - Added By Kalpesh Sharma on 27/06/2014 for PL ticket #508 */
+
+
+
+
+.nav-tabs li a {
+        color: #D4D4D4 !important;/*#585*/
+    }
+
+
+     .nav-tabs li a:hover {
+        color:#555555 !important;
+    } /*uday #585*/
+
+      .nav-tabs > .active > a, .nav-tabs > .active > a:hover, .nav-tabs > .active > a:focus {
+    color: #555555 !important;
+    text-decoration: none !important;
+}/*#585*/

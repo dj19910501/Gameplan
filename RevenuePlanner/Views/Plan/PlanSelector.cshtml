@@ -113,7 +113,6 @@
         // Function to attach event to li element of Years tab
         $('#YearTabs').on('click', 'li', function (e) {
             RemoveActiveClass_YearsTab();
-            $(this).removeClass("disabled");
             $(this).addClass("active");
             TabClick();
         });
@@ -121,7 +120,6 @@
         // Function to attach event to li element of Business Units tab
         $('#BUTabs').on('click', 'li', function (e) {
             RemoveActiveClass_BUTab();
-            $(this).removeClass("disabled");
             $(this).addClass("active");
             TabClick();
         });
@@ -212,13 +210,12 @@
             $('#YearTabs li:not(:first)').empty();
             if (Years.length) {
                 for (i in Years) {
-                    $("#YearTabs").append('<li class="disabled pull-right" id="' + Years[i] + '"><a >' + Years[i] + '</a></li>');
+                    $("#YearTabs").append('<li class="pull-right" id="' + Years[i] + '"><a >' + Years[i] + '</a></li>');
                 }
 
                 // This code makes the current year tab active
                 $('#YearTabs > li > a').each(function () {
                     if ($(this).text() == Year) {
-                        $(this).parent().removeClass("disabled");
                         $(this).parent().addClass("active");
                         //TabClick();/* commented by Nirav shah for TFS Point : 218 on 13 March 2014*/
                     }
@@ -238,7 +235,6 @@
         $('#YearTabs').children().each(function () {
             if ($(this).hasClass('active')) {
                 $(this).removeClass("active");
-                $(this).addClass("disabled");
             }
         });
     }
@@ -262,9 +258,8 @@
             $('#BUTabs').empty();
             if (BU.length) {
                 for (i in BU) {
-                    $("#BUTabs").append('<li class="disabled pull-left" id="' + BU[i].id + '"><a >' + BU[i].title + '</a></li>');
+                    $("#BUTabs").append('<li class="pull-left" id="' + BU[i].id + '"><a >' + BU[i].title + '</a></li>');
                 }
-                $("#BUTabs").find('li:first').removeClass("disabled");
                 $("#BUTabs").find('li:first').addClass("active");
             }
             else {
@@ -277,7 +272,6 @@
         $('#BUTabs').children().each(function () {
             if ($(this).hasClass('active')) {
                 $(this).removeClass("active");
-                $(this).addClass("disabled");
             }
         });
     }

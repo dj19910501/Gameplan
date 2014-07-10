@@ -794,7 +794,7 @@ span.setbackground {
 .nav > li > a:hover,
 .nav > li > a:focus {
     /*text-decoration: none;*/
-    background-color: #dddddd !important;
+    /*background-color: #dddddd !important;*/
 }
 
 a {
@@ -3401,3 +3401,8 @@ font-family: 'source_sans_proregular', Arial, "sans-serif" !important; color:#ff
 }
 /*END : Functional & code review points 34*/
 
+
+
+a:focus {
+        outline:0 !important;
+    }/*#585*/
