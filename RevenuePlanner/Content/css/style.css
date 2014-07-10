@@ -7277,6 +7277,7 @@ background-color: #ffffff; padding:20px; margin-top:1px; border-radius: 5px 5px 
       .nav-tabs > .active > a, .nav-tabs > .active > a:hover, .nav-tabs > .active > a:focus {
     color: #555555 !important;
     text-decoration: none !important;
+    cursor:pointer !important;/*FOR HAND CURSOR*/
 }/*#585*/ 
 
 /* Start - Added by Sohel Pathan on 10/07/2014 for PL ticket #586 */
