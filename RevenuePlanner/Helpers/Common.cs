@@ -345,7 +345,7 @@ namespace RevenuePlanner.Helpers
                 // Modified BY : Kalpesh Sharma
                 // #453: Support request Issue field needs to be bigger
                 // Send image in Email template 
-                if (htmltextview.LinkedResources.Count > 0)
+                if (htmltextview != null && htmltextview.LinkedResources.Count > 0)//null cond added by uday since this parameter is utilized only for support mail but mail sending method is utilized all over application
                 {
                     objEmail.AlternateViews.Add(htmltextview);
                 }

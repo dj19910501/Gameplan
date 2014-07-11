@@ -747,7 +747,8 @@ namespace RevenuePlanner.Controllers
                 Notification notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationUserCreated));
                 if (notification != null)
                 {
-                    string emailBody = notification.EmailContent.Replace("[NameToBeReplaced]", user.FirstName + " " + user.LastName).Replace("[LoginToBeReplaced]", user.Email).Replace("[PasswordToBeReplaced]", password);
+                    string applicationLink = Url.Action("Index", "Login", new { }, Request.Url.Scheme);//added by uday for #587
+                    string emailBody = notification.EmailContent.Replace("[NameToBeReplaced]", user.FirstName + " " + user.LastName).Replace("[LoginToBeReplaced]", user.Email).Replace("[PasswordToBeReplaced]", password).Replace("[ApplicationLink]", applicationLink);//application link added by uday for #587););
                     Common.sendMail(user.Email, Common.FromMail, emailBody, notification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High));
                 }
             }
