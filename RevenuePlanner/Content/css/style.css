@@ -7304,6 +7304,7 @@ background-color: #ffffff; padding:20px; margin-top:1px; border-radius: 5px 5px 
             display: block;
             float: left;
             margin-top: 3px;
+            margin-left: 15px;
         }
 
         #table_baseline tbody tr:hover td span.duplicate-icon {
