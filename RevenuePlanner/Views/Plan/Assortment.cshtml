@@ -183,49 +183,8 @@
         $("#spanTitle").prop('title', spantitle);
     }
 
-    $("#btnSaveAndContinue").click(function () {
-        //CheckUserSession("#btnSaveAndContinue", true);
-        //if (reason == 'user') {
-        //    return false;
-        //}
-        if (isApply) {
-            $('#cErrorDuplicatePlan').html('<strong>Error! </strong> Please add at least one campaign.');
-            $("#errorMessageDuplicatePlan").slideDown(3000);
-        }
-        else {
-            // Added By Bhavesh
-            // PL Ticket 289,377,378
-            if (SuggestionIMPTacticIdList.length != 0) {
-                if (confirm('Are you sure you want to delete the un-deployed improvement tactic? Please note that any changes to the improvement tactic owned by others won\'t be saved.')) {
-                    var uId = $(window).attr('name');
-                    $.ajax({
-                        type: 'POST',
-                        url: '@Url.Content("~/Plan/DeleteSuggestedBoxImprovementTactic/")',
-                        data: {
-                            SuggestionIMPTacticIdList: SuggestionIMPTacticIdList.toString(),
-                            UserId: uId
-                        },
-                        success: function (data) {
-                            if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                                window.location = '@Url.Content("~/Login/Index")';
-                            }
-                            else {
-                                var url = '@Url.Action("ApplyToCalendar", "Plan")';
-                                window.location.href = url;
-                            }
-                        }
-                    });
-                    }
-                    else {
-                        return false;
-                    }
-                }
-                else {
-                    var url = '@Url.Action("ApplyToCalendar", "Plan")';
-                window.location.href = url;
-            }
-        }
-    });
+    
+
     var ismsg = $("#hdnMsg").val();
     var hdnisError = $("#hdnisError").val();
     
@@ -278,17 +237,23 @@
 
         $('#BtnGroup').click(function (e) {
             if ($(this).html().toLowerCase() == "duplicate") {
-                CheckUserSession("#BtnGroup", true);
-                if (reason == 'user') {
-                    return false;
-                }
-                else {
-                    DuplicatePlan();
-                }
+                //CheckUserSession("#BtnGroup", true);
+                //if (reason == 'user') {
+                //    return false;
+                //}
+                //else {
+                //DuplicatePlan();
+                //Dharmraj 11July2014 : 547 (Warning of data loss during make duplicate plan)
+                displayConfirmCommon('DuplicatePlan();');
+
+                //}
             }
             else {
-                var url = '@Url.Content("~/Plan/Create/0")';
-                window.location.href = url;
+                //Dharmraj 11July2014 : 547 (Warning of data loss during new plan creation)
+                @*var url = '@Url.Content("~/Plan/Create/0")';
+                window.location.href = url;*@
+                displayconfirm('@Url.Content("~/Plan/Create/0")');
+
             }
         });
 
@@ -368,7 +333,8 @@
             e.stopPropagation();
             $.ajaxSetup({ cache: false });
             var idCampaing = $(this).parent().parent().attr('id');
-            displayconfirmForCampaignEvent(idCampaing);
+            //displayconfirmForCampaignEvent(idCampaing);
+            displayConfirmCommon('campaignCommonClick(' + idCampaing + ');');
 
             @*$("#slidepanel").css("display", "block");
             var idCampaing = $(this).parent().parent().attr('id');
@@ -402,21 +368,21 @@
         }
 
         //Dharmraj Start 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
-        function displayconfirmForCampaignEvent(id) {
-            if (isDataChanged()) {
-                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
-                $("#errorMessageDuplicatePlan").slideDown(3000);
-                $("#btnConfirmOK").click(function () {
-                    //alert(id);
-                    $('#cErrorDuplicatePlan').html("");
-                    $("#errorMessageDuplicatePlan").hide();
-                    campaignCommonClick(id);
-                });
-            }
-            else {
-                campaignCommonClick(id);
-            }
-        }
+        //function displayconfirmForCampaignEvent(id) {
+        //    if (isDataChanged()) {
+        //        $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+        //        $("#errorMessageDuplicatePlan").slideDown(3000);
+        //        $("#btnConfirmOK").click(function () {
+        //            //alert(id);
+        //            $('#cErrorDuplicatePlan').html("");
+        //            $("#errorMessageDuplicatePlan").hide();
+        //            campaignCommonClick(id);
+        //        });
+        //    }
+        //    else {
+        //        campaignCommonClick(id);
+        //    }
+        //}
 
         //Manoj Start 28Jan2014 : Bug-12 (User can lose data via navigation in application)
         function AssignDefaultValue() {
@@ -473,6 +439,23 @@
         }
         //Manoj End 28Jan2014 : Bug-12 (User can lose data via navigation in application)
 
+        function displayConfirmCommon(functionName) {
+            if (isDataChanged()) {
+                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+                $("#errorMessageDuplicatePlan").slideDown(3000);
+                $("#btnConfirmOK").click(function () {
+                    //alert(id);
+                    $('#cErrorDuplicatePlan').html("");
+                    $("#errorMessageDuplicatePlan").hide();
+                    eval(functionName);
+                });
+            }
+            else {
+                eval(functionName);
+            }
+        }
+        
+
         //Modified by Dharmraj 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
         $(document).on("click", ".gray-bg-text", function (e) {
             e.stopPropagation();
@@ -485,7 +468,9 @@
                 $(this).addClass('1');
             }
 
-            displayconfirmForProgramEvent(idProgram);
+            //displayconfirmForProgramEvent(idProgram);
+            displayConfirmCommon('programCommonClick(' + idProgram + ');');
+
             @*if (idProgram == 0) {
                 var idCampaing = $(this).parent().parent().attr('data-id-campaing');
                 var url = '@Url.Content("~/Plan/CreateProgram")';
@@ -521,21 +506,21 @@
         }
 
         //Dharmraj Start 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
-        function displayconfirmForProgramEvent(id) {
-            if (isDataChanged()) {
-                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
-                $("#errorMessageDuplicatePlan").slideDown(3000);
-                $("#btnConfirmOK").click(function () {
-                    //alert(id);
-                    $('#cErrorDuplicatePlan').html("");
-                    $("#errorMessageDuplicatePlan").hide();
-                    programCommonClick(id);
-                });
-            }
-            else {
-                programCommonClick(id);
-            }
-        }
+        //function displayconfirmForProgramEvent(id) {
+        //    if (isDataChanged()) {
+        //        $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+        //        $("#errorMessageDuplicatePlan").slideDown(3000);
+        //        $("#btnConfirmOK").click(function () {
+        //            //alert(id);
+        //            $('#cErrorDuplicatePlan').html("");
+        //            $("#errorMessageDuplicatePlan").hide();
+        //            programCommonClick(id);
+        //        });
+        //    }
+        //    else {
+        //        programCommonClick(id);
+        //    }
+        //}
 
         $(document).on("click", ".add-icon.program", function (e) {
             var idCampaing = $(this).parent().parent().attr('data-id-campaing');
@@ -560,7 +545,8 @@
                 $(this).addClass('1');
             }
             
-            displayconfirmForTacticEvent(idTactic);
+            //displayconfirmForTacticEvent(idTactic);
+            displayConfirmCommon('tacticCommonClick(' + idTactic + ');');
 
             @*$("#slidepanel").css("display", "block");
             if (idTactic == 0) {
@@ -593,21 +579,21 @@
         }
 
         //Dharmraj Start 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
-        function displayconfirmForTacticEvent(id) {
-            if (isDataChanged()) {
-                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
-                $("#errorMessageDuplicatePlan").slideDown(3000);
-                $("#btnConfirmOK").click(function () {
-                    //alert(id);
-                    $('#cErrorDuplicatePlan').html("");
-                    $("#errorMessageDuplicatePlan").hide();
-                    tacticCommonClick(id);
-                });
-            }
-            else {
-                tacticCommonClick(id);
-            }
-        }
+        //function displayconfirmForTacticEvent(id) {
+        //    if (isDataChanged()) {
+        //        $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+        //        $("#errorMessageDuplicatePlan").slideDown(3000);
+        //        $("#btnConfirmOK").click(function () {
+        //            //alert(id);
+        //            $('#cErrorDuplicatePlan').html("");
+        //            $("#errorMessageDuplicatePlan").hide();
+        //            tacticCommonClick(id);
+        //        });
+        //    }
+        //    else {
+        //        tacticCommonClick(id);
+        //    }
+        //}
 
         /*
           Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
@@ -706,9 +692,11 @@
             //if (reason == 'user') {
             //    return false;
             //}
+
             e.stopPropagation();
             var idTactic = $(this).parent().attr('index');
             displayconfirmForDeleteEvent(idTactic, 'tactic');
+            
             e.stopPropagation();
             @*var uId = $(window).attr('name');
             if (confirm('Are you sure you want to delete this tactic?')) {
@@ -811,7 +799,7 @@
             if (type == "program") {
                 var uId = $(window).attr('name');
                 if (confirm('Are you sure you want to delete this program?')) {
-                    e.stopPropagation();
+                    //e.stopPropagation();
                     //var idProgram = $(this).parent().attr('id');
                     var idProgram = id;
                     $.ajax({
@@ -893,6 +881,7 @@
             if (isDataChanged()) {
                 $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
                 $("#errorMessageDuplicatePlan").slideDown(3000);
+
                 $("#btnConfirmOK").click(function () {
                     //alert(id);
                     //$("#slidepanel").is(':visible')
@@ -908,7 +897,113 @@
             }
         }
 
+        $("#btnSaveAndContinue").click(function () {
+            //CheckUserSession("#btnSaveAndContinue", true);
+            //if (reason == 'user') {
+            //    return false;
+            //}
+            displayconfirmForSaveContinueEvent();
+            @*if (isApply) {
+            $('#cErrorDuplicatePlan').html('<strong>Error! </strong> Please add at least one campaign.');
+            $("#errorMessageDuplicatePlan").slideDown(3000);
+        }
+        else {
+            // Added By Bhavesh
+            // PL Ticket 289,377,378
+            if (SuggestionIMPTacticIdList.length != 0) {
+                if (confirm('Are you sure you want to delete the un-deployed improvement tactic? Please note that any changes to the improvement tactic owned by others won\'t be saved.')) {
+                    var uId = $(window).attr('name');
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/Plan/DeleteSuggestedBoxImprovementTactic/")',
+                        data: {
+                            SuggestionIMPTacticIdList: SuggestionIMPTacticIdList.toString(),
+                            UserId: uId
+                        },
+                        success: function (data) {
+                            if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                                window.location = '@Url.Content("~/Login/Index")';
+                            }
+                            else {
+                                var url = '@Url.Action("ApplyToCalendar", "Plan")';
+                                window.location.href = url;
+                            }
+                        }
+                    });
+                    }
+                    else {
+                        return false;
+                    }
+                }
+                else {
+                    var url = '@Url.Action("ApplyToCalendar", "Plan")';
+                window.location.href = url;
+            }
+        }*@
+        });
 
+
+        //Dharmraj Start 11July2014 : 547 (Warning of data loss during save and comtinue)
+        function displayconfirmForSaveContinueEvent() {
+            if (isDataChanged()) {
+                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+                $("#errorMessageDuplicatePlan").slideDown(3000);
+                $("#btnConfirmOK").click(function () {
+                    //alert(id);
+                    $('#cErrorDuplicatePlan').html("");
+                    $("#errorMessageDuplicatePlan").hide();
+                    saveAndContinueClick();
+                });
+            }
+            else {
+                saveAndContinueClick();
+            }
+        }
+
+        function saveAndContinueClick() {
+            //CheckUserSession("#btnSaveAndContinue", true);
+            //if (reason == 'user') {
+            //    return false;
+            //}
+            if (isApply) {
+                $('#cErrorDuplicatePlan').html('<strong>Error! </strong> Please add at least one campaign.');
+                $("#errorMessageDuplicatePlan").slideDown(3000);
+            }
+            else {
+                // Added By Bhavesh
+                // PL Ticket 289,377,378
+                if (SuggestionIMPTacticIdList.length != 0) {
+                    if (confirm('Are you sure you want to delete the un-deployed improvement tactic? Please note that any changes to the improvement tactic owned by others won\'t be saved.')) {
+                        var uId = $(window).attr('name');
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Content("~/Plan/DeleteSuggestedBoxImprovementTactic/")',
+                            data: {
+                                SuggestionIMPTacticIdList: SuggestionIMPTacticIdList.toString(),
+                                UserId: uId
+                            },
+                            success: function (data) {
+                                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                                    window.location = '@Url.Content("~/Login/Index")';
+                                }
+                                else {
+                                    var url = '@Url.Action("ApplyToCalendar", "Plan")';
+                                    window.location.href = url;
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        return false;
+                    }
+                }
+                else {
+                    var url = '@Url.Action("ApplyToCalendar", "Plan")';
+                    window.location.href = url;
+                }
+            }
+        }
+        //Dharmraj End 11July2014 : 547 (Warning of data loss during save and comtinue)
 
         $.ajax({
             type: 'POST',
@@ -1017,7 +1112,8 @@
                 $("a#divimpTactic").removeClass('1');
                 $(this).parent().addClass('1');
             }
-            displayconfirmForImpTacticEvent(idTactic);
+            //displayconfirmForImpTacticEvent(idTactic);
+            displayConfirmCommon('impTacticCommonClick(' + idTactic + ');');
 
             @*if (idTactic == 0) {
                 var idProgram = $(this).parent().attr('data-id-program');
@@ -1049,21 +1145,21 @@
         }
 
         //Dharmraj Start 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
-        function displayconfirmForImpTacticEvent(id) {
-            if (isDataChanged()) {
-                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
-                $("#errorMessageDuplicatePlan").slideDown(3000);
-                $("#btnConfirmOK").click(function () {
-                    //alert(id);
-                    $('#cErrorDuplicatePlan').html("");
-                    $("#errorMessageDuplicatePlan").hide();
-                    impTacticCommonClick(id);
-                });
-            }
-            else {
-                impTacticCommonClick(id);
-            }
-        }
+        //function displayconfirmForImpTacticEvent(id) {
+        //    if (isDataChanged()) {
+        //        $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+        //        $("#errorMessageDuplicatePlan").slideDown(3000);
+        //        $("#btnConfirmOK").click(function () {
+        //            //alert(id);
+        //            $('#cErrorDuplicatePlan').html("");
+        //            $("#errorMessageDuplicatePlan").hide();
+        //            impTacticCommonClick(id);
+        //        });
+        //    }
+        //    else {
+        //        impTacticCommonClick(id);
+        //    }
+        //}
 
         function Showmsg() {
             if (ismsg != '') {

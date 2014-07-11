@@ -106,7 +106,8 @@ namespace RevenuePlanner.Controllers
                 {
                     return RedirectToAction("NoModel");
                 }
-                TempData["selectList"] = new SelectList(List, "ModelId", "ModelTitle");
+                List.Insert(0, new PlanModel { ModelId = 0, ModelTitle = "select" }); // Added by dharmraj to add default select item in model dropdown
+                TempData["selectList"] = new SelectList(List, "ModelId", "ModelTitle"); 
                 /* added by Nirav Shah 12/20/2013*/
                 List<int> Listyear = new List<int>();
                 int yr = DateTime.Now.Year;
@@ -147,6 +148,7 @@ namespace RevenuePlanner.Controllers
                     objPlanModel.Title = "Plan Title";
                     objPlanModel.MQls = "0";
                     objPlanModel.Budget = 0;
+                    objPlanModel.Year = DateTime.Now.Year.ToString(); // Added by dharmraj to add default year in year dropdown
                     ViewBag.IsBusinessUnitEditable = true; // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 }
                 //end

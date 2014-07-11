@@ -135,7 +135,7 @@
                         @{
                         if (strPlanid == "" || strPlanid == "0")//if (strPlanid == "" || strPlanid == "0" || Model.IsDirector)
                         {
-                            @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], "select", new { datadefault = "SelectModel", @class = "myValue", placeholder = @Model.ModelId })
+                            @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], new { datadefault = "SelectModel", @class = "myValue", placeholder = @Model.ModelId })
                         }
                         else
                         {      
@@ -217,8 +217,10 @@
           // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
 
           $('#BtnGroup').click(function (e) {
-              var url = '@Url.Content("~/Plan/Create/0")';
-              window.location.href = url;
+              //Dharmraj 11July2014 : 547 (Warning of data loss during new plan creation)
+              @*var url = '@Url.Content("~/Plan/Create/0")';
+              window.location.href = url;*@
+              displayconfirm('@Url.Content("~/Plan/Create/0")');
           });
 
           $("#button-save").click(function () {

@@ -495,18 +495,38 @@
        function () {
            $('#BtnGroup').click(function (e) {
                if ($(this).html().toLowerCase() == "duplicate") {
-                   CheckUserSession("#BtnGroup", true);
-                   if (reason == 'user') {
-                       return false;
-                   }
-                   DuplicatePlan();
+                   //CheckUserSession("#BtnGroup", true);
+                   //if (reason == 'user') {
+                   //    return false;
+                   //}
+                   //DuplicatePlan();
+                   //Dharmraj 11July2014 : 547 (Warning of data loss during make duplicate plan)
+                   displayConfirmCommon('DuplicatePlan();');
                }
                else {
-                   var url = '@Url.Content("~/Plan/Create/0")';
-                   window.location.href = url;
+                   //Dharmraj 11July2014 : 547 (Warning of data loss during new plan creation)
+                   @*var url = '@Url.Content("~/Plan/Create/0")';
+                   window.location.href = url;*@
+                   displayconfirm('@Url.Content("~/Plan/Create/0")');
                }
            });
        });
+
+    function displayConfirmCommon(functionName) {
+        if (isDataChanged()) {
+            $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+            $("#errorMessageDuplicatePlan").slideDown(3000);
+            $("#btnConfirmOK").click(function () {
+                //alert(id);
+                $('#cErrorDuplicatePlan').html("");
+                $("#errorMessageDuplicatePlan").hide();
+                eval(functionName);
+            });
+        }
+        else {
+            eval(functionName);
+        }
+    }
 
        function DuplicatePlan() {
            $.ajax({
