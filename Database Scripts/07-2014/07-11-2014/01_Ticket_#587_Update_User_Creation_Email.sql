@@ -1,3 +1,6 @@
+
+--Execute this script on MRP Database--
+
 IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME='Notification' AND COLUMN_NAME = 'EmailContent')
 BEGIN
 
