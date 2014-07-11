@@ -2207,7 +2207,8 @@ namespace RevenuePlanner.Controllers
                         }
                     }
 
-                    if (IsPlanEditable && Convert.ToString(section).Trim().ToLower() != Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                    //47.	Check only for tactic, bhavesh internal review point, modified by Dharmraj
+                    if (IsPlanEditable && Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
                         // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
                         var lstUserCustomRestriction = Common.GetUserCustomRestriction();
@@ -2848,8 +2849,9 @@ namespace RevenuePlanner.Controllers
             int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
             var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
             var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
-            var IsBusinessUnitEditable = Common.IsBusinessUnitEditable(Sessions.BusinessUnitId);    // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            if (lstAllowedGeography.Contains(objPlanTactic.GeographyId.ToString()) && lstAllowedVertical.Contains(objPlanTactic.VerticalId.ToString()) && IsBusinessUnitEditable)   // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+            var lstAllowedBusinessUnit = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId).ToList();
+            //var IsBusinessUnitEditable = Common.IsBusinessUnitEditable(Sessions.BusinessUnitId);    // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+            if (lstAllowedGeography.Contains(objPlanTactic.GeographyId.ToString()) && lstAllowedVertical.Contains(objPlanTactic.VerticalId.ToString()) && lstAllowedBusinessUnit.Contains(objPlanTactic.BusinessUnitId.ToString()))//&& IsBusinessUnitEditable)   // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             {
                 ViewBag.IsTacticEditable = true;
             }
