@@ -7294,3 +7294,18 @@ background-color: #ffffff; padding:20px; margin-top:1px; border-radius: 5px 5px 
     z-index:auto !important;
 }
 /* End - Added by Sohel Pathan on 10/07/2014 for PL ticket #586 */
+
+/*Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-11-2014*/
+  #table_baseline tbody tr td span.duplicate-icon {
+            visibility: hidden;
+            background: url("../images/duplicate_icon.png") no-repeat;
+            width: 16px;
+            height: 16px;
+            display: block;
+            float: left;
+            margin-top: 3px;
+        }
+
+        #table_baseline tbody tr:hover td span.duplicate-icon {
+            visibility: visible;
+        }

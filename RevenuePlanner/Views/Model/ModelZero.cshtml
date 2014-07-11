@@ -108,6 +108,43 @@ else
     </div>
 }
 
+  <input type="hidden" value="0" id="hdnModelId" />
+ <!--div to display pop up for copying role-->
+        <div id="DivPartialShareModelDuplicate" style="display: none;">
+            <div class="all-height DivResetDefaults" id="DivShareModelDuplicatePopupMaincopy">
+                <div class="calc-height">
+                    <div class="span12">
+
+                        <div id="DivModelDuplicatePopupcopy" class="form-inspect-share hide fade in height-auto popup" role="dialog" style="display: block;">
+
+                            <div style="padding-bottom: 20px;" class="login-wrapper">
+                                @*Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-11-2014*@
+                                <h2 class="primary-title source-sans-proregular without-text-shadow">Duplicating a model</h2>
+                               <p> You are about to duplicate the 
+                                <strong id="original"></strong>
+                                .Please rename the new model:@*review point*@</p>
+                                @*End By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-11-2014*@
+                                <input type="text" value="" placeholder="Enter new model" name="textfield" maxlength="255" id="copymodeldesc" class="input-block-level source-sans-proregular copyroledesc">
+                                <!--error message-->
+                                <div id="errorMessagecopy" class="alert hide alert-error message-position">
+                                    <a class="close">×</a>
+                                    <strong></strong><span id="spanErrorMessageModelcopy"></span>
+                                </div>
+                                <!--error message-->
+                                <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" title="Save" value="Submit" id="copymodelbtn">Duplicate</button>
+                                <button class="cancel-btn btn-link text-shadow-black" type="button" id="cancelbtncopy">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="DivBackgroundShareModelDuplicatecopy" class="modal-backdrop fade in" style="z-index: 1500"></div>
+        </div>
+
+
+
+
+
 <script type="text/javascript">
     $(document).ready(function () {
 
@@ -264,7 +301,7 @@ function fillBaselineTable() {
             $html += '<span class="width3 float-left-margin-top4-margin-right10"></span>';
     }
 
-    $html += '<span class="title-baseline-model">' + _title + '</span><span class="search-icon"></span></td>' +
+        $html += '<span class="title-baseline-model">' + _title + '</span><span class="search-icon"></span><span id="' + _id + '" class="duplicate-icon"></span></td>' +
         '<td>' + _businessUnit + '</td>' +
         '<td>' + _version + '</td>' +
         '<td>' + _status + '</td>' +
@@ -276,4 +313,115 @@ function fillBaselineTable() {
 $(".createbtn").click(function () {
     window.location.href = $(this).attr('href');
 });
+
+
+@*Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-11-2014*@
+    $(document).on('click', '#table_baseline tbody tr .duplicate-icon', function (e) {
+        var id = $(this).attr("id");
+        $("#errorMessagecopy").css("display", "none");
+        if (id != null) {
+            $("#hdnModelId").val(id);
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Model/GetDefaultDuplicateModelName/")',
+            data: { modelId: id },
+            dataType: "json",
+            success: function (data) {
+                if (data.status == 1) {
+                    $("#copymodeldesc").val(data.msg);
+                    $("#original").text(data.name);
+                    $('#DivPartialShareModelDuplicate').show();
+                }
+                else {
+                    $("#cError").html('<strong>Error! </strong>' + data.msg)
+                    $("#errorMessage").slideDown(400);
+                    $("html, body").animate({ scrollTop: 0 }, 1000);
+                }
+            }
+        });
+    }
+        return false;
+    });
+function DuplicateModel() {
+
+    $.ajax({
+        type: 'POST',
+        url: '@Url.Content("~/Model/DuplicateModel/")',
+            data: { modelId: $('#hdnModelId').val(), title: $('#copymodeldesc').val() },
+            dataType: "json",
+            success: function (data) {
+                if (data.status == 1) {
+                    var url = '@Url.Content("~/Model/ModelZero")';
+                    window.location.href = url;
+                }
+                else {
+                    $("#cError").html('<strong>Error! </strong>' + data.msg)
+                    $("#errorMessage").slideDown(400);
+                    $("html, body").animate({ scrollTop: 0 }, 1000);
+                }
+            }
+        });
+    }
+
+
+    // Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
+    // Close or hide the Duplicate popup on Cancel click . 
+    $('#cancelbtncopy').click(function () {
+        $('#DivPartialShareModelDuplicate').hide();
+    });
+
+    // Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
+    $('#copymodelbtn').click(function () {
+        $(".copymodeldesc").removeClass("error");
+        var flag = 0;
+
+        if ($("#copymodeldesc").val() == "") {
+            $("#copymodeldesc").addClass("error");
+            flag = 1;
+        }
+
+        if (flag == 1) {
+            var msgspan = "Please enter value in the above field.";
+            $("#errorMessagecopy").css("display", "block");
+            $("#spanErrorMessageModelcopy").text(msgspan);
+        } else {
+            var modeltitle = $('#copymodeldesc').val();
+            if (/[!@@#$%\^&*(){}[\]<>?/|\-]/.test($("#copymodeldesc").val())) {
+
+                var msgspan = "Special character are not allowed, try again.";
+                $("#errorMessagecopy").css("display", "block");
+                $("#copymodeldesc").addClass("error");
+                $("#spanErrorMessageModelcopy").text(msgspan);//review point
+            }
+            else {
+
+                var titleName = $('#copymodeldesc').val();
+                var ModelID = $('#hdnModelId').val();
+
+                $.ajax(
+                {
+                    type: "POST",
+                    cache: false,
+                    url: '@Url.Content("~/Model/CheckDuplicateModelTitleByID")',
+                    data: { title: titleName, modelId: ModelID },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data == 'exist') {
+
+                            var msgspan = "A model with the same name already exists.";
+                            $("#errorMessagecopy").css("display", "block");
+                            $("#spanErrorMessageModelcopy").text(msgspan);
+                        }
+                        else {
+                            $('#DivPartialShareModelDuplicate').hide();
+                            DuplicateModel();
+                        }
+                    }
+                });
+            }
+        }
+        return false;
+    });
+
+@*End By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-11-2014*@
 </script>

@@ -4071,7 +4071,8 @@ namespace RevenuePlanner.Controllers
 
                     if (oldModel != null)
                     {
-                        result = oldModel.Title + Common.GetTimeStamp();
+                        //Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-11-2014
+                        result = oldModel.Title + " " + DateTime.Now.ToString("MMddyy");
                         ModelName = oldModel.Title;
                         StatusOpt = 1;
                     }
@@ -4083,6 +4084,40 @@ namespace RevenuePlanner.Controllers
                 result = "Invalid model id";
             }
             return Json(new { status = StatusOpt, msg = result, name = ModelName }, JsonRequestBehavior.AllowGet);
+        }
+
+
+        /// <summary>
+        /// Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-11-2014
+        /// When Duplicate model popup will be open at that time we have to set default value in textbox (Old Model Name + TImestamp value) 
+        /// </summary>
+        /// <param name="modelId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult CheckDuplicateModelTitleByID(string title, int modelId)
+        {
+            string result = string.Empty;
+
+
+            if (modelId > 0)
+            {
+                var businessunit = db.Models.Where(b => b.ModelId == modelId && b.IsDeleted == false).OrderByDescending(c => c.CreatedDate).Select(u => u.BusinessUnitId).FirstOrDefault();
+
+                if (!string.IsNullOrEmpty(Convert.ToString(businessunit)))
+                {
+                    Guid BUID = Guid.Parse(Convert.ToString(businessunit));
+                    var obj = db.Models.Where(m => m.IsDeleted == false && m.BusinessUnitId == BUID && m.Title.Trim().ToLower() == title.Trim().ToLower()).FirstOrDefault();
+                    if (obj == null)
+                    {
+                        return Json("notexist", JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json("exist", JsonRequestBehavior.AllowGet);
+                    }
+                }
+            }
+            return Json("exist", JsonRequestBehavior.AllowGet);
         }
 
         // Added By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
