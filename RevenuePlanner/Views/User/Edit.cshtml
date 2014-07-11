@@ -336,7 +336,14 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                                     {*@
                                         @Html.Label("Reassign Subordinates to")
                                         <div class="selectBox" id="ddlNewManagerIdSelectBox">
-                                            @Html.DropDownListFor(c => c.NewManagerId, Enumerable.Empty<SelectListItem>(), "Please Select")
+                                            @if(ViewBag.isForDelete == "true")
+                                            {
+                                                @Html.DropDownListFor(c => c.NewManagerId, new SelectList((System.Collections.IEnumerable)ViewData["ManagerList"], "ManagerId", "ManagerName"), "Please Select")
+                                            }
+                                            else
+                                            {
+                                                @Html.DropDownListFor(c => c.NewManagerId, Enumerable.Empty<SelectListItem>(), "Please Select")
+                                            }
                                         </div>
                                     @*}*@
                                 </div>

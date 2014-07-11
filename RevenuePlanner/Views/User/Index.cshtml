@@ -156,13 +156,13 @@
                             @foreach (var item in (List<RevenuePlanner.BDSService.User>)ViewBag.OtherUsers)
                             {
                                 <tr id="@item.UserId">
-                                    <td class="Inactive" title="@item.FirstName">
+                                    <td class="Inactive OtherUserList" title="@item.FirstName">
                                         @Html.DisplayFor(model => item.FirstName)
                                     </td>
-                                    <td class="Inactive border-r" title="@item.LastName" >
+                                    <td class="Inactive OtherUserList border-r" title="@item.LastName" >
                                         @Html.DisplayFor(model => item.LastName)
                                     </td>
-                                    <td class="Inactive">
+                                    <td class="Inactive OtherUserList">
                                         <div class="selectBox" id="ddlAssignRole">
                                             @Html.DropDownListFor(model => item.RoleId, new SelectList((System.Collections.IEnumerable)ViewData["Roles"], "RoleId", "Title"), "Please Select")
                                         </div>

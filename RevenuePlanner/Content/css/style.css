@@ -7284,8 +7284,11 @@ background-color: #ffffff; padding:20px; margin-top:1px; border-radius: 5px 5px 
 #ddlAssignRole {
     width: 100%;
 }
+.OtherUserList {
+    cursor:default !important;
+}
 .assignUser {
-    cursor:pointer;
+    cursor:pointer !important;
 }
 .myteam .sbHolder {
     z-index:auto !important;

@@ -525,7 +525,7 @@ namespace BDSService
             try
             {
                 User user = db.Users.Where(u => u.IsDeleted == false && u.UserId == userId).SingleOrDefault();
-                user.User_Application.Where(u => u.ApplicationId == applicationId && u.UserId == userId).FirstOrDefault().IsDeleted = true;////Added by Mitesh Vaishnav on 09-07-2014 for internal review points # 40.
+                user.User_Application.Where(u => u.ApplicationId == applicationId && u.UserId == userId && u.IsDeleted == false).FirstOrDefault().IsDeleted = true;////Added by Mitesh Vaishnav on 09-07-2014 for internal review points # 40.
                 db.Entry(user).State = EntityState.Modified;
                 int res = db.SaveChanges();
                 if (res > 0)
