@@ -22,9 +22,8 @@ namespace BDSService
             this.Role_Activity_Permission = new HashSet<Role_Activity_Permission>();
             this.User_Activity_Permission = new HashSet<User_Activity_Permission>();
             this.User_Activity_Permission1 = new HashSet<User_Activity_Permission>();
-            this.User_Application = new HashSet<User_Application>();
-            this.User_Application1 = new HashSet<User_Application>();
             this.User1 = new HashSet<User>();
+            this.User_Application = new HashSet<User_Application>();
         }
     
         public System.Guid UserId { get; set; }
@@ -53,9 +52,8 @@ namespace BDSService
         public virtual SecurityQuestion SecurityQuestion { get; set; }
         public virtual ICollection<User_Activity_Permission> User_Activity_Permission { get; set; }
         public virtual ICollection<User_Activity_Permission> User_Activity_Permission1 { get; set; }
-        public virtual ICollection<User_Application> User_Application { get; set; }
-        public virtual ICollection<User_Application> User_Application1 { get; set; }
         public virtual ICollection<User> User1 { get; set; }
         public virtual User User2 { get; set; }
+        public virtual ICollection<User_Application> User_Application { get; set; }
     }
 }

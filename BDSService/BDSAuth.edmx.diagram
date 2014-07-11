@@ -18,11 +18,9 @@
         <EntityTypeShape EntityType="BDSAuthModel.SecurityQuestion" Width="1.5" PointX="0.75" PointY="5" IsExpanded="true" />
         <EntityTypeShape EntityType="BDSAuthModel.User" Width="1.5" PointX="3" PointY="7" IsExpanded="true" />
         <EntityTypeShape EntityType="BDSAuthModel.User_Activity_Permission" Width="1.5" PointX="8.25" PointY="4.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="BDSAuthModel.User_Application" Width="1.5" PointX="8.25" PointY="12.125" IsExpanded="true" />
         <AssociationConnector Association="BDSAuthModel.FK_Application_Activity_Application" ManuallyRouted="false" />
         <AssociationConnector Association="BDSAuthModel.FK_Application_Role_Application" ManuallyRouted="false" />
         <AssociationConnector Association="BDSAuthModel.FK_Menu_Application_Application" ManuallyRouted="false" />
-        <AssociationConnector Association="BDSAuthModel.FK_User_Application_Application" ManuallyRouted="false" />
         <AssociationConnector Association="BDSAuthModel.FK_Role_Activity_Permission_Application_Activity" ManuallyRouted="false" />
         <AssociationConnector Association="BDSAuthModel.FK_User_Activity_Permission_Application_Activity" ManuallyRouted="false" />
         <AssociationConnector Association="BDSAuthModel.FK_Application_Role_Role" ManuallyRouted="false" />
@@ -38,10 +36,11 @@
         <AssociationConnector Association="BDSAuthModel.FK_User_SecurityQuestion" ManuallyRouted="false" />
         <AssociationConnector Association="BDSAuthModel.FK_User_Activity_Permission_User" ManuallyRouted="false" />
         <AssociationConnector Association="BDSAuthModel.FK_User_Activity_Permission_User1" ManuallyRouted="false" />
-        <AssociationConnector Association="BDSAuthModel.FK_User_Application_User" ManuallyRouted="false" />
-        <AssociationConnector Association="BDSAuthModel.FK_User_Application_User_ManagerId" ManuallyRouted="false" />
         <AssociationConnector Association="BDSAuthModel.ApplicationId_fk" />
         <AssociationConnector Association="BDSAuthModel.FK_User_User" />
+        <EntityTypeShape EntityType="BDSAuthModel.User_Application" Width="1.5" PointX="3.5749837903189396" PointY="18.724186607973738" />
+        <AssociationConnector Association="BDSAuthModel.FK_User_Application_Application" />
+        <AssociationConnector Association="BDSAuthModel.FK_User_Application_User" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
