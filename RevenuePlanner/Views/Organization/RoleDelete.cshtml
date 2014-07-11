@@ -100,24 +100,33 @@
             return false;
         }
         else {
+            var uId = $(window).attr('name');       // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
             $.ajax({
                 url: '@Url.Content("~/Organization/DeleteRole/")',
                 data: {
                     delroleid: deleterole,
-                    reassignroleid: reassignrole
+                    reassignroleid: reassignrole,
+                    LoginId: uId        // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
                 },
                 type: 'POST',
                 cache: false,
                 success: function (result) {
-                    if (result == true) {
-                        var url = '';
-                        url = '@Url.Content("~/Organization/ManageRoles")';
-                        window.location.href = url;
+                    // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                    if (result.returnURL != 'undefined' && result.returnURL == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
                     }
                     else {
-                        var msgspan = "Error.";
-                        $("#errorMessage").css("display", "block");
-                        $("#spanErrorMessageRole").text(msgspan);
+                    // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                        if (result == true) {
+                            var url = '';
+                            url = '@Url.Content("~/Organization/ManageRoles")';
+                            window.location.href = url;
+                        }
+                        else {
+                            var msgspan = "Error.";
+                            $("#errorMessage").css("display", "block");
+                            $("#spanErrorMessageRole").text(msgspan);
+                        }
                     }
                 }
             });

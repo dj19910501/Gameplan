@@ -340,6 +340,7 @@ function saveRoleActivity() {
     //syntax to get selected text 
     var roledesc = $("#ddlRoles :selected").text();
     var roleid = '@ViewBag.roleid';
+    var uId = $(window).attr('name');       // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
         $.ajax({
             url: '@Url.Content("~/Organization/Save/")',
             data: {
@@ -347,19 +348,27 @@ function saveRoleActivity() {
                 checkbox: globalids.toString(),
                 colorcode: colorCode,
                 roleid: roleid,
-                delpermission: globaldeleteids.toString()
+                delpermission: globaldeleteids.toString(),
+                LoginId: uId        // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
             },
             type: 'POST',
             cache: false,
             success: function (result) {
-                if (result == true) {
-                    $('#DivPartialShareTacticCheck').hide();
-                    $('#DivPartialShareTacticDel').show();
+                // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                if (result.returnURL != 'undefined' && result.returnURL == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
                 }
                 else {
-                    var msgspan = "Error.";
-                    $("#errorMessage").css("display", "block");
-                    $("#spanErrorMessageRole").text(msgspan);
+                // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                    if (result.status == true) {
+                        $('#DivPartialShareTacticCheck').hide();
+                        $('#DivPartialShareTacticDel').show();
+                    }
+                    else {
+                        var msgspan = "Error.";
+                        $("#errorMessage").css("display", "block");
+                        $("#spanErrorMessageRole").text(msgspan);
+                    }
                 }
             }
         });

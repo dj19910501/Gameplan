@@ -572,7 +572,9 @@
             autoclose: true,
         }).on('changeDate', function (ev) {
             var projectedStageValue = ReplaceCC($("#txtProjectedStageValue").val());
-            GetConversionRate(projectedStageValue, false);
+            if ($('#ddlTacticType').val() != '') {      // Added by Sohel Pathan on 11/07/2014 for PL ticket #549
+                GetConversionRate(projectedStageValue, false);
+            }
             $(this).datepicker('hide');
         });;
 

@@ -254,31 +254,41 @@
             var msgspan = "Please enter value in the above field.";
             $("#errorMessagecopy").css("display", "block");
             $("#spanErrorMessageRolecopy").text(msgspan);
-        } else {
+        }
+        else
+        {
+            var uId = $(window).attr('name');       // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
                 $.ajax({
                     url: '@Url.Content("~/Organization/CopyRole/")',
                     data: {
                         copyroledesc:escape(copyroledescription),
-                        originalroleid: originalid
+                        originalroleid: originalid,
+                        LoginId: uId        // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check 
                     },
                     type: 'POST',
                     cache: false,
                     success: function (result) {
-                        if (result == true) {
+                    // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                    if (result.returnURL != 'undefined' && result.returnURL == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
+                    }
+                    else {
+                    // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53  to implement user session check
+                        if (result.status == true) {
                             $('#copyroledesc').val(' ');
                             var url = '';
                             url = '@Url.Content("~/Organization/ManageRoles")';
-                        window.location.href = url;
-                    }
-                    else {
-                        var msgspan = "A role with the same name already exists.";;
-                        $("#errorMessagecopy").css("display", "block");
-                        $("#spanErrorMessageRolecopy").text(msgspan);
+                            window.location.href = url;
+                        }
+                        else {
+                            var msgspan = "A role with the same name already exists.";;
+                            $("#errorMessagecopy").css("display", "block");
+                            $("#spanErrorMessageRolecopy").text(msgspan);
+                        }
                     }
                 }
-                });
-
-    }
+            });
+        }
         return false;
     });
 

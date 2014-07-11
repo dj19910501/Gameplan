@@ -128,8 +128,8 @@ namespace RevenuePlanner.Controllers
             if (roledesc != null && roledesc != string.Empty)
             {
                 BDSService.Role objrole = new BDSService.Role();
-                objrole.Description =HttpUtility.HtmlDecode(roledesc);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-                objrole.Title =HttpUtility.HtmlDecode(roledesc);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+                objrole.Description = HttpUtility.HtmlDecode(roledesc);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+                objrole.Title = HttpUtility.HtmlDecode(roledesc);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
                 //Session["session"] = objrole;commented by uday for functional review point...3-7-2014
                 TempData["objrole"] = objrole;
 
@@ -276,8 +276,19 @@ namespace RevenuePlanner.Controllers
         }
 
         [HttpPost]
-        public JsonResult DeleteRole(Guid delroleid, Guid? reassignroleid)
+        public JsonResult DeleteRole(Guid delroleid, Guid? reassignroleid, string LoginId = "")
         {
+            // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+            if (!string.IsNullOrEmpty(LoginId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(LoginId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+
             if (reassignroleid == null)
             {
                 reassignroleid = Guid.Empty;
@@ -286,34 +297,55 @@ namespace RevenuePlanner.Controllers
             if (retval == 1)
             {
                 TempData["SuccessMessage"] = "Role Deleted Successfully.";
-                return Json(true, JsonRequestBehavior.AllowGet);
+                return Json(new { status = true }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
             }
             else
             {
-                return Json(false, JsonRequestBehavior.AllowGet);
+                return Json(new { status = false }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
             }
         }
 
         [HttpPost]
-        public JsonResult Save(string roledesc, string checkbox, string colorcode, Guid roleid, string delpermission)
+        public JsonResult Save(string roledesc, string checkbox, string colorcode, Guid roleid, string delpermission, string LoginId = "")
         {
+            // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+            if (!string.IsNullOrEmpty(LoginId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(LoginId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+
             string permissionID = checkbox.ToString();
 
             int retval = objBDSServiceClient.CreateRole(roledesc, permissionID, colorcode, Sessions.ApplicationId, Sessions.User.UserId, roleid, delpermission);
             if (retval == 1)
             {
-                return Json(true, JsonRequestBehavior.AllowGet);
+                return Json(new { status = true }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
             }
             else
             {
-                return Json(false, JsonRequestBehavior.AllowGet);
+                return Json(new { status = false }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
             }
         }
 
-
         [HttpPost]
-        public JsonResult CopyRole(string copyroledesc, Guid originalroleid)
+        public JsonResult CopyRole(string copyroledesc, Guid originalroleid, string LoginId = "")
         {
+            // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+            if (!string.IsNullOrEmpty(LoginId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(LoginId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+
             if (copyroledesc != null && copyroledesc != string.Empty)
             {
                 BDSService.Role objrole = new BDSService.Role();
@@ -327,19 +359,19 @@ namespace RevenuePlanner.Controllers
                     if (retval == 1)
                     {
                         TempData["SuccessMessage"] = "Role Copied Successfully.";
-                        return Json(true, JsonRequestBehavior.AllowGet);
+                        return Json(new { status = true }, JsonRequestBehavior.AllowGet);   // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
                     }
                     else
                     {
-                        return Json(false, JsonRequestBehavior.AllowGet);
+                        return Json(new { status = false }, JsonRequestBehavior.AllowGet);   // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
                     }
                 }
                 else
                 {
-                    return Json(false, JsonRequestBehavior.AllowGet);
+                    return Json(new { status = false }, JsonRequestBehavior.AllowGet);   // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
                 }
             }
-            return Json(false);
+            return Json(new { status = false }, JsonRequestBehavior.AllowGet);   // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
         }
 
         /// <summary>
@@ -436,142 +468,142 @@ namespace RevenuePlanner.Controllers
             List<UserActivityPermissionModel> userActivityPermissionList = new List<UserActivityPermissionModel>();
             try
             {
-            // Start - Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
-            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
-            ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
+                // Start - Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
+                ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+                ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
 
-            if ((bool)ViewBag.IsUserAdminAuthorized == false && Mode.ToLower() != Enums.UserPermissionMode.View.ToString().ToLower() && Mode.ToLower() != Enums.UserPermissionMode.MyPermission.ToString().ToLower())
-            {
-                return RedirectToAction("Index", "NoAccess");
-            }
-            // End - Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
-
-            ViewBag.PermissionMode = Mode;
-            Guid UserId = Guid.Parse(Id);
-            ViewBag.userId = UserId;
-            var userDetails = objBDSServiceClient.GetTeamMemberDetails(UserId, Sessions.ApplicationId);
-            var roleColorCode = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId).Where(rol => rol.RoleId == userDetails.RoleId).FirstOrDefault().ColorCode;
-            ViewBag.RoleColorCode = roleColorCode;
-            ViewBag.Name = userDetails.FirstName + " " + userDetails.LastName;
-            ViewBag.RoleName = userDetails.RoleTitle;
-            ViewBag.userGeography = userDetails.GeographyId.ToString();
-            ViewBag.userBusinessUnit = userDetails.BusinessUnitId.ToString();
-            var clientVerticals = db.Verticals.Where(ver => ver.ClientId == Sessions.User.ClientId).ToList();
-            var clientGeography = db.Geographies.Where(geo => geo.ClientId == Sessions.User.ClientId).ToList();
-            var clientBusinessUnit = db.BusinessUnits.Where(bu => bu.ClientId == Sessions.User.ClientId).ToList();
-            var userCustomRestrictionList = objBDSServiceClient.GetUserCustomRestrictionList(UserId, Sessions.ApplicationId);
-            var allAtctivity = objBDSServiceClient.GetAllApplicationActivity(Sessions.ApplicationId);
-            var userActivity = objBDSServiceClient.GetUserActivity(UserId, Sessions.ApplicationId);
-
-                
-            foreach (var item in allAtctivity)
-            {
-                UserActivityPermissionModel uapobj = new UserActivityPermissionModel();
-                uapobj.ApplicationActivityId = item.ApplicationActivityId;
-                uapobj.ApplicationId = item.ApplicationId;
-                uapobj.CreatedDate = item.CreatedDate;
-                uapobj.ParentId = item.ParentId;
-                uapobj.Title = item.ActivityTitle;
-                uapobj.Permission = Enums.UserActivityPermissionType.No.ToString();
-                if (userActivity != null)
+                if ((bool)ViewBag.IsUserAdminAuthorized == false && Mode.ToLower() != Enums.UserPermissionMode.View.ToString().ToLower() && Mode.ToLower() != Enums.UserPermissionMode.MyPermission.ToString().ToLower())
                 {
-                    if (userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).ToList().Count > 0)
+                    return RedirectToAction("Index", "NoAccess");
+                }
+                // End - Added by Sohel Pathan on 24/06/2014 for PL ticket #537 to implement user permission Logic
+
+                ViewBag.PermissionMode = Mode;
+                Guid UserId = Guid.Parse(Id);
+                ViewBag.userId = UserId;
+                var userDetails = objBDSServiceClient.GetTeamMemberDetails(UserId, Sessions.ApplicationId);
+                var roleColorCode = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId).Where(rol => rol.RoleId == userDetails.RoleId).FirstOrDefault().ColorCode;
+                ViewBag.RoleColorCode = roleColorCode;
+                ViewBag.Name = userDetails.FirstName + " " + userDetails.LastName;
+                ViewBag.RoleName = userDetails.RoleTitle;
+                ViewBag.userGeography = userDetails.GeographyId.ToString();
+                ViewBag.userBusinessUnit = userDetails.BusinessUnitId.ToString();
+                var clientVerticals = db.Verticals.Where(ver => ver.ClientId == Sessions.User.ClientId).ToList();
+                var clientGeography = db.Geographies.Where(geo => geo.ClientId == Sessions.User.ClientId).ToList();
+                var clientBusinessUnit = db.BusinessUnits.Where(bu => bu.ClientId == Sessions.User.ClientId).ToList();
+                var userCustomRestrictionList = objBDSServiceClient.GetUserCustomRestrictionList(UserId, Sessions.ApplicationId);
+                var allAtctivity = objBDSServiceClient.GetAllApplicationActivity(Sessions.ApplicationId);
+                var userActivity = objBDSServiceClient.GetUserActivity(UserId, Sessions.ApplicationId);
+
+
+                foreach (var item in allAtctivity)
+                {
+                    UserActivityPermissionModel uapobj = new UserActivityPermissionModel();
+                    uapobj.ApplicationActivityId = item.ApplicationActivityId;
+                    uapobj.ApplicationId = item.ApplicationId;
+                    uapobj.CreatedDate = item.CreatedDate;
+                    uapobj.ParentId = item.ParentId;
+                    uapobj.Title = item.ActivityTitle;
+                    uapobj.Permission = Enums.UserActivityPermissionType.No.ToString();
+                    if (userActivity != null)
                     {
-                        uapobj.Permission = Enums.UserActivityPermissionType.Yes.ToString();
-                        uapobj.UserCreatedBy = userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).FirstOrDefault().CreatedBy;
-                        uapobj.UserCreatedDate = userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).FirstOrDefault().CreatedDate;
-                        uapobj.UserId = userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).FirstOrDefault().UserId;
+                        if (userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).ToList().Count > 0)
+                        {
+                            uapobj.Permission = Enums.UserActivityPermissionType.Yes.ToString();
+                            uapobj.UserCreatedBy = userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).FirstOrDefault().CreatedBy;
+                            uapobj.UserCreatedDate = userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).FirstOrDefault().CreatedDate;
+                            uapobj.UserId = userActivity.Where(uact => uact.ApplicationActivityId == item.ApplicationActivityId).FirstOrDefault().UserId;
+                        }
+                        else
+                        {
+                            uapobj.Permission = Enums.UserActivityPermissionType.No.ToString();
+                        }
+                    }
+                    userActivityPermissionList.Add(uapobj);
+                }
+                List<CustomRestrictionModel> customRestrictionList = new List<CustomRestrictionModel>();
+                foreach (var item in clientVerticals)
+                {
+                    CustomRestrictionModel cRestrictionobj = new CustomRestrictionModel();
+                    cRestrictionobj.Title = item.Title;
+                    cRestrictionobj.CustomField = Enums.CustomRestrictionType.Verticals.ToString();
+                    cRestrictionobj.CustomFieldId = item.VerticalId.ToString();
+                    var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId.ToLower() == item.VerticalId.ToString().ToLower() && ucr.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).FirstOrDefault() : null;
+                    if (IsUserRestrictionExist != null)
+                    {
+                        string permission = ((Enums.CustomRestrictionPermission)Enum.Parse(typeof(Enums.CustomRestrictionPermission), IsUserRestrictionExist.Permission.ToString())).ToString();
+                        cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(permission)).Value;
+                        cRestrictionobj.Permission = IsUserRestrictionExist.Permission;
                     }
                     else
                     {
-                        uapobj.Permission = Enums.UserActivityPermissionType.No.ToString();
+                        string none = Enums.CustomRestrictionPermission.None.ToString();
+                        cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(none)).Value;
+                        cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.None;
                     }
+                    customRestrictionList.Add(cRestrictionobj);
                 }
-                userActivityPermissionList.Add(uapobj);
-            }
-            List<CustomRestrictionModel> customRestrictionList = new List<CustomRestrictionModel>();
-            foreach (var item in clientVerticals)
-            {
-                CustomRestrictionModel cRestrictionobj = new CustomRestrictionModel();
-                cRestrictionobj.Title = item.Title;
-                cRestrictionobj.CustomField =Enums.CustomRestrictionType.Verticals.ToString();
-                cRestrictionobj.CustomFieldId = item.VerticalId.ToString();
-                var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId.ToLower() == item.VerticalId.ToString().ToLower() && ucr.CustomField==Enums.CustomRestrictionType.Verticals.ToString()).FirstOrDefault() : null;
-                if (IsUserRestrictionExist != null)
+                foreach (var item in clientGeography)
                 {
-                    string permission = ((Enums.CustomRestrictionPermission)Enum.Parse(typeof(Enums.CustomRestrictionPermission), IsUserRestrictionExist.Permission.ToString())).ToString();
-                    cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(permission)).Value;
-                    cRestrictionobj.Permission = IsUserRestrictionExist.Permission;
+                    CustomRestrictionModel cRestrictionobj = new CustomRestrictionModel();
+                    cRestrictionobj.Title = item.Title;
+                    cRestrictionobj.CustomField = Enums.CustomRestrictionType.Geography.ToString();
+                    cRestrictionobj.CustomFieldId = item.GeographyId.ToString();
+                    if (userDetails.GeographyId != item.GeographyId)
+                    {
+                        var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId.ToLower() == item.GeographyId.ToString().ToLower() && ucr.CustomField == Enums.CustomRestrictionType.Geography.ToString()).FirstOrDefault() : null;
+                        if (IsUserRestrictionExist != null)
+                        {
+                            string permission = ((Enums.CustomRestrictionPermission)Enum.Parse(typeof(Enums.CustomRestrictionPermission), IsUserRestrictionExist.Permission.ToString())).ToString();
+                            cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(permission)).Value;
+                            cRestrictionobj.Permission = IsUserRestrictionExist.Permission;
+                        }
+                        else
+                        {
+                            string none = Enums.CustomRestrictionPermission.None.ToString();
+                            cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(none)).Value;
+                            cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.None;
+                        }
+                    }
+                    else
+                    {
+                        string ViewEdit = Enums.CustomRestrictionPermission.ViewEdit.ToString();
+                        cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(ViewEdit)).Value;
+                        cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                    }
+                    customRestrictionList.Add(cRestrictionobj);
                 }
-                else
+                foreach (var item in clientBusinessUnit)
                 {
-                    string none = Enums.CustomRestrictionPermission.None.ToString();
-                    cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(none)).Value;
-                    cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.None;
+                    CustomRestrictionModel cRestrictionobj = new CustomRestrictionModel();
+                    cRestrictionobj.Title = item.Title;
+                    cRestrictionobj.CustomField = Enums.CustomRestrictionType.BusinessUnit.ToString();
+                    cRestrictionobj.CustomFieldId = item.BusinessUnitId.ToString();
+                    if (userDetails.BusinessUnitId != item.BusinessUnitId)
+                    {
+                        var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId.ToLower() == item.BusinessUnitId.ToString().ToLower() && ucr.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).FirstOrDefault() : null;
+                        if (IsUserRestrictionExist != null)
+                        {
+                            string permission = ((Enums.CustomRestrictionPermission)Enum.Parse(typeof(Enums.CustomRestrictionPermission), IsUserRestrictionExist.Permission.ToString())).ToString();
+                            cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(permission)).Value;
+                            cRestrictionobj.Permission = IsUserRestrictionExist.Permission;
+                        }
+                        else
+                        {
+                            string none = Enums.CustomRestrictionPermission.None.ToString();
+                            cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(none)).Value;
+                            cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.None;
+                        }
+                    }
+                    else
+                    {
+                        string ViewEdit = Enums.CustomRestrictionPermission.ViewEdit.ToString();
+                        cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(ViewEdit)).Value;
+                        cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                    }
+                    customRestrictionList.Add(cRestrictionobj);
                 }
-                customRestrictionList.Add(cRestrictionobj);
-            }
-            foreach (var item in clientGeography)
-            {
-                CustomRestrictionModel cRestrictionobj = new CustomRestrictionModel();
-                cRestrictionobj.Title = item.Title;
-                cRestrictionobj.CustomField = Enums.CustomRestrictionType.Geography.ToString();
-                cRestrictionobj.CustomFieldId = item.GeographyId.ToString();
-                if (userDetails.GeographyId != item.GeographyId)
-                {
-                var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId.ToLower() == item.GeographyId.ToString().ToLower() && ucr.CustomField==Enums.CustomRestrictionType.Geography.ToString()).FirstOrDefault() : null;
-                if (IsUserRestrictionExist != null)
-                {
-                    string permission = ((Enums.CustomRestrictionPermission)Enum.Parse(typeof(Enums.CustomRestrictionPermission), IsUserRestrictionExist.Permission.ToString())).ToString();
-                    cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(permission)).Value;
-                    cRestrictionobj.Permission = IsUserRestrictionExist.Permission;
-                }
-                else
-                {
-                    string none = Enums.CustomRestrictionPermission.None.ToString();
-                    cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(none)).Value;
-                    cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.None;
-                }
-                }
-                else
-                {
-                    string ViewEdit = Enums.CustomRestrictionPermission.ViewEdit.ToString();
-                    cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(ViewEdit)).Value;
-                    cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                }
-                customRestrictionList.Add(cRestrictionobj);
-            }
-            foreach (var item in clientBusinessUnit)
-            {
-                CustomRestrictionModel cRestrictionobj = new CustomRestrictionModel();
-                cRestrictionobj.Title = item.Title;
-                cRestrictionobj.CustomField = Enums.CustomRestrictionType.BusinessUnit.ToString();
-                cRestrictionobj.CustomFieldId = item.BusinessUnitId.ToString();
-                if (userDetails.BusinessUnitId != item.BusinessUnitId)
-                {
-                var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId.ToLower() == item.BusinessUnitId.ToString().ToLower() && ucr.CustomField==Enums.CustomRestrictionType.BusinessUnit.ToString()).FirstOrDefault() : null;
-                if (IsUserRestrictionExist != null)
-                {
-                    string permission = ((Enums.CustomRestrictionPermission)Enum.Parse(typeof(Enums.CustomRestrictionPermission), IsUserRestrictionExist.Permission.ToString())).ToString();
-                    cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(permission)).Value;
-                    cRestrictionobj.Permission = IsUserRestrictionExist.Permission;
-                }
-                else
-                {
-                    string none = Enums.CustomRestrictionPermission.None.ToString();
-                    cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(none)).Value;
-                    cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.None;
-                }
-                }
-                else
-                {
-                    string ViewEdit = Enums.CustomRestrictionPermission.ViewEdit.ToString();
-                    cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(ViewEdit)).Value;
-                    cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                }
-                customRestrictionList.Add(cRestrictionobj);
-            }
-            ViewData["CustomRestriction"] = customRestrictionList;
+                ViewData["CustomRestriction"] = customRestrictionList;
             }
             catch (Exception e)
             {
@@ -596,8 +628,19 @@ namespace RevenuePlanner.Controllers
         /// update user's activity permissions.
         /// </summary>
         [HttpPost]
-        public bool SaveUserPermission(string permissionIds, string userId)
+        public JsonResult SaveUserPermission(string permissionIds, string userId, string LoginId = "")
         {
+            // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+            if (!string.IsNullOrEmpty(LoginId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(LoginId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+
             try
             {
                 string[] arrPermissionId = permissionIds.Split(',');
@@ -606,8 +649,8 @@ namespace RevenuePlanner.Controllers
                 int i = objBDSServiceClient.AddUserActivityPermissions(UserId, CurrentUserID, arrPermissionId.ToList(), Sessions.ApplicationId);
                 if (i >= 1)
                 {
-                return true;
-            }
+                    return Json(new { status = true }, JsonRequestBehavior.AllowGet);   // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                }
             }
             catch (Exception e)
             {
@@ -617,14 +660,14 @@ namespace RevenuePlanner.Controllers
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
                     TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                return false;
-            }
+                    return Json(new { status = false }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                }
                 else
                 {
                     TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
                 }
             }
-            return false;
+            return Json(new { status = false }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
         }
 
         /// <summary>
@@ -632,8 +675,19 @@ namespace RevenuePlanner.Controllers
         /// Reset user's activity permissions as per his role default permission.
         /// </summary>
         [HttpPost]
-        public bool ResetToRoleDefault(string userId)
+        public JsonResult ResetToRoleDefault(string userId, string LoginId = "")
         {
+            // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+            if (!string.IsNullOrEmpty(LoginId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(LoginId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+
             try
             {
                 Guid UserId = Guid.Parse(userId);
@@ -642,8 +696,8 @@ namespace RevenuePlanner.Controllers
                 if (i >= 1)
                 {
                     TempData["SuccessMessage"] = Common.objCached.UserPermissionsResetToDefault;
-                return true;
-            }
+                    return Json(new { status = true }, JsonRequestBehavior.AllowGet);   // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                }
             }
             catch (Exception e)
             {
@@ -653,14 +707,14 @@ namespace RevenuePlanner.Controllers
                 if (e is System.ServiceModel.EndpointNotFoundException)
                 {
                     TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                return false;
-            }
+                    return Json(new { status = false }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                }
                 else
                 {
                     TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
                 }
             }
-            return false;
+            return Json(new { status = false }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
         }
     }
 }

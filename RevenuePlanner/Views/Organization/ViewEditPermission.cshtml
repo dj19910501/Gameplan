@@ -649,50 +649,64 @@ else
         });
 
         var userId = '@ViewBag.UserId';
+        var uId = $(window).attr('name');       // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
         $.ajax({
             url: '@Url.Content("~/Organization/SaveUserPermission/")',
             data: {
-
                 permissionIds: ids.toString(),
-                UserId: userId
-
+                UserId: userId,
+                LoginId: uId        // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
             },
             type: 'POST',
             cache: false,
             success: function (result) {
-                if (result == 'True') {
-                    $('#divpartialsharetactic1').show();
+                // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                if (result.returnURL != 'undefined' && result.returnURL == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
                 }
                 else {
-                    var msgspan = "Error.";
-                    $("#errorMessage").css("display", "block");
-                    $("#spanErrorMessage").text(msgspan);
+                // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                    if (result.status == 'True') {
+                        $('#divpartialsharetactic1').show();
+                    }
+                    else {
+                        var msgspan = "Error.";
+                        $("#errorMessage").css("display", "block");
+                        $("#spanErrorMessage").text(msgspan);
+                    }
                 }
             }
         });
     });
 
     $('#proceedDefault').click(function () {
-
-
         var userId = '@ViewBag.UserId';
+        var uId = $(window).attr('name');       // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
         $.ajax({
             url: '@Url.Content("~/Organization/ResetToRoleDefault/")',
             data: {
                 UserId: userId,
-                creatorId: '@ViewBag.CreatorId'
+                creatorId: '@ViewBag.CreatorId',
+                LoginId: uId        // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
             },
             type: 'POST',
             cache: false,
             success: function (result) {
-                if (result == 'True') {
-                    url = '@Url.Content("~/Organization/ViewEditPermission?Id="+ViewBag.UserId+"&Mode=Edit")';
-                    window.location.href = url;
+                // Start - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                if (result.returnURL != 'undefined' && result.returnURL == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
                 }
                 else {
-                    var msgspan = "Error.";
-                    $("#errorMessage").css("display", "block");
-                    $("#spanErrorMessage").text(msgspan);
+                // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                    if (result.status == 'True') {
+                        url = '@Url.Content("~/Organization/ViewEditPermission?Id="+ViewBag.UserId+"&Mode=Edit")';
+                        window.location.href = url;
+                    }
+                    else {
+                        var msgspan = "Error.";
+                        $("#errorMessage").css("display", "block");
+                        $("#spanErrorMessage").text(msgspan);
+                    }
                 }
             }
         });
