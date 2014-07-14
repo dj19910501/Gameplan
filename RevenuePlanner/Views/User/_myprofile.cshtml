@@ -24,7 +24,7 @@
                     <ul class="nav nav-pills nav-stacked width216">
                     @if (@ViewBag.PageTitle == "Edit")
                     {
-                        <li id="account" class="active"><a href="@Url.Action("Edit", "User", new { usrid = Model.UserId, src = "myaccount" })">Account</a></li>
+                        <li id="account"><a href="@Url.Action("Edit", "User", new { usrid = Model.UserId, src = "myaccount" })">Account</a></li>
                     }
                     else
                     {
