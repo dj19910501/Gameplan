@@ -997,11 +997,13 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateInput(false)]////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-        public ActionResult Edit(UserModel form, HttpPostedFileBase file)
+        public ActionResult Edit(UserModel form, HttpPostedFileBase file, FormCollection formcollection)//formcollection added by uday#555 )
         {
             // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
             ViewBag.IsUserAdminAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin);
+
+            var flag = formcollection["removeflag"];//added by uday #555 
 
             // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
             ViewBag.isForDelete = "false";
@@ -1058,10 +1060,23 @@ namespace RevenuePlanner.Controllers
                             objUser.ProfilePhoto = data;
                         }
                     }
-                    else
+                    else if (flag != null && flag != "false" && flag != "" && flag != string.Empty)//added by uday #555 
                     {
                         objUser.ProfilePhoto = null;
                     }
+                    else
+                    {
+
+                        //add uday 
+                        BDSService.User objUsernew = objBDSServiceClient.GetTeamMemberDetails(form.UserId, Sessions.ApplicationId);
+                        if (objUsernew != null)
+                        {
+                            objUser.ProfilePhoto = objUsernew.ProfilePhoto;
+                        }
+                        //end add uday  
+                    }//#555 
+
+
                     objUser.ClientId = form.ClientId;
                     objUser.BusinessUnitId = form.BusinessUnitId;
                     objUser.GeographyId = form.GeographyId;
