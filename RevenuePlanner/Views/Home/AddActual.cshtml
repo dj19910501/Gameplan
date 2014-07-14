@@ -980,7 +980,7 @@
 
         function displayConfirmCommon(functionName) {
             if (isDataChanged()) {
-                $('#spanMessageError').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+                $('#spanMessageError').html(" You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
                 $("#errorMessage").slideDown(3000);
                 $("#btnConfirmOK").click(function () {
                     //alert(id);
