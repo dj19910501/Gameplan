@@ -129,6 +129,10 @@ function htmlEncode(value) {
     var retVal = $('<div/>').text(value).html();
     return retVal;
 };
+function htmlDecode(value) {
+    var retVal = $('<div/>').html(value).text();
+    return retVal;
+};
 /*End: Added by Mitesh Vaishnav for PL Ticket #584*/
 
 

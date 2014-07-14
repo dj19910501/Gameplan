@@ -448,6 +448,8 @@
                             return;
                         }
                         if (data.errormsg) {
+                            document.getElementById("Title").value = htmlDecode($('#Title').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+                            document.getElementById("Description").value = htmlDecode($('#Description').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
                             ShowError(data.errormsg);
                             return;
                         }

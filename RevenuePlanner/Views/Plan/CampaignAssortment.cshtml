@@ -432,10 +432,13 @@
                     }
                     else {
                         if (data.redirect) {
+                           
                             window.location.href = data.redirect;
                             return;
                         }
                         if (data.errormsg) {
+                            document.getElementById("txtTitle").value = htmlDecode($('#txtTitle').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+                            document.getElementById("Description").value = htmlDecode($('#Description').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
                             ShowError(data.errormsg);
                             return false;
                         }

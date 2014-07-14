@@ -267,10 +267,10 @@
             }
             if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
             $("#txtCost").val(ReplaceCC($("#txtCost").val()));
-            CheckUserSession("#save_campaign_tactic", true);
-            if (reason == 'user') {
-                return false;
-            }
+            //CheckUserSession("#save_campaign_tactic", true);
+            //if (reason == 'user') {
+            //    return false;
+            //}
             document.getElementById("Title").value = htmlEncode($('#Title').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             document.getElementById("Description").value = htmlEncode($('#Description').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             $.ajax({
@@ -283,6 +283,8 @@
                         return;
                     }
                     if (data.errormsg) {
+                        document.getElementById("Title").value = htmlDecode($('#Title').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+                        document.getElementById("Description").value = htmlDecode($('#Description').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
                         ShowError(data.errormsg);
                         return;
                     }
