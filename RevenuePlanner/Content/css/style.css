@@ -7310,3 +7310,21 @@ background-color: #ffffff; padding:20px; margin-top:1px; border-radius: 5px 5px 
         #table_baseline tbody tr:hover td span.duplicate-icon {
             visibility: visible;
         }
+
+
+/* END - Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-11-2014*/
+
+/*Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-14-2014*/
+#DivModelDuplicatePopupcopy #errorMessagecopy
+{
+padding: 7px 24px 7px 4px !important;
+}
+
+#DivModelDuplicatePopupcopy
+{
+     width: 360px !important;
+}
+/*END - Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-14-2014*/
+
+
+
