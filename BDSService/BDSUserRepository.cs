@@ -1935,6 +1935,11 @@ namespace BDSService
 
                     return retVal;
                 }
+                else
+                {
+                    retVal = 1;
+                    return retVal;
+                }
             }
             catch (Exception ex)
             {
@@ -1970,6 +1975,11 @@ namespace BDSService
                     if (res > 0)
                         retVal = 1;
 
+                    return retVal;
+                }
+                else
+                {
+                    retVal = 1;
                     return retVal;
                 }
             }
