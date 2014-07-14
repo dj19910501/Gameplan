@@ -341,10 +341,14 @@ $(".createbtn").click(function () {
     });
 function DuplicateModel() {
 
+    //added by : Kalpesh Sharma - 14/07/2014 #560 Method to Specify a Name for Cloned Model
+    var titleName = htmlEncode($("#copymodeldesc").val().trim());
+
+
     $.ajax({
         type: 'POST',
         url: '@Url.Content("~/Model/DuplicateModel/")',
-            data: { modelId: $('#hdnModelId').val(), title: $('#copymodeldesc').val() },
+        data: { modelId: $('#hdnModelId').val(), title: titleName },
             dataType: "json",
             success: function (data) {
                 if (data.status == 1) {
@@ -382,8 +386,11 @@ function DuplicateModel() {
             $("#errorMessagecopy").css("display", "block");
             $("#spanErrorMessageModelcopy").text(msgspan);
         } else {
-                var titleName = $('#copymodeldesc').val();
+               // var titleName = $('#copymodeldesc').val();
                 var ModelID = $('#hdnModelId').val();
+
+            //added by : Kalpesh Sharma - 14/07/2014 #560 Method to Specify a Name for Cloned Model
+                var titleName = htmlEncode($("#copymodeldesc").val().trim());
 
                 $.ajax(
                 {

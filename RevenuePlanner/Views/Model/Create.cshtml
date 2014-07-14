@@ -354,12 +354,16 @@
             $("#spanErrorMessageModelcopy").text(msgspan);
         }
         else {
+
+            //added by : Kalpesh Sharma - 14/07/2014 #560 Method to Specify a Name for Cloned Model
+            var titleName = htmlEncode($("#copymodeldesc").val().trim());
+
             $.ajax(
             {
               type: "GET",
               cache: false,
               url: '@Url.Content("~/Model/CheckDuplicateModelTitle")',
-                data: { Title: $('#copymodeldesc').val(), BusinessUnitId: '@BusinessUnitId' },
+                data: { Title: titleName, BusinessUnitId: '@BusinessUnitId' },
                 dataType: "json",
                 success: function (data) {
                     if (data == 'exist') {
@@ -1161,10 +1165,14 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
     // Modified By : Kalpesh Sharma #560 Method to Specify a Name for Cloned Model
     //Pass extra paramter model title from the model duplicate popup.
     function DuplicateModel() {
+
+        //added by : Kalpesh Sharma - 14/07/2014 #560 Method to Specify a Name for Cloned Model
+        var titleName = htmlEncode($("#copymodeldesc").val().trim());
+
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Model/DuplicateModel/")',
-            data: { modelId: $('#ModelId').val(), title: $('#copymodeldesc').val() },
+            data: { modelId: $('#ModelId').val(), title: titleName },
             dataType: "json",
             success: function (data) {
                 if (data.status == 1) {
