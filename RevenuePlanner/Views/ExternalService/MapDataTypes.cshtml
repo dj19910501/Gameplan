@@ -6,6 +6,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.PageTitle = "MapDataType";////Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
     ViewBag.ModuleTitle = "Integration";////Added by Mitesh Vaishnav on 10-07-2014 for functional review point 49
+    string sd = ViewBag.IntegrationInstanceId.ToString();
 }
 @section nlFormContent{
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
@@ -14,7 +15,7 @@
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
 }
 @section Sidebar {
-    @Html.Partial("~/Views/shared/_Sidebar.cshtml")
+    @Html.Partial("~/Views/shared/_preferences.cshtml")
 }
 @using (Html.BeginForm(new { id = ViewBag.IntegrationInstanceId }))
 {

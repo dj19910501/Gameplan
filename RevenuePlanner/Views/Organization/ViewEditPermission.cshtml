@@ -25,7 +25,7 @@
 
 
 @section Sidebar {
-    @Html.Partial("~/Views/shared/_Sidebar.cshtml")
+    @Html.Partial("~/Views/shared/_preferences.cshtml")
 }
 @if (ViewBag.PermissionMode == Enums.UserPermissionMode.View.ToString() || ViewBag.PermissionMode == Enums.UserPermissionMode.MyPermission.ToString())
 {
@@ -199,6 +199,7 @@ else
     <div class="padding-content cf source-sans-proregular">
         <div class="row">
             <div id="internalLink" class="span2 myaccount-colum">
+                 @Html.Partial("~/Views/Organization/_organization.cshtml")
                 
             </div>
 

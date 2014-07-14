@@ -6,52 +6,50 @@
     string ViewPermissionURL = varUrlnew + "?Id=" + Sessions.User.UserId + "&Mode=MyPermission";
 }
 <html>
-<head>
-    <meta charset="utf-8" />
-    <title>@ViewBag.Title</title>
-</head>
+
 <body>
     <div class="padding-right70">
         <ul class="nav nav-pills nav-stacked width216">
-            @if (ViewBag.PageTitle == "OrganizationHierarchy")
-            {
 
-                <li><a href='@ViewPermissionURL'>My Permissions</a></li>
+            <li id="MPermission"><a href='@ViewPermissionURL'>My Permissions</a></li>
 
-                <li class="active"><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
+            <li id="OHierarchy" class="active"><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
 
-                if ((bool)ViewBag.IsUserAdminAuthorized)   // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
+            @if ((bool)ViewBag.IsUserAdminAuthorized)   // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
                 {
+
  @*<li><a href="#">Manage Users</a></li>*@
- <li><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
-                }
+
+            <li id="MRoles"><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
             }
-            else if (ViewBag.PageTitle == "MyPermission")
-            {
-                <li class="active"><a href='@ViewPermissionURL'>My Permissions</a></li>
-
-                <li><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
-
-                if ((bool)ViewBag.IsUserAdminAuthorized)   // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
-                {
- @*<li><a href="#">Manage Users</a></li>*@
- <li><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
-                }
-            }
-            else if (ViewBag.PageTitle == "ManageRole")
-            {
-                <li><a href='@ViewPermissionURL'>My Permissions</a></li>
-
-                <li><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
-
-                if ((bool)ViewBag.IsUserAdminAuthorized)   // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
-                {
- @*<li><a href="#">Manage Users</a></li>*@
- <li  class="active"><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
-                }
-            }
+           
 
         </ul>
     </div>
 </body>
+<script>
+    $(document).ready(
+        function () {
+            $('.nav nav-pills nav-stacked width216 li').each(function () {
+                $(this).removeClass('active');
+            });
+            if ('@ViewBag.PageTitle' == 'OrganizationHierarchy') {
+
+                if (!$('#OHierarchy').hasClass('active')) {
+                    $('#OHierarchy').addClass('active');
+                }
+            }
+            else if ('@ViewBag.PageTitle' == 'MyPermission') {
+                if (!$('#MPermission').hasClass('active')) {
+                    $('#MPermission').addClass('active');
+                }
+            }
+            else if ('@ViewBag.PageTitle' == 'ManageRole') {
+                if (!$('#MRoles').hasClass('active')) {
+                    $('#MRoles').addClass('active');
+                }
+            }
+        }
+            );
+</script>
 </html>

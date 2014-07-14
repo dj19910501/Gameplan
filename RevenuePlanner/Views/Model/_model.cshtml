@@ -1,0 +1,123 @@
+﻿@using RevenuePlanner.Helpers
+
+<!DOCTYPE html>
+@{
+    string ShowModelResultsTab = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ShowModelResultsTab"]);
+    string modelId = null;
+    if (ViewBag.ModelId != null)
+    {
+        modelId = Convert.ToString(ViewBag.ModelId);
+    }
+    
+}
+<html>
+
+<body>
+    <div class="padding-content padding-bottom0">
+        <h4 class="text-shadow-black source-sans-prolight">Model Summary</h4>
+        <div class="wraper-btns cf">
+            <div class="span6">
+                <div class="btn-group">
+                    <button id="BtnGroup" class="btn btn-blue text-shadow-blue source-sans-proregular buttom-width resize-drop-button without-border-buttom displayinherit source-sans-prolight width90px">
+                        New Model
+                    </button>
+                    <button data-toggle="dropdown" class="btn btn-blue dropdown-toggle height25 displayinherit width19px">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu source-sans-prolight">
+                        <li>
+                            <a href="#">Create New</a>
+                        </li>
+                        @* Show Duplicate option only in Edit mode and only for latest version of model. *@
+                        @if (Convert.ToString(Model.ModelId) != "" && Convert.ToString(Model.ModelId) != "0" && (Convert.ToString(ViewBag.IsOwner) == "True" || Convert.ToString(ViewBag.IsViewEditBusinessUnit) == "True")) // && isViewOnly != "true")
+                        {
+                            if (ViewBag.PageTitle == "Create")
+                            {
+                                if (ViewBag.modelStageCount > 0)
+                                {
+                            <li id="liDuplicate">
+                                <a href="#">Duplicate</a>
+                            </li>
+                                }
+                            }
+                            else
+                            {
+                            <li id="liDuplicate">
+                                <a href="#">Duplicate</a>
+                            </li>
+                            }
+
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div class="span6">
+                <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button" id="publish">@Html.Raw("Publish")</button>
+            </div>
+        </div>
+    </div>
+
+    <ul id="linkarea" class="nav nav-list nav-gray">
+        <li id="liInput" class="item">
+            <a class="source-sans-probold inputs leftnav" id="aInput" href="#"><span></span>@Html.Raw("INPUTS")</a>
+        </li>
+        @if (ShowModelResultsTab == null || ShowModelResultsTab == "" || ShowModelResultsTab.ToLower() == "true")
+        {
+            <li id="liAudience" class="item">
+                <a class="source-sans-probold audience leftnav" id="aAudience" href="#"><span></span>@Html.Raw("AUDIENCE")</a>
+            </li>
+        }
+        <li id="litactics" class="item active">
+            <a class="source-sans-probold tactics leftnav" id="aTactics" href="#"><span></span>@Html.Raw("TACTICS")</a>
+        </li>
+        @if (ShowModelResultsTab == null || ShowModelResultsTab == "" || ShowModelResultsTab.ToLower() == "true")
+        {
+            <li id="liResults" class="item">
+                <a class="source-sans-probold result leftnav" id="aResults" href="#"><span></span>@Html.Raw("RESULTS")</a>
+            </li>
+        }
+        <li id="liIntegration" class="item">
+            <a class="source-sans-probold integrations leftnav" id="aIntegration" href="#"><span></span>@Html.Raw("INTEGRATIONS")</a>
+        </li>
+    </ul>
+    <ul class="nav nav-list nav-gray-plan">
+        <li id="change-log" class="nav-header">
+            <span>Change Log</span>
+            <div class="changes"></div>
+        </li>
+    </ul>
+</body>
+<script>
+    $(document).ready(
+           function () {
+               $('.nav nav-list nav-gray li').each(function () {
+                   $(this).removeClass('active');
+               });
+               if ('@ViewBag.PageTitle' == 'Tactics') {
+
+                   if (!$('#litactics').hasClass('active')) {
+                       $('#litactics').addClass('active');
+                   }
+               }
+               else if ('@ViewBag.PageTitle' == 'Integration') {
+                   if (!$('#liIntegration').hasClass('active')) {
+                       $('#liIntegration').addClass('active');
+                   }
+               }
+               else if ('@ViewBag.PageTitle' == 'Create') {
+                   if (!$('#liInput').hasClass('active')) {
+                       $('#liInput').addClass('active');
+                   }
+                   if ('@modelId' == '' || '@modelId' == '0') {
+                       $('#linkarea').removeClass();
+                       $('#linkarea').addClass('nav nav-list nav-gray-planc');
+                   }
+                   else {
+                       $('#linkarea').removeClass();
+                       $('#linkarea').addClass('nav nav-list nav-gray-plan');
+                   }
+               }
+           }
+            );
+</script>
+</html>

@@ -528,6 +528,10 @@ body {
     background-position: -204px 0 !important;
 }
 
+.nav-gray li a.organization span.trophy {
+    background-position: 0px 0px !important;
+}
+
 .nav-gray li a.bestInClass span {
     background-position: 0 0 !important; 
 }

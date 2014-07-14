@@ -3097,28 +3097,12 @@ namespace RevenuePlanner.Controllers
             try
             {
                 ////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #569: make urls in tactic notes hyperlinks
-                Regex regxForOnlyHttp = new Regex(@"(?<http>((http|https):[/][/])([a-z]|[A-Z]|[0-9]|[/.]|[~])*)", RegexOptions.IgnoreCase);
-                MatchCollection matchesForHttp = regxForOnlyHttp.Matches(comment);
-                Regex regxMain = new Regex(@"(?<http>(http:[/][/]|www.|https:[/][/])([a-z]|[A-Z]|[0-9]|[/.]|[~])*)", RegexOptions.IgnoreCase);
-                MatchCollection matchesMain = regxMain.Matches(comment);
-                string regexComment = comment;
-                foreach (Match match in matchesMain)
-                {
-                    int i = 0;
-                    foreach (Match matchHttp in matchesForHttp)
-                    {
-                        if (matchHttp.Value == match.Value)
-                        {
-                            regexComment = regexComment.Replace(match.Value, string.Format("<a href=\"{0}\" target=\"_blank\">{0}</a>", match.Value));
-                            i = i + 1;
-                        }
-                    }
-                    if (i == 0)
-                    {
-                        regexComment = regexComment.Replace(match.Value, string.Format("<a href=\"http://{0}\" target=\"_blank\">{0}</a>", match.Value));
-                    }
-                   
-                }
+                string regex = @"((www\.|(http|https|ftp|news|file)+\:\/\/)[&#95;.a-z0-9-]+\.[a-z0-9\/&#95;:@=.+?,##%&~-]*[^.|\'|\# |!|\(|?|,| |>|<|;|\)])";
+                Regex r = new Regex(regex, RegexOptions.IgnoreCase);
+                comment = r.Replace(comment, "<a href=\"$1\" title=\"Click to open in a new window or tab\" target=\"&#95;blank\">$1</a>").Replace("href=\"www", "href=\"http://www");
+
+
+
                 ////End Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #569: make urls in tactic notes hyperlinks
                 if (ModelState.IsValid)
                 {
@@ -3126,7 +3110,7 @@ namespace RevenuePlanner.Controllers
                     {
                         Plan_Improvement_Campaign_Program_Tactic_Comment pcpitc = new Plan_Improvement_Campaign_Program_Tactic_Comment();
                         pcpitc.ImprovementPlanTacticId = planTacticId;
-                        pcpitc.Comment = regexComment;
+                        pcpitc.Comment = comment;
                         DateTime currentdate = DateTime.Now;
                         pcpitc.CreatedDate = currentdate;
                         string displayDate = currentdate.ToString("MMM dd") + " at " + currentdate.ToString("hh:mmtt");
@@ -3150,7 +3134,7 @@ namespace RevenuePlanner.Controllers
                         {
                             pcptc.PlanCampaignId = planTacticId;
                         }
-                        pcptc.Comment = regexComment;
+                        pcptc.Comment = comment;
                         DateTime currentdate = DateTime.Now;
                         pcptc.CreatedDate = currentdate;
                         string displayDate = currentdate.ToString("MMM dd") + " at " + currentdate.ToString("hh:mmtt");

@@ -8,25 +8,10 @@
     ViewBag.Title = "Improvement Tactics";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Boost;
     Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.PageTitle = "Index";
 }
 @section Sidebar {
-    <div class="padding-content2">
-        <h4 class="text-shadow-black source-sans-prolight">Boost Summary</h4>
-    </div>
-    <ul class="nav nav-list nav-gray">
-        <li class="item active">
-            @if ((bool)ViewBag.IsBoostImprovementTacticCreateEditAuthorized)   // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
-            {
-                <a class="source-sans-probold inputs tactics"  href="#"><span></span>TACTICS</a>
-            }
-        </li>
-        <li class="item">
-            @if ((bool)ViewBag.IsBoostBestInClassNumberEditAuthorized)   // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
-            {
-                <a class="source-sans-probold bestInClass" href="#" id="aBiclink"><span class="trophy"></span>BEST IN CLASS</a>
-            }
-        </li>
-    </ul>
+     @Html.Partial("~/Views/Boost/_boost.cshtml")
 }
 
 <div id="successMessage" class="alert hide alert-success message-position">

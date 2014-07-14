@@ -6,6 +6,8 @@
     string strPlanid = Convert.ToString(Model.PlanId);
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     bool IsBusinessUnitEditable = (bool)ViewBag.IsBusinessUnitEditable;    
+    ViewBag.strplanid = strPlanid;//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49   
+    ViewBag.PageTitle = "Create";//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49   
 }
 
 @section nlFormContent{
@@ -19,95 +21,7 @@
 
 @section Sidebar
 {
-    <div class="padding-content padding-bottom0 ">
-        <h4 class="text-shadow-black source-sans-prolight">Plan Summary</h4>
-        <div class="wraper-btns cf">
-             @if (IsPlanCreateAuthorized) // added by dharmraj form user activity permission
-             {
-            <div class="span6">
-                <div class="btn-group ">
-                    <button id="BtnGroup" class="btn btn-blue text-shadow-blue source-sans-proregular buttom-width resize-drop-button without-border-buttom displayinherit   source-sans-prolight width90px">
-                        New Plan
-                    </button>
-                    <button data-toggle="dropdown" class="btn btn-blue dropdown-toggle height25 displayinherit width19px">
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu source-sans-prolight">
-                        <li>
-                            <a href="#">Create New</a>
-                        </li>
-                        @if (Sessions.PlanId != 0 && (bool)ViewBag.IsBusinessUnitEditable == true)
-                        {
-                            <li>
-                                <a href="#">Duplicate</a>
-                            </li>
-                        }
-                    </ul>
-                </div>
-            </div>
-              }
-            <div class="span6">
-                <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button" disabled="disabled">Add Activity</button>
-            </div>
-        </div>
-    </div>
-    @{
-        string ulclass = "";
-        bool mode_edit = false;
-        if (strPlanid == "" || strPlanid == "0")
-        {
-            ulclass = "nav nav-listc nav-gray-planc";
-
-        }
-        else
-        {
-            ulclass = "nav nav-listc nav-gray-plan";
-            mode_edit = true;
-        }
-    
-    }
-    <ul class="@ulclass">
-        <li class="item active">
-            <a class="source-sans-probold inputs" href="#"><span></span>@Html.Raw("PLAN DEFINITION")</a>
-        </li>
-        <li class="item">
-            @if (!mode_edit)
-            {
-                <a class="source-sans-probold audience" href="#"><span></span>@Html.Raw("CAMPAIGNS")</a>
-            }
-            else
-            {
-@*<a class="source-sans-probold audience" onclick="window.location.href='@Url.Action("Assortment", "Plan")'"><span></span>@Html.Raw("CAMPAIGNS")</a>*@
-                <a class="source-sans-probold audience" id="LeftNavCampaigns"><span></span>@Html.Raw("CAMPAIGNS")</a>
-            }
-        </li>
-        <li class="item">
-            @if (!mode_edit)
-            {
-                <a class="source-sans-probold tactics" href="#"><span></span>@Html.Raw("APPLY TO CALENDAR")</a>
-            }
-            else
-            {
-@*<a class="source-sans-probold tactics" onclick="window.location.href='@Url.Action("ApplyToCalendar", "Plan")'"><span></span>@Html.Raw("APPLY TO CALENDAR")</a>*@
-                <a class="source-sans-probold tactics" id="aApplyToCalender"><span></span>@Html.Raw("APPLY TO CALENDAR")</a>
-            }
-        </li>
-
-    </ul>
-
-    <ul class="nav nav-list nav-gray-plan">
-        <li id="change-log" class="nav-header">
-            <span>Change Log</span>
-            @if (strPlanid != "0")
-            {
-                <div class="changes"></div>
-            }
-        </li>
-    </ul>
-
-
-
-
+    @Html.Partial("~/Views/Plan/_plan.cshtml")
 }
 
 

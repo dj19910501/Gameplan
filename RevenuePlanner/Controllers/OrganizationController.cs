@@ -128,8 +128,8 @@ namespace RevenuePlanner.Controllers
             if (roledesc != null && roledesc != string.Empty)
             {
                 BDSService.Role objrole = new BDSService.Role();
-                objrole.Description = HttpUtility.HtmlDecode(roledesc);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
-                objrole.Title = HttpUtility.HtmlDecode(roledesc);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+                objrole.Description =roledesc;////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
+                objrole.Title =roledesc;////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
                 //Session["session"] = objrole;commented by uday for functional review point...3-7-2014
                 TempData["objrole"] = objrole;
 

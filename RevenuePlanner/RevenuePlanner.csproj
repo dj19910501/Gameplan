@@ -810,6 +810,10 @@
     <Content Include="Views\Organization\_organization.cshtml" />
     <Content Include="Views\User\_myprofile.cshtml" />
     <Content Include="Views\Shared\_Sidebar.cshtml" />
+    <Content Include="Views\Boost\_boost.cshtml" />
+    <Content Include="Views\Model\_model.cshtml" />
+    <Content Include="Views\Plan\_plan.cshtml" />
+    <Content Include="Views\Shared\_preferences.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

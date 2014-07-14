@@ -1,0 +1,153 @@
+﻿@using RevenuePlanner.Helpers
+
+<!DOCTYPE html>
+
+<html>
+@{
+    bool IsPlanCreateAuthorized = false;
+    if (!(bool)ViewBag.IsPlanCreateAuthorized)
+    {
+        IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
+    }
+    bool IsPlanEditable = false;
+    if (ViewBag.IsPlanEditable != null)
+    {
+        if (!(bool)ViewBag.IsPlanEditable)
+        {
+            IsPlanEditable = (bool)ViewBag.IsPlanEditable;
+        }
+    }
+    string strPlanid = ViewBag.strplanid;
+}
+
+<body>
+
+    <div class="padding-content padding-bottom0 ">
+        <h4 class="text-shadow-black source-sans-prolight">Plan Summary</h4>
+
+        <div class="wraper-btns cf">
+            @if (IsPlanCreateAuthorized) // added by dharmraj form user activity permission
+            {
+                <div class="span6">
+                    <div class="btn-group ">
+                        <button id="BtnGroup" class="btn btn-blue text-shadow-blue source-sans-proregular buttom-width resize-drop-button without-border-buttom displayinherit   source-sans-prolight width90px">
+                            New Plan
+                        </button>
+                        <button data-toggle="dropdown" class="btn btn-blue dropdown-toggle height25 displayinherit width19px">
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu source-sans-prolight">
+                            <li>
+                                <a href="#">Create New</a>
+                            </li>
+                            @if (ViewBag.PageTitle = "Create")
+                            {
+                                if (Sessions.PlanId != 0 && (bool)ViewBag.IsBusinessUnitEditable == true)
+                                {
+                                <li>
+                                    <a href="#">Duplicate</a>
+                                </li>
+                                }
+                            }
+                            else if (ViewBag.PageTitle = "Assortment")
+                            {  
+                                <li>
+                                    <a href="#">Duplicate</a>
+                                </li>
+                            }
+                            else if (ViewBag.PageTitle = "ApplyToCallender")
+                            {    
+                                <li>
+                                    <a href="#">Duplicate</a>
+                                </li>  
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div id="Addactivityarea" class="span6">
+                    <button id="LeftNavAddActivity" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Add Activity</button>
+                </div>
+            }
+        </div>
+
+    </div>
+
+
+
+    <ul id="ulplan" class="nav nav-list nav-gray-plan">
+        <li id="liDefination" class="item ">
+            @*<a class="source-sans-probold inputs" onclick="window.location.href='@Url.Action("Create", "Plan", new { id = Planid })'"><span></span>@Html.Raw("PLAN DEFINITION")</a>*@
+            <a class="source-sans-probold inputs" id="LeftNavInput"><span></span>@Html.Raw("PLAN DEFINITION")</a>
+        </li>
+        <li id="liCampaign" class="item">
+            @*<a class="source-sans-probold audience" onclick="window.location.href='@Url.Action("Assortment", "Plan")'"><span></span>@Html.Raw("CAMPAIGNS")</a>*@
+            <a class="source-sans-probold audience" id="LeftNavCampaigns"><span></span>@Html.Raw("CAMPAIGNS")</a>
+        </li>
+        <li id="liCalender" class="item  active">
+            <a class="source-sans-probold tactics" id="aApplyToCalender"><span></span>@Html.Raw("APPLY TO CALENDAR")</a>
+        </li>
+    </ul>
+
+
+
+
+    <ul class="nav nav-list nav-gray-plan">
+        <li id="change-log" class="nav-header">
+            <span>Change Log</span>
+            <div class="changes"></div>
+        </li>
+    </ul>
+</body>
+<script>
+    $(document).ready(
+        function () {
+            $('.nav nav-list nav-gray-plan li').each(function () {
+                $(this).removeClass('active');
+            });
+            if ('@ViewBag.PageTitle' == 'Create') {
+
+                $('#LeftNavAddActivity').attr("disabled", "disabled");
+                if (!$('#liDefination').hasClass('active')) {
+                    $('#liDefination').addClass('active');
+                    if ('@strPlanid' == '' || '@strPlanid' == '0') {
+                        $('#ulplan').removeClass();
+                        $('#ulplan').addClass('nav nav-listc nav-gray-planc');
+                        $('#LeftNavCampaigns').removeAttr('id');
+                        $('#LeftNavCampaigns').attr("href", "#");
+                        $('#aApplyToCalender').removeAttr('id');
+                        $('#aApplyToCalender').attr("href", "#");
+                    }
+                    else {
+                        $('#ulplan').removeClass();
+                        $('#ulplan').addClass('nav nav-listc nav-gray-plan');
+                        $('#LeftNavCampaigns').attr("id", "LeftNavCampaigns");
+                        $('#LeftNavCampaigns').removeAttr("href");
+                        $('#aApplyToCalender').attr("id", "aApplyToCalender");
+                        $('#aApplyToCalender').removeAttr("href", "#");
+                    }
+                }
+
+            }
+            else if ('@ViewBag.PageTitle' == 'Assortment') {
+                $('#LeftNavAddActivity').removeAttr("disabled", "disabled");
+                if (!$('#liCampaign').hasClass('active')) {
+                    $('#liCampaign').addClass('active');
+                    $('#LeftNavCampaigns').removeAttr('id');
+                    $('#LeftNavCampaigns').attr("href", "#");
+                }
+            }
+            else if ('@ViewBag.PageTitle' == 'ApplyToCallender') {
+                var isplanEdit = '@IsPlanEditable.ToString()';
+                if (!$('#liCalender').hasClass('active')) {
+                    $('#liCalender').addClass('active');
+                    $('#aApplyToCalender').removeAttr('id');
+                    $('#aApplyToCalender').attr("href", "#");
+                }
+                if (isplanEdit == 'false') {
+                    $('#Addactivityarea').hide();
+                }
+            }
+        }
+            );
+</script>
+</html>

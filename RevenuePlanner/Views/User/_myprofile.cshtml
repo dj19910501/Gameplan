@@ -3,98 +3,86 @@
 <!DOCTYPE html>
 @{
     var srcval = (string)ViewBag.SourceValue;
+    if (srcval == null)
+    {
+        srcval = string.Empty;
+    }
 }
 <html>
-<head>
-    <meta charset="utf-8" />
-    <title>@ViewBag.Title</title>
-</head>
+
 <body>
-    @if (ViewBag.PageTitle == "Edit")
-    {
-         if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myteam")
+    @if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myteam")
         {
             <div class="span2 content-colum-left content-img-user">
                 <img src="@Url.Action("LoadUserImage", "User", new { id = Model.UserId, width = 60, height = 60 })" class="img-user" style="height:140px; width:140px;">
             </div>
         }
-        else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
+    else //if ( srcval.ToLower() == "myaccount")
         {
             <div class="span2 myaccount-colum">
                 <div class="padding-right70">
                     <ul class="nav nav-pills nav-stacked width216">
-                        <li class="active"><a href="@Url.Action("Edit", "User", new { usrid = Model.UserId, src = "myaccount" })">Account</a></li>
-                        <li><a href="@Url.Action("Index", "User")">Team Members</a></li>
-                        <li><a href="@Url.Action("Notifications", "User")">Notifications</a></li>
-                        <li><a href="@Url.Action("SecurityQuestion", "User")">Security Question</a></li>
-                        <li><a href="@Url.Action("ChangePassword", "User")">Change Password</a></li>
+                    @if (@ViewBag.PageTitle == "Edit")
+                    {
+                        <li id="account" class="active"><a href="@Url.Action("Edit", "User", new { usrid = Model.UserId, src = "myaccount" })">Account</a></li>
+                    }
+                    else
+                    {
+                        <li id="account">
+                            <a  href="@Url.Action("Edit", "User", new { src = "myaccount" })">Account</a>
+                        </li>
+                    }
+                    <li id="Tmember"><a href="@Url.Action("Index", "User")">Team Members</a></li>
+                    <li id="notification"><a href="@Url.Action("Notifications", "User")">Notifications</a></li>
+                    <li id="Squestion"><a href="@Url.Action("SecurityQuestion", "User")">Security Question</a></li>
+                    <li id="Cpassword"><a href="@Url.Action("ChangePassword", "User")">Change Password</a></li>
                     </ul>
                 </div>
             </div>
         }
-    }
-    else if (ViewBag.PageTitle == "TeamMember")
-    {
-         <div class="span2 content-colum-left">
-            <div class="padding-right70">
-                <ul class="nav nav-pills nav-stacked width216">
-                    <li>
-                        <a  href="@Url.Action("Edit", "User", new { src = "myaccount" })">Account</a>
-                    </li>
-                    <li class="active"><a href="@Url.Action("Index", "User")">Team Members</a></li>
-                    <li><a href="@Url.Action("Notifications", "User")">Notifications</a></li>
-                    <li><a href="@Url.Action("SecurityQuestion", "User")">Security Question</a></li>
-                    <li><a href="@Url.Action("ChangePassword", "User")">Change Password</a></li>
-                </ul>
-            </div>
-        </div>
-    }
-    else if (ViewBag.PageTitle == "Notifications")
-    {
-          <div class="span2 width216">
-            <div class="padding-right70">
-                <ul class="nav nav-pills nav-stacked width216">
-                    <li>
-                        <a href="@Url.Action("Edit", "User", new { src = "myaccount" })">Account</a>
-                    </li>
-                    <li><a href="@Url.Action("Index", "User")">Team Members</a></li>
-                    <li class="active"><a href="@Url.Action("Notifications", "User")">Notifications</a></li>
-                    <li><a href="@Url.Action("SecurityQuestion", "User")">Security Question</a></li>
-                    <li><a href="@Url.Action("ChangePassword", "User")">Change Password</a></li>
-                </ul>
-            </div>
-        </div>
-    }
-    else if (ViewBag.PageTitle == "SecurityQuestion")
-    {
-          <div class="span2 width216">
-            <div class="padding-right70">
-                <ul class="nav nav-pills nav-stacked width216">
-                    <li>
-                        <a href="@Url.Action("Edit", "User", new { src = "myaccount" })">Account</a>
-                    </li>
-                    <li><a href="@Url.Action("Index", "User")">Team Members</a></li>
-                    <li><a href="@Url.Action("Notifications", "User")">Notifications</a></li>
-                    <li class="active"><a href="@Url.Action("SecurityQuestion", "User")">Security Question</a></li>
-                    <li><a href="@Url.Action("ChangePassword", "User")">Change Password</a></li>
-                </ul>
-            </div>
-        </div>
-    }
-    else if (ViewBag.PageTitle == "ChangePassword")
-    {
-        <div class="span2 width216">
-            <div class="padding-right70">
-                <ul class="nav nav-pills nav-stacked width216">
-                    <li>
-                        <a href="@Url.Action("Edit", "User", new { src = "myaccount" })">Account</a>
-                    </li>
-                    <li><a href="@Url.Action("Index", "User")">Team Members</a></li>
-                    <li><a href="@Url.Action("Notifications", "User")">Notifications</a></li>
-                    <li><a href="@Url.Action("SecurityQuestion", "User")">Security Question</a></li>
-                    <li class="active"><a href="@Url.Action("ChangePassword", "User")">Change Password</a></li>
-                </ul>
-            </div>
-        </div>
-    }
+
     </body>
+</html>
+<script>
+    $(document).ready(
+        function () {
+            var srcval = '@srcval.ToLower()';
+            if (srcval != 'myteam') {
+                $('.nav nav-pills nav-stacked width216 li').each(function () {
+                    $(this).removeClass('active');
+                });
+                    if ('@ViewBag.PageTitle' == 'Edit') {
+
+                        if (!$('#account').hasClass('active')) {
+                            $('#account').addClass('active');
+                            
+                        }
+                    }
+                    else if ('@ViewBag.PageTitle' == 'TeamMember') {
+                        if (!$('#Tmember').hasClass('active')) {
+                            $('#Tmember').addClass('active');
+                            
+                        }
+                    }
+                    else if ('@ViewBag.PageTitle' == 'Notifications') {
+                        if (!$('#notification').hasClass('active')) {
+                            $('#notification').addClass('active');
+                            
+                        }
+                    }
+                    else if ('@ViewBag.PageTitle' == 'SecurityQuestion') {
+                        if (!$('#Squestion').hasClass('active')) {
+                            $('#Squestion').addClass('active');
+                            
+                        }
+                    }
+                    else if ('@ViewBag.PageTitle' == 'ChangePassword') {
+                        if (!$('#Cpassword').hasClass('active')) {
+                            $('#Cpassword').addClass('active');
+                            
+                        }
+                    }
+    }
+            }
+            );
+</script>

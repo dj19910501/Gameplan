@@ -17,7 +17,7 @@
 @Html.Hidden("SuccMsg", TempData["SuccessMessage"])
 
 @section Sidebar {
-    @Html.Partial("~/Views/shared/_Sidebar.cshtml")
+    @Html.Partial("~/Views/shared/_preferences.cshtml")
 }
 <!--success message-->
 <div id="successMessage" class="alert hide alert-success message-position">
@@ -211,7 +211,7 @@
             $("#errorMessage").css("display", "block");
             $("#spanErrorMessageRole").text(msgspan);
         } else {
-            var roledescription =htmlEncode($('#newrole').val());
+            var roledescription =$('#newrole').val();
                 $.ajax({
                     url: '@Url.Content("~/Organization/AddRole/")',
                     data: {

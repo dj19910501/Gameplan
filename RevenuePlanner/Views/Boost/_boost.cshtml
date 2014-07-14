@@ -1,0 +1,49 @@
+﻿@using RevenuePlanner.Helpers
+
+<!DOCTYPE html>
+
+<html>
+
+<body>
+    <div class="padding-content2">
+        <h4 class="text-shadow-black source-sans-prolight">Boost Summary</h4>
+    </div>
+    <ul class="nav nav-list nav-gray">
+
+        <li id="tactics" class="item">
+            @if ((bool)ViewBag.IsBoostImprovementTacticCreateEditAuthorized)   // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            {
+
+                <a class="source-sans-probold inputs tactics" id="aTactic" href="#"><span></span>TACTICS</a>
+            }
+        </li>
+        <li id="bestinclass" class="item">
+            @if ((bool)ViewBag.IsBoostBestInClassNumberEditAuthorized)   // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+            {
+
+                <a class="source-sans-probold organization" href="#" id="aBiclink"><span class="trophy"></span>BEST IN CLASS</a>
+            }
+        </li>
+    </ul>
+    <script>
+        $(document).ready(
+            function () {
+                $('.nav nav-list nav-gray li').each(function () {
+                    $(this).removeClass('active');
+                });
+                if ('@ViewBag.PageTitle' == 'BestInClass') {
+                   
+                    if (!$('#bestinclass').hasClass('active')) {
+                        $('#bestinclass').addClass('active');
+                    }
+                }
+                else if ('@ViewBag.PageTitle' == 'Index') {
+                    if (!$('#tactics').hasClass('active')) {
+                        $('#tactics').addClass('active');
+                    }
+                }
+            }
+            );
+    </script>
+</body>
+</html>
