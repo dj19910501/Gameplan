@@ -88,18 +88,24 @@
 
           // Click on Tab Partialview Refresh Based On Selected Tab
           $(".pull-left").on("click", function () {
-              RemoveTabClass();
-              $(this).removeClass("pull-left");
-              $(this).addClass("active pull-left");
-              $("#errorMessage").css("display", "none");
-              $("#successMessage").css("display", "none");
-              /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
-              var topsize = $(document).scrollTop();
-              $("#modal-container-186470").css("top", topsize + "px");
-              var tabtext = ($(this).children('a').text());
-              var planTacticId = $("#hdnPlanTacticId").val();
-              loadReview(planTacticId, tabtext);
-
+              var activeTab = $("#InspectTab li.active a").text();
+              if (activeTab == 'Actuals') {
+                  var tabtext = ($(this).children('a').text());
+                  displayConfirm('topTabsClick("' + tabtext + '");');
+              }
+              else {
+                  RemoveTabClass();
+                  $(this).removeClass("pull-left");
+                  $(this).addClass("active pull-left");
+                  $("#errorMessage").css("display", "none");
+                  $("#successMessage").css("display", "none");
+                  /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+                  var topsize = $(document).scrollTop();
+                  $("#modal-container-186470").css("top", topsize + "px");
+                  var tabtext = ($(this).children('a').text());
+                  var planTacticId = $("#hdnPlanTacticId").val();
+                  loadReview(planTacticId, tabtext);
+              }
           });
 
           // Close event for Error Message & Success Message Close button 
@@ -112,7 +118,30 @@
               $("#modal-container-186470").css("top", topsize + "px");
           });
 
+          //Dharmraj Start 14July2014 : ticket #547, No warning of data loss during Add actuals
+          $(document).on("click", "#confirmClose", function (e) {
+              $('#spanMessageError').html("");
+              $("#errorMessage").hide();
+              var topsize = $(document).scrollTop();
+              $("#modal-container-186470").css("top", topsize + "px");
+          });
+          //Dharmraj End 14July2014 : ticket #547, No warning of data loss during Add actuals
+
       });
+
+    function topTabsClick(tabText) {
+        RemoveTabClass();
+        $("#li" + tabText).removeClass("pull-left");
+        $("#li" + tabText).addClass("active pull-left");
+        $("#errorMessage").css("display", "none");
+        $("#successMessage").css("display", "none");
+        /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
+        var topsize = $(document).scrollTop();
+        $("#modal-container-186470").css("top", topsize + "px");
+        var tabtext = ($("#li" + tabText).children('a').text());
+        var planTacticId = $("#hdnPlanTacticId").val();
+        loadReview(planTacticId, tabtext);
+    }
 
     function RemoveTabClass() {
         $('#InspectTab').children().each(function () {
@@ -144,5 +173,62 @@
         $("#divTab").empty();
         $("#divTab").load(url + '?id=' + id);
     }
+
+    //Dharmraj Start 14July2014 : ticket #547, No warning of data loss during Add actuals
+    function AssignDefaultValue() {
+        $('#divTab').find("input,input[type=text],textarea,select").each(function () {
+            $(this).attr("myValue", $(this).val());
+            //$(this).attr("title", $(this).val());//uday 2-7-2014
+        });
+    }
+    //function to check myValue attribute values and input values that any changes made?
+    function isDataChanged() {
+        var changed = false;
+        $('#divTab').find("input,input[type=text],textarea,select").each(function () {
+            var iv = $(this).attr("myValue");
+            if ($(this).val() != iv) {
+                changed = true;
+            }
+        });
+        return changed;
+    }
+
+    function displayConfirmCommon() {
+        if (isDataChanged()) {
+            $('#spanMessageError').html(" You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+            $("#errorMessage").css("display", "block");
+            var topsize = $(document).scrollTop() + 41;
+            $("#modal-container-186470").css("top", topsize + "px");
+            $("#btnConfirmOK").click(function () {
+                //alert(id);
+                $('#spanMessageError').html("");
+                $("#errorMessage").hide();
+                $('#modal-container-186470').modal("hide");
+            });
+        }
+        else {
+            $('#modal-container-186470').modal("hide");
+        }
+    }
+
+    function displayConfirm(functionName) {
+        if (isDataChanged()) {
+            $('#spanMessageError').html(" You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+            $("#errorMessage").css("display", "block");
+            var topsize = $(document).scrollTop() + 41;
+            $("#modal-container-186470").css("top", topsize + "px");
+            $("#btnConfirmOK").click(function () {
+                //alert(id);
+                $('#spanMessageError').html("");
+                $("#errorMessage").hide();
+                eval(functionName);
+            });
+        }
+        else {
+            eval(functionName);
+        }
+    }
+
+    //Dharmraj End 14July2014 : ticket #547, No warning of data loss during Add actuals
 
 </script>

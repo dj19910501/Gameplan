@@ -4203,6 +4203,37 @@ namespace RevenuePlanner.Controllers
 
                 ViewBag.TacticTypeList = objTacticType;
 
+                // Added by Dharmraj Mangukiya to implement custom restrictions PL ticket #537
+                // Get current user permission for edit own and subordinates plans.
+                var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
+                lstOwnAndSubOrdinates.Add(Sessions.User.UserId);
+                bool IsPlanEditable = true;
+                bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+                bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+                var objPlan = db.Plans.FirstOrDefault(p => p.PlanId == Sessions.PlanId);
+                if (IsPlanEditAllAuthorized)
+                {
+                    IsPlanEditable = true;
+                }
+                else if (IsPlanEditOwnAndSubordinatesAuthorized)
+                {
+                    if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy))
+                    {
+                        IsPlanEditable = true;
+                    }
+                    else
+                    {
+                        IsPlanEditable = false;
+                    }
+                }
+                else
+                {
+                    IsPlanEditable = false;
+                }
+
+                ViewBag.IsPlanEditable = IsPlanEditable;
+                ViewBag.IsNewPlanEnable = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+
             }
             catch (Exception ex)
             {

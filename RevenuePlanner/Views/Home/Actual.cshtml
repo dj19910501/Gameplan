@@ -202,6 +202,7 @@
                     TacticActual = r;
                     fillTacticActualTable();
                     getLoadActual();
+                    AssignDefaultValue(); // added by dharmraj, #547
 
                     //Fetch all the row values from the tables
                     $('.ActualsFormater').each(function () {
@@ -222,6 +223,11 @@
                 }
             });
         }
+
+        $(".modal-backdrop.in").unbind('click');
+        $(".modal-backdrop.in").bind('click', function () {
+            displayConfirmCommon();
+        });
 
         function fillTacticActualTable() {
             if (typeof TacticActual != 'undefined') {
