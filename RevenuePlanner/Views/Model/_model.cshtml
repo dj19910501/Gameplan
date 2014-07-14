@@ -4,9 +4,17 @@
 @{
     string ShowModelResultsTab = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ShowModelResultsTab"]);
     string modelId = null;
+    int? stagecount = ViewBag.modelStageCount;
+    if(stagecount==null)
+    {
+        stagecount = 0;
+    }
     if (ViewBag.ModelId != null)
     {
         modelId = Convert.ToString(ViewBag.ModelId);
+    }
+    else {
+        modelId =Convert.ToString(Model.ModelId);
     }
     
 }
@@ -29,11 +37,11 @@
                             <a href="#">Create New</a>
                         </li>
                         @* Show Duplicate option only in Edit mode and only for latest version of model. *@
-                        @if (Convert.ToString(Model.ModelId) != "" && Convert.ToString(Model.ModelId) != "0" && (Convert.ToString(ViewBag.IsOwner) == "True" || Convert.ToString(ViewBag.IsViewEditBusinessUnit) == "True")) // && isViewOnly != "true")
+                        @if (Convert.ToString(modelId) != "" && Convert.ToString(modelId) != "0" && (Convert.ToString(ViewBag.IsOwner) == "True" || Convert.ToString(ViewBag.IsViewEditBusinessUnit) == "True")) // && isViewOnly != "true")
                         {
                             if (ViewBag.PageTitle == "Create")
                             {
-                                if (ViewBag.modelStageCount > 0)
+                                if (stagecount > 0)
                                 {
                             <li id="liDuplicate">
                                 <a href="#">Duplicate</a>
