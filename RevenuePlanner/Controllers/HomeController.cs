@@ -4190,9 +4190,13 @@ namespace RevenuePlanner.Controllers
                 lstAllowedGeography.ForEach(g => lstAllowedGeographyId.Add(Guid.Parse(g)));
                 planmodel.objGeography = db.Geographies.Where(g => g.IsDeleted.Equals(false) && g.ClientId == Sessions.User.ClientId && lstAllowedGeographyId.Contains(g.GeographyId)).Select(g => g).OrderBy(g => g.Title).ToList();
                 List<string> tacticStatus = Common.GetStatusListAfterApproved();
-                BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
-                var individuals = bdsUserRepository.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true);
+
+                //added by uday for internal point on 15-7-2014
+                int type = 0; // this is inititalized as 0 bcoz to get the status for tactics.
+                var individuals = GetIndividualsByPlanId(Sessions.PlanId, (GanttTabs)type, Enums.ActiveMenu.Home.ToString());
                 planmodel.objIndividuals = individuals.OrderBy(i => string.Format("{0} {1}", i.FirstName, i.LastName)).ToList();
+                //end by uday
+
                 List<TacticType> objTacticType = new List<TacticType>();
 
                 //// Modified By: Maninder Singh for TFS Bug#282: Extra Tactics Displaying in Add Actual Screen

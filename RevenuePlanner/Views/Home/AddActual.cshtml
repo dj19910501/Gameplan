@@ -89,8 +89,9 @@
                     <div id="accordion-filterIndividuals" class="accordion-body collapse">
                         @foreach (var individual in Model.objIndividuals)
                         {
-                            //here lastname and firstname are interchanged as per ticket PL #505 by uday 4-6-2014 i.e last name is displayed first and first name at last
-                            <a href="#" class="accordion-inner" filterId="@individual.UserId">@string.Format("{0} {1}", individual.LastName, individual.FirstName)<span class="pull-right"></span></a>                        
+                            //here lastname and firstname are interchanged as per ticket PL #505 by uday 4-6-2014 i.e last name is displayed first and first name at last //change on 15-7-2014
+                            var name = individual.LastName + ", " + individual.FirstName;
+                            <a href="#" class="accordion-inner" filterId="@individual.UserId">@string.Format("{0}", name)<span class="pull-right"></span></a>                        
                         }
                     </div>
                 }
