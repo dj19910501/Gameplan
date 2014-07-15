@@ -5,14 +5,14 @@
 <html>
 @{
     bool IsPlanCreateAuthorized = false;
-    if (!(bool)ViewBag.IsPlanCreateAuthorized)
+    if ((bool)ViewBag.IsPlanCreateAuthorized)
     {
         IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     }
     bool IsPlanEditable = false;
     if (ViewBag.IsPlanEditable != null)
     {
-        if (!(bool)ViewBag.IsPlanEditable)
+        if ((bool)ViewBag.IsPlanEditable)
         {
             IsPlanEditable = (bool)ViewBag.IsPlanEditable;
         }
@@ -40,7 +40,7 @@
                             <li>
                                 <a href="#">Create New</a>
                             </li>
-                            @if (ViewBag.PageTitle = "Create")
+                            @if (ViewBag.PageTitle == "Create")
                             {
                                 if (Sessions.PlanId != 0 && (bool)ViewBag.IsBusinessUnitEditable == true)
                                 {
@@ -49,13 +49,13 @@
                                 </li>
                                 }
                             }
-                            else if (ViewBag.PageTitle = "Assortment")
+                            else if (ViewBag.PageTitle == "Assortment")
                             {  
                                 <li>
                                     <a href="#">Duplicate</a>
                                 </li>
                             }
-                            else if (ViewBag.PageTitle = "ApplyToCallender")
+                            else if (ViewBag.PageTitle == "ApplyToCallender")
                             {    
                                 <li>
                                     <a href="#">Duplicate</a>
@@ -145,6 +145,9 @@
                 }
                 if (isplanEdit == 'false') {
                     $('#Addactivityarea').hide();
+                }
+                else {
+                    $('#Addactivityarea').show();
                 }
             }
         }
