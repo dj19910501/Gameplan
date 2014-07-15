@@ -756,8 +756,11 @@
                 dataType: "json",
                 success: function (data) {
                     if (data.status == 1) {
-                        $("#copymodeldesc").val(data.msg);
-                        $("#original").text(data.name);
+                       
+                        //Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-15-2014
+                        $("#copymodeldesc").val(htmlDecode(data.msg));
+                        $("#original").text(htmlDecode(data.name));
+
                         //07/14/2014
                         $("#errorMessagecopy").css("display", "none");
                         $("#copymodeldesc").removeClass("error");

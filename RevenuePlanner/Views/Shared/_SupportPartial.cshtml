@@ -9,19 +9,22 @@
 @*<div class="container-fluid all-height" id="DivShareTacticPopupMain">
     <div class="row-fluid calc-height">
         <div class="span12">*@
-    <div id="errorMessageContactSupportPopup" class="alert alert-error hide contact-support-message-position-popup">
-        <a class="close">×</a>
-        <strong>Error : </strong><span id="spanErrorMessageContactSupportPopup"></span>
-    </div>
-    <div id="SuccessMessageContactSupportPopup" class="alert alert-success hide contact-support-message-position-popup">
-        <a class="close">×</a>
-        <strong>Success : </strong><span id="spanSuccessMessageContactSupportPopup"></span>
-    </div>
+ 
     <div id="DivContactSupportPopup" class="form-contact-support fade in" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block">
         <div class="login-wrapper">
             <form name="login-register">
                 <h2 class="primary-title source-sans-prosemibold">Contact Support</h2>
                 <label class="inpus-required-title source-sans-prolight">All fields required.</label>
+
+                <div id="errorMessageContactSupportPopup" class="alert alert-error hide ">
+                    <a class="close">×</a>
+                    <strong>Error : </strong><span id="spanErrorMessageContactSupportPopup"></span>
+                </div>
+                <div id="SuccessMessageContactSupportPopup" class="alert alert-success hide">
+                    <a class="close">×</a>
+                    <strong>Success : </strong><span id="spanSuccessMessageContactSupportPopup"></span>
+                </div>
+
                 @if (IsDisable == false)
                 {
                     <input id="email_id" name="email" type="email" class="input-block-level-contact-support source-sans-prolight inputs-login" placeholder="Email" disabled="@IsDisable" required/>
@@ -40,10 +43,10 @@
                 <button class="button-contact-support btn btn-large" id="submit_issue" type="submit" value="Submit">Submit</button>
                 <button id="close_popup" class="btn-link contactsupport" type="button">Cancel</button>@*class changed by uday for #453 7-7-2014*@
 
-            </form>
+            
             @if (IsDisable == false)
             {
-                @*<div style="margin-top: 50px;"></div>*@//uday for #453 7-7-2014
+@*<div style="margin-top: 50px;"></div>*@//uday for #453 7-7-2014
                         
                 <div class="icon-contact-support conv_helveticaltstd-light">
                     <a href='@Url.Action("Index", "Login")'>
@@ -51,6 +54,7 @@
                         Return to Sign in</a>
                 </div>
             }
+    </form>
         </div>
     </div>@*
         </div>
@@ -67,9 +71,17 @@
         }
     });//uday for #453 7-7-2014
 
+    var heightValue = '615px';
+    var reinitlaizeValue = '560px';
+    if ('@IsDisable' == 'True') {
+        heightValue = '560px';
+        reinitlaizeValue = '500px';
+     }
+
     $(function () {
 
         $("#errorMessageContactSupportPopup").find(".close").on("click", function (e) {
+            $("#DivContactSupportPopup").css("height", reinitlaizeValue);
             e.stopPropagation();
             e.preventDefault();
             $(this).closest(".alert").slideUp(400);
@@ -79,6 +91,7 @@
         $('#submit_issue').click(function () {
             $(".input-block-level-contact-support").removeClass("error");
             var flag = 0;
+
             $('.input-block-level-contact-support').each(function () {
                 if ($(this).val() == "") {
                     $(this).addClass("error");
@@ -90,6 +103,7 @@
                 var msgspan = "Please enter values in all field.";
                 $("#errorMessageContactSupportPopup").css("display", "block");
                 $("#spanErrorMessageContactSupportPopup").text(msgspan);
+                $("#DivContactSupportPopup").css("height", heightValue);
             }
             else {
                 /*
@@ -97,6 +111,7 @@
                 Bug 109 :  	 Steps: 1. Click on support to open support pop-up 2. Enter 1' OR '1'='1 as script in Company name and Issue field Bug: Observe that entering shows blank fields in email 
                 */
                 var flage = true;
+
                 close_messages();
                 var emailId = $('#email_id').val();
                 var company = $('#company_name').val();
@@ -109,6 +124,7 @@
                     var msgspan = "Please enter valid companyName.";
                     $("#errorMessageContactSupportPopup").css("display", "block");
                     $("#spanErrorMessageContactSupportPopup").text(msgspan);
+                    $("#DivContactSupportPopup").css("height", heightValue);
                 }
                 //if (!validateIssue(issue)) {
                 //    flage = false;
@@ -123,6 +139,7 @@
                     var msgspan = "Please enter valid email.";
                     $("#errorMessageContactSupportPopup").css("display", "block");
                     $("#spanErrorMessageContactSupportPopup").text(msgspan);
+                    $("#DivContactSupportPopup").css("height", heightValue);
                 }
                 if (flage == true) {
                     $.ajax({
@@ -146,6 +163,7 @@
                                 });
                             }
                             else {
+                                $("#DivContactSupportPopup").css("height", heightValue);
                                 var msgspan = "Error occured in sending mail, Please try again";
                                 $(".input-block-level-contact-support").addClass("error");
                                 $("#errorMessageContactSupportPopup").css("display", "block");

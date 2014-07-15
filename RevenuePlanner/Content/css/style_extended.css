@@ -2662,7 +2662,9 @@ label {
 /*Modified by : Kalpesh Sharma PL#453 - SummerNote Editor issue*/
 #DivContactSupportPopup.form-contact-support {
     /*width: 400px;*/
-    width: auto;
+    /*width: auto;*/
+    /*Added By : Kalpesh Sharma :: Functional review point 55, 56 & 57*/
+    width: 480px;
     height: 570px;/*changed 4m 495 to 570 by uday #453s*/
 }
 

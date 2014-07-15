@@ -7330,5 +7330,21 @@ padding: 7px 24px 7px 4px !important;
 }
 /*END - Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-14-2014*/
 
+/*Added By : Kalpesh Sharma :: Functional review point 55, 56 & 57*/
+.note-editor .note-editable
+{
+    font-family:Arial !important;
+    /*max-width :410px;*/
+    word-wrap: break-word;
+}
+
+#errorMessageContactSupportPopup , #SuccessMessageContactSupportPopup
+{
+    margin-left: 5px;
+    width: calc(96% - 44px) !important;
+    margin-bottom: 10px !important;
+    text-align: left;
+}
+/*End Kalpesh Sharma :: Functional review point 55, 56 & 57*/
 
 
