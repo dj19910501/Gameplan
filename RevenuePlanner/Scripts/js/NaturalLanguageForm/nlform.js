@@ -88,7 +88,7 @@
 			    var maxLength = this.elOriginal.getAttribute('maxlength');
 			    if (maxLength.length > 0) {
 			        if (this.toggle.innerHTML.length > maxLength) {
-			            this.toggle.title = this.toggle.innerHTML;
+			            this.toggle.title = $('<div/>').html(this.toggle.innerHTML).text();
 			            this.toggle.innerHTML = this.toggle.innerHTML.substring(0, maxLength) + '...';
 			        }
 			    }

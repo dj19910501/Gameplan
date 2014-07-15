@@ -43,11 +43,11 @@
 <!--success message-->
 <div id="successMessage" class="alert hide alert-success message-position">
     <a class="close">×</a>
-    <div id="cSuccess">@Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))</div>
+    <div id="cSuccess">@HttpUtility.HtmlDecode((string)TempData["SuccessMessage"])</div>
 </div>
 <div id="errorMessage" class="alert alert-error hide message-position">
     <a class="close">×</a>
-    <div id="cError">@Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))</div>
+    <div id="cError">@HttpUtility.HtmlDecode((string)TempData["ErrorMessage"])</div>
 </div>
 @Html.HiddenFor(model => model.ModelId, new { id = "hdnModelId" })
 @Html.HiddenFor(model => model.Status, new { id = "hdnStatus" })

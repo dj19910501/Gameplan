@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace RevenuePlanner.Models
 {
@@ -14,12 +15,14 @@ namespace RevenuePlanner.Models
 
         public Guid ClientId { get; set; }
 
+        [AllowHtml]
         [Display(Name = "Instance Name")]
         [Required]
         [MaxLength(250, ErrorMessage = "Instance name cannot be more than 250 characters.")]
         //[RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in Instance Name.")]
         public string Instance { get; set; }
 
+        [AllowHtml]
         [Display(Name = "User ID")]
         [Required]
         //[RegularExpression("^[^<>~%^;/|]+", ErrorMessage = "^<>~%;/| characters are not allowed in Username.")]
