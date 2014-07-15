@@ -38,22 +38,20 @@ namespace RevenuePlanner.Helpers
         //     The httpContext parameter is null.
         protected override bool AuthorizeCore(HttpContextBase httpContext)
         {
-            bool isAuthorized = base.AuthorizeCore(httpContext);
-            if (!isAuthorized)
+            bool isAuthorized = true;
+            if (Sessions.User != null)//Added by Mitesh Vaishnav on 15/07/2014 for PL ticket #590 ,If User session is null than not check for AuthorizeUser attribute
             {
-                return false;
+                isAuthorized = base.AuthorizeCore(httpContext);
+                if (!isAuthorized)
+                {
+                    return false;
+                }
+
+                isAuthorized = IsAuthorized(Permissions);
+                return isAuthorized;
             }
 
-
-            isAuthorized = IsAuthorized(Permissions);
-            if (isAuthorized)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return isAuthorized;
         }
 
         //
@@ -79,14 +77,7 @@ namespace RevenuePlanner.Helpers
         //     The permission object contains the permission for request.
         public static bool IsAuthorized(Enums.ApplicationActivity permissions)
         {
-            if (Sessions.User != null)//Added by Mitesh Vaishnav on 15/07/2014 for PL ticket #590 ,If User session is null than not check for AuthorizeUser attribute
-            {
             return ((int)(Sessions.UserActivityPermission & permissions)) > 0;
-            }
-            else
-            {
-                return true;
-            }
         }
 
         //
