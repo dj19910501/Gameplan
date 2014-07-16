@@ -67,28 +67,55 @@
     $(document).ready(function () {
         var value = '@ViewBag.login';
         if (value == "login") {
-            document.getElementById("DivContactSupportPopup").style.height = "500px";
+            document.getElementById("DivContactSupportPopup").style.height = "510px";
+        }
+        else {
+            //Added By Kalpesh Sharma :: Few Points for Contact Support Pop-Up  07-16-2014 
+            document.getElementById("DivContactSupportPopup").style.height = "560px";
         }
     });//uday for #453 7-7-2014
 
-    var heightValue = '615px';
-    var reinitlaizeValue = '560px';
-    if ('@IsDisable' == 'True') {
-        heightValue = '560px';
-        reinitlaizeValue = '500px';
-     }
+    //Added By Kalpesh Sharma :: Few Points for Contact Support Pop-Up  07-16-2014 
+    function SetHeight(control,height,IsAdd)
+    {
+        var OldHeight = $(control).height();
+        var NewHeight = null;
+        if (IsAdd) {
+            NewHeight = OldHeight + height;
+        }
+        else {
+            if (OldHeight > height) {
+                NewHeight = OldHeight - height;
+            }
+            else {
+                NewHeight = OldHeight;
+            }
+        }
+        $(control).height(NewHeight + 'px');
+    }
+
 
     $(function () {
 
         $("#errorMessageContactSupportPopup").find(".close").on("click", function (e) {
-            $("#DivContactSupportPopup").css("height", reinitlaizeValue);
+            SetHeight("#DivContactSupportPopup", 60, false);
             e.stopPropagation();
             e.preventDefault();
-            $(this).closest(".alert").slideUp(400);
+            $(this).closest(".alert").slideUp(0);
+            
         });
 
         // Valdiate and Send mail on click of share button of share tactic popup.
         $('#submit_issue').click(function () {
+            //Added By Kalpesh Sharma :: Few Points for Contact Support Pop-Up  07-16-2014 
+            var value = '@ViewBag.login';
+            if (value == "login") {
+                document.getElementById("DivContactSupportPopup").style.height = "510px";
+            }
+            else {
+                document.getElementById("DivContactSupportPopup").style.height = "560px";
+            }
+
             $(".input-block-level-contact-support").removeClass("error");
             var flag = 0;
 
@@ -103,7 +130,8 @@
                 var msgspan = "Please enter values in all field.";
                 $("#errorMessageContactSupportPopup").css("display", "block");
                 $("#spanErrorMessageContactSupportPopup").text(msgspan);
-                $("#DivContactSupportPopup").css("height", heightValue);
+                //Added By Kalpesh Sharma :: Few Points for Contact Support Pop-Up  07-16-2014 
+                SetHeight("#DivContactSupportPopup", 60, true);
             }
             else {
                 /*
@@ -124,22 +152,27 @@
                     var msgspan = "Please enter valid companyName.";
                     $("#errorMessageContactSupportPopup").css("display", "block");
                     $("#spanErrorMessageContactSupportPopup").text(msgspan);
-                    $("#DivContactSupportPopup").css("height", heightValue);
+                    //Added By Kalpesh Sharma :: Few Points for Contact Support Pop-Up  07-16-2014 
+                    SetHeight("#DivContactSupportPopup", 60, true);
                 }
-                //if (!validateIssue(issue)) {
-                //    flage = false;
-                //    $('#issue').addClass("error");
-                //    var msgspan = "Please enter valid characters in issue.";
-                //    $("#errorMessageContactSupportPopup").css("display", "block");
-                //    $("#spanErrorMessageContactSupportPopup").text(msgspan);
-                //}
+                
+                if ($('#summernote').code() == "<p><br></p>") {
+                    flage = false;
+                    var msgspan = "Please enter a message.";
+                    $("#errorMessageContactSupportPopup").css("display", "block");
+                    $("#spanErrorMessageContactSupportPopup").text(msgspan);
+                    //Added By Kalpesh Sharma :: Few Points for Contact Support Pop-Up  07-16-2014 
+                    SetHeight("#DivContactSupportPopup", 60, true);
+                }
+
                 if (!validateEmail(emailId)) {
                     flage = false;
                     $('#email_id').addClass("error");
                     var msgspan = "Please enter valid email.";
                     $("#errorMessageContactSupportPopup").css("display", "block");
                     $("#spanErrorMessageContactSupportPopup").text(msgspan);
-                    $("#DivContactSupportPopup").css("height", heightValue);
+                    //Added By Kalpesh Sharma :: Few Points for Contact Support Pop-Up  07-16-2014 
+                    SetHeight("#DivContactSupportPopup", 60, true);
                 }
                 if (flage == true) {
                     $.ajax({
@@ -155,19 +188,23 @@
                         cache: false,
                         success: function (result) {
                             if (result == true) {
+                                //Added By Kalpesh Sharma :: Few Points for Contact Support Pop-Up  07-16-2014 
+                                SetHeight("#DivContactSupportPopup", 60, true);
                                 var msgspan = "Contact support request submitted successfully";
                                 $("#spanSuccessMessageContactSupportPopup").text(msgspan);
-                                $("#SuccessMessageContactSupportPopup").slideDown(1200);
+                                $("#SuccessMessageContactSupportPopup").css("display", "block");
                                 $("#SuccessMessageContactSupportPopup").slideUp(2500).promise().always(function () {
                                     close_popup();
                                 });
+
                             }
                             else {
-                                $("#DivContactSupportPopup").css("height", heightValue);
                                 var msgspan = "Error occured in sending mail, Please try again";
                                 $(".input-block-level-contact-support").addClass("error");
                                 $("#errorMessageContactSupportPopup").css("display", "block");
                                 $("#spanErrorMessageContactSupportPopup").text(msgspan);
+                                //Added By Kalpesh Sharma :: Few Points for Contact Support Pop-Up  07-16-2014 
+                                SetHeight("#DivContactSupportPopup", 60, true);
                             }
                         }
                     });
