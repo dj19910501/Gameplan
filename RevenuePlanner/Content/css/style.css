@@ -5754,10 +5754,13 @@ span.left-arrow {
 
 #change-log .change {
     margin-top: 13px;
+    display:block !important;
 }
 
 #change-log .changes .title {
     font-weight: bold;
+    display:block !important;
+    word-wrap:break-word;
 }
 
 .nav-gray-plan .nav-header .change span.datetime {
