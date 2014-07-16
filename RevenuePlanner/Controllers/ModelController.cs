@@ -3628,6 +3628,10 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsBenchmarked = (IsBenchmarked != null) ? IsBenchmarked : true;
             BaselineModel objBaselineModel = FillInitialData(id, businessunit);
             string Title = objBaselineModel.Versions.Where(s => s.IsLatest == true).Select(s => s.Title).FirstOrDefault();
+
+            //Added By Kalpesh Sharma Functional and code review #560 07-16-2014
+            ViewBag.LatestModelID = objBaselineModel.Versions.Where(s => s.IsLatest == true).Select(s => s.ModelId).FirstOrDefault();
+
             if (Title != null && Title != string.Empty)
             {
                 ViewBag.Msg = string.Format(Common.objCached.ModelTacticTypeNotexist, Title);
@@ -4020,8 +4024,12 @@ namespace RevenuePlanner.Controllers
                                                     newModel_Funnel_Stage.ModifiedBy = null;
                                                     newModel_Funnel_Stage.ModifiedDate = null;
                                                     mrp.Model_Funnel_Stage.Add(newModel_Funnel_Stage);
-                                                    mrp.SaveChanges();
+                                                    
                                                 }
+
+                                                //Added By Kalpesh Sharma Functional and code review #560 07-16-2014   
+                                                mrp.SaveChanges();
+
                                             }
                                         }
                                         #endregion

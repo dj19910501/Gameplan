@@ -1,0 +1,31 @@
+﻿
+<!--div to display pop up for copying role-->
+        <div id="DivPartialShareModelDuplicate" style="display: none;">
+            <div class="all-height DivResetDefaults" id="DivShareModelDuplicatePopupMaincopy">
+                <div class="calc-height">
+                    <div class="span12">
+
+                        <div id="DivModelDuplicatePopupcopy" class="form-inspect-share hide fade in height-auto popup" role="dialog" style="display: block;">
+
+                           <div style="padding-bottom: 20px;" class="login-wrapper">
+                                @*Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-11-2014*@
+                                <h2 class="primary-title source-sans-proregular without-text-shadow">Duplicating a model</h2>
+                               <p> You are about to duplicate the 
+                                <strong id="original"></strong>.Please rename the new model:@*review point*@</p>
+                                @*End By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-11-2014*@
+                                <input type="text" value="" placeholder="Enter new model" name="textfield" maxlength="255" id="copymodeldesc" class="input-block-level source-sans-proregular copyroledesc">
+                                <!--error message-->
+                                <div id="errorMessagecopy" class="alert hide alert-error message-position">
+                                    <a class="close">×</a>
+                                    <strong></strong><span id="spanErrorMessageModelcopy"></span>
+                                </div>
+                                <!--error message-->
+                                <button class="form-inspect-share-button btn btn-large text-shadow-blue default-btn" type="submit" title="Duplicate" value="Submit" id="copymodelbtn">Duplicate</button>
+                                <button class="cancel-btn btn-link text-shadow-black" type="button" id="cancelbtncopy">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="DivBackgroundShareModelDuplicatecopy" class="modal-backdrop fade in" style="z-index: 1500"></div>
+        </div>
