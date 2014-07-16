@@ -578,6 +578,11 @@ table.myteam {
     margin-left: 5% !important;      /* Added by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #62 */
 }
 
+/* Start - Added by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #62 */
+#lnkAddUser {
+    margin-left: 5% !important;      
+}
+/* End - Added by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #62 */
     table.myteam tbody tr:hover {
         cursor: pointer;
     }
