@@ -7347,4 +7347,22 @@ padding: 7px 24px 7px 4px !important;
 }
 /*End Kalpesh Sharma :: Functional review point 55, 56 & 57*/
 
+.btn-gray:hover {
+    text-decoration:none;
+}
+.btn-gray {
+    color: #6d6d6d !important;
+    border:1px solid #d4d4d4;
+    border-radius:4px;
+    text-decoration:none;
+    font-size:12px;
+    padding:5px 15px;
+    background: rgb(236, 236, 236);
+    background: -moz-linear-gradient(270deg, rgb(236, 236, 236) 4%, rgb(254, 254, 254) 98%);
+    background: -webkit-linear-gradient(270deg, rgb(236, 236, 236) 4%, rgb(254, 254, 254) 98%);
+    background: -o-linear-gradient(270deg, rgb(236, 236, 236) 4%, rgb(254, 254, 254) 98%);
+    background: -ms-linear-gradient(270deg, rgb(236, 236, 236) 4%, rgb(254, 254, 254) 98%);
+    background: linear-gradient(0deg, rgb(236, 236, 236) 4%, rgb(254, 254, 254) 98%);
+}
+
 

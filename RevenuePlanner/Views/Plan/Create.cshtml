@@ -264,7 +264,7 @@
         });
         return changed;
     }
-    $(document).on("click", "#confirmClose", function (e) {
+    $(document).on("click", "#confirmClose, .confirmClose", function (e) {
         $("#errorMessage").slideUp(3000);
     });
     $(document).on("click", "#aApplyToCalender", function (e) {
@@ -275,7 +275,7 @@
     });
     function displayconfirm(strURL) {
         if (isDataChanged()) {
-            $('#errorMessage').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a style='font-weight:bold;color:gray;' href='" + strURL + "'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+            $('#errorMessage').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a><a id='aclose' class='close confirmClose'>×</a>");
             $("#errorMessage").slideDown(3000);
         }
         else {

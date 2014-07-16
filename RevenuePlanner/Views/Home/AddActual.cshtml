@@ -955,7 +955,7 @@
                 return true;
             }
         });
-        $(document).on("click", "#confirmClose", function (e) {
+        $(document).on("click", "#confirmClose, .confirmClose", function (e) {
             $('#spanMessageError').html("");
             $("#errorMessage").slideUp(3000);
         });
@@ -971,7 +971,7 @@
         //Dharmraj Start 14July2014 : ticket #547, No warning of data loss during Add actuals
         function displayconfirm(strURL) {
             if (isDataChanged()) {
-                $('#spanMessageError').html(" You have unsaved changes. Do you wish to leave this page and lose your work?<br><a style='font-weight:bold;color:gray;' href='" + strURL + "'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+                $('#spanMessageError').html(" You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
                 $("#errorMessage").slideDown(3000);
             }
             else {
@@ -981,7 +981,7 @@
 
         function displayConfirmCommon(functionName) {
             if (isDataChanged()) {
-                $('#spanMessageError').html(" You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+                $('#spanMessageError').html(" You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
                 $("#errorMessage").slideDown(3000);
                 $("#btnConfirmOK").click(function () {
                     //alert(id);

@@ -195,7 +195,7 @@
 
     function displayConfirmCommon() {
         if (isDataChanged()) {
-            $('#spanMessageError').html(" You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+            $('#spanMessageError').html(" You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
             $("#errorMessage").css("display", "block");
             var topsize = $(document).scrollTop() + 41;
             $("#modal-container-186470").css("top", topsize + "px");
@@ -213,7 +213,7 @@
 
     function displayConfirm(functionName) {
         if (isDataChanged()) {
-            $('#spanMessageError').html(" You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='CursorHand' style='font-weight:bold;color:gray;'>Ok</a>&nbsp;&nbsp;<a style='font-weight:bold;color:gray;' id='confirmClose' href='#'>Cancel</a>");
+            $('#spanMessageError').html(" You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
             $("#errorMessage").css("display", "block");
             var topsize = $(document).scrollTop() + 41;
             $("#modal-container-186470").css("top", topsize + "px");
