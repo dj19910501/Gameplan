@@ -83,23 +83,25 @@
             onClickActivity();
             //  onClickBusinessUnit();//Added by Nirav for Custom Dropdown - 388
 
-            //// Start - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
-            $('.toggleStatus').click(function () {
-                $(this).hide();
-                $('.toggle-status div').show();
-                showTacticStatus = true;
-                RefreshCurrentTab();
-                gantt.refreshData();
-            });
+            if ($('#ActiveMenu').val().toLowerCase() == 'plan') { //// Added by Sohel Pathan on 16/07/2014 for PL ticket #556 to hide "Showstatus" feature on home screen
+                //// Start - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+                $('.toggleStatus').click(function () {
+                    $(this).hide();
+                    $('.toggle-status div').show();
+                    showTacticStatus = true;
+                    RefreshCurrentTab();
+                    gantt.refreshData();
+                });
 
-            $('.toggleStatusHide').click(function () {
-                $('.toggleStatus').show();
-                $('.toggle-status div').hide();
-                showTacticStatus = false;
-                RefreshCurrentTab();
-                gantt.refreshData();
-            });
-            //// End - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+                $('.toggleStatusHide').click(function () {
+                    $('.toggleStatus').show();
+                    $('.toggle-status div').hide();
+                    showTacticStatus = false;
+                    RefreshCurrentTab();
+                    gantt.refreshData();
+                });
+                //// End - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+            }
         });
         function populateNF(items, id) {
             var $dropdown = $("#" + id);
@@ -540,18 +542,21 @@
             <div class="margin-left9 pull-left" id="divCollaborator" style="position: relative;">
                 <!-- position:relative = added by kapil -->
             </div>
-            @* Start - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen *@
-            <div class="pull-right toggle-status source-sans-proregular">
-                <div class="pull-right">
-                    <a href="#" class="toggleStatusHide">Hide Status</a>
-                    <span class="status-created">Created</span>
-                    <span class="status-submitted">Submitted</span>
-                    <span class="status-approved">Approved</span>
-                    <span class="status-rejected">Rejected</span>
+            @if (activeMenu.ToLower() == "plan") //// Added by Sohel Pathan on 16/07/2014 for PL ticket #556 to hide "Showstatus" feature on home screen
+            {
+                @* Start - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen *@
+                <div class="pull-right toggle-status source-sans-proregular">
+                    <div class="pull-right">
+                        <a href="#" class="toggleStatusHide">Hide Status</a>
+                        <span class="status-created">Created</span>
+                        <span class="status-submitted">Submitted</span>
+                        <span class="status-approved">Approved</span>
+                        <span class="status-rejected">Rejected</span>
+                    </div>
+                    <a href="#" class="toggleStatus">Show Status</a>
                 </div>
-                <a href="#" class="toggleStatus">Show Status</a>
-            </div>
-            @* End - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen *@
+                @* End - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen *@
+            }
             <div>
                 <div class="gantt-padding cf lenght-div" style="min-height:300px;">
                     <div id="gantt_here"></div>
@@ -1799,20 +1804,20 @@
          cssClass = task.color + ' no_drag ';
      }
 
-     //// Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
-     if (showTacticStatus == true) {
-         if (task.Status == "Created")
-             cssClass += " tactic-created";
-         else if (task.Status == "Submitted")
-             cssClass += " tactic-submitted ";
-         else if (task.Status == "Approved" || task.Status == "Complete" || task.Status == "In-Progress")
-             cssClass += " tactic-approved";
-         else if (task.Status == "Rejected" || task.Status == "Declined")
-             cssClass += " tactic-rejected";
+        //// Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
+        if (showTacticStatus == true) {
+            if (task.Status == "Created")
+                cssClass += " tactic-created";
+            else if (task.Status == "Submitted")
+                cssClass += " tactic-submitted ";
+            else if (task.Status == "Approved" || task.Status == "Complete" || task.Status == "In-Progress")
+                cssClass += " tactic-approved";
+            else if (task.Status == "Rejected" || task.Status == "Declined")
+                cssClass += " tactic-rejected";
 
-         if(isImprovement == true)
-             cssClass += " improvement-border-top-status";
-     }
+            if(isImprovement == true)
+                cssClass += " improvement-border-top-status";
+        }
      return cssClass;
  }
 
