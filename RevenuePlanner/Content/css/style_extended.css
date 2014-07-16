@@ -574,7 +574,8 @@ span.green-arrow-up-icon, span.red-arrow-down-icon {
 /* Added By Kuber*/
 
 table.myteam {
-    width: 90%;
+    width: 100%;          /* Modified by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #62 */
+    margin-left: 5% !important;      /* Added by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #62 */
 }
 
     table.myteam tbody tr:hover {
@@ -3415,3 +3416,9 @@ a:focus {
 .targetStageclick {
     cursor:pointer !important;/*14-7-2014  PL Ticket #591*/
 }
+
+ /* Start - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 */  
+.highlighted-budget-fields {
+    font-weight:bold !important;
+}
+/* End - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 */  

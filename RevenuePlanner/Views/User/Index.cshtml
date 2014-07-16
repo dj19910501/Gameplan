@@ -131,8 +131,7 @@
         @* Start - Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
         @if ((bool)ViewBag.IsUserAdminAuthorized)
         {
-            <div class="span2 content-colum-left">
-            </div>
+            <div class="span2 myaccount-colum"></div>   // Modified by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #62
             <div class="span10 content-colum-right">
                 @if ((List<RevenuePlanner.BDSService.User>)ViewBag.OtherUsers != null)
                 {
