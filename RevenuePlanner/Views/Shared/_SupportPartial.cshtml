@@ -117,6 +117,8 @@
             }
 
             $(".input-block-level-contact-support").removeClass("error");
+            $('.note-editable').css("background-color", "#FFFFFF");
+
             var flag = 0;
 
             $('.input-block-level-contact-support').each(function () {
@@ -132,6 +134,10 @@
                 $("#spanErrorMessageContactSupportPopup").text(msgspan);
                 //Added By Kalpesh Sharma :: Few Points for Contact Support Pop-Up  07-16-2014 
                 SetHeight("#DivContactSupportPopup", 60, true);
+
+                if ($('#summernote').code() == "<p><br></p>") {
+                    $('.note-editable').css("background-color", "#F2DEDE");
+                }
             }
             else {
                 /*
@@ -161,6 +167,7 @@
                     var msgspan = "Please enter a message.";
                     $("#errorMessageContactSupportPopup").css("display", "block");
                     $("#spanErrorMessageContactSupportPopup").text(msgspan);
+                    $('.note-editable').css("background-color", "#F2DEDE");
                     //Added By Kalpesh Sharma :: Few Points for Contact Support Pop-Up  07-16-2014 
                     SetHeight("#DivContactSupportPopup", 60, true);
                 }
