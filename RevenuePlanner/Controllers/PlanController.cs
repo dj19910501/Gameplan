@@ -104,7 +104,11 @@ namespace RevenuePlanner.Controllers
                 var List = GetModelName();
                 if (List == null || List.Count == 0)
                 {
-                    return RedirectToAction("NoModel");
+                    //Modified by Mitesh Vaishnav for functional review point 64
+                    TempData["IsNoModel"] = true;
+                    return RedirectToAction("PlanSelector");
+                    //End: Modified by Mitesh Vaishnav for functional review point 64
+                   
                 }
                 List.Insert(0, new PlanModel { ModelId = 0, ModelTitle = "select" }); // Added by dharmraj to add default select item in model dropdown
                 TempData["selectList"] = new SelectList(List, "ModelId", "ModelTitle"); 
@@ -3518,6 +3522,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult PlanSelector()
         {
+          
             ViewBag.ActiveMenu = Enums.ActiveMenu.Plan;
             //ViewBag.IsViewOnly = "false";
             try

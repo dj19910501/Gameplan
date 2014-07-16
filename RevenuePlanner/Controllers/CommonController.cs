@@ -121,5 +121,15 @@ namespace RevenuePlanner.Controllers
             ViewBag.login = "login";//uday for #453 7-7-14
             return PartialView("_SupportPartial");
         }
+        /// <summary>
+        /// Open NoModel pop-up if there is not any model in application 
+        /// </summary>
+        /// <CreatedBy>Mitesh Vaishnav</CreatedBy>
+        /// <CreatedDate>16/07/2014</CreatedDate>
+        /// <returns></returns>
+        public PartialViewResult LoadNoModelPartial()
+        {
+            return PartialView("~/Views/Plan/_NoModel.cshtml");
+        }
     }
 }

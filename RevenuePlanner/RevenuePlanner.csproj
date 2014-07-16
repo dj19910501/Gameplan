@@ -815,6 +815,7 @@
     <Content Include="Views\Plan\_plan.cshtml" />
     <Content Include="Views\Shared\_preferences.cshtml" />
     <Content Include="Views\Model\_DuplicateModelPartial.cshtml" />
+    <Content Include="Views\Plan\_NoModel.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

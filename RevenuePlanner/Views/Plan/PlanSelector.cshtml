@@ -9,6 +9,7 @@
     string strConfirmationmessage = Common.objCached.PlanDeleteConfirmMessage;
     bool IsPlanEditAllAuthorized = (bool)ViewBag.IsPlanEditAllAuthorized;
     bool IsPlanEditOwnAndSubordinatesAuthorized = (bool)ViewBag.IsPlanEditOwnAndSubordinatesAuthorized;
+     
 }
 
 @Html.Hidden("IsPlanEditOwnAndSubordinatesAuthorized", IsPlanEditOwnAndSubordinatesAuthorized)
@@ -55,7 +56,7 @@
     <div id="cError">@Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))</div>
 </div>
 <!--success/error message-->
-
+<div id="Div_NoModelArea"></div>
 <ul class="nav nav-tabs" id="YearTabs">
     <li class="title-header source-sans-proregular">
         <h2>Plan Selector</h2>
@@ -88,6 +89,13 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
+        /*Added by Mitesh Vaishnav on 16/07/2014 for functional review point 64   */
+        if ('@TempData["IsNoModel"]' == 'True') {
+            $("#Div_NoModelArea").empty();
+            var url = '@Url.Content("~/Common/LoadNoModelPartial/")';   
+            $("#Div_NoModelArea").load(url);
+        }
+        /*End: Added by Mitesh Vaishnav on 16/07/2014 for functional review point 64   */
         LoadYearsData(); //function call to load Years tabs
         //LoadBUData(); //function call to load Business Units tabs
 
