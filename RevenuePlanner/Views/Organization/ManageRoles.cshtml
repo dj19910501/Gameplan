@@ -239,7 +239,7 @@
 
     $('#copyrolebtn').click(function () {
 
-         var copyroledescription = htmlEncode($('#copyroledesc').val());
+         var copyroledescription = $('#copyroledesc').val();
 
         $(".copyroledesc").removeClass("error");
         var flag = 0;
@@ -261,7 +261,7 @@
                 $.ajax({
                     url: '@Url.Content("~/Organization/CopyRole/")',
                     data: {
-                        copyroledesc:escape(copyroledescription),
+                        copyroledesc:copyroledescription,
                         originalroleid: originalid,
                         LoginId: uId        // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check 
                     },
