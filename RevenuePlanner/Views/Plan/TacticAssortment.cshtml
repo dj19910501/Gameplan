@@ -302,21 +302,23 @@
 
         var mqlConversion = 0;
         function GetConversionRate(projectedStageValue, isTacticTypeChange) {
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Plan/CalculateMQL")',
-                data: $("form").serialize() + '&projectedStageValue=' + projectedStageValue + '&RedirectType=' + isAssortment + '&isTacticTypeChange=' + isTacticTypeChange,
-                success: function (data) {
-                    if (data.mql == 'N/A') {
-                        $("#txtmql").val(data.mql);
-                        $("#txtmql").removeClass('priceValue');
+            if ($('#ddlTacticType').val() != '') {//added by uday for point 68
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Plan/CalculateMQL")',
+                    data: $("form").serialize() + '&projectedStageValue=' + projectedStageValue + '&RedirectType=' + isAssortment + '&isTacticTypeChange=' + isTacticTypeChange,
+                    success: function (data) {
+                        if (data.mql == 'N/A') {
+                            $("#txtmql").val(data.mql);
+                            $("#txtmql").removeClass('priceValue');
+                        }
+                        else {
+                            mqlConversion = data.mql;
+                            $("#txtmql").val(FormatCommas(mqlConversion.toString(), false));
+                        }
                     }
-                    else {
-                        mqlConversion = data.mql;
-                        $("#txtmql").val(FormatCommas(mqlConversion.toString(), false));
-                    }
-                }
-            });
+                });
+            }
         }
         $('form').find('input[type=text], select, textarea').each(function () {
             $(this).change(function () {
@@ -573,10 +575,10 @@
             format: "@RevenuePlanner.Helpers.Common.dateFormat",
             autoclose: true,
         }).on('changeDate', function (ev) {
-            var projectedStageValue = ReplaceCC($("#txtProjectedStageValue").val());
-            if ($('#ddlTacticType').val() != '') {      // Added by Sohel Pathan on 11/07/2014 for PL ticket #549
-                GetConversionRate(projectedStageValue, false);
-            }
+            //var projectedStageValue = ReplaceCC($("#txtProjectedStageValue").val());
+            //if ($('#ddlTacticType').val() != '') {      // Added by Sohel Pathan on 11/07/2014 for PL ticket #549
+            //    GetConversionRate(projectedStageValue, false);//commented by uday for internal point 68 17-7-2014
+            //}
             $(this).datepicker('hide');
         });;
 

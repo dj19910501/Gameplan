@@ -50,7 +50,7 @@
             @Html.HiddenFor(model => model.ClientId, new { id = "hdnClientId" })
 
             <label>Title</label>
-            @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true" })
+            @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true", maxlength = "255" })@*maxlength added by uday for functinal review point 69 17-7-2014*@ })
 
             <label>Description</label>
             @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional" })
