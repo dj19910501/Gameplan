@@ -134,10 +134,42 @@
               //Dharmraj 11July2014 : 547 (Warning of data loss during new plan creation)
               @*var url = '@Url.Content("~/Plan/Create/0")';
               window.location.href = url;*@
-              displayconfirm('@Url.Content("~/Plan/Create/0")');
+              @*displayconfirm('@Url.Content("~/Plan/Create/0")');*@
+
+              //#599 Added By Kalpesh Sharma : Plan: Unable to Duplicate Plan 
+              if ($(this).html().toLowerCase() == "duplicate") {
+                  CheckUserSession("#BtnGroup", true);
+                  if (reason == 'user') {
+                      return false;
+                  }
+                  DuplicatePlan();
+              }
+              else {
+                  var url = '@Url.Content("~/Plan/Create/0")';
+                    window.location.href = url;
+                }
+
           });
 
-          $("#button-save").click(function () {
+          //#599 Added By Kalpesh Sharma : Plan: Unable to Duplicate Plan 
+          function DuplicatePlan() {
+              $.ajax({
+                  type: 'POST',
+                  url: '@Url.Content("~/Plan/DuplicatePlan/")',
+            dataType: "json",
+            success: function (data) {
+                if (data.isSuccess == true) {
+                    var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + $('#ActiveMenu').val() + '&currentPlanId=' + data.planId;
+                    window.location.href = url;
+                }
+                else {
+                    alert('Error');
+                }
+            }
+        });
+    }
+
+ $("#button-save").click(function () {
 
               var isError = false;
               $('.nl-field').each(function () {

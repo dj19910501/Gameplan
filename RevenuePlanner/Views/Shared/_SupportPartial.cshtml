@@ -200,10 +200,10 @@
                                 var msgspan = "Contact support request submitted successfully";
                                 $("#spanSuccessMessageContactSupportPopup").text(msgspan);
                                 $("#SuccessMessageContactSupportPopup").css("display", "block");
-                                $("#SuccessMessageContactSupportPopup").slideUp(2500).promise().always(function () {
+                                $("#SuccessMessageContactSupportPopup").slideUp(5500).promise().always(function () {
                                     close_popup();
                                 });
-
+    
                             }
                             else {
                                 var msgspan = "Error occured in sending mail, Please try again";

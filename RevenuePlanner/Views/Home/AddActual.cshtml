@@ -312,7 +312,10 @@
         };
         function maskWidht() {
             var widthHeader = $("#accordion2").width(),
-                widthRigth = widthHeader - 652;
+                //widthRigth = widthHeader - 652;
+
+                //#598 Added by Kalpesh Sharma : Add Actuals: Inappropriate Display of Add Actuals Tactics
+                widthRigth = widthHeader - 662;
 
             $(".header-toogle-actual-right").width(widthRigth);
             $(".table-actual-mask").width(widthRigth);
@@ -416,7 +419,10 @@
             window.onresize = function () {
                 function maskWidht() {
                     var widthHeader = $("#accordion2").width(),
-                        widthRigth = widthHeader - 652;
+                        //widthRigth = widthHeader - 652;
+
+                   //#598 Added by Kalpesh Sharma : Add Actuals: Inappropriate Display of Add Actuals Tactics
+                   widthRigth = widthHeader - 662;
 
                     $(".header-toogle-actual-right").width(widthRigth);
                     $(".table-actual-mask").width(widthRigth);
