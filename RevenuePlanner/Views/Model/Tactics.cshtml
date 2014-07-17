@@ -365,7 +365,8 @@
                                     $("#NewModel").removeClass('btn-blue-disable');
                                     $("#NewModel").addClass('btn-blue');
                                     $("#mode").val(latest);
-                                    if (r[i].Status == "Draft" && $('#IsViewEditBusinessUnit').val().toLowerCase() == 'true' || $('#IsOwner').val().toLowerCase() == 'true') { // Modified by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
+                                    if (r[i].Status == "Draft" && ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'true' || $('#IsOwner').val().toLowerCase() == 'true')) { // Modified by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
+                                       
                                         $("#publish").removeClass('btn-blue-disable');
                                         $("#publish").addClass('btn-blue');
                                         $('#hdnStatus').val(r[i].Status);
