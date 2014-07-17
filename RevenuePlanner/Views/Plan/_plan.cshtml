@@ -84,7 +84,7 @@
             <a class="source-sans-probold audience" id="LeftNavCampaigns"><span></span>@Html.Raw("CAMPAIGNS")</a>
         </li>
         <li id="liCalender" class="item">
-            <a class="source-sans-probold tactics" id="aApplyToCalender"><span></span>@Html.Raw("APPLY TO CALENDAR")</a>
+            <a class="source-sans-probold calendar" id="aApplyToCalender"><span></span>@Html.Raw("APPLY TO CALENDAR")</a>
         </li>
     </ul>
 
@@ -110,20 +110,22 @@
                 if (!$('#liDefination').hasClass('active')) {
                     $('#liDefination').addClass('active');
                     if ('@strPlanid' == '' || '@strPlanid' == '0') {
-                        $('#ulplan').removeClass();
-                        $('#ulplan').addClass('nav nav-listc nav-gray-planc');
+                        $('#LeftNavCampaigns').attr('style', 'cursor:default !important');
+                        $('#aApplyToCalender').attr('style', 'cursor:default !important');
+                        //$('#ulplan').removeClass();
+                        //$('#ulplan').addClass('nav nav-listc nav-gray-planc');
                         $('#LeftNavCampaigns').removeAttr('id');
-                        $('#LeftNavCampaigns').attr("href", "#");
+                        $('#LeftNavCampaigns').attr('href', '#');
                         $('#aApplyToCalender').removeAttr('id');
-                        $('#aApplyToCalender').attr("href", "#");
+                        $('#aApplyToCalender').attr('href', '#');
                     }
                     else {
-                        $('#ulplan').removeClass();
-                        $('#ulplan').addClass('nav nav-listc nav-gray-plan');
+                        //$('#ulplan').removeClass();
+                        //$('#ulplan').addClass('nav nav-listc nav-gray-plan');
                         $('#LeftNavCampaigns').attr("id", "LeftNavCampaigns");
-                        $('#LeftNavCampaigns').removeAttr("href");
+                        $('#LeftNavCampaigns').removeAttr('href','#');
                         $('#aApplyToCalender').attr("id", "aApplyToCalender");
-                        $('#aApplyToCalender').removeAttr("href", "#");
+                        $('#aApplyToCalender').removeAttr('href', '#');
                     }
                 }
 
