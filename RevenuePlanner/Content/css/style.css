@@ -1799,7 +1799,7 @@ span.requests-logo-icon {
 }
 
 .padding-content .row .content-colum-right {
-    width: 75% !important;      /* Modified by Sohel Pathan on 10/07/2014 for PL ticket #586 and on 16/07/2014 for internal functional review point #62 */
+    width: 70% !important;      /* Modified by Sohel Pathan on 10/07/2014 for PL ticket #586 and on 16/07/2014 for internal functional review point #62 */
     float: left;
 }
 
