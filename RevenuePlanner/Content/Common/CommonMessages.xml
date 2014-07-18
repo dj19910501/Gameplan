@@ -457,4 +457,190 @@
 		<value>Users permissions have been reset to the role default permissions.</value>
 	</Field>
 	<!-- End - Added By Mitesh Vaishnav on 04/07/2014 for PL ticket #521 -->
+	<!-- Start - Added By Mitesh Vaishnav on 17/07/2014 for functional review point 65 -->
+	<Field>
+		<Name>ValidateForEmptyImprovementWeight</Name>
+		<value>User must select at least one improvement weight for the improvement tactic to be valid.</value>
+	</Field>
+	<Field>
+		<Name>ValidateForNumericDigitOneToFive</Name>
+		<value>A valid entry must be an integer between 0 and 5.</value>
+	</Field>
+	<Field>
+		<Name>ValidateIntegretionCredential</Name>
+		<value>Please test integration credentials</value>
+	</Field>
+	<Field>
+		<Name>SynchronizationStatus</Name>
+		<value>The synchronization has started and status will be updated on completion.</value>
+	</Field>
+	<Field>
+		<Name>ValidateForEmptyFieldAndValid</Name>
+		<value>Make sure all fields are filled and valid,try again.</value>
+	</Field>
+	<Field>
+		<Name>ValidateEmailAtleastone</Name>
+		<value>Please select atleast one email.</value>
+	</Field>
+	<Field>
+		<Name>ValidatePaswordMustSameAsConfirm</Name>
+		<value>New and confirm new password must be same.</value>
+	</Field>
+	<Field>
+		<Name>ValidatePassowordCannotSameAsCurrent</Name>
+		<value>New and current password cannot be same.</value>
+	</Field>
+	<Field>
+		<Name>HilightedFieldRequire</Name>
+		<value>highlighted fields are required.</value>
+	</Field>
+	<Field>
+		<Name>ValidatePasswordCannotSameAsOld</Name>
+		<value>New password should not be same as old password.</value>
+	</Field>
+	<Field>
+		<Name>ValidateEnteredField</Name>
+		<value>Please enter value in the above field.</value>
+	</Field>
+	<Field>
+		<Name>ModelAlreadyExits</Name>
+		<value>A model with the same name already exists.</value>
+	</Field>
+	<Field>
+		<Name>ValidateConversionRateAndTargetStage</Name>
+		<value>User must enter at least one conversion(%) or velocity (days) and set allowed as target stage true for the model to be valid.</value>
+	</Field>
+	<Field>
+		<Name>ValidateConversionRate</Name>
+		<value>User must enter at least one conversion(%) or velocity (days) for the model to be valid.</value>
+	</Field>
+	<Field>
+		<Name>ValidateTargetStage</Name>
+		<value>User must set at least one allowed as target stage true for the model to be valid.</value>
+	</Field>
+	<Field>
+		<Name>ConfirmationForDeleteTactic</Name>
+		<value>Are you sure you want to delete this tactic?</value>
+	</Field>
+	<Field>
+		<Name>RoleAlreadyExits</Name>
+		<value>A role with the same name already exists.</value>
+	</Field>
+	<Field>
+		<Name>ValidateRequiredRole</Name>
+		<value>Please select a role to reassign.</value>
+	</Field>
+	<Field>
+		<Name>ValidateRequiredPermission</Name>
+		<value>Please Select at least one permission</value>
+	</Field>
+	<Field>
+		<Name>ValidateAtleastOneCampaign</Name>
+		<value>Please add at least one campaign.</value>
+	</Field>
+	<Field>
+		<Name>AddMarketingActivitiesBeforeAddImprovementActivities</Name>
+		<value>Before adding any improvement tactic please add marketing activities.</value>
+	</Field>
+	<Field>
+		<Name>ConfirmationForDeleteCampaign</Name>
+		<value>Are you sure you want to delete this campaign?</value>
+	</Field>
+	<Field>
+		<Name>ValidateEffectiveDate</Name>
+		<value>please select valid effective date.</value>
+	</Field>
+	<Field>
+		<Name>NoPublishPlanAvailable</Name>
+		<value>No published plan available to shown on home, please publish a plan.</value>
+	</Field>
+	<Field>
+		<Name>ConfirmationForDeleteProgram</Name>
+		<value>Are you sure you want to delete this program?</value>
+	</Field>
+	<Field>
+		<Name>ValidateEmailAtleastone</Name>
+		<value>Please select atleast one email.</value>
+	</Field>
+	<Field>
+		<Name>EmailAlreadyExits</Name>
+		<value>This email already exists. Please choose another email.</value>
+	</Field>
+	<Field>
+		<Name>EmailAvailable</Name>
+		<value>Email available.</value>
+	</Field>
+	<Field>
+		<Name>BusinessunitRequired</Name>
+		<value>The Business Unit field is required.</value>
+	</Field>
+	<Field>
+		<Name>RegionRequired</Name>
+		<value>The Region field is required.</value>
+	</Field>
+	<Field>
+		<Name>RoleRequired</Name>
+		<value>The Role field is required.</value>
+	</Field>
+	<Field>
+		<Name>ManagerRequired</Name>
+		<value>The Manager field is required.</value>
+	</Field>
+	<Field>
+		<Name>ReassignRequired</Name>
+		<value>The Reassign field is required.</value>
+	</Field>
+	<Field>
+		<Name>NotValidEmail</Name>
+		<value>Not a valid Email.</value>
+	</Field>
+	<Field>
+		<Name>NoRecordFound</Name>
+		<value>No record found for this id.</value>
+	</Field>
+	<Field>
+		<Name>RoleDeleteSuccess</Name>
+		<value>Role Deleted Successfully.</value>
+	</Field>
+	<Field>
+		<Name>RoleCopySuccess</Name>
+		<value>Role Copied Successfully.</value>
+	</Field>
+	<Field>
+		<Name>CampaignDeleteSuccess</Name>
+		<value>Campaign {0} Deleted Successfully.</value>
+	</Field>
+	<Field>
+		<Name>ProgramDeleteSuccess</Name>
+		<value>Program {0} Deleted Successfully.</value>
+	</Field>
+	<Field>
+		<Name>TacticDeleteSuccess</Name>
+		<value>Tactic {0} Deleted Successfully.</value>
+	</Field>
+	<Field>
+		<Name>ImprovementTacticDeleteSuccess</Name>
+		<value>Improvement Tactic {0} Deleted Successfully.</value>
+	</Field>
+	<Field>
+		<Name>CloneDuplicated</Name>
+		<value>{0} duplicated.</value>
+	</Field>
+	<Field>
+		<Name>CloneAlreadyExits</Name>
+		<value>{0} with same name already exist.</value>
+	</Field>
+	<Field>
+		<Name>TacticMustDeployedToModel</Name>
+		<value>For Deploy to Integration, The tactic must be Deployed to Model.</value>
+	</Field>
+	<Field>
+		<Name>ConfirmationForModifyTargetIntegration</Name>
+		<value>Modifying target integration will reset sync details configured at plan level. Are you sure you want to proceed?</value>
+	</Field>
+	<Field>
+		<Name>ConfirmationForDeleteImprovementTactic</Name>
+		<value>Are you sure you want to delete the un-deployed improvement tactic? Please note that any changes to the improvement tactic owned by others won\'t be saved.</value>
+	</Field>
+	<!-- End - Added By Mitesh Vaishnav on 17/07/2014 for functional review point 65-->
 </Messages>

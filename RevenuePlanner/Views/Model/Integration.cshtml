@@ -189,7 +189,7 @@
             }
 
             if (flag == 1) {
-                var msgspan = "Please enter value in the above field.";
+                var msgspan = "@Common.objCached.ValidateEnteredField";
                 $("#errorMessagecopy").css("display", "block");
                 $("#spanErrorMessageModelcopy").text(msgspan);
             } else {
@@ -206,7 +206,7 @@
                         dataType: "json",
                         success: function (data) {
                         if (data == 'exist') {
-                            var msgspan = "A model with the same name already exists.";
+                            var msgspan = "@Common.objCached.ModelAlreadyExits";
                         $("#errorMessagecopy").css("display", "block");
                         $("#spanErrorMessageModelcopy").text(msgspan);
                     }
@@ -486,7 +486,7 @@
                 return false;
             }
             // End - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            if (confirm('Modifying target integration will reset sync details configured at plan level. Are you sure you want to proceed?')) {
+            if (confirm('@Common.objCached.ConfirmationForModifyTargetIntegration')) {
                 var id = this.id;
 
                 var integrationInstanceId = id.split('_')[1];

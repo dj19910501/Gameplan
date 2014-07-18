@@ -290,7 +290,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                TempData["ErrorMessage"] = "No published plan available to shown on home, please publish a plan.";  //// Error Message modified by Sohel Pathan on 22/05/2014 to address internal review points
+                TempData["ErrorMessage"] = Common.objCached.NoPublishPlanAvailable;  //// Error Message modified by Sohel Pathan on 22/05/2014 to address internal review points
                 return RedirectToAction("PlanSelector", "Plan");
             }
 

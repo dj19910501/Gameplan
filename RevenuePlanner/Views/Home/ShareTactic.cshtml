@@ -1,4 +1,5 @@
-﻿@{
+﻿@using RevenuePlanner.Helpers
+@{
     int planTacticId = Convert.ToInt32(ViewBag.PlanTacticId);
     string tacticTitle = Convert.ToString(ViewBag.TacticTitle);
     @Html.Hidden("planTacticId", planTacticId);
@@ -90,7 +91,7 @@
         //// Valdiate and Send mail on click of share button of share tactic popup.
         $('form[name="share-tactic"]').on("submit", function (e) {
             if ($("#select2Email").select2("val") == "") {
-                var msgspan = "Please select atleast one email.";
+                var msgspan = "@Common.objCached.ValidateEmailAtleastone";
                 $("#errorMessageShareTacticPopup").css("display", "block");
                 $(".input-block-level").addClass("error");
                 //// Added by Sohel on 2nd April for PL#398 to display validation error properly

@@ -154,7 +154,7 @@
                         }
                     </div>
                     @Html.ValidationMessageFor(model => model.BusinessUnitId)
-                    @Html.Label("", "The Business Unit field is required.", new { @class="field-validation-error selectbox-validation-message", id="lblBusinessUnitIdRequired" })
+                    @Html.Label("", Common.objCached.BusinessunitRequired, new { @class="field-validation-error selectbox-validation-message", id="lblBusinessUnitIdRequired" })
                 </div>
 
                 <div class="cf inputs-aligned-horizontal">
@@ -171,7 +171,7 @@
                         }
                     </div>
                     @Html.ValidationMessageFor(model => model.GeographyId)
-                    @Html.Label("", "The Region field is required.", new { @class="field-validation-error selectbox-validation-message", id="lblGeographyIdRequired" })
+                    @Html.Label("", Common.objCached.RegionRequired, new { @class="field-validation-error selectbox-validation-message", id="lblGeographyIdRequired" })
                 </div>
                 
                 <div class="cf inputs-aligned-horizontal">
@@ -181,7 +181,7 @@
                         @Html.DropDownListFor(c => c.RoleId, new SelectList((System.Collections.IEnumerable)ViewData["Roles"], "RoleId", "Title"), "Please Select")
                     </div>
                     @Html.ValidationMessageFor(model => model.RoleId)
-                    @Html.Label("", "The Role field is required.", new { @class="field-validation-error selectbox-validation-message", id="lblRoleIdRequired" })
+                    @Html.Label("", Common.objCached.RoleRequired, new { @class="field-validation-error selectbox-validation-message", id="lblRoleIdRequired" })
                 </div>
                 
                 // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
@@ -199,7 +199,7 @@
                                 @Html.DropDownListFor(c => c.ManagerId, Enumerable.Empty<SelectListItem>(), "Please Select")
                             }
                         </div>
-                        @Html.Label("", "The Manager field is required.", new { @class="field-validation-error selectbox-validation-message", id="lblManagerIdRequired" })
+                        @Html.Label("", Common.objCached.ManagerRequired, new { @class="field-validation-error selectbox-validation-message", id="lblManagerIdRequired" })
                     </div>
                 @*}*@
                 // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
@@ -485,7 +485,7 @@
             var pattern = new RegExp(/^\b[A-Z0-9._%-]+@@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i);
             if (!pattern.test(email)) {
                 $('#isEmailExist').addClass('field-validation-error');
-                $('#isEmailExist').html('Not a valid Email.');
+                $('#isEmailExist').html('@Common.objCached.NotValidEmail');
                 return;
             }
             $.ajax(
@@ -498,11 +498,11 @@
                 success: function (data) {
                     if (data == '1') {
                         $('#isEmailExist').addClass('field-validation-error');
-                        $('#isEmailExist').html('This email already exists. Please choose another email.');
+                        $('#isEmailExist').html('@Common.objCached.EmailAlreadyExits');
                     }
                     else if (data == '0') {
                         $('#isEmailExist').addClass('field-validation-success');
-                        $('#isEmailExist').html('Email available.');
+                        $('#isEmailExist').html('@Common.objCached.EmailAvailable');
                     }
                     else {
                         $('#isEmailExist').html('');
@@ -520,7 +520,7 @@
         var id = $(this).attr("id");
         var filesize = this.files[0].size;
         if (filesize > 1 * 1024 * 1024) {
-            alert("- Only files with extensions " + (validExtensions.join("  ").toUpperCase()) + " and size upto 1MB are allowed.");
+            alert("@Common.objCached.InvalidProfileImage");
             return false;
         }
         ChangeFile("#userImage", "#filePrev");
@@ -546,7 +546,7 @@
         var file = $(fileID).val();
         var ext = file.slice(file.lastIndexOf(".")).toLowerCase();
         if (!isValidExtension(ext)) {
-            alert("- Only files with extensions " + (validExtensions.join("  ").toUpperCase()) + " and size upto 1MB are allowed.");
+            alert("@Common.objCached.InvalidProfileImage");
             return false;
         }
         $('<input>').attr({ type: $(inputTag).attr('type'), name: "name-clone" }).addClass("upload-clone").insertAfter(inputTag);

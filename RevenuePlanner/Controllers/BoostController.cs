@@ -535,7 +535,7 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     TempData["SuccessMessage"] = string.Empty;
-                    return Json(new { status = 1,  errormsg = "No record found for this id." }, JsonRequestBehavior.AllowGet);
+                    return Json(new { status = 1,  errormsg = Common.objCached.NoRecordFound }, JsonRequestBehavior.AllowGet);
                 }
             }
             catch (Exception e)

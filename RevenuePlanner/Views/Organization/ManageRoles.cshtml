@@ -207,7 +207,7 @@
         });
 
         if (flag == 1) {
-            var msgspan = "Please enter value in the above field.";
+            var msgspan = "@Common.objCached.ValidateEnteredField";
             $("#errorMessage").css("display", "block");
             $("#spanErrorMessageRole").text(msgspan);
         } else {
@@ -225,7 +225,7 @@
                             window.location.href = url + "?roleId=" + '@emptyGuidId';
                         }
                         else {
-                            var msgspan = "A role with the same name already exists.";;
+                            var msgspan = "@Common.objCached.RoleAlreadyExits";;
                             $("#errorMessage").css("display", "block");
                             $("#spanErrorMessageRole").text(msgspan);
                         }
@@ -251,7 +251,7 @@
         });
 
         if (flag == 1) {
-            var msgspan = "Please enter value in the above field.";
+            var msgspan = "@Common.objCached.ValidateEnteredField";
             $("#errorMessagecopy").css("display", "block");
             $("#spanErrorMessageRolecopy").text(msgspan);
         }
@@ -281,7 +281,7 @@
                             window.location.href = url;
                         }
                         else {
-                            var msgspan = "A role with the same name already exists.";;
+                            var msgspan = "@Common.objCached.RoleAlreadyExits";;
                             $("#errorMessagecopy").css("display", "block");
                             $("#spanErrorMessageRolecopy").text(msgspan);
                         }

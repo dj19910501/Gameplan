@@ -93,7 +93,7 @@
         var check = '@lstUsers.Count';
 
         if (parseInt(check) > 0 && reassignrole == "") {
-            var msgspan = "Please select a role to reassign.";
+            var msgspan = "@Common.objCached.ValidateRequiredRole";
             $("#errorMessagedel").css("display", "block");
             $('.selectBox').addClass("error");//added by uday for functional review point...3-7-2014
             $("#spanErrorMessagedel").text(msgspan);

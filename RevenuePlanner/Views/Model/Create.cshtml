@@ -320,7 +320,7 @@
             }
     
         if (flag == 1) {
-            var msgspan = "Please enter value in the above field.";
+            var msgspan = "@Common.objCached.ValidateEnteredField";
             $("#errorMessagecopy").css("display", "block");
             $("#spanErrorMessageModelcopy").text(msgspan);
         }
@@ -338,7 +338,7 @@
                 dataType: "json",
                 success: function (data) {
                     if (data == 'exist') {
-                        var msgspan = "A model with the same name already exists.";
+                        var msgspan = "@Common.objCached.ModelAlreadyExits";
                         $("#errorMessagecopy").css("display", "block");
                         $("#spanErrorMessageModelcopy").text(msgspan);
                     }
@@ -787,7 +787,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                  }
              });
              if (cntFill < 1 && targetStagecnt < 1) {
-                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must enter at least one conversion(%) or velocity (days) and set allowed as target stage true for the model to be valid.')
+                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateConversionRateAndTargetStage')
                  $("#errorMessage").slideDown(400);
                  $("html, body").animate({ scrollTop: 0 }, 1000);
                  $('#inputs-group input[type=text]').each(function () {
@@ -799,7 +799,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                  return false;
              }
              else if (cntFill < 1 && targetStagecnt > 0) {
-                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must enter at least one conversion(%) or velocity (days) for the model to be valid.')
+                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateConversionRate')
                  $("#errorMessage").slideDown(400);
                  $("html, body").animate({ scrollTop: 0 }, 1000);
                  $('#inputs-group input[type=text]').each(function () {
@@ -812,7 +812,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                  return false;
              }
              else if (cntFill > 0 && targetStagecnt < 1) {
-                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must set at least one allowed as target stage true for the model to be valid.')
+                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateTargetStage')
                  $("#errorMessage").slideDown(400);
                  $("html, body").animate({ scrollTop: 0 }, 1000);
                  $('#inputs-group a').each(function () {
@@ -1028,7 +1028,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                 }
             });
             if (cntFill < 1 && targetStagecnt < 1) {
-                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must enter at least one conversion(%) or velocity (days) and set allowed as target stage true for the model to be valid.')
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateConversionRateAndTargetStage')
                 $("#errorMessage").slideDown(400);
                 $("html, body").animate({ scrollTop: 0 }, 1000);
                 $('#inputs-group input[type=text]').each(function () {
@@ -1040,7 +1040,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                 return false;
             }
             else if (cntFill < 1 && targetStagecnt > 0) {
-                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must enter at least one conversion(%) or velocity (days) for the model to be valid.')
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateConversionRate')
                 $("#errorMessage").slideDown(400);
                 $("html, body").animate({ scrollTop: 0 }, 1000);
                 $('#inputs-group input[type=text]').each(function () {
@@ -1053,7 +1053,7 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
                 return false;
             }
             else if (cntFill > 0 && targetStagecnt < 1) {
-                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> User must set at least one allowed as target stage true for the model to be valid.')
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateTargetStage')
                 $("#errorMessage").slideDown(400);
                 $("html, body").animate({ scrollTop: 0 }, 1000);
                 $('#inputs-group a').each(function () {

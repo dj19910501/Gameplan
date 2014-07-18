@@ -1351,6 +1351,550 @@ namespace RevenuePlanner.Helpers
             }
         }
         // End - Added By Mitesh Vaishnav on 04/07/2014 for PL ticket #521
+
+        // Start - Added By Mitesh Vaishnav on 17/07/2014 for functional review point 65
+        private string _ValidateForEmptyImprovementWeight;
+        public string ValidateForEmptyImprovementWeight
+        {
+            get
+            {
+                return _ValidateForEmptyImprovementWeight;
+            }
+            set
+            {
+                _ValidateForEmptyImprovementWeight = value;
+            }
+        }
+        private string _ValidateForNumericDigitOneToFive;
+        public string ValidateForNumericDigitOneToFive
+        {
+            get
+            {
+                return _ValidateForNumericDigitOneToFive;
+            }
+            set
+            {
+                _ValidateForNumericDigitOneToFive = value;
+            }
+        }
+        private string _ValidateIntegretionCredential;
+        public string ValidateIntegretionCredential
+        {
+            get
+            {
+                return _ValidateIntegretionCredential;
+            }
+            set
+            {
+                _ValidateIntegretionCredential = value;
+            }
+        }
+        private string _SynchronizationStatus;
+        public string SynchronizationStatus
+        {
+            get
+            {
+                return _SynchronizationStatus;
+            }
+            set
+            {
+                _SynchronizationStatus = value;
+            }
+        }
+        private string _ValidateForEmptyFieldAndValid;
+        public string ValidateForEmptyFieldAndValid
+        {
+            get
+            {
+                return _ValidateForEmptyFieldAndValid;
+            }
+            set
+            {
+                _ValidateForEmptyFieldAndValid = value;
+            }
+        }
+        private string _ValidateEmailAtleastone;
+        public string ValidateEmailAtleastone
+        {
+            get
+            {
+                return _ValidateEmailAtleastone;
+            }
+            set
+            {
+                _ValidateEmailAtleastone = value;
+            }
+        }
+        private string _ValidatePaswordMustSameAsConfirm;
+        public string ValidatePaswordMustSameAsConfirm
+        {
+            get
+            {
+                return _ValidatePaswordMustSameAsConfirm;
+            }
+            set
+            {
+                _ValidatePaswordMustSameAsConfirm = value;
+            }
+        }
+        private string _ValidatePassowordCannotSameAsCurrent;
+        public string ValidatePassowordCannotSameAsCurrent
+        {
+            get
+            {
+                return _ValidatePassowordCannotSameAsCurrent;
+            }
+            set
+            {
+                _ValidatePassowordCannotSameAsCurrent = value;
+            }
+        }
+        private string _HilightedFieldRequire;
+        public string HilightedFieldRequire
+        {
+            get
+            {
+                return _HilightedFieldRequire;
+            }
+            set
+            {
+                _HilightedFieldRequire = value;
+            }
+        }
+        private string _ValidatePasswordCannotSameAsOld;
+        public string ValidatePasswordCannotSameAsOld
+        {
+            get
+            {
+                return _ValidatePasswordCannotSameAsOld;
+            }
+            set
+            {
+                _ValidatePasswordCannotSameAsOld = value;
+            }
+        }
+        private string _ValidateEnteredField;
+        public string ValidateEnteredField
+        {
+            get
+            {
+                return _ValidateEnteredField;
+            }
+            set
+            {
+                _ValidateEnteredField = value;
+            }
+        }
+        private string _ModelAlreadyExits;
+        public string ModelAlreadyExits
+        {
+            get
+            {
+                return _ModelAlreadyExits;
+            }
+            set
+            {
+                _ModelAlreadyExits = value;
+            }
+        }
+        private string _ValidateConversionRateAndTargetStage;
+        public string ValidateConversionRateAndTargetStage
+        {
+            get
+            {
+                return _ValidateConversionRateAndTargetStage;
+            }
+            set
+            {
+                _ValidateConversionRateAndTargetStage = value;
+            }
+        }
+        private string _ValidateConversionRate;
+        public string ValidateConversionRate
+        {
+            get
+            {
+                return _ValidateConversionRate;
+            }
+            set
+            {
+                _ValidateConversionRate = value;
+            }
+        }
+        private string _ValidateTargetStage;
+        public string ValidateTargetStage
+        {
+            get
+            {
+                return _ValidateTargetStage;
+            }
+            set
+            {
+                _ValidateTargetStage = value;
+            }
+        }
+        private string _ConfirmationForDeleteTactic;
+        public string ConfirmationForDeleteTactic
+        {
+            get
+            {
+                return _ConfirmationForDeleteTactic;
+            }
+            set
+            {
+                _ConfirmationForDeleteTactic = value;
+            }
+        }
+        private string _RoleAlreadyExits;
+        public string RoleAlreadyExits
+        {
+            get
+            {
+                return _RoleAlreadyExits;
+            }
+            set
+            {
+                _RoleAlreadyExits = value;
+            }
+        }
+        private string _ValidateRequiredRole;
+        public string ValidateRequiredRole
+        {
+            get
+            {
+                return _ValidateRequiredRole;
+            }
+            set
+            {
+                _ValidateRequiredRole = value;
+            }
+        }
+        private string _ValidateRequiredPermission;
+        public string ValidateRequiredPermission
+        {
+            get
+            {
+                return _ValidateRequiredPermission;
+            }
+            set
+            {
+                _ValidateRequiredPermission = value;
+            }
+        }
+        
+        private string _ValidateAtleastOneCampaign;
+        public string ValidateAtleastOneCampaign
+        {
+            get
+            {
+                return _ValidateAtleastOneCampaign;
+            }
+            set
+            {
+                _ValidateAtleastOneCampaign = value;
+            }
+        }
+        private string _AddMarketingActivitiesBeforeAddImprovementActivities;
+        public string AddMarketingActivitiesBeforeAddImprovementActivities
+        {
+            get
+            {
+                return _AddMarketingActivitiesBeforeAddImprovementActivities;
+            }
+            set
+            {
+                _AddMarketingActivitiesBeforeAddImprovementActivities = value;
+            }
+        }
+        private string _ConfirmationForDeleteCampaign;
+        public string ConfirmationForDeleteCampaign
+        {
+            get
+            {
+                return _ConfirmationForDeleteCampaign;
+            }
+            set
+            {
+                _ConfirmationForDeleteCampaign = value;
+            }
+        }
+        private string _ValidateEffectiveDate;
+        public string ValidateEffectiveDate
+        {
+            get
+            {
+                return _ValidateEffectiveDate;
+            }
+            set
+            {
+                _ValidateEffectiveDate = value;
+            }
+        }
+        private string _NoPublishPlanAvailable;
+        public string NoPublishPlanAvailable
+        {
+            get
+            {
+                return _NoPublishPlanAvailable;
+            }
+            set
+            {
+                _NoPublishPlanAvailable = value;
+            }
+        }
+        private string _ConfirmationForDeleteProgram;
+        public string ConfirmationForDeleteProgram
+        {
+            get
+            {
+                return _ConfirmationForDeleteProgram;
+            }
+            set
+            {
+                _ConfirmationForDeleteProgram = value;
+            }
+        }
+        private string _EmailAlreadyExits;
+        public string EmailAlreadyExits
+        {
+            get
+            {
+                return _EmailAlreadyExits;
+            }
+            set
+            {
+                _EmailAlreadyExits = value;
+            }
+        }
+        private string _EmailAvailable;
+        public string EmailAvailable
+        {
+            get
+            {
+                return _EmailAvailable;
+            }
+            set
+            {
+                _EmailAvailable = value;
+            }
+        }
+        private string _BusinessunitRequired;
+        public string BusinessunitRequired
+        {
+            get
+            {
+                return _BusinessunitRequired;
+            }
+            set
+            {
+                _BusinessunitRequired = value;
+            }
+        }
+        private string _RegionRequired;
+        public string RegionRequired
+        {
+            get
+            {
+                return _RegionRequired;
+            }
+            set
+            {
+                _RegionRequired = value;
+            }
+        }
+        private string _RoleRequired;
+        public string RoleRequired
+        {
+            get
+            {
+                return _RoleRequired;
+            }
+            set
+            {
+                _RoleRequired = value;
+            }
+        }
+        private string _ManagerRequired;
+        public string ManagerRequired
+        {
+            get
+            {
+                return _ManagerRequired;
+            }
+            set
+            {
+                _ManagerRequired = value;
+            }
+        }
+        private string _ReassignRequired;
+        public string ReassignRequired
+        {
+            get
+            {
+                return _ReassignRequired;
+            }
+            set
+            {
+                _ReassignRequired = value;
+            }
+        }
+        private string _NotValidEmail;
+        public string NotValidEmail
+        {
+            get
+            {
+                return _NotValidEmail;
+            }
+            set
+            {
+                _NotValidEmail = value;
+            }
+        }
+        private string _NoRecordFound;
+        public string NoRecordFound
+        {
+            get
+            {
+                return _NoRecordFound;
+            }
+            set
+            {
+                _NoRecordFound = value;
+            }
+        }
+        private string _RoleDeleteSuccess;
+        public string RoleDeleteSuccess
+        {
+            get
+            {
+                return _RoleDeleteSuccess;
+            }
+            set
+            {
+                _RoleDeleteSuccess = value;
+            }
+        }
+        private string _RoleCopySuccess;
+        public string RoleCopySuccess
+        {
+            get
+            {
+                return _RoleCopySuccess;
+            }
+            set
+            {
+                _RoleCopySuccess = value;
+            }
+        }
+        private string _ProgramDeleteSuccess;
+        public string ProgramDeleteSuccess
+        {
+            get
+            {
+                return _ProgramDeleteSuccess;
+            }
+            set
+            {
+                _ProgramDeleteSuccess = value;
+            }
+        }
+        private string _TacticDeleteSuccess;
+        public string TacticDeleteSuccess
+        {
+            get
+            {
+                return _TacticDeleteSuccess;
+            }
+            set
+            {
+                _TacticDeleteSuccess = value;
+            }
+        }
+        private string _CampaignDeleteSuccess;
+        public string CampaignDeleteSuccess
+        {
+            get
+            {
+                return _CampaignDeleteSuccess;
+            }
+            set
+            {
+                _CampaignDeleteSuccess = value;
+            }
+        }
+        private string _ImprovementTacticDeleteSuccess;
+        public string ImprovementTacticDeleteSuccess
+        {
+            get
+            {
+                return _ImprovementTacticDeleteSuccess;
+            }
+            set
+            {
+                _ImprovementTacticDeleteSuccess = value;
+            }
+        }
+        private string _CloneDuplicated;
+        public string CloneDuplicated
+        {
+            get
+            {
+                return _CloneDuplicated;
+            }
+            set
+            {
+                _CloneDuplicated = value;
+            }
+        }
+        private string _CloneAlreadyExits;
+        public string CloneAlreadyExits
+        {
+            get
+            {
+                return _CloneAlreadyExits;
+            }
+            set
+            {
+                _CloneAlreadyExits = value;
+            }
+        }
+        private string _TacticMustDeployedToModel;
+        public string TacticMustDeployedToModel
+        {
+            get
+            {
+                return _TacticMustDeployedToModel;
+            }
+            set
+            {
+                _TacticMustDeployedToModel = value;
+            }
+        }
+        private string _ConfirmationForModifyTargetIntegration;
+        public string ConfirmationForModifyTargetIntegration
+        {
+            get
+            {
+                return _ConfirmationForModifyTargetIntegration;
+            }
+            set
+            {
+                _ConfirmationForModifyTargetIntegration = value;
+            }
+        }
+        private string _ConfirmationForDeleteImprovementTactic;
+        public string ConfirmationForDeleteImprovementTactic
+        {
+            get
+            {
+                return _ConfirmationForDeleteImprovementTactic;
+            }
+            set
+            {
+                _ConfirmationForDeleteImprovementTactic = value;
+            }
+        }
+        // End - Added By Mitesh Vaishnav on 17/07/2014 for functional review point 65
         #endregion
 
 
@@ -1768,6 +2312,141 @@ namespace RevenuePlanner.Helpers
                                             _UserPermissionsResetToDefault = strMsgValue;
                                             break;
                                         // End - Added By Mitesh Vaishnav on 04/07/2014 for PL ticket #521
+                                        // Start - Added By Mitesh Vaishnav on 17/07/2014 for functional review point 65
+                                        case "ValidateForEmptyImprovementWeight":
+                                            _ValidateForEmptyImprovementWeight = strMsgValue;
+                                            break;
+                                        case "ValidateForNumericDigitOneToFive":
+                                            _ValidateForNumericDigitOneToFive = strMsgValue;
+                                            break;
+                                        case "ValidateIntegretionCredential":
+                                            _ValidateIntegretionCredential = strMsgValue;
+                                            break;
+                                        case "SynchronizationStatus":
+                                            _SynchronizationStatus = strMsgValue;
+                                            break;
+                                        case "ValidateForEmptyFieldAndValid":
+                                            _ValidateForEmptyFieldAndValid = strMsgValue;
+                                            break;
+                                        case "ValidateEmailAtleastone":
+                                            _ValidateEmailAtleastone = strMsgValue;
+                                            break;
+                                        case "ValidatePaswordMustSameAsConfirm":
+                                            _ValidatePaswordMustSameAsConfirm = strMsgValue;
+                                            break;
+                                        case "ValidatePassowordCannotSameAsCurrent":
+                                            _ValidatePassowordCannotSameAsCurrent = strMsgValue;
+                                            break;
+                                        case "HilightedFieldRequire":
+                                            _HilightedFieldRequire = strMsgValue;
+                                            break;
+                                        case "ValidatePasswordCannotSameAsOld":
+                                            _ValidatePasswordCannotSameAsOld = strMsgValue;
+                                            break;
+                                        case "ValidateEnteredField":
+                                            _ValidateEnteredField = strMsgValue;
+                                            break;
+                                        case "ModelAlreadyExits":
+                                            _ModelAlreadyExits = strMsgValue;
+                                            break;
+                                        case "ValidateConversionRateAndTargetStage":
+                                            _ValidateConversionRateAndTargetStage = strMsgValue;
+                                            break;
+                                        case "ValidateConversionRate":
+                                            _ValidateConversionRate = strMsgValue;
+                                            break;
+                                        case "ValidateTargetStage":
+                                            _ValidateTargetStage = strMsgValue;
+                                            break;
+                                        case "ConfirmationForDeleteTactic":
+                                            _ConfirmationForDeleteTactic = strMsgValue;
+                                            break;
+                                        case "RoleAlreadyExits":
+                                            _RoleAlreadyExits = strMsgValue;
+                                            break;
+                                        case "ValidateRequiredRole":
+                                            _ValidateRequiredRole = strMsgValue;
+                                            break;
+                                        case "ValidateRequiredPermission":
+                                            _ValidateRequiredPermission = strMsgValue;
+                                            break;
+                                        case "ValidateAtleastOneCampaign":
+                                            _ValidateAtleastOneCampaign = strMsgValue;
+                                            break;
+                                        case "AddMarketingActivitiesBeforeAddImprovementActivities":
+                                            _AddMarketingActivitiesBeforeAddImprovementActivities = strMsgValue;
+                                            break;
+                                        case "ConfirmationForDeleteCampaign":
+                                            _ConfirmationForDeleteCampaign = strMsgValue;
+                                            break;
+                                        case "ValidateEffectiveDate":
+                                            _ValidateEffectiveDate = strMsgValue;
+                                            break;
+                                        case "NoPublishPlanAvailable":
+                                            _NoPublishPlanAvailable = strMsgValue;
+                                            break;
+                                        case "ConfirmationForDeleteProgram":
+                                            _ConfirmationForDeleteProgram = strMsgValue;
+                                            break;
+                                        case "EmailAlreadyExits":
+                                            _EmailAlreadyExits = strMsgValue;
+                                            break;
+                                        case "EmailAvailable":
+                                            _EmailAvailable = strMsgValue;
+                                            break;
+                                        case "BusinessunitRequired":
+                                            _BusinessunitRequired = strMsgValue;
+                                            break;
+                                        case "RegionRequired":
+                                            _RegionRequired = strMsgValue;
+                                            break;
+                                        case "RoleRequired":
+                                            _RoleRequired = strMsgValue;
+                                            break;
+                                        case "ManagerRequired":
+                                            _ManagerRequired = strMsgValue;
+                                            break;
+                                        case "ReassignRequired":
+                                            _ReassignRequired = strMsgValue;
+                                            break;
+                                        case "NotValidEmail":
+                                            _NotValidEmail = strMsgValue;
+                                            break;
+                                        case "RoleDeleteSuccess":
+                                            _RoleDeleteSuccess = strMsgValue;
+                                            break;
+                                        case "RoleCopySuccess":
+                                            _RoleCopySuccess = strMsgValue;
+                                            break;
+                                        case "CampaignDeleteSuccess":
+                                            _CampaignDeleteSuccess = strMsgValue;
+                                            break;
+                                        case "ProgramDeleteSuccess":
+                                            _ProgramDeleteSuccess = strMsgValue;
+                                            break;
+                                        case "TacticDeleteSuccess":
+                                            _TacticDeleteSuccess = strMsgValue;
+                                            break;
+                                        case "ImprovementTacticDeleteSuccess":
+                                            _ImprovementTacticDeleteSuccess = strMsgValue;
+                                            break;
+                                        case "CloneDuplicated":
+                                            _CloneDuplicated = strMsgValue;
+                                            break;
+                                        case "CloneAlreadyExits":
+                                            _CloneAlreadyExits = strMsgValue;
+                                            break;
+                                        case "TacticMustDeployedToModel":
+                                            _TacticMustDeployedToModel = strMsgValue;
+                                            break;
+                                        case "ConfirmationForModifyTargetIntegration":
+                                            _ConfirmationForModifyTargetIntegration = strMsgValue;
+                                            break;
+                                        case "ConfirmationForDeleteImprovementTactic":
+                                            _ConfirmationForDeleteImprovementTactic = strMsgValue;
+                                            break;
+                                       
+                                        // End - Added By Mitesh Vaishnav on 17/07/2014 for functional review point 65
                                     }
                                 }
                                 i = i + 1;

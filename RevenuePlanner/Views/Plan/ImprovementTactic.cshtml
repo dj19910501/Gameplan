@@ -262,7 +262,7 @@
             }
             var sdate = $('#t_startdate').val();
             if (!isDate(sdate)) {
-                alert('please select valid effective date.');
+                alert('@Common.objCached.ValidateEffectiveDate');
                 return false;
             }
             if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;

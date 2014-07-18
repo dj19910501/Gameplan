@@ -31,7 +31,7 @@
     <!--Error message-->
     <div id="errorMessage" class="alert alert-error hide message-position-small">
         <a class="close" id="aclose">×</a>
-        <strong>Error! </strong><span id="spanMessageError">Make sure all fields are filled and try again.</span>
+        <strong>Error! </strong><span id="spanMessageError">@Common.objCached.ValidateForEmptyField</span>
     </div>
     <!--Error message-->
             
@@ -224,7 +224,7 @@
               if (isError) {
                   $("#errorMessage").css("display", "block");
                   $("#spanMessageError").empty();
-                  $("#spanMessageError").text("Make sure all fields are filled and try again.");
+                  $("#spanMessageError").text("@Common.objCached.ValidateForEmptyField");
               }
               else {
                   $("#errorMessage").css("display", "none");

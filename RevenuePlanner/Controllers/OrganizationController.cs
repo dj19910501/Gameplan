@@ -296,7 +296,7 @@ namespace RevenuePlanner.Controllers
             int retval = objBDSServiceClient.DeleteRoleAndReassign(delroleid, reassignroleid.Value, Sessions.ApplicationId, Sessions.User.UserId);
             if (retval == 1)
             {
-                TempData["SuccessMessage"] = "Role Deleted Successfully.";
+                TempData["SuccessMessage"] = Common.objCached.RoleDeleteSuccess;
                 return Json(new { status = true }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
             }
             else
@@ -358,7 +358,7 @@ namespace RevenuePlanner.Controllers
                     int retval = objBDSServiceClient.CopyRole(copyroledesc.Trim(), originalroleid, Sessions.ApplicationId, Sessions.User.UserId);
                     if (retval == 1)
                     {
-                        TempData["SuccessMessage"] = "Role Copied Successfully.";
+                        TempData["SuccessMessage"] = Common.objCached.RoleCopySuccess;
                         return Json(new { status = true }, JsonRequestBehavior.AllowGet);   // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
                     }
                     else

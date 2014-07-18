@@ -162,7 +162,7 @@
             //syncNow.css("style", "display:none");
             //syncNow.css("color", "red");
             var id = $(this).attr("id").replace("syncnow_", "");
-            alert("The synchronization has started and status will be updated on completion.");
+            alert("@Common.objCached.SynchronizationStatus");
             $.ajax({
                 type: 'GET',
                 cache: false,

@@ -202,7 +202,7 @@
                 }
             });
             if (iserror) {
-                ShowError("Make sure all fields are filled and try again.");
+                ShowError('@Common.objCached.ValidateForEmptyField');
                 return false;
             }
         });
@@ -237,7 +237,7 @@
                         $(this).addClass("error");
                     });
                 }
-                ShowError("Make sure all fields are filled and try again.");
+                ShowError("@Common.objCached.ValidateForEmptyField");
                 iserror = true;
                 return false;
             }
@@ -260,7 +260,7 @@
                 }
             });
             if (cntFill < 1) {
-                ShowError("User must select at least one improvement weight for the improvement tactic to be valid.");
+                ShowError("@Common.objCached.ValidateForEmptyImprovementWeight");
                 $('#accordion-1 input[type=text]').each(function () {
                     $(this).addClass("error");
                 });
@@ -268,7 +268,7 @@
                 return false;
             }
             if (wrongval != 0) {
-                ShowError("A valid entry must be an integer between 0 and 5.");
+                ShowError("@Common.objCached.ValidateForNumericDigitOneToFive");
                 iserror = true;
                 return false;
             }

@@ -384,7 +384,7 @@
 
         function displayconfirm(strURL) {
             if (isDataChanged()) {
-                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
+                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
                 $("#errorMessageDuplicatePlan").slideDown(3000);
             }
             else {
@@ -395,7 +395,7 @@
 
         function displayConfirmCommon(functionName) {
             if (isDataChanged()) {
-                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
+                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
                 $("#errorMessageDuplicatePlan").slideDown(3000);
                 $("#btnConfirmOK").click(function () {
                     //alert(id);
@@ -716,7 +716,7 @@
             if (type == "tactic") {
                 //alert("tactic");
                 var uId = $(window).attr('name');
-                if (confirm('Are you sure you want to delete this tactic?')) {
+                if (confirm('@Common.objCached.ConfirmationForDeleteTactic')) {
                     //var idTactic = $(this).parent().attr('index');
                     var idTactic = id;
                     $.ajax({
@@ -752,7 +752,7 @@
 
             if (type == "program") {
                 var uId = $(window).attr('name');
-                if (confirm('Are you sure you want to delete this program?')) {
+                if (confirm('@Common.objCached.ConfirmationForDeleteProgram')) {
                     //e.stopPropagation();
                     //var idProgram = $(this).parent().attr('id');
                     var idProgram = id;
@@ -786,7 +786,7 @@
 
             if (type == "campaign") {
                 var uId = $(window).attr('name');
-                if (confirm('Are you sure you want to delete this campaign?')) {
+                if (confirm('@Common.objCached.ConfirmationForDeleteCampaign')) {
                     //var idCampaing = $(this).parent().attr('id');
                     var idCampaing = id;
                     $.ajax({
@@ -833,7 +833,7 @@
         //Dharmraj Start 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign deletion)
         function displayconfirmForDeleteEvent(id, type) {
             if (isDataChanged()) {
-                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
+                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
                 $("#errorMessageDuplicatePlan").slideDown(3000);
 
                 $("#btnConfirmOK").click(function () {
@@ -900,7 +900,7 @@
         //Dharmraj Start 11July2014 : 547 (Warning of data loss during save and comtinue)
         function displayconfirmForSaveContinueEvent() {
             if (isDataChanged()) {
-                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
+                $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
                 $("#errorMessageDuplicatePlan").slideDown(3000);
                 $("#btnConfirmOK").click(function () {
                     //alert(id);
@@ -920,14 +920,14 @@
             //    return false;
             //}
             if (isApply) {
-                $('#cErrorDuplicatePlan').html('<strong>Error! </strong> Please add at least one campaign.');
+                $('#cErrorDuplicatePlan').html('<strong>Error! </strong> @Common.objCached.ValidateAtleastOneCampaign');
                 $("#errorMessageDuplicatePlan").slideDown(3000);
             }
             else {
                 // Added By Bhavesh
                 // PL Ticket 289,377,378
                 if (SuggestionIMPTacticIdList.length != 0) {
-                    if (confirm('Are you sure you want to delete the un-deployed improvement tactic? Please note that any changes to the improvement tactic owned by others won\'t be saved.')) {
+                    if (confirm('@Common.objCached.ConfirmationForDeleteImprovementTactic')) {
                         var uId = $(window).attr('name');
                         $.ajax({
                             type: 'POST',
@@ -1034,7 +1034,7 @@
             
             if (!isMarketingTacticExits) {
                 $("#slidepanel").css("display", "none");
-                ismsg = 'Before adding any improvement tactic please add marketing activities.';
+                ismsg = '@Common.objCached.AddMarketingActivitiesBeforeAddImprovementActivities';
                 hdnisError = 'True';
                 Showmsg();
                 return false;
@@ -1052,7 +1052,7 @@
         //Modified by Dharmraj 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
         $(document).on("click", "#divimpTactic #divPanelImp", function (e) {
             if (!isMarketingTacticExits) {
-                ismsg = 'Before adding any improvement tactic please add marketing activities.';
+                ismsg = '@Common.objCached.AddMarketingActivitiesBeforeAddImprovementActivities';
                 hdnisError = 'True';
                 Showmsg();
                 return false;

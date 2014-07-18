@@ -398,7 +398,7 @@
             $("#errorMessage").css("display", "none");
             var commentText = htmlEncode($('#txtAreaComment').val());
             if (commentText == '') {
-                var msgspan = "Make sure all fields are filled and valid,try again.";
+                var msgspan = "@Common.objCached.ValidateForEmptyFieldAndValid";
                 $("#errorMessage").css("display", "block");
                 /*Changed by Nirav Shah for Inspect pop-up screen : CSS changes as per new HTML on 13 feb 2014*/
                 var topsize = $(document).scrollTop() + 41;

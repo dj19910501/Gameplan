@@ -2100,7 +2100,7 @@ namespace RevenuePlanner.Controllers
                                   changed by : Nirav Shah on 13 feb 2014
                                   Changed : set message and based on request redirect page.
                                 */
-                                TempData["SuccessMessageDeletedPlan"] = "Campaign " + Title + " Deleted Successfully.";
+                                TempData["SuccessMessageDeletedPlan"] = string.Format(Common.objCached.CampaignDeleteSuccess,Title);
 
                                 //return Json(new { redirect = Url.Action("Assortment") });
                                 if (RedirectType)
@@ -2555,7 +2555,7 @@ namespace RevenuePlanner.Controllers
                                 Common.ChangeCampaignStatus(pc.PlanCampaignId);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 scope.Complete();
                                 /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
-                                TempData["SuccessMessageDeletedPlan"] = "Program " + Title + " Deleted Successfully.";
+                                TempData["SuccessMessageDeletedPlan"] = string.Format(Common.objCached.ProgramDeleteSuccess,Title);
                                 
                                 //return Json(new { redirect = Url.Action("Assortment", new { campaignId = pc.PlanCampaignId }) });
                                 if (RedirectType)
@@ -3179,7 +3179,7 @@ namespace RevenuePlanner.Controllers
                                 //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
 
                                 scope.Complete();
-                                TempData["SuccessMessageDeletedPlan"] = "Tactic " + Title + " Deleted Successfully.";
+                                TempData["SuccessMessageDeletedPlan"] = string.Format(Common.objCached.TacticDeleteSuccess,Title);
                                                                
 
                                 if (RedirectType)
@@ -3498,11 +3498,11 @@ namespace RevenuePlanner.Controllers
                 Int32.TryParse(parameterReturnValue.Value.ToString(), out returnValue);
                 if (returnValue != 0)
                 {
-                    TempData["SuccessMessageDuplicatePlan"] = CopyClone + " duplicated.";
+                    TempData["SuccessMessageDuplicatePlan"] = string.Format(Common.objCached.CloneDuplicated,CopyClone);
                 }
                 else
                 {
-                    TempData["ErrorMessageDuplicatePlan"] = CopyClone + " with same name already exist.";
+                    TempData["ErrorMessageDuplicatePlan"] = string.Format(Common.objCached.CloneAlreadyExits,CopyClone);
                 }
             }
             catch (Exception e)
@@ -4264,7 +4264,7 @@ namespace RevenuePlanner.Controllers
                         if (returnValue >= 1)
                         {
                             scope.Complete();
-                            TempData["SuccessMessageDeletedPlan"] = "Improvement Tactic " + Title + " Deleted Successfully.";
+                            TempData["SuccessMessageDeletedPlan"] = string.Format(Common.objCached.ImprovementTacticDeleteSuccess,Title);
                             if (RedirectType)
                             {
                                 return Json(new { redirect = Url.Action("ApplyToCalendar") });

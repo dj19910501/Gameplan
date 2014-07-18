@@ -234,7 +234,7 @@
             }
 
             if (flag == 1) {
-                var msgspan = "Please enter value in the above field.";
+                var msgspan = "@Common.objCached.ValidateEnteredField";
                 $("#errorMessagecopy").css("display", "block");
                 $("#spanErrorMessageModelcopy").text(msgspan);
             } else {
@@ -251,7 +251,7 @@
                         dataType: "json",
                         success: function (data) {
                     if (data == 'exist') {
-                        var msgspan = "A model with the same name already exists.";
+                        var msgspan = "@Common.objCached.ModelAlreadyExits";
                         $("#errorMessagecopy").css("display", "block");
                         $("#spanErrorMessageModelcopy").text(msgspan);
                     }
@@ -574,7 +574,7 @@
                     }
                 }
                 else {
-                    alert("For Deploy to Integration, The tactic must be Deployed to Model.");
+                    alert("@Common.objCached.TacticMustDeployedToModel");
                 }
             }
         });
