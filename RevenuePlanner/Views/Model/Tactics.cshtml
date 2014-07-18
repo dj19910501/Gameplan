@@ -265,32 +265,6 @@
         return false;
     });
 
-
-        $(".leftnav").click(function () {
-            var url = '';
-            var isResults = '';
-            if ($(this).attr('id') == 'aInput') {
-                url = '@Url.Content("~/Model/Create")';
-            }
-            else if ($(this).attr('id') == 'aAudience') {
-                url = '@Url.Content("~/Model/Audience")';
-            }
-            else if ($(this).attr('id') == 'aIntegration') {
-                url = '@Url.Content("~/Model/Integration")';
-            }
-            else if ($(this).attr('id') == 'aResults') {
-                url = '@Url.Content("~/Model/Results")';
-                isResults = '1';
-            }
-            if (url != '' && lastModelId != null && lastModelId != 0) {
-                if (isResults == '1') {
-                    window.location.href = url + '?mid1=' + lastModelId + '&mid2=' + lastModelId;
-                }
-                else {
-                    window.location.href = url + '?id=' + lastModelId;
-                }
-            }
-        });
         $(document).on("click", "a[name='versionId']", function (e) {
             var latest = $("#latestModelId").val();
             var id = $(this).attr("id");

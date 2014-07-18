@@ -13,14 +13,12 @@
     {
         modelId = Convert.ToString(ViewBag.ModelId);
     }
-    else {
+    else
+    {
         modelId =Convert.ToString(Model.ModelId);
     }
     
 }
-<html>
-
-<body>
     <div class="padding-content padding-bottom0">
         <h4 class="text-shadow-black source-sans-prolight">Model Summary</h4>
         <div class="wraper-btns cf">
@@ -98,25 +96,26 @@
             <div class="changes"></div>
         </li>
     </ul>
-</body>
+
 <script>
-    $(document).ready(
-           function () {
+    $(document).ready(function () {
                $('.nav nav-list nav-gray li').each(function () {
                    $(this).removeClass('active');
                });
                if ('@ViewBag.PageTitle' == 'Tactics') {
-
+            $('#aTactics').removeAttr('id');
                    if (!$('#litactics').hasClass('active')) {
                        $('#litactics').addClass('active');
                    }
                }
                else if ('@ViewBag.PageTitle' == 'Integration') {
+            $('#aIntegration').removeAttr('id');
                    if (!$('#liIntegration').hasClass('active')) {
                        $('#liIntegration').addClass('active');
                    }
                }
                else if ('@ViewBag.PageTitle' == 'Create') {
+            $('#aInput').removeAttr('id');
                    $('#publish').attr('id', 'publishModelDisabled');
                    if (!$('#liInput').hasClass('active')) {
                        $('#liInput').addClass('active');
@@ -124,13 +123,42 @@
                    if ('@modelId' == '' || '@modelId' == '0') {
                        $('#linkarea').removeClass();
                        $('#linkarea').addClass('nav nav-list nav-gray-planc');
+                $('#aTactics').attr('style', 'cursor:default !important');
+                $('#aIntegration').attr('style', 'cursor:default !important');
                    }
                    else {
                        $('#linkarea').removeClass();
                        $('#linkarea').addClass('nav nav-list nav-gray-plan');
                    }
                }
-           }
-            );
+        $(".leftnav").click(function () {
+            var url = '';
+            var isResults = '';
+            if ($(this).attr('id') == 'aInput') {
+                url = '@Url.Content("~/Model/Create")';
+            }
+            else if ($(this).attr('id') == 'aAudience') {
+                url = '@Url.Content("~/Model/Audience")';
+            }
+            else if ($(this).attr('id') == 'aIntegration') {
+                url = '@Url.Content("~/Model/Integration")';
+            }
+            else if ($(this).attr('id') == 'aResults') {
+                url = '@Url.Content("~/Model/Results")';
+                isResults = '1';
+            }
+            else if ($(this).attr('id') == 'aTactics') {
+                url = '@Url.Content("~/Model/Tactics")';
+            }
+            if (url != '' && lastModelId != null && lastModelId != 0) {
+                if (isResults == '1') {
+                    window.location.href = url + '?mid1=' + lastModelId + '&mid2=' + lastModelId;
+                }
+                else {
+                    window.location.href = url + '?id=' + lastModelId;
+                }
+            }
+        });
+    });
 </script>
-</html>
+

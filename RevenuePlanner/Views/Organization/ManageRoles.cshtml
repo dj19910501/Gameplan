@@ -255,8 +255,7 @@
             $("#errorMessagecopy").css("display", "block");
             $("#spanErrorMessageRolecopy").text(msgspan);
         }
-        else
-        {
+        else {
             var uId = $(window).attr('name');       // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
                 $.ajax({
                     url: '@Url.Content("~/Organization/CopyRole/")',
@@ -290,20 +289,6 @@
             });
         }
         return false;
-    });
-
-
-$('#aIntegrations').click(function () {
-    var url = '';
-    url = '@Url.Content("~/ExternalService/Index")';
-    window.location.href = url;
-});
-
-
-$('#aMyProfile').click(function () {
-    var url = '';
-    url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
-        window.location.href = url;
     });
 
     $('.btnEdit').click(function () {

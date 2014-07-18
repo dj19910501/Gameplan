@@ -728,17 +728,7 @@ else
         url = '@Url.Content("~/Organization/OrganizationHierarchy")';
         window.location.href = url;
     });
-    $('#aMyProfile').click(function () {
-        var url = '';
-        url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
-        window.location.href = url;
-    });
 
-    $('#aIntegrations').click(function () {
-        var url = '';
-        url = '@Url.Content("~/ExternalService/Index")';
-        window.location.href = url;
-    });
 
 
 </script>

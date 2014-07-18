@@ -5,9 +5,7 @@
     string varUrlnew = Url.Action("vieweditpermission", "Organization");
     string ViewPermissionURL = varUrlnew + "?Id=" + Sessions.User.UserId + "&Mode=MyPermission";
 }
-<html>
 
-<body>
     <div class="padding-right70">
         <ul class="nav nav-pills nav-stacked width216">
 
@@ -26,7 +24,6 @@
 
         </ul>
     </div>
-</body>
 <script>
     $(document).ready(
         function () {
@@ -34,17 +31,19 @@
                 $(this).removeClass('active');
             });
             if ('@ViewBag.PageTitle' == 'OrganizationHierarchy') {
-
+                $('#OHierarchy a').attr('href', '#');
                 if (!$('#OHierarchy').hasClass('active')) {
                     $('#OHierarchy').addClass('active');
                 }
             }
             else if ('@ViewBag.PageTitle' == 'MyPermission') {
+                $('#MPermission a').attr('href', '#');
                 if (!$('#MPermission').hasClass('active')) {
                     $('#MPermission').addClass('active');
                 }
             }
             else if ('@ViewBag.PageTitle' == 'ManageRole') {
+                $('#MRoles a').attr('href', '#');
                 if (!$('#MRoles').hasClass('active')) {
                     $('#MRoles').addClass('active');
                 }
@@ -52,4 +51,4 @@
         }
             );
 </script>
-</html>
+

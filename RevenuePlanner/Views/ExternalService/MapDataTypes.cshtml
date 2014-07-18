@@ -83,11 +83,7 @@
     </div>
 }
 <script type="text/javascript">
-    $('#aMyProfile').click(function () {
-        var url = '';
-        url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
-        window.location.href = url;
-    });
+   
     $('.ddlStyle').change(function () {
         var sbValue = $(this).attr('sb');
         var selValue = $('#sbSelector_' + $(this).attr('sb')).html();
@@ -186,10 +182,5 @@
     //// End - Added by :- Sohel Pathan on 28/05/2014 for PL #494 to Validate that a target field should be mapped to an entity only once.
 
 
-    //Modified by Mitesh Vaishnav on 23-06-2014
-    $('#aOrganization').click(function () {
-        var url = '';
-        url = '@Url.Action("ViewEditPermission", "Organization", new { Id = Sessions.User.UserId, Mode = "MyPermission" })';
-        window.location.href = url;
-    });
+   
 </script>

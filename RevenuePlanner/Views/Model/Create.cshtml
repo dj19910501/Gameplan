@@ -444,31 +444,6 @@
     }
     });
 
-$(".leftnav").click(function () {
-    var url = '';
-    var isResults = '';
-    if ($(this).attr('id') == 'aAudience') {
-        url = '@Url.Content("~/Model/Audience")';
-    }
-    else if ($(this).attr('id') == 'aTactics') {
-        url = '@Url.Content("~/Model/Tactics")';
-    }
-    else if ($(this).attr('id') == 'aIntegration') {
-        url = '@Url.Content("~/Model/Integration")';
-    }
-    else if ($(this).attr('id') == 'aResults') {
-        url = '@Url.Content("~/Model/Results")';
-        isResults = '1';
-    }
-    if (url != '' && lastModelId != null && lastModelId != 0) {
-        if (isResults == '1') {
-            window.location.href = url + '?mid1=' + lastModelId + '&mid2=' + lastModelId;
-        }
-        else {
-            window.location.href = url + '?id=' + lastModelId;
-        }
-    }
-});
 $(document).ready(function () {
         // Start - Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
         if ($('#IsViewEditBusinessUnit').val().toLowerCase() == 'false' && $('#IsOwner').val().toLowerCase() == 'false') {

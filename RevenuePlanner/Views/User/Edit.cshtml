@@ -586,12 +586,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
             }
         }
         // End - Added by Sohel Pathan on 03/07/2014 for Functional review points.
-        // Added by :- Sohel Pathan on 1/5/2014 for PL #430 to setup integration screen
-        $('#aIntegrations').click(function () {
-            var url = '';
-            url = '@Url.Content("~/ExternalService/Index")';
-            window.location.href = url;
-        });
+       
         
         // Start - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
         if ($('#IsManager').val().toLowerCase() == 'true') {
@@ -783,12 +778,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
     });
     // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
 
-    //Modified by Mitesh Vaishnav on 23-06-2014
-    $('#aOrganization').click(function () {
-        var url = '';
-        url = '@Url.Action("ViewEditPermission", "Organization", new { Id = Sessions.User.UserId, Mode = "MyPermission" })';
-        window.location.href = url;
-    });
+  
 
     // Start - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
     $("#BusinessUnitId").change(function () {

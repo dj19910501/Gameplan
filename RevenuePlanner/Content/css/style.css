@@ -2091,7 +2091,21 @@ input.error {
     margin-bottom: 70px;
     margin-top: 35px;
 }
+.upcoming-activities .nl-field-toggle {
 
+    background: url("../images/arrow-down-white.png") no-repeat scroll right center rgba(0, 0, 0, 0);
+    padding-right:17px;
+}
+.plantitle .nl-field-toggle {
+
+    background: url("../images/drop-down-logo.png") no-repeat scroll right center rgba(0, 0, 0, 0);
+    padding-right:17px;
+}
+/*.nl-field-toggle {
+
+/*background: url("../images/drop-down-logo.png") no-repeat scroll right center rgba(0, 0, 0, 0);*/
+/*padding-right:17px;
+}*/
 .nl-field-toggle, .nl-field-toggle:hover {
     display: inline;
     color: #2384b8;

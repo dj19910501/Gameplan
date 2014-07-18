@@ -212,11 +212,7 @@
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
     });
 
-    $('#aMyProfile').click(function () {
-        var url = '';
-        url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
-            window.location.href = url;
-    });
+ 
 
     function fillIntegrationServiceList()
     {
@@ -290,10 +286,5 @@
     }
 
 
-    //Modified by Mitesh Vaishnav on 23-06-2014
-    $('#aOrganization').click(function () {
-        var url = '';
-        url = '@Url.Action("ViewEditPermission", "Organization", new { Id = Sessions.User.UserId, Mode = "MyPermission" })';
-        window.location.href = url;
-    });
+   
 </script>

@@ -2,8 +2,9 @@
 
 <!DOCTYPE html>
 
-<html>
+
 @{
+    string Planid = Convert.ToString(RevenuePlanner.Helpers.Sessions.PlanId);
     bool IsPlanCreateAuthorized = false;
     if ((bool)ViewBag.IsPlanCreateAuthorized)
     {
@@ -20,7 +21,7 @@
     string strPlanid = ViewBag.strplanid;
 }
 
-<body>
+
 
     <div class="padding-content padding-bottom0 ">
         <h4 class="text-shadow-black source-sans-prolight">Plan Summary</h4>
@@ -97,10 +98,22 @@
             <div class="changes"></div>
         </li>
     </ul>
-</body>
+
 <script>
-    $(document).ready(
-        function () {
+    $(document).ready(function () {
+        @*$(document).on("click", "#LeftNavCampaigns", function (e) {
+            displayconfirm('@Url.Action("Assortment", "Plan")');
+        });
+        $(document).on("click", "#LeftNavInput", function (e) {
+            displayconfirm('@Url.Action("Create", "Plan", new { id = Planid })');
+        });
+
+        $(document).on("click", "#LeftNavAddActivity", function (e) {
+            displayconfirm('@Url.Action("Assortment", "Plan")');
+        });
+        $(document).on("click", "#aApplyToCalender", function (e) {
+            displayconfirm('@Url.Action("ApplyToCalendar", "Plan")');
+        });*@
             $('.nav nav-list nav-gray-plan li').each(function () {
                 $(this).removeClass('active');
             });
@@ -112,12 +125,14 @@
                     if ('@strPlanid' == '' || '@strPlanid' == '0') {
                         $('#LeftNavCampaigns').attr('style', 'cursor:default !important');
                         $('#aApplyToCalender').attr('style', 'cursor:default !important');
-                        //$('#ulplan').removeClass();
-                        //$('#ulplan').addClass('nav nav-listc nav-gray-planc');
+                    $('#liCampaign').attr('style', 'on:default !important');
+                    $('#ulplan').removeClass();
+                    $('#ulplan').addClass('nav nav-list nav-gray-planc');
                         $('#LeftNavCampaigns').removeAttr('id');
                         $('#LeftNavCampaigns').attr('href', '#');
                         $('#aApplyToCalender').removeAttr('id');
                         $('#aApplyToCalender').attr('href', '#');
+                    $('#LeftNavInput').removeAttr('id');
                     }
                     else {
                         //$('#ulplan').removeClass();
@@ -126,6 +141,7 @@
                         $('#LeftNavCampaigns').removeAttr('href','#');
                         $('#aApplyToCalender').attr("id", "aApplyToCalender");
                         $('#aApplyToCalender').removeAttr('href', '#');
+                    $('#LeftNavInput').removeAttr('id');
                     }
                 }
 
@@ -136,6 +152,7 @@
                     $('#liCampaign').addClass('active');
                     $('#LeftNavCampaigns').removeAttr('id');
                     $('#LeftNavCampaigns').attr("href", "#");
+                $('#LeftNavCampaigns').removeAttr('id');
                 }
             }
             else if ('@ViewBag.PageTitle' == 'ApplyToCallender') {
@@ -144,6 +161,7 @@
                     $('#liCalender').addClass('active');
                     $('#aApplyToCalender').removeAttr('id');
                     $('#aApplyToCalender').attr("href", "#");
+                $('#aApplyToCalender').removeAttr('id');
                 }
                 if (isplanEdit == 'false') {
                     $('#Addactivityarea').hide();
@@ -152,7 +170,32 @@
                     $('#Addactivityarea').show();
                 }
             }
-        }
-            );
+
+    });
+    //function displayconfirm(strURL) {
+    //    if (isDataChanged()) {
+    //        $('#errorMessage').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a><a id='aclose' class='close confirmClose'>×</a>");
+    //        $("#errorMessage").slideDown(3000);
+    //    }
+    //    else {
+    //        window.location.href = strURL;
+    //    }
+    //};
+    //function isDataChanged() {
+    //    var changed = false;
+    //    $('.myValue').each(function () {
+    //        var iv = $(this).attr("placeholder");
+    //        if ($(this).val() != iv) {
+    //            changed = true;
+    //        }
+    //    });
+    //    $('.myValueFormat').each(function () {
+    //        var iv = $(this).attr("placeholder");
+    //        if (ReplaceCC($(this).val()) != ReplaceCC(iv)) {
+    //            changed = true;
+    //        }
+    //    });
+    //    return changed;
+    //}
 </script>
-</html>
+

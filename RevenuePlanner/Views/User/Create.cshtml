@@ -158,6 +158,23 @@
                 </div>
 
                 <div class="cf inputs-aligned-horizontal">
+                    @Html.LabelFor(model => model.GeographyId)
+                    @*Modified by :- Sohel on 27 March 2014 for ticket #334*@
+                    <div class="selectBox UserProfile" id="ddlGeographyIdSelectBox">
+                        @if (ViewData["Geographies"] != null)
+                        {
+                            @Html.DropDownListFor(c => c.GeographyId, new SelectList((System.Collections.IEnumerable)ViewData["Geographies"], "GeographyId", "Title"), "Please Select")
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(c => c.GeographyId, Enumerable.Empty<SelectListItem>(), "Please Select")
+                        }
+                    </div>
+                    @Html.ValidationMessageFor(model => model.GeographyId)
+                    @Html.Label("", Common.objCached.RegionRequired, new { @class="field-validation-error selectbox-validation-message", id="lblGeographyIdRequired" })
+                </div>
+                
+                <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.RoleId)
                     @*Modified by :- Sohel on 27 March 2014 for ticket #334*@
                     <div class="selectBox UserProfile" id="ddlRoleIdSelectBox">
@@ -583,12 +600,7 @@
         }
     }
 
-    // Added by :- Sohel Pathan on 15/5/2014 for PL #430 to setup integration screen
-    $('#aIntegrations').click(function () {
-        var url = '';
-        url = '@Url.Content("~/ExternalService/Index")';
-        window.location.href = url;
-    });
+
 
     // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
     //$('#RoleId').change(function () {
@@ -604,13 +616,7 @@
     // End - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517 
 
 
-    //Modified by Mitesh Vaishnav on 23-06-2014
-    $('#aOrganization').click(function () {
-        var url = '';
-        url = '@Url.Action("ViewEditPermission", "Organization", new { Id = Sessions.User.UserId, Mode = "MyPermission" })';
 
-        window.location.href = url;
-    });
 
     $("#BusinessUnitId").change(function () {
         var BusinessUnitId = $(this).val();

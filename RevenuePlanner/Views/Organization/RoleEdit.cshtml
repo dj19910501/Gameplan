@@ -213,17 +213,7 @@
     });
 
 
-        $('#aMyProfile').click(function () {
-            var url = '';
-            url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
-        window.location.href = url;
-    });
 
-        $('#backbtn').click(function () {
-            var url = '';
-            url = '@Url.Content("~/Organization/ManageRoles")';
-        window.location.href = url;
-    });
 
         function ShowError(value) {
             $("#errorMessage").slideDown(400);

@@ -2,9 +2,7 @@
 
 <!DOCTYPE html>
 
-<html>
 
-<body>
     <div class="padding-content2">
         <h4 class="text-shadow-black source-sans-prolight">Boost Summary</h4>
     </div>
@@ -26,8 +24,8 @@
         </li>
     </ul>
     <script>
-        $(document).ready(
-            function () {
+    $(document).ready(function () {
+
                 $('.nav nav-list nav-gray li').each(function () {
                     $(this).removeClass('active');
                 });
@@ -35,15 +33,22 @@
                    
                     if (!$('#bestinclass').hasClass('active')) {
                         $('#bestinclass').addClass('active');
+                $('#aBiclink').removeAttr('id');
                     }
                 }
                 else if ('@ViewBag.PageTitle' == 'Index') {
                     if (!$('#tactics').hasClass('active')) {
                         $('#tactics').addClass('active');
-                    }
-                }
+                $('#aTactic').removeAttr('id');
             }
-            );
+        }
+        $("#aBiclink").click(function () {
+            url = '@Url.Content("~/Boost/BestInClass")';
+            window.location.href = url;
+        });
+        $("#aTactic").click(function () {
+            url = '@Url.Content("~/Boost/Index")';
+            window.location.href = url;
+        });
+    });
     </script>
-</body>
-</html>

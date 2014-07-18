@@ -56,10 +56,6 @@
 <script type="text/javascript">
     var improvementTactics = null;
     $(document).ready(function () {
-        $("#aBiclink").click(function () {
-            url = '@Url.Content("~/Boost/BestInClass")';
-            window.location.href = url;
-        });
         LoadTactics();
         if ($('#cError').html() != '') {
             alert($('#cError').html());

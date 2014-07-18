@@ -236,19 +236,7 @@
         window.location.href = "@Url.Content("~/user/edit?usrid=")" + userId + "&src=myteam&isForDelete=true";
     }
 
-    // Added by :- Sohel Pathan on 13/5/2014 for PL #430 to setup integration screen
-    $('#aIntegrations').click(function () {
-        var url = '';
-        url = '@Url.Content("~/ExternalService/Index")';
-            window.location.href = url;
-    });
 
-    //Modified by Mitesh Vaishnav on 23-06-2014
-    $('#aOrganization').click(function () {
-        var url = '';
-        url = '@Url.Action("ViewEditPermission", "Organization", new { Id = Sessions.User.UserId, Mode = "MyPermission" })';
-        window.location.href = url;
-    });
 
     @* Start - Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
     $('.assignUser').click(function () {

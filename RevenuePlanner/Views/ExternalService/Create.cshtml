@@ -228,11 +228,7 @@
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
     });
 
-    $('#aMyProfile').click(function () {
-        var url = '';
-        url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
-        window.location.href = url;
-    });
+   
 
     $('#btnCancel').click(function () {
         var url = '';
@@ -424,14 +420,6 @@
             $(this).removeClass("icon-check-gray");
         }
     });
-
-    // Added by :- Sohel Pathan on 12/5/2014 for PL #430 to setup integration screen
-    $('#aIntegrations').click(function () {
-        var url = '';
-        url = '@Url.Content("~/ExternalService/Index")';
-            window.location.href = url;
-    });
-
     function populateTimeOptions() {
         $.getJSON("@Url.Content("~/ExternalService/populateTimeOptions")",
         function (TimeData) {
@@ -465,11 +453,4 @@
             $(".selectBox select").selectbox("attach");
         });
     }
-
-    //Modified by Mitesh Vaishnav on 23-06-2014
-    $('#aOrganization').click(function () {
-        var url = '';
-        url = '@Url.Action("ViewEditPermission", "Organization", new { Id = Sessions.User.UserId, Mode = "MyPermission" })';
-        window.location.href = url;
-    });
 </script>

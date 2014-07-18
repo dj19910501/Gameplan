@@ -746,6 +746,10 @@ span.setbackground {
 .nav-gray-planc li a.tactics span {
     background-position: -170px 0 !important;
 }
+/*Added by mitesh vaishnav on 18/07/2014*/
+.nav-gray-planc li#liCalender span {
+    background-position: -170px 0 !important;
+}
 
 /*.nav-gray-planc li a:hover{color: #1a638a !important;}*/
 /*.nav-gray-planc li a.inputs:hover span{background-position: 0 -30px !important;}
