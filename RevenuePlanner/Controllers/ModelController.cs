@@ -3141,6 +3141,7 @@ namespace RevenuePlanner.Controllers
                     var exist = db.TacticTypes.Where(t => t.ModelId == ModelId && t.Title.ToLower() == Title.ToLower() && (t.IsDeleted == null || t.IsDeleted == false)).ToList();
                     if (exist.Count == 0)
                     {
+                        objtactic.IsDeleted = false;
                         db.TacticTypes.Attach(objtactic);
                         db.Entry(objtactic).State = EntityState.Added;
                         int result = db.SaveChanges();
