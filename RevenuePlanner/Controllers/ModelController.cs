@@ -334,6 +334,32 @@ namespace RevenuePlanner.Controllers
                                 db.Models.Add(objModel);
                                 int resModel = db.SaveChanges();
                                 intModelid = objModel.ModelId;
+
+                                // Start - Added by Sohel Pathan on 17/07/2014 for PL ticket #594 
+                                // Insert TacticType entry from ClientTacticType table of logged in client.
+                                var lstClientTacticType = db.ClientTacticTypes.Where(ct => ct.ClientId == Sessions.User.ClientId && ct.IsDeleted == false).ToList();
+                                if (lstClientTacticType != null)
+                                {
+                                    if (lstClientTacticType.Count > 0)
+                                    {
+                                        foreach (var item in lstClientTacticType)
+                                        {
+                                            TacticType objTacticType = new TacticType();
+                                            objTacticType.ColorCode = item.ColorCode;
+                                            objTacticType.CreatedBy = Sessions.User.UserId;
+                                            objTacticType.CreatedDate = DateTime.Now;
+                                            objTacticType.Description = item.Description;
+                                            objTacticType.IsDeleted = false;
+                                            objTacticType.IsDeployedToIntegration = false;
+                                            objTacticType.IsDeployedToModel = true;
+                                            objTacticType.ModelId = intModelid;
+                                            objTacticType.Title = item.Title;
+                                            db.TacticTypes.Add(objTacticType);
+                                        }
+                                        int resTacticType = db.SaveChanges();
+                                    }
+                                }
+                                // End - Added by Sohel Pathan on 17/07/2014 for PL ticket #594
                             }
                             else
                             {
@@ -3278,7 +3304,7 @@ namespace RevenuePlanner.Controllers
                                             }
                                             else
                                             {
-                                                rejobj.ModelId = null;
+                                                //rejobj.ModelId = null;
                                                 rejobj.PreviousTacticTypeId = null;
                                                 rejobj.IsDeployedToIntegration = false;
                                                 db.TacticTypes.Attach(rejobj);

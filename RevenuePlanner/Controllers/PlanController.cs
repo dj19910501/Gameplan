@@ -2611,7 +2611,7 @@ namespace RevenuePlanner.Controllers
             ////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             var tactics = from t in db.TacticTypes
                               join p in db.Plans on t.ModelId equals p.ModelId
-                              where p.PlanId == Sessions.PlanId && (t.IsDeleted == null || t.IsDeleted == false)
+                              where p.PlanId == Sessions.PlanId && (t.IsDeleted == null || t.IsDeleted == false) && t.IsDeployedToModel == true //// Modified by Sohel Pathan on 17/07/2014 for PL ticket #594
                               orderby t.Title
                               select t;
             foreach (var item in tactics)
@@ -2674,18 +2674,12 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Tactic.</returns>
         public PartialViewResult EditTactic(int id = 0, string RedirectType = "")
         {
-           
             var tList = from t in db.TacticTypes
                               join p in db.Plans on t.ModelId equals p.ModelId
-                              where p.PlanId == Sessions.PlanId && (t.IsDeleted == null || t.IsDeleted == false)
+                              where p.PlanId == Sessions.PlanId && (t.IsDeleted == null || t.IsDeleted == false) && t.IsDeployedToModel == true //// Modified by Sohel Pathan on 17/07/2014 for PL ticket #594
                               orderby t.Title
                               select t;
-            /*Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584*/
-            foreach (var item in tList)
-            {
-                item.Title = HttpUtility.HtmlDecode(item.Title);
-            }
-            /*End :Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584*/
+            
             ViewBag.IsCreated = false;
             if (RedirectType == "Assortment")
             {
@@ -2701,6 +2695,26 @@ namespace RevenuePlanner.Controllers
             {
                 return null;
             }
+
+            // Start - Added by Sohel Pathan on 17/07/2014 for PL ticket #594 
+            if (!tList.Any(t => t.TacticTypeId == pcpt.TacticTypeId))
+            {
+                var tacticTypeSpecial = from t in db.TacticTypes
+                                      join p in db.Plans on t.ModelId equals p.ModelId
+                                      where p.PlanId == Sessions.PlanId && t.TacticTypeId == pcpt.TacticTypeId 
+                                      orderby t.Title
+                                      select t;
+                tList = tList.Concat<TacticType>(tacticTypeSpecial);
+                tList = tList.OrderBy(a => a.Title);
+            }
+            // End - Added by Sohel Pathan on 17/07/2014 for PL ticket #594 
+
+            /*Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584*/
+            foreach (var item in tList)
+            {
+                item.Title = HttpUtility.HtmlDecode(item.Title);
+            }
+            /*End :Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584*/
 
             // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
             List<UserCustomRestrictionModel> lstUserCustomRestriction = Common.GetUserCustomRestriction();
