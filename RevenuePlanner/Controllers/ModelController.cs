@@ -351,7 +351,7 @@ namespace RevenuePlanner.Controllers
                                             objTacticType.Description = item.Description;
                                             objTacticType.IsDeleted = false;
                                             objTacticType.IsDeployedToIntegration = false;
-                                            objTacticType.IsDeployedToModel = true;
+                                            objTacticType.IsDeployedToModel = false;
                                             objTacticType.ModelId = intModelid;
                                             objTacticType.Title = item.Title;
                                             db.TacticTypes.Add(objTacticType);
@@ -3020,7 +3020,7 @@ namespace RevenuePlanner.Controllers
                 {
                     if (objModel.Status.ToLower() == ModelPublished)
                     {
-                        List<TacticType> lstTactictTypes = db.TacticTypes.Where(t => t.ModelId == ModelId && (t.IsDeleted == null || t.IsDeleted == false)).ToList();
+                        List<TacticType> lstTactictTypes = db.TacticTypes.Where(t => t.ModelId == ModelId && t.IsDeployedToModel == true && (t.IsDeleted == null || t.IsDeleted == false)).ToList();
                         if (lstTactictTypes.Count == 1)
                         {
                             return Json(new { status = "ERROR", Message = string.Format(Common.objCached.ModelTacticCannotDelete) });
@@ -3188,6 +3188,7 @@ namespace RevenuePlanner.Controllers
                             var getPreviousTacticTypeId = db.TacticTypes.Where(t => t.TacticTypeId == TacticTypeId).Select(t => t.PreviousTacticTypeId).FirstOrDefault();
                             objtactic.PreviousTacticTypeId = getPreviousTacticTypeId;
                             objtactic.TacticTypeId = TacticTypeId;
+                            objtactic.IsDeleted = false;
                             MRPEntities dbedit = new MRPEntities();
                             dbedit.Entry(objtactic).State = EntityState.Modified;
                             int result = dbedit.SaveChanges();
@@ -3243,21 +3244,21 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                if (rejid.Length > 0)
-                {
-                    for (int i = 0; i < rejid.Length; i++)
+                    if (rejid.Length > 0)
                     {
-                        int tacticId;
-                        string[] strArr = rejid[i].Replace("rej", "").Split('_');
-                        int.TryParse(strArr[0], out tacticId);
-                        if (tacticId != 0)
+                        for (int i = 0; i < rejid.Length; i++)
                         {
-                            TacticType rejobj = db.TacticTypes.Where(t => t.TacticTypeId == tacticId).FirstOrDefault();
-                            if (rejobj != null)
+                            int tacticId;
+                            string[] strArr = rejid[i].Replace("rej", "").Split('_');
+                            int.TryParse(strArr[0], out tacticId);
+                            if (tacticId != 0)
                             {
-                                /*TFS point 252: editing a published model
-                                  Added by Nirav Shah on 18 feb 2014
-                               */
+                                TacticType rejobj = db.TacticTypes.Where(t => t.TacticTypeId == tacticId).FirstOrDefault();
+                                if (rejobj != null)
+                                {
+                                    /*TFS point 252: editing a published model
+                                      Added by Nirav Shah on 18 feb 2014
+                                   */
                                     //bool flag = true;
                                     //Model objModel = db.Models.Where(t => t.ModelId == rejobj.ModelId).FirstOrDefault();
                                     //Title = objModel.Title;
@@ -3298,18 +3299,19 @@ namespace RevenuePlanner.Controllers
                                     //Plan_Campaign_Program_Tactic pt = db.Plan_Campaign_Program_Tactic.Where(p => p.TacticTypeId == tacticId).FirstOrDefault();
                                     //if (pt == null)
                                     //{
-                                            /*  TFS Bug - 179 : Improper behavior when editing Tactic in model 
-                                                Changed By : Nirav shah on 6 Feb 2014
-                                                Change : add new check if samme tactic title with mdelid=null found then delete current tactic other wise update tactic set modelid=null
-                                            */
+                                    /*  TFS Bug - 179 : Improper behavior when editing Tactic in model 
+                                        Changed By : Nirav shah on 6 Feb 2014
+                                        Change : add new check if samme tactic title with mdelid=null found then delete current tactic other wise update tactic set modelid=null
+                                    */
                                     //var existTactic = db.TacticTypes.Where(t => t.ModelId == null && t.ClientId == Sessions.User.ClientId && t.Title.ToLower() == rejobj.Title.ToLower() && t.TacticTypeId != tacticId).ToList();
                                     //if (existTactic.Count > 0)
                                     //{
                                     rejobj.IsDeployedToModel = false;
-                                                rejobj.IsDeployedToIntegration = false;
-                                                db.TacticTypes.Attach(rejobj);
-                                                db.Entry(rejobj).State = EntityState.Modified;
-                                                result = db.SaveChanges();
+                                    rejobj.IsDeployedToIntegration = false;
+                                    rejobj.IsDeleted = false;
+                                    db.TacticTypes.Attach(rejobj);
+                                    db.Entry(rejobj).State = EntityState.Modified;
+                                    result = db.SaveChanges();
                                     //}
                                     //else
                                     //{
@@ -3320,16 +3322,16 @@ namespace RevenuePlanner.Controllers
                                     //    db.Entry(rejobj).State = EntityState.Modified;
                                     //    result = db.SaveChanges();
                                     //}/*end 6 feb change*/
-                                            Common.InsertChangeLog(Sessions.ModelId, 0, rejobj.TacticTypeId, rejobj.Title, Enums.ChangeLog_ComponentType.tactictype, Enums.ChangeLog_TableName.Model, Enums.ChangeLog_Actions.removed);
-                                            /*
-                                             * changed by : Nirav Shah on 31 Jan 2013
-                                             * Bug 19:Model - should not be able to publish a model with no tactics selected */
-                                            if (msgshow == false)
-                                            {
-                                                msgshow = true;
-                                                successMessage = string.Format(Common.objCached.ModifiedTactic);
-                                                TempData["SuccessMessage"] = string.Format(Common.objCached.ModifiedTactic);
-                                            }
+                                    Common.InsertChangeLog(Sessions.ModelId, 0, rejobj.TacticTypeId, rejobj.Title, Enums.ChangeLog_ComponentType.tactictype, Enums.ChangeLog_TableName.Model, Enums.ChangeLog_Actions.removed);
+                                    /*
+                                     * changed by : Nirav Shah on 31 Jan 2013
+                                     * Bug 19:Model - should not be able to publish a model with no tactics selected */
+                                    if (msgshow == false)
+                                    {
+                                        msgshow = true;
+                                        successMessage = string.Format(Common.objCached.ModifiedTactic);
+                                        TempData["SuccessMessage"] = string.Format(Common.objCached.ModifiedTactic);
+                                    }
                                     //}
                                     //else
                                     //{
@@ -3340,7 +3342,7 @@ namespace RevenuePlanner.Controllers
                                     //        TempData["ErrorMessage"] = string.Format(Common.objCached.DeleteTacticDependency);
                                     //    }
                                     //}
-                                        /*End Nirav Changes */
+                                    /*End Nirav Changes */
                                     //}
 
                                 }
@@ -3348,47 +3350,47 @@ namespace RevenuePlanner.Controllers
                         }
                     }
 
-                if (id.Length > 0)
-                {
-                    for (int i = 0; i < id.Length; i++)
+                    if (id.Length > 0)
                     {
-                        int tacticId;
-                        string[] strArr = id[i].Replace("rej", "").Split('_');
-                        int.TryParse(strArr[0], out tacticId);
-                        if (tacticId != 0)
+                        for (int i = 0; i < id.Length; i++)
                         {
-                            bool IsDeployToIntegration = Convert.ToBoolean(strArr[1]);
-                            int tid = Convert.ToInt32(Convert.ToString(strArr[0]));
-                            var obj = db.TacticTypes.Where(t => t.TacticTypeId == tid).FirstOrDefault();
-                            objtactic.Title = obj.Title;
-                            objtactic.Description = obj.Description;
-                            //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
-                            objtactic.ProjectedStageValue = obj.ProjectedStageValue;
-                            objtactic.ProjectedRevenue = obj.ProjectedRevenue;
-                            //objtactic.ProjectedInquiries = obj.ProjectedInquiries;
-                            string StageType = Enums.StageType.CR.ToString();
-                            Model_Funnel_Stage objStage = db.Model_Funnel_Stage.Where(s => s.StageType == StageType && s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true).OrderBy(s => s.Stage.Level).Distinct().FirstOrDefault();
-                            if (objStage != null)
+                            int tacticId;
+                            string[] strArr = id[i].Replace("rej", "").Split('_');
+                            int.TryParse(strArr[0], out tacticId);
+                            if (tacticId != 0)
                             {
-                                objtactic.StageId = objStage.StageId;
-                            }
-                            else
-                            {
-                                TempData["ErrorMessage"] = string.Format(Common.objCached.StageNotExist);
-                                errorMessage = string.Format(Common.objCached.StageNotExist);
-                                return Json(new { errorMessage }, JsonRequestBehavior.AllowGet);
-                            }
-                            objtactic.StageId = (obj.StageId == null) ? db.Model_Funnel_Stage.Where(s => s.StageType == StageType && s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true).OrderBy(s => s.Stage.Level).Distinct().Select(s => s.StageId).FirstOrDefault() : obj.StageId;   // Line uncommented by Sohel Pathan on 16/06/2014 for PL ticket #528.
-                            int intRandomColorNumber = rnd.Next(colorcodeList.Count);
-                            objtactic.ColorCode = Convert.ToString(colorcodeList[intRandomColorNumber]);
-                            objtactic.CreatedDate = DateTime.Now;
+                                bool IsDeployToIntegration = Convert.ToBoolean(strArr[1]);
+                                int tid = Convert.ToInt32(Convert.ToString(strArr[0]));
+                                var obj = db.TacticTypes.Where(t => t.TacticTypeId == tid).FirstOrDefault();
+                                objtactic.Title = obj.Title;
+                                objtactic.Description = obj.Description;
+                                //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
+                                objtactic.ProjectedStageValue = obj.ProjectedStageValue;
+                                objtactic.ProjectedRevenue = obj.ProjectedRevenue;
+                                //objtactic.ProjectedInquiries = obj.ProjectedInquiries;
+                                string StageType = Enums.StageType.CR.ToString();
+                                Model_Funnel_Stage objStage = db.Model_Funnel_Stage.Where(s => s.StageType == StageType && s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true).OrderBy(s => s.Stage.Level).Distinct().FirstOrDefault();
+                                if (objStage != null)
+                                {
+                                    objtactic.StageId = objStage.StageId;
+                                }
+                                else
+                                {
+                                    TempData["ErrorMessage"] = string.Format(Common.objCached.StageNotExist);
+                                    errorMessage = string.Format(Common.objCached.StageNotExist);
+                                    return Json(new { errorMessage }, JsonRequestBehavior.AllowGet);
+                                }
+                                objtactic.StageId = (obj.StageId == null) ? db.Model_Funnel_Stage.Where(s => s.StageType == StageType && s.Model_Funnel.ModelId == ModelId && s.AllowedTargetStage == true).OrderBy(s => s.Stage.Level).Distinct().Select(s => s.StageId).FirstOrDefault() : obj.StageId;   // Line uncommented by Sohel Pathan on 16/06/2014 for PL ticket #528.
+                                int intRandomColorNumber = rnd.Next(colorcodeList.Count);
+                                objtactic.ColorCode = Convert.ToString(colorcodeList[intRandomColorNumber]);
+                                objtactic.CreatedDate = DateTime.Now;
                                 //objtactic.ClientId = Sessions.User.ClientId;
-                            objtactic.CreatedBy = Sessions.User.UserId;
-                            objtactic.ModelId = ModelId;
-                            objtactic.PreviousTacticTypeId = obj.PreviousTacticTypeId;
+                                objtactic.CreatedBy = Sessions.User.UserId;
+                                objtactic.ModelId = ModelId;
+                                objtactic.PreviousTacticTypeId = obj.PreviousTacticTypeId;
 
-                            // Added by dharmraj for ticket #433 Integration - Model Screen Tactic List
-                            objtactic.IsDeployedToIntegration = IsDeployToIntegration;
+                                // Added by dharmraj for ticket #433 Integration - Model Screen Tactic List
+                                objtactic.IsDeployedToIntegration = IsDeployToIntegration;
                                 objtactic.IsDeployedToModel = true;
 
                                 //if (obj.ModelId == null)
@@ -3402,19 +3404,20 @@ namespace RevenuePlanner.Controllers
                                 //else
                                 //{
                                 objtactic.TacticTypeId = obj.TacticTypeId;
+                                objtactic.IsDeleted = false;
                                 MRPEntities dbedit = new MRPEntities();
                                 dbedit.Entry(objtactic).State = EntityState.Modified;
                                 result = dbedit.SaveChanges();
                                 dbedit.Dispose();
                                 //}
-                            /*
-                                    * changed by : Nirav Shah on 31 Jan 2013
-                                    * Bug 19:Model - should not be able to publish a model with no tactics selected */
-                            if (msgshow == false)
-                            {
-                                msgshow = true;
-                                successMessage = string.Format(Common.objCached.ModifiedTactic);
-                                TempData["SuccessMessage"] = string.Format(Common.objCached.ModifiedTactic);
+                                /*
+                                        * changed by : Nirav Shah on 31 Jan 2013
+                                        * Bug 19:Model - should not be able to publish a model with no tactics selected */
+                                if (msgshow == false)
+                                {
+                                    msgshow = true;
+                                    successMessage = string.Format(Common.objCached.ModifiedTactic);
+                                    TempData["SuccessMessage"] = string.Format(Common.objCached.ModifiedTactic);
                                 }
                             }
                         }
@@ -3897,7 +3900,7 @@ namespace RevenuePlanner.Controllers
         public bool PublishModel(int modelId, string effectiveDate, out bool isTacticTypeExist)
         {
             isTacticTypeExist = false;
-            int cntSelectedTactic = db.TacticTypes.Where(TacticTypes => TacticTypes.ModelId == modelId).ToList().Count;
+            int cntSelectedTactic = db.TacticTypes.Where(TacticTypes => TacticTypes.ModelId == modelId && TacticTypes.IsDeployedToModel == true).ToList().Count;
             Model objModel = db.Models.Where(t => t.ModelId == modelId).FirstOrDefault();
             bool isPublish = false;
             try

@@ -1887,7 +1887,7 @@ namespace RevenuePlanner.Controllers
         {
             var tacticType = from t in db.TacticTypes
                              join p in db.Plans on t.ModelId equals p.ModelId
-                             where p.PlanId == Sessions.PlanId && (t.IsDeleted == null || t.IsDeleted == false)
+                             where p.PlanId == Sessions.PlanId && (t.IsDeleted == null || t.IsDeleted == false) && t.IsDeployedToModel == true
                              orderby t.Title
                              select new { t.Title, t.TacticTypeId };
             return Json(tacticType, JsonRequestBehavior.AllowGet);
