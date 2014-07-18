@@ -52,7 +52,6 @@ namespace BDSService
                     userEntity.UserId = user.UserId;
                     userEntity.ClientId = user.ClientId;
                     userEntity.BusinessUnitId = user.BusinessUnitId;
-                    userEntity.GeographyId = user.GeographyId;
                     userEntity.Client = lstClient.FirstOrDefault(c => c.ClientId == user.ClientId).Name; //db.Clients.Where(cl => cl.ClientId == user.ClientId).Select(c => c.Name).FirstOrDefault();
                     userEntity.DisplayName = user.DisplayName;
                     userEntity.Email = user.Email;
@@ -215,7 +214,6 @@ namespace BDSService
             {
                 userObj.UserId = user.UserId;
                 userObj.BusinessUnitId = user.BusinessUnitId;
-                userObj.GeographyId = user.GeographyId;
                 userObj.ClientId = user.ClientId;
                 userObj.Client = user.Client.Name; //db.Clients.Where(cl => cl.ClientId == user.ClientId).Select(c => c.Name).FirstOrDefault();
                 userObj.DisplayName = user.DisplayName;
@@ -277,7 +275,6 @@ namespace BDSService
                         {
                             userObj.UserId = user.UserId;
                             userObj.BusinessUnitId = user.BusinessUnitId;
-                            userObj.GeographyId = user.GeographyId;
                             userObj.ClientId = user.ClientId;
                             userObj.Client = db.Clients.Where(cl => cl.ClientId == user.ClientId).Select(c => c.Name).FirstOrDefault();
                             userObj.DisplayName = user.DisplayName;
@@ -490,7 +487,6 @@ namespace BDSService
 
                 userObj.UserId = user.UserId;
                 userObj.BusinessUnitId = user.BusinessUnitId;
-                userObj.GeographyId = user.GeographyId;
                 userObj.ClientId = user.ClientId;
                 userObj.DisplayName = user.DisplayName;
                 userObj.Email = user.Email;
@@ -586,7 +582,6 @@ namespace BDSService
                         if (user.ProfilePhoto != null)
                             obj.ProfilePhoto = user.ProfilePhoto;
                         obj.BusinessUnitId = user.BusinessUnitId;
-                        obj.GeographyId = user.GeographyId;
                         obj.CreatedDate = DateTime.Now;
                         obj.IsDeleted = false;
                         obj.CreatedDate = DateTime.Now;
@@ -687,7 +682,6 @@ namespace BDSService
                             obj.JobTitle = user.JobTitle;
                             obj.ClientId = user.ClientId;
                             obj.BusinessUnitId = user.BusinessUnitId;
-                            obj.GeographyId = user.GeographyId;
                             if (user.ProfilePhoto != null)
                             {
                                 obj.ProfilePhoto = user.ProfilePhoto;
@@ -1392,7 +1386,6 @@ namespace BDSService
                     userEntity.UserId = user.UserId;
                     userEntity.ClientId = user.ClientId;
                     userEntity.BusinessUnitId = user.BusinessUnitId;
-                    userEntity.GeographyId = user.GeographyId;
                     userEntity.Client = db.Clients.Where(cl => cl.ClientId == user.ClientId).Select(c => c.Name).FirstOrDefault();
                     userEntity.DisplayName = user.DisplayName;
                     userEntity.Email = user.Email;
@@ -2165,7 +2158,6 @@ namespace BDSService
                                 RoleTitle = r.Title,
                                 ColorCode = r.ColorCode,
                                 JobTitle = u.JobTitle,
-                                GeographyId = u.GeographyId,
                                 Phone = u.Phone,
                                 //Start Manoj 08Jul2014 PL # 34 (Measure)
                                 //ManagerId = ua.ManagerId
@@ -2261,7 +2253,6 @@ namespace BDSService
                     userEntity.UserId = user.UserId;
                     userEntity.ClientId = user.ClientId;
                     userEntity.BusinessUnitId = user.BusinessUnitId;
-                    userEntity.GeographyId = user.GeographyId;
                     userEntity.Client = db.Clients.Where(cl => cl.ClientId == user.ClientId).Select(c => c.Name).FirstOrDefault();
                     userEntity.DisplayName = user.DisplayName;
                     userEntity.Email = user.Email;

@@ -23,8 +23,8 @@ namespace BDSService
         public System.Guid CreatedBy { get; set; }
         public Nullable<System.Guid> ApplicationId { get; set; }
     
+        public virtual Application Application { get; set; }
         public virtual User User { get; set; }
         public virtual User User1 { get; set; }
-        public virtual Application Application { get; set; }
     }
 }

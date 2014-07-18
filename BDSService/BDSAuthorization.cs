@@ -37,7 +37,6 @@ namespace BDSService
             {
                 userObj.UserId = user.u.UserId;
                 userObj.BusinessUnitId = user.u.BusinessUnitId;
-                userObj.GeographyId = user.u.GeographyId;
                 userObj.ClientId = user.u.ClientId;
                 userObj.Client = db.Clients.Where(cl => cl.ClientId == user.u.ClientId).Select(c => c.Name).FirstOrDefault();
                 userObj.DisplayName = user.u.DisplayName;

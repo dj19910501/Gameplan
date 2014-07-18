@@ -144,11 +144,18 @@
             @if ((bool)ViewBag.IsCreated)
             {
                 <div class="tactics-part">
-                    <label>Tactics</label>
-                    <div id="c_tactics">
-                        <!--selects elements created dynamically-->
-                    </div>
-                    <span class="c-add-tactic link-blue " style="margin-top:3px;">Add New tactics</span>
+                    @if((bool)ViewBag.CanCreateTactic)
+                    {
+                        <label>Tactics</label>
+                        <div id="c_tactics">
+                            <!--selects elements created dynamically-->
+                        </div>
+                        <span class="c-add-tactic link-blue " style="margin-top:3px;">Add New tactics</span>
+                    }
+                    else
+                    {
+                        @Html.Raw(@ViewBag.CannotCreateQuickTacticMessage)
+                    }
                 </div>			
             }
             @if ((bool)ViewBag.RedirectType)
@@ -158,8 +165,8 @@
             }
         </div>
         <!--end content dark-->
-         if((bool)ViewBag.IsOwner)
-                {
+            if ((bool)ViewBag.IsOwner)
+            {
         <div class="wraper-btns cf">
             <div class="span6">
                 <button id="save_campaign_program" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
@@ -168,7 +175,7 @@
                 <button class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
             </div>
         </div>
-             }
+            }
         <!--End buttons-->
     }
 

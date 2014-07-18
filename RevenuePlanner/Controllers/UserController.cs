@@ -93,8 +93,6 @@ namespace RevenuePlanner.Controllers
                         objUserModel.JobTitle = user.JobTitle;
                         objUserModel.LastName = user.LastName;
                         objUserModel.Password = user.Password;
-                        objUserModel.GeographyId = user.GeographyId;
-                        objUserModel.Geography = db.Geographies.Where(geo => geo.GeographyId == objUserModel.GeographyId).Select(g => g.Title).FirstOrDefault();
                         objUserModel.UserId = user.UserId;
                         objUserModel.RoleCode = user.RoleCode;
                         objUserModel.RoleId = user.RoleId;
@@ -553,7 +551,6 @@ namespace RevenuePlanner.Controllers
             {
                 Guid userClientId = Guid.Parse(clientId);
                 ViewData["BusinessUnits"] = db.BusinessUnits.Where(bu => bu.ClientId == userClientId && bu.IsDeleted == false).OrderBy(q => q.Title).ToList();
-                ViewData["Geographies"] = db.Geographies.Where(r => r.IsDeleted == false && r.ClientId == userClientId).OrderBy(q => q.Title).ToList();
                 // Start - Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
                 if (IsUserAdminAuthorized)
                 {
@@ -565,7 +562,6 @@ namespace RevenuePlanner.Controllers
             else
             {
                 ViewData["BusinessUnits"] = null;
-                ViewData["Geographies"] = null;
             }
 
             ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId);
@@ -694,7 +690,6 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                     objUser.BusinessUnitId = form.BusinessUnitId;
-                    objUser.GeographyId = form.GeographyId;
                     objUser.ManagerId = form.ManagerId;     // Added by :- Sohel Pathan on 17/06/2014 for PL ticket #517
 
                     int retVal = objBDSServiceClient.CreateUser(objUser, Sessions.ApplicationId, Sessions.User.UserId);
@@ -838,7 +833,6 @@ namespace RevenuePlanner.Controllers
             if (clientId != null)
             {
                 ViewData["BusinessUnits"] = db.BusinessUnits.Where(bu => bu.ClientId == clientId && bu.IsDeleted == false).OrderBy(q => q.Title).ToList();
-                ViewData["Geographies"] = db.Geographies.Where(r => r.IsDeleted == false && r.ClientId == clientId).OrderBy(q => q.Title).ToList();
             }
             if (!string.IsNullOrWhiteSpace(src))
             {
@@ -913,8 +907,6 @@ namespace RevenuePlanner.Controllers
                     objUserModel.LastName = objUser.LastName;
                     objUserModel.Password = objUser.Password;
                     objUserModel.ProfilePhoto = objUser.ProfilePhoto;
-                    objUserModel.GeographyId = objUser.GeographyId;
-                    objUserModel.Geography = db.Geographies.Where(geo => geo.GeographyId == objUserModel.GeographyId).Select(g => g.Title).FirstOrDefault();
                     objUserModel.UserId = objUser.UserId;
                     objUserModel.RoleCode = objUser.RoleCode;
                     objUserModel.RoleId = objUser.RoleId;
@@ -1079,7 +1071,6 @@ namespace RevenuePlanner.Controllers
 
                     objUser.ClientId = form.ClientId;
                     objUser.BusinessUnitId = form.BusinessUnitId;
-                    objUser.GeographyId = form.GeographyId;
                     objUser.RoleId = form.RoleId;
                     if (form.RoleId != null)
                     {
@@ -1466,32 +1457,6 @@ namespace RevenuePlanner.Controllers
             }).OrderBy(t => t.Text);
 
             return Json(businessUnitData, JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
-        /// Get list of geographic locations for selected client. 
-        /// </summary>
-        /// <param name="id">client</param>
-        [AcceptVerbs(HttpVerbs.Get)]
-        public JsonResult GetGeography(string id = null)
-        {
-            Guid clientId = new Guid();
-            if (id != null)
-            {
-                Guid.TryParse(id, out clientId);
-            }
-
-            var geographyList = (from g in db.Geographies
-                                 where g.ClientId == clientId && g.IsDeleted == false
-                                 select new { g.GeographyId, g.Title }).ToList();
-
-            var geographyData = geographyList.Select(q => new SelectListItem()
-            {
-                Text = q.Title,
-                Value = Convert.ToString(q.GeographyId),
-            }).OrderBy(g => g.Text);
-
-            return Json(geographyData, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>

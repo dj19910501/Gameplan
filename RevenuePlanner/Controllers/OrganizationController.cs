@@ -40,7 +40,7 @@ namespace RevenuePlanner.Controllers
                 {
                     OrganizationModel obj = new OrganizationModel();
                     obj.UserId = item.UserId;
-                    obj.GeographyId = item.GeographyId;
+                    //obj.GeographyId = item.GeographyId;   // Commented by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
                     obj.Client = item.Client;
                     obj.ClientId = item.ClientId;
                     obj.DisplayName = item.DisplayName;
@@ -449,7 +449,7 @@ namespace RevenuePlanner.Controllers
             string RoleTitle = objUserHierarchy.RoleTitle;
             string ColorCode = objUserHierarchy.ColorCode;
             string JobTitle = objUserHierarchy.JobTitle;
-            Guid GeographyId = objUserHierarchy.GeographyId;
+            //Guid GeographyId = objUserHierarchy.GeographyId;  // Commented by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
             var objGeography = db.Geographies.FirstOrDefault(g => g.GeographyId == objUserHierarchy.GeographyId);
             string Geography = objGeography == null ? string.Empty : objGeography.Title;
             string Phone = objUserHierarchy.Phone;
@@ -457,7 +457,8 @@ namespace RevenuePlanner.Controllers
             var subUsers = GetSubUsers(lstUserHierarchy, userid)
               .Select(r => CreateUserHierarchy(lstUserHierarchy, r))
               .ToList();
-            return new UserHierarchyModel { UserId = userid, FirstName = FirstName, LastName = LastName, Email = Email, RoleId = RoleId, RoleTitle = RoleTitle, ColorCode = ColorCode, JobTitle = JobTitle, GeographyId = GeographyId, Geography = Geography, Phone = Phone, ManagerId = ManagerId, subUsers = subUsers };
+            // Modified by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
+            return new UserHierarchyModel { UserId = userid, FirstName = FirstName, LastName = LastName, Email = Email, RoleId = RoleId, RoleTitle = RoleTitle, ColorCode = ColorCode, JobTitle = JobTitle, Geography = Geography, Phone = Phone, ManagerId = ManagerId, subUsers = subUsers }; 
         }
         /// <summary>
         /// Added By: Mitesh Vaishnav for PL ticket #521
@@ -486,7 +487,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.RoleColorCode = roleColorCode;
                 ViewBag.Name = userDetails.FirstName + " " + userDetails.LastName;
                 ViewBag.RoleName = userDetails.RoleTitle;
-                ViewBag.userGeography = userDetails.GeographyId.ToString();
+                //ViewBag.userGeography = userDetails.GeographyId.ToString();   // Commented by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
                 ViewBag.userBusinessUnit = userDetails.BusinessUnitId.ToString();
                 var clientVerticals = db.Verticals.Where(ver => ver.ClientId == Sessions.User.ClientId).ToList();
                 var clientGeography = db.Geographies.Where(geo => geo.ClientId == Sessions.User.ClientId).ToList();
@@ -549,8 +550,9 @@ namespace RevenuePlanner.Controllers
                     cRestrictionobj.Title = item.Title;
                     cRestrictionobj.CustomField = Enums.CustomRestrictionType.Geography.ToString();
                     cRestrictionobj.CustomFieldId = item.GeographyId.ToString();
-                    if (userDetails.GeographyId != item.GeographyId)
-                    {
+                    // Start - Commented by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
+                    //if (userDetails.GeographyId != item.GeographyId)
+                    //{
                         var IsUserRestrictionExist = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomFieldId.ToLower() == item.GeographyId.ToString().ToLower() && ucr.CustomField == Enums.CustomRestrictionType.Geography.ToString()).FirstOrDefault() : null;
                         if (IsUserRestrictionExist != null)
                         {
@@ -564,13 +566,14 @@ namespace RevenuePlanner.Controllers
                             cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(none)).Value;
                             cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.None;
                         }
-                    }
-                    else
-                    {
-                        string ViewEdit = Enums.CustomRestrictionPermission.ViewEdit.ToString();
-                        cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(ViewEdit)).Value;
-                        cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                    }
+                    //}
+                    //else
+                    //{
+                    //    string ViewEdit = Enums.CustomRestrictionPermission.ViewEdit.ToString();
+                    //    cRestrictionobj.permissiontext = Enums.CustomRestrictionValues.Single(customRestriction => customRestriction.Key.Equals(ViewEdit)).Value;
+                    //    cRestrictionobj.Permission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                    //}
+                    // End - Commented by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
                     customRestrictionList.Add(cRestrictionobj);
                 }
                 foreach (var item in clientBusinessUnit)

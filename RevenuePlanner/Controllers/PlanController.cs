@@ -2183,6 +2183,33 @@ namespace RevenuePlanner.Controllers
             pcpm.CStartDate = pcp.StartDate;
             pcpm.CEndDate = pcp.EndDate;
             // End - Added by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
+
+            // Start - Added by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
+            bool canCreateTactic = false;
+            var IsAudienceExists = db.Audiences.Where(a => a.ClientId == Sessions.User.ClientId && a.IsDeleted == false).Any();
+            if (IsAudienceExists)
+            {
+                var userCustomRestrictionList = objBDSServiceClient.GetUserCustomRestrictionList(Sessions.User.UserId, Sessions.ApplicationId);
+                var isGeographyAllowed = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomField == Enums.CustomRestrictionType.Geography.ToString()
+                    && (ucr.Permission == (int)Enums.CustomRestrictionPermission.ViewOnly || ucr.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit)).Any() : false;
+                if (isGeographyAllowed)
+                {
+                    var isVerticalAllowed = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomField == Enums.CustomRestrictionType.Verticals.ToString()
+                                            && (ucr.Permission == (int)Enums.CustomRestrictionPermission.ViewOnly || ucr.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit)).Any() : false;
+
+                    if (isVerticalAllowed)
+                        canCreateTactic = true;
+                }
+            }
+
+            if (canCreateTactic == false)
+            {
+                ViewBag.CannotCreateQuickTacticMessage = Common.objCached.CannotCreateQuickTacticMessage;
+            }
+
+            ViewBag.CanCreateTactic = canCreateTactic;
+            // End - Added by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
+
             return PartialView("ProgramAssortment", pcpm);
         }
 
@@ -2393,9 +2420,25 @@ namespace RevenuePlanner.Controllers
                                         pcptobj.IsDeployedToIntegration = mt.IsDeployedToIntegration;//mt.Model.IntegrationInstanceId == null ? false : true;
                                         pcptobj.Title = mt.Title;
                                         /* changed by Nirav on 11 APR for PL 322*/
-                                        pcptobj.VerticalId = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId).Select(s => s.VerticalId).FirstOrDefault();
+
+                                        // Start - Added by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
+                                        var userCustomRestrictionList = objBDSServiceClient.GetUserCustomRestrictionList(Sessions.User.UserId, Sessions.ApplicationId);
+                                        List<int> lstVerticalRestricted = new List<int>();
+                                        List<Guid> lstGeographyRestricted = new List<Guid>();
+                                        if (userCustomRestrictionList != null)
+                                        {
+                                            lstVerticalRestricted = userCustomRestrictionList.Where(ucr => ucr.CustomField == Enums.CustomRestrictionType.Verticals.ToString()
+                                                                    && (ucr.Permission == (int)Enums.CustomRestrictionPermission.None)).Select(a => Convert.ToInt32(a.CustomFieldId)).ToList();
+                                            lstGeographyRestricted = userCustomRestrictionList.Where(ucr => ucr.CustomField == Enums.CustomRestrictionType.Geography.ToString()
+                                                                    && (ucr.Permission == (int)Enums.CustomRestrictionPermission.None)).Select(a => Guid.Parse(a.CustomFieldId)).ToList();
+                                        }
+                                        // End - Added by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
+                                        
+                                        // Start - Added by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
+                                        pcptobj.VerticalId = db.Verticals.Where(vertical => vertical.IsDeleted == false && vertical.ClientId == Sessions.User.ClientId && !lstVerticalRestricted.Contains(vertical.VerticalId)).Select(s => s.VerticalId).FirstOrDefault();
                                         pcptobj.AudienceId = db.Audiences.Where(audience => audience.IsDeleted == false && audience.ClientId == Sessions.User.ClientId).Select(s => s.AudienceId).FirstOrDefault();
-                                        pcptobj.GeographyId = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId).Select(s => s.GeographyId).FirstOrDefault();
+                                        pcptobj.GeographyId = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId && !lstGeographyRestricted.Contains(geography.GeographyId)).Select(s => s.GeographyId).FirstOrDefault();
+                                        // End - Added by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
 
                                         //pcptobj.VerticalId = form.VerticalId;
                                         //pcptobj.AudienceId = form.AudienceId;

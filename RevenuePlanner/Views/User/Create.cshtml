@@ -158,23 +158,6 @@
                 </div>
 
                 <div class="cf inputs-aligned-horizontal">
-                    @Html.LabelFor(model => model.GeographyId)
-                    @*Modified by :- Sohel on 27 March 2014 for ticket #334*@
-                    <div class="selectBox UserProfile" id="ddlGeographyIdSelectBox">
-                        @if (ViewData["Geographies"] != null)
-                        {
-                            @Html.DropDownListFor(c => c.GeographyId, new SelectList((System.Collections.IEnumerable)ViewData["Geographies"], "GeographyId", "Title"), "Please Select")
-                        }
-                        else
-                        {
-                            @Html.DropDownListFor(c => c.GeographyId, Enumerable.Empty<SelectListItem>(), "Please Select")
-                        }
-                    </div>
-                    @Html.ValidationMessageFor(model => model.GeographyId)
-                    @Html.Label("", Common.objCached.RegionRequired, new { @class="field-validation-error selectbox-validation-message", id="lblGeographyIdRequired" })
-                </div>
-                
-                <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.RoleId)
                     @*Modified by :- Sohel on 27 March 2014 for ticket #334*@
                     <div class="selectBox UserProfile" id="ddlRoleIdSelectBox">
@@ -222,7 +205,6 @@
 
         $('#lblClientIdRequired').hide();
         $('#lblBusinessUnitIdRequired').hide();
-        $('#lblGeographyIdRequired').hide();
         $('#lblRoleIdRequired').hide();
         $('#lblManagerIdRequired').hide();
 
@@ -254,17 +236,6 @@
                 $('#lblBusinessUnitIdRequired').hide();
             }
             
-            //GeographyId Dropdown Required Validtion
-            if (($("#GeographyId option").eq(0).val() == "" && $("#GeographyId").val() == "")) {
-                $("#ddlGeographyIdSelectBox .sbHolder").addClass("selectBoxError");
-                $('#lblGeographyIdRequired').show();
-                isValid = false;
-            }
-            else {
-                $("#ddlGeographyIdSelectBox .sbHolder").removeClass("selectBoxError");
-                $('#lblGeographyIdRequired').hide();
-            }
-
             //RoleID Dropdown Required Validtion
             if (($("#RoleId option").eq(0).val() == "" && $("#RoleId").val() == "")) {
                 $("#ddlRoleIdSelectBox .sbHolder").addClass("selectBoxError");
@@ -377,11 +348,9 @@
             var clientId = $(this).val();
             if (clientId != "") {
                 loadBusinessUnit(clientId);
-                loadGeography(clientId);
                 loadManagers(clientId);     // Added by Sohel Pathan on 03/07/2014 for Functional review points.
                 $('#lblClientIdRequired').hide();
                 $('#lblBusinessUnitIdRequired').hide();
-                $('#lblGeographyIdRequired').hide();
                 $('#lblRoleIdRequired').hide();
                 $('#lblManagerIdRequired').hide();
             }
@@ -418,33 +387,6 @@
                 }
         }
                 
-        function loadGeography(clientId) {
-            if (clientId != "" && clientId != "0" && clientId != "null") {
-                $.getJSON("@Url.Content("~/User/GetGeography")", { id: clientId },
-                function (geographyData) {
-                    var select = $("#GeographyId");
-                    select.empty();
-                    $.each(geographyData, function (index, itemData) {
-                        select.append($('<option/>', {
-                            value: itemData.Value,
-                            text: itemData.Text
-                        }));
-                    });
-                    if ($("#GeographyId option").eq(0).val() != "") {
-                        $("#GeographyId option").eq(0).before($("<option></option>").val("").text("Please select"));
-                    }
-                    if ($("#GeographyId option").eq(0).val() == undefined) {
-                        $("#GeographyId").append($("<option></option>").val("").text("Please select"));
-                    }
-                    $("#GeographyId").val("");
-
-                    //Added by :- Sohel on 27 March 2014 for ticket #334
-                    $(".selectBox select").selectbox('detach');
-                    $(".selectBox select").selectbox("attach");
-                });
-            }
-        }
-
         // Start - Added by Sohel Pathan on 03/07/2014 for Functional review points.
         function loadManagers(clientId) {
             if (clientId != "" && clientId != "0" && clientId != "null") {
@@ -679,18 +621,6 @@
         else {
             $("#ddlBusinessUnitIdSelectBox .sbHolder").addClass("selectBoxError");
             $('#lblBusinessUnitIdRequired').show();
-        }
-    });
-
-    $("#GeographyId").change(function () {
-        var GeographyId = $(this).val();
-        if (GeographyId != "") {
-            $("#ddlGeographyIdSelectBox .sbHolder").removeClass("selectBoxError");
-            $('#lblGeographyIdRequired').hide();
-        }
-        else {
-            $("#ddlGeographyIdSelectBox .sbHolder").addClass("selectBoxError");
-            $('#lblGeographyIdRequired').show();
         }
     });
 

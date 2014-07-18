@@ -224,26 +224,6 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                 </div>
 
                 <div class="cf inputs-aligned-horizontal">
-                    @Html.LabelFor(model => model.GeographyId)
-                    @if ((bool)ViewBag.IsUserAdminAuthorized && currentUserId != Convert.ToString(Model.UserId))
-                    //@if (permRoleCodesForDel.Contains(Model.RoleCode) || (Model.IsSystemAdmin && currentUserId == Convert.ToString(Model.UserId)))
-                    //@if ((Convert.ToString(Model.UserId) == currentUserId) || permRoleCodesForDel.Contains(Model.RoleCode))
-                    {
-                        //Modified by :- Sohel on 27 March 2014 for ticket #334
-                        <div class="selectBox UserProfile" id="ddlGeographyIdSelectBox">
-                            @Html.DropDownListFor(c => c.GeographyId, new SelectList((System.Collections.IEnumerable)ViewData["Geographies"], "GeographyId", "Title"), "Please Select")
-                        </div>
-                        @Html.ValidationMessageFor(model => model.GeographyId)
-                        @Html.Label("", Common.objCached.RegionRequired, new { @class="field-validation-error selectbox-validation-message", id="lblGeographyIdRequired" }) // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
-                    }
-                    else
-                    {
-                        @Html.HiddenFor(model => model.GeographyId)
-                        @Html.HiddenFor(model => model.Geography)
-                        @Html.TextBox("txtGeography", Model.Geography, new { style = "background:#F2F2F2;", @readonly = "true", title = Model.Geography })
-                    }
-                </div>
-                <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.RoleId)
                     @if ((bool)ViewBag.IsUserAdminAuthorized && currentUserId != Convert.ToString(Model.UserId))
                     //@if (permRoleCodesForDel.Contains(Model.RoleCode) || (Model.IsSystemAdmin && currentUserId == Convert.ToString(Model.UserId)))
@@ -385,7 +365,6 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
         // Start - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
         $('#lblClientIdRequired').hide();
         $('#lblBusinessUnitIdRequired').hide();
-        $('#lblGeographyIdRequired').hide();
         $('#lblRoleIdRequired').hide();
         $('#lblManagerIdRequired').hide();
         $('#lblNewManagerIdRequired').hide();
@@ -417,17 +396,6 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
             else {
                 $("#ddlBusinessUnitIdSelectBox .sbHolder").removeClass("selectBoxError");
                 $('#lblBusinessUnitIdRequired').hide(); // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
-            }
-
-            //GeographyId Dropdown Required Validtion
-            if (($("#GeographyId option").eq(0).val() == "" && $("#GeographyId").val() == "")) {
-                $("#ddlGeographyIdSelectBox .sbHolder").addClass("selectBoxError");
-                $('#lblGeographyIdRequired').show();    // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
-                isValid = false;
-            }
-            else {
-                $("#ddlGeographyIdSelectBox .sbHolder").removeClass("selectBoxError");
-                $('#lblGeographyIdRequired').hide();    // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
             }
 
             //RoleID Dropdown Required Validtion
@@ -546,8 +514,7 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
             var clientId = $(this).val();
             if (clientId != "") {
                 loadBusinessUnit(clientId);
-                loadGeography(clientId);
-
+                
                 // Start - Added by Sohel Pathan on 03/07/2014 for Functional review points.
                 loadManagers(clientId);
                 if ($('#IsDeleted').val().toLowerCase() == 'yes')
@@ -557,7 +524,6 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                 // Start - Added by Sohel Pathan on 26/06/2014 for PL ticket #517
                 $('#lblClientIdRequired').hide();
                 $('#lblBusinessUnitIdRequired').hide();
-                $('#lblGeographyIdRequired').hide();
                 $('#lblRoleIdRequired').hide();
                 $('#lblManagerIdRequired').hide();
             }
@@ -591,32 +557,6 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
                     $(".selectBox select").selectbox('detach');
                     $(".selectBox select").selectbox("attach");
                 });
-            }
-        }
-        function loadGeography(clientId) {
-            if (clientId != "" && clientId != "0" && clientId != "null") {
-                $.getJSON("@Url.Content("~/User/GetGeography")", { id: clientId },
-            function (geographyData) {
-                var select = $("#GeographyId");
-                select.empty();
-                $.each(geographyData, function (index, itemData) {
-                    select.append($('<option/>', {
-                        value: itemData.Value,
-                        text: itemData.Text
-                    }));
-                });
-                if ($("#GeographyId option").eq(0).val() != "") {
-                    $("#GeographyId option").eq(0).before($("<option></option>").val("").text("Please select"));
-                }
-                if ($("#GeographyId option").eq(0).val() == undefined) {
-                    $("#GeographyId").append($("<option></option>").val("").text("Please select"));
-                }
-                $("#GeographyId").val("");
-
-                //Added by :- Sohel on 27 March 2014 for ticket #334
-                $(".selectBox select").selectbox('detach');
-                $(".selectBox select").selectbox("attach");
-            });
             }
         }
         // Start - Added by Sohel Pathan on 03/07/2014 for Functional review points.
@@ -860,18 +800,6 @@ else if (!string.IsNullOrWhiteSpace(srcval) && srcval.ToLower() == "myaccount")
         else {
             $("#ddlBusinessUnitIdSelectBox .sbHolder").addClass("selectBoxError");
             $('#lblBusinessUnitIdRequired').show();
-        }
-    });
-
-    $("#GeographyId").change(function () {
-        var GeographyId = $(this).val();
-        if (GeographyId != "") {
-            $("#ddlGeographyIdSelectBox .sbHolder").removeClass("selectBoxError");
-            $('#lblGeographyIdRequired').hide();
-        }
-        else {
-            $("#ddlGeographyIdSelectBox .sbHolder").addClass("selectBoxError");
-            $('#lblGeographyIdRequired').show();
         }
     });
 

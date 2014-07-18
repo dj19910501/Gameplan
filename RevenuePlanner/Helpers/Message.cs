@@ -1895,6 +1895,21 @@ namespace RevenuePlanner.Helpers
             }
         }
         // End - Added By Mitesh Vaishnav on 17/07/2014 for functional review point 65
+
+        // Start - Added by Sohel Pathan on 18/07/2014 for PL ticket #596
+        private string _CannotCreateQuickTacticMessage;
+        public string CannotCreateQuickTacticMessage
+        {
+            get
+            {
+                return _CannotCreateQuickTacticMessage;
+            }
+            set
+            {
+                _CannotCreateQuickTacticMessage = value;
+            }
+        }
+        // End - Added by Sohel Pathan on 18/07/2014 for PL ticket #596
         #endregion
 
 
@@ -2445,8 +2460,12 @@ namespace RevenuePlanner.Helpers
                                         case "ConfirmationForDeleteImprovementTactic":
                                             _ConfirmationForDeleteImprovementTactic = strMsgValue;
                                             break;
-                                       
                                         // End - Added By Mitesh Vaishnav on 17/07/2014 for functional review point 65
+                                        // Start - Added by Sohel Pathan on 18/07/2014 for PL ticket #596
+                                        case "CannotCreateQuickTacticMessage":
+                                            _CannotCreateQuickTacticMessage = strMsgValue;
+                                            break;
+                                        // End - Added by Sohel Pathan on 18/07/2014 for PL ticket #596
                                     }
                                 }
                                 i = i + 1;
