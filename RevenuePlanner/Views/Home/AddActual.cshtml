@@ -126,7 +126,7 @@
 <!--success message-->
 
 <a class="link-alone" id="calendar-link-home-actuals" href="#">
-    <label class="CursorHand" onclick="displayconfirm('@Url.Action("Index", "Home", new { currentPlanId = @RevenuePlanner.Helpers.Sessions.PlanId })');"><span class="left-arrow"></span>Back to Calendar</label>
+    <label class="CursorHand" onclick="displayconfirm('@Url.Action("Index", "Home", new { currentPlanId = @RevenuePlanner.Helpers.Sessions.PlanId })');"><span></span>« BACK TO CALENDAR</label>
 </a>
 <ul class="nav nav-tabs">
     <li class="title-header source-sans-proregular">
@@ -159,6 +159,12 @@
         $(".alert").find(".close").on("click", function (e) {
             $(this).closest(".alert").slideUp(400);
         });
+
+        //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
+        $(document).on("click", "#calendar-link-home-actuals", function (e) {
+            displayconfirm('@Url.Action("Index", "Home", new { currentPlanId = @RevenuePlanner.Helpers.Sessions.PlanId })');
+        });
+
 
         $('.changes').html('');
         var url = '@Url.Content("~/Home/LoadChangeLog")';
@@ -359,6 +365,25 @@
                                                                         .css({ "visibility": "hidden" });
                 /*set visibility on scroll over mask*/
                 $(".table-actual-mask").css({ "overflow-x": "hidden" });
+
+                $('.shadow-scroll-table-mask-right').each(function () {
+                    //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
+                    $(this).removeClass("resetVisibility");
+                });
+
+                $('.shadow-scroll-table-mask-left').each(function () {
+                    //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
+                    $(this).removeClass("resetVisibility");
+                });
+
+                //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
+                $(".accordion-actuals .accordion-group .in").prev().
+                                                 find(".shadow-scroll-table-mask-right").addClass("resetVisibility");
+
+                //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
+                $(".accordion-actuals .accordion-group .in").prev().
+                                 find(".shadow-scroll-table-mask-left").addClass("resetVisibility");
+
 
                 var that = this,
                     mask = $(that).next().find(".table-actual-mask"),
@@ -765,7 +790,15 @@
                     $tableActuals.append($html);
                 }
 
+                $('.addFormatterActualCurrency').each(function () {
+                    //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
+                    SetLabelFormaterWithTipsy($(this));
+                });
 
+                $('.addFormatterActualNumber').each(function () {
+                    //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
+                    SetLabelFormaterWithTipsyNumbers($(this));
+                });
             }
         }
 
@@ -860,10 +893,10 @@
             for (var i = 0; i < arrStage.length; i++) {
                 if (arrStage[i] == '@Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString()') {
                     $html += '<div class="body-toogle-actual">' + tacticStageTitle + '<input type="hidden" id="hdnProjectedStageValueTitle' + _id + '" value="' + tacticStageTitle + '" /><div class="table-info-actual-left-wraper">' +
-                                                                      '<div class="table-info-actual-left truncate" id="lblProjectedStageValue' + _id + '">' +
+                                                                      '<div class="table-info-actual-left truncate addFormatterActualNumber" id="lblProjectedStageValue' + _id + '">' +
                                                     _projectedStageValue +
                                             '</div>' +
-                                                '<div class="table-info-actual-left table-info-actual-width truncate" id="ActuallblPProjectedStageValue' + _id + '">' +
+                                                '<div class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber" id="ActuallblPProjectedStageValue' + _id + '">' +
                                                     _projectedStageValueActual +
                                             '</div>' +
                                         '</div>' +
@@ -871,10 +904,10 @@
                 }
                 else if (arrStage[i].toLowerCase() == '@Common.StageCodeMQL') {
                     $html += '<div class="body-toogle-actual">@Html.LabelForMQL("MQL")<div class="table-info-actual-left-wraper">' +
-                                                    '<div class="table-info-actual-left truncate" id="ProjectedlblPMQL' + _id + '">' +
+                                                    '<div class="table-info-actual-left truncate addFormatterActualNumber" id="ProjectedlblPMQL' + _id + '">' +
                                                         _mqlProjected +
                                                     '</div>' +
-                                                    '<div class="table-info-actual-left table-info-actual-width truncate" id="ActuallblPMQL' + _id + '">' +
+                                                    '<div class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber" id="ActuallblPMQL' + _id + '">' +
                                                         _mqlActual +
                                                     '</div>' +
                                                 '</div>' +
@@ -883,20 +916,20 @@
             }
 
             $html += '<div class="body-toogle-actual">@Html.LabelForCW("CW")<div class="table-info-actual-left-wraper">' +
-                                            '<div class="table-info-actual-left truncate" id="ProjectedlblValueCW' + _id + '">' +
+                                            '<div class="table-info-actual-left truncate addFormatterActualNumber" id="ProjectedlblValueCW' + _id + '">' +
                                                 _cwProjected +
                                             '</div>' +
-                                            '<div class="table-info-actual-left table-info-actual-width truncate" id="ActuallblPCW' + _id + '">' +
+                                            '<div class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber" id="ActuallblPCW' + _id + '">' +
                                                 _cwActual +
                                             '</div>' +
                                         '</div>' +
                                     '</div>';
 
             $html += '<div class="body-toogle-actual">Revenue<div class="table-info-actual-left-wraper">' +
-                                            '<div class="table-info-actual-left truncate" id="ProjectedlblValueRevenue' + _id + '">' +
+                                            '<div class="table-info-actual-left truncate addFormatterActualCurrency" id="ProjectedlblValueRevenue' + _id + '">' +
                                                 _revenueProjected +
                                             '</div>' +
-                                            '<div class="table-info-actual-left table-info-actual-width truncate" id="ActuallblCRevenue' + _id + '">' +
+                                            '<div class="table-info-actual-left table-info-actual-width truncate addFormatterActualCurrency" id="ActuallblCRevenue' + _id + '">' +
                                                 _revenueActual +
                                             '</div>' +
                                         '</div>' +
@@ -904,7 +937,7 @@
 
             $html += '<div class="body-toogle-actual">Cost' +
                                 '<div id="border-right" class="table-info-actual-left-wraper">' +
-                                    '<div class="table-info-actual-left truncate" id="ProjectedlblCCost' + _id + '">' +
+                                    '<div class="table-info-actual-left truncate addFormatterActualCurrency" id="ProjectedlblCCost' + _id + '">' +
                                         _costProjected +
                                     '</div>' +
                                     '<div class="table-info-actual-left" style="float: right;">' +

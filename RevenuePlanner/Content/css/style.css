@@ -7368,4 +7368,29 @@ padding: 7px 24px 7px 4px !important;
     background: linear-gradient(0deg, rgb(236, 236, 236) 4%, rgb(254, 254, 254) 98%);
 }
 
+/*Added By : Kalpesh Sharma Internal Review Points 07-18-2014*/
+.shadow-scroll-table-mask-right.resetVisibility
+{
+    visibility:hidden !important;
+}
 
+.shadow-scroll-table-mask-left.resetVisibility
+{
+    visibility:hidden !important;
+}
+
+#calendar-link-home-actuals .CursorHand {
+    color: #D4D4D4 !important;
+    cursor: pointer;
+    margin-left: 20px;
+      font-size : 14px !important;
+    font-family: "Helvetica" !important;
+}
+
+#calendar-link-home-actuals :hover{
+    color: #D4D4D4 !important;
+    text-decoration: underline;
+}
+
+
+/*End Added By : Kalpesh Sharma Internal Review Points 07-18-2014*/
