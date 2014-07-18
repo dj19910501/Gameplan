@@ -22,9 +22,8 @@ namespace RevenuePlanner.Models
         public int TacticTypeId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public Nullable<System.Guid> ClientId { get; set; }
         public string ColorCode { get; set; }
-        public Nullable<int> ModelId { get; set; }
+        public int ModelId { get; set; }
         public Nullable<int> StageId { get; set; }
         public Nullable<double> ProjectedRevenue { get; set; }
         public System.DateTime CreatedDate { get; set; }
@@ -35,6 +34,7 @@ namespace RevenuePlanner.Models
         public Nullable<bool> IsDeleted { get; set; }
         public bool IsDeployedToIntegration { get; set; }
         public Nullable<double> ProjectedStageValue { get; set; }
+        public bool IsDeployedToModel { get; set; }
     
         public virtual Model Model { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }

@@ -224,7 +224,7 @@ namespace Integration.Salesforce
                     Plan_Campaign_Program_Tactic tactic = tacticList.Where(t => t.IntegrationInstanceTacticId == idvalue).Single();
                     int tacticStageLevel = Convert.ToInt32(tactic.Stage.Level);
                     string tacticStageCode = tactic.Stage.Code;
-                    Guid ClientId = (Guid)tactic.TacticType.ClientId;
+                    Guid ClientId = (Guid)tactic.BusinessUnit.ClientId;//.TacticType.ClientId; // Modified by dharmraj, #593 : Tactic type data model - Tactic screen
                     int MQLStageLevel = Convert.ToInt32(db.Stages.FirstOrDefault(s => s.ClientId == ClientId && s.Code == Stage_MQL).Level);
 
                     tactic.CostActual = 0;

@@ -18,7 +18,6 @@ namespace RevenuePlanner.Models
         {
             this.BestInClasses = new HashSet<BestInClass>();
             this.ImprovementTacticType_Metric = new HashSet<ImprovementTacticType_Metric>();
-            this.ImprovementTacticType_Touches = new HashSet<ImprovementTacticType_Touches>();
             this.Model_Funnel_Stage = new HashSet<Model_Funnel_Stage>();
             this.Plan_Campaign_Program_Tactic = new HashSet<Plan_Campaign_Program_Tactic>();
             this.TacticTypes = new HashSet<TacticType>();
@@ -41,7 +40,6 @@ namespace RevenuePlanner.Models
     
         public virtual ICollection<BestInClass> BestInClasses { get; set; }
         public virtual ICollection<ImprovementTacticType_Metric> ImprovementTacticType_Metric { get; set; }
-        public virtual ICollection<ImprovementTacticType_Touches> ImprovementTacticType_Touches { get; set; }
         public virtual ICollection<Model_Funnel_Stage> Model_Funnel_Stage { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
         public virtual ICollection<TacticType> TacticTypes { get; set; }
