@@ -32,6 +32,7 @@ namespace RevenuePlanner.Models
         public DbSet<BestInClass> BestInClasses { get; set; }
         public DbSet<BusinessUnit> BusinessUnits { get; set; }
         public DbSet<ChangeLog> ChangeLogs { get; set; }
+        public DbSet<ClientTacticType> ClientTacticTypes { get; set; }
         public DbSet<Field> Fields { get; set; }
         public DbSet<Funnel> Funnels { get; set; }
         public DbSet<Funnel_Field> Funnel_Field { get; set; }
@@ -39,7 +40,6 @@ namespace RevenuePlanner.Models
         public DbSet<Geography> Geographies { get; set; }
         public DbSet<ImprovementTacticType> ImprovementTacticTypes { get; set; }
         public DbSet<ImprovementTacticType_Metric> ImprovementTacticType_Metric { get; set; }
-        public DbSet<ImprovementTacticType_Touches> ImprovementTacticType_Touches { get; set; }
         public DbSet<IntegrationInstance> IntegrationInstances { get; set; }
         public DbSet<IntegrationInstance_Attribute> IntegrationInstance_Attribute { get; set; }
         public DbSet<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
@@ -47,6 +47,7 @@ namespace RevenuePlanner.Models
         public DbSet<IntegrationInstancePlanEntityLog> IntegrationInstancePlanEntityLogs { get; set; }
         public DbSet<IntegrationType> IntegrationTypes { get; set; }
         public DbSet<IntegrationTypeAttribute> IntegrationTypeAttributes { get; set; }
+        public DbSet<MasterTacticType> MasterTacticTypes { get; set; }
         public DbSet<Model> Models { get; set; }
         public DbSet<Model_Audience_Event> Model_Audience_Event { get; set; }
         public DbSet<Model_Audience_Inbound> Model_Audience_Inbound { get; set; }

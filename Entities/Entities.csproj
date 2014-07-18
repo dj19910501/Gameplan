@@ -58,6 +58,9 @@
     <Compile Include="Models\ChangeLog.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ClientTacticType.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Field.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
@@ -79,9 +82,6 @@
     <Compile Include="Models\ImprovementTacticType_Metric.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\ImprovementTacticType_Touches.cs">
-      <DependentUpon>MRP.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\IntegrationInstance.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
@@ -101,6 +101,9 @@
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\IntegrationTypeAttribute.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\MasterTacticType.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Model.cs">

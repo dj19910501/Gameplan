@@ -12,14 +12,12 @@ namespace RevenuePlanner.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class ImprovementTacticType_Touches
+    public partial class MasterTacticType
     {
-        public int ImprovementTacticTypeId { get; set; }
-        public System.DateTime CreatedDate { get; set; }
-        public System.Guid CreatedBy { get; set; }
-        public int StageId { get; set; }
-    
-        public virtual ImprovementTacticType ImprovementTacticType { get; set; }
-        public virtual Stage Stage { get; set; }
+        public int MasterTacticTypeId { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string ColorCode { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }
