@@ -483,52 +483,52 @@
             }
 
             //Format Commas For Projected Value
-            $("div[id^='ProjectedlblP']").each(function () {
-                $(this).text(FormatCommas($(this).text(), false));
-                var txtvalue = $(this).text();
-                $(this).attr('title', txtvalue);
-                //$('.truncate').tipsy({ gravity: 's' });
-            });
+            //$("div[id^='ProjectedlblP']").each(function () {
+            //    $(this).text(FormatCommas($(this).text(), false));
+            //    var txtvalue = $(this).text();
+            //    $(this).attr('title', txtvalue);
+            //    //$('.truncate').tipsy({ gravity: 's' });
+            //});
 
-            //Format Commas For Projected Value
-            $("div[id^='ProjectedlblValueCW']").each(function () {
-                $(this).text(FormatCommas($(this).text(), true));
-                var txtvalue = $(this).text();
-                $(this).attr('title', txtvalue);
-                SetTipsyNumeric($(this)); //$('.truncate').tipsy({ gravity: 's' });
-            });
+            ////Format Commas For Projected Value
+            //$("div[id^='ProjectedlblValueCW']").each(function () {
+            //    $(this).text(FormatCommas($(this).text(), true));
+            //    var txtvalue = $(this).text();
+            //    $(this).attr('title', txtvalue);
+            //    SetTipsyNumeric($(this)); //$('.truncate').tipsy({ gravity: 's' });
+            //});
 
-            //Format Commas For Projected Value Revenue
-            $("div[id^='ProjectedlblValueRevenue']").each(function () {
-                $(this).text(FormatCurrency($(this).text(), true));
-                var txtvalue = $(this).text();
-                $(this).attr('title', txtvalue);
-                SetTipsyPrice($(this), txtvalue); //$('.truncate').tipsy({ gravity: 's' });
-            });
+            ////Format Commas For Projected Value Revenue
+            //$("div[id^='ProjectedlblValueRevenue']").each(function () {
+            //    $(this).text(FormatCurrency($(this).text(), true));
+            //    var txtvalue = $(this).text();
+            //    $(this).attr('title', txtvalue);
+            //    SetTipsyPrice($(this), txtvalue); //$('.truncate').tipsy({ gravity: 's' });
+            //});
 
-            //Format Currency For Projected Value
-            $("div[id^='ProjectedlblC']").each(function () {
-                $(this).text(FormatCurrency($(this).text(), false));
-                var txtvalue = $(this).text();
-                $(this).attr('title', txtvalue);
-                SetTipsyPrice($(this), txtvalue);
-            });
+            ////Format Currency For Projected Value
+            //$("div[id^='ProjectedlblC']").each(function () {
+            //    $(this).text(FormatCurrency($(this).text(), false));
+            //    var txtvalue = $(this).text();
+            //    $(this).attr('title', txtvalue);
+            //    SetTipsyPrice($(this), txtvalue);
+            //});
 
-            //Format Commas For Actual Value
-            $("div[id^='ActuallblP']").each(function () {
-                $(this).text(FormatCommas($(this).text(), false));
-                var txtvalue = $(this).text();
-                $(this).attr('title', txtvalue);
-                SetTipsyNumeric($(this));
-            });
+            ////Format Commas For Actual Value
+            //$("div[id^='ActuallblP']").each(function () {
+            //    $(this).text(FormatCommas($(this).text(), false));
+            //    var txtvalue = $(this).text();
+            //    $(this).attr('title', txtvalue);
+            //    SetTipsyNumeric($(this));
+            //});
 
-            //Format Currency For Actual Value
-            $("div[id^='ActuallblC']").each(function () {
-                $(this).text(FormatCurrency($(this).text(), false));
-                var txtvalue = $(this).text();
-                $(this).attr('title', txtvalue);
-                SetTipsyPrice($(this), txtvalue); //$('.truncate').tipsy({ gravity: 's' });
-            });
+            ////Format Currency For Actual Value
+            //$("div[id^='ActuallblC']").each(function () {
+            //    $(this).text(FormatCurrency($(this).text(), false));
+            //    var txtvalue = $(this).text();
+            //    $(this).attr('title', txtvalue);
+            //    SetTipsyPrice($(this), txtvalue); //$('.truncate').tipsy({ gravity: 's' });
+            //});
 
             //Format Currency For Actual Cost Input
             $("input[id^='ActuallblC']").each(function () {
