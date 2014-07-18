@@ -2191,11 +2191,11 @@ namespace RevenuePlanner.Controllers
             {
                 var userCustomRestrictionList = objBDSServiceClient.GetUserCustomRestrictionList(Sessions.User.UserId, Sessions.ApplicationId);
                 var isGeographyAllowed = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomField == Enums.CustomRestrictionType.Geography.ToString()
-                    && (ucr.Permission == (int)Enums.CustomRestrictionPermission.ViewOnly || ucr.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit)).Any() : false;
+                    && (ucr.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit)).Any() : false;
                 if (isGeographyAllowed)
                 {
                     var isVerticalAllowed = userCustomRestrictionList != null ? userCustomRestrictionList.Where(ucr => ucr.CustomField == Enums.CustomRestrictionType.Verticals.ToString()
-                                            && (ucr.Permission == (int)Enums.CustomRestrictionPermission.ViewOnly || ucr.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit)).Any() : false;
+                                            && (ucr.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit)).Any() : false;
 
                     if (isVerticalAllowed)
                         canCreateTactic = true;
