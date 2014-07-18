@@ -962,8 +962,8 @@
             }
         });
         $(document).on("click", "#confirmClose, .confirmClose", function (e) {
-            $('#spanMessageError').html("");
-            $("#errorMessage").slideUp(3000);
+            $("#errorMessage").slideUp(400);
+            //$('#spanMessageError').html("");
         });
         $(document).on("click", "#btnNPlan", function (e) {
             displayconfirm('@Url.Action("Create", "Plan")');
@@ -978,7 +978,7 @@
         function displayconfirm(strURL) {
             if (isDataChanged()) {
                 $('#spanMessageError').html(" You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
-                $("#errorMessage").slideDown(3000);
+                $("#errorMessage").slideDown(400);
             }
             else {
                 window.location.href = strURL;
@@ -988,7 +988,7 @@
         function displayConfirmCommon(functionName) {
             if (isDataChanged()) {
                 $('#spanMessageError').html(" You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
-                $("#errorMessage").slideDown(3000);
+                $("#errorMessage").slideDown(400);
                 $("#btnConfirmOK").click(function () {
                     //alert(id);
                     $('#spanMessageError').html("");

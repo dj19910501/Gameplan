@@ -18,6 +18,7 @@ CREATE TABLE [dbo].[MasterTacticType](
 	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
+ALTER TABLE [dbo].[MasterTacticType] ADD  DEFAULT ((0)) FOR [IsDeleted]
 
 INSERT INTO [dbo].[MasterTacticType] ([TITLE], [DESCRIPTION], [COLORCODE],  [isdeleted]) VALUES (N'Email', N'', N'27a4e5',  0)
 INSERT INTO [dbo].[MasterTacticType] ([TITLE], [DESCRIPTION], [COLORCODE],  [isdeleted]) VALUES (N'Online Banner', N'', N'555305',  0)
@@ -60,11 +61,13 @@ CREATE TABLE [dbo].[ClientTacticType](
 	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
+ALTER TABLE [dbo].[ClientTacticType] ADD  DEFAULT ((0)) FOR [IsDeleted]
+
+
 EXECUTE('INSERT INTO [dbo].[ClientTacticType] 
 ([Title],[Description],[ColorCode],[ClientId],[IsDeleted],[CreatedDate],[CreatedBy])
 select t.TITLE,t.[DESCRIPTION],t.COLORCODE,c.ClientId,0 as isdeleted,GETDATE() as createddate,'''+@CREATEDBY+'''
 FROM MasterTacticType as t cross join (select ClientId from ['+@BDSAuth+'].[dbo].[Client] ) as c')
-
 
 delete from TacticType where ModelId is null
 ALTER TABLE [TacticType] ALTER COLUMN [ModelId] INTEGER NOT NULL
@@ -72,11 +75,6 @@ ALTER TABLE [TacticType] DROP COLUMN [ClientId]
 
 
 End
-GO
-
-ALTER TABLE [dbo].[MasterTacticType] ADD  DEFAULT ((0)) FOR [IsDeleted]
-GO
-ALTER TABLE [dbo].[ClientTacticType] ADD  DEFAULT ((0)) FOR [IsDeleted]
 GO
 
 IF NOT EXISTS(SELECT * FROM sys.columns WHERE [name] = N'IsDeployedToModel' AND [object_id] = OBJECT_ID(N'TacticType'))
@@ -91,24 +89,25 @@ IF EXISTS(SELECT * FROM sys.columns WHERE [name] = N'IsDeployedToModel' AND
 			[object_id] = OBJECT_ID(N'TacticType') AND (SELECT COUNT(*) FROM TacticType WHERE IsDeployedToModel = 1) = 0 )
 BEGIN
 	UPDATE TacticType set IsDeployedToModel = 1 
+	UPDATE TacticType set IsDeleted = 0 where IsDeleted is null
 END
 GO
 
-update TacticType set IsDeleted = 0 where IsDeleted is null
-
-
+DECLARE @CREATEDBY uniqueidentifier = N'efeb8d52-d7f8-45f4-8297-fe1525afd1f3'
 ;WITH AllCombination AS(
 	select distinct 
 		mt.Title,
 		mt.[Description],
 		mt.ColorCode,
 		t.ModelId
-	from MasterTacticType as mt cross join (select distinct ModelId from TacticType) as t 
+	from MasterTacticType as mt cross join (select ModelId from Model where IsDeleted=0) as t 
 )
-
 insert into TacticType (title,[Description],ColorCode,ModelId,CreatedDate,CreatedBy,IsDeleted,IsDeployedToIntegration,IsDeployedToModel)
 select distinct ac.Title,ac.Description,ac.ColorCode,ac.ModelId,GETDATE() as CreatedDate,@CREATEDBY as CreatedBy,0 as IsDeleted,0 as  IsDeployedToIntegration,0 as IsDeployedToModel 
 from AllCombination ac
 inner join TacticType t on t.ModelId = ac.ModelId AND ac.Title NOT IN 
 (select Title from TacticType where ModelId= ac.ModelId)
+
+
+
 

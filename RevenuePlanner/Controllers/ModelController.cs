@@ -2861,7 +2861,7 @@ namespace RevenuePlanner.Controllers
             // Modified to distinct all master tactics of model, Dharmraj 10-7-2014
             //objTacticList = objTacticList.Union(lstMstaerTactic.Distinct()).ToList();
             // Added by Dharmraj , ticket #592 Tactic type data model
-            var objTacticList = db.TacticTypes.Where(t => t.ModelId == id).ToList();
+            var objTacticList = db.TacticTypes.Where(t => t.ModelId == id && t.IsDeleted == false).ToList();
 
             // Start - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
             string Marketing = Convert.ToString(Enums.Funnel.Marketing).ToLower();
