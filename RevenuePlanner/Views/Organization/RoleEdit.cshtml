@@ -46,7 +46,7 @@
 <div class="padding-content cf source-sans-proregular" id="content" style="padding-bottom: 0px !important">
     <div class="row">
         <div id="internalLink" class="span2 myaccount-colum">
-             @Html.Partial("~/Views/Organization/_organization.cshtml")
+            @Html.Partial("~/Views/Organization/_organization.cshtml")
         </div>
 
         <div class="span9">
@@ -57,7 +57,7 @@
                 <div class="manage-roles-header clearfix">
                     <div class="pull-left">
                         <div id="nl-form" class="nl-form-plan-title without-margin">
-                           
+
                             @Html.DropDownList("ddlRoles", new SelectList((System.Collections.IEnumerable)TempData["RoleList"], "Value", "Text"), (string)ViewBag.Current, new { require = "true" })
                             <div class="nl-overlay"></div>
                         </div>
@@ -146,8 +146,8 @@
                 </div>
                 <div id="DivBackgroundShareTacticDel" class="modal-backdrop fade in" style="z-index: 9999"></div>
             </div>
-             <!--div to load partialview for delete role-->
-        <div id="loaddiv"></div>
+            <!--div to load partialview for delete role-->
+            <div id="loaddiv"></div>
         </div>
     </div>
 </div>
@@ -203,15 +203,15 @@
         $('#closebtn').click(function () {
             var url = '';
             url = '@Url.Content("~/Organization/ManageRoles")';
-        window.location.href = url;
-    });//review point
+            window.location.href = url;
+        });//review point
 
-        $('#aIntegrations').click(function () {
+
+        $('#backbtn').click(function () {
             var url = '';
-            url = '@Url.Content("~/ExternalService/Index")';
-        window.location.href = url;
-    });
-
+            url = '@Url.Content("~/Organization/ManageRoles")';
+            window.location.href = url;
+        });
 
 
 
@@ -274,38 +274,38 @@
                 }
                 if (count > 0) {
                     //start uday for uncheck other validation                
-                var permissions = '@ViewData["permissionids"]';
-                var originalpermissions = [];
-                var match = [];
-                var unmatch = [];
-                if (permissions != '') {
+                    var permissions = '@ViewData["permissionids"]';
+                    var originalpermissions = [];
+                    var match = [];
+                    var unmatch = [];
+                    if (permissions != '') {
 
-                    var strsa = permissions.split(",");
-                    for (var i = 0; i < strsa.length; i++) {
-                        ////var split = [];
-                        ////split = strsa[i].split("_");
-                        //originalpermissions.push(split[1]);commented by uday for functional review point...3-7-2014
-                        originalpermissions.push(strsa[i]);
-                    }
-                    if (originalpermissions.length > 0) {
-                        for (i in originalpermissions) {
-                            var ismatch = false;
-                            for (j in truecheck) {
-                                if (originalpermissions[i] == truecheck[j]) {
-                                    ismatch = true;
-                                    break;
+                        var strsa = permissions.split(",");
+                        for (var i = 0; i < strsa.length; i++) {
+                            ////var split = [];
+                            ////split = strsa[i].split("_");
+                            //originalpermissions.push(split[1]);commented by uday for functional review point...3-7-2014
+                            originalpermissions.push(strsa[i]);
+                        }
+                        if (originalpermissions.length > 0) {
+                            for (i in originalpermissions) {
+                                var ismatch = false;
+                                for (j in truecheck) {
+                                    if (originalpermissions[i] == truecheck[j]) {
+                                        ismatch = true;
+                                        break;
+                                    }
                                 }
-                            }
-                            if (!ismatch) {
-                                unmatch.push(originalpermissions[i].toString());
+                                if (!ismatch) {
+                                    unmatch.push(originalpermissions[i].toString());
+                                }
                             }
                         }
                     }
-                }
-                if (unmatch.length > 0) {
-                    globaldeleteids = unmatch;
-                    var url = '';
-                    url = '@Url.Content("~/Organization/CheckPermission/")';
+                    if (unmatch.length > 0) {
+                        globaldeleteids = unmatch;
+                        var url = '';
+                        url = '@Url.Content("~/Organization/CheckPermission/")';
                     //window.location.href = url + "?roleId=" + '@ViewBag.roleid' + "&permission=" + unmatch.toString();
                     $("#loaddiv").load(url + "?roleId=" + '@ViewBag.roleid' + "&permission=" + unmatch.toString());
                     return false;
@@ -313,26 +313,26 @@
                 else {
                     saveRoleActivity();
                 }
-                //end
+                    //end
             }
             else {
                 ShowError("@Common.objCached.ValidateRequiredPermission");
-                return false;
+                    return false;
+                }
             }
-        }
-        //end validation
+            //end validation
+
+        });
 
     });
 
-    });
-
-function saveRoleActivity() {
-    //syntax to get selected text 
-    var roledesc = $("#ddlRoles :selected").text();
-    var roleid = '@ViewBag.roleid';
+    function saveRoleActivity() {
+        //syntax to get selected text 
+        var roledesc = $("#ddlRoles :selected").text();
+        var roleid = '@ViewBag.roleid';
     var uId = $(window).attr('name');       // Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
-        $.ajax({
-            url: '@Url.Content("~/Organization/Save/")',
+    $.ajax({
+        url: '@Url.Content("~/Organization/Save/")',
             data: {
                 roledesc: roledesc,
                 checkbox: globalids.toString(),
@@ -349,7 +349,7 @@ function saveRoleActivity() {
                     window.location = '@Url.Content("~/Login/Index")';
                 }
                 else {
-                // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
+                    // End - Added by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
                     if (result.status == true) {
                         $('#DivPartialShareTacticCheck').hide();
                         $('#DivPartialShareTacticDel').show();
