@@ -814,9 +814,6 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Entities\Entities.csproj">
       <Project>{c7aa3463-8e84-4280-a893-c6e7d38ea8d2}</Project>
       <Name>Entities</Name>
@@ -825,6 +822,9 @@
       <Project>{b312ef9a-c33a-4e44-8bd6-b141080302e0}</Project>
       <Name>Integration</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadataStorage Include="Service References\BDSService\" />
