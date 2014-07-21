@@ -1910,6 +1910,44 @@ namespace RevenuePlanner.Helpers
             }
         }
         // End - Added by Sohel Pathan on 18/07/2014 for PL ticket #596
+        // Start -Added By Mitesh Vaishnav on 21/07/2014 for functional review point 65
+        private string _ValidateStartDate;
+        public string ValidateStartDate
+        {
+            get
+            {
+                return _ValidateStartDate;
+            }
+            set
+            {
+                _ValidateStartDate = value;
+            }
+        }
+        private string _ValidateEndDate;
+        public string ValidateEndDate
+        {
+            get
+            {
+                return _ValidateEndDate;
+            }
+            set
+            {
+                _ValidateEndDate = value;
+            }
+        }
+        private string _SessionExpired;
+        public string SessionExpired
+        {
+            get
+            {
+                return _SessionExpired;
+            }
+            set
+            {
+                _SessionExpired = value;
+            }
+        }
+        // End - Added By Mitesh Vaishnav on 21/07/2014 for functional review point 65
         #endregion
 
 
@@ -2466,6 +2504,17 @@ namespace RevenuePlanner.Helpers
                                             _CannotCreateQuickTacticMessage = strMsgValue;
                                             break;
                                         // End - Added by Sohel Pathan on 18/07/2014 for PL ticket #596
+                                        // Start -Added By Mitesh Vaishnav on 21/07/2014 for functional review point 65
+                                        case "ValidateStartDate":
+                                            _ValidateStartDate = strMsgValue;
+                                            break;
+                                        case "ValidateEndDate":
+                                            _ValidateEndDate = strMsgValue;
+                                            break;
+                                        case "SessionExpired":
+                                            _SessionExpired = strMsgValue;
+                                            break;
+                                        // End -Added By Mitesh Vaishnav on 21/07/2014 for functional review point 65
                                     }
                                 }
                                 i = i + 1;

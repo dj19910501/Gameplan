@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using RevenuePlanner.Helpers
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -174,7 +175,7 @@
                 //this will catch any and all access denied errors
                 if (isAlerted == false) {
                     isAlerted = true;
-                    alert("Sorry, your session has expired. Please login again by clicking on Ok button.");
+                    alert("@Common.objCached.SessionExpired");
                     window.location = "@Url.Content("~/login/Index")";
                 }
             }
@@ -190,7 +191,7 @@
         var IsSessionExist = readCookie('IsSessionExist');
         if (IsSessionExist == 0 && isAlerted == false) {
             isAlerted = true;
-            alert("Sorry, your session has expired. Please login again by clicking on Ok button.");
+            alert("@Common.objCached.SessionExpired");
             window.location = "@Url.Content("~/login/Index")";
         }
     }

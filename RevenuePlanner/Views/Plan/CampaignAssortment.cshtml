@@ -369,11 +369,11 @@
                 $('#t_enddate').removeClass("error");
                 $('#t_startdate').removeClass("error");
                 if (!isDate(sdate)) {
-                    alert('please select valid start date.');
+                    alert('@Common.objCached.ValidateStartDate');
                     return false;
                 }
                 if (!isDate(edate)) {
-                    alert('please select valid end date.');
+                    alert('@Common.objCached.ValidateEndDate');
                     return false;
                 }
                 if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;

@@ -157,22 +157,6 @@
                     @Html.Label("", Common.objCached.BusinessunitRequired, new { @class="field-validation-error selectbox-validation-message", id="lblBusinessUnitIdRequired" })
                 </div>
 
-                <div class="cf inputs-aligned-horizontal">
-                    @Html.LabelFor(model => model.GeographyId)
-                    @*Modified by :- Sohel on 27 March 2014 for ticket #334*@
-                    <div class="selectBox UserProfile" id="ddlGeographyIdSelectBox">
-                        @if (ViewData["Geographies"] != null)
-                        {
-                            @Html.DropDownListFor(c => c.GeographyId, new SelectList((System.Collections.IEnumerable)ViewData["Geographies"], "GeographyId", "Title"), "Please Select")
-                        }
-                        else
-                        {
-                            @Html.DropDownListFor(c => c.GeographyId, Enumerable.Empty<SelectListItem>(), "Please Select")
-                        }
-                    </div>
-                    @Html.ValidationMessageFor(model => model.GeographyId)
-                    @Html.Label("", Common.objCached.RegionRequired, new { @class="field-validation-error selectbox-validation-message", id="lblGeographyIdRequired" })
-                </div>
                 
                 <div class="cf inputs-aligned-horizontal">
                     @Html.LabelFor(model => model.RoleId)

@@ -489,9 +489,11 @@ namespace RevenuePlanner.Controllers
                 ViewBag.RoleName = userDetails.RoleTitle;
                 //ViewBag.userGeography = userDetails.GeographyId.ToString();   // Commented by :- Sohel Pathan on 18/17/2014 for PL ticket #594.
                 ViewBag.userBusinessUnit = userDetails.BusinessUnitId.ToString();
-                var clientVerticals = db.Verticals.Where(ver => ver.ClientId == Sessions.User.ClientId).ToList();
-                var clientGeography = db.Geographies.Where(geo => geo.ClientId == Sessions.User.ClientId).ToList();
-                var clientBusinessUnit = db.BusinessUnits.Where(bu => bu.ClientId == Sessions.User.ClientId).ToList();
+                //Start : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
+                var clientVerticals = db.Verticals.Where(ver => ver.ClientId == Sessions.User.ClientId && ver.IsDeleted==false).ToList();
+                var clientGeography = db.Geographies.Where(geo => geo.ClientId == Sessions.User.ClientId && geo.IsDeleted==false).ToList();
+                var clientBusinessUnit = db.BusinessUnits.Where(bu => bu.ClientId == Sessions.User.ClientId && bu.IsDeleted==false).ToList();
+                //End : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
                 var userCustomRestrictionList = objBDSServiceClient.GetUserCustomRestrictionList(UserId, Sessions.ApplicationId);
                 var allAtctivity = objBDSServiceClient.GetAllApplicationActivity(Sessions.ApplicationId);
                 var userActivity = objBDSServiceClient.GetUserActivity(UserId, Sessions.ApplicationId);

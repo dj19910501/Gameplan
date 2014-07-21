@@ -145,14 +145,7 @@
             hideContactDetail();
         });
 
-        $('#aMyProfile').click(function () {
-            var url = '';
-            url = '@Url.Action("Edit", "User", new { usrid = Sessions.User.UserId, src = "myaccount" })';
-            window.location.href = url;
         });
-
-
-    });
 
     function showContactDetail(userId) {
 

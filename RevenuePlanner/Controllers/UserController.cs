@@ -84,7 +84,7 @@ namespace RevenuePlanner.Controllers
                     {
                         UserModel objUserModel = new UserModel();
                         objUserModel.BusinessUnitId = user.BusinessUnitId;
-                        objUserModel.BusinessUnit = db.BusinessUnits.Where(bu => bu.BusinessUnitId == objUserModel.BusinessUnitId).Select(b => b.Title).FirstOrDefault();
+                        objUserModel.BusinessUnit = db.BusinessUnits.Where(bu => bu.BusinessUnitId == objUserModel.BusinessUnitId && bu.IsDeleted == false).Select(b => b.Title).FirstOrDefault();//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
                         objUserModel.ClientId = user.ClientId;
                         objUserModel.Client = user.Client;
                         objUserModel.DisplayName = user.DisplayName;
@@ -896,7 +896,7 @@ namespace RevenuePlanner.Controllers
                 if (objUser != null)
                 {
                     objUserModel.BusinessUnitId = objUser.BusinessUnitId;
-                    objUserModel.BusinessUnit = db.BusinessUnits.Where(bu => bu.BusinessUnitId == objUserModel.BusinessUnitId).Select(b => b.Title).FirstOrDefault();
+                    objUserModel.BusinessUnit = db.BusinessUnits.Where(bu => bu.BusinessUnitId == objUserModel.BusinessUnitId && bu.IsDeleted == false).Select(b => b.Title).FirstOrDefault();//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
                     objUserModel.ClientId = objUser.ClientId;
                     objUserModel.Client = objUser.Client;
                     objUserModel.DisplayName = objUser.DisplayName;
