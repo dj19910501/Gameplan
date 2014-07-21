@@ -280,7 +280,17 @@ namespace RevenuePlanner.Controllers
             {
                 MetricModel Metricsobj = new MetricModel();
                 Metricsobj.MetricID_Size = item.StageId;
-                Metricsobj.MetricType = item.ImprovementTacticType_Metric.Where(ittm => ittm.StageId == item.StageId).FirstOrDefault().StageType;
+                //start: Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 73
+                var stageTypeList = item.ImprovementTacticType_Metric.Where(ittm => ittm.StageId == item.StageId).FirstOrDefault();
+                if (stageTypeList != null)
+                {
+                    Metricsobj.MetricType = stageTypeList.StageType;
+                }
+                else
+                {
+                    Metricsobj.MetricType = Enums.MetricType.Size.ToString();
+                }
+                //End : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 73
                 Metricsobj.MetricName = item.Title;
                 weight = db.ImprovementTacticType_Metric.Where(itm => itm.StageId == item.StageId && itm.ImprovementTacticTypeId == id).Select(v => v.Weight).FirstOrDefault();
                 Metricsobj.ConversionValue = weight;
