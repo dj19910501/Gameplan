@@ -1948,6 +1948,23 @@ namespace RevenuePlanner.Helpers
             }
         }
         // End - Added By Mitesh Vaishnav on 21/07/2014 for functional review point 65
+
+
+        //Added By : Kalpesh Sharma Functional Review Point #75
+        private string _NoActiveModelFound;
+        public string NoActiveModelFound
+        {
+            get
+            {
+                return _NoActiveModelFound;
+            }
+            set
+            {
+                _NoActiveModelFound = value;
+            }
+        }
+
+
         #endregion
 
 
@@ -2515,6 +2532,12 @@ namespace RevenuePlanner.Helpers
                                             _SessionExpired = strMsgValue;
                                             break;
                                         // End -Added By Mitesh Vaishnav on 21/07/2014 for functional review point 65
+
+                                        //Added By : Kalpesh Sharma Functional Review Point #75
+                                        case "NoActiveModelFound":
+                                            _NoActiveModelFound = strMsgValue;
+                                            break;
+
                                     }
                                 }
                                 i = i + 1;

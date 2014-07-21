@@ -663,4 +663,12 @@
 		<value>Sorry, your session has expired. Please login again by clicking on Ok button.</value>
 	</Field>
 	<!-- End - Added by Mitesh Vaishnav on 21/07/2014 for functional review point 49 -->
+
+  <!--Added By : Kalpesh Sharma Functional Review Point #75-->
+  <Field>
+    <Name>NoActiveModelFound</Name>
+    <value>There is no any active model.</value>
+  </Field>
+  
+  
 </Messages>

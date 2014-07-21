@@ -109,12 +109,16 @@
             </li>
                 }
             }
-            if (Model.Versions.Count == 1)
+            
+            
+            //Added By : Kalpesh Sharma Functional Review Point #77
+            @*if (Model.Versions.Count == 1)
             {
             <li class="pull-right">
                 <a href="#">@Html.Raw("No Saved Versions")</a>
             </li>
-            }
+            }*@
+            
             if (Model.Versions.Count == 0)
             {
             <li class="title-header source-sans-proregular" title="Title">
@@ -257,14 +261,14 @@
                 <br />
                 <div class="container-button">
                     @{ 
-                    if (Model.lstmodelstage.Count() > 0)
-                    {
-                        if (Convert.ToString(ViewBag.IsOwner) == "True" || Convert.ToString(ViewBag.IsViewEditBusinessUnit) == "True")  // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                        {
+        if (Model.lstmodelstage.Count() > 0)
+        {
+            if (Convert.ToString(ViewBag.IsOwner) == "True" || Convert.ToString(ViewBag.IsViewEditBusinessUnit) == "True")  // Added by Sohel Pathan on 01/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+            {
                             <input id="btnsave" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Save Current Version & Continue" />
                             <input id="button-save" type="submit" class="btn btn-blue text-shadow-blue source-sans-proregular savebtn" style="display: inline" value="Create New Version & Continue" />
-                        }
-                    }
+            }
+        }
                     }
                 </div>
                 @Html.Hidden("isPublishButton")
@@ -280,7 +284,7 @@
         </div>
     </div>
     
-     //Added By Kalpesh Sharma Functional and code review #560 07-16-2014   
+        //Added By Kalpesh Sharma Functional and code review #560 07-16-2014   
      @Html.Partial("~/Views/Model/_DuplicateModel.cshtml")
     
 }

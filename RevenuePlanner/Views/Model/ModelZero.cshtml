@@ -213,6 +213,8 @@ else
                     dataType: "json",
                     success: function (r) {
                         baselinesModels = r;
+                        //Added By : Kalpesh Sharma Functional Review Point #75
+                        $('#table_baseline > tbody').html("");
                         fillBaselineTable();
                         myApp.hidePleaseWait();
                     }
@@ -227,7 +229,16 @@ else
                     dataType: "json",
                     success: function (r) {
                         baselinesModels = r;
-                        fillBaselineTable();
+                        //Added By : Kalpesh Sharma Functional Review Point #75
+                        if (baselinesModels.length) {
+                            fillBaselineTable();
+                        }
+                        else {
+                            $('#table_baseline > tbody').html("");
+                            var $baselineTable = $('#table_baseline > tbody');
+                            var $html = "@Common.objCached.NoActiveModelFound";
+                            $baselineTable.append($html);
+                        }
                         myApp.hidePleaseWait();
                     }
                 });

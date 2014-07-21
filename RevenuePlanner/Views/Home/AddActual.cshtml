@@ -156,6 +156,10 @@
     var indArr = [];
     var tacArr = [];
     $(document).ready(function () {
+
+        //Added By : Kalpesh Sharma Functional Review Point #76
+        $("#div-user-Note").show();
+
         $(".alert").find(".close").on("click", function (e) {
             $(this).closest(".alert").slideUp(400);
         });
@@ -200,7 +204,9 @@
             $("#liAll").removeClass('active');
             $("#errorMessage").css("display", "none");
             $("#successMessage").css("display", "none");
-            $("#div-user-Note").hide();
+            //Added By : Kalpesh Sharma Functional Review Point #76
+            //$("#div-user-Note").hide();
+            $("#div-user-Note").show();
             CallAjax();
         }
 

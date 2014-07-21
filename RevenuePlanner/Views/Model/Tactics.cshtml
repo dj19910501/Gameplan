@@ -95,12 +95,15 @@
         </li>
             }
         }
-        if (Model.Versions.Count == 1)
+        
+           //Added By : Kalpesh Sharma Functional Review Point #77
+        @*if (Model.Versions.Count == 1)
         {
         <li class="pull-right">
             <a href="#">@Html.Raw("No Saved Versions")</a>
         </li>
-        }
+        }*@
+        
         if (Model.Versions.Count == 0)
         {
         <li class="title-header source-sans-proregular" title="Title">
