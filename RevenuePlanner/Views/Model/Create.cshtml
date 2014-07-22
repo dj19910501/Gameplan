@@ -609,9 +609,10 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
              GoToLogin();
          }
      });
+     if (modelId > 0) {
      $('.changes').html('');
      var url = '@Url.Content("~/Model/LoadChangeLog/")';
-     if (modelId > 0) {
+
          $('.changes').load(url + '?objectId=' + modelId);
      }
 

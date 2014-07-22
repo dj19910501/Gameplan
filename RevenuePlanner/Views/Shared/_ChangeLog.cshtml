@@ -1,6 +1,7 @@
 ﻿@model List<RevenuePlanner.Models.ChangeLog_ViewModel>
-
-    @foreach(var item in Model)
+@if(Model.Count()>0)
+{
+    foreach(var item in Model)
     {
         <div class="change"> 
             <span class="title">
@@ -29,4 +30,9 @@
                 @item.DateStamp
             </span>
         </div>
+    }
+}
+else
+{
+    <div class="change">  <span class="action">None</span></div>
     }
