@@ -3255,7 +3255,7 @@ namespace RevenuePlanner.Controllers
                             if (tacticId != 0)
                             {
                                 TacticType rejobj = db.TacticTypes.Where(t => t.TacticTypeId == tacticId).FirstOrDefault();
-                                if (rejobj != null)
+                                if (rejobj != null && rejobj.IsDeployedToModel!=false )//Modified by Mitesh Vaishnav on 22/07/2014 for PL ticket #612 I had added condition for only deploed model
                                 {
                                     /*TFS point 252: editing a published model
                                       Added by Nirav Shah on 18 feb 2014
