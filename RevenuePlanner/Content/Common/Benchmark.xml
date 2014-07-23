@@ -21,12 +21,17 @@
 
     <ClientCode value="ZBR">
       <stage code="SUS" cr="0.714" sv="30" targetstage="true" />
-      <stage code="INQ" cr="4" sv="26" targetstage="false" />
-      <stage code="MAL" cr="76" sv="15" targetstage="false" />
+      <stage code="INQ" cr="4" sv="26" targetstage="false"  />
+      <stage code="AQL" cr="76" sv="15" targetstage="false" />
       <stage code="MQL" cr="50" sv="26" targetstage="false" />
+      <stage code="TQL" cr="50" sv="26" targetstage="false" />
       <stage code="SAL" cr="62" sv="74" targetstage="false" />
       <stage code="SQL" cr="62" sv="74" targetstage="false" />
+      <stage code="CW" cr="76" sv="15" targetstage="false"  />
+      <stage code="ADS" cr="76" sv="15" targetstage="false" />
+      <stage code="MAL" cr="76" sv="15" targetstage="false" />
     </ClientCode>
+    
   </ModelInput>
   <modelAudience>
     <Quarter1>
