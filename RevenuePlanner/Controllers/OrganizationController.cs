@@ -85,7 +85,9 @@ namespace RevenuePlanner.Controllers
             try
             {
                 BDSService.BDSServiceClient bdsuserrepository = new BDSServiceClient();
-                var memberlist = bdsuserrepository.GetAllRoleList(Sessions.ApplicationId);
+                
+                //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+                var memberlist = bdsuserrepository.GetAllRoleList(Sessions.ApplicationId,Sessions.User.ClientId);
                 //foreach (var item in memberlist)
                 //{
                 //    RoleModel role = new RoleModel();
@@ -133,7 +135,8 @@ namespace RevenuePlanner.Controllers
                 //Session["session"] = objrole;commented by uday for functional review point...3-7-2014
                 TempData["objrole"] = objrole;
 
-                int retval = objBDSServiceClient.DuplicateRoleCheck(objrole, Sessions.ApplicationId);
+                //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+                int retval = objBDSServiceClient.DuplicateRoleCheck(objrole, Sessions.ApplicationId,Sessions.User.ClientId);
                 if (retval == 1)
                 {
                     return Json(true);
@@ -158,7 +161,10 @@ namespace RevenuePlanner.Controllers
             try
             {
                 BDSService.BDSServiceClient bdsuserrepository = new BDSServiceClient();
-                var rolelist = bdsuserrepository.GetAllRoleList(Sessions.ApplicationId);
+
+                //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+                var rolelist = bdsuserrepository.GetAllRoleList(Sessions.ApplicationId,Sessions.User.ClientId);
+
                 if (roleId == Guid.Empty)//changed by uday for functional review point...3-7-2014;
                 {
                     var prevrole = (Role)TempData["objrole"];//changed by uday for functional review point...3-7-2014;
@@ -220,7 +226,9 @@ namespace RevenuePlanner.Controllers
             try
             {
                 BDSService.BDSServiceClient bdsuserrepository = new BDSServiceClient();
-                var rolelistData = bdsuserrepository.GetAllRoleList(Sessions.ApplicationId).Where(rolelist => rolelist.RoleId != roleid).ToList().Select(role => new SelectListItem()
+                
+                //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+                var rolelistData = bdsuserrepository.GetAllRoleList(Sessions.ApplicationId , Sessions.User.ClientId).Where(rolelist => rolelist.RoleId != roleid).ToList().Select(role => new SelectListItem()
                 {
                     Text = role.Title,
                     Value = Convert.ToString(role.RoleId),
@@ -293,7 +301,10 @@ namespace RevenuePlanner.Controllers
             {
                 reassignroleid = Guid.Empty;
             }
-            int retval = objBDSServiceClient.DeleteRoleAndReassign(delroleid, reassignroleid.Value, Sessions.ApplicationId, Sessions.User.UserId);
+
+            //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+            int retval = objBDSServiceClient.DeleteRoleAndReassign(delroleid, reassignroleid.Value, Sessions.ApplicationId, Sessions.User.UserId, Sessions.User.ClientId);
+            
             if (retval == 1)
             {
                 TempData["SuccessMessage"] = Common.objCached.RoleDeleteSuccess;
@@ -321,7 +332,8 @@ namespace RevenuePlanner.Controllers
 
             string permissionID = checkbox.ToString();
 
-            int retval = objBDSServiceClient.CreateRole(roledesc, permissionID, colorcode, Sessions.ApplicationId, Sessions.User.UserId, roleid, delpermission);
+            //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+            int retval = objBDSServiceClient.CreateRole(roledesc, permissionID, colorcode, Sessions.ApplicationId, Sessions.User.UserId, roleid, delpermission,Sessions.User.ClientId);
             if (retval == 1)
             {
                 return Json(new { status = true }, JsonRequestBehavior.AllowGet);  // Modified by Sohel Pathan on 11/07/2014 for Internal Functional Review Points #53 to implement user session check
@@ -352,10 +364,11 @@ namespace RevenuePlanner.Controllers
                 objrole.Description = copyroledesc;
                 objrole.Title = copyroledesc.Trim();
                 Session["session"] = objrole;
-                int retvalcheck = objBDSServiceClient.DuplicateRoleCheck(objrole, Sessions.ApplicationId);
+                //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+                int retvalcheck = objBDSServiceClient.DuplicateRoleCheck(objrole, Sessions.ApplicationId,Sessions.User.ClientId);
                 if (retvalcheck == 1)
                 {
-                    int retval = objBDSServiceClient.CopyRole(copyroledesc.Trim(), originalroleid, Sessions.ApplicationId, Sessions.User.UserId);
+                    int retval = objBDSServiceClient.CopyRole(copyroledesc.Trim(), originalroleid, Sessions.ApplicationId, Sessions.User.UserId,Sessions.User.ClientId);
                     if (retval == 1)
                     {
                         TempData["SuccessMessage"] = Common.objCached.RoleCopySuccess;
@@ -483,7 +496,10 @@ namespace RevenuePlanner.Controllers
                 Guid UserId = Guid.Parse(Id);
                 ViewBag.userId = UserId;
                 var userDetails = objBDSServiceClient.GetTeamMemberDetails(UserId, Sessions.ApplicationId);
-                var roleColorCode = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId).Where(rol => rol.RoleId == userDetails.RoleId).FirstOrDefault().ColorCode;
+                
+                //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+                var roleColorCode = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId,Sessions.User.ClientId).Where(rol => rol.RoleId == userDetails.RoleId).FirstOrDefault().ColorCode;
+                
                 ViewBag.RoleColorCode = roleColorCode;
                 ViewBag.Name = userDetails.FirstName + " " + userDetails.LastName;
                 ViewBag.RoleName = userDetails.RoleTitle;

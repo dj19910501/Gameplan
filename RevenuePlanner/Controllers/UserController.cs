@@ -149,7 +149,9 @@ namespace RevenuePlanner.Controllers
                 {
                     lstOtherUser.ForEach(a => a.DisplayName = a.FirstName + a.LastName);
                     ViewBag.OtherUsers = lstOtherUser.OrderBy(a => a.DisplayName).ToList();
-                    ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId);
+
+                    //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+                    ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId,Sessions.User.ClientId);
                 }
                 else
                 {
@@ -466,7 +468,8 @@ namespace RevenuePlanner.Controllers
             {
                 if (id != null)
                 {
-                    string userRole = objBDSServiceClient.GetUserRole(id, Sessions.ApplicationId);
+                    //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+                    string userRole = objBDSServiceClient.GetUserRole(id, Sessions.ApplicationId,Sessions.User.ClientId);
                     //Enums.Role delUserRole = Common.GetKey<Enums.Role>(Enums.RoleCodeValues, userRole);
                     //Enums.Role currUserRole = Common.GetKey<Enums.Role>(Enums.RoleCodeValues, Sessions.User.RoleCode);
                     //switch (currUserRole)
@@ -564,7 +567,8 @@ namespace RevenuePlanner.Controllers
                 ViewData["BusinessUnits"] = null;
             }
 
-            ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId);
+            //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+            ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId,Sessions.User.ClientId);
             ViewBag.CurrClientId = Sessions.User.ClientId;
             ViewBag.CurrClient = Sessions.User.Client;
 
@@ -839,7 +843,10 @@ namespace RevenuePlanner.Controllers
                 ViewBag.SourceValue = src;
             }
             ViewData["Clients"] = objBDSServiceClient.GetClientList();
-            ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId);
+
+            //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+            ViewData["Roles"] = objBDSServiceClient.GetAllRoleList(Sessions.ApplicationId,Sessions.User.ClientId);
+
             ViewBag.CurrentUserId = Convert.ToString(Sessions.User.UserId);
             ViewBag.CurrentUserRole = Convert.ToString(Sessions.User.RoleCode);
             //ViewBag.PermRoleCodesForUpd = permRoleCodesForUpd;

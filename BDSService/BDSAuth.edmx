@@ -68,6 +68,10 @@
             <End Role="User" EntitySet="User" />
             <End Role="Role_Activity_Permission" EntitySet="Role_Activity_Permission" />
           </AssociationSet>
+          <AssociationSet Name="FK_Role_Client" Association="BDSAuthModel.Store.FK_Role_Client">
+            <End Role="Client" EntitySet="Client" />
+            <End Role="Role" EntitySet="Role" />
+          </AssociationSet>
           <AssociationSet Name="FK_Role_Permission_Menu_Application" Association="BDSAuthModel.Store.FK_Role_Permission_Menu_Application">
             <End Role="Menu_Application" EntitySet="Menu_Application" />
             <End Role="Role_Permission" EntitySet="Role_Permission" />
@@ -225,6 +229,7 @@
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
           <Property Name="ColorCode" Type="nchar" MaxLength="10" />
+          <Property Name="ClientId" Type="uniqueidentifier" />
         </EntityType>
         <EntityType Name="Role_Activity_Permission">
           <Key>
@@ -446,6 +451,18 @@
             </Principal>
             <Dependent Role="Role_Activity_Permission">
               <PropertyRef Name="CreatedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Role_Client">
+          <End Role="Client" Type="BDSAuthModel.Store.Client" Multiplicity="0..1" />
+          <End Role="Role" Type="BDSAuthModel.Store.Role" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Client">
+              <PropertyRef Name="ClientId" />
+            </Principal>
+            <Dependent Role="Role">
+              <PropertyRef Name="ClientId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -676,6 +693,10 @@
             <End Role="User" EntitySet="Users" />
             <End Role="User1" EntitySet="Users" />
           </AssociationSet>
+          <AssociationSet Name="FK_Role_Client" Association="BDSAuthModel.FK_Role_Client">
+            <End Role="Client" EntitySet="Clients" />
+            <End Role="Role" EntitySet="Roles" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Application">
           <Key>
@@ -746,6 +767,7 @@
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
           <Property Name="ModifiedBy" Type="Guid" />
           <NavigationProperty Name="Users" Relationship="BDSAuthModel.FK_User_Client" FromRole="Client" ToRole="User" />
+          <NavigationProperty Name="Roles" Relationship="BDSAuthModel.FK_Role_Client" FromRole="Client" ToRole="Role" />
         </EntityType>
         <EntityType Name="CustomRestriction">
           <Key>
@@ -815,6 +837,8 @@
           <NavigationProperty Name="Application_Role" Relationship="BDSAuthModel.FK_Application_Role_Role" FromRole="Role" ToRole="Application_Role" />
           <NavigationProperty Name="Role_Activity_Permission" Relationship="BDSAuthModel.FK_Role_Activity_Permission_Role" FromRole="Role" ToRole="Role_Activity_Permission" />
           <NavigationProperty Name="Role_Permission" Relationship="BDSAuthModel.FK_Role_Permission_Role" FromRole="Role" ToRole="Role_Permission" />
+          <Property Type="Guid" Name="ClientId" />
+          <NavigationProperty Name="Client" Relationship="BDSAuthModel.FK_Role_Client" FromRole="Role" ToRole="Client" />
         </EntityType>
         <EntityType Name="Role_Activity_Permission">
           <Key>
@@ -1181,6 +1205,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Role_Client">
+          <End Type="BDSAuthModel.Client" Role="Client" Multiplicity="0..1" />
+          <End Type="BDSAuthModel.Role" Role="Role" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Client">
+              <PropertyRef Name="ClientId" />
+            </Principal>
+            <Dependent Role="Role">
+              <PropertyRef Name="ClientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1299,6 +1335,7 @@
           <EntitySetMapping Name="Roles">
             <EntityTypeMapping TypeName="BDSAuthModel.Role">
               <MappingFragment StoreEntitySet="Role">
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
                 <ScalarProperty Name="RoleId" ColumnName="RoleId" />
                 <ScalarProperty Name="Code" ColumnName="Code" />
                 <ScalarProperty Name="Title" ColumnName="Title" />

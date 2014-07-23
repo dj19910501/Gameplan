@@ -30,5 +30,7 @@ namespace BDSService.BDSEntities
         public Guid? ModifiedBy { get; set; }
         [DataMember]
         public string ColorCode { get; set; }//added by uday as per DB changes for #513
+        [DataMember]
+        public Guid? ClientId { get; set; } //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
     }
 }

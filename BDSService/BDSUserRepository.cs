@@ -44,7 +44,9 @@ namespace BDSService
                 // Modified by Dharmraj to optimize below code, 10-7-2014
                 var lstClient = db.Clients.Where(c => c.IsDeleted == false);
                 var lstUserApplication = db.User_Application.Where(ua => ua.ApplicationId == applicationId && ua.IsDeleted == false);
-                var lstRole = db.Roles.Where(r => r.IsDeleted == false);
+                
+                //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+                var lstRole = db.Roles.Where(r => r.IsDeleted == false && r.ClientId == clientId);
 
                 foreach (var user in lstUser)
                 {
@@ -226,7 +228,8 @@ namespace BDSService
                 userObj.ProfilePhoto = user.ProfilePhoto;
                 userObj.RoleId = db.User_Application.Where(ua => ua.ApplicationId == applicationId && ua.UserId == user.UserId).Select(u => u.RoleId).FirstOrDefault();
 
-                var objRole = db.Roles.FirstOrDefault(rl => rl.RoleId == userObj.RoleId);
+                //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+                var objRole = db.Roles.FirstOrDefault(rl => rl.RoleId == userObj.RoleId && rl.ClientId == userObj.ClientId);
                 userObj.RoleCode = objRole.Code; //db.Roles.Where(rl => rl.RoleId == userObj.RoleId).Select(r => r.Code).FirstOrDefault();
                 userObj.RoleTitle = objRole.Title; //db.Roles.Where(rl => rl.RoleId == userObj.RoleId).Select(r => r.Title).FirstOrDefault();
                 userObj.SecurityQuestionId = user.SecurityQuestionId;
@@ -285,8 +288,9 @@ namespace BDSService
                             userObj.Password = user.Password;
                             userObj.ProfilePhoto = user.ProfilePhoto;
                             userObj.RoleId = db.User_Application.Where(ua => ua.ApplicationId == applicationId && ua.UserId == user.UserId).Select(u => u.RoleId).FirstOrDefault();
-                            userObj.RoleCode = db.Roles.Where(rl => rl.RoleId == userObj.RoleId).Select(r => r.Code).FirstOrDefault();
-                            userObj.RoleTitle = db.Roles.Where(rl => rl.RoleId == userObj.RoleId).Select(r => r.Title).FirstOrDefault();
+                            //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+                            userObj.RoleCode = db.Roles.Where(rl => rl.RoleId == userObj.RoleId && rl.ClientId == user.ClientId).Select(r => r.Code).FirstOrDefault();
+                            userObj.RoleTitle = db.Roles.Where(rl => rl.RoleId == userObj.RoleId && rl.ClientId == user.ClientId).Select(r => r.Title).FirstOrDefault();
                             teamMemberList.Add(userObj);
                         }
                     }
@@ -855,7 +859,7 @@ namespace BDSService
         /// <param name="id">user entity</param>
         /// <param name="applicationId">application</param>
         /// <returns>Returns user role code for specific application.</returns>
-        public string GetUserRole(Guid id, Guid applicationId)
+        public string GetUserRole(Guid id, Guid applicationId ,Guid ClientId)
         {
             string userRoleCode = string.Empty;
             if (id != null && applicationId != null)
@@ -864,11 +868,12 @@ namespace BDSService
                 //Role logical deletion and Application id in Custom restrication
                 //Changes : Check approle.Isdeleted flag is flase in below query  
 
+                //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
                 userRoleCode = (from r in db.Roles
                                 join ua in db.User_Application on r.RoleId equals ua.RoleId
                                 join appRole in db.Application_Role on r.RoleId equals appRole.RoleId
                                 where ua.UserId == id && ua.ApplicationId == applicationId && ua.IsDeleted == false
-                                && appRole.ApplicationId == applicationId && appRole.IsDeleted == false
+                                && appRole.ApplicationId == applicationId && appRole.IsDeleted == false && r.ClientId == ClientId
                                 select (r.Code)).FirstOrDefault();
             }
             return userRoleCode;
@@ -1219,7 +1224,7 @@ namespace BDSService
         /// </summary>
         /// added by uday for #513
         /// <returns>Returns roles .</returns>
-        public List<BDSEntities.Role> GetAllRoleList(Guid applicationid)
+        public List<BDSEntities.Role> GetAllRoleList(Guid applicationid , Guid ClientID)
         {
             List<BDSEntities.Role> roleList = new List<BDSEntities.Role>();
             List<Role> rolelist = new List<Role>();
@@ -1232,9 +1237,10 @@ namespace BDSService
 
             //Change By : Kalpesh Sharma
             //Role logical deletion and Application id in Custom restrication
+            //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
             rolelist = (from role in db.Roles
                         join approle in db.Application_Role on role.RoleId equals approle.RoleId
-                        where approle.ApplicationId == applicationid && approle.IsDeleted == false
+                        where approle.ApplicationId == applicationid && approle.IsDeleted == false && role.ClientId == ClientID
                         select role).OrderBy(role => role.Title).ToList();//change review point order by clause
 
             //if (rolelist.Count > 0)
@@ -1268,7 +1274,8 @@ namespace BDSService
                 CreatedBy = r.CreatedBy,
                 CreatedDate = r.CreatedDate,
                 ModifiedBy = r.ModifiedBy,
-                ModifiedDate = r.ModifiedDate
+                ModifiedDate = r.ModifiedDate,
+                ClientId = r.ClientId
             }).ToList();
 
             return roleList;
@@ -1329,7 +1336,9 @@ namespace BDSService
         /// <param name="applicationId">application</param>
         /// <param name="createdBy">created by this user</param>
         /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
-        public int DuplicateRoleCheck(BDSEntities.Role role, Guid applicationid)
+        
+        //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+        public int DuplicateRoleCheck(BDSEntities.Role role, Guid applicationid,Guid ClientID)
         {
             int retVal = 0;
             try
@@ -1339,7 +1348,7 @@ namespace BDSService
                 //Changes : Check approle.Isdeleted flag in below query  
                 var objDuplicateCheck = (from roles in db.Roles
                                          join approle in db.Application_Role on roles.RoleId equals approle.RoleId
-                                         where approle.ApplicationId == applicationid && roles.Title == role.Title && approle.IsDeleted == false
+                                         where approle.ApplicationId == applicationid && roles.Title == role.Title && approle.IsDeleted == false && roles.ClientId == ClientID
                                          select roles.Title).FirstOrDefault();
 
                 if (objDuplicateCheck != null)
@@ -1412,7 +1421,7 @@ namespace BDSService
         /// </summary>
         /// <param name="role id">role id</param>
         /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
-        public int CreateRole(string roledesc, string permissionID, string colorcode, Guid applicationid, Guid createdby, Guid roleid, string delpermission)
+        public int CreateRole(string roledesc, string permissionID, string colorcode, Guid applicationid, Guid createdby, Guid roleid, string delpermission , Guid ClientId)
         {
             int retVal = 0;
             Guid NewRoleId = Guid.NewGuid();
@@ -1424,7 +1433,7 @@ namespace BDSService
                 //Changes : Check approle.Isdeleted flag is flase in below query  
                 var obj = (from roles in db.Roles
                            join approle in db.Application_Role on roles.RoleId equals approle.RoleId
-                           where approle.ApplicationId == applicationid && roles.RoleId == roleid && approle.IsDeleted == false
+                           where approle.ApplicationId == applicationid && roles.RoleId == roleid && approle.IsDeleted == false && roles.ClientId == ClientId
                            select roles).FirstOrDefault();
 
                 //Modified By : Kalpesh Sharma
@@ -1432,7 +1441,7 @@ namespace BDSService
                 //Changes : Check approle.Isdeleted flag is flase in below query  
                 var objnew = (from roles in db.Roles
                               join approle in db.Application_Role on roles.RoleId equals approle.RoleId
-                              where approle.ApplicationId == applicationid && roles.RoleId == roleid && approle.IsDeleted == false
+                              where approle.ApplicationId == applicationid && roles.RoleId == roleid && approle.IsDeleted == false && roles.ClientId == ClientId
                               select approle).FirstOrDefault();
 
                 if (obj != null)
@@ -1452,6 +1461,9 @@ namespace BDSService
                     objrole.CreatedDate = DateTime.Now;
                     objrole.IsDeleted = false;
                     objrole.ColorCode = colorcode;
+
+                    //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+                    objrole.ClientId = ClientId;
 
                     db.Entry(objrole).State = EntityState.Added;
                     db.Roles.Add(objrole);
@@ -1578,19 +1590,19 @@ namespace BDSService
         /// </summary>
         /// <param name="role id">role id</param>
         /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
-        public int DeleteRoleAndReassign(Guid delroleid, Guid? reassignroleid, Guid applicationid, Guid modifiedBy)
+        public int DeleteRoleAndReassign(Guid delroleid, Guid? reassignroleid, Guid applicationid, Guid modifiedBy , Guid ClientId)
         {
             int retVal = 0;
             try
             {
                 var obj = (from roles in db.Roles
                            join approle in db.Application_Role on roles.RoleId equals approle.RoleId
-                           where approle.ApplicationId == applicationid && roles.RoleId == delroleid
+                           where approle.ApplicationId == applicationid && roles.RoleId == delroleid && roles.ClientId == ClientId
                            select roles).FirstOrDefault();
 
                 var objnew = (from roles in db.Roles
                               join approle in db.Application_Role on roles.RoleId equals approle.RoleId
-                              where approle.ApplicationId == applicationid && roles.RoleId == delroleid
+                              where approle.ApplicationId == applicationid && roles.RoleId == delroleid && roles.ClientId == ClientId
                               select approle).FirstOrDefault();
 
                 var objuser = db.User_Application.Where(userapp => userapp.ApplicationId == applicationid && userapp.RoleId == delroleid).ToList();
@@ -1708,7 +1720,9 @@ namespace BDSService
         /// </summary>
         /// <param name="role id">role id</param>
         /// <returns>Returns 1 if the operation is successful, 0 otherwise.</returns>
-        public int CopyRole(string copyroledesc, Guid originalid, Guid applicationid, Guid createdby)
+        
+        //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+        public int CopyRole(string copyroledesc, Guid originalid, Guid applicationid, Guid createdby , Guid ClientId)
         {
             int retVal = 0;
             try
@@ -1720,7 +1734,7 @@ namespace BDSService
                 //Changes : Check approle.Isdeleted flag is flase in below query  
                 var objrole = (from roles in db.Roles
                                join approle in db.Application_Role on roles.RoleId equals approle.RoleId
-                               where approle.ApplicationId == applicationid && roles.RoleId == originalid && approle.IsDeleted == false
+                               where approle.ApplicationId == applicationid && roles.RoleId == originalid && approle.IsDeleted == false && roles.ClientId == ClientId
                                select roles).FirstOrDefault();
 
                 Role objrolenew;
@@ -1739,6 +1753,8 @@ namespace BDSService
                     objrolenew.CreatedDate = DateTime.Now;
                     objrolenew.IsDeleted = false;
                     objrolenew.ColorCode = objrole.ColorCode;
+                    //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+                    objrolenew.ClientId = objrole.ClientId;
 
                     db.Entry(objrolenew).State = EntityState.Added;
                     db.Roles.Add(objrolenew);
@@ -2140,13 +2156,15 @@ namespace BDSService
             //Role logical deletion and Application id in Custom restrication
             //Changes : Check Isdeleted flag is flase in Application Role and User Application table  
 
+            //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+
             List<BDSEntities.UserHierarchy> lstUserHierarchy = (
                            from u in db.Users
                            join ua in db.User_Application on u.UserId equals ua.UserId
                            join r in db.Roles on ua.RoleId equals r.RoleId
                            join appRole in db.Application_Role on r.RoleId equals appRole.RoleId
                            where u.IsDeleted == false && u.ClientId == clientId && ua.ApplicationId == applicationId && ua.IsDeleted == false
-                           && appRole.ApplicationId == applicationId && appRole.IsDeleted == false
+                           && appRole.ApplicationId == applicationId && appRole.IsDeleted == false && r.ClientId == clientId
 
                             select new BDSEntities.UserHierarchy
                             {

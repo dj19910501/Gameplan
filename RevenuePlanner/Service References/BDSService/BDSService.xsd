@@ -103,6 +103,7 @@
   <xs:element name="Permission" nillable="true" type="tns:Permission" />
   <xs:complexType name="Role">
     <xs:sequence>
+      <xs:element minOccurs="0" name="ClientId" nillable="true" type="ser:guid" />
       <xs:element minOccurs="0" name="Code" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="ColorCode" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="CreatedBy" nillable="true" type="ser:guid" />

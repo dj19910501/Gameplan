@@ -62,8 +62,9 @@ namespace BDSService
         [OperationContract]
         int UpdateUser(BDSEntities.User user, Guid applicationId, Guid modifiedBy);
 
+        //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
         [OperationContract]
-        string GetUserRole(Guid id, Guid applicationId);
+        string GetUserRole(Guid id, Guid applicationId,Guid ClientId);
 
         [OperationContract]
         string GetApplicationName(Guid applicationId);
@@ -111,8 +112,9 @@ namespace BDSService
         List<string> GetUserActivityPermission(Guid userId, Guid applicationId);
 
         /// added by uday for #513
+        ///Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
         [OperationContract]
-        List<BDSEntities.Role> GetAllRoleList(Guid applicationid);
+        List<BDSEntities.Role> GetAllRoleList(Guid applicationid , Guid ClientId);
 
         /// added by uday for #513
         [OperationContract]
@@ -120,23 +122,25 @@ namespace BDSService
 
         /// added by uday for #513
         [OperationContract]
-        int DuplicateRoleCheck(BDSEntities.Role role, Guid applicationid);
+        int DuplicateRoleCheck(BDSEntities.Role role, Guid applicationid,Guid ClientID);
 
         /// added by uday for #513
         [OperationContract]
         List<BDSEntities.User> GetRoleMemberList(Guid applicationId, Guid roleid);
 
         /// added by uday for #513
+        ///Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
         [OperationContract]
-        int DeleteRoleAndReassign(Guid delroleid, Guid? reassignroleid, Guid applicationid, Guid modifiedBy);
+        int DeleteRoleAndReassign(Guid delroleid, Guid? reassignroleid, Guid applicationid, Guid modifiedBy,Guid ClientId);
+
+        /// added by uday for #513
+        //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+        [OperationContract]
+        int CreateRole(string roledesc, string permissionID, string colorcode, Guid applicationid, Guid createdby, Guid roleid, string delpermission,Guid ClientId);
 
         /// added by uday for #513
         [OperationContract]
-        int CreateRole(string roledesc, string permissionID, string colorcode, Guid applicationid, Guid createdby, Guid roleid, string delpermission);
-
-        /// added by uday for #513
-        [OperationContract]
-        int CopyRole(string copyroledesc, Guid originalid, Guid applicationid, Guid createdby);
+        int CopyRole(string copyroledesc, Guid originalid, Guid applicationid, Guid createdby , Guid ClientId);
 
         /// added by uday for #513
         [OperationContract]

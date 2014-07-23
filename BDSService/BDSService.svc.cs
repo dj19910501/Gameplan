@@ -109,10 +109,11 @@ namespace BDSService
             return obj.UpdateUser(user, applicationId, modifiedBy);
         }
 
-        public string GetUserRole(Guid id, Guid applicationId)
+        //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+        public string GetUserRole(Guid id, Guid applicationId , Guid ClientId)
         {
             BDSUserRepository obj = new BDSUserRepository();
-            return obj.GetUserRole(id, applicationId);
+            return obj.GetUserRole(id, applicationId, ClientId);
         }
 
         public string GetApplicationName(Guid applicationId)
@@ -212,10 +213,11 @@ namespace BDSService
         }
 
         /// added by uday for #513
-        public int DuplicateRoleCheck(BDSEntities.Role role, Guid applicationId)
+        //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+        public int DuplicateRoleCheck(BDSEntities.Role role, Guid applicationId,Guid ClientID)
         {
             BDSUserRepository obj = new BDSUserRepository();
-            return obj.DuplicateRoleCheck(role, applicationId);
+            return obj.DuplicateRoleCheck(role, applicationId, ClientID);
         }
 
         /// added by uday for #513
@@ -226,24 +228,26 @@ namespace BDSService
         }
 
         /// added by uday for #513
-        public int DeleteRoleAndReassign(Guid delroleid, Guid? reassignroleid, Guid applicationid, Guid modifiedBy)
+        /// Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+        public int DeleteRoleAndReassign(Guid delroleid, Guid? reassignroleid, Guid applicationid, Guid modifiedBy , Guid ClientId)
         {
             BDSUserRepository obj = new BDSUserRepository();
-            return obj.DeleteRoleAndReassign(delroleid, reassignroleid, applicationid, modifiedBy);
+            return obj.DeleteRoleAndReassign(delroleid, reassignroleid, applicationid, modifiedBy, ClientId);
         }
 
         /// added by uday for #513
-        public int CreateRole(string roledesc, string permissionID, string colorcode, Guid applicationid, Guid createdby, Guid roleid, string delpermission)
+        ///Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+        public int CreateRole(string roledesc, string permissionID, string colorcode, Guid applicationid, Guid createdby, Guid roleid, string delpermission , Guid ClientId)
         {
             BDSUserRepository obj = new BDSUserRepository();
-            return obj.CreateRole(roledesc, permissionID, colorcode, applicationid, createdby, roleid, delpermission);
+            return obj.CreateRole(roledesc, permissionID, colorcode, applicationid, createdby, roleid, delpermission,ClientId);
         }
 
         /// added by uday for #513
-        public int CopyRole(string copyroledesc, Guid originalid, Guid applicationid, Guid createdby)
+        public int CopyRole(string copyroledesc, Guid originalid, Guid applicationid, Guid createdby,Guid ClientId)
         {
             BDSUserRepository obj = new BDSUserRepository();
-            return obj.CopyRole(copyroledesc, originalid, applicationid, createdby);
+            return obj.CopyRole(copyroledesc, originalid, applicationid, createdby, ClientId);
         }
 
         /// added by uday for #513
@@ -254,10 +258,11 @@ namespace BDSService
         }
 
         /// added by uday for #513
-        public List<BDSEntities.Role> GetAllRoleList(Guid applicationid)
+        //Added By : Kalpesh Sharam bifurcated Role by Client ID - 07-22-2014 
+        public List<BDSEntities.Role> GetAllRoleList(Guid applicationid , Guid ClientId)
         {
             BDSUserRepository obj = new BDSUserRepository();
-            return obj.GetAllRoleList(applicationid);
+            return obj.GetAllRoleList(applicationid, ClientId);
         }
 
         public List<BDSEntities.ApplicationActivity> GetAllApplicationActivity(Guid applicationId)

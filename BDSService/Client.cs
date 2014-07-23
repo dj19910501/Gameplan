@@ -17,6 +17,7 @@ namespace BDSService
         public Client()
         {
             this.Users = new HashSet<User>();
+            this.Roles = new HashSet<Role>();
         }
     
         public System.Guid ClientId { get; set; }
@@ -36,5 +37,6 @@ namespace BDSService
         public Nullable<System.Guid> ModifiedBy { get; set; }
     
         public virtual ICollection<User> Users { get; set; }
+        public virtual ICollection<Role> Roles { get; set; }
     }
 }

@@ -41,6 +41,7 @@
         <AssociationConnector Association="BDSAuthModel.FK_User_Activity_Permission_User1" />
         <AssociationConnector Association="BDSAuthModel.FK_User_Application_User" />
         <AssociationConnector Association="BDSAuthModel.FK_User_User" />
+        <AssociationConnector Association="BDSAuthModel.FK_Role_Client" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
