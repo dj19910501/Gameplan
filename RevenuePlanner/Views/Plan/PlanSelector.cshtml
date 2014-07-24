@@ -341,8 +341,18 @@
             dataType: "json",
             success: function (r) {
                 baselinesModels = r;
-                fillBaselineTable();
-                TruncateTitle();
+                //Added By : Kalpesh Sharma Functional Review Point 07/24/2014
+                if (baselinesModels.lstPlanSelector != "") {
+                    $('#table_baseline > tbody').html("");
+                    fillBaselineTable();
+                    TruncateTitle();
+                }
+                else {
+                    $('#table_baseline > tbody').html("");
+                    var $baselineTable = $('#table_baseline > tbody');
+                    var $html = "@Common.objCached.NoPlanFoundPlanSelector";
+                    $baselineTable.append($html);
+                }
                 myApp.hidePleaseWait();
             }
         });

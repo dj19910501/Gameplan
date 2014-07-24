@@ -1964,6 +1964,21 @@ namespace RevenuePlanner.Helpers
             }
         }
 
+        //Added By : Kalpesh Sharma Functional Review Point
+        private string _NoPlanFoundPlanSelector;
+        public string NoPlanFoundPlanSelector
+        {
+            get
+            {
+                return _NoPlanFoundPlanSelector;
+            }
+            set
+            {
+                _NoPlanFoundPlanSelector = value;
+            }
+        }
+
+
 
         #endregion
 
@@ -2536,6 +2551,11 @@ namespace RevenuePlanner.Helpers
                                         //Added By : Kalpesh Sharma Functional Review Point #75
                                         case "NoActiveModelFound":
                                             _NoActiveModelFound = strMsgValue;
+                                            break;
+
+                                        //Added By : Kalpesh Sharma Functional Review Point #75
+                                        case "NoPlanFoundPlanSelector":
+                                            _NoPlanFoundPlanSelector = strMsgValue;
                                             break;
 
                                     }
