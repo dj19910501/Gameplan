@@ -7473,7 +7473,7 @@ background: linear-gradient(0deg, rgb(236, 236, 236) 4%, rgb(254, 254, 254) 98%)
 .accordion-campaign .tactic-level a.accordion-toggle.chevron-right, .accordion-campaign .tactic-level a.accordion-toggle.chevron-down{background-position: 69px 0 !important;}
 a:hover, a:focus{text-decoration: none !important;}
 .tactic-level .accordion-inner{background:#E6E6E6;}
-.lineitem-level > .accordion-inner{border-bottom:none !important;}
+.lineitem-level > .accordion-inner{border-bottom:none !important;padding-left:0 !important;}
 
 
 /* End added by dharmraj #567: Budget allocation for campaign */

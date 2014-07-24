@@ -65,10 +65,10 @@ namespace RevenuePlanner.Models
         public DbSet<Plan_Campaign_Program_Budget> Plan_Campaign_Program_Budget { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Actual> Plan_Campaign_Program_Tactic_Actual { get; set; }
-        public DbSet<Plan_Campaign_Program_Tactic_Budget> Plan_Campaign_Program_Tactic_Budget { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Comment> Plan_Campaign_Program_Tactic_Comment { get; set; }
+        public DbSet<Plan_Campaign_Program_Tactic_Cost> Plan_Campaign_Program_Tactic_Cost { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_LineItem> Plan_Campaign_Program_Tactic_LineItem { get; set; }
-        public DbSet<Plan_Campaign_Program_Tactic_LineItem_Budget> Plan_Campaign_Program_Tactic_LineItem_Budget { get; set; }
+        public DbSet<Plan_Campaign_Program_Tactic_LineItem_Cost> Plan_Campaign_Program_Tactic_LineItem_Cost { get; set; }
         public DbSet<Plan_Improvement_Campaign> Plan_Improvement_Campaign { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program> Plan_Improvement_Campaign_Program { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program_Tactic> Plan_Improvement_Campaign_Program_Tactic { get; set; }
@@ -91,35 +91,6 @@ namespace RevenuePlanner.Models
                 new ObjectParameter("PlanTacticId", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Plan_Campaign_Program_Tactic_ActualDelete", planTacticIdParameter, returnValue);
-        }
-    
-        public virtual int Plan_Task_Delete(Nullable<int> planCampaignId, Nullable<int> planProgramId, Nullable<int> planTacticId, Nullable<bool> isDelete, Nullable<System.DateTime> modifiedDate, Nullable<System.Guid> modifiedBy, ObjectParameter returnValue)
-        {
-            var planCampaignIdParameter = planCampaignId.HasValue ?
-                new ObjectParameter("PlanCampaignId", planCampaignId) :
-                new ObjectParameter("PlanCampaignId", typeof(int));
-    
-            var planProgramIdParameter = planProgramId.HasValue ?
-                new ObjectParameter("PlanProgramId", planProgramId) :
-                new ObjectParameter("PlanProgramId", typeof(int));
-    
-            var planTacticIdParameter = planTacticId.HasValue ?
-                new ObjectParameter("PlanTacticId", planTacticId) :
-                new ObjectParameter("PlanTacticId", typeof(int));
-    
-            var isDeleteParameter = isDelete.HasValue ?
-                new ObjectParameter("IsDelete", isDelete) :
-                new ObjectParameter("IsDelete", typeof(bool));
-    
-            var modifiedDateParameter = modifiedDate.HasValue ?
-                new ObjectParameter("ModifiedDate", modifiedDate) :
-                new ObjectParameter("ModifiedDate", typeof(System.DateTime));
-    
-            var modifiedByParameter = modifiedBy.HasValue ?
-                new ObjectParameter("ModifiedBy", modifiedBy) :
-                new ObjectParameter("ModifiedBy", typeof(System.Guid));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Plan_Task_Delete", planCampaignIdParameter, planProgramIdParameter, planTacticIdParameter, isDeleteParameter, modifiedDateParameter, modifiedByParameter, returnValue);
         }
     
         public virtual int PlanDuplicate(Nullable<int> planId, string planStatus, string tacticStatus, Nullable<System.DateTime> createdDate, Nullable<System.Guid> createdBy, string suffix, string copyClone, Nullable<int> id, ObjectParameter returnValue)
@@ -178,6 +149,39 @@ namespace RevenuePlanner.Models
                 new ObjectParameter("CreatedBy", typeof(System.Guid));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SaveModelInboundOutboundEvent", oldModelIdParameter, newModelIdParameter, createdDateParameter, createdByParameter, returnValue);
+        }
+    
+        public virtual int Plan_Task_Delete(Nullable<int> planCampaignId, Nullable<int> planProgramId, Nullable<int> planTacticId, Nullable<bool> isDelete, Nullable<System.DateTime> modifiedDate, Nullable<System.Guid> modifiedBy, ObjectParameter returnValue, Nullable<int> planLineItemId)
+        {
+            var planCampaignIdParameter = planCampaignId.HasValue ?
+                new ObjectParameter("PlanCampaignId", planCampaignId) :
+                new ObjectParameter("PlanCampaignId", typeof(int));
+    
+            var planProgramIdParameter = planProgramId.HasValue ?
+                new ObjectParameter("PlanProgramId", planProgramId) :
+                new ObjectParameter("PlanProgramId", typeof(int));
+    
+            var planTacticIdParameter = planTacticId.HasValue ?
+                new ObjectParameter("PlanTacticId", planTacticId) :
+                new ObjectParameter("PlanTacticId", typeof(int));
+    
+            var isDeleteParameter = isDelete.HasValue ?
+                new ObjectParameter("IsDelete", isDelete) :
+                new ObjectParameter("IsDelete", typeof(bool));
+    
+            var modifiedDateParameter = modifiedDate.HasValue ?
+                new ObjectParameter("ModifiedDate", modifiedDate) :
+                new ObjectParameter("ModifiedDate", typeof(System.DateTime));
+    
+            var modifiedByParameter = modifiedBy.HasValue ?
+                new ObjectParameter("ModifiedBy", modifiedBy) :
+                new ObjectParameter("ModifiedBy", typeof(System.Guid));
+    
+            var planLineItemIdParameter = planLineItemId.HasValue ?
+                new ObjectParameter("PlanLineItemId", planLineItemId) :
+                new ObjectParameter("PlanLineItemId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Plan_Task_Delete", planCampaignIdParameter, planProgramIdParameter, planTacticIdParameter, isDeleteParameter, modifiedDateParameter, modifiedByParameter, returnValue, planLineItemIdParameter);
         }
     }
 }

@@ -12,15 +12,15 @@ namespace RevenuePlanner.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Plan_Campaign_Program_Tactic_LineItem_Budget
+    public partial class Plan_Campaign_Program_Tactic_Cost
     {
-        public int PlanLineItemBudgetId { get; set; }
-        public int PlanLineItemId { get; set; }
+        public int PlanTacticBudgetId { get; set; }
+        public int PlanTacticId { get; set; }
         public string Period { get; set; }
         public double Value { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
     
-        public virtual Plan_Campaign_Program_Tactic_LineItem Plan_Campaign_Program_Tactic_LineItem { get; set; }
+        public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic { get; set; }
     }
 }

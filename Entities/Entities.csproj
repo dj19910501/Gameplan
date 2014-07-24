@@ -172,16 +172,16 @@
     <Compile Include="Models\Plan_Campaign_Program_Tactic_Actual.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Plan_Campaign_Program_Tactic_Budget.cs">
+    <Compile Include="Models\Plan_Campaign_Program_Tactic_Comment.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Plan_Campaign_Program_Tactic_Comment.cs">
+    <Compile Include="Models\Plan_Campaign_Program_Tactic_Cost.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Plan_Campaign_Program_Tactic_LineItem.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Plan_Campaign_Program_Tactic_LineItem_Budget.cs">
+    <Compile Include="Models\Plan_Campaign_Program_Tactic_LineItem_Cost.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Plan_Improvement_Campaign.cs">

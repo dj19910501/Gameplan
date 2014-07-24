@@ -77,9 +77,18 @@
 <script>
     var nlform = new NLForm(document.getElementById('nl-form'));
 </script>
+ <div class=" margin5 padding15 element-disable">
+						<div class="gray-title-steps source-sans-probold cf">
+							<span class="pull-left width60">2. Allocate Monthly Budgets</span>		
+							<a href="#" class="btn-gray" onclick="EditPlan();">Back</a>
+												
+						</div>
+						<!--Second Accordion-->
+						
+					</div>
 <div class="light-blue-background close-icon margin5 padding15 padding-bottom0">
     <div class="gray-title-steps source-sans-probold cf">
-        <span class="pull-left width55">2.Marketing Activities</span>
+        <span class="pull-left width55">3.Marketing Activities</span>
         <span class="pull-right width100px text-right margin-right50">Programs</span>
         <span class="pull-right width150px text-right tipsyclass">Cost</span>
         <span class="pull-right width100px text-right ">@Html.LabelForMQL("MQL")</span>
@@ -101,7 +110,7 @@
 <div class="stripe-border improvement-area margin5">
 <div class="light-blue-background close-icon  padding15 padding-bottom0">
     <div class="gray-title-steps source-sans-probold cf">
-        <span class="pull-left width55">3.Improvement Activities</span>
+        <span class="pull-left width55">4.Improvement Activities</span>
         <span class="pull-right width100px text-right margin-right50">Programs</span>
         <span class="pull-right width150px text-right">Cost</span>
         <span class="pull-right width100px text-right">@Html.LabelForMQL("MQL")</span>
@@ -531,11 +540,12 @@
             e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
         });
 
-        //Modified by Dharmraj 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
-        $(document).on("click", "#divTactic", function (e) {
+        //Modified by Mitesh 24July2014 for pl ticket 619 
+        $(document).on("click", ".tactictitle", function (e) {
             e.stopPropagation();
             $.ajaxSetup({ cache: false });
-            var idTactic = $(this).attr("index");
+            var idTactic = $(this).parent().attr("index");
+           // alert(idTactic);
             if (idTactic == 0) {
                 $('div[index=0]').removeClass('1');
                 $(this).addClass('1');
@@ -573,7 +583,43 @@
             $("#slidepanel").css("right", "0px");
             myApp.hidePleaseWait();
         }
+        /*Added by Mitesh Vaishnav */
+        $(document).on("click", "#divlineitem", function (e) {
+            e.stopPropagation();
+            $.ajaxSetup({ cache: false });
+            var idLineItem = $(this).attr("index");
+            displayConfirmCommon('lineCommonClick(' + idLineItem + ');');
+        });
+        function lineCommonClick(id) {
+            $("#slidepanel").css("display", "block");
 
+            var url = '@Url.Content("~/Plan/EditLineItem")';
+            $('#slidepanel-container').load(url + '?id=' + id + '&RedirectType=' + Assortment, AssignDefaultValue);
+
+            $("#slidepanel").css("right", "0px");
+            myApp.hidePleaseWait();
+        };
+        $(document).on("click", "#createlineitem", function (e) {
+            var idtactic = $(this).parent().attr('data-id-tactic');
+           // alert(idtactic);
+            e.stopPropagation();
+            $.ajaxSetup({ cache: false });
+            $("#slidepanel").css("display", "block");
+            var url = '@Url.Content("~/Plan/createLine")';
+            $('#slidepanel-container').load(url + '?id=' + idtactic, AssignDefaultValue);
+            $("#slidepanel").css("right", "0px");
+            myApp.hidePleaseWait();
+            e.preventDefault();
+        });
+        $(document).on('click', '#delLineItem', function (e) {
+
+            e.stopPropagation();
+            var idLineItem = $(this).parent().attr('index');
+            displayconfirmForDeleteEvent(idLineItem, 'lineitem');
+            e.stopPropagation();
+        });
+        
+        /*End: Added by Mitesh Vaishnav */
         //Dharmraj Start 8July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
         //function displayconfirmForTacticEvent(id) {
         //    if (isDataChanged()) {
@@ -637,7 +683,7 @@
         });
         
         // Change by Dharmraj to handle Warning of data loss during program deletion, #547
-        $(document).on('click', '.program-level a.accordion-toggle .delete-program', function (e) {
+        $(document).on('click', '#delprogram', function (e) {
             //CheckUserSession(".program-level a.accordion-toggle .delete-program", true);
             //if (reason == 'user') {
             //    return false;
@@ -683,7 +729,7 @@
           changed by : Nirav Shah on 13 feb 2014
         */
         // Change by Dharmraj to handle Warning of data loss during tactic deletion, #547
-        $(document).on('click', '.tactic-level #divTactic .delete-program', function (e) {
+        $(document).on('click', '#delTactic', function (e) {
             //CheckUserSession(".tactic-level #divTactic .delete-program", true);
             //if (reason == 'user') {
             //    return false;
@@ -755,6 +801,42 @@
 
         //Dharmraj Start 8July2014 Common function to handle tactic/program/campaign delete event
         function deleteCommonClick(id, type) {
+            if (type == "lineitem") {
+                //alert("tactic");
+                var uId = $(window).attr('name');
+                if (confirm('@Common.objCached.ConfirmationForDeleteTactic')) {
+                    //var idTactic = $(this).parent().attr('index');
+                    var idTactic = id;
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/Plan/DeleteLineItem")',
+                        data: {
+                            ID: idTactic,
+                            RedirectType: false, UserId: uId
+                        },
+                        success: function (data) {
+                            if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                                window.location = '@Url.Content("~/Login/Index")';
+                            }
+                            else {
+                                if (data.redirect) {
+                                    window.location.href = data.redirect;
+                                    return;
+                                }
+                                if (data.errormsg) {
+                                    alert(data.errormsg);
+                                    return;
+                                }
+                            }
+                        }
+                    });
+                    $("#slidepanel").css("display", "none");
+                }
+                else {
+                    $("#slidepanel").css("display", "none");
+                    return false;
+                }
+            }
             if (type == "tactic") {
                 //alert("tactic");
                 var uId = $(window).attr('name');
@@ -1289,7 +1371,7 @@
                         }
                         $html += '" data-toggle="collapse" href="#collapseTwo' + _programs[i].id + '">';
                         if (_programs[i].isOwner == 0) {
-                            $html += '<span class="delete-program width5"></span>';
+                            $html += '<span class="delete-program width5" id="delprogram"></span>';
                         }
                         $html += '<span class="pull-left width55"><span class="gray-bg-text campaign-name campaign-name-span tipsyclassTitle">' + _programs[i].title + '</span></span>' +
                          '<span class="pull-right width50px"><div class="add-icon program" ></div></span>' +
@@ -1325,23 +1407,62 @@
                                                 '</div>' +
                                             '</div>';
                 */
-                                    $html += '<div id="' + _programs[i].tactics[k].id + '" class="accordion-body collapse in">' +
-                                            '<div id="divTactic" class="accordion-inner tactic CursorHand" index="' + _programs[i].tactics[k].id + '" data-slidepanel="panel">';
+                                    $html += '<div id="' + _programs[i].tactics[k].id + '" class="accordion-header">' +
+
+                                             '<a id="program_' + _programs[i].tactics[k].id + '" index="' + _programs[i].tactics[k].id + '" data-id-campaing="' + _programs[i].id + '" data-id-tactic="' + _programs[i].tactics[k].id + '" class="background-position30 accordion-toggle font-black chevron-right" data-toggle="collapse" href="#collapseThree' + _programs[i].tactics[k].id + '">';
                                     if (_programs[i].tactics[k].isOwner == 0) {
                                         $html += '<span class="delete-program width5" id="delTactic"></span>';
                                     }
-                                    $html += '<span class="underline tipsyclassTitle">' + _programs[i].tactics[k].title + '</span>' +
+                                    $html += '<span class="underline tipsyclassTitle tactictitle">' + _programs[i].tactics[k].title + '</span>' +
                                                     '<span class="pull-right width50px text-right font-black">&nbsp;</span>' +
                                               '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
                                               '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].tactics[k].cost.toString(), false) + '</span>' +
                                               '<span class="pull-right width100px text-right font-black tipsyclass">' + displayTacticMQL(_programs[i].tactics[k].mqls.toString()) + '</span>' +
+                                              '<span class="pull-right btn-gray" id="createlineitem">Add Line Item</span>' +
+                                                '</a>' +
+
                                                 '</div>' +
+
+                                    /*Line item area */
+                                    '<div id="collapseThree' + _programs[i].tactics[k].id + '" class="accordion-body collapse lineitem-level "' + 'program_' + _programs[i].tactics[k].id + '>' +
+                                  '<div class="accordion-inner">' +
+                                      '<div class="accordion-group">';
+                                    /*  alert(_programs[i].tactics[k].lineitems);*/
+                                    if (typeof _programs[i].tactics[k].lineitems != 'undefined') {
+
+                                        if (_programs[i].tactics[k].lineitems.length > 0) {
+                                            for (z in _programs[i].tactics[k].lineitems) {
+                                                $html += '<div id="lineitem_' + _programs[i].tactics[k].lineitems[z].id + '" class="accordion-body collapse in lineitem">' +
+                                                  '<div id="divlineitem" class="accordion-inner" index="' + _programs[i].tactics[k].lineitems[z].id + '">' +
+                                                            '<span class="delete-program width5 " id="delLineItem"></span>' +
+                                                            '<span class="underline">' + _programs[i].tactics[k].lineitems[z].title + '</span>' +
+                                                            '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
+                                                            '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
+                                                            '<span class="pull-right width100px text-right font-black">$' + _programs[i].tactics[k].lineitems[z].cost + '</span>' +
+                                                          '<span class="pull-right text-right font-black">-</span>' +
+                                                  '</div>' +
                                             '</div>';
-                              
+                                            }
+
+                                        }
+                                        else {
+                                            $html += '<div class="accordion-body collapse in ">' +
+                                            '<div class="accordion-inner tactic" grandparent="' + _id + '" parent="' + _programs[i].id + '" index="0" data-slidepanel="panel">' +
+                                                      '<span class="underline">Select Tactic</span>' +
+                                            '</div>' +
+                                          '</div>';
+                                        }
+
+                                    }
+
+                                    $html += '</div>' +
+                             '</div>' +
+                     '</div>';
+
                                 }
                             }
-                            $html += '<div class="accordion-body collapse in" data-id-program="' + pid + '" >' +
-                                        '<div id="divTactic" class="accordion-inner CursorHand" index="0">' +
+                            $html += '<div class="accordion-body collapse in" data-id-program="' + pid + '" index="0" >' +
+                                        '<div id="divTactic" class="accordion-inner CursorHand tactictitle" index="0">' +
                                             '<span class="underline">Select Tactic</span>' +
                                         '</div>' +
                                     '</div>';

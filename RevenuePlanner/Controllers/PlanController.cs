@@ -1744,6 +1744,16 @@ namespace RevenuePlanner.Controllers
                          changed by : Nirav Shah on 13 feb 2014*/
                         // Added By Bhavesh : 25-June-2014 : #538 Custom Restriction
                         isOwner = Sessions.User.UserId == pcptj.CreatedBy ? (Common.GetRightsForTactic(lstUserCustomRestriction,pcptj.VerticalId,pcptj.GeographyId) ? 0 : 1) : 1,
+                        //Added by Mitesh Vaishnav for pl ticket 619
+                        lineitems = (db.Plan_Campaign_Program_Tactic_LineItem.ToList().Where(pcptl => pcptl.PlanTacticId.Equals(pcptj.PlanTacticId) && pcptl.IsDeleted.Equals(false))).Select(pcptlj => new
+                        {
+                            id = pcptlj.PlanLineItemId,
+                            type = pcptlj.LineItemTypeId,
+                            title = pcptlj.Title,
+                            cost = pcptlj.Cost
+
+                        }).Select(pcptlj => pcptlj).Distinct().OrderBy(pcptlj => pcptlj.id)
+                        //End :Added by Mitesh Vaishnav for pl ticket 619
                     }).Select(pcptj => pcptj).Distinct().OrderBy(pcptj => pcptj.id)
                 }).Select(pcpj => pcpj).Distinct().OrderBy(pcpj => pcpj.id)
             }).Select(p => p).Distinct().OrderBy(p => p.id);
@@ -2338,7 +2348,8 @@ namespace RevenuePlanner.Controllers
                                             true,
                                             DateTime.Now,
                                             Sessions.User.UserId,
-                                            parameterReturnValue);
+                                            parameterReturnValue,
+                                            null);
                         int returnValue;
                         int cid = 0;
                         int pid = 0;
@@ -2836,7 +2847,8 @@ namespace RevenuePlanner.Controllers
                                             true,
                                             DateTime.Now,
                                             Sessions.User.UserId,
-                                            parameterReturnValue);
+                                            parameterReturnValue,
+                                            null);
                         int returnValue;
                         int cid = 0;
                         int pid = 0;
@@ -3468,7 +3480,8 @@ namespace RevenuePlanner.Controllers
                                             true,
                                             DateTime.Now,
                                             Sessions.User.UserId,
-                                            parameterReturnValue);
+                                            parameterReturnValue,
+                                            null);
                         int returnValue;
                         int cid = 0;
                         int pid = 0;
@@ -5850,5 +5863,93 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #endregion
+        //Added by Mitesh Vaishnav for PL ticket 619
+ public PartialViewResult createLine(int id = 0)
+        {
+            return PartialView("LineAssortment", null);
+        }
+        public PartialViewResult EditLineItem(int id = 0)
+        {
+            return PartialView("LineAssortment", null);
+        }
+        public ActionResult DeleteLineItem(int id = 0, bool RedirectType = false, string closedTask = null, string UserId = "")
+        {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            try
+            {
+                using (MRPEntities mrp = new MRPEntities())
+                {
+                    using (var scope = new TransactionScope())
+                    {
+                        ObjectParameter parameterReturnValue = new ObjectParameter("ReturnValue", typeof(int));
+                        db.Plan_Task_Delete(null,
+                                            null,
+                                            null,
+                                            true,
+                                            DateTime.Now,
+                                            Sessions.User.UserId,
+                                            parameterReturnValue,
+                                            id);
+                        int returnValue;
+                        int cid = 0;
+                        int pid = 0;
+                        int tid = 0;
+                        string Title = "";
+                        Int32.TryParse(parameterReturnValue.Value.ToString(), out returnValue);
+                        if (returnValue != 0)
+                        {
+                            Plan_Campaign_Program_Tactic_LineItem pcptl = db.Plan_Campaign_Program_Tactic_LineItem.Where(p => p.PlanLineItemId == id).SingleOrDefault();
+                            cid = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId;
+                            pid = pcptl.Plan_Campaign_Program_Tactic.PlanProgramId;
+                            tid = pcptl.PlanTacticId;
+                            Title = pcptl.Title;
+                            returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcptl.PlanLineItemId, pcptl.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
+                            if (returnValue >= 1)
+                            {
+                                //TacticValueCalculate(pcpt.PlanProgramId); // Modified by Dharmraj for PL #440
+
+                                //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+                                var planProgramId = pcptl.Plan_Campaign_Program_Tactic.PlanProgramId;
+                                Common.ChangeProgramStatus(planProgramId);
+                                var PlanCampaignId = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == pcptl.Plan_Campaign_Program_Tactic.PlanProgramId).Select(a => a.PlanCampaignId).Single();
+                                Common.ChangeCampaignStatus(PlanCampaignId);
+                                //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+
+                                scope.Complete();
+                                TempData["SuccessMessageDeletedPlan"] = string.Format("Line Item {0} deleted successfully", Title);
+
+
+                                if (RedirectType)
+                                {
+                                    if (closedTask != null)
+                                    {
+                                        TempData["ClosedTask"] = closedTask;
+                                    }
+                                    return Json(new { redirect = Url.Action("ApplyToCalendar") });
+                                }
+                                else
+                                {
+                                    return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            return Json(new { });
+        }
+        //End :Added by Mitesh Vaishnav for PL ticket 619
     }
 }

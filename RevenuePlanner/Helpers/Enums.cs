@@ -512,6 +512,8 @@ namespace RevenuePlanner.Helpers
             updatedto,
             [Description("improvement tactic")]
             improvetactic,
+            [Description("line item")]
+            lineitem,
 
         }
         #endregion

@@ -16,7 +16,7 @@ namespace RevenuePlanner.Models
     {
         public Plan_Campaign_Program_Tactic_LineItem()
         {
-            this.Plan_Campaign_Program_Tactic_LineItem_Budget = new HashSet<Plan_Campaign_Program_Tactic_LineItem_Budget>();
+            this.Plan_Campaign_Program_Tactic_LineItem_Cost = new HashSet<Plan_Campaign_Program_Tactic_LineItem_Cost>();
         }
     
         public int PlanLineItemId { get; set; }
@@ -35,6 +35,6 @@ namespace RevenuePlanner.Models
     
         public virtual LineItemType LineItemType { get; set; }
         public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic { get; set; }
-        public virtual ICollection<Plan_Campaign_Program_Tactic_LineItem_Budget> Plan_Campaign_Program_Tactic_LineItem_Budget { get; set; }
+        public virtual ICollection<Plan_Campaign_Program_Tactic_LineItem_Cost> Plan_Campaign_Program_Tactic_LineItem_Cost { get; set; }
     }
 }

@@ -1503,8 +1503,10 @@ a {
 }
 
 .close-icon .tactic-level div.accordion-body > div {
-    padding-left: 25px !important;
+    padding-left: 25px;
 }
+.tactic-level > .accordion-inner > .accordion-group > .accordion-header a {padding-left:85px !important; }
+.tactic-level .accordion-inner span.underline {padding-left:10px !important;}
 /* end changes */
 
 /* Pencil icon on Tactic/Program/Campaign popup */
