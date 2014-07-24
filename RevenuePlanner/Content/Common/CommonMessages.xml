@@ -669,6 +669,13 @@
     <Name>NoActiveModelFound</Name>
     <value>There is no any active model.</value>
   </Field>
-  
-  
+
+
+
+  <!--Added By : Kalpesh Sharma Functional Review Point-->
+  <Field>
+    <Name>NoPlanFoundPlanSelector</Name>
+    <value>There is no any active plan.</value>
+  </Field>
+
 </Messages>
