@@ -1976,6 +1976,31 @@ namespace RevenuePlanner.Helpers
             {
                 _NoPlanFoundPlanSelector = value;
             }
+        }	 
+
+private string _CannotAllocateMorethanRemainingBudgeted;
+        public string CannotAllocateMorethanRemainingBudgeted
+        {
+            get { return _CannotAllocateMorethanRemainingBudgeted; }
+            set { _CannotAllocateMorethanRemainingBudgeted = value; }
+        }
+        private string _CannotSetBudgetLessthanAllocated;
+        public string CannotSetBudgetLessthanAllocated
+        {
+            get { return _CannotSetBudgetLessthanAllocated; }
+            set { _CannotSetBudgetLessthanAllocated = value; }
+        }
+        private string _CannotAllocateMorehanBudgeted;
+        public string CannotAllocateMorehanBudgeted
+        {
+            get { return _CannotAllocateMorehanBudgeted; }
+            set { _CannotAllocateMorehanBudgeted = value; }
+        }
+        private string _CampaignBudgetIsLowerthanTotalAllocatedPrograms;
+        public string CampaignBudgetIsLowerthanTotalAllocatedPrograms
+        {
+            get { return _CampaignBudgetIsLowerthanTotalAllocatedPrograms; }
+            set { _CampaignBudgetIsLowerthanTotalAllocatedPrograms = value; }
         }
 
 
@@ -2558,6 +2583,20 @@ namespace RevenuePlanner.Helpers
                                             _NoPlanFoundPlanSelector = strMsgValue;
                                             break;
 
+										//Start Added By Dharmraj #567 : Budget allocation for campaign
+                                        case "CannotAllocateMorethanRemainingBudgeted":
+                                            _CannotAllocateMorethanRemainingBudgeted = strMsgValue;
+                                            break;
+                                        case "CannotSetBudgetLessthanAllocated":
+                                            _CannotSetBudgetLessthanAllocated = strMsgValue;
+                                            break;
+                                        case "CannotAllocateMorehanBudgeted":
+                                            _CannotAllocateMorehanBudgeted = strMsgValue;
+                                            break;
+                                        case "CampaignBudgetIsLowerthanTotalAllocatedPrograms":
+                                            _CampaignBudgetIsLowerthanTotalAllocatedPrograms = strMsgValue;
+                                            break;
+                                        //End Added By Dharmraj #567 : Budget allocation for campaign
                                     }
                                 }
                                 i = i + 1;

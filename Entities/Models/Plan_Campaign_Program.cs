@@ -18,6 +18,7 @@ namespace RevenuePlanner.Models
         {
             this.Plan_Campaign_Program_Tactic_Comment = new HashSet<Plan_Campaign_Program_Tactic_Comment>();
             this.Tactic_Share = new HashSet<Tactic_Share>();
+            this.Plan_Campaign_Program_Budget = new HashSet<Plan_Campaign_Program_Budget>();
             this.Plan_Campaign_Program_Tactic = new HashSet<Plan_Campaign_Program_Tactic>();
         }
     
@@ -39,12 +40,14 @@ namespace RevenuePlanner.Models
         public bool IsDeployedToIntegration { get; set; }
         public string IntegrationInstanceProgramId { get; set; }
         public Nullable<System.DateTime> LastSyncDate { get; set; }
+        public double ProgramBudget { get; set; }
     
         public virtual Audience Audience { get; set; }
         public virtual Geography Geography { get; set; }
         public virtual Plan_Campaign Plan_Campaign { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic_Comment> Plan_Campaign_Program_Tactic_Comment { get; set; }
         public virtual ICollection<Tactic_Share> Tactic_Share { get; set; }
+        public virtual ICollection<Plan_Campaign_Program_Budget> Plan_Campaign_Program_Budget { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
         public virtual Vertical Vertical { get; set; }
     }

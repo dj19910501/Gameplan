@@ -38,6 +38,7 @@
           </EntitySet>
           <EntitySet Name="IntegrationType" EntityType="MRPModel.Store.IntegrationType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationTypeAttribute" EntityType="MRPModel.Store.IntegrationTypeAttribute" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="LineItemType" EntityType="MRPModel.Store.LineItemType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="MasterTacticType" EntityType="MRPModel.Store.MasterTacticType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Model" EntityType="MRPModel.Store.Model" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Model_Audience_Event" EntityType="MRPModel.Store.Model_Audience_Event" store:Type="Tables" Schema="dbo" />
@@ -48,11 +49,17 @@
           <EntitySet Name="ModelReview" EntityType="MRPModel.Store.ModelReview" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Notification" EntityType="MRPModel.Store.Notification" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Plan" EntityType="MRPModel.Store.Plan" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Plan_Budget" EntityType="MRPModel.Store.Plan_Budget" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Plan_Campaign" EntityType="MRPModel.Store.Plan_Campaign" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Plan_Campaign_Budget" EntityType="MRPModel.Store.Plan_Campaign_Budget" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Plan_Campaign_Program" EntityType="MRPModel.Store.Plan_Campaign_Program" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Plan_Campaign_Program_Budget" EntityType="MRPModel.Store.Plan_Campaign_Program_Budget" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Plan_Campaign_Program_Tactic" EntityType="MRPModel.Store.Plan_Campaign_Program_Tactic" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Plan_Campaign_Program_Tactic_Actual" EntityType="MRPModel.Store.Plan_Campaign_Program_Tactic_Actual" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Plan_Campaign_Program_Tactic_Budget" EntityType="MRPModel.Store.Plan_Campaign_Program_Tactic_Budget" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Plan_Campaign_Program_Tactic_Comment" EntityType="MRPModel.Store.Plan_Campaign_Program_Tactic_Comment" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Plan_Campaign_Program_Tactic_LineItem" EntityType="MRPModel.Store.Plan_Campaign_Program_Tactic_LineItem" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Plan_Campaign_Program_Tactic_LineItem_Budget" EntityType="MRPModel.Store.Plan_Campaign_Program_Tactic_LineItem_Budget" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Plan_Improvement_Campaign" EntityType="MRPModel.Store.Plan_Improvement_Campaign" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Plan_Improvement_Campaign_Program" EntityType="MRPModel.Store.Plan_Improvement_Campaign_Program" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Plan_Improvement_Campaign_Program_Tactic" EntityType="MRPModel.Store.Plan_Improvement_Campaign_Program_Tactic" store:Type="Tables" Schema="dbo" />
@@ -143,6 +150,10 @@
             <End Role="IntegrationType" EntitySet="IntegrationType" />
             <End Role="IntegrationTypeAttribute" EntitySet="IntegrationTypeAttribute" />
           </AssociationSet>
+          <AssociationSet Name="FK_LineItemType_Model" Association="MRPModel.Store.FK_LineItemType_Model">
+            <End Role="Model" EntitySet="Model" />
+            <End Role="LineItemType" EntitySet="LineItemType" />
+          </AssociationSet>
           <AssociationSet Name="FK_Model_Audience_Event_Model_Audience_Event" Association="MRPModel.Store.FK_Model_Audience_Event_Model_Audience_Event">
             <End Role="Model" EntitySet="Model" />
             <End Role="Model_Audience_Event" EntitySet="Model_Audience_Event" />
@@ -191,9 +202,17 @@
             <End Role="Model_Funnel" EntitySet="Model_Funnel" />
             <End Role="ModelReview" EntitySet="ModelReview" />
           </AssociationSet>
+          <AssociationSet Name="FK_Plan_Budget_Plan" Association="MRPModel.Store.FK_Plan_Budget_Plan">
+            <End Role="Plan" EntitySet="Plan" />
+            <End Role="Plan_Budget" EntitySet="Plan_Budget" />
+          </AssociationSet>
           <AssociationSet Name="FK_Plan_Campaign_Audience" Association="MRPModel.Store.FK_Plan_Campaign_Audience">
             <End Role="Audience" EntitySet="Audience" />
             <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Budget_Plan_Campaign" Association="MRPModel.Store.FK_Plan_Campaign_Budget_Plan_Campaign">
+            <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
+            <End Role="Plan_Campaign_Budget" EntitySet="Plan_Campaign_Budget" />
           </AssociationSet>
           <AssociationSet Name="FK_Plan_Campaign_Geography" Association="MRPModel.Store.FK_Plan_Campaign_Geography">
             <End Role="Geography" EntitySet="Geography" />
@@ -206,6 +225,10 @@
           <AssociationSet Name="FK_Plan_Campaign_Program_Audience" Association="MRPModel.Store.FK_Plan_Campaign_Program_Audience">
             <End Role="Audience" EntitySet="Audience" />
             <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Program_Budget_Plan_Campaign_Program_Budget" Association="MRPModel.Store.FK_Plan_Campaign_Program_Budget_Plan_Campaign_Program_Budget">
+            <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
+            <End Role="Plan_Campaign_Program_Budget" EntitySet="Plan_Campaign_Program_Budget" />
           </AssociationSet>
           <AssociationSet Name="FK_Plan_Campaign_Program_Geography" Association="MRPModel.Store.FK_Plan_Campaign_Program_Geography">
             <End Role="Geography" EntitySet="Geography" />
@@ -223,6 +246,10 @@
             <End Role="Audience" EntitySet="Audience" />
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
           </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_Budget_Plan_Campaign_Program_Tactic" Association="MRPModel.Store.FK_Plan_Campaign_Program_Tactic_Budget_Plan_Campaign_Program_Tactic">
+            <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
+            <End Role="Plan_Campaign_Program_Tactic_Budget" EntitySet="Plan_Campaign_Program_Tactic_Budget" />
+          </AssociationSet>
           <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_BusinessUnit" Association="MRPModel.Store.FK_Plan_Campaign_Program_Tactic_BusinessUnit">
             <End Role="BusinessUnit" EntitySet="BusinessUnit" />
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
@@ -234,6 +261,18 @@
           <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_Geography" Association="MRPModel.Store.FK_Plan_Campaign_Program_Tactic_Geography">
             <End Role="Geography" EntitySet="Geography" />
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem" Association="MRPModel.Store.FK_Plan_Campaign_Program_Tactic_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem">
+            <End Role="Plan_Campaign_Program_Tactic_LineItem" EntitySet="Plan_Campaign_Program_Tactic_LineItem" />
+            <End Role="Plan_Campaign_Program_Tactic_LineItem_Budget" EntitySet="Plan_Campaign_Program_Tactic_LineItem_Budget" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_LineItem_LineItemType" Association="MRPModel.Store.FK_Plan_Campaign_Program_Tactic_LineItem_LineItemType">
+            <End Role="LineItemType" EntitySet="LineItemType" />
+            <End Role="Plan_Campaign_Program_Tactic_LineItem" EntitySet="Plan_Campaign_Program_Tactic_LineItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_LineItem_Plan_Campaign_Program_Tactic" Association="MRPModel.Store.FK_Plan_Campaign_Program_Tactic_LineItem_Plan_Campaign_Program_Tactic">
+            <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
+            <End Role="Plan_Campaign_Program_Tactic_LineItem" EntitySet="Plan_Campaign_Program_Tactic_LineItem" />
           </AssociationSet>
           <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program" Association="MRPModel.Store.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program">
             <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
@@ -588,6 +627,20 @@
           <Property Name="AttributeType" Type="nvarchar" Nullable="false" MaxLength="255" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
         </EntityType>
+        <EntityType Name="LineItemType">
+          <Key>
+            <PropertyRef Name="LineItemTypeId" />
+          </Key>
+          <Property Name="LineItemTypeId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+          <Property Name="Title" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="Description" Type="nvarchar" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="ModifiedBy" Type="uniqueidentifier" />
+        </EntityType>
         <EntityType Name="MasterTacticType">
           <Key>
             <PropertyRef Name="MasterTacticTypeId" />
@@ -764,7 +817,6 @@
           <Property Name="Version" Type="nvarchar" Nullable="false" MaxLength="50" />
           <Property Name="Year" Type="varchar" Nullable="false" MaxLength="10" />
           <Property Name="Description" Type="nvarchar" />
-          <Property Name="MQLs" Type="float" Nullable="false" />
           <Property Name="Budget" Type="float" Nullable="false" />
           <Property Name="Status" Type="nvarchar" Nullable="false" MaxLength="50" />
           <Property Name="IsActive" Type="bit" Nullable="false" />
@@ -773,6 +825,20 @@
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
+          <Property Name="GoalType" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="GoalValue" Type="float" Nullable="false" />
+          <Property Name="AllocatedBy" Type="varchar" Nullable="false" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Plan_Budget">
+          <Key>
+            <PropertyRef Name="PlanBudgetId" />
+          </Key>
+          <Property Name="PlanBudgetId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="PlanId" Type="int" Nullable="false" />
+          <Property Name="Period" Type="nvarchar" Nullable="false" MaxLength="5" />
+          <Property Name="Value" Type="float" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
         <EntityType Name="Plan_Campaign">
           <Key>
@@ -796,6 +862,18 @@
           <Property Name="IsDeployedToIntegration" Type="bit" Nullable="false" />
           <Property Name="IntegrationInstanceCampaignId" Type="nvarchar" MaxLength="50" />
           <Property Name="LastSyncDate" Type="datetime" />
+          <Property Name="CampaignBudget" Type="float" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Plan_Campaign_Budget">
+          <Key>
+            <PropertyRef Name="PlanCampaignBudgetId" />
+          </Key>
+          <Property Name="PlanCampaignBudgetId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="PlanCampaignId" Type="int" Nullable="false" />
+          <Property Name="Period" Type="nvarchar" Nullable="false" MaxLength="5" />
+          <Property Name="Value" Type="float" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program">
           <Key>
@@ -819,6 +897,18 @@
           <Property Name="IsDeployedToIntegration" Type="bit" Nullable="false" />
           <Property Name="IntegrationInstanceProgramId" Type="nvarchar" MaxLength="50" />
           <Property Name="LastSyncDate" Type="datetime" />
+          <Property Name="ProgramBudget" Type="float" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Plan_Campaign_Program_Budget">
+          <Key>
+            <PropertyRef Name="PlanProgramBudgetId" />
+          </Key>
+          <Property Name="PlanProgramBudgetId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="PlanProgramId" Type="int" Nullable="false" />
+          <Property Name="Period" Type="nvarchar" Nullable="false" MaxLength="5" />
+          <Property Name="Value" Type="float" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic">
           <Key>
@@ -862,6 +952,17 @@
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
+        <EntityType Name="Plan_Campaign_Program_Tactic_Budget">
+          <Key>
+            <PropertyRef Name="PlanTacticBudgetId" />
+          </Key>
+          <Property Name="PlanTacticBudgetId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="PlanTacticId" Type="int" Nullable="false" />
+          <Property Name="Period" Type="nvarchar" Nullable="false" MaxLength="5" />
+          <Property Name="Value" Type="float" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_Comment">
           <Key>
             <PropertyRef Name="PlanTacticCommentId" />
@@ -873,6 +974,35 @@
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="PlanProgramId" Type="int" />
           <Property Name="PlanCampaignId" Type="int" />
+        </EntityType>
+        <EntityType Name="Plan_Campaign_Program_Tactic_LineItem">
+          <Key>
+            <PropertyRef Name="PlanLineItemId" />
+          </Key>
+          <Property Name="PlanLineItemId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="PlanTacticId" Type="int" Nullable="false" />
+          <Property Name="LineItemTypeId" Type="int" />
+          <Property Name="Title" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="Description" Type="nvarchar" />
+          <Property Name="StartDate" Type="datetime" />
+          <Property Name="EndDate" Type="datetime" />
+          <Property Name="Cost" Type="float" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="ModifiedBy" Type="uniqueidentifier" />
+        </EntityType>
+        <EntityType Name="Plan_Campaign_Program_Tactic_LineItem_Budget">
+          <Key>
+            <PropertyRef Name="PlanLineItemBudgetId" />
+          </Key>
+          <Property Name="PlanLineItemBudgetId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="PlanLineItemId" Type="int" Nullable="false" />
+          <Property Name="Period" Type="nvarchar" Nullable="false" MaxLength="5" />
+          <Property Name="Value" Type="float" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
         <EntityType Name="Plan_Improvement_Campaign">
           <Key>
@@ -1294,6 +1424,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_LineItemType_Model">
+          <End Role="Model" Type="MRPModel.Store.Model" Multiplicity="1" />
+          <End Role="LineItemType" Type="MRPModel.Store.LineItemType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Model">
+              <PropertyRef Name="ModelId" />
+            </Principal>
+            <Dependent Role="LineItemType">
+              <PropertyRef Name="ModelId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Model_Audience_Event_Model_Audience_Event">
           <End Role="Model" Type="MRPModel.Store.Model" Multiplicity="1" />
           <End Role="Model_Audience_Event" Type="MRPModel.Store.Model_Audience_Event" Multiplicity="*" />
@@ -1438,6 +1580,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Plan_Budget_Plan">
+          <End Role="Plan" Type="MRPModel.Store.Plan" Multiplicity="1" />
+          <End Role="Plan_Budget" Type="MRPModel.Store.Plan_Budget" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan">
+              <PropertyRef Name="PlanId" />
+            </Principal>
+            <Dependent Role="Plan_Budget">
+              <PropertyRef Name="PlanId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Plan_Campaign_Audience">
           <End Role="Audience" Type="MRPModel.Store.Audience" Multiplicity="0..1" />
           <End Role="Plan_Campaign" Type="MRPModel.Store.Plan_Campaign" Multiplicity="*" />
@@ -1447,6 +1601,18 @@
             </Principal>
             <Dependent Role="Plan_Campaign">
               <PropertyRef Name="AudienceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Campaign_Budget_Plan_Campaign">
+          <End Role="Plan_Campaign" Type="MRPModel.Store.Plan_Campaign" Multiplicity="1" />
+          <End Role="Plan_Campaign_Budget" Type="MRPModel.Store.Plan_Campaign_Budget" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign">
+              <PropertyRef Name="PlanCampaignId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Budget">
+              <PropertyRef Name="PlanCampaignId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1483,6 +1649,18 @@
             </Principal>
             <Dependent Role="Plan_Campaign_Program">
               <PropertyRef Name="AudienceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Campaign_Program_Budget_Plan_Campaign_Program_Budget">
+          <End Role="Plan_Campaign_Program" Type="MRPModel.Store.Plan_Campaign_Program" Multiplicity="1" />
+          <End Role="Plan_Campaign_Program_Budget" Type="MRPModel.Store.Plan_Campaign_Program_Budget" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program">
+              <PropertyRef Name="PlanProgramId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Program_Budget">
+              <PropertyRef Name="PlanProgramId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1534,6 +1712,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Plan_Campaign_Program_Tactic_Budget_Plan_Campaign_Program_Tactic">
+          <End Role="Plan_Campaign_Program_Tactic" Type="MRPModel.Store.Plan_Campaign_Program_Tactic" Multiplicity="1" />
+          <End Role="Plan_Campaign_Program_Tactic_Budget" Type="MRPModel.Store.Plan_Campaign_Program_Tactic_Budget" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program_Tactic">
+              <PropertyRef Name="PlanTacticId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Program_Tactic_Budget">
+              <PropertyRef Name="PlanTacticId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Plan_Campaign_Program_Tactic_BusinessUnit">
           <End Role="BusinessUnit" Type="MRPModel.Store.BusinessUnit" Multiplicity="1" />
           <End Role="Plan_Campaign_Program_Tactic" Type="MRPModel.Store.Plan_Campaign_Program_Tactic" Multiplicity="*" />
@@ -1567,6 +1757,42 @@
             </Principal>
             <Dependent Role="Plan_Campaign_Program_Tactic">
               <PropertyRef Name="GeographyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Campaign_Program_Tactic_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem">
+          <End Role="Plan_Campaign_Program_Tactic_LineItem" Type="MRPModel.Store.Plan_Campaign_Program_Tactic_LineItem" Multiplicity="1" />
+          <End Role="Plan_Campaign_Program_Tactic_LineItem_Budget" Type="MRPModel.Store.Plan_Campaign_Program_Tactic_LineItem_Budget" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program_Tactic_LineItem">
+              <PropertyRef Name="PlanLineItemId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Program_Tactic_LineItem_Budget">
+              <PropertyRef Name="PlanLineItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Campaign_Program_Tactic_LineItem_LineItemType">
+          <End Role="LineItemType" Type="MRPModel.Store.LineItemType" Multiplicity="0..1" />
+          <End Role="Plan_Campaign_Program_Tactic_LineItem" Type="MRPModel.Store.Plan_Campaign_Program_Tactic_LineItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LineItemType">
+              <PropertyRef Name="LineItemTypeId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Program_Tactic_LineItem">
+              <PropertyRef Name="LineItemTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Campaign_Program_Tactic_LineItem_Plan_Campaign_Program_Tactic">
+          <End Role="Plan_Campaign_Program_Tactic" Type="MRPModel.Store.Plan_Campaign_Program_Tactic" Multiplicity="1" />
+          <End Role="Plan_Campaign_Program_Tactic_LineItem" Type="MRPModel.Store.Plan_Campaign_Program_Tactic_LineItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program_Tactic">
+              <PropertyRef Name="PlanTacticId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Program_Tactic_LineItem">
+              <PropertyRef Name="PlanTacticId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1908,6 +2134,7 @@
           <EntitySet Name="IntegrationInstancePlanEntityLogs" EntityType="MRPModel.IntegrationInstancePlanEntityLog" />
           <EntitySet Name="IntegrationTypes" EntityType="MRPModel.IntegrationType" />
           <EntitySet Name="IntegrationTypeAttributes" EntityType="MRPModel.IntegrationTypeAttribute" />
+          <EntitySet Name="LineItemTypes" EntityType="MRPModel.LineItemType" />
           <EntitySet Name="MasterTacticTypes" EntityType="MRPModel.MasterTacticType" />
           <EntitySet Name="Models" EntityType="MRPModel.Model" />
           <EntitySet Name="Model_Audience_Event" EntityType="MRPModel.Model_Audience_Event" />
@@ -1918,11 +2145,17 @@
           <EntitySet Name="ModelReviews" EntityType="MRPModel.ModelReview" />
           <EntitySet Name="Notifications" EntityType="MRPModel.Notification" />
           <EntitySet Name="Plans" EntityType="MRPModel.Plan" />
+          <EntitySet Name="Plan_Budget" EntityType="MRPModel.Plan_Budget" />
           <EntitySet Name="Plan_Campaign" EntityType="MRPModel.Plan_Campaign" />
+          <EntitySet Name="Plan_Campaign_Budget" EntityType="MRPModel.Plan_Campaign_Budget" />
           <EntitySet Name="Plan_Campaign_Program" EntityType="MRPModel.Plan_Campaign_Program" />
+          <EntitySet Name="Plan_Campaign_Program_Budget" EntityType="MRPModel.Plan_Campaign_Program_Budget" />
           <EntitySet Name="Plan_Campaign_Program_Tactic" EntityType="MRPModel.Plan_Campaign_Program_Tactic" />
           <EntitySet Name="Plan_Campaign_Program_Tactic_Actual" EntityType="MRPModel.Plan_Campaign_Program_Tactic_Actual" />
+          <EntitySet Name="Plan_Campaign_Program_Tactic_Budget" EntityType="MRPModel.Plan_Campaign_Program_Tactic_Budget" />
           <EntitySet Name="Plan_Campaign_Program_Tactic_Comment" EntityType="MRPModel.Plan_Campaign_Program_Tactic_Comment" />
+          <EntitySet Name="Plan_Campaign_Program_Tactic_LineItem" EntityType="MRPModel.Plan_Campaign_Program_Tactic_LineItem" />
+          <EntitySet Name="Plan_Campaign_Program_Tactic_LineItem_Budget" EntityType="MRPModel.Plan_Campaign_Program_Tactic_LineItem_Budget" />
           <EntitySet Name="Plan_Improvement_Campaign" EntityType="MRPModel.Plan_Improvement_Campaign" />
           <EntitySet Name="Plan_Improvement_Campaign_Program" EntityType="MRPModel.Plan_Improvement_Campaign_Program" />
           <EntitySet Name="Plan_Improvement_Campaign_Program_Tactic" EntityType="MRPModel.Plan_Improvement_Campaign_Program_Tactic" />
@@ -2053,6 +2286,14 @@
             <End Role="IntegrationType" EntitySet="IntegrationTypes" />
             <End Role="IntegrationTypeAttribute" EntitySet="IntegrationTypeAttributes" />
           </AssociationSet>
+          <AssociationSet Name="FK_LineItemType_Model" Association="MRPModel.FK_LineItemType_Model">
+            <End Role="Model" EntitySet="Models" />
+            <End Role="LineItemType" EntitySet="LineItemTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_LineItem_LineItemType" Association="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_LineItemType">
+            <End Role="LineItemType" EntitySet="LineItemTypes" />
+            <End Role="Plan_Campaign_Program_Tactic_LineItem" EntitySet="Plan_Campaign_Program_Tactic_LineItem" />
+          </AssociationSet>
           <AssociationSet Name="FK_Model_Audience_Event_Model_Audience_Event" Association="MRPModel.FK_Model_Audience_Event_Model_Audience_Event">
             <End Role="Model" EntitySet="Models" />
             <End Role="Model_Audience_Event" EntitySet="Model_Audience_Event" />
@@ -2097,6 +2338,10 @@
             <End Role="Notification" EntitySet="Notifications" />
             <End Role="User_Notification" EntitySet="User_Notification" />
           </AssociationSet>
+          <AssociationSet Name="FK_Plan_Budget_Plan" Association="MRPModel.FK_Plan_Budget_Plan">
+            <End Role="Plan" EntitySet="Plans" />
+            <End Role="Plan_Budget" EntitySet="Plan_Budget" />
+          </AssociationSet>
           <AssociationSet Name="FK_Plan_Campaign_Plan" Association="MRPModel.FK_Plan_Campaign_Plan">
             <End Role="Plan" EntitySet="Plans" />
             <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
@@ -2117,6 +2362,10 @@
             <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
           </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Budget_Plan_Campaign" Association="MRPModel.FK_Plan_Campaign_Budget_Plan_Campaign">
+            <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
+            <End Role="Plan_Campaign_Budget" EntitySet="Plan_Campaign_Budget" />
+          </AssociationSet>
           <AssociationSet Name="FK_Plan_Campaign_Program_Plan_Campaign" Association="MRPModel.FK_Plan_Campaign_Program_Plan_Campaign">
             <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
             <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
@@ -2133,6 +2382,10 @@
             <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
           </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Program_Budget_Plan_Campaign_Program_Budget" Association="MRPModel.FK_Plan_Campaign_Program_Budget_Plan_Campaign_Program_Budget">
+            <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
+            <End Role="Plan_Campaign_Program_Budget" EntitySet="Plan_Campaign_Program_Budget" />
+          </AssociationSet>
           <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program" Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program">
             <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
@@ -2145,9 +2398,17 @@
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
             <End Role="Plan_Campaign_Program_Tactic_Actual" EntitySet="Plan_Campaign_Program_Tactic_Actual" />
           </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_Budget_Plan_Campaign_Program_Tactic" Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Budget_Plan_Campaign_Program_Tactic">
+            <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
+            <End Role="Plan_Campaign_Program_Tactic_Budget" EntitySet="Plan_Campaign_Program_Tactic_Budget" />
+          </AssociationSet>
           <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_Comment_Plan_Campaign_Program_Tactic" Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Comment_Plan_Campaign_Program_Tactic">
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
             <End Role="Plan_Campaign_Program_Tactic_Comment" EntitySet="Plan_Campaign_Program_Tactic_Comment" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_LineItem_Plan_Campaign_Program_Tactic" Association="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Plan_Campaign_Program_Tactic">
+            <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
+            <End Role="Plan_Campaign_Program_Tactic_LineItem" EntitySet="Plan_Campaign_Program_Tactic_LineItem" />
           </AssociationSet>
           <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program_Tactic" Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program_Tactic">
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
@@ -2168,6 +2429,10 @@
           <AssociationSet Name="FK_Tactic_Share_Plan_Campaign_Program_Tactic1" Association="MRPModel.FK_Tactic_Share_Plan_Campaign_Program_Tactic1">
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem" Association="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem">
+            <End Role="Plan_Campaign_Program_Tactic_LineItem" EntitySet="Plan_Campaign_Program_Tactic_LineItem" />
+            <End Role="Plan_Campaign_Program_Tactic_LineItem_Budget" EntitySet="Plan_Campaign_Program_Tactic_LineItem_Budget" />
           </AssociationSet>
           <AssociationSet Name="FK_Plan_Improvement_Campaign_Program_Plan_Improvement_Campaign" Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Plan_Improvement_Campaign">
             <End Role="Plan_Improvement_Campaign" EntitySet="Plan_Improvement_Campaign" />
@@ -2497,6 +2762,22 @@
           <NavigationProperty Name="IntegrationInstance_Attribute" Relationship="MRPModel.FK_IntegrationInstance_Attribute_IntegrationTypeAttribute" FromRole="IntegrationTypeAttribute" ToRole="IntegrationInstance_Attribute" />
           <NavigationProperty Name="IntegrationType" Relationship="MRPModel.FK_IntegrationTypeAttribute_IntegrationType" FromRole="IntegrationTypeAttribute" ToRole="IntegrationType" />
         </EntityType>
+        <EntityType Name="LineItemType">
+          <Key>
+            <PropertyRef Name="LineItemTypeId" />
+          </Key>
+          <Property Type="Int32" Name="LineItemTypeId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="ModelId" Nullable="false" />
+          <Property Type="String" Name="Title" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Description" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
+          <Property Type="Guid" Name="ModifiedBy" />
+          <NavigationProperty Name="Model" Relationship="MRPModel.FK_LineItemType_Model" FromRole="LineItemType" ToRole="Model" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic_LineItem" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_LineItemType" FromRole="LineItemType" ToRole="Plan_Campaign_Program_Tactic_LineItem" />
+        </EntityType>
         <EntityType Name="MasterTacticType">
           <Key>
             <PropertyRef Name="MasterTacticTypeId" />
@@ -2530,6 +2811,7 @@
           <Property Type="Int32" Name="IntegrationInstanceId" />
           <NavigationProperty Name="BusinessUnit" Relationship="MRPModel.FK_Model_BusinessUnit" FromRole="Model" ToRole="BusinessUnit" />
           <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_Model_IntegrationInstance" FromRole="Model" ToRole="IntegrationInstance" />
+          <NavigationProperty Name="LineItemTypes" Relationship="MRPModel.FK_LineItemType_Model" FromRole="Model" ToRole="LineItemType" />
           <NavigationProperty Name="Model_Audience_Event" Relationship="MRPModel.FK_Model_Audience_Event_Model_Audience_Event" FromRole="Model" ToRole="Model_Audience_Event" />
           <NavigationProperty Name="Model_Audience_Inbound" Relationship="MRPModel.FK_Model_Audience_Inbound_Model" FromRole="Model" ToRole="Model_Audience_Inbound" />
           <NavigationProperty Name="Model_Audience_Outbound" Relationship="MRPModel.FK_Model_Audience_Outbound_Model" FromRole="Model" ToRole="Model_Audience_Outbound" />
@@ -2695,7 +2977,6 @@
           <Property Type="String" Name="Version" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="Year" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="Description" MaxLength="4000" FixedLength="false" Unicode="true" />
-          <Property Type="Double" Name="MQLs" Nullable="false" />
           <Property Type="Double" Name="Budget" Nullable="false" />
           <Property Type="String" Name="Status" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Type="Boolean" Name="IsActive" Nullable="false" />
@@ -2704,10 +2985,26 @@
           <Property Type="Guid" Name="CreatedBy" Nullable="false" />
           <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
           <Property Type="Guid" Name="ModifiedBy" />
+          <Property Type="String" Name="GoalType" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Double" Name="GoalValue" Nullable="false" />
+          <Property Type="String" Name="AllocatedBy" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Model" Relationship="MRPModel.FK_Plan_Plan" FromRole="Plan" ToRole="Model" />
+          <NavigationProperty Name="Plan_Budget" Relationship="MRPModel.FK_Plan_Budget_Plan" FromRole="Plan" ToRole="Plan_Budget" />
           <NavigationProperty Name="Plan_Campaign" Relationship="MRPModel.FK_Plan_Campaign_Plan" FromRole="Plan" ToRole="Plan_Campaign" />
           <NavigationProperty Name="Plan_Team" Relationship="MRPModel.FK_Plan_Collaborator_Plan" FromRole="Plan" ToRole="Plan_Team" />
           <NavigationProperty Name="Plan_Improvement_Campaign" Relationship="MRPModel.FK_Plan_Improvement_Campaign_Plan" FromRole="Plan" ToRole="Plan_Improvement_Campaign" />
+        </EntityType>
+        <EntityType Name="Plan_Budget">
+          <Key>
+            <PropertyRef Name="PlanBudgetId" />
+          </Key>
+          <Property Type="Int32" Name="PlanBudgetId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="PlanId" Nullable="false" />
+          <Property Type="String" Name="Period" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
+          <Property Type="Double" Name="Value" Nullable="false" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <NavigationProperty Name="Plan" Relationship="MRPModel.FK_Plan_Budget_Plan" FromRole="Plan_Budget" ToRole="Plan" />
         </EntityType>
         <EntityType Name="Plan_Campaign">
           <Key>
@@ -2731,13 +3028,27 @@
           <Property Type="Boolean" Name="IsDeployedToIntegration" Nullable="false" />
           <Property Type="String" Name="IntegrationInstanceCampaignId" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Type="DateTime" Name="LastSyncDate" Precision="3" />
+          <Property Type="Double" Name="CampaignBudget" Nullable="false" />
           <NavigationProperty Name="Audience" Relationship="MRPModel.FK_Plan_Campaign_Audience" FromRole="Plan_Campaign" ToRole="Audience" />
           <NavigationProperty Name="Geography" Relationship="MRPModel.FK_Plan_Campaign_Geography" FromRole="Plan_Campaign" ToRole="Geography" />
           <NavigationProperty Name="Plan" Relationship="MRPModel.FK_Plan_Campaign_Plan" FromRole="Plan_Campaign" ToRole="Plan" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic_Comment" Relationship="MRPModel.FK__Plan_Camp__PlanC__43A1090D" FromRole="Plan_Campaign" ToRole="Plan_Campaign_Program_Tactic_Comment" />
           <NavigationProperty Name="Tactic_Share" Relationship="MRPModel.FK__Tactic_Sh__PlanC__4589517F" FromRole="Plan_Campaign" ToRole="Tactic_Share" />
+          <NavigationProperty Name="Plan_Campaign_Budget" Relationship="MRPModel.FK_Plan_Campaign_Budget_Plan_Campaign" FromRole="Plan_Campaign" ToRole="Plan_Campaign_Budget" />
           <NavigationProperty Name="Plan_Campaign_Program" Relationship="MRPModel.FK_Plan_Campaign_Program_Plan_Campaign" FromRole="Plan_Campaign" ToRole="Plan_Campaign_Program" />
           <NavigationProperty Name="Vertical" Relationship="MRPModel.FK_Plan_Campaign_Vertical" FromRole="Plan_Campaign" ToRole="Vertical" />
+        </EntityType>
+        <EntityType Name="Plan_Campaign_Budget">
+          <Key>
+            <PropertyRef Name="PlanCampaignBudgetId" />
+          </Key>
+          <Property Type="Int32" Name="PlanCampaignBudgetId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="PlanCampaignId" Nullable="false" />
+          <Property Type="String" Name="Period" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
+          <Property Type="Double" Name="Value" Nullable="false" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <NavigationProperty Name="Plan_Campaign" Relationship="MRPModel.FK_Plan_Campaign_Budget_Plan_Campaign" FromRole="Plan_Campaign_Budget" ToRole="Plan_Campaign" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program">
           <Key>
@@ -2761,13 +3072,27 @@
           <Property Type="Boolean" Name="IsDeployedToIntegration" Nullable="false" />
           <Property Type="String" Name="IntegrationInstanceProgramId" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Type="DateTime" Name="LastSyncDate" Precision="3" />
+          <Property Type="Double" Name="ProgramBudget" Nullable="false" />
           <NavigationProperty Name="Audience" Relationship="MRPModel.FK_Plan_Campaign_Program_Audience" FromRole="Plan_Campaign_Program" ToRole="Audience" />
           <NavigationProperty Name="Geography" Relationship="MRPModel.FK_Plan_Campaign_Program_Geography" FromRole="Plan_Campaign_Program" ToRole="Geography" />
           <NavigationProperty Name="Plan_Campaign" Relationship="MRPModel.FK_Plan_Campaign_Program_Plan_Campaign" FromRole="Plan_Campaign_Program" ToRole="Plan_Campaign" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic_Comment" Relationship="MRPModel.FK__Plan_Camp__PlanP__42ACE4D4" FromRole="Plan_Campaign_Program" ToRole="Plan_Campaign_Program_Tactic_Comment" />
           <NavigationProperty Name="Tactic_Share" Relationship="MRPModel.FK__Tactic_Sh__PlanP__44952D46" FromRole="Plan_Campaign_Program" ToRole="Tactic_Share" />
+          <NavigationProperty Name="Plan_Campaign_Program_Budget" Relationship="MRPModel.FK_Plan_Campaign_Program_Budget_Plan_Campaign_Program_Budget" FromRole="Plan_Campaign_Program" ToRole="Plan_Campaign_Program_Budget" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program" FromRole="Plan_Campaign_Program" ToRole="Plan_Campaign_Program_Tactic" />
           <NavigationProperty Name="Vertical" Relationship="MRPModel.FK_Plan_Campaign_Program_Vertical" FromRole="Plan_Campaign_Program" ToRole="Vertical" />
+        </EntityType>
+        <EntityType Name="Plan_Campaign_Program_Budget">
+          <Key>
+            <PropertyRef Name="PlanProgramBudgetId" />
+          </Key>
+          <Property Type="Int32" Name="PlanProgramBudgetId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="PlanProgramId" Nullable="false" />
+          <Property Type="String" Name="Period" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
+          <Property Type="Double" Name="Value" Nullable="false" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <NavigationProperty Name="Plan_Campaign_Program" Relationship="MRPModel.FK_Plan_Campaign_Program_Budget_Plan_Campaign_Program_Budget" FromRole="Plan_Campaign_Program_Budget" ToRole="Plan_Campaign_Program" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic">
           <Key>
@@ -2802,7 +3127,9 @@
           <NavigationProperty Name="Geography" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Geography" FromRole="Plan_Campaign_Program_Tactic" ToRole="Geography" />
           <NavigationProperty Name="Plan_Campaign_Program" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program" FromRole="Plan_Campaign_Program_Tactic" ToRole="Plan_Campaign_Program" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic_Actual" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Actual_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic" ToRole="Plan_Campaign_Program_Tactic_Actual" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic_Budget" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Budget_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic" ToRole="Plan_Campaign_Program_Tactic_Budget" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic_Comment" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Comment_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic" ToRole="Plan_Campaign_Program_Tactic_Comment" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic_LineItem" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic" ToRole="Plan_Campaign_Program_Tactic_LineItem" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic1" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic" ToRole="Plan_Campaign_Program_Tactic1" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic2" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic1" ToRole="Plan_Campaign_Program_Tactic" />
           <NavigationProperty Name="Stage" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Stage" FromRole="Plan_Campaign_Program_Tactic" ToRole="Stage" />
@@ -2824,6 +3151,18 @@
           <Property Type="Guid" Name="CreatedBy" Nullable="false" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Actual_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic_Actual" ToRole="Plan_Campaign_Program_Tactic" />
         </EntityType>
+        <EntityType Name="Plan_Campaign_Program_Tactic_Budget">
+          <Key>
+            <PropertyRef Name="PlanTacticBudgetId" />
+          </Key>
+          <Property Type="Int32" Name="PlanTacticBudgetId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="PlanTacticId" Nullable="false" />
+          <Property Type="String" Name="Period" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
+          <Property Type="Double" Name="Value" Nullable="false" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Budget_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic_Budget" ToRole="Plan_Campaign_Program_Tactic" />
+        </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_Comment">
           <Key>
             <PropertyRef Name="PlanTacticCommentId" />
@@ -2838,6 +3177,39 @@
           <NavigationProperty Name="Plan_Campaign" Relationship="MRPModel.FK__Plan_Camp__PlanC__43A1090D" FromRole="Plan_Campaign_Program_Tactic_Comment" ToRole="Plan_Campaign" />
           <NavigationProperty Name="Plan_Campaign_Program" Relationship="MRPModel.FK__Plan_Camp__PlanP__42ACE4D4" FromRole="Plan_Campaign_Program_Tactic_Comment" ToRole="Plan_Campaign_Program" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Comment_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic_Comment" ToRole="Plan_Campaign_Program_Tactic" />
+        </EntityType>
+        <EntityType Name="Plan_Campaign_Program_Tactic_LineItem">
+          <Key>
+            <PropertyRef Name="PlanLineItemId" />
+          </Key>
+          <Property Type="Int32" Name="PlanLineItemId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="PlanTacticId" Nullable="false" />
+          <Property Type="Int32" Name="LineItemTypeId" />
+          <Property Type="String" Name="Title" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Description" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="StartDate" Precision="3" />
+          <Property Type="DateTime" Name="EndDate" Precision="3" />
+          <Property Type="Double" Name="Cost" Nullable="false" />
+          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
+          <Property Type="Guid" Name="ModifiedBy" />
+          <NavigationProperty Name="LineItemType" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_LineItemType" FromRole="Plan_Campaign_Program_Tactic_LineItem" ToRole="LineItemType" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic_LineItem" ToRole="Plan_Campaign_Program_Tactic" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic_LineItem_Budget" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem" FromRole="Plan_Campaign_Program_Tactic_LineItem" ToRole="Plan_Campaign_Program_Tactic_LineItem_Budget" />
+        </EntityType>
+        <EntityType Name="Plan_Campaign_Program_Tactic_LineItem_Budget">
+          <Key>
+            <PropertyRef Name="PlanLineItemBudgetId" />
+          </Key>
+          <Property Type="Int32" Name="PlanLineItemBudgetId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="PlanLineItemId" Nullable="false" />
+          <Property Type="String" Name="Period" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
+          <Property Type="Double" Name="Value" Nullable="false" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic_LineItem" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem" FromRole="Plan_Campaign_Program_Tactic_LineItem_Budget" ToRole="Plan_Campaign_Program_Tactic_LineItem" />
         </EntityType>
         <EntityType Name="Plan_Improvement_Campaign">
           <Key>
@@ -3407,6 +3779,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_LineItemType_Model">
+          <End Type="MRPModel.Model" Role="Model" Multiplicity="1" />
+          <End Type="MRPModel.LineItemType" Role="LineItemType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Model">
+              <PropertyRef Name="ModelId" />
+            </Principal>
+            <Dependent Role="LineItemType">
+              <PropertyRef Name="ModelId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Campaign_Program_Tactic_LineItem_LineItemType">
+          <End Type="MRPModel.LineItemType" Role="LineItemType" Multiplicity="0..1" />
+          <End Type="MRPModel.Plan_Campaign_Program_Tactic_LineItem" Role="Plan_Campaign_Program_Tactic_LineItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LineItemType">
+              <PropertyRef Name="LineItemTypeId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Program_Tactic_LineItem">
+              <PropertyRef Name="LineItemTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Model_Audience_Event_Model_Audience_Event">
           <End Type="MRPModel.Model" Role="Model" Multiplicity="1" />
           <End Type="MRPModel.Model_Audience_Event" Role="Model_Audience_Event" Multiplicity="*" />
@@ -3539,6 +3935,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Plan_Budget_Plan">
+          <End Type="MRPModel.Plan" Role="Plan" Multiplicity="1" />
+          <End Type="MRPModel.Plan_Budget" Role="Plan_Budget" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan">
+              <PropertyRef Name="PlanId" />
+            </Principal>
+            <Dependent Role="Plan_Budget">
+              <PropertyRef Name="PlanId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Plan_Campaign_Plan">
           <End Type="MRPModel.Plan" Role="Plan" Multiplicity="1" />
           <End Type="MRPModel.Plan_Campaign" Role="Plan_Campaign" Multiplicity="*" />
@@ -3599,6 +4007,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Plan_Campaign_Budget_Plan_Campaign">
+          <End Type="MRPModel.Plan_Campaign" Role="Plan_Campaign" Multiplicity="1" />
+          <End Type="MRPModel.Plan_Campaign_Budget" Role="Plan_Campaign_Budget" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign">
+              <PropertyRef Name="PlanCampaignId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Budget">
+              <PropertyRef Name="PlanCampaignId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Plan_Campaign_Program_Plan_Campaign">
           <End Type="MRPModel.Plan_Campaign" Role="Plan_Campaign" Multiplicity="1" />
           <End Type="MRPModel.Plan_Campaign_Program" Role="Plan_Campaign_Program" Multiplicity="*" />
@@ -3647,6 +4067,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Plan_Campaign_Program_Budget_Plan_Campaign_Program_Budget">
+          <End Type="MRPModel.Plan_Campaign_Program" Role="Plan_Campaign_Program" Multiplicity="1" />
+          <End Type="MRPModel.Plan_Campaign_Program_Budget" Role="Plan_Campaign_Program_Budget" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program">
+              <PropertyRef Name="PlanProgramId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Program_Budget">
+              <PropertyRef Name="PlanProgramId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Plan_Campaign_Program_Tactic_Plan_Campaign_Program">
           <End Type="MRPModel.Plan_Campaign_Program" Role="Plan_Campaign_Program" Multiplicity="1" />
           <End Type="MRPModel.Plan_Campaign_Program_Tactic" Role="Plan_Campaign_Program_Tactic" Multiplicity="*" />
@@ -3683,6 +4115,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Plan_Campaign_Program_Tactic_Budget_Plan_Campaign_Program_Tactic">
+          <End Type="MRPModel.Plan_Campaign_Program_Tactic" Role="Plan_Campaign_Program_Tactic" Multiplicity="1" />
+          <End Type="MRPModel.Plan_Campaign_Program_Tactic_Budget" Role="Plan_Campaign_Program_Tactic_Budget" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program_Tactic">
+              <PropertyRef Name="PlanTacticId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Program_Tactic_Budget">
+              <PropertyRef Name="PlanTacticId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Plan_Campaign_Program_Tactic_Comment_Plan_Campaign_Program_Tactic">
           <End Type="MRPModel.Plan_Campaign_Program_Tactic" Role="Plan_Campaign_Program_Tactic" Multiplicity="0..1" />
           <End Type="MRPModel.Plan_Campaign_Program_Tactic_Comment" Role="Plan_Campaign_Program_Tactic_Comment" Multiplicity="*" />
@@ -3691,6 +4135,18 @@
               <PropertyRef Name="PlanTacticId" />
             </Principal>
             <Dependent Role="Plan_Campaign_Program_Tactic_Comment">
+              <PropertyRef Name="PlanTacticId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Campaign_Program_Tactic_LineItem_Plan_Campaign_Program_Tactic">
+          <End Type="MRPModel.Plan_Campaign_Program_Tactic" Role="Plan_Campaign_Program_Tactic" Multiplicity="1" />
+          <End Type="MRPModel.Plan_Campaign_Program_Tactic_LineItem" Role="Plan_Campaign_Program_Tactic_LineItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program_Tactic">
+              <PropertyRef Name="PlanTacticId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Program_Tactic_LineItem">
               <PropertyRef Name="PlanTacticId" />
             </Dependent>
           </ReferentialConstraint>
@@ -3752,6 +4208,18 @@
             </Principal>
             <Dependent Role="Tactic_Share">
               <PropertyRef Name="PlanTacticId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Plan_Campaign_Program_Tactic_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem">
+          <End Type="MRPModel.Plan_Campaign_Program_Tactic_LineItem" Role="Plan_Campaign_Program_Tactic_LineItem" Multiplicity="1" />
+          <End Type="MRPModel.Plan_Campaign_Program_Tactic_LineItem_Budget" Role="Plan_Campaign_Program_Tactic_LineItem_Budget" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program_Tactic_LineItem">
+              <PropertyRef Name="PlanLineItemId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Program_Tactic_LineItem_Budget">
+              <PropertyRef Name="PlanLineItemId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4103,6 +4571,21 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="LineItemTypes">
+            <EntityTypeMapping TypeName="MRPModel.LineItemType">
+              <MappingFragment StoreEntitySet="LineItemType">
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+                <ScalarProperty Name="LineItemTypeId" ColumnName="LineItemTypeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="MasterTacticTypes">
             <EntityTypeMapping TypeName="MRPModel.MasterTacticType">
               <MappingFragment StoreEntitySet="MasterTacticType">
@@ -4281,6 +4764,9 @@
           <EntitySetMapping Name="Plans">
             <EntityTypeMapping TypeName="MRPModel.Plan">
               <MappingFragment StoreEntitySet="Plan">
+                <ScalarProperty Name="AllocatedBy" ColumnName="AllocatedBy" />
+                <ScalarProperty Name="GoalValue" ColumnName="GoalValue" />
+                <ScalarProperty Name="GoalType" ColumnName="GoalType" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
@@ -4289,7 +4775,6 @@
                 <ScalarProperty Name="IsActive" ColumnName="IsActive" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
                 <ScalarProperty Name="Budget" ColumnName="Budget" />
-                <ScalarProperty Name="MQLs" ColumnName="MQLs" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Year" ColumnName="Year" />
                 <ScalarProperty Name="Version" ColumnName="Version" />
@@ -4299,9 +4784,22 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Plan_Budget">
+            <EntityTypeMapping TypeName="MRPModel.Plan_Budget">
+              <MappingFragment StoreEntitySet="Plan_Budget">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Period" ColumnName="Period" />
+                <ScalarProperty Name="PlanId" ColumnName="PlanId" />
+                <ScalarProperty Name="PlanBudgetId" ColumnName="PlanBudgetId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Plan_Campaign">
             <EntityTypeMapping TypeName="MRPModel.Plan_Campaign">
               <MappingFragment StoreEntitySet="Plan_Campaign">
+                <ScalarProperty Name="CampaignBudget" ColumnName="CampaignBudget" />
                 <ScalarProperty Name="LastSyncDate" ColumnName="LastSyncDate" />
                 <ScalarProperty Name="IntegrationInstanceCampaignId" ColumnName="IntegrationInstanceCampaignId" />
                 <ScalarProperty Name="IsDeployedToIntegration" ColumnName="IsDeployedToIntegration" />
@@ -4323,9 +4821,22 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Plan_Campaign_Budget">
+            <EntityTypeMapping TypeName="MRPModel.Plan_Campaign_Budget">
+              <MappingFragment StoreEntitySet="Plan_Campaign_Budget">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Period" ColumnName="Period" />
+                <ScalarProperty Name="PlanCampaignId" ColumnName="PlanCampaignId" />
+                <ScalarProperty Name="PlanCampaignBudgetId" ColumnName="PlanCampaignBudgetId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Plan_Campaign_Program">
             <EntityTypeMapping TypeName="MRPModel.Plan_Campaign_Program">
               <MappingFragment StoreEntitySet="Plan_Campaign_Program">
+                <ScalarProperty Name="ProgramBudget" ColumnName="ProgramBudget" />
                 <ScalarProperty Name="LastSyncDate" ColumnName="LastSyncDate" />
                 <ScalarProperty Name="IntegrationInstanceProgramId" ColumnName="IntegrationInstanceProgramId" />
                 <ScalarProperty Name="IsDeployedToIntegration" ColumnName="IsDeployedToIntegration" />
@@ -4344,6 +4855,18 @@
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="PlanCampaignId" ColumnName="PlanCampaignId" />
                 <ScalarProperty Name="PlanProgramId" ColumnName="PlanProgramId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Plan_Campaign_Program_Budget">
+            <EntityTypeMapping TypeName="MRPModel.Plan_Campaign_Program_Budget">
+              <MappingFragment StoreEntitySet="Plan_Campaign_Program_Budget">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Period" ColumnName="Period" />
+                <ScalarProperty Name="PlanProgramId" ColumnName="PlanProgramId" />
+                <ScalarProperty Name="PlanProgramBudgetId" ColumnName="PlanProgramBudgetId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -4389,6 +4912,18 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Plan_Campaign_Program_Tactic_Budget">
+            <EntityTypeMapping TypeName="MRPModel.Plan_Campaign_Program_Tactic_Budget">
+              <MappingFragment StoreEntitySet="Plan_Campaign_Program_Tactic_Budget">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Period" ColumnName="Period" />
+                <ScalarProperty Name="PlanTacticId" ColumnName="PlanTacticId" />
+                <ScalarProperty Name="PlanTacticBudgetId" ColumnName="PlanTacticBudgetId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Plan_Campaign_Program_Tactic_Comment">
             <EntityTypeMapping TypeName="MRPModel.Plan_Campaign_Program_Tactic_Comment">
               <MappingFragment StoreEntitySet="Plan_Campaign_Program_Tactic_Comment">
@@ -4399,6 +4934,37 @@
                 <ScalarProperty Name="Comment" ColumnName="Comment" />
                 <ScalarProperty Name="PlanTacticId" ColumnName="PlanTacticId" />
                 <ScalarProperty Name="PlanTacticCommentId" ColumnName="PlanTacticCommentId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Plan_Campaign_Program_Tactic_LineItem">
+            <EntityTypeMapping TypeName="MRPModel.Plan_Campaign_Program_Tactic_LineItem">
+              <MappingFragment StoreEntitySet="Plan_Campaign_Program_Tactic_LineItem">
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="Cost" ColumnName="Cost" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="LineItemTypeId" ColumnName="LineItemTypeId" />
+                <ScalarProperty Name="PlanTacticId" ColumnName="PlanTacticId" />
+                <ScalarProperty Name="PlanLineItemId" ColumnName="PlanLineItemId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Plan_Campaign_Program_Tactic_LineItem_Budget">
+            <EntityTypeMapping TypeName="MRPModel.Plan_Campaign_Program_Tactic_LineItem_Budget">
+              <MappingFragment StoreEntitySet="Plan_Campaign_Program_Tactic_LineItem_Budget">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Period" ColumnName="Period" />
+                <ScalarProperty Name="PlanLineItemId" ColumnName="PlanLineItemId" />
+                <ScalarProperty Name="PlanLineItemBudgetId" ColumnName="PlanLineItemBudgetId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -1750,6 +1750,8 @@ namespace RevenuePlanner.Controllers
             pc.StartDate = GetCurrentDateBasedOnPlan();
             pc.EndDate = GetCurrentDateBasedOnPlan(true);
             ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
+            pc.CampaignBudget = 0; // Added By Dharmraj #567 : Budget allocation for campaign
+            pc.AllocatedBy = objPlan.AllocatedBy;
             // End - Added by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
             return PartialView("CampaignAssortment", pc);   // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
         }
@@ -1838,6 +1840,11 @@ namespace RevenuePlanner.Controllers
             //pcm.INQs = pc.INQs;
             pcm.MQLs = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == pc.PlanCampaignId && t.IsDeleted == false).ToList()).Sum(tm => tm.MQL);
             pcm.Cost = Common.CalculateCampaignCost(pc.PlanCampaignId); //pc.Cost; // Modified for PL#440 by Dharmraj
+            // Start Added By Dharmraj #567 : Budget allocation for campaign
+            pcm.CampaignBudget = pc.CampaignBudget; 
+            pcm.AllocatedBy = pc.Plan.AllocatedBy;
+            pcm.Revenue = 0; // currently set as 0 bhavesh
+            // End Added By Dharmraj #567 : Budget allocation for campaign
             if (Sessions.User.UserId == pc.CreatedBy)
             {
                 ViewBag.IsOwner = true;
@@ -1879,6 +1886,71 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
+        /// Added By: Dharmraj Mangukiya.
+        /// Action to Get month/Quarter wise budget Value Of campaign.
+        /// </summary>
+        /// <param name="id">Plan Campaign Id.</param>
+        /// <returns>Returns Json Result of campaign budget allocation Value.</returns>
+        public JsonResult GetBudgetAllocationCampaignData(int id)
+        {
+            try
+            {
+                List<string> lstMonthly = new List<string>() { "Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "Y7", "Y8", "Y9", "Y10", "Y11", "Y12" };
+                var objPlanCampaign = db.Plan_Campaign.SingleOrDefault(c => c.PlanCampaignId == id);
+                var objPlan = db.Plans.SingleOrDefault(p => p.PlanId == Sessions.PlanId);
+                if (objPlan.AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString())
+                {
+                    lstMonthly = new List<string>() { "Y1", "Y4", "Y7", "Y10" };
+                }
+                var lstAllCampaign = db.Plan_Campaign.Where(c => c.PlanId == Sessions.PlanId && c.IsDeleted == false).ToList();
+                var planCampaignId = lstAllCampaign.Select(c => c.PlanCampaignId);
+                var lstAllProgram = db.Plan_Campaign_Program.Where(p => p.PlanCampaignId == id && p.IsDeleted == false).ToList();
+                var ProgramId = lstAllProgram.Select(p => p.PlanProgramId);
+                var lstCampaignBudget = db.Plan_Campaign_Budget.Where(c => planCampaignId.Contains(c.PlanCampaignId)).ToList()
+                                                               .Select(c => new
+                                                               {
+                                                                   c.PlanCampaignBudgetId,
+                                                                   c.PlanCampaignId,
+                                                                   c.Period,
+                                                                   c.Value
+                                                               }).ToList();
+                var lstProgramBudget = db.Plan_Campaign_Program_Budget.Where(c => ProgramId.Contains(c.PlanProgramId)).ToList()
+                                                               .Select(c => new
+                                                               {
+                                                                   c.PlanProgramBudgetId,
+                                                                   c.PlanProgramId,
+                                                                   c.Period,
+                                                                   c.Value
+                                                               }).ToList();
+
+                var lstPlanBudget = db.Plan_Budget.Where(p => p.PlanId == Sessions.PlanId);
+
+                var budgetData = lstMonthly.Select(m => new
+                {
+                    periodTitle = m,
+                    budgetValue = lstCampaignBudget.SingleOrDefault(c => c.Period == m && c.PlanCampaignId == id) == null ? "" : lstCampaignBudget.SingleOrDefault(c => c.Period == m && c.PlanCampaignId == id).Value.ToString(),
+                    remainingMonthlyBudget = (lstPlanBudget.SingleOrDefault(p => p.Period == m) == null ? 0 : lstPlanBudget.SingleOrDefault(p => p.Period == m).Value) - (lstCampaignBudget.Where(c => c.Period == m).Sum(c => c.Value)),
+                    programMonthlyBudget = lstProgramBudget.Where(c => c.Period == m).Sum(c => c.Value)
+                });
+
+
+                double allCampaignBudget = lstAllCampaign.Sum(c => c.CampaignBudget);
+                double planBudget = objPlan.Budget;
+                double planRemainingBudget = planBudget - allCampaignBudget;
+
+                var objBudgetAllocationData = new { budgetData = budgetData, planRemainingBudget = planRemainingBudget };
+
+                return Json(objBudgetAllocationData, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            return Json(new { }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
         /// Added By: Bhavesh Dobariya.
         /// Action to Get TacticType.
         /// </summary>
@@ -1902,7 +1974,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveCampaign(Plan_CampaignModel form, string programs, bool RedirectType, string closedTask, string UserId = "")
+        public ActionResult SaveCampaign(Plan_CampaignModel form, string programs, bool RedirectType, string closedTask,string BudgetInputValues, string UserId = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -1914,6 +1986,8 @@ namespace RevenuePlanner.Controllers
             }
             try
             {
+                string[] arrBudgetInputValues = BudgetInputValues.Split(',');
+
                 if (form.PlanCampaignId == 0)
                 {
                     using (MRPEntities mrp = new MRPEntities())
@@ -1945,6 +2019,7 @@ namespace RevenuePlanner.Controllers
                                 pcobj.CreatedBy = Sessions.User.UserId;
                                 pcobj.CreatedDate = DateTime.Now;
                                 pcobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(); // status field in Plan_Campaign table 
+                                pcobj.CampaignBudget = form.CampaignBudget;
                                 db.Entry(pcobj).State = EntityState.Added;
                                 int result = db.SaveChanges();
                                 int campaignid = pcobj.PlanCampaignId;
@@ -1973,12 +2048,56 @@ namespace RevenuePlanner.Controllers
                                             pcpobj.CreatedBy = Sessions.User.UserId;
                                             pcpobj.CreatedDate = DateTime.Now;
                                             pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(); // status field in Plan_Campaign_Program table 
+                                            pcpobj.ProgramBudget = 0;
                                             db.Entry(pcpobj).State = EntityState.Added;
                                             result = db.SaveChanges();
                                             int programId = pcpobj.PlanProgramId;
                                             result = Common.InsertChangeLog(Sessions.PlanId, null, programId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                                         }
                                     }
+
+                                    // Start Added By Dharmraj #567 : Budget allocation for campaign
+                                    var PrevAllocationList = db.Plan_Campaign_Budget.Where(c => c.PlanCampaignId == campaignid).Select(c => c).ToList();
+                                    PrevAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+
+                                    if (arrBudgetInputValues.Length == 12)
+                                    {
+                                        for (int i = 0; i < arrBudgetInputValues.Length; i++)
+                                        {
+                                            if (arrBudgetInputValues[i] != "")
+                                            {
+                                                Plan_Campaign_Budget objPlanCampaignBudget = new Plan_Campaign_Budget();
+                                                objPlanCampaignBudget.PlanCampaignId = campaignid;
+                                                objPlanCampaignBudget.Period = "Y" + (i + 1);
+                                                objPlanCampaignBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
+                                                objPlanCampaignBudget.CreatedBy = Sessions.User.UserId;
+                                                objPlanCampaignBudget.CreatedDate = DateTime.Now;
+                                                db.Entry(objPlanCampaignBudget).State = EntityState.Added;
+                                            }
+                                        }
+                                    }
+                                    else if (arrBudgetInputValues.Length == 4)
+                                    {
+                                        int QuarterCnt = 1;
+                                        for (int i = 0; i < 4; i++)
+                                        {
+                                            if (arrBudgetInputValues[i] != "")
+                                            {
+                                                Plan_Campaign_Budget objPlanCampaignBudget = new Plan_Campaign_Budget();
+                                                objPlanCampaignBudget.PlanCampaignId = campaignid;
+                                                objPlanCampaignBudget.Period = "Y" + QuarterCnt;
+                                                objPlanCampaignBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
+                                                objPlanCampaignBudget.CreatedBy = Sessions.User.UserId;
+                                                objPlanCampaignBudget.CreatedDate = DateTime.Now;
+                                                db.Entry(objPlanCampaignBudget).State = EntityState.Added;
+                                            }
+                                            QuarterCnt = QuarterCnt + 3;
+                                        }
+                                    }
+                                    // End Added By Dharmraj #567 : Budget allocation for campaign
+
+                                    db.SaveChanges();
+
                                 }
                                 scope.Complete();
                                 return Json(new { redirect = Url.Action("Assortment") });
@@ -2019,11 +2138,54 @@ namespace RevenuePlanner.Controllers
                                 //pcobj.Cost = (form.Cost == null ? 0 : form.Cost);
                                 pcobj.ModifiedBy = Sessions.User.UserId;
                                 pcobj.ModifiedDate = DateTime.Now;
+                                pcobj.CampaignBudget = form.CampaignBudget;
                                 db.Entry(pcobj).State = EntityState.Modified;
                                 int result = db.SaveChanges();
                                 result = Common.InsertChangeLog(Sessions.PlanId, null, pcobj.PlanCampaignId, pcobj.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
                                 if (result >= 1)
                                 {
+                                    // Start Added By Dharmraj #567 : Budget allocation for campaign
+                                    var PrevAllocationList = db.Plan_Campaign_Budget.Where(c => c.PlanCampaignId == form.PlanCampaignId).Select(c => c).ToList();
+                                    PrevAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+
+                                    if (arrBudgetInputValues.Length == 12)
+                                    {
+                                        for (int i = 0; i < arrBudgetInputValues.Length; i++)
+                                        {
+                                            if (arrBudgetInputValues[i] != "")
+                                            {
+                                                Plan_Campaign_Budget objPlanCampaignBudget = new Plan_Campaign_Budget();
+                                                objPlanCampaignBudget.PlanCampaignId = form.PlanCampaignId;
+                                                objPlanCampaignBudget.Period = "Y" + (i + 1);
+                                                objPlanCampaignBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
+                                                objPlanCampaignBudget.CreatedBy = Sessions.User.UserId;
+                                                objPlanCampaignBudget.CreatedDate = DateTime.Now;
+                                                db.Entry(objPlanCampaignBudget).State = EntityState.Added;
+                                            }
+                                        }
+                                    }
+                                    else if (arrBudgetInputValues.Length == 4)
+                                    {
+                                        int QuarterCnt = 1;
+                                        for (int i = 0; i < 4; i++)
+                                        {
+                                            if (arrBudgetInputValues[i] != "")
+                                            {
+                                                Plan_Campaign_Budget objPlanCampaignBudget = new Plan_Campaign_Budget();
+                                                objPlanCampaignBudget.PlanCampaignId = form.PlanCampaignId;
+                                                objPlanCampaignBudget.Period = "Y" + QuarterCnt;
+                                                objPlanCampaignBudget.Value = Convert.ToDouble(arrBudgetInputValues[i]);
+                                                objPlanCampaignBudget.CreatedBy = Sessions.User.UserId;
+                                                objPlanCampaignBudget.CreatedDate = DateTime.Now;
+                                                db.Entry(objPlanCampaignBudget).State = EntityState.Added;
+                                            }
+                                            QuarterCnt = QuarterCnt + 3;
+                                        }
+                                    }
+                                    // End Added By Dharmraj #567 : Budget allocation for campaign
+                                    db.SaveChanges();
+
+
                                     scope.Complete();
                                     if (RedirectType)
                                     {
@@ -3665,7 +3827,7 @@ namespace RevenuePlanner.Controllers
                         objPlanSelector.PlanId = item.PlanId;
                         objPlanSelector.PlanTitle = item.Title;
                         objPlanSelector.LastUpdated = LastUpdated.Value.Date.ToString("M/d/yy");
-                        objPlanSelector.MQLS = (item.MQLs).ToString("#,##0");
+                        //objPlanSelector.MQLS = (item.MQLs).ToString("#,##0");
                         objPlanSelector.Budget = (item.Budget).ToString("#,##0");
                         objPlanSelector.Status = item.Status;
 

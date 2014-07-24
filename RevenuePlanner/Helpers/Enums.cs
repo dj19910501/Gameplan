@@ -658,6 +658,19 @@ namespace RevenuePlanner.Helpers
         }
 
         #endregion
+
+        /// <summary>
+        /// Added by: Sohel Pathan
+        /// Date:14/07/2014
+        /// Enum for AllocatedBy
+        /// </summary>
+        public enum PlanAllocatedBy
+        {
+            defaults = 0,
+            months = 1,
+            quarters = 2
+        }
+
     }
 
     #region Authorization

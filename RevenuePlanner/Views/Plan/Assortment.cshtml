@@ -279,6 +279,7 @@
             //$('#slidepanel').load('@Url.Content("~/Plan/CreateCampaign")');
             $('#slidepanel-container').load('@Url.Content("~/Plan/CreateCampaign")', AssignDefaultValue);
             $("#slidepanel").css("right", "0px");
+            $("#slidepanel").addClass('sidebar-wide');
             myApp.hidePleaseWait();
             e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue 
         });
@@ -318,6 +319,7 @@
                 $('#slidepanel-container').load(url + '?id=' + id + '&RedirectType=' + Assortment, AssignDefaultValue);
             }
             $("#slidepanel").css("right", "0px");
+            $("#slidepanel").addClass('sidebar-wide');
             myApp.hidePleaseWait();
         }
 

@@ -3410,6 +3410,7 @@ span.accept-icon:hover, span.accept-icon.active {
 
         .sidebar-form .content.dark {
             background: #f2f2f2; /* Edited by KAPIL 100414 - Boost Sidebar design change - #357 */
+            clear:both;
         }
 
         .sidebar-form .content input[type=text], .sidebar-form .content textarea {
@@ -7056,7 +7057,7 @@ span.circle-check-icon-gray{margin-left: auto;margin-right: auto;background: url
 
 .padding-left34{padding-left:34px !important;}
 #table_integrations a{color:#5693b3;}
-.error-text{color:#c6605a;}
+.error-text{color:#c6605a !important;}
 
 #table_integrations .nl-form{line-height:24px;}
 #table_integrations .title-baseline-model .nl-field-toggle{font-family: 'source_sans_prolight', Arial; font-weight:normal; font-size:24px;}
@@ -7408,3 +7409,68 @@ padding: 7px 24px 7px 4px !important;
 
 
 /*End Added By : Kalpesh Sharma Internal Review Points 07-18-2014*/
+
+/* Start added by dharmraj #567: Budget allocation for campaign */
+
+.nav-gray-plan li a.budget span{background-position: -266px 0 !important;}
+.nav-gray-plan li.active a.budget span,.nav-gray-plan li:hover a.budget span {background-position: -266px -30px !important;}
+.budget-section{padding:14px 17px 10px 0;float: left;clear:both;width: 100%;}
+.white-bg{background:#fff;float: left;padding:8px 20px 0;overflow: auto;width:97%;height:90px;}
+.budget-month{float:left;margin:0 5px;min-width:75px;width: 7.3%;}
+.budget-month span{display:block;text-align:right;padding:3px 3px 3px 0;}
+.budget-month input{background: none repeat scroll 0 0 #dff0f8 !important;border: 0 none;width: 100%;text-align:right;color:#5693b3;}
+.month{margin-top:10px;}
+.budget-month .light-blue-background{color:#5693b3;}
+.budget-result{float:right;margin-top:34px;font-size:18px;color:#000;}
+.budget-result p{display:block;padding-bottom:8px;text-align:right;}/**/
+.budget-result span{padding-left:5px;}
+.error-msg{clear:both;font-size:14px;background:#f1dbde !important;border:1px solid #db9d9c;color:#C6605A;}
+.error-msg p{margin-bottom:0;}
+/*.programs{margin-bottom:35px;}*/
+.sidebar-wide{width: 528px !important;box-shadow: -3px 0 11px 0 #999999;}/**/
+.programs input{width:85% !important;float:left;font-family: 'source_sans_prolight', Arial, "sans-serif";}
+/*.close-icon{background:url('../images/close-icon.png') no-repeat; width: 15px; height: 15px;display:block;margin:9px 0 0 5px;float:left;cursor:pointer;}*/
+.sidebar-wide .budget-result{font-size:14px;}
+.sidebar-wide .budget-result p{margin-bottom:0;}
+.budget-head p{float:left;font-size:14px;}
+.budget-head a{float:right;font-size:12px;text-decoration:underline;}
+.sidebar-wide .white-bg{height:auto;width: 91%;border-bottom:1px solid #ccc;padding-bottom:15px;}
+.sidebar-wide .budget-section{border: 1px solid #cccccc;border-radius: 4px;padding:0;margin:0 20px 30px 20px;width:91%;}
+.sidebar-wide .budget-head{border-bottom: 1px solid #cccccc;
+   padding: 10px 15px 0;}
+.sidebar-wide .budget-result{padding-right:15px;margin-top: 10px;}
+.btn-gray {
+font-family: 'source_sans_prolight', Arial, "sans-serif";
+Color:#908d88;
+font-size:14px;
+border:1px solid #d4d4d4;
+Padding:5px 20px;
+border-radius:4px;
+background: rgb(236, 236, 236);
+background: -moz-linear-gradient(270deg, rgb(236, 236, 236) 4%, rgb(254, 254, 254) 98%);
+background: -webkit-linear-gradient(270deg, rgb(236, 236, 236) 4%, rgb(254, 254, 254) 98%);
+background: -o-linear-gradient(270deg, rgb(236, 236, 236) 4%, rgb(254, 254, 254) 98%);
+background: -ms-linear-gradient(270deg, rgb(236, 236, 236) 4%, rgb(254, 254, 254) 98%);
+background: linear-gradient(0deg, rgb(236, 236, 236) 4%, rgb(254, 254, 254) 98%);
+
+}
+.content-row{margin-right: 4px;width: 49%;float:left;}	/*added 18/7/14*/
+.btn-gray:hover{Color:#908d88;}
+.element-disable a.btn-gray{float:right;}
+ .content .content-row .calendar-width input[type="text"], .sidebar-form .content-row .calendar-width textarea{width: calc(100% - 7px);}
+/*.expand{background:url(../images/expand-plus.png) no-repeat left center;padding-left:9px;}*/
+/*.alternate{width:49%;margin-right:9px;}*/
+.alternate .select-width100{width: calc(100% - 48px); text-align: left;}
+.lineitem-level .accordion-inner .lineitem span.underline{padding-left:104px !important;font-family: 'source_sans_prolight', Arial, "sans-serif";color:#3F3F3F;}
+.sidebar-wide .btn-save button{min-width:110px !important;}
+.tactic-level .btn-gray{margin:7px 40px 0 0;line-height: 18px;Color:#6d6d6d;font-size:12px;padding:5px 10px;}
+.tactic-level .accordion-inner span.underline {
+    padding-left: 25px !important;
+}
+.accordion-campaign .tactic-level a.accordion-toggle.chevron-right, .accordion-campaign .tactic-level a.accordion-toggle.chevron-down{background-position: 69px 0 !important;}
+a:hover, a:focus{text-decoration: none !important;}
+.tactic-level .accordion-inner{background:#E6E6E6;}
+.lineitem-level > .accordion-inner{border-bottom:none !important;}
+
+
+/* End added by dharmraj #567: Budget allocation for campaign */

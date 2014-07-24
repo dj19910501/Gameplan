@@ -103,6 +103,9 @@
     <Compile Include="Models\IntegrationTypeAttribute.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\LineItemType.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\MasterTacticType.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
@@ -148,10 +151,19 @@
     <Compile Include="Models\Plan.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Plan_Budget.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Plan_Campaign.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Plan_Campaign_Budget.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Plan_Campaign_Program.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Plan_Campaign_Program_Budget.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Plan_Campaign_Program_Tactic.cs">
@@ -160,7 +172,16 @@
     <Compile Include="Models\Plan_Campaign_Program_Tactic_Actual.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Plan_Campaign_Program_Tactic_Budget.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Plan_Campaign_Program_Tactic_Comment.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Plan_Campaign_Program_Tactic_LineItem.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Plan_Campaign_Program_Tactic_LineItem_Budget.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Plan_Improvement_Campaign.cs">

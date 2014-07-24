@@ -16,6 +16,7 @@ namespace RevenuePlanner.Models
     {
         public Model()
         {
+            this.LineItemTypes = new HashSet<LineItemType>();
             this.Model_Audience_Event = new HashSet<Model_Audience_Event>();
             this.Model_Audience_Inbound = new HashSet<Model_Audience_Inbound>();
             this.Model_Audience_Outbound = new HashSet<Model_Audience_Outbound>();
@@ -45,6 +46,7 @@ namespace RevenuePlanner.Models
     
         public virtual BusinessUnit BusinessUnit { get; set; }
         public virtual IntegrationInstance IntegrationInstance { get; set; }
+        public virtual ICollection<LineItemType> LineItemTypes { get; set; }
         public virtual ICollection<Model_Audience_Event> Model_Audience_Event { get; set; }
         public virtual ICollection<Model_Audience_Inbound> Model_Audience_Inbound { get; set; }
         public virtual ICollection<Model_Audience_Outbound> Model_Audience_Outbound { get; set; }

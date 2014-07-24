@@ -47,6 +47,7 @@ namespace RevenuePlanner.Models
         public DbSet<IntegrationInstancePlanEntityLog> IntegrationInstancePlanEntityLogs { get; set; }
         public DbSet<IntegrationType> IntegrationTypes { get; set; }
         public DbSet<IntegrationTypeAttribute> IntegrationTypeAttributes { get; set; }
+        public DbSet<LineItemType> LineItemTypes { get; set; }
         public DbSet<MasterTacticType> MasterTacticTypes { get; set; }
         public DbSet<Model> Models { get; set; }
         public DbSet<Model_Audience_Event> Model_Audience_Event { get; set; }
@@ -57,11 +58,17 @@ namespace RevenuePlanner.Models
         public DbSet<ModelReview> ModelReviews { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Plan> Plans { get; set; }
+        public DbSet<Plan_Budget> Plan_Budget { get; set; }
         public DbSet<Plan_Campaign> Plan_Campaign { get; set; }
+        public DbSet<Plan_Campaign_Budget> Plan_Campaign_Budget { get; set; }
         public DbSet<Plan_Campaign_Program> Plan_Campaign_Program { get; set; }
+        public DbSet<Plan_Campaign_Program_Budget> Plan_Campaign_Program_Budget { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic> Plan_Campaign_Program_Tactic { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Actual> Plan_Campaign_Program_Tactic_Actual { get; set; }
+        public DbSet<Plan_Campaign_Program_Tactic_Budget> Plan_Campaign_Program_Tactic_Budget { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_Comment> Plan_Campaign_Program_Tactic_Comment { get; set; }
+        public DbSet<Plan_Campaign_Program_Tactic_LineItem> Plan_Campaign_Program_Tactic_LineItem { get; set; }
+        public DbSet<Plan_Campaign_Program_Tactic_LineItem_Budget> Plan_Campaign_Program_Tactic_LineItem_Budget { get; set; }
         public DbSet<Plan_Improvement_Campaign> Plan_Improvement_Campaign { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program> Plan_Improvement_Campaign_Program { get; set; }
         public DbSet<Plan_Improvement_Campaign_Program_Tactic> Plan_Improvement_Campaign_Program_Tactic { get; set; }

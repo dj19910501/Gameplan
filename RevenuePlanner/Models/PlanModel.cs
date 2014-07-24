@@ -56,6 +56,9 @@ namespace RevenuePlanner.Models
         public DateTime? TEndDate { get; set; }
 
         public bool IsDeployedToIntegration { get; set; }
+        public double CampaignBudget { get; set; }
+        public string AllocatedBy { get; set; }
+        public double Revenue { get; set; }
     }
 
     public class Plan_Campaign_ProgramModel
