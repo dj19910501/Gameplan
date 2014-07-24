@@ -662,15 +662,50 @@ namespace RevenuePlanner.Helpers
         /// <summary>
         /// Added by: Sohel Pathan
         /// Date:14/07/2014
+        /// Enum for GoalType
+        /// </summary>
+        public enum PlanGoalType
+        {
+            INQ,
+            MQL,
+            Revenue
+        }
+
+        /// <summary>
+        /// Added by: Sohel Pathan
+        /// Date:14/07/2014
+        /// GoalType List based on Enum
+        /// </summary>
+        public static Dictionary<string, string> PlanGoalTypeList = new Dictionary<string, string>()
+        {
+            {PlanGoalType.INQ.ToString(), "inq"},
+            {PlanGoalType.MQL.ToString(), "mql"},
+            {PlanGoalType.Revenue.ToString(), "revenue"}
+        };
+
+        /// <summary>
+        /// Added by: Sohel Pathan
+        /// Date:14/07/2014
         /// Enum for AllocatedBy
         /// </summary>
         public enum PlanAllocatedBy
         {
-            defaults = 0,
-            months = 1,
-            quarters = 2
+            defaults,
+            months,
+            quarters
         }
 
+        /// <summary>
+        /// Added by: Sohel Pathan
+        /// Date:14/07/2014
+        /// Allocated by List based on Enum
+        /// </summary>
+        public static Dictionary<string, string> PlanAllocatedByList = new Dictionary<string, string>()
+        {
+            {PlanAllocatedBy.defaults.ToString().TrimEnd('s'), PlanAllocatedBy.defaults.ToString().TrimEnd('s')},
+            {PlanAllocatedBy.months.ToString(), PlanAllocatedBy.months.ToString()},
+            {PlanAllocatedBy.quarters.ToString(), PlanAllocatedBy.quarters.ToString()}
+        };
     }
 
     #region Authorization

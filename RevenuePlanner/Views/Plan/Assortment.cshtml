@@ -29,6 +29,7 @@
     <div id="cErrorDuplicatePlan"></div>
 </div>
 @Html.Hidden("hdnYear", pm.Year, new { id = "hdnYear" })
+@Html.Hidden("hdnModelId", pm.ModelId, new { id = "hdnModelId" })   @* Added by Sohel Pathan on 15/07/2014 for PL ticket #566*@
 <!--error message-->
 <table class="light-blue-background margin5 element-disable">
     <tbody>
@@ -37,7 +38,32 @@
                 <div id="nl-form" class="nl-form nomargin pull-left form-plan-mini padding-assortment">
                     <div class="gray-title-steps source-sans-probold">1.Plan definition</div>
                     <div class="spanPlanDefinition">
-                        I'm using the <span>@pm.ModelTitle</span> model to create a new plan called <span id="spanTitle">@pm.Title</span> in <span>@pm.Year</span> that generates <span id="spanMQl">@pm.MQLDisplay</span> @Html.LabelForMQL("MQL") with a budget of <span id="spanBudget">@pm.Budget</span>.
+                        @* Start - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
+                        I'm using the <span>@pm.ModelTitle</span> model to create a new plan called <span id="spanTitle">@pm.Title</span> in <span>@pm.Year</span> 
+                        with a
+                        <span id="spanGoalType">@pm.GoalType</span>
+                        goal of
+                        @if(@pm.GoalType.ToLower() == "revenue")
+                        {
+                            <span> $ </span>
+                        }
+                        <span id="spanGoalValue">@pm.GoalValue</span>
+                        and a budget of
+                        <span id="spanBudget">@pm.Budget</span>
+                        allocated by
+                        <span id="spanAllocatedBy">@pm.AllocatedBy</span>.
+                    </div>
+                    <div>
+                        Based on my goal, this plan will require
+                        <span id="input1" class="highlighted-budget-fields"></span>
+                        <span id="msg1" class="highlighted-budget-fields"></span>
+                        and 
+                        <span id="input2" class="highlighted-budget-fields"></span>
+                        <span id="msg2" class="highlighted-budget-fields"></span>
+                        with an
+                        average deal size of
+                        <span id="averageDealSize" class="highlighted-budget-fields"></span>
+                        @* End - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
                     </div>
                 </div>
             </td>
@@ -124,7 +150,7 @@
     CampaignID = @ViewBag.CampaignID
     ProgramID = @ViewBag.ProgramID
     ImprovementPlanProgramId = @ViewBag.ImprovementPlanProgramId
-    $("#spanMQl").text(FormatCommas($("#spanMQl").text(), false));
+    $("#spanGoalValue").text(FormatCommas($("#spanGoalValue").text(), false));  @* Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
 
     //Added By : Kalpesh Sharma
     //PL #508 Set format for label in tool tip
@@ -188,6 +214,20 @@
         var url = '@Url.Content("~/Home/LoadChangeLog")';
         $('.changes').load(url + '?objectId=' + "@RevenuePlanner.Helpers.Sessions.PlanId");
 
+        @* Start - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
+        hdnPlanId = "@RevenuePlanner.Helpers.Sessions.PlanId";
+        if (hdnPlanId != 0) {
+            var modelId = 0;
+            var goalType = $("#spanGoalType").html();
+            var goalValue = $("#spanGoalValue").html();
+
+            if ($('#hdnModelId').val() != '')
+                modelId = $('#hdnModelId').val();
+
+            if (goalType != '')
+                calculateBudget(modelId, goalType, goalValue);
+        }
+        @* End - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
 
         $('#BtnGroup').click(function (e) {
             if ($(this).html().toLowerCase() == "duplicate") {
@@ -2345,4 +2385,28 @@
 
     });
 
+    @* Start - Added by Sohel Pathan on 14/07/2014 for PL ticket #566 *@
+    function calculateBudget(_modelId, _goalType, _goalValue) {
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Content("~/Plan/calculateBudget/")',
+            dataType: "json",
+            data: { modelId: _modelId, goalType: _goalType, goalValue: _goalValue },
+            success: function (data) {
+                $('#msg1').html(data.msg1);
+                $('#msg2').html(data.msg2);
+                $('#input1').html(FormatCommas(data.input1.toString(), false));
+                SetPriceValue("#input1");
+                if (_goalType.toLowerCase() != "revenue") {
+                    $('#input2').html(FormatCurrency(data.input2.toString(), false));
+                }
+                else {
+                    $('#input2').html(FormatCommas(data.input2.toString(), false));
+                    SetPriceValue("#input2");
+                }
+                $('#averageDealSize').html(FormatCurrency(data.ADS, false));
+            }
+        });
+    }
+    @* End - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
 </script>

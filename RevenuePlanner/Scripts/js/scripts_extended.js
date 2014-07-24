@@ -83,8 +83,10 @@ function FormatCurrency(amount, showDecimals) {
     }
     //s = minus + s;
     s = '$' + FormatCommas(s, showDecimals);
-    if (minus)
-        s = "(" + s + ")";
+    //// Start - Commented By Sohel Pathan on 23/07/2014 for PL ticket #597
+    //if (minus)
+    //    s = "(" + s + ")";
+    //// End - Commented By Sohel Pathan on 23/07/2014 for PL ticket #597
     return s;
 }
 function FormatCommas(amount, showDecimals) {

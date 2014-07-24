@@ -14,8 +14,9 @@ namespace RevenuePlanner.Models
         [Required]
         public string Title { get; set; }
 
-        [Required]
-        public string MQls { get; set; }
+        // Commented by Sohel Pathan on 15/07/2014 for PL ticket #566
+        //[Required]    
+        //public string MQls { get; set; }
 
         [Required]
         public double Budget { get; set; }
@@ -34,6 +35,15 @@ namespace RevenuePlanner.Models
         public string Version { get; set; }
 
         public bool IsDirector { get; set; }
+
+        /* Start - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 */  
+        public string GoalType { get; set; }
+        public string GoalValue { get; set; }
+        public string AllocatedBy { get; set; }
+        public string AverageDealSize { get; set; }
+        /* End - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 */
+
+        public double TotalAllocatedCampaignBudget { get; set; }
     }
 
     public class Plan_CampaignModel
@@ -292,6 +302,15 @@ namespace RevenuePlanner.Models
     {
         public int PlanId { get; set; }
         public int ModelId { get; set; }
+    }
+
+    // Added by Sohel Pathan on 15/07/2014 for PL ticket #566
+    public class BudgetAllocationModel
+    {
+        public double INQValue { get; set; }
+        public double MQLValue { get; set; }
+        public double RevenueValue { get; set; }
+        public double ADSValue { get; set; }
     }
 
 }

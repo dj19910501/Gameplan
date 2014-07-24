@@ -2002,7 +2002,59 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             get { return _CampaignBudgetIsLowerthanTotalAllocatedPrograms; }
             set { _CampaignBudgetIsLowerthanTotalAllocatedPrograms = value; }
         }
+        //Start Added By Sohel #597 
+        private string _ErrMsgLessPlanBudget;
+        public string ErrMsgLessPlanBudget
+        {
+            get
+            {
+                return _ErrMsgLessPlanBudget;
+            }
+            set
+            {
+                _ErrMsgLessPlanBudget = value;
+            }
+        }
 
+        private string _ErrMsgLessCampaignBudget;
+        public string ErrMsgLessCampaignBudget
+        {
+            get
+            {
+                return _ErrMsgLessCampaignBudget;
+            }
+            set
+            {
+                _ErrMsgLessCampaignBudget = value;
+            }
+        }
+
+        private string _ErrMsgBudgetAllocationExceeds;
+        public string ErrMsgBudgetAllocationExceeds
+        {
+            get
+            {
+                return _ErrMsgBudgetAllocationExceeds;
+            }
+            set
+            {
+                _ErrMsgBudgetAllocationExceeds = value;
+            }
+        }
+
+        private string _DefaultPlanAllocationMessage;
+        public string DefaultPlanAllocationMessage
+        {
+            get
+            {
+                return _DefaultPlanAllocationMessage;
+            }
+            set
+            {
+                _DefaultPlanAllocationMessage = value;
+            }
+        }
+        //End Added By Sohel #597 
 
 
         #endregion
@@ -2597,6 +2649,21 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             _CampaignBudgetIsLowerthanTotalAllocatedPrograms = strMsgValue;
                                             break;
                                         //End Added By Dharmraj #567 : Budget allocation for campaign
+
+                                        //Start Added By Sohel #597 
+                                        case "ErrMsgLessPlanBudget":
+                                            _ErrMsgLessPlanBudget = strMsgValue;
+                                            break;
+                                        case "ErrMsgLessCampaignBudget":
+                                            _ErrMsgLessCampaignBudget = strMsgValue;
+                                            break;
+                                        case "ErrMsgBudgetAllocationExceeds":
+                                            _ErrMsgBudgetAllocationExceeds = strMsgValue;
+                                            break;
+                                        case "DefaultPlanAllocationMessage":
+                                            _DefaultPlanAllocationMessage = strMsgValue;
+                                            break;
+                                        //End Added By Sohel #597 
                                     }
                                 }
                                 i = i + 1;
