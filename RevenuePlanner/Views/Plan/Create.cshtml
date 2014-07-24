@@ -279,7 +279,7 @@
                 <p class="source-sans-probold">@Common.objCached.ErrMsgBudgetAllocationExceeds</p>
             </div>
             <div id="divErrCampaignBudgetAllocation" class="alert alert-error error-msg">
-                <a class="close">×</a>
+                <a class="close ErrCampaignBudgetAllocation">×</a>
                 <p class="source-sans-probold">@Common.objCached.ErrMsgLessCampaignBudget</p>
             </div>
         </div>
@@ -290,7 +290,7 @@
 </div>
 
 <script type="text/javascript">
-    var isErrorShown = true;
+    
     $(document).ready(
       function () {
           
@@ -650,6 +650,7 @@
 
 </script>
 <script type="text/javascript">
+    var isErrorShown = true;
     //Manoj Start 28Jan2014 : Bug-12 (User can lose data via navigation in application)
     //function to check myValue attribute values and input values that any changes made?
     function isDataChanged() {
@@ -810,8 +811,8 @@
             var AllocatedBy = $('#AllocatedBy').val().toLowerCase();
             if (AllocatedBy == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower()')
             {
-                if ($('#divErrCampaignBudgetAllocation').attr('display') == 'none') {
-                    $('.budget-months .priceValue').each(function () {
+                if (isErrorShown) {
+                    $('.budget-month .priceValue').each(function () {
                         if ($(this).attr('campaignbudgeterror') != '') {
                             $('#divErrCampaignBudgetAllocation').show();
                             isError = true;
@@ -824,7 +825,7 @@
             }
             else if (AllocatedBy == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower()')
             {
-                if ($('#divErrCampaignBudgetAllocation').attr('display') == 'none') {//if (isErrorShown) {
+                if (isErrorShown) {
                     $('.budget-quarters .priceValue').each(function () {
                         if ($(this).attr('campaignbudgeterror') != '') {
                             $('#divErrCampaignBudgetAllocation').show();
@@ -1033,7 +1034,7 @@
         $('#disabledAllocatedBy').html($('#AllocatedBy').prev().find('.nl-field-toggle').html());
     }
 
-    $('#aclose').click(function () {
+    $('.ErrCampaignBudgetAllocation').click(function () {
         isErrorShown = true;
     });
 
