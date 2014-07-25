@@ -514,6 +514,8 @@
                 $('#slidepanel-container').load(url + '?id=' + id + '&RedirectType=' + Assortment, AssignDefaultValue);
             }
             $("#slidepanel").css("right", "0px");
+            //Start added by Kalpesh  #608: Budget allocation for Program
+            $("#slidepanel").addClass('sidebar-wide');
             myApp.hidePleaseWait();
         }
 

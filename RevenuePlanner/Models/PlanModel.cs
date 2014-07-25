@@ -92,6 +92,10 @@ namespace RevenuePlanner.Models
         public DateTime? TEndDate { get; set; }
 
         public bool IsDeployedToIntegration { get; set; }
+
+        //Start added by Kalpesh  #608: Budget allocation for Program
+        public double ProgramBudget { get; set; }
+        public string AllocatedBy { get; set; }
     }
 
     public class Plan_Campaign_Program_TacticModel
