@@ -134,10 +134,11 @@ namespace RevenuePlanner.Models
         public bool IsPlanEditable { get; set; }
     }
 
-    public class Plan_Tactic_MQL
+    public class Plan_Tactic_Values
     {
         public int PlanTacticId { get; set; }
         public double MQL { get; set; }
+        public double Revenue { get; set; }
     }
 
     /// <summary>

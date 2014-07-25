@@ -1969,14 +1969,15 @@ namespace RevenuePlanner.Helpers
         /// <param name="PlanTacticIds"></param>
         /// <param name="isRound"></param>
         /// <returns></returns>
-        public static List<Plan_Tactic_MQL> GetMQLValueTacticList(List<Plan_Campaign_Program_Tactic> PlanTacticList, bool isRound = true)
+        public static List<Plan_Tactic_Values> GetMQLValueTacticList(List<Plan_Campaign_Program_Tactic> PlanTacticList, bool isRound = true)
         {
             List<TacticStageValue> tacticStageList = GetTacticStageRelation(PlanTacticList, false);
-            List<Plan_Tactic_MQL> TacticMQLList = (from tactic in tacticStageList
-                                                   select new Plan_Tactic_MQL
+            List<Plan_Tactic_Values> TacticMQLList = (from tactic in tacticStageList
+                                                      select new Plan_Tactic_Values
                                                       {
                                                           PlanTacticId = tactic.TacticObj.PlanTacticId,
-                                                          MQL = isRound ? Math.Round(tactic.MQLValue, 0, MidpointRounding.AwayFromZero) : tactic.MQLValue
+                                                          MQL = isRound ? Math.Round(tactic.MQLValue, 0, MidpointRounding.AwayFromZero) : tactic.MQLValue,
+                                                          Revenue = tactic.RevenueValue
                                                       }).ToList();
             return TacticMQLList;
         }

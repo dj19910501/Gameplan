@@ -1942,12 +1942,13 @@ namespace RevenuePlanner.Controllers
             }
             //}
             //pcm.INQs = pc.INQs;
-            pcm.MQLs = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == pc.PlanCampaignId && t.IsDeleted == false).ToList()).Sum(tm => tm.MQL);
+            List<Plan_Tactic_Values> PlanTacticValuesList = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == pc.PlanCampaignId && t.IsDeleted == false).ToList());
+            pcm.MQLs = PlanTacticValuesList.Sum(tm => tm.MQL);
             pcm.Cost = Common.CalculateCampaignCost(pc.PlanCampaignId); //pc.Cost; // Modified for PL#440 by Dharmraj
             // Start Added By Dharmraj #567 : Budget allocation for campaign
             pcm.CampaignBudget = pc.CampaignBudget;
             pcm.AllocatedBy = pc.Plan.AllocatedBy;
-            pcm.Revenue = 0; // currently set as 0 bhavesh
+            pcm.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue)); //  Update by Bhavesh to Display Revenue
             // End Added By Dharmraj #567 : Budget allocation for campaign
             if (Sessions.User.UserId == pc.CreatedBy)
             {

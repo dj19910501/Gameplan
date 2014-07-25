@@ -4295,7 +4295,7 @@ namespace RevenuePlanner.Controllers
 
             // Added BY Bhavesh
             // Calculate MQL at runtime #376
-            List<Plan_Tactic_MQL> MQLTacticList = Common.GetMQLValueTacticList(TacticList);
+            List<Plan_Tactic_Values> MQLTacticList = Common.GetMQLValueTacticList(TacticList);
             List<ProjectedRevenueClass> tacticList = Common.ProjectedRevenueCalculateList(TacticList);
             List<ProjectedRevenueClass> tacticListCW = Common.ProjectedRevenueCalculateList(TacticList, true);
             var listModified = TacticList.Where(t => t.ModifiedDate != null).Select(t => t).ToList();
