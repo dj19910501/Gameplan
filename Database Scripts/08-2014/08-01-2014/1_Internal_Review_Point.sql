@@ -3,12 +3,6 @@
 -- This script will be check that ClientID field is exists or not in Role Table . 
 -- if it will be not in that table at that time we have to insert that field with mirgation of Existing data.
 
-Declare @Application_ID UNIQUEIDENTIFIER
-Declare @Client_ID UNIQUEIDENTIFIER
-
-Set @Application_ID = (Select ApplicationId from Application where Code ='MRP')
-Set @Client_ID = (Select ClientId from Client where Code = 'BLD')
-
 --Check that ClientId is exists in Role Table or not.
 IF NOT EXISTS (
 		SELECT *
@@ -18,11 +12,25 @@ IF NOT EXISTS (
 		)
 	begin
 	ALTER TABLE dbo.ROLE ADD ClientId UNIQUEIDENTIFIER CONSTRAINT ClientId_fk REFERENCES dbo.Client (ClientId)
+	end
+go 
 
+Declare @Application_ID UNIQUEIDENTIFIER
+Declare @Client_ID UNIQUEIDENTIFIER
+Set @Application_ID = (Select ApplicationId from Application where Code ='MRP')
+Set @Client_ID = (Select ClientId from Client where Code = 'BLD')
+
+
+IF ((SELECT count(*) FROM [ROLE] WHERE ClientId is not null) = 0)
+	begin
 -- Check that Role_Transform table is exists or not.
 -- If table is exists at that time we have apply Cross join on Role and Client Table
 
-DROP TABLE #Role_Temp
+
+IF OBJECT_ID(N'TempDB.dbo.#Role_Temp', N'U') IS NOT NULL
+BEGIN
+  DROP TABLE #Role_Temp
+END
 
 Create table #Role_Temp
 (
