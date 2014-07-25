@@ -584,13 +584,13 @@
     <Content Include="Properties\DataSources\Integration.BDSService.Role.datasource" />
     <Content Include="Properties\DataSources\Integration.BDSService.SecurityQuestion.datasource" />
     <Content Include="Properties\DataSources\Integration.BDSService.User.datasource" />
-    <None Include="Service References\BDSService\BDSService.disco" />
-    <None Include="Service References\BDSService\configuration91.svcinfo" />
-    <None Include="Service References\BDSService\configuration.svcinfo" />
-    <None Include="Service References\BDSService\Reference.svcmap">
+    <Content Include="Service References\BDSService\BDSService.disco" />
+    <Content Include="Service References\BDSService\configuration91.svcinfo" />
+    <Content Include="Service References\BDSService\configuration.svcinfo" />
+    <Content Include="Service References\BDSService\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
+    </Content>
     <Content Include="Views\Plan\PlanSelector.cshtml">
       <SubType>Code</SubType>
     </Content>
@@ -761,7 +761,18 @@
     <Content Include="Views\Organization\_userHierarchy.cshtml" />
     <Content Include="Views\Organization\ViewEditPermission.cshtml" />
     <Content Include="Views\Organization\CheckPermission.cshtml" />
-    <None Include="Service References\BDSService\BDSService.wsdl" />
+    <Content Include="Views\ExternalService\_integration.cshtml" />
+    <Content Include="Views\Organization\_organization.cshtml" />
+    <Content Include="Views\User\_myprofile.cshtml" />
+    <Content Include="Views\Shared\_Sidebar.cshtml" />
+    <Content Include="Views\Boost\_boost.cshtml" />
+    <Content Include="Views\Model\_model.cshtml" />
+    <Content Include="Views\Plan\_plan.cshtml" />
+    <Content Include="Views\Shared\_preferences.cshtml" />
+    <Content Include="Views\Model\_DuplicateModel.cshtml" />
+    <Content Include="Views\Plan\_NoModel.cshtml" />
+    <Content Include="Views\Plan\LineAssortment.cshtml" />
+    <Content Include="Service References\BDSService\BDSService.wsdl" />
     <None Include="Service References\BDSService\BDSService.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -777,16 +788,10 @@
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.ApplicationActivity.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
-    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.CustomRestriction.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserApplicationPermission.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserHierarchy.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.Client.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.CustomRestriction.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.Menu.datasource">
@@ -807,17 +812,12 @@
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.User.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
-    <Content Include="Views\ExternalService\_integration.cshtml" />
-    <Content Include="Views\Organization\_organization.cshtml" />
-    <Content Include="Views\User\_myprofile.cshtml" />
-    <Content Include="Views\Shared\_Sidebar.cshtml" />
-    <Content Include="Views\Boost\_boost.cshtml" />
-    <Content Include="Views\Model\_model.cshtml" />
-    <Content Include="Views\Plan\_plan.cshtml" />
-    <Content Include="Views\Shared\_preferences.cshtml" />
-    <Content Include="Views\Model\_DuplicateModel.cshtml" />
-    <Content Include="Views\Plan\_NoModel.cshtml" />
-    <Content Include="Views\Plan\LineAssortment.cshtml" />
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserApplicationPermission.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserHierarchy.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>
