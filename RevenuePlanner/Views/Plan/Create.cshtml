@@ -105,6 +105,7 @@
                             <span id="spanAllocatedBy">@Model.AllocatedBy</span>
                         }
                         }.
+                        <div class="nl-overlay"></div>
                         </div>
                         <div id="divPlanDefinationDisabled">
                             I'm using the 
@@ -133,7 +134,6 @@
                             <span id="averageDealSize" class="highlighted-budget-fields">@Model.AverageDealSize</span>
                         </div>
                         @* End - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
-													    <div class="nl-overlay"></div>
                         <!--To call js for forms animations-->
                         <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
                         <script>
@@ -175,76 +175,68 @@
                     <div id="divMonthlyBudget">
                         <div class="budget-month">
                             <span class="month">Jan</span>
-                            @*<span class="light-blue-background">5,000</span>*@
                             <input id="MY1" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
                             <input type="hidden" id="hdnMY1" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">Feb</span>
-                            @*<span class="light-blue-background">15,000</span>*@
                             <input id="MY2" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
                             <input type="hidden" id="hdnMY2" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">Mar</span>
-                            @*<span class="light-blue-background">40,000</span>*@
                             <input id="MY3" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
                             <input type="hidden" id="hdnMY3" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">Apr</span>
-                            @*<span class="light-blue-background">- - -</span>*@
                             <input id="MY4" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
                             <input type="hidden" id="hdnMY4" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">May</span>
-                            @*<span class="light-blue-background">2,190,000</span>*@
                             <input id="MY5" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
                             <input type="hidden" id="hdnMY5" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">Jun</span>
-                            @*<span class="light-blue-background">50,000</span>*@
                             <input id="MY6" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
                             <input type="hidden" id="hdnMY6" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">Jul</span>
-                            @*<span class="light-blue-background">- - -</span>*@
                             <input id="MY7" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
                             <input type="hidden" id="hdnMY7" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">Aug</span>
-                            @*<span class="light-blue-background">- - -</span>*@
                             <input id="MY8" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
                             <input type="hidden" id="hdnMY8" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">Sep</span>
-                            @*<span class="light-blue-background">- - -</span>*@
                             <input id="MY9" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
                             <input type="hidden" id="hdnMY9" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">Oct</span>
-                            @*<span class="light-blue-background">- - -</span>*@
                             <input id="MY10" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
                             <input type="hidden" id="hdnMY10" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">Nov</span>
-                            @*<span class="light-blue-background">- - -</span>*@
                             <input id="MY11" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
                             <input type="hidden" id="hdnMY11" value="0" />
                         </div>
                         <div class="budget-month">
                             <span class="month">Dec</span>
-                            @*<span class="light-blue-background">- - -</span>*@
                             <input id="MY12" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
                             <input type="hidden" id="hdnMY12" value="0" />
                         </div>
+                        <div class="budget-month">
+                            <span class="month">Unallocaed</span>
+                            <input id="unallocatedBudget" placeholder="---" maxlength="12" readonly="true" class="backgroundC6EBF3 text-align-right width75px input-table priceValue gray-input"/>
+                    </div>
                     </div>
                     <div id="divQuarterlyBudget" style="position: relative; left: 0px; width: 1020px;" class="mCSB_container mCS_no_scrollbar">
                         <div class="budget-quarters">
@@ -267,6 +259,10 @@
                             <input id="QY10" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
                             <input type="hidden" id="hdnQY4" value="0" />
                         </div>
+                        <div class="budget-quarters">
+                            <span class="month">Unallocaed</span>
+                            <input id="unallocatedBudget" placeholder="---" maxlength="12" readonly="true" class="backgroundC6EBF3 text-align-right width75px input-table priceValue gray-input"/>
+                    </div>
                     </div>
                 </div>
                 <div class="font30 alignCenter" id="divDefaultBudget">
@@ -277,7 +273,6 @@
                 <p>Allocated Campaigns Budget (this month):<span id="spnCampaignAllocatedBudget" class="source-sans-proregular">$0</span></p>
                 <p>Total Allocated:<span id="spnTotalAllocatedBudget" class="source-sans-proregular">$0</span></p>
                 <p>Total Budgeted:<span id="spnTotalBudget" class="source-sans-proregular"></span></p>
-                <p>Unallocated Budget:<span id="spnUnallocatedBudget" class="source-sans-proregular"></span></p>
             </div>
             <div id="divErrMoreAllocation" class="alert alert-error error-msg">
                 <a class="close">×</a>
@@ -299,13 +294,13 @@
     $(document).ready(
       function () {
           
-          $(".white-bg").mCustomScrollbar({
-              scrollButtons: {
-                  enable: true
-              },
-              horizontalScroll: true,
-              advanced: { autoExpandHorizontalScroll: true, updateOnContentResize: false }
-          });
+          //$(".white-bg").mCustomScrollbar({
+          //    scrollButtons: {
+          //        enable: true
+          //    },
+          //    horizontalScroll: true,
+          //    advanced: { autoExpandHorizontalScroll: true, updateOnContentResize: false }
+          //});
 
           var hdnPlanId = $("#hdnPlanId").val();
           if (hdnPlanId != 0) {
@@ -507,8 +502,8 @@
                                       $('#spnTotalAllocatedBudget').html('---');
                                       $('#spnTotalBudget').html(totalBudget);
                                       $('#divMonthQuarterAllocation').hide();
-                                      $('#spnUnallocatedBudget').html(totalBudget);
-                                      $('#spnUnallocatedBudget').removeClass('error-text');
+                                      $('#unallocatedBudget').val(FormatCommas($("#txtBudget").val().toString(), false));
+                                      $('#unallocatedBudget').removeClass('error-text');
                                       $('#spnCampaignAllocatedBudget').html('---');
                                   }
                                   else if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower()') {
@@ -517,14 +512,15 @@
                                       $('#divMonthlyBudget').show();
                                       $('#spnTotalBudget').html(totalBudget);
                                       $('#divQuarterlyBudget').hide();
-                                      $('#spnUnallocatedBudget').html(totalBudget);
+                                      $('#divMonthlyBudget').find('#unallocatedBudget').val(FormatCommas($("#txtBudget").val().toString(), false));
                                   }
                                   else if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower()') {
                                       $('#divMonthQuarterAllocation').show();
                                       $('#divDefaultBudget').hide();
                                       $('#divMonthlyBudget').hide();
-                                      $('#spnTotalBudget').html(FormatCurrency(totalBudget));
+                                      $('#spnTotalBudget').html(totalBudget);
                                       $('#divQuarterlyBudget').show();
+                                      $('#divQuarterlyBudget').find('#unallocatedBudget').val(FormatCommas($("#txtBudget").val().toString(), false));
                                   }
                                   GetAllocatedBudgetForPlan(hdnPlanId);
                               }
@@ -576,7 +572,7 @@
           }
           else {
               $('#divBudgetSummary').hide();
-              $('#spnUnallocatedBudget').html(FormatCurrency($("#txtBudget").val(), false));
+              $('#unallocatedBudget').val(FormatCommas($("#txtBudget").val().toString(), false));
           }
           @* End - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
 
@@ -766,23 +762,31 @@
     });
 
     $('.budget-month .priceValue').focus(function () {
+        if (this.id.toString() != 'unallocatedBudget') {
         checkCampaignBudget(this);
+        }
     });
 
     $('.budget-quarters .priceValue').focus(function () {
+        if (this.id.toString() != 'unallocatedBudget') {
         checkCampaignBudget(this);
+        }
     });
 
     $('.budget-month .priceValue').keyup(function () {
+        if (this.id.toString() != 'unallocatedBudget') {
         var allocatedBudget = calculateAllocatedBudgetMonthly();
         checkBudgetDifference(allocatedBudget);
         checkCampaignBudget(this);
+        }
     });
 
     $('.budget-quarters .priceValue').keyup(function () {
+        if (this.id.toString() != 'unallocatedBudget') {
         var allocatedBudget = calculateAllocatedBudgetQuarterly();
         checkBudgetDifference(allocatedBudget);
         checkCampaignBudget(this);
+        }
     });
 
     function checkCampaignBudget(input)
@@ -806,7 +810,7 @@
     {
         var allocatedBudget = 0;
         $('.budget-month .priceValue').each(function () {
-            if ($(this).val().trim() != '') {
+            if ($(this).val().trim() != '' && this.id.toString() != 'unallocatedBudget') {
                 var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
                 if (currentValue.match('^(0|[1-9][0-9]*)$')) {
                     allocatedBudget += parseInt(currentValue);
@@ -820,7 +824,7 @@
     {
         var allocatedBudget = 0;
         $('.budget-quarters .priceValue').each(function () {
-            if ($(this).val().trim() != '') {
+            if ($(this).val().trim() != '' && this.id.toString() != 'unallocatedBudget') {
                 var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
                 if (currentValue.match('^(0|[1-9][0-9]*)$')) {
                     allocatedBudget += parseInt(currentValue);
@@ -839,13 +843,13 @@
         if (totalBudget != 0) {
             if (allocatedBudget > totalBudget) {
                 $('#spnTotalAllocatedBudget').addClass('error-text');
-                $('#spnUnallocatedBudget').addClass('error-text');
-                $('#spnUnallocatedBudget').html('- ' + FormatCurrency(unAllocatedBudget, false));
+                $('#unallocatedBudget').addClass('error-text');
+                $('#unallocatedBudget').val(FormatCommas(unAllocatedBudget.toString(), false));
             }
             else {
                 $('#spnTotalAllocatedBudget').removeClass('error-text');
-                $('#spnUnallocatedBudget').removeClass('error-text');
-                $('#spnUnallocatedBudget').html(FormatCurrency(unAllocatedBudget, false));
+                $('#unallocatedBudget').removeClass('error-text');
+                $('#unallocatedBudget').val(FormatCommas(unAllocatedBudget.toString(), false));
             }
         }
     }
@@ -864,7 +868,7 @@
             {
                 if (isErrorShown) {
                     $('.budget-month .priceValue').each(function () {
-                        if ($(this).val().toString() != '' && $(this).hasClass('campaignBudgetError')) {
+                        if ($(this).val().toString() != '' && $(this).hasClass('campaignBudgetError') && this.id.toString() != 'unallocatedBudget') {
                             $('#divErrCampaignBudgetAllocation').show();
                             isError = true;
                             isErrorShown = false;
@@ -878,7 +882,7 @@
             {
                 if (isErrorShown) {
                     $('.budget-quarters .priceValue').each(function () {
-                        if ($(this).val().toString() != '' && $(this).hasClass('campaignBudgetError')) {
+                        if ($(this).val().toString() != '' && $(this).hasClass('campaignBudgetError') && this.id.toString() != 'unallocatedBudget') {
                             $('#divErrCampaignBudgetAllocation').show();
                             isError = true;
                             isErrorShown = false;
@@ -900,6 +904,7 @@
         var _inputs = [];
         if (inputsType != '') {
             $(inputsType).each(function () {
+                if (this.id.toString() != 'unallocatedBudget') {
                 if ($(this).val().trim() != '') {
                     var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
                     if (currentValue.match('^(0|[1-9][0-9]*)$')) {
@@ -911,6 +916,7 @@
                 }
                 else {
                     _inputs.push(0);
+                }
                 }
             });
             if (_planId != "" || _planId != "0") {
@@ -1060,11 +1066,15 @@
     function emptyAllBudgetFields()
     {
         $('.budget-month .priceValue').each(function () {
+            if (this.id.toString() != 'unallocatedBudget') {
             $(this).val('');
+            }
         });
 
         $('.budget-quarters .priceValue').each(function () {
+            if (this.id.toString() != 'unallocatedBudget') {
             $(this).val('');
+            }
         });            
     }
 
@@ -1091,3 +1101,4 @@
 
 </script>
 <script src="~/Scripts/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.mCustomScrollbar.css")" type="text/css" />

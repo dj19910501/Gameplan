@@ -262,6 +262,7 @@
     <Content Include="Content\css\DHTMLX\dhtmlxgantt.css" />
     <Content Include="Content\css\font-awesome.min.css" />
     <Content Include="Content\css\font.css" />
+    <Content Include="Content\css\jquery.mCustomScrollbar.css" />
     <Content Include="Content\css\jquery.slidepanel.css" />
     <Content Include="Content\css\jquery.treeview.css" />
     <Content Include="Content\css\NaturalLanguageForm\component.css" />
