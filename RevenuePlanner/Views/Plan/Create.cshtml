@@ -398,7 +398,7 @@
                       }
                   }
                   else if ($(this).next().attr('datadefault') == "SelectModel") {
-                      if ($("#Planid").val() == '' || $("#Planid").val() == '0') {
+                      //if ($("#Planid").val() == '' || $("#Planid").val() == '0') {
                           var tValue = $(this).children('a').text();
                           if (tValue == 'select') {
                               $(this).children('a').addClass("error-form");
@@ -408,11 +408,11 @@
                           else {
                               $(this).children('a').removeClass("error-form");
                           }
-                      }
+                      //}
                   }
                   @* Start - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
                   else if ($(this).next().attr('datadefault') == "SelectGoalType") {
-                      if ($("#Planid").val() == '' || $("#Planid").val() == '0') {
+                      //if ($("#Planid").val() == '' || $("#Planid").val() == '0') {
                           var tValue = $(this).children('a').text();
                           if (tValue == 'select') {
                               $(this).children('a').addClass("error-form");
@@ -422,10 +422,10 @@
                           else {
                               $(this).children('a').removeClass("error-form");
                           }
-                      }
+                      //}
                   }
                   else if ($(this).next().attr('datadefault') == "SelectAllocatedBy") {
-                      if ($("#Planid").val() == '' || $("#Planid").val() == '0') {
+                      //if ($("#Planid").val() == '' || $("#Planid").val() == '0') {
                           var tValue = $(this).children('a').text();
                           if (tValue == 'select') {
                               $(this).children('a').addClass("error-form");
@@ -435,7 +435,7 @@
                           else {
                               $(this).children('a').removeClass("error-form");
                           }
-                      }
+                      //}
                   }
                   @* End - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
               });
@@ -585,16 +585,21 @@
       });
 
     @* Start - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
-    $('#nl-form > div[class="nl-field nl-dd"]').find('li').click(function (e) {
-        if ($("#GoalType").val().toLowerCase() == 'revenue')
+    //$('#nl-form > div[class="nl-field nl-dd"]').find('li').click(function () {
+    $('#nl-form').find('.nl-field.nl-dd').find('li').click(function () {
+        if ($("#GoalType").val().toLowerCase() == 'revenue') {
             $('#revenueSign').show();
-        else
+        }
+        else {
             $('#revenueSign').hide();
+        }
 
-        if ($("#GoalType").val().toLowerCase() == '')
+        if ($("#GoalType").val().toLowerCase() == '') {
             $('#divBudgetSummary').hide();
-        else
+        }
+        else {
             $('#divBudgetSummary').show();
+        }
 
         var modelId = 0;
         var goalType = $("#GoalType").val();
@@ -742,11 +747,11 @@
         var selectedMonthBudget = parseInt($(input).val().trim().replace(/,/g, '').replace('$', ''));
         if (campaignBudget > selectedMonthBudget) {
             $('#spnCampaignAllocatedBudget').addClass('error-text');
-            $(input).attr('campaignBudgetError', $(input).prev().html());
+            $(input).addClass('campaignBudgetError');
         }
         else {
             $('#spnCampaignAllocatedBudget').removeClass('error-text');
-            $(input).removeAttr('campaignBudgetError');
+            $(input).removeClass('campaignBudgetError');
         }
         $(input).val(FormatCommas(selectedMonthBudget.toString(), false));
     }
@@ -813,7 +818,7 @@
             {
                 if (isErrorShown) {
                     $('.budget-month .priceValue').each(function () {
-                        if ($(this).attr('campaignbudgeterror') != '') {
+                        if ($(this).val().toString() != '' && $(this).hasClass('campaignBudgetError')) {
                             $('#divErrCampaignBudgetAllocation').show();
                             isError = true;
                             isErrorShown = false;
@@ -827,7 +832,7 @@
             {
                 if (isErrorShown) {
                     $('.budget-quarters .priceValue').each(function () {
-                        if ($(this).attr('campaignbudgeterror') != '') {
+                        if ($(this).val().toString() != '' && $(this).hasClass('campaignBudgetError')) {
                             $('#divErrCampaignBudgetAllocation').show();
                             isError = true;
                             isErrorShown = false;
@@ -937,10 +942,10 @@
                                                     $('#spnCampaignAllocatedBudget').html(FormatCurrency($('#hdnMY' + i).val(), false));
                                                 }
                                                 if (parseInt(campaignAllocatedAmount) > parseInt(allocatedAmount)) {
-                                                    $('#MY' + i).attr('campaignBudgetError', $('#MY' + i).prev().html());
+                                                    $('#MY' + i).addClass('campaignBudgetError');
                                                 }
                                                 else {
-                                                    $('#MY' + i).removeAttr('campaignBudgetError');
+                                                    $('#MY' + i).removeClass('campaignBudgetError');
                                                 }
                                             }
                                         }
@@ -967,10 +972,10 @@
                                                     $('#spnCampaignAllocatedBudget').html(FormatCurrency($('#hdnQY' + i).val(), false));
                                                 }
                                                 if (parseInt(campaignAllocatedAmoount) > parseInt(allocatedAmount)) {
-                                                    $('#QY' + i).attr('campaignBudgetError', $('#QY' + i).prev().html());
+                                                    $('#QY' + i).addClass('campaignBudgetError');
                                                 }
                                                 else {
-                                                    $('#QY' + i).removeAttr('campaignBudgetError');
+                                                    $('#QY' + i).removeClass('campaignBudgetError');
                                                 }
                                             }
                                         }

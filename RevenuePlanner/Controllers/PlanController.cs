@@ -5537,7 +5537,7 @@ namespace RevenuePlanner.Controllers
                         }
 
                         //-- Insert new budget allocation for plan
-                        if (inputValues.Length == 12)
+                        if (inputValues.Length == 12 && inputValues.Where(a => Convert.ToInt64(a) > 0).Any())
                         {
                             //-- Monthly Budget Allocation
                             for (int i = 0; i < 12; i++)
@@ -5553,7 +5553,7 @@ namespace RevenuePlanner.Controllers
                             }
                             isDBSaveChanges = true;
                         }
-                        else if (inputValues.Length == 4)
+                        else if (inputValues.Length == 4 && inputValues.Where(a => Convert.ToInt64(a) > 0).Any())
                         {
                             //-- Quarterly Budget Allocation
                             int j = 0;
