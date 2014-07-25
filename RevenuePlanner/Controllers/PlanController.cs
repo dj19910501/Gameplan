@@ -36,8 +36,14 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <returns></returns>
         /// added id parameter by kunal on 01/17/2014 for edit plan
-        public ActionResult Create(int id = 0)
+        public ActionResult Create(int id = 0,bool isBackFromAssortment=false)
         {
+            /*Added by Mitesh Vaishnav on 25/07/2014 for PL ticket 619*/
+            if (isBackFromAssortment == true)
+            {
+                TempData["IsBackFromAssortment"] = true;
+            }
+            /*End :Added by Mitesh Vaishnav on 25/07/2014 for PL ticket 619*/
             // Added by dharmraj to check user activity permission
             bool IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
             ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;

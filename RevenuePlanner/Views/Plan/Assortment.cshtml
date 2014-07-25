@@ -160,7 +160,14 @@
     ProgramID = @ViewBag.ProgramID
     ImprovementPlanProgramId = @ViewBag.ImprovementPlanProgramId
     $("#spanGoalValue").text(FormatCommas($("#spanGoalValue").text(), false));  @* Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
+    /*Added by Mitesh Vaishnav on 25/07/2014 for PL ticket 619*/
+    function EditPlan() {
+        var pid = parseInt('@Planid');
+        var url = '@Url.Content("~/Plan/Create?isBackFromAssortment=true&id=")';
 
+        window.location.href =url.replace('amp;','') + pid;
+    }
+    /*End : Added by Mitesh Vaishnav on 25/07/2014 for PL ticket 619*/
     //Added By : Kalpesh Sharma
     //PL #508 Set format for label in tool tip
     SetLabelFormaterWithTipsy("#spanBudget");
@@ -1407,9 +1414,15 @@
                                                 '</div>' +
                                             '</div>';
                 */
-                                    $html += '<div id="' + _programs[i].tactics[k].id + '" class="accordion-header">' +
-
-                                             '<a id="program_' + _programs[i].tactics[k].id + '" index="' + _programs[i].tactics[k].id + '" data-id-campaing="' + _programs[i].id + '" data-id-tactic="' + _programs[i].tactics[k].id + '" class="background-position30 accordion-toggle font-black chevron-right" data-toggle="collapse" href="#collapseThree' + _programs[i].tactics[k].id + '">';
+                                    $html += '<div id="' + _programs[i].tactics[k].id + '" class="accordion-header">';
+                                    if (typeof _programs[i].tactics[k].lineitems != 'undefined') {
+                                        if (_programs[i].tactics[k].lineitems.length > 0) {
+                                            $html += '<a id="program_' + _programs[i].tactics[k].id + '" index="' + _programs[i].tactics[k].id + '" data-id-campaing="' + _programs[i].id + '" data-id-tactic="' + _programs[i].tactics[k].id + '" class="background-position30 accordion-toggle font-black chevron-right" data-toggle="collapse" href="#collapseThree' + _programs[i].tactics[k].id + '">';
+                                        }
+                                        else {
+                                            $html += '<a id="program_' + _programs[i].tactics[k].id + '" index="' + _programs[i].tactics[k].id + '" data-id-campaing="' + _programs[i].id + '" data-id-tactic="' + _programs[i].tactics[k].id + '" class="background-position30 accordion-toggle font-black" data-toggle="collapse" href="#collapseThree' + _programs[i].tactics[k].id + '">';
+                                        }
+                                    }
                                     if (_programs[i].tactics[k].isOwner == 0) {
                                         $html += '<span class="delete-program width5" id="delTactic"></span>';
                                     }
@@ -1436,10 +1449,10 @@
                                                   '<div id="divlineitem" class="accordion-inner" index="' + _programs[i].tactics[k].lineitems[z].id + '">' +
                                                             '<span class="delete-program width5 " id="delLineItem"></span>' +
                                                             '<span class="underline">' + _programs[i].tactics[k].lineitems[z].title + '</span>' +
+                                                            '<span class="pull-right width50px text-right font-black">&nbsp;</span>' +
                                                             '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
-                                                            '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
-                                                            '<span class="pull-right width100px text-right font-black">$' + _programs[i].tactics[k].lineitems[z].cost + '</span>' +
-                                                          '<span class="pull-right text-right font-black">-</span>' +
+                                                            '<span class="pull-right width150px text-right font-black">$' + _programs[i].tactics[k].lineitems[z].cost + '</span>' +
+                                                          '<span class="pull-right width100px text-right font-black">-</span>' +
                                                   '</div>' +
                                             '</div>';
                                             }
@@ -1463,7 +1476,7 @@
                             }
                             $html += '<div class="accordion-body collapse in" data-id-program="' + pid + '" index="0" >' +
                                         '<div id="divTactic" class="accordion-inner CursorHand tactictitle" index="0">' +
-                                            '<span class="underline">Select Tactic</span>' +
+                                            '<span class="underline" style="padding-left:70px !important ;">Select Tactic</span>' +
                                         '</div>' +
                                     '</div>';
 

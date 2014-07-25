@@ -8,6 +8,11 @@
     bool IsBusinessUnitEditable = (bool)ViewBag.IsBusinessUnitEditable;    
     ViewBag.strplanid = strPlanid;//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49   
     ViewBag.PageTitle = "Create";//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49   
+    bool isBackFromAssortment = false;//Added by Mitesh vaishnav on 25/07/2014 for PL ticket 619
+    if (TempData["IsBackFromAssortment"] != null)
+    {
+        isBackFromAssortment = (bool)TempData["IsBackFromAssortment"];
+    }
 }
 
 @section nlFormContent{
@@ -582,6 +587,47 @@
           $('#divPlanDefinationEnabled').show();
           $('#divPlanDefinationDisabled').hide();
           $('#divErrCampaignBudgetAllocation').hide();
+          /* Added by Mitesh Vaishnav for PL ticket 619*/
+
+          if ('@isBackFromAssortment' == 'True') {
+              $('#button-back').css('display', 'block'); // .show();
+              $('#button-save').hide();
+              $('#divPlanBudgetAllocation').show();
+              $('#button-saveContinue').show();
+              $('#divPlanDefinationEnabled').hide();
+              $('#divPlanDefinationDisabled').show();
+              renderDisablePlanDefinationSection();
+              $('#divErrCampaignBudgetAllocation').hide();
+              $('#divErrMoreAllocation').hide();
+              var totalBudget = FormatCurrency($("#txtBudget").val(), false);
+              if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString().TrimEnd('s')].ToString().ToLower()') {
+                  $('#divDefaultBudget').show();
+                  $('#spnTotalAllocatedBudget').html('---');
+                  $('#spnTotalBudget').html(totalBudget);
+                  $('#divMonthQuarterAllocation').hide();
+                  $('#spnUnallocatedBudget').html(totalBudget);
+                  $('#spnUnallocatedBudget').removeClass('error-text');
+                  $('#spnCampaignAllocatedBudget').html('---');
+              }
+              else if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower()') {
+                  $('#divMonthQuarterAllocation').show();
+                  $('#divDefaultBudget').hide();
+                  $('#divMonthlyBudget').show();
+                  $('#spnTotalBudget').html(totalBudget);
+                  $('#divQuarterlyBudget').hide();
+                  $('#spnUnallocatedBudget').html(totalBudget);
+              }
+              else if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower()') {
+                  $('#divMonthQuarterAllocation').show();
+                  $('#divDefaultBudget').hide();
+                  $('#divMonthlyBudget').hide();
+                  $('#spnTotalBudget').html(FormatCurrency(totalBudget));
+                  $('#divQuarterlyBudget').show();
+              }
+          GetAllocatedBudgetForPlan('@strPlanid');
+          }
+
+          /*End : Added by Mitesh Vaishnav for PL ticket 619*/
       });
 
     @* Start - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
