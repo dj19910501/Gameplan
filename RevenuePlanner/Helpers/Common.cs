@@ -2681,7 +2681,19 @@ namespace RevenuePlanner.Helpers
             List<TacticStageValueRelation> TacticSatgeValueList = new List<TacticStageValueRelation>();
             string Size = Enums.StageType.Size.ToString();
             int ADSStageId = stageList.Single(s => s.Level == null && s.StageType == Size).StageId;
-            double bestInClassAdsValue = bestInClassStageRelation.Single(b => b.StageId == ADSStageId).Value;
+            
+            //Modified By Kalpesh Sharma : Internal Review Point #83 Error on home page when user login for Other Clients
+
+            double bestInClassAdsValue = 0;
+
+            var objbestInClassAdsValue = bestInClassStageRelation.SingleOrDefault(b => b.StageId == ADSStageId);
+
+            if (!string.IsNullOrEmpty(Convert.ToString(objbestInClassAdsValue)))
+            {
+                bestInClassAdsValue = objbestInClassAdsValue.Value;
+            }
+
+            
             List<PlanADSRelation> planADSList = GetPlanADSList(planIMPTacticList, improvementTypeWeightList, ADSStageId, Size, bestInClassAdsValue);
 
             foreach (Plan_Campaign_Program_Tactic tactic in tlist)
