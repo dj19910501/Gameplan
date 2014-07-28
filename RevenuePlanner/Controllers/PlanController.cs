@@ -127,6 +127,8 @@ namespace RevenuePlanner.Controllers
                 TempData["selectYearList"] = new SelectList(year);
                 /*end*/
 
+                var GoalTypeList = Common.GetGoalTypeList(Sessions.User.ClientId);
+
                 //added by kunal to fill the plan data in edit mode - 01/17/2014
                 if (id != 0)
                 {
@@ -136,7 +138,7 @@ namespace RevenuePlanner.Controllers
                     objPlanModel.Title = objplan.Title;
                     objPlanModel.Year = objplan.Year;
                     //objPlanModel.MQls = Convert.ToString(objplan.MQLs);
-                    objPlanModel.GoalType = objplan.GoalType;
+                    objPlanModel.GoalType = GoalTypeList.Where(a => a.Value == objplan.GoalType).Select(a => a.Text).FirstOrDefault();
                     objPlanModel.GoalValue = Convert.ToString(objplan.GoalValue);
                     objPlanModel.AllocatedBy = objplan.AllocatedBy;
                     objPlanModel.Budget = objplan.Budget;
@@ -173,7 +175,7 @@ namespace RevenuePlanner.Controllers
                 }
                 //end
 
-                TempData["goalTypeList"] = Common.GetGoalTypeList(Sessions.User.ClientId);
+                TempData["goalTypeList"] = GoalTypeList;
                 TempData["allocatedByList"] = new SelectList(Enums.PlanAllocatedByList.ToList(), "Key", "Value");
             }
             catch (Exception e)
@@ -1651,7 +1653,8 @@ namespace RevenuePlanner.Controllers
             pm.ModelTitle = plan.Model.Title + " " + plan.Model.Version;
             pm.Title = plan.Title;
             //pm.MQLDisplay = plan.MQLs;
-            pm.GoalType = plan.GoalType;
+            var GoalTypeList = Common.GetGoalTypeList(Sessions.User.ClientId);
+            pm.GoalType = GoalTypeList.Where(a => a.Value == plan.GoalType).Select(a => a.Text).FirstOrDefault();
             pm.GoalValue = plan.GoalValue.ToString();
             pm.AllocatedBy = plan.AllocatedBy;
             pm.ModelId = plan.ModelId;

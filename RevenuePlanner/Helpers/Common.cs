@@ -3503,8 +3503,8 @@ namespace RevenuePlanner.Helpers
                // new SelectListItem { Text = a.Title, Value = a.Code }).ToList();
             lstGoalTypeListFromDB.ForEach(a => a.Title = a.Title.ToLower());
             Stage objStage = new Stage();
-            objStage.Title = "revenue";
-            objStage.Code = "REVENUE";
+            objStage.Title = Enums.PlanGoalTypeList[Enums.PlanGoalType.Revenue.ToString()].ToString().ToLower();
+            objStage.Code = Enums.PlanGoalTypeList[Enums.PlanGoalType.Revenue.ToString()].ToString().ToUpper();
             lstGoalTypeListFromDB.Add(objStage);
             return new SelectList(lstGoalTypeListFromDB, "Code", "Title");
             
@@ -3538,9 +3538,12 @@ namespace RevenuePlanner.Helpers
                 List<int> mqlStagelist = new List<int>();
                 List<int> cwStagelist = new List<int>();
                 
+                string CR = Enums.StageType.CR.ToString();
+                string marketing = Enums.Funnel.Marketing.ToString();
+                var ModelFunnelStageList = dbStage.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && mfs.StageType == CR && mfs.Model_Funnel.Funnel.Title == marketing).ToList();
+
                 if (goalType != "" && goalValue != "" && goalValue != "0")
                 {
-                    string CR = Enums.StageType.CR.ToString();
                     double inputValue = Convert.ToInt64(goalValue.Trim().Replace(",", "").Replace("$", ""));
 
                     if (goalType == Enums.PlanGoalType.INQ.ToString())
@@ -3548,13 +3551,13 @@ namespace RevenuePlanner.Helpers
                         // Calculate MQL
                         int projectedStageLevel = levelINQ;
                         mqlStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelMQL).Select(s => s.StageId).ToList();
-                        var modelFunnelStageListMQL = dbStage.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && mqlStagelist.Contains(mfs.StageId) && mfs.StageType == CR).ToList();
+                        var modelFunnelStageListMQL = ModelFunnelStageList.Where(mfs => mqlStagelist.Contains(mfs.StageId)).ToList();
                         double MQLValue = (inputValue) * (modelFunnelStageListMQL.Aggregate(1.0, (x, y) => x * (y.Value / 100)));
                         objBudgetAllocationModel.MQLValue = MQLValue;
 
                         // Calculate Revenue
                         cwStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level <= levelCW).Select(s => s.StageId).ToList();
-                        var modelFunnelStageListCW = dbStage.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && mqlStagelist.Contains(mfs.StageId) && cwStagelist.Contains(mfs.StageId) && mfs.StageType == CR).ToList();
+                        var modelFunnelStageListCW = ModelFunnelStageList.Where(mfs => cwStagelist.Contains(mfs.StageId)).ToList();
                         double RevenueValue = (inputValue) * (modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100))) * averageDealSize;
                         objBudgetAllocationModel.RevenueValue = RevenueValue;
                     }
@@ -3563,13 +3566,13 @@ namespace RevenuePlanner.Helpers
                         // Calculate INQ
                         int projectedStageLevel = levelINQ;
                         mqlStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelMQL).Select(s => s.StageId).ToList();
-                        var modelFunnelStageListINQ = dbStage.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && mqlStagelist.Contains(mfs.StageId) && mfs.StageType == CR).ToList();
+                        var modelFunnelStageListINQ = ModelFunnelStageList.Where(mfs => mqlStagelist.Contains(mfs.StageId)).ToList();
                         double INQValue = (inputValue) / (modelFunnelStageListINQ.Aggregate(1.0, (x, y) => x * (y.Value / 100)));
                         objBudgetAllocationModel.INQValue = INQValue;
 
                         // Calculate Revenue
-                        cwStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level <= levelCW).Select(s => s.StageId).ToList();
-                        var modelFunnelStageListCW = dbStage.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && mqlStagelist.Contains(mfs.StageId) && cwStagelist.Contains(mfs.StageId) && mfs.StageType == CR).ToList();
+                        cwStagelist = stageList.Where(s => s.Level >= levelMQL && s.Level <= levelCW).Select(s => s.StageId).ToList();
+                        var modelFunnelStageListCW = ModelFunnelStageList.Where(mfs => cwStagelist.Contains(mfs.StageId)).ToList();
                         double RevenueValue = (INQValue) * (modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100))) * averageDealSize;
                         objBudgetAllocationModel.RevenueValue = RevenueValue;
 
@@ -3577,15 +3580,15 @@ namespace RevenuePlanner.Helpers
                     else if (goalType == Enums.PlanGoalType.Revenue.ToString().ToUpper())
                     {
                         // Calculate INQ
-                        int projectedStageLevel = levelINQ;
-                        mqlStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelMQL).Select(s => s.StageId).ToList();
-                        cwStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level <= levelCW).Select(s => s.StageId).ToList();
-                        var modelFunnelStageListCW = dbStage.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && mqlStagelist.Contains(mfs.StageId) && cwStagelist.Contains(mfs.StageId) && mfs.StageType == CR).ToList();
-                        double INQValue = (inputValue) / ((modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100))) * averageDealSize);
+                        cwStagelist = stageList.Where(s => s.Level >= levelINQ && s.Level <= levelCW).Select(s => s.StageId).ToList();
+                        var modelFunnelStageListCW = ModelFunnelStageList.Where(mfs => cwStagelist.Contains(mfs.StageId)).ToList();
+                        double convalue = ((modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100))) * averageDealSize);
+                        double INQValue = (inputValue) / convalue;//((modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100))) * averageDealSize);
                         objBudgetAllocationModel.INQValue = INQValue;
 
                         // Calculate MQL
-                        var modelFunnelStageListMQL = dbStage.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && mqlStagelist.Contains(mfs.StageId) && mfs.StageType == CR).ToList();
+                        cwStagelist = stageList.Where(s => s.Level >= levelMQL && s.Level <= levelCW).Select(s => s.StageId).ToList();
+                        var modelFunnelStageListMQL = ModelFunnelStageList.Where(mfs => cwStagelist.Contains(mfs.StageId)).ToList();
                         double MQLValue = (INQValue) * (modelFunnelStageListMQL.Aggregate(1.0, (x, y) => x * (y.Value / 100)));
                         objBudgetAllocationModel.MQLValue = MQLValue;
                     }

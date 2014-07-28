@@ -3,10 +3,10 @@
 @{
     ViewBag.Title = "Plan Definition";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    string strPlanid = Convert.ToString(Model.PlanId);
+    string strPlanId = Convert.ToString(Model.PlanId);
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     bool IsBusinessUnitEditable = (bool)ViewBag.IsBusinessUnitEditable;    
-    ViewBag.strplanid = strPlanid;//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49   
+    ViewBag.strplanid = strPlanId;//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49   
     ViewBag.PageTitle = "Create";//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49   
     bool isBackFromAssortment = false;//Added by Mitesh vaishnav on 25/07/2014 for PL ticket 619
     if (TempData["IsBackFromAssortment"] != null)
@@ -21,7 +21,7 @@
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
 }
 
-@Html.Hidden("hdnPlanId", strPlanid, new { id = "hdnPlanId" })
+@Html.Hidden("hdnPlanId", strPlanId, new { id = "hdnPlanId" })
 @Html.Hidden("IsBusinessUnitEditable", IsBusinessUnitEditable)
 
 @section Sidebar
@@ -55,7 +55,7 @@
                         I'm using the 
 					    @*@Html.DropDownList("ddlModel", (SelectList)TempData["selectList"])*@
                         @{
-                        if (strPlanid == "" || strPlanid == "0")//if (strPlanid == "" || strPlanid == "0" || Model.IsDirector)
+                        if (strPlanId == "" || strPlanId == "0")//if (strPlanId == "" || strPlanId == "0" || Model.IsDirector)
                         {
                             @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], new { datadefault = "SelectModel", @class = "myValue", placeholder = @Model.ModelId })
                         }
@@ -64,11 +64,11 @@
                             <span id="spandef">@Model.ModelTitle</span>
                         }
                         }
-                        model to create a new plan called						
-														@Html.TextBoxFor(model => model.Title, new { placeholder = @Model.Title, datasubline = "For example: <em>2014 North American Events</em>", datadefault = "Title", maxlength = "50", @class = "myValue" })
+                        model to create a plan called						
+						@Html.TextBoxFor(model => model.Title, new { placeholder = @Model.Title, datasubline = "For example: <em>2014 North American Events</em>", datadefault = "Title", maxlength = "50", @class = "myValue" })
                         in
                         @{
-                        if(strPlanid == "" || strPlanid == "0"  || (bool)ViewBag.IsBusinessUnitEditable == true)
+                        if(strPlanId == "" || strPlanId == "0"  || (bool)ViewBag.IsBusinessUnitEditable == true)
                         {
                          @Html.DropDownListFor(m => m.Year, (SelectList)TempData["selectYearList"], new { placeholder = @Model.Year, @class = "myValue" })
                         }
@@ -80,9 +80,9 @@
                         @* Start - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
                         with a
                         @{
-                        if (strPlanid == "" || strPlanid == "0" || (bool)ViewBag.IsBusinessUnitEditable == true)
+                        if (strPlanId == "" || strPlanId == "0" || (bool)ViewBag.IsBusinessUnitEditable == true)
                         {
-                            @Html.DropDownListFor(m => m.GoalType, (SelectList)TempData["goalTypeList"], "select", new { datadefault = "SelectGoalType", @class = "myValue", placeholder = @Model.GoalType})
+                            @Html.DropDownListFor(m => m.GoalType, (SelectList)TempData["goalTypeList"], "select", new { datadefault = "SelectGoalType", @class = "myValue calculateBudget", placeholder = @Model.GoalType})
                         }
                         else
                         {
@@ -96,7 +96,7 @@
                         @Html.TextBoxFor(model => model.Budget, new { placeholder = @Model.Budget, datasubline = "For example: <em>$800,000</em>", datadefault = "Budget", formatType = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, id = "txtBudget", @class = "myValueFormat" })
                         allocated by
                         @{
-                        if (strPlanid == "" || strPlanid == "0" || (bool)ViewBag.IsBusinessUnitEditable == true)    
+                        if (strPlanId == "" || strPlanId == "0" || (bool)ViewBag.IsBusinessUnitEditable == true)    
                         {
                             @Html.DropDownListFor(m => m.AllocatedBy, (SelectList)TempData["allocatedByList"], "select", new { datadefault = "SelectAllocatedBy", @class = "myValue", placeholder = @Model.AllocatedBy})
                         }
@@ -110,7 +110,7 @@
                         <div id="divPlanDefinationDisabled">
                             I'm using the 
                             <span id="disabledModelTitle"></span> 
-                            model to create a new plan called 
+                            model to create a plan called 
                             <span id="disabledPlanTitle"></span> in 
                             <span id="disabledPlanYear"></span> 
                             with a
@@ -129,8 +129,7 @@
                             and 
                             <span id="input2" class="highlighted-budget-fields"></span>
                             <span id="msg2" class="highlighted-budget-fields"></span>
-                            with an
-                            average deal size of
+                            with an<span class="highlighted-budget-fields"> average deal size of</span>
                             <span id="averageDealSize" class="highlighted-budget-fields">@Model.AverageDealSize</span>
                         </div>
                         @* End - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
@@ -155,7 +154,7 @@
                     <input type="button" value="Next" id="button-save" class="btn btn-blue text-shadow-blue source-sans-proregular padding-side20" />
                     <input type="button" value="Back" id="button-back" class="btn btn-gray text-shadow-blue source-sans-proregular padding-side20" />
                 </td>
-                @Html.Hidden("Planid", strPlanid)
+                @*@Html.Hidden("PlanId", strPlanId)*@           @* Commented By Sohel Pathan on 28/07/2014 for PL ticket #597 as PlanId ID conflict because used twice. *@
                 @Html.HiddenFor(model => model.ModelId)
                 @Html.HiddenFor(model => model.PlanId)
                 @Html.HiddenFor(model => model.TotalAllocatedCampaignBudget)
@@ -247,17 +246,17 @@
                         <div class="budget-quarters">
                             <span class="month">Q2</span>
                             <input id="QY4" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
-                            <input type="hidden" id="hdnQY2" value="0" />
+                            <input type="hidden" id="hdnQY4" value="0" />
                         </div>
                         <div class="budget-quarters">
                             <span class="month">Q3</span>
                             <input id="QY7" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
-                            <input type="hidden" id="hdnQY3" value="0" />
+                            <input type="hidden" id="hdnQY7" value="0" />
                         </div>
                         <div class="budget-quarters">
                             <span class="month">Q4</span>
                             <input id="QY10" placeholder="---" maxlength="12" class="backgroundC6EBF3 text-align-right width75px input-table priceValue"/>
-                            <input type="hidden" id="hdnQY4" value="0" />
+                            <input type="hidden" id="hdnQY10" value="0" />
                         </div>
                         <div class="budget-quarters">
                             <span class="month">Unallocaed</span>
@@ -270,7 +269,10 @@
 				</div>					
             </div>
             <div class="budget-result source-sans-prolight">
-                <p>Allocated Campaigns Budget (this month):<span id="spnCampaignAllocatedBudget" class="source-sans-proregular">$0</span></p>
+                <p>
+                    <span id="spnThisMonth">Allocated Campaigns Budget (this month):</span>
+                    <span id="spnThisQuarter">Allocated Campaigns Budget (this quarter):</span>
+                    <span id="spnCampaignAllocatedBudget" class="source-sans-proregular">$0</span></p>
                 <p>Total Allocated:<span id="spnTotalAllocatedBudget" class="source-sans-proregular">$0</span></p>
                 <p>Total Budgeted:<span id="spnTotalBudget" class="source-sans-proregular"></span></p>
             </div>
@@ -398,7 +400,7 @@
                       }
                   }
                   else if ($(this).next().attr('datadefault') == "SelectModel") {
-                      //if ($("#Planid").val() == '' || $("#Planid").val() == '0') {
+                      //if ($("#PlanId").val() == '' || $("#PlanId").val() == '0') {
                           var tValue = $(this).children('a').text();
                           if (tValue == 'select') {
                               $(this).children('a').addClass("error-form");
@@ -412,7 +414,7 @@
                   }
                   @* Start - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
                   else if ($(this).next().attr('datadefault') == "SelectGoalType") {
-                      //if ($("#Planid").val() == '' || $("#Planid").val() == '0') {
+                      //if ($("#PlanId").val() == '' || $("#PlanId").val() == '0') {
                           var tValue = $(this).children('a').text();
                           if (tValue == 'select') {
                               $(this).children('a').addClass("error-form");
@@ -425,7 +427,7 @@
                       //}
                   }
                   else if ($(this).next().attr('datadefault') == "SelectAllocatedBy") {
-                      //if ($("#Planid").val() == '' || $("#Planid").val() == '0') {
+                      //if ($("#PlanId").val() == '' || $("#PlanId").val() == '0') {
                           var tValue = $(this).children('a').text();
                           if (tValue == 'select') {
                               $(this).children('a').addClass("error-form");
@@ -465,6 +467,7 @@
               //if (reason == 'user') {
               //    return false;
               //}
+
               if (!isError) {
                   $("#GoalValue").val(ReplaceCC($("#GoalValue").val()));    @* Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
                   $("#txtBudget").val(ReplaceCC($("#txtBudget").val()));
@@ -487,6 +490,7 @@
                               else if (data.id != 0) {
                                   //window.location.href = data.redirect;
                                   //return;
+                                  $('#PlanId').val(data.id.toString());
                                   $('#button-back').css('display', 'block'); // .show();
                                   $('#button-save').hide();
                                   $('#divPlanBudgetAllocation').show();
@@ -505,6 +509,8 @@
                                       $('#unallocatedBudget').val(FormatCommas($("#txtBudget").val().toString(), false));
                                       $('#unallocatedBudget').removeClass('error-text');
                                       $('#spnCampaignAllocatedBudget').html('---');
+                                      $('#spnThisQuarter').hide();
+                                      $('#spnThisMonth').show();
                                   }
                                   else if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower()') {
                                       $('#divMonthQuarterAllocation').show();
@@ -513,6 +519,8 @@
                                       $('#spnTotalBudget').html(totalBudget);
                                       $('#divQuarterlyBudget').hide();
                                       $('#divMonthlyBudget').find('#unallocatedBudget').val(FormatCommas($("#txtBudget").val().toString(), false));
+                                      $('#spnThisQuarter').hide();
+                                      $('#spnThisMonth').show();
                                   }
                                   else if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower()') {
                                       $('#divMonthQuarterAllocation').show();
@@ -521,6 +529,8 @@
                                       $('#spnTotalBudget').html(totalBudget);
                                       $('#divQuarterlyBudget').show();
                                       $('#divQuarterlyBudget').find('#unallocatedBudget').val(FormatCommas($("#txtBudget").val().toString(), false));
+                                      $('#spnThisQuarter').show();
+                                      $('#spnThisMonth').hide();
                                   }
                                   GetAllocatedBudgetForPlan(hdnPlanId);
                               }
@@ -576,6 +586,7 @@
           }
           @* End - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
 
+          @* Start - Added by Sohel Pathan on 25/07/2014 for PL ticket #597 *@
           $('#button-back').hide();
           $('#divPlanBudgetAllocation').hide();
           $('#divErrMoreAllocation').hide();
@@ -583,6 +594,10 @@
           $('#divPlanDefinationEnabled').show();
           $('#divPlanDefinationDisabled').hide();
           $('#divErrCampaignBudgetAllocation').hide();
+          $('#spnThisQuarter').hide();
+          $('#spnThisMonth').show();
+          @* End - Added by Sohel Pathan on 25/07/2014 for PL ticket #597 *@
+
           /* Added by Mitesh Vaishnav for PL ticket 619*/
 
           if ('@isBackFromAssortment' == 'True') {
@@ -620,7 +635,7 @@
                   $('#spnTotalBudget').html(FormatCurrency(totalBudget));
                   $('#divQuarterlyBudget').show();
               }
-          GetAllocatedBudgetForPlan('@strPlanid');
+          GetAllocatedBudgetForPlan('@strPlanId');
           }
 
           /*End : Added by Mitesh Vaishnav for PL ticket 619*/
@@ -629,31 +644,34 @@
     @* Start - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
     //$('#nl-form > div[class="nl-field nl-dd"]').find('li').click(function () {
     $('#nl-form').find('.nl-field.nl-dd').find('li').click(function () {
-        if ($("#GoalType").val().toLowerCase() == 'revenue') {
-            $('#revenueSign').show();
-        }
-        else {
-            $('#revenueSign').hide();
-        }
+        var element = $(this).parent().parent().next();
+        if (element.hasClass('calculateBudget')) {
+            if ($("#GoalType").val().toLowerCase() == 'revenue') {
+                $('#revenueSign').show();
+            }
+            else {
+                $('#revenueSign').hide();
+            }
 
-        if ($("#GoalType").val().toLowerCase() == '') {
-            $('#divBudgetSummary').hide();
-        }
-        else {
-            $('#divBudgetSummary').show();
-        }
+            if ($("#GoalType").val().toLowerCase() == '') {
+                $('#divBudgetSummary').hide();
+            }
+            else {
+                $('#divBudgetSummary').show();
+            }
 
-        var modelId = 0;
-        var goalType = $("#GoalType").val();
-        var goalValue = $("#GoalValue").val();
+            var modelId = 0;
+            var goalType = $("#GoalType").val();
+            var goalValue = $("#GoalValue").val();
 
-        if ($('#ModelId').val() != '') {
-            modelId = $('#ModelId').val();
-            $('#averageDealSize').html("0");
+            if ($('#ModelId').val() != '') {
+                modelId = $('#ModelId').val();
+                $('#averageDealSize').html("0");
+            }
+
+            if (goalType != '')
+                calculateBudget(modelId, goalType, goalValue);
         }
-
-        if (goalType != '')
-            calculateBudget(modelId, goalType, goalValue);
     });
 
     function calculateBudget(_modelId, _goalType, _goalValue)
@@ -679,12 +697,12 @@
             }
         });
     }
-
-    $('.priceValue').blur(function () {
+    
+    $('#GoalValue').parent().find('.priceValue').change(function () {
         if (!$(this).parent().hasClass('budget-month') && !$(this).parent().hasClass('budget-quarters')) {
             var modelId = 0;
             var goalType = $("#GoalType").val();
-            var goalValue = $("#GoalValue").val();
+            var goalValue = $('#GoalValue').parent().find('.priceValue').val();
 
             if ($('#ModelId').val() != '')
                 modelId = $('#ModelId').val();
@@ -776,7 +794,7 @@
     $('.budget-month .priceValue').keyup(function () {
         if (this.id.toString() != 'unallocatedBudget') {
         var allocatedBudget = calculateAllocatedBudgetMonthly();
-        checkBudgetDifference(allocatedBudget);
+        checkBudgetDifference(allocatedBudget, $('#divMonthlyBudget'));
         checkCampaignBudget(this);
         }
     });
@@ -784,7 +802,7 @@
     $('.budget-quarters .priceValue').keyup(function () {
         if (this.id.toString() != 'unallocatedBudget') {
         var allocatedBudget = calculateAllocatedBudgetQuarterly();
-        checkBudgetDifference(allocatedBudget);
+        checkBudgetDifference(allocatedBudget, $('#divQuarterlyBudget'));
         checkCampaignBudget(this);
         }
     });
@@ -834,22 +852,23 @@
         return allocatedBudget;
     }
 
-    function checkBudgetDifference(allocatedBudget)
+    function checkBudgetDifference(allocatedBudget, allocatedBy)
     {
         var totalBudget = parseInt(ReplaceCC($("#txtBudget").val()));
         $('#spnTotalAllocatedBudget').html(FormatCurrency(allocatedBudget, false));
         var unAllocatedBudget = totalBudget - allocatedBudget;
 
         if (totalBudget != 0) {
+            
+            $(allocatedBy).find('#unallocatedBudget').val(FormatCommas(unAllocatedBudget.toString(), false));
+            
             if (allocatedBudget > totalBudget) {
                 $('#spnTotalAllocatedBudget').addClass('error-text');
-                $('#unallocatedBudget').addClass('error-text');
-                $('#unallocatedBudget').val(FormatCommas(unAllocatedBudget.toString(), false));
+                $(allocatedBy).find('#unallocatedBudget').addClass('error-text');
             }
             else {
                 $('#spnTotalAllocatedBudget').removeClass('error-text');
-                $('#unallocatedBudget').removeClass('error-text');
-                $('#unallocatedBudget').val(FormatCommas(unAllocatedBudget.toString(), false));
+                $(allocatedBy).find('#unallocatedBudget').removeClass('error-text');
             }
         }
     }
@@ -870,6 +889,10 @@
                     $('.budget-month .priceValue').each(function () {
                         if ($(this).val().toString() != '' && $(this).hasClass('campaignBudgetError') && this.id.toString() != 'unallocatedBudget') {
                             $('#divErrCampaignBudgetAllocation').show();
+                            var errorMsg = '@RevenuePlanner.Helpers.Common.objCached.ErrMsgLessCampaignBudget ';
+                            errorMsg += $(this).prev().html() + ' month';
+                            errorMsg += '. <br />If you want to continue, hit Save & Continue below.';
+                            $('#divErrCampaignBudgetAllocation').find('.source-sans-probold').html(errorMsg);
                             isError = true;
                             isErrorShown = false;
                             return false;
@@ -884,6 +907,10 @@
                     $('.budget-quarters .priceValue').each(function () {
                         if ($(this).val().toString() != '' && $(this).hasClass('campaignBudgetError') && this.id.toString() != 'unallocatedBudget') {
                             $('#divErrCampaignBudgetAllocation').show();
+                            var errorMsg = '@RevenuePlanner.Helpers.Common.objCached.ErrMsgLessCampaignBudget ';
+                            errorMsg += $(this).prev().html() + ' quarter';
+                            errorMsg += '. <br />If you want to continue, hit Save & Continue below.';
+                            $('#divErrCampaignBudgetAllocation').find('.source-sans-probold').html(errorMsg);
                             isError = true;
                             isErrorShown = false;
                             return false;
@@ -900,7 +927,7 @@
 
     function saveBudgetAllocation(inputsType)
     {
-        var _planId = $('#Planid').val();
+        var _planId = $('#PlanId').val();
         var _inputs = [];
         if (inputsType != '') {
             $(inputsType).each(function () {
@@ -1005,7 +1032,7 @@
 
                                     var allocatedBudget = calculateAllocatedBudgetMonthly();
                                     $('#spnTotalAllocatedBudget').html(FormatCurrency(allocatedBudget, false));
-                                    checkBudgetDifference(allocatedBudget);
+                                    checkBudgetDifference(allocatedBudget, $('#divMonthlyBudget'));
                                 }
                                 else if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower()') {
                                     var i;
@@ -1035,11 +1062,11 @@
 
                                     var allocatedBudget = calculateAllocatedBudgetQuarterly();
                                     $('#spnTotalAllocatedBudget').html(FormatCurrency(allocatedBudget, false));
-                                    checkBudgetDifference(allocatedBudget);
+                                    checkBudgetDifference(allocatedBudget, $('#divQuarterlyBudget'));
                                 }
                                 else if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString().TrimEnd('s')].ToString().ToLower()')
                                 {
-                                    checkBudgetDifference(0);
+                                    checkBudgetDifference(0, $('#divMonthlyBudget'));
                                 }
                             }
                             else
@@ -1084,13 +1111,13 @@
         $('#disabledModelTitle').html($('#spandef').html());
         $('#disabledPlanTitle').html($('#Title').prev().find('.nl-field-toggle').html());
         $('#disabledPlanYear').html($('#Year').val());
-        if ($('#GoalType').html().toLowerCase() == "revenue") {
-            $('#disabledGoalType').html("$" + $('#GoalType').prev().find('.nl-field-toggle').html());
+        $('#disabledGoalType').html($('#GoalType').prev().find('.nl-field-toggle').html());
+        if ($('#GoalType').val().toLowerCase() == "revenue") {
+            $('#disabledGoalValue').html("$"+ $('#GoalValue').prev().find('.nl-field-toggle').html());
         }
         else {
-            $('#disabledGoalType').html($('#GoalType').prev().find('.nl-field-toggle').html());
+            $('#disabledGoalValue').html($('#GoalValue').prev().find('.nl-field-toggle').html());
         }
-        $('#disabledGoalValue').html($('#GoalValue').prev().find('.nl-field-toggle').html());
         $('#disabledBudgetValue').html($('#txtBudget').prev().find('.nl-field-toggle').html());
         $('#disabledAllocatedBy').html($('#AllocatedBy').prev().find('.nl-field-toggle').html());
     }

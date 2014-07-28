@@ -706,7 +706,7 @@
 	</Field>
 	<Field>
 		<Name>ErrMsgLessCampaignBudget</Name>
-		<value>Your plan budget is lower than the total allocated campaigns budget. If you want to continue, hit Save &amp; Continue below.</value>
+		<value>Your plan budget is lower than the total allocated campaigns budget in</value>
 	</Field>
 	<Field>
 		<Name>ErrMsgBudgetAllocationExceeds</Name>
@@ -733,7 +733,7 @@
 	<Field>
 		<Name>AllocateMoreThanBudgetedCustom</Name>
 		<value>You cannot allocate more than budgeted for</value>
-	</Field>  
+	</Field>
 	<!-- Start - Added By Dharmraj #574 -->
 	<Field>
 		<Name>ConfirmationForDeleteLineItem</Name>
