@@ -153,92 +153,7 @@
                         </div>
                         <div class="budget-collapse">
                             <div class="white-bg">
-                                @if (AllocatedBy == Enums.PlanAllocatedBy.months.ToString())
-                                {
-                                    <div class="budget-month">
-                                        <span class="month">Jan</span>
-                                        <span class="light-blue-background">
-                                            <input id="Y1" class="priceValue" placeholder="- - -" /></span>
-                                    </div>
-                                    <div class="budget-month">
-                                        <span class="month">Feb</span>
-                                        <span class="light-blue-background">
-                                            <input id="Y2" class="priceValue" placeholder="- - -" /></span>
-                                    </div>
-                                    <div class="budget-month">
-                                        <span class="month">Mar</span>
-                                        <span class="light-blue-background">
-                                            <input id="Y3" class="priceValue" placeholder="- - -" /></span>
-                                    </div>
-                                    <div class="budget-month">
-                                        <span class="month">Apr</span>
-                                        <span class="light-blue-background">
-                                            <input id="Y4" class="priceValue" placeholder="- - -" /></span>
-                                    </div>
-                                    <div class="budget-month">
-                                        <span class="month">May</span>
-                                        <span class="light-blue-background">
-                                            <input id="Y5" class="priceValue" placeholder="- - -" /></span>
-                                    </div>
-                                    <div class="budget-month">
-                                        <span class="month">Jun</span>
-                                        <span class="light-blue-background">
-                                            <input id="Y6" class="priceValue" placeholder="- - -" /></span>
-                                    </div>
-                                    <div class="budget-month">
-                                        <span class="month">Jul</span>
-                                        <span class="light-blue-background">
-                                            <input id="Y7" class="priceValue" placeholder="- - -" /></span>
-                                    </div>
-                                    <div class="budget-month">
-                                        <span class="month">Aug</span>
-                                        <span class="light-blue-background">
-                                            <input id="Y8" class="priceValue" placeholder="- - -" /></span>
-                                    </div>
-                                    <div class="budget-month">
-                                        <span class="month">Sep</span>
-                                        <span class="light-blue-background">
-                                            <input id="Y9" class="priceValue" placeholder="- - -" /></span>
-                                    </div>
-                                    <div class="budget-month">
-                                        <span class="month">Oct</span>
-                                        <span class="light-blue-background">
-                                            <input id="Y10" class="priceValue" placeholder="- - -" /></span>
-                                    </div>
-                                    <div class="budget-month">
-                                        <span class="month">Nov</span>
-                                        <span class="light-blue-background">
-                                            <input id="Y11" class="priceValue" placeholder="- - -" /></span>
-                                    </div>
-                                    <div class="budget-month">
-                                        <span class="month">Dec</span>
-                                        <span class="light-blue-background">
-                                            <input id="Y12" class="priceValue" placeholder="- - -" /></span>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="budget-month">
-                                        <span class="month">Q1</span>
-                                        <span class="light-blue-background">
-                                            <input id="Y1" class="priceValue" placeholder="- - -" /></span>
-                                    </div>
-                                    <div class="budget-month">
-                                        <span class="month">Q2</span>
-                                        <span class="light-blue-background">
-                                            <input id="Y4" class="priceValue" placeholder="- - -" /></span>
-                                    </div>
-                                    <div class="budget-month">
-                                        <span class="month">Q3</span>
-                                        <span class="light-blue-background">
-                                            <input id="Y7" class="priceValue" placeholder="- - -" /></span>
-                                    </div>
-                                    <div class="budget-month">
-                                        <span class="month">Q4</span>
-                                        <span class="light-blue-background">
-                                            <input id="Y10" class="priceValue" placeholder="- - -" /></span>
-                                    </div>
-                                }
+                                @HtmlHelpers.GenerateBudgetAllocationControl(AllocatedBy)
                             </div>
                              <div class="budget-result source-sans-prolight">
                                 <p>
@@ -298,7 +213,7 @@
         }
 
         if ($("#hdnIsBudgetAllocated").val() == "True" && $("#hdnIsOtherLineItem").val() == "False") {
-            $("#lblTotalLineItemCost").html('$' + FormatCommas($("#lblTotalLineItemCost").html(), false));
+            $("#lblTotalLineItemCost").html(FormatCommasBudget($("#lblTotalLineItemCost").html(), false,true));
         }
         
         $("span.tool-tip").tooltip();
@@ -593,7 +508,7 @@
                 }
 
                 if (typeof data.otherLineItemCost != 'undefined') {
-                    $("#txtOtherLineItemCost").val('$' + FormatCommas(data.otherLineItemCost.toString(), false));
+                    $("#txtOtherLineItemCost").val(FormatCommasBudget(data.otherLineItemCost.toString(), false,true));
                     $("#txtOtherLineItemCost").attr('title', $("#txtOtherLineItemCost").val());
                 }
             },

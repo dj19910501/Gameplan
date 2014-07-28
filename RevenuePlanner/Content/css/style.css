@@ -7421,7 +7421,7 @@ padding: 7px 24px 7px 4px !important;
 .white-bg{background:#fff;float: left;padding:8px 20px 0;overflow: auto;width:97%;height:90px;}
 .budget-month{float:left;margin:0 5px;min-width:75px;width: 7.3%;}
 .budget-month span{display:block;text-align:right;padding:3px 3px 3px 0;}
-.budget-month input{background: none repeat scroll 0 0 #dff0f8 !important;border: 0 none;width: 100%;text-align:right;color:#5693b3;}
+.budget-month input{background: none repeat scroll 0 0 #dff0f8;border: 0 none;width: 100%;text-align:right;color:#5693b3;}
 .month{margin-top:10px;}
 .budget-month .light-blue-background{color:#5693b3;}
 .budget-result{float:right;margin-top:34px;font-size:18px;color:#000;}
@@ -7475,7 +7475,9 @@ background: linear-gradient(0deg, rgb(236, 236, 236) 4%, rgb(254, 254, 254) 98%)
 a:hover, a:focus{text-decoration: none !important;}
 .tactic-level .accordion-inner{background:#E6E6E6;}
 .lineitem-level > .accordion-inner{border-bottom:none !important;padding-left:0 !important;}
-.unallocated-text {background-color: rgb(238, 238, 238) !important;color:rgb(51, 51, 51) !important;}
+.unallocated-text {background-color:#f2f2f2 !important;color: #666666 !important;padding: 0px !important;}
+.unallocated-span {background-color:#f2f2f2 !important;border:1px solid #CCCCCC !important;}
+.border000000 {border:1px solid #000000 !important;}
 
 /* End added by dharmraj #567: Budget allocation for campaign */
 

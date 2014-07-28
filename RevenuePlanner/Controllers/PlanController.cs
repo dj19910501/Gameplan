@@ -3920,6 +3920,12 @@ namespace RevenuePlanner.Controllers
             pcptlm.EndDate = Convert.ToDateTime(pcptl.EndDate);
             pcptlm.Cost = pcptl.Cost;
             pcptlm.AllocatedBy = objPlan.AllocatedBy;
+            pcptlm.TStartDate = pcptl.Plan_Campaign_Program_Tactic.StartDate;
+            pcptlm.TEndDate = pcptl.Plan_Campaign_Program_Tactic.EndDate;
+            pcptlm.PStartDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.StartDate;
+            pcptlm.PEndDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.EndDate;
+            pcptlm.CStartDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.StartDate;
+            pcptlm.CEndDate = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.EndDate;
             ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
 
             return PartialView("LineItemAssortment", pcptlm);

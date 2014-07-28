@@ -676,11 +676,11 @@
 	<!--Start Added By Dharmraj #567 : Budget allocation for campaign-->
 	<Field>
 		<Name>CannotAllocateMorethanRemainingBudgeted</Name>
-		<value>You cannot allocate more than remaining budgeted</value>
+		<value>You cannot allocate more than remaining budgeted.</value>
 	</Field>
 	<Field>
 		<Name>CannotSetBudgetLessthanAllocated</Name>
-		<value>You cannot set budget less than allocated</value>
+		<value>You cannot set budget less than allocated.</value>
 	</Field>
 	<Field>
 		<Name>CannotAllocateMorehanBudgeted</Name>
