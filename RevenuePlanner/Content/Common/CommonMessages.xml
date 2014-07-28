@@ -717,4 +717,27 @@
     <value>You have chosen not to allocate this plan's budget.</value>
   </Field>
   <!-- End - Added By Sohel Pathan #597 -->
+  <!--Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string-->
+  <Field>
+    <Name>AllocateMoreThanRemainingBudgeted</Name>
+    <value>You cannot allocate more than remaining budgeted.</value>
+  </Field>
+
+  <Field>
+    <Name>BudgetLessThanAllocated</Name>
+    <value>You cannot set budget less than allocated.</value>
+  </Field>
+
+  <Field>
+    <Name>AllocateMoreThanBudgeted</Name>
+    <value>You cannot allocate more than budgeted.</value>
+  </Field>
+
+  <Field>
+    <Name>AllocateMoreThanBudgetedCustom</Name>
+    <value>You cannot allocate more than budgeted for </value>
+  </Field>
+
+
+
 </Messages>

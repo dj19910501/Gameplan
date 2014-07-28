@@ -2056,9 +2056,58 @@ private string _CannotAllocateMorethanRemainingBudgeted;
         }
         //End Added By Sohel #597 
 
+        //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
+
+        private string _AllocateMoreThanRemainingBudgeted;
+        public string AllocateMoreThanRemainingBudgeted
+        {
+            get
+            {
+                return _AllocateMoreThanRemainingBudgeted;
+            }
+            set
+            {
+                _AllocateMoreThanRemainingBudgeted = value;
+            }
+        }
+        private string _BudgetLessThanAllocated;
+        public string BudgetLessThanAllocated
+        {
+            get
+            {
+                return _BudgetLessThanAllocated;
+            }
+            set
+            {
+                _BudgetLessThanAllocated = value;
+            }
+        }
+        private string _AllocateMoreThanBudgeted;
+        public string AllocateMoreThanBudgeted
+        {
+            get
+            {
+                return _AllocateMoreThanBudgeted;
+            }
+            set
+            {
+                _AllocateMoreThanBudgeted = value;
+            }
+        }
+        private string _AllocateMoreThanBudgetedCustom;
+        public string AllocateMoreThanBudgetedCustom
+        {
+            get
+            {
+                return _AllocateMoreThanBudgetedCustom;
+            }
+            set
+            {
+                _AllocateMoreThanBudgetedCustom = value;
+            }
+        }
 
         #endregion
-
 
         #region  Functions
         public string loadMsg(string XmlFilePath)
@@ -2664,6 +2713,22 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             _DefaultPlanAllocationMessage = strMsgValue;
                                             break;
                                         //End Added By Sohel #597 
+
+                                        //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
+                                        case "AllocateMoreThanRemainingBudgeted":
+                                            _AllocateMoreThanRemainingBudgeted = strMsgValue;
+                                            break;
+                                        case "BudgetLessThanAllocated":
+                                            _BudgetLessThanAllocated = strMsgValue;
+                                            break;
+                                        case "AllocateMoreThanBudgeted":
+                                            _AllocateMoreThanBudgeted = strMsgValue;
+                                            break;
+                                        case "AllocateMoreThanBudgetedCustom":
+                                            _AllocateMoreThanBudgetedCustom = strMsgValue;
+                                            break;
+
+
                                     }
                                 }
                                 i = i + 1;

@@ -268,6 +268,43 @@ namespace RevenuePlanner.Helpers
                 return StageLabel;
             }
         }
+
+        //Added By : Kalpesh Sharma :: #607 Code optimization :: Make a control for bind the Budget Allocation Controls
+        /// <summary>
+        /// Method for bind control of Budget Allocation Controls     
+        /// </summary>
+        /// <param name="isMonthlyAllocation"></param>
+        /// <returns></returns>
+        public static MvcHtmlString GenerateBudgetAllocationControl(string isMonthlyAllocation)
+        {
+            string[] lstMonths = "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec".Split(',');
+
+            string[] lstQuarters = "Q1,Q3,Q7,Q10".Split(',');
+
+            string sb = string.Empty;
+
+            if (isMonthlyAllocation  == Enums.PlanAllocatedBy.months.ToString())
+            {
+                for (int i = 0; i < 11; i++)
+                {
+                    sb += "<div class=\"budget-month\"><span class=\"month\">" + lstMonths[i] + "</span><span class=\"light-blue-background\"><input id=\"Y"+(i + 1)+ "\" class=\"priceValue\" placeholder=\"- - -\" /></span></div>";
+                }
+            }
+            else
+            {
+                int quarterCounter = 1;
+                for (int i = 0; i < 4; i++)
+                {
+                    sb += "<div class=\"budget-month\"><span class=\"month\">" + lstQuarters[i] + "</span><span class=\"light-blue-background\"><input id=\"Y"+quarterCounter + "\" class=\"priceValue\" placeholder=\"- - -\" /></span></div>";
+                    quarterCounter = quarterCounter + 3; 
+                }
+            }
+
+            return new MvcHtmlString(sb.ToString());
+        }
+
+
+
         #endregion
     }
 }
