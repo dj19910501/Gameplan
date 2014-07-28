@@ -2105,6 +2105,13 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             {
                 _AllocateMoreThanBudgetedCustom = value;
             }
+        }	
+		   
+        private string _ConfirmationForDeleteLineItem;
+        public string ConfirmationForDeleteLineItem
+        {
+            get { return _ConfirmationForDeleteLineItem; }
+            set { _ConfirmationForDeleteLineItem = value; }
         }
 
         #endregion
@@ -2728,7 +2735,9 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             _AllocateMoreThanBudgetedCustom = strMsgValue;
                                             break;
 
-
+												 case "ConfirmationForDeleteLineItem":
+                                            _ConfirmationForDeleteLineItem = strMsgValue;
+                                            break;
                                     }
                                 }
                                 i = i + 1;

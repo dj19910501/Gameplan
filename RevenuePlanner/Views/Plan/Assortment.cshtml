@@ -606,6 +606,7 @@
             $('#slidepanel-container').load(url + '?id=' + id + '&RedirectType=' + Assortment, AssignDefaultValue);
 
             $("#slidepanel").css("right", "0px");
+            $("#slidepanel").addClass('sidebar-wide');
             myApp.hidePleaseWait();
         };
         $(document).on("click", "#createlineitem", function (e) {
@@ -617,6 +618,7 @@
             var url = '@Url.Content("~/Plan/createLine")';
             $('#slidepanel-container').load(url + '?id=' + idtactic, AssignDefaultValue);
             $("#slidepanel").css("right", "0px");
+            $("#slidepanel").addClass('sidebar-wide');
             myApp.hidePleaseWait();
             e.preventDefault();
         });

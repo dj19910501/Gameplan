@@ -7457,7 +7457,8 @@ background: -ms-linear-gradient(270deg, rgb(236, 236, 236) 4%, rgb(254, 254, 254
 background: linear-gradient(0deg, rgb(236, 236, 236) 4%, rgb(254, 254, 254) 98%);
 
 }
-.content-row{margin-right: 4px;width: 49%;float:left;}	/*added 18/7/14*/
+.content-row{margin-right: 14px;width: 48%;float:left;}	/*added 18/7/14*/
+.content-row.alternate{margin-right: 0px;}
 .btn-gray:hover{Color:#908d88;}
 .element-disable a.btn-gray{float:right;}
  .content .content-row .calendar-width input[type="text"], .sidebar-form .content-row .calendar-width textarea{width: calc(100% - 7px);}
@@ -7474,7 +7475,7 @@ background: linear-gradient(0deg, rgb(236, 236, 236) 4%, rgb(254, 254, 254) 98%)
 a:hover, a:focus{text-decoration: none !important;}
 .tactic-level .accordion-inner{background:#E6E6E6;}
 .lineitem-level > .accordion-inner{border-bottom:none !important;padding-left:0 !important;}
-
+.unallocated-text {background-color: rgb(238, 238, 238) !important;color:rgb(51, 51, 51) !important;}
 
 /* End added by dharmraj #567: Budget allocation for campaign */
 

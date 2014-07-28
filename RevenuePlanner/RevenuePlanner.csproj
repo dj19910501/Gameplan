@@ -772,7 +772,7 @@
     <Content Include="Views\Shared\_preferences.cshtml" />
     <Content Include="Views\Model\_DuplicateModel.cshtml" />
     <Content Include="Views\Plan\_NoModel.cshtml" />
-    <Content Include="Views\Plan\LineAssortment.cshtml" />
+    <Content Include="Views\Plan\LineItemAssortment.cshtml" />
     <Content Include="Service References\BDSService\BDSService.wsdl" />
     <None Include="Service References\BDSService\BDSService.xsd">
       <SubType>Designer</SubType>

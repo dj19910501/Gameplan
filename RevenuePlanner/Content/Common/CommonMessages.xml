@@ -691,53 +691,53 @@
 		<value>Your campaign budget is lower than the total allocated programs month budget in</value>
 	</Field>
 	<!--End Added By Dharmraj #567 : Budget allocation for campaign-->
-  <!-- Start - Added By Sohel Pathan #597 -->
-  <Field>
-    <Name>NoActiveModelFound</Name>
-    <value>There is no any active model.</value>
-  </Field>
-  <Field>
-    <Name>ErrMsgLessPlanBudget</Name>
-    <value>You cannot reduce the total budget amount of the plan than the total allocated campaign budget amount.</value>
-  </Field>
-  <Field>
-    <Name>ErrMsgLessPlanBudget</Name>
-    <value>You cannot reduce the total budget amount of the plan than the total allocated campaign budget amount.</value>
-  </Field>
-  <Field>
-    <Name>ErrMsgLessCampaignBudget</Name>
-    <value>Your plan budget is lower than the total allocated campaigns budget. If you want to continue, hit Save &amp; Continue below.</value>
-  </Field>
-  <Field>
-    <Name>ErrMsgBudgetAllocationExceeds</Name>
-    <value>You cannot allocate more than budgeted.</value>
-  </Field>
-  <Field>
-    <Name>DefaultPlanAllocationMessage</Name>
-    <value>You have chosen not to allocate this plan's budget.</value>
-  </Field>
-  <!-- End - Added By Sohel Pathan #597 -->
-  <!--Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string-->
-  <Field>
-    <Name>AllocateMoreThanRemainingBudgeted</Name>
-    <value>You cannot allocate more than remaining budgeted.</value>
-  </Field>
-
-  <Field>
-    <Name>BudgetLessThanAllocated</Name>
-    <value>You cannot set budget less than allocated.</value>
-  </Field>
-
-  <Field>
-    <Name>AllocateMoreThanBudgeted</Name>
-    <value>You cannot allocate more than budgeted.</value>
-  </Field>
-
-  <Field>
-    <Name>AllocateMoreThanBudgetedCustom</Name>
-    <value>You cannot allocate more than budgeted for </value>
-  </Field>
-
-
-
+	<!-- Start - Added By Sohel Pathan #597 -->
+	<Field>
+		<Name>NoActiveModelFound</Name>
+		<value>There is no any active model.</value>
+	</Field>
+	<Field>
+		<Name>ErrMsgLessPlanBudget</Name>
+		<value>You cannot reduce the total budget amount of the plan than the total allocated campaign budget amount.</value>
+	</Field>
+	<Field>
+		<Name>ErrMsgLessPlanBudget</Name>
+		<value>You cannot reduce the total budget amount of the plan than the total allocated campaign budget amount.</value>
+	</Field>
+	<Field>
+		<Name>ErrMsgLessCampaignBudget</Name>
+		<value>Your plan budget is lower than the total allocated campaigns budget. If you want to continue, hit Save &amp; Continue below.</value>
+	</Field>
+	<Field>
+		<Name>ErrMsgBudgetAllocationExceeds</Name>
+		<value>You cannot allocate more than budgeted.</value>
+	</Field>
+	<Field>
+		<Name>DefaultPlanAllocationMessage</Name>
+		<value>You have chosen not to allocate this plan's budget.</value>
+	</Field>
+	<!-- End - Added By Sohel Pathan #597 -->
+	<!--Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string-->
+	<Field>
+		<Name>AllocateMoreThanRemainingBudgeted</Name>
+		<value>You cannot allocate more than remaining budgeted.</value>
+	</Field>
+	<Field>
+		<Name>BudgetLessThanAllocated</Name>
+		<value>You cannot set budget less than allocated.</value>
+	</Field>
+	<Field>
+		<Name>AllocateMoreThanBudgeted</Name>
+		<value>You cannot allocate more than budgeted.</value>
+	</Field>
+	<Field>
+		<Name>AllocateMoreThanBudgetedCustom</Name>
+		<value>You cannot allocate more than budgeted for</value>
+	</Field>  
+	<!-- Start - Added By Dharmraj #574 -->
+	<Field>
+		<Name>ConfirmationForDeleteLineItem</Name>
+		<value>Are you sure you want to delete this line item?</value>
+	</Field>
+	<!-- End - Added By Dharmraj #574 -->
 </Messages>

@@ -127,6 +127,26 @@ namespace RevenuePlanner.Models
         public double ProjectedStageValue { get; set; }
     }
 
+    public class Plan_Campaign_Program_Tactic_LineItemModel
+    {
+        public int PlanLineItemId { get; set; }
+        public int PlanTacticId { get; set; }
+        public int LineItemTypeId { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public double Cost { get; set; }
+        public DateTime TStartDate { get; set; }
+        public DateTime TEndDate { get; set; }
+        public DateTime PStartDate { get; set; }
+        public DateTime PEndDate { get; set; }
+        public DateTime CStartDate { get; set; }
+        public DateTime CEndDate { get; set; }
+        public string AllocatedBy { get; set; }
+        public bool IsOtherLineItem { get; set; }
+    }
+
     public class Plan_Selector
     {
         public int PlanId { get; set; }

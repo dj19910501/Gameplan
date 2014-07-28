@@ -126,6 +126,9 @@ namespace RevenuePlanner.Helpers
         public static string ImprovementActivities = "Improvement Activities";
         public static string ImprovementProgram = "Improvement Program";
 
+        // Default Other line item title
+        public static string DefaultLineItemTitle = "Other";
+
         #endregion
 
         //#region Enums
