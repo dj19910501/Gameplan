@@ -303,12 +303,12 @@ namespace BDSService
         /// <returns>Returns list of users of specific client.</returns>
         public List<BDSEntities.User> GetUserListByClientId(Guid clientId, Guid applicationId)
         {
-            return db.User_Application.Where(user => user.ApplicationId == applicationId && user.User.ClientId == clientId).Select(user =>
+            return db.Users.Where(user => user.ClientId == clientId).Select(user =>
                 new BDSEntities.User
                 {
-                    UserId = user.User.UserId,
-                    FirstName = user.User.FirstName,
-                    LastName = user.User.LastName
+                    UserId = user.UserId,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName
                 }).ToList();
         }
 
