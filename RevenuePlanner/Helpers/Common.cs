@@ -2590,10 +2590,10 @@ namespace RevenuePlanner.Helpers
                                                  .Plan_Campaign_Program
                                                  .Where(varP => varP.IsDeleted == false)
                                                  .ToList();
-
+              
                 double cost = 0;
-
-                lstProgram.ForEach(varP => cost = cost + varP.Plan_Campaign_Program_Tactic.Where(varT => varT.IsDeleted == false).Sum(varT => varT.Cost));
+                /*Modified by Mitesh Vaishnav on 29/07/2014 for PL ticket #619*/
+                lstProgram.ForEach(varP => varP.Plan_Campaign_Program_Tactic.Where(varT => varT.IsDeleted == false).ToList().ForEach(varT=>cost=cost+ varT.Plan_Campaign_Program_Tactic_LineItem.Where(varL=>varL.IsDeleted==false).Sum(varL=>varL.Cost)));
 
                 return cost;
 
@@ -2616,8 +2616,8 @@ namespace RevenuePlanner.Helpers
                                                  .ToList();
 
                 double cost = 0;
-
-                cost = lstTactic.Sum(varT => varT.Cost);
+                /*Modified by Mitesh Vaishnav on 29/07/2014 for PL ticket #619*/
+                 lstTactic.ForEach(varT => cost = cost + varT.Plan_Campaign_Program_Tactic_LineItem.Where(varL=>varL.IsDeleted==false).Sum(varL=>varL.Cost));
 
                 return cost;
 
