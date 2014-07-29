@@ -599,6 +599,7 @@
             document.getElementById("txtTitle").value = htmlEncode($('#txtTitle').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             document.getElementById("Description").value = htmlEncode($('#Description').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             $("#txtCampaignBudget").val(ReplaceCC($("#txtCampaignBudget").val()));
+            $("#txtCampaignBudget").attr('title', $("#txtCampaignBudget").val());
             var formData = $("form").serialize();////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             var uId = $(window).attr('name');
             $.ajax({
@@ -709,6 +710,7 @@
         }
 
         $("#txtCampaignBudget").keyup(function () {
+            $("#txtCampaignBudget").attr('title', $("#txtCampaignBudget").val());
             var CampaignBudgetValue = ReplaceCC($("#txtCampaignBudget").val());
             var OldCampaignBudgetValue = ReplaceCC($("#hdnOldCampaignBudget").val());
             var differenceVal = parseInt(OldCampaignBudgetValue) - parseInt(CampaignBudgetValue);

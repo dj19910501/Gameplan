@@ -446,7 +446,7 @@
                   $("#errorMessage").css("display", "block");
                   $("#spanMessageError").empty();
                   $("#spanMessageError").text("@Common.objCached.ValidateForEmptyField");
-                  $("#divErrLessBudget").css("display", "none");
+                  $("#divErrLessBudget").css("display", "block"); // Modified By Dharmraj for internal point #15
               }
               else {
                   $("#errorMessage").css("display", "none");
@@ -636,6 +636,21 @@
                   $('#divQuarterlyBudget').show();
               }
           GetAllocatedBudgetForPlan('@strPlanId');
+              // Added by dharmraj to focus first month/Quarter
+              if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower()') {
+                  var My1Val = $("$MY1").val() == '' ? '0' : $("$MY1").val();
+                  var cam1Val = $("hdnMY1").val() == '' ? '0' : $("hdnMY1").val();
+                  if (parseInt(My1Val) < parseInt(cam1Val)) {
+                      $("#spnCampaignAllocatedBudget").addClass('error-text');
+                  }
+              }
+              else if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower()') {
+                  var My1Val = $("$QY1").val() == '' ? '0' : $("$QY1").val();
+                  var cam1Val = $("hdnQY1").val() == '' ? '0' : $("hdnQY1").val();
+                  if (parseInt(My1Val) < parseInt(cam1Val)) {
+                      $("#spnCampaignAllocatedBudget").addClass('error-text');
+                  }
+              }
           }
 
           /*End : Added by Mitesh Vaishnav for PL ticket 619*/
@@ -735,7 +750,7 @@
         return changed;
     }
     $(document).on("click", "#confirmClose, .confirmClose", function (e) {
-        $("#errorMessage").slideUp(3000);
+        $("#errorMessage").slideUp(1000);
         $("#divErrLessBudget").css("display", "none");
     });
     $(document).on("click", "#aApplyToCalender", function (e) {
@@ -746,8 +761,8 @@
     });
     function displayconfirm(strURL) {
         if (isDataChanged()) {
-            $('#errorMessage').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a><a id='aclose' class='close confirmClose'>×</a>");
-            $("#errorMessage").slideDown(3000);
+            $('#errorMessage').html("<strong>Error! </strong> <span id='spanMessageError'>You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a></span><a id='aclose' class='close confirmClose'>×</a>");
+            $("#errorMessage").slideDown(1000);
             $("#divErrLessBudget").css("display", "none");
         }
         else {
@@ -886,7 +901,7 @@
             if (AllocatedBy == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower()')
             {
                 if (isErrorShown) {
-                    $('.budget-month .priceValue').each(function () {
+                    @*$('.budget-month .priceValue').each(function () {
                         if ($(this).val().toString() != '' && $(this).hasClass('campaignBudgetError') && this.id.toString() != 'unallocatedBudget') {
                             $('#divErrCampaignBudgetAllocation').show();
                             var errorMsg = '@RevenuePlanner.Helpers.Common.objCached.ErrMsgLessCampaignBudget ';
@@ -897,7 +912,42 @@
                             isErrorShown = false;
                             return false;
                         }
-                    });
+                    });*@
+
+                    var lstAllocInputs = $(".budget-month .priceValue.campaignBudgetError").not('#unallocatedBudget');
+                    if (lstAllocInputs.length > 0) {
+                        var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.ErrMsgLessCampaignBudget ";
+                        var inputLength = lstAllocInputs.length;
+                        var removeLength = 0;
+                        for (var i = 0; i < lstAllocInputs.length; i++) {
+
+                            if (inputLength == 1) {
+                                errorMsg += ($(lstAllocInputs[i]).prev().html());
+                            }
+                            else if (inputLength == 2) {
+                                errorMsg += ($(lstAllocInputs[i]).prev().html() + ' and ');
+                                removeLength = 4;
+                            }
+                            else if (inputLength > 2) {
+                                if (i == inputLength - 2) {
+                                    errorMsg += ($(lstAllocInputs[i]).prev().html() + ' and ');
+                                    removeLength = 4;
+                                }
+                                else {
+                                    errorMsg += ($(lstAllocInputs[i]).prev().html() + ', ');
+                                    removeLength = 2;
+                                }
+                            }
+                        }
+
+                        errorMsg = errorMsg.substring(0, errorMsg.length - removeLength);
+                        errorMsg += ' month. <br />If you want to continue, hit Save & Continue below.';
+                        $('#divErrCampaignBudgetAllocation').find('.source-sans-probold').html(errorMsg);
+                        $('#divErrCampaignBudgetAllocation').show();
+                        isError = true;
+                        isErrorShown = false;
+                        return false;
+                    }
                 }
                 inputsType = '.budget-month .priceValue';
             }
@@ -1030,6 +1080,13 @@
                                         }
                                     }
 
+                                    // Added by dharmraj to focus first month
+                                        var My1Val = $("#MY1").val() == '' ? '0' : $("#MY1").val();
+                                        var cam1Val = $("#hdnMY1").val() == '' ? '0' : $("#hdnMY1").val();
+                                        if (parseInt(My1Val) < parseInt(cam1Val)) {
+                                            $("#spnCampaignAllocatedBudget").addClass('error-text');
+                                        }
+
                                     var allocatedBudget = calculateAllocatedBudgetMonthly();
                                     $('#spnTotalAllocatedBudget').html(FormatCurrency(allocatedBudget, false));
                                     checkBudgetDifference(allocatedBudget, $('#divMonthlyBudget'));
@@ -1058,6 +1115,13 @@
                                                 }
                                             }
                                         }
+                                    }
+
+                                    // Added by dharmraj to focus first Quarter
+                                    var My1Val = $("#QY1").val() == '' ? '0' : $("#QY1").val();
+                                    var cam1Val = $("#hdnQY1").val() == '' ? '0' : $("#hdnQY1").val();
+                                    if (parseInt(My1Val) < parseInt(cam1Val)) {
+                                        $("#spnCampaignAllocatedBudget").addClass('error-text');
                                     }
 
                                     var allocatedBudget = calculateAllocatedBudgetQuarterly();
