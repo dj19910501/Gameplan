@@ -2685,6 +2685,9 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.CreatedDate = DateTime.Now;
                                 pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(); //status field added for Plan_Campaign_Program table
                                 pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
+                                
+                                //Added By : Kalpesh Sharma : PL #604 : 07/29/2014
+                                pcpobj.ProgramBudget = form.ProgramBudget;
 
                                 db.Entry(pcpobj).State = EntityState.Added;
 
@@ -2860,6 +2863,9 @@ namespace RevenuePlanner.Controllers
                                 //pcpobj.Cost = (form.Cost == null ? 0 : form.Cost);
                                 pcpobj.ModifiedBy = Sessions.User.UserId;
                                 pcpobj.ModifiedDate = DateTime.Now;
+
+                                //Added By : Kalpesh Sharma : PL #604 : 07/29/2014
+                                pcpobj.ProgramBudget = form.ProgramBudget;
 
                                 //Start added by Kalpesh  #608: Budget allocation for Program
                                 var PrevAllocationListTactics = db.Plan_Campaign_Program_Budget.Where(c => c.PlanProgramId == form.PlanProgramId).Select(c => c).ToList();
