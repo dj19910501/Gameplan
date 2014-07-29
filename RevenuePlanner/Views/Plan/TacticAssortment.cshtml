@@ -8,6 +8,11 @@
     //Start by Kalpesh Sharma #605: Cost allocation for Tactic
     string AllocatedBy = Model.AllocatedBy;
 }
+<style type="text/css">
+    #c_tactics .verticalIdSelectBox .sbHolder {
+        width: 90%;
+    }
+</style>
 
 <div class="head">
     <span class="close-form source-sans-proregular">» CLOSE MENU</span>
@@ -184,7 +189,7 @@
             }
         <!-- End by Kalpesh Sharma #605: Cost allocation for Tactic-->
         
-        <div class="content dark inline-ellipsis">
+        <div class="content dark inline-ellipsis cf">
             <div class="cf width100">
                 <div class="width65px margin-right20 pull-left">
                     @*<label title="@Html.LabelForINQ("INQ")">@Html.LabelForINQ("INQ")</label>*@
@@ -213,6 +218,18 @@
                     @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", id = "txtCost", @class = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                 </div>
             </div>
+
+            @if ((bool)ViewBag.IsCreated)
+            {
+                <div class="tactics-part">
+                    <label>Line Items</label>
+                    <div id="c_tactics">
+                        <!--selects elements created dynamically-->
+                    </div>
+                    <span class="c-add-lineitem link-blue " style="margin-top:3px;">Add New Line Items</span>
+                </div>	
+            }
+
             @if ((bool)ViewBag.RedirectType)
             {
                 <p class="font-size12 pull-left font-size13">Edit tactic details in </p>
@@ -229,10 +246,10 @@
                 <p id="BudgetErrorMessage" class="source-sans-probold">You cannot allocate more than budgeted for Jan and May .</p>
             </div>
 
-            <div class="span6">
+            <div class="span2 btn-save">
                 <button id="save_campaign_tactic" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
             </div>
-            <div class="span6">
+            <div class="span2">
                 <button class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
             </div>
         </div>
@@ -295,6 +312,38 @@
             //}
             $("#slidepanel").css("display", "none");
             $("#slidepanel-container").empty();
+        });
+
+        var lineItemType;
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/GetLineItemType/")',
+            data: {
+            },
+            success: function (r) {
+                lineItemType = r;
+                myApp.hidePleaseWait();
+            }
+        });
+
+        $(".c-add-lineitem").click(function () {
+            var lineitemString;
+            if (typeof lineItemType != 'undefined') {
+                for (i in lineItemType) {
+                    lineitemString = lineitemString + '<option value="' + lineItemType[i].LineItemTypeId + '">' + lineItemType[i].Title + '</option>';
+                }
+            }
+
+            $("#c_tactics").append('<div  style="margin-bottom: 5px;"><span class="verticalIdSelectBox"><select id="LineItemTypeId" class="ddlStyle" require="true" name="lineitemTypeId" data-val-required="The LineItemTypeId field is required." data-val-number="The field LineItemTypeId must be a number." data-val="true">' +
+               '<option value="">Please Select</option>' + lineitemString +
+               '</select></span>' +
+          '<span class="delete-tactic"></span></div>');
+            $(".verticalIdSelectBox select").selectbox();
+        });
+
+        $('#c_tactics').on('click', '.delete-tactic', function () {
+            $(this).prev().remove();
+            $(this).remove();
         });
 
         $("#spanDuplicate").click(function () {
@@ -551,7 +600,12 @@
 
             $("#txtTacticPlannedCost").val(ReplaceCC($("#txtTacticPlannedCost").val()));
 
-
+            var arLineitem = [];
+            var _Lineitems = $("#frm_campaigns #c_tactics select");
+            for (var l = 0; l < _Lineitems.length; l++) {
+                var typeid = $(_Lineitems[l]).val();
+                arLineitem[l] = typeid;
+            }
 
             document.getElementById("Title").value = htmlEncode($('#Title').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             document.getElementById("Description").value = htmlEncode($('#Description').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
@@ -559,7 +613,7 @@
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/SaveTactic")',
-                data: $("form").serialize() + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&BudgetInputValues=' + allocationValue.toString() + '&UserId=' + uId,
+                data: $("form").serialize() + '&lineitems=' + arLineitem + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&BudgetInputValues=' + allocationValue.toString() + '&UserId=' + uId,
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
                         window.location = '@Url.Content("~/Login/Index")';

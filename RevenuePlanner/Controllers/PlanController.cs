@@ -3314,7 +3314,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveTactic(Plan_Campaign_Program_TacticModel form, bool RedirectType, string closedTask, string BudgetInputValues,  string UserId = "")
+        public ActionResult SaveTactic(Plan_Campaign_Program_TacticModel form,string lineitems, bool RedirectType, string closedTask, string BudgetInputValues,  string UserId = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -3377,6 +3377,20 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.CreatedDate = DateTime.Now;
                                 db.Entry(pcpobj).State = EntityState.Added;
                                 int result = db.SaveChanges();
+                                int tacticId = pcpobj.PlanTacticId;
+
+                                // Start Added by dharmraj for ticket #644
+                                Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
+                                objNewLineitem.PlanTacticId = tacticId;
+                                objNewLineitem.Title = Common.DefaultLineItemTitle;
+                                objNewLineitem.Cost = pcpobj.Cost;
+                                objNewLineitem.Description = string.Empty;
+                                objNewLineitem.CreatedBy = Sessions.User.UserId;
+                                objNewLineitem.CreatedDate = DateTime.Now;
+                                db.Entry(objNewLineitem).State = EntityState.Added;
+                                db.SaveChanges();
+                                // End Added by dharmraj for ticket #644
+
                                 ////Start - Added by : Mitesh Vaishnav on 25-06-2014    for PL ticket 554 Home & Plan Pages: Program and Campaign Blocks are not covering newly added Tactic.
                                 var planCampaignProgramDetails = (from pcp in db.Plan_Campaign_Program
                                                                   join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
@@ -3445,6 +3459,31 @@ namespace RevenuePlanner.Controllers
 
                                 //result = TacticValueCalculate(pcpobj.PlanProgramId); // Commented by Dharmraj for PL #440
                                 result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                                // Added by Dharmraj for PL #644
+                                if (lineitems != string.Empty)
+                                {
+                                    string[] lineitem = lineitems.Split(',');
+                                    var lineItemType = db.LineItemTypes.ToList();
+                                    foreach (string li in lineitem)
+                                    {
+                                        Plan_Campaign_Program_Tactic_LineItem pcptlobj = new Plan_Campaign_Program_Tactic_LineItem();
+                                        pcptlobj.PlanTacticId = tacticId;
+                                        int lineItemTypeid = Convert.ToInt32(li);
+                                        pcptlobj.LineItemTypeId = lineItemTypeid;
+                                        LineItemType lit = lineItemType.Where(m => m.LineItemTypeId == lineItemTypeid).FirstOrDefault();
+                                        pcptlobj.Title = lit.Title;
+                                        pcptlobj.Cost = 0;
+                                        pcptlobj.StartDate = form.StartDate;
+                                        pcptlobj.EndDate = form.EndDate;
+                                        pcptlobj.CreatedBy = Sessions.User.UserId;
+                                        pcptlobj.CreatedDate = DateTime.Now;
+                                        db.Entry(pcptlobj).State = EntityState.Added;
+                                        result = db.SaveChanges();
+                                        int liid = pcptlobj.PlanLineItemId;
+                                        result = Common.InsertChangeLog(Sessions.PlanId, null, liid, pcptlobj.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                                    }
+                                }
+
                                 if (result >= 1)
                                 {
                                     //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
@@ -3652,6 +3691,47 @@ namespace RevenuePlanner.Controllers
                                     Common.mailSendForTactic(pcpobj.PlanTacticId, pcpobj.Status, pcpobj.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
                                 }
                                 result = db.SaveChanges();
+
+                                // Start Added by dharmraj for ticket #644
+                                var objOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == pcpobj.PlanTacticId && l.Title == Common.DefaultLineItemTitle && l.LineItemTypeId == null);
+                                double totalLoneitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == pcpobj.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).Sum(l => l.Cost);
+                                if (pcpobj.Cost > totalLoneitemCost)
+                                {
+                                    double diffCost = pcpobj.Cost - totalLoneitemCost;
+                                    if (objOtherLineItem == null)
+                                    {
+                                        Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
+                                        objNewLineitem.PlanTacticId = pcpobj.PlanTacticId;
+                                        objNewLineitem.Title = Common.DefaultLineItemTitle;
+                                        objNewLineitem.Cost = diffCost;
+                                        objNewLineitem.Description = string.Empty;
+                                        objNewLineitem.CreatedBy = Sessions.User.UserId;
+                                        objNewLineitem.CreatedDate = DateTime.Now;
+                                        db.Entry(objNewLineitem).State = EntityState.Added;
+                                        db.SaveChanges();
+                                    }
+                                    else
+                                    {
+                                        objOtherLineItem.IsDeleted = false;
+                                        objOtherLineItem.Cost = diffCost;
+                                        objOtherLineItem.Description = string.Empty;
+                                        db.Entry(objOtherLineItem).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+                                }
+                                else
+                                {
+                                    if (objOtherLineItem != null)
+                                    {
+                                        objOtherLineItem.IsDeleted = true;
+                                        objOtherLineItem.Cost = 0;
+                                        objOtherLineItem.Description = string.Empty;
+                                        db.Entry(objOtherLineItem).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+                                }
+                                // End Added by dharmraj for ticket #644
+
                                 //result = TacticValueCalculate(pcpobj.PlanProgramId); // Modified by Dharmraj for PL #440
                                 if (result >= 1)
                                 {
@@ -4612,6 +4692,24 @@ namespace RevenuePlanner.Controllers
             return Json(new { });
         }
         //End :Added by Mitesh Vaishnav for PL ticket 619
+
+        /// <summary>
+        /// Added By: Dharmraj Mangukiya.
+        /// Action to Get Line Item Type.
+        /// </summary>
+        /// <returns>Returns JSon Result Of Line Item Type.</returns>
+        public JsonResult GetLineItemType()
+        {
+            var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
+
+            // Line item Type
+            var lineItemTypes = from lit in db.LineItemTypes
+                                where lit.ModelId == objPlan.ModelId && lit.IsDeleted == false
+                                orderby lit.Title
+                                select new { lit.Title, lit.LineItemTypeId };
+
+            return Json(lineItemTypes, JsonRequestBehavior.AllowGet);
+        }
 
         #endregion
 
