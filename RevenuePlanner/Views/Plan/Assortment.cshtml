@@ -589,6 +589,8 @@
                 $('#slidepanel-container').load(url + '?id=' + id + '&RedirectType=' + Assortment, AssignDefaultValue);
             }
             $("#slidepanel").css("right", "0px");
+            //Start by Kalpesh Sharma #605: Cost allocation for Tactic
+            $("#slidepanel").addClass('sidebar-wide');
             myApp.hidePleaseWait();
         }
         /*Added by Mitesh Vaishnav */

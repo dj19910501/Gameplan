@@ -245,6 +245,10 @@
     $(document).ready(function () {
         $('#slidepanel-container').slimScroll({ scrollTo: '0px' });
 
+        //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
+        $("#lblRemainingMonthlyBudget").html(FormatCommasBudget("0", false, true));
+        $("#lblAllocatedProgramsBudget").html(FormatCommasBudget("0", false, true));
+
         //added by kalpesh #608: Budget allocation for campaign
         $(".budget-head a").click(function () {
             $('.budget-collapse').slideToggle();

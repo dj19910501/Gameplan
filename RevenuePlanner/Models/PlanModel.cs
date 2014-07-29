@@ -125,6 +125,12 @@ namespace RevenuePlanner.Models
         public int StageId { get; set; }
         public string StageTitle { get; set; }
         public double ProjectedStageValue { get; set; }
+
+
+        //Start by Kalpesh Sharma #605: Cost allocation for Tactic
+        public double TacticCost { get; set; }
+        public string AllocatedBy { get; set; }
+
     }
 
     public class Plan_Campaign_Program_Tactic_LineItemModel
