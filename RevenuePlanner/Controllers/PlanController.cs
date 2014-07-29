@@ -118,14 +118,16 @@ namespace RevenuePlanner.Controllers
                 }
                 List.Insert(0, new PlanModel { ModelId = 0, ModelTitle = "select" }); // Added by dharmraj to add default select item in model dropdown
                 TempData["selectList"] = new SelectList(List, "ModelId", "ModelTitle");
-                /* added by Nirav Shah 12/20/2013*/
-                List<int> Listyear = new List<int>();
+                /*Modified by Mitesh Vaishnav for PL ticket #622*/
+                List<SelectListItem> Listyear = new List<SelectListItem>();
                 int yr = DateTime.Now.Year;
                 for (int i = 0; i < 5; i++)
-                    Listyear.Add(yr + i);
+                {
+                    Listyear.Add(new SelectListItem { Text = (yr + i).ToString(), Value = (yr + i).ToString(), Selected = false });
+                }
                 var year = Listyear;
-                TempData["selectYearList"] = new SelectList(year);
-                /*end*/
+                TempData["selectYearList"] = new SelectList(year, "Value", "Text");
+                /*End :Modified by Mitesh Vaishnav for PL ticket #622*/
 
                 var GoalTypeList = Common.GetGoalTypeList(Sessions.User.ClientId);
 
@@ -157,10 +159,12 @@ namespace RevenuePlanner.Controllers
                     if (planYear != 0 && planYear < yr)
                     {
                         for (int i = planYear; i < yr; i++)
-                            Listyear.Insert(0, i);
+                        {
+                            Listyear.Add(new SelectListItem { Text = (yr + i).ToString(), Value = (yr + i).ToString(), Selected = false });//Modified by Mitesh Vaishnav for PL ticket #622
+                        }
 
                         year = Listyear;
-                        TempData["selectYearList"] = new SelectList(year);
+                        TempData["selectYearList"] = new SelectList(year, "Value", "Text");//Modified by Mitesh Vaishnav for PL ticket #622
                     }
                     #endregion
                     ViewBag.IsBusinessUnitEditable = Common.IsBusinessUnitEditable(db.Models.Where(b => b.ModelId == objplan.ModelId).Select(b => b.BusinessUnitId).FirstOrDefault());  // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
