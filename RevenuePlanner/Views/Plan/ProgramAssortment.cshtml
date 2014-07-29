@@ -4,6 +4,13 @@
 @{
     string ExtIntService = ViewBag.ExtIntService;
     string AllocatedBy = Model.AllocatedBy;
+
+    bool IsBudgetAllocated = false;
+    if (AllocatedBy != Enums.PlanAllocatedBy.defaults.ToString().TrimEnd('s'))
+    {
+        IsBudgetAllocated = true;
+    }
+    
 }
 
 <style type="text/css">
@@ -60,6 +67,7 @@
             @Html.HiddenFor(model => model.TEndDate, new { id = "hdnTEndDate" })
             @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
             @Html.HiddenFor(model => model.ProgramBudget, new { id = "hdnOldProgramBudget" })
+            @Html.Hidden("hdnIsBudgetAllocated",IsBudgetAllocated)
 
             <label class="t_title">Program Title</label>
             @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true", maxlength = "255", id = "txtTitle" }) @* Modified by :- Sohel Pathan on 24/04/2014 for internal review point to stop form posting on ENTERKEY press event *@
@@ -264,8 +272,9 @@
         var SaveCampaignFlag = true;
 
         //Added By : Kalpesh Sharma : PL #605 : 07/29/2014
-        $("#lblTotalBudget").html(FormatCommasBudget($("#lblTotalBudget").html(), false, true));
-
+        if ($("#hdnIsBudgetAllocated").val() == "True") {
+            $("#lblTotalBudget").html(FormatCommasBudget($("#lblTotalBudget").html(), false, true));
+        }
 
         var isredirect = "@ViewBag.RedirectType";
         var hdnYear = @ViewBag.Year
@@ -488,11 +497,13 @@
                
             //}
 
-            // Start check error related to budget section, By Kalpesh  #567
-            //Added By : Kalpesh Sharma : PL #605 : 07/29/2014
-            var lstAllocInputs = $(".budget-section input.error-text").not('.unallocated-text');
-            if (lstAllocInputs.length > 0) {
-                var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted for ";
+            if ($("#hdnIsBudgetAllocated").val() == "True") {
+
+                // Start check error related to budget section, By Kalpesh  #567
+                //Added By : Kalpesh Sharma : PL #605 : 07/29/2014
+                var lstAllocInputs = $(".budget-section input.error-text").not('.unallocated-text');
+                if (lstAllocInputs.length > 0) {
+                    var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted for ";
                     var inputLength = lstAllocInputs.length;
                     var removeLength = 0;
                     for (var i = 0; i < lstAllocInputs.length; i++) {
@@ -525,24 +536,24 @@
                 }
 
 
-            if ($("#txtRemainingBudget").hasClass('error-text')) {
-                //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
-                ShowBudgetError("@RevenuePlanner.Helpers.Common.objCached.AllocateMoreThanRemainingBudgeted");
-                return false;
-            }
+                if ($("#txtRemainingBudget").hasClass('error-text')) {
+                    //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
+                    ShowBudgetError("@RevenuePlanner.Helpers.Common.objCached.AllocateMoreThanRemainingBudgeted");
+                    return false;
+                }
 
-            if (parseInt(ReplaceCC($("#lblUnallocatedBudget").html())) < 0) {
-                //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
-                ShowBudgetError("@RevenuePlanner.Helpers.Common.objCached.BudgetLessThanAllocated");
-                return false;
-            }
+                if (parseInt(ReplaceCC($("#lblUnallocatedBudget").html())) < 0) {
+                    //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
+                    ShowBudgetError("@RevenuePlanner.Helpers.Common.objCached.BudgetLessThanAllocated");
+                    return false;
+                }
 
-            if ($("#lblTotalAllocated").hasClass('error-text')) {
-                //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
-                ShowBudgetError("@RevenuePlanner.Helpers.Common.objCached.AllocateMoreThanBudgeted");
-                return false;
+                if ($("#lblTotalAllocated").hasClass('error-text')) {
+                    //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
+                    ShowBudgetError("@RevenuePlanner.Helpers.Common.objCached.AllocateMoreThanBudgeted");
+                    return false;
+                }
             }
-
             //if (SaveCampaignFlag) {
             //    var lstAllocInputs = $(".budget-section input.low-budgeted");
             //    if (lstAllocInputs.length > 0) {
@@ -707,7 +718,10 @@
 
 
     //Start added by Kalpesh  #608: Budget allocation for Program
-    fillBudgetAllocationData();
+    if ($("#hdnIsBudgetAllocated").val() == "True") {
+        fillBudgetAllocationData();
+    }
+
     $("#txtProgramBudget").keyup(function () {
         var ProgramBudgetValue = ReplaceCC($("#txtProgramBudget").val());
         var OldProgramBudgetValue = ReplaceCC($("#hdnOldProgramBudget").val());
@@ -728,8 +742,9 @@
         }
 
         $("#lblTotalBudget").html(FormatCommasBudget(ProgramBudgetValue, false, true));
-        alert($("#lblTotalBudget").html());
-        calculateUnallocatedBudget();
+        if ($("#hdnIsBudgetAllocated").val() == "True") {
+            calculateUnallocatedBudget();
+        }
        
     });
 
