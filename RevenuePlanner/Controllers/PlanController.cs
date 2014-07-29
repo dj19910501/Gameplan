@@ -1869,6 +1869,13 @@ namespace RevenuePlanner.Controllers
             ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
             pc.CampaignBudget = 0; // Added By Dharmraj #567 : Budget allocation for campaign
             pc.AllocatedBy = objPlan.AllocatedBy;
+
+            var lstAllCampaign = db.Plan_Campaign.Where(c => c.PlanId == Sessions.PlanId && c.IsDeleted == false).ToList();
+            double allCampaignBudget = lstAllCampaign.Sum(c => c.CampaignBudget);
+            double planBudget = objPlan.Budget;
+            double planRemainingBudget = planBudget - allCampaignBudget;
+            ViewBag.planRemainingBudget = planRemainingBudget;
+
             // End - Added by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
             return PartialView("CampaignAssortment", pc);   // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
         }
@@ -1961,6 +1968,13 @@ namespace RevenuePlanner.Controllers
             // Start Added By Dharmraj #567 : Budget allocation for campaign
             pcm.CampaignBudget = pc.CampaignBudget;
             pcm.AllocatedBy = pc.Plan.AllocatedBy;
+
+            var lstAllCampaign = db.Plan_Campaign.Where(c => c.PlanId == Sessions.PlanId && c.IsDeleted == false).ToList();
+            double allCampaignBudget = lstAllCampaign.Sum(c => c.CampaignBudget);
+            double planBudget = pc.Plan.Budget;
+            double planRemainingBudget = planBudget - allCampaignBudget;
+            ViewBag.planRemainingBudget = planRemainingBudget;
+
             pcm.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue)); //  Update by Bhavesh to Display Revenue
             // End Added By Dharmraj #567 : Budget allocation for campaign
             if (Sessions.User.UserId == pc.CreatedBy)

@@ -5,6 +5,7 @@
     string ExtIntService = ViewBag.ExtIntService;
     string AllocatedBy = Model.AllocatedBy;
     bool IsBudgetAllocated=false;
+    string planRemainingBudget = Convert.ToString(ViewBag.planRemainingBudget);
     if(AllocatedBy != Enums.PlanAllocatedBy.defaults.ToString().TrimEnd('s'))
     {
         IsBudgetAllocated=true;
@@ -118,7 +119,7 @@
             <div class="content-row alternate">
                 <label class="padding-left4" title="Cost">Remaining Budget</label>
                 @*<input id="txtCost" class="currency_dollar margin-top3px"  type="text" value="1,500,000" placeholder="$1,500,000" name="Cost" maxlength="13" data-val-required="The Cost field is required." data-val-number="The field Cost must be a number." data-val="true" readonly myvalue="$1,500,000" title="$1,500,000">                      *@
-                @Html.TextBox("txtRemainingBudget", "$0", new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
+                @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
             </div>
         </div>
         <!--End content-->
@@ -256,6 +257,9 @@
         if ($("#hdnIsBudgetAllocated").val() == "True") {
             $("#lblTotalBudget").html(FormatCommasBudget($("#lblTotalBudget").html(), false,true));
         }
+
+        $("#txtRemainingBudget").val(FormatCommasBudget($("#txtRemainingBudget").val(), false, true));
+
         //end added by dharmraj #567: Budget allocation for campaign
         //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
             $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
