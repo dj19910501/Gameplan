@@ -279,13 +279,13 @@ namespace RevenuePlanner.Helpers
         {
             string[] lstMonths = "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec".Split(',');
 
-            string[] lstQuarters = "Q1,Q3,Q7,Q10".Split(',');
+            string[] lstQuarters = "Q1,Q2,Q3,Q4".Split(',');
 
             string sb = string.Empty;
 
             if (isMonthlyAllocation  == Enums.PlanAllocatedBy.months.ToString())
             {
-                for (int i = 0; i < 11; i++)
+                for (int i = 0; i < 12; i++)
                 {
                     sb += "<div class=\"budget-month\"><span class=\"month\">" + lstMonths[i] + "</span><span class=\"light-blue-background\"><input id=\"Y"+(i + 1)+ "\" class=\"priceValue\" placeholder=\"- - -\" /></span></div>";
                 }

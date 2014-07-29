@@ -122,14 +122,14 @@
                 </div>
             @*}*@
 
-         <div class="content-row alternate">
+         <div class="content-row">
                 <label class="padding-left4" title="Cost">Program Budget</label>
                 @Html.TextBoxFor(model => model.ProgramBudget, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", id = "txtProgramBudget" })
             </div>
-            <div class="content-row">
+            <div class="content-row alternate">
                 <label class="padding-left4" title="Cost">Remaining Campaign Budget</label>
                 @*<input id="txtCost" class="currency_dollar margin-top3px"  type="text" value="1,500,000" placeholder="$1,500,000" name="Cost" maxlength="13" data-val-required="The Cost field is required." data-val-number="The field Cost must be a number." data-val="true" readonly myvalue="$1,500,000" title="$1,500,000">                      *@
-                @Html.TextBox("txtRemainingBudget", "$0", new { @class = "currency_dollar margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
+                @Html.TextBox("txtRemainingBudget", "$0", new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
             </div>
 
         </div>
@@ -146,6 +146,11 @@
                 <div class="budget-collapse">
                     <div class="white-bg">
                         @HtmlHelpers.GenerateBudgetAllocationControl(AllocatedBy)
+                        @*Added By : Kalpesh Sharma : PL #605 : 07/29/2014*@
+                        <div class="budget-month">
+                            <span class="month">Unallocated</span>
+                            <span class="unallocated-span"><input id="lblUnallocatedBudget" class="unallocated-text" readonly="true" /></span>
+                        </div>
                     </div>
                     <div class="budget-result source-sans-prolight">
                          <p>
@@ -164,10 +169,10 @@
                             Total Budgeted:
                           <span id="lblTotalBudget" class="source-sans-proregular">@Model.ProgramBudget</span>
                         </p>
-                          <p>
+                          @*<p>
                             Unallocated budget:
                          <span id="lblUnallocatedBudget" class="source-sans-proregular"></span>
-                        </p>
+                        </p>*@
                     </div>
                 </div>
                 <!--End content-->
@@ -189,10 +194,16 @@
                         @Html.TextBoxFor(model => model.MQLs, new { placeholder = "0", id = "txtmql", @class = "priceValue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
                     </div>
 
-                    <div class="width65px pull-left">
+                    <div class="width65px margin-right20 pull-left">
                         <label title="Cost">Cost</label>
                         @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", id = "txtCost", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                     </div>
+
+                    <div class="width65px pull-left">
+                        <label title="Revenue">Revenue</label>
+                        @Html.TextBoxFor(model => model.Revenue, new { placeholder = "$0", id = "txtRevenue", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                </div>
+
                 </div>
             }
             @if ((bool)ViewBag.IsCreated)
@@ -245,16 +256,15 @@
     $(document).ready(function () {
         $('#slidepanel-container').slimScroll({ scrollTo: '0px' });
 
-        //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
-        $("#lblRemainingMonthlyBudget").html(FormatCommasBudget("0", false, true));
-        $("#lblAllocatedProgramsBudget").html(FormatCommasBudget("0", false, true));
-
         //added by kalpesh #608: Budget allocation for campaign
         $(".budget-head a").click(function () {
             $('.budget-collapse').slideToggle();
             $('.budget-head a').html($('.budget-head a').text() == '- Collapse' ? '+ Expand' : '- Collapse');
         });
         var SaveCampaignFlag = true;
+
+        //Added By : Kalpesh Sharma : PL #605 : 07/29/2014
+        $("#lblTotalBudget").html(FormatCommasBudget($("#lblTotalBudget").html(), false, true));
 
 
         var isredirect = "@ViewBag.RedirectType";
@@ -478,20 +488,42 @@
                
             //}
 
-
-
             // Start check error related to budget section, By Kalpesh  #567
-            var lstAllocInputs = $(".budget-section input.error-text");
+            //Added By : Kalpesh Sharma : PL #605 : 07/29/2014
+            var lstAllocInputs = $(".budget-section input.error-text").not('.unallocated-text');
             if (lstAllocInputs.length > 0) {
-                //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
-                var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.AllocateMoreThanBudgetedCustom";
-                for (var i = 0; i < lstAllocInputs.length; i++) {
-                    errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
+                var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted for ";
+                    var inputLength = lstAllocInputs.length;
+                    var removeLength = 0;
+                    for (var i = 0; i < lstAllocInputs.length; i++) {
+
+                        if (inputLength == 1) {
+                            errorMsg += ($(lstAllocInputs[i]).parent().prev().html());
+                        }
+                        else if (inputLength == 2) {
+                            errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
+                            removeLength = 4;
+                        }
+                        else if (inputLength > 2) {
+                            if (i == inputLength - 2) {
+                                errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ' and ');
+                                removeLength = 4;
+                            }
+                            else {
+                                errorMsg += ($(lstAllocInputs[i]).parent().prev().html() + ', ');
+                                removeLength = 2;
+                            }
+                        }
+
+                    }
+
+                    errorMsg = errorMsg.substring(0, errorMsg.length - removeLength);
+                    errorMsg += '.';
+
+                    ShowBudgetError(errorMsg);
+                    return false;
                 }
-                errorMsg = errorMsg.substring(0, errorMsg.length - 4);
-                ShowBudgetError(errorMsg);
-                return false;
-            }
+
 
             if ($("#txtRemainingBudget").hasClass('error-text')) {
                 //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
@@ -695,12 +727,14 @@
             $("#txtRemainingBudget").removeClass('error-text');
         }
 
-        $("#lblTotalBudget").html('$' + FormatCommas(ProgramBudgetValue, false));
+        $("#lblTotalBudget").html(FormatCommasBudget(ProgramBudgetValue, false, true));
+        alert($("#lblTotalBudget").html());
         calculateUnallocatedBudget();
+       
     });
 
 
-    $('.budget-section').find('input').each(function () {
+    $('.budget-section').find('input').not('.unallocated-text').each(function () {
         $(this).keyup(function () {
             if ($(this).val().trim() != '') {
                 var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
@@ -746,8 +780,10 @@
         });
     });
 
-    $('.budget-section').find('input').each(function () {
+    //Added By : Kalpesh Sharma : PL #605 : 07/29/2014
+    $('.budget-section').find('input').not('.unallocated-text').each(function () {
         $(this).focus(function () {
+            $(this).parent().addClass('border000000');
             var remainingValue = parseInt($(this).attr("rmb"));
             var AllocatedProgramsBudget = parseInt($(this).attr("pmb"));
             if (remainingValue < 0) {
@@ -756,12 +792,15 @@
             else {
                 $("#lblRemainingMonthlyBudget").removeClass('error-text');
             }
-            $("#lblRemainingMonthlyBudget").html("$" + FormatCommas(remainingValue.toString(), false));
-            $("#lblAllocatedProgramsBudget").html("$" + FormatCommas(AllocatedProgramsBudget.toString(), false));
+            $("#lblRemainingMonthlyBudget").html(FormatCommasBudget(remainingValue.toString(), false, true));
+            $("#lblAllocatedProgramsBudget").html(FormatCommasBudget(AllocatedProgramsBudget.toString(), false, true));
 
         });
-    });
 
+        $(this).focusout(function () {
+            $(this).parent().removeClass('border000000');
+        });
+    });
 
     //Start added by Kalpesh  #608: Budget allocation for Program
     function fillBudgetAllocationData() {
@@ -798,6 +837,7 @@
                 }
                 $("#lblTotalAllocated").html('$' + TotalallocationValue);
                 calculateUnallocatedBudget();
+                $("#Y1").focus();
             },
             error: function () {
                 ShowError('');
@@ -812,7 +852,7 @@
             var unallocatedBudget = parseInt(CampaignBudgetValue) - parseInt(CampaignAllocatedBudgetValue);
 
             //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
-            $("#lblUnallocatedBudget").html(FormatCommasBudget(unallocatedBudget.toString(), false,true));
+            $("#lblUnallocatedBudget").val(FormatCommasBudget(unallocatedBudget.toString(), false,true));
 
             if (unallocatedBudget < 0) {
                 $("#lblUnallocatedBudget").addClass('error-text');

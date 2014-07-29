@@ -96,6 +96,7 @@ namespace RevenuePlanner.Models
         //Start added by Kalpesh  #608: Budget allocation for Program
         public double ProgramBudget { get; set; }
         public string AllocatedBy { get; set; }
+        public double Revenue { get; set; }
     }
 
     public class Plan_Campaign_Program_TacticModel
