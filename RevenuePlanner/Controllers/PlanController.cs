@@ -138,7 +138,7 @@ namespace RevenuePlanner.Controllers
                     objPlanModel.Title = objplan.Title;
                     objPlanModel.Year = objplan.Year;
                     //objPlanModel.MQls = Convert.ToString(objplan.MQLs);
-                    objPlanModel.GoalType = GoalTypeList.Where(a => a.Value == objplan.GoalType).Select(a => a.Text).FirstOrDefault();
+                    objPlanModel.GoalType = GoalTypeList.Where(a => a.Value == objplan.GoalType).Select(a => a.Value).FirstOrDefault();
                     objPlanModel.GoalValue = Convert.ToString(objplan.GoalValue);
                     objPlanModel.AllocatedBy = objplan.AllocatedBy;
                     objPlanModel.Budget = objplan.Budget;
@@ -4486,15 +4486,63 @@ namespace RevenuePlanner.Controllers
                                             Sessions.User.UserId,
                                             parameterReturnValue,
                                             id);
+
                         int returnValue;
+                        Int32.TryParse(parameterReturnValue.Value.ToString(), out returnValue);
+                        
                         int cid = 0;
                         int pid = 0;
                         int tid = 0;
                         string Title = "";
-                        Int32.TryParse(parameterReturnValue.Value.ToString(), out returnValue);
+                        
                         if (returnValue != 0)
                         {
                             Plan_Campaign_Program_Tactic_LineItem pcptl = db.Plan_Campaign_Program_Tactic_LineItem.Where(p => p.PlanLineItemId == id).SingleOrDefault();
+
+                            // Start added by dharmraj to handle "Other" line item
+                            var objOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == pcptl.Plan_Campaign_Program_Tactic.PlanTacticId && l.Title == Common.DefaultLineItemTitle && l.LineItemTypeId == null);
+                            double totalLoneitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == pcptl.Plan_Campaign_Program_Tactic.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).Sum(l => l.Cost);
+                            if (pcptl.Plan_Campaign_Program_Tactic.Cost > totalLoneitemCost)
+                            {
+                                double diffCost = pcptl.Plan_Campaign_Program_Tactic.Cost - totalLoneitemCost;
+                                if (objOtherLineItem == null)
+                                {
+                                    Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
+                                    objNewLineitem.PlanTacticId = pcptl.Plan_Campaign_Program_Tactic.PlanTacticId;
+                                    objNewLineitem.Title = Common.DefaultLineItemTitle;
+                                    objNewLineitem.Cost = diffCost;
+                                    objNewLineitem.Description = string.Empty;
+                                    objNewLineitem.CreatedBy = Sessions.User.UserId;
+                                    objNewLineitem.CreatedDate = DateTime.Now;
+                                    db.Entry(objNewLineitem).State = EntityState.Added;
+                                    db.SaveChanges();
+                                }
+                                else
+                                {
+                                    if (diffCost != objOtherLineItem.Cost)
+                                    {
+                                        objOtherLineItem.IsDeleted = false;
+                                        objOtherLineItem.Cost = diffCost;
+                                        objOtherLineItem.Description = string.Empty;
+                                        db.Entry(objOtherLineItem).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (objOtherLineItem != null)
+                                {
+                                    objOtherLineItem.IsDeleted = true;
+                                    objOtherLineItem.Cost = 0;
+                                    objOtherLineItem.Description = string.Empty;
+                                    db.Entry(objOtherLineItem).State = EntityState.Modified;
+                                    db.SaveChanges();
+                                }
+                            }
+                            // End added by dharmraj to handle "Other" line item
+
+                            
                             cid = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId;
                             pid = pcptl.Plan_Campaign_Program_Tactic.PlanProgramId;
                             tid = pcptl.PlanTacticId;
