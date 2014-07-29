@@ -6523,9 +6523,14 @@ span.left-arrow {
     visibility: visible;
 }
 
-.accordion-campaign .tactic-level .accordion-body:hover .delete-program {
+/*Modified by Mitesh vaishnav for PL ticket #619*/
+.accordion-campaign .tactic-level >.accordion-body:hover .delete-program {
     visibility: visible;
 }
+/* End Modified by Mitesh vaishnav for PL ticket #619*/
+/*Added by Mitesh vaishnav for PL ticket #619*/
+.accordion-campaign .accordion-body.lineitem-level .accordion-body:hover .delete-program{visibility: visible;}
+/*End :Added by Mitesh vaishnav for PL ticket #619*/
 /* end changes*/
 /*added by Nirav Shah  on 14 feb 2014  for 256: Model list - add delete option for model*/
 #table_baseline tbody tr td span.delete-temp-program {

@@ -1746,7 +1746,7 @@ namespace RevenuePlanner.Controllers
                         id = pcptj.PlanTacticId,
                         title = pcptj.Title,
                         description = pcptj.Description,
-                        cost = pcptj.Cost,
+                        cost = db.Plan_Campaign_Program_Tactic_LineItem.ToList().Where(lc=>lc.PlanTacticId.Equals(pcptj.PlanTacticId)&& lc.IsDeleted.Equals(false)).Select(lc=>lc.Cost).Sum()>pcptj.Cost?db.Plan_Campaign_Program_Tactic_LineItem.ToList().Where(lc=>lc.PlanTacticId.Equals(pcptj.PlanTacticId)&& lc.IsDeleted.Equals(false)).Select(lc=>lc.Cost).Sum():pcptj.Cost,//Modified by mitesh Vaishnav on 29-07-2014 for PL ticket #619
                         //inqs = pcptj.INQs,
                         mqls = GetTacticMQL(pcptj),
                         /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
@@ -1761,7 +1761,7 @@ namespace RevenuePlanner.Controllers
                             title = pcptlj.Title,
                             cost = pcptlj.Cost
 
-                        }).Select(pcptlj => pcptlj).Distinct().OrderBy(pcptlj => pcptlj.id)
+                        }).Select(pcptlj => pcptlj).Distinct().OrderByDescending(pcptlj => pcptlj.type)
                         //End :Added by Mitesh Vaishnav for pl ticket 619
                     }).Select(pcptj => pcptj).Distinct().OrderBy(pcptj => pcptj.id)
                 }).Select(pcpj => pcpj).Distinct().OrderBy(pcpj => pcpj.id)
