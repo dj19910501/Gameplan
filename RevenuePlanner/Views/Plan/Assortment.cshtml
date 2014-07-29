@@ -544,6 +544,7 @@
             //$('#slidepanel').load(url + '?id=' + idCampaing);
             $('#slidepanel-container').load(url + '?id=' + idCampaing, AssignDefaultValue);
             $("#slidepanel").css("right", "0px");
+            $("#slidepanel").addClass('sidebar-wide');
             myApp.hidePleaseWait();
             e.preventDefault(); //// Added by :- Sohel Pathan on 24/24/2014 for Intenal Review Points #8 to solve scrolling issue
         });
@@ -1181,7 +1182,8 @@
             var idProgram = $(this).attr('data-id-program');
             var url = '@Url.Content("~/Plan/CreateImprovementTactic")';
              $('#slidepanel-container').load(url + '?id=' + idProgram, AssignDefaultValue);
-            $("#slidepanel").css("right", "0px");
+             $("#slidepanel").css("right", "0px");
+             $("#slidepanel").addClass('sidebar-wide');
             myApp.hidePleaseWait();
         });
 

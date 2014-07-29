@@ -7543,3 +7543,9 @@ a:hover, a:focus{text-decoration: none !important;}
 /*#divMonthlyBudget, #divQuarterlyBudget {
     padding-bottom: 5px;
 }*/
+
+/*Added By : Kalpesh Sharma : PL #605 : 07/29/2014*/
+#divAddNewTactics {
+    width: 40%;
+}
+/*End By : Kalpesh Sharma : PL #605 : 07/29/2014*/

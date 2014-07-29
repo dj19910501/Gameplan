@@ -135,9 +135,9 @@
                 @Html.TextBoxFor(model => model.ProgramBudget, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", id = "txtProgramBudget" })
             </div>
             <div class="content-row alternate">
-                <label class="padding-left4" title="Cost">Remaining Campaign Budget</label>
+                <label class="padding-left4" title="Cost1">Remaining Campaign Budget</label>
                 @*<input id="txtCost" class="currency_dollar margin-top3px"  type="text" value="1,500,000" placeholder="$1,500,000" name="Cost" maxlength="13" data-val-required="The Cost field is required." data-val-number="The field Cost must be a number." data-val="true" readonly myvalue="$1,500,000" title="$1,500,000">                      *@
-                @Html.TextBox("txtRemainingBudget", "$0", new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
+                @Html.TextBox("txtRemainingBudget", "$0", new {  @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
             </div>
 
         </div>
@@ -223,7 +223,9 @@
                         <div id="c_tactics">
                             <!--selects elements created dynamically-->
                         </div>
+                        <div id="divAddNewTactics">
                         <span class="c-add-tactic link-blue " style="margin-top:3px;">Add New tactics</span>
+                        </div>
                     }
                     else
                     {
@@ -402,10 +404,10 @@
                 }
             }
             
-            $("#c_tactics").append('<div  style="margin-bottom: 5px;"><span class="verticalIdSelectBox"><select id="TacticTypeId" class="ddlStyle" require="true" name="TacticTypeId" data-val-required="The TacticTypeId field is required." data-val-number="The field TacticTypeId must be a number." data-val="true">' +
+            $("#c_tactics").append('<div  style="margin-bottom: 5px;width: 50% !important;float:left;"><span class="verticalIdSelectBox"><select id="TacticTypeId" class="ddlStyle" require="true" name="TacticTypeId" data-val-required="The TacticTypeId field is required." data-val-number="The field TacticTypeId must be a number." data-val="true">' +
                '<option value="">Please Select</option>' + tacticString +
                '</select></span>' +
-          '<span class="delete-tactic"></span></div>');
+          '<span style="margin-right: 4px;" class="delete-tactic"></span>');
             $(".verticalIdSelectBox select").selectbox();
         });
 
@@ -729,7 +731,8 @@
         var newRemainingBudget = parseInt(ReplaceCC($("#txtRemainingBudget").val())) + differenceVal;
 
 
-        $("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false,true));
+        $("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false, true));
+        $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
 
         $("#hdnOldProgramBudget").val(ProgramBudgetValue);
         if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
@@ -844,7 +847,9 @@
                     }
                 }
 
-                $("#txtRemainingBudget").val('$' + FormatCommas(data.planRemainingBudget.toString(), false));
+                $("#txtRemainingBudget").val(FormatCommasBudget(data.planRemainingBudget.toString(), false , true));
+                $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
+
                 var TotalallocationValue = 0;
                 var lstAllocInputs = $(".budget-section input");
                 for (var i = 0; i < lstAllocInputs.length; i++) {
