@@ -1432,6 +1432,7 @@
                 $("#ddlBusinessUnitSelectBox").find('.sbSelector').each(function () {
                     $(this).unbind("click");
                     $(this).removeAttr("href");
+                    $(this).attr('style', 'cursor:default');//Added by Mitesh Vaishnav For PL ticket #606
                     $(this).prev().unbind("click");
                     $(this).prev().removeAttr("href");
                 });
