@@ -227,12 +227,10 @@
                     <input type="text" value="@Model.MQLs" readonly="true" id = "txtmql" />
                 </div>
 
-                 <div class="width65px margin-right20 pull-left">
+               @*  <div class="width65px margin-right20 pull-left">
                     <label title="Cost">Cost</label>
-                    @*  TFS Bug 207 : Cant override the Cost from the defaults coming out of the model
-                                    changed by Nirav shah on 10 feb 2014  *@
                     @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", id = "txtCost", @class = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
-                </div>
+                </div>*@
 
                    <div class="width65px pull-left">
                         <label title="Revenue">Revenue</label>
@@ -633,12 +631,13 @@
             else {
                 $("#txtmql").val(ReplaceCC($("#txtmql").val()));
             }
-            $("#txtCost").val(ReplaceCC($("#txtCost").val()));
+
+          
+            $("#txtTacticPlannedCost").val(ReplaceCC($("#txtTacticPlannedCost").val()));
             var arrClosedTaskString = null;
             if (typeof arrClosedTask != 'undefined') {
                 arrClosedTaskString = arrClosedTask.toString();
             }
-
 
             //Start by Kalpesh Sharma #605: Cost allocation for Tactic
             var allocationValue = [];
@@ -705,7 +704,10 @@
                         $("#txtProjectedStageValue").val(projectedStageValue);
                         GetConversionRate(projectedStageValue, true); //GetConversionRate(pinq);
                         // $("#txtmql").val(FormatCommas(Math.round(mqlConversion * pinq).toString(), false));
-                        $("#txtCost").val(pcost);
+                        //$("#txtCost").val(pcost);
+                        //Start by Kalpesh Sharma #605: Cost allocation for Tactic 07/30/2014
+                        $("#txtTacticPlannedCost").val(pcost);
+
                         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
                         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
@@ -728,7 +730,9 @@
             else {
                 $("#txtProjectedStageValue").val(projectedStageValue);
                 $("#txtmql").val(pmql);
-                $("#txtCost").val(pcost);
+                //$("#txtCost").val(pcost);
+                //Start by Kalpesh Sharma #605: Cost allocation for Tactic 07/30/2014
+                $("#txtTacticPlannedCost").val(txtTacticPlannedCost);
                 $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
                 $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
                 $("#lblStageTitle").text("Stage");

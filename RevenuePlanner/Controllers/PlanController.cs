@@ -3367,7 +3367,7 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.AudienceId = form.AudienceId;
                                 pcpobj.GeographyId = form.GeographyId;
                                 //pcpobj.INQs = form.INQs;
-                                pcpobj.Cost = form.Cost;
+                                pcpobj.Cost = form.TacticCost;
                                 pcpobj.StartDate = form.StartDate;  // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
                                 pcpobj.EndDate = form.EndDate;  // Modified by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
                                 pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString();
