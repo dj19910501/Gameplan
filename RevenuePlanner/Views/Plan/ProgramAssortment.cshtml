@@ -544,7 +544,7 @@
                     return false;
                 }
 
-                if (parseInt(ReplaceCC($("#lblUnallocatedBudget").html())) < 0) {
+                if (parseInt(ReplaceCC($("#lblUnallocatedBudget").val())) < 0) {
                     //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
                     ShowBudgetError("@RevenuePlanner.Helpers.Common.objCached.BudgetLessThanAllocated");
                     return false;
@@ -787,11 +787,11 @@
                     }
 
                     var TotalallocationValue = 0;
-                    var lstAllocInputs = $(".budget-section input");
+                    var lstAllocInputs = $(".budget-section input").not('.unallocated-text');
                     for (var i = 0; i < lstAllocInputs.length; i++) {
                         TotalallocationValue += parseInt($(lstAllocInputs[i]).val() == '' ? 0 : ReplaceCC($(lstAllocInputs[i]).val()));
                     }
-                    $("#lblTotalAllocated").html('$' + FormatCommas(TotalallocationValue.toString(), false));
+                    $("#lblTotalAllocated").html(FormatCommasBudget(TotalallocationValue.toString(), false, true));
                     calculateUnallocatedBudget();
                 }
             }

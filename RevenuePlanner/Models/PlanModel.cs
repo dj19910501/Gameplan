@@ -131,7 +131,7 @@ namespace RevenuePlanner.Models
         //Start by Kalpesh Sharma #605: Cost allocation for Tactic
         public double TacticCost { get; set; }
         public string AllocatedBy { get; set; }
-
+        public double Revenue { get; set; }
     }
 
     public class Plan_Campaign_Program_Tactic_LineItemModel

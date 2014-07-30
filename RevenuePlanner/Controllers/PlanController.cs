@@ -3302,6 +3302,11 @@ namespace RevenuePlanner.Controllers
             var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
             pcptm.AllocatedBy = objPlan.AllocatedBy;
 
+            //Added By : Kalpesh Sharma : PL #605 : 07/29/2014
+            List<Plan_Tactic_Values> PlanTacticValuesList = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcpt.PlanProgramId &&
+                t.PlanTacticId == pcpt.PlanTacticId && t.IsDeleted == false).ToList());
+            pcptm.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue)); 
+
             return PartialView("TacticAssortment", pcptm);
         }
 
@@ -3380,15 +3385,18 @@ namespace RevenuePlanner.Controllers
                                 int tacticId = pcpobj.PlanTacticId;
 
                                 // Start Added by dharmraj for ticket #644
-                                Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
-                                objNewLineitem.PlanTacticId = tacticId;
-                                objNewLineitem.Title = Common.DefaultLineItemTitle;
-                                objNewLineitem.Cost = pcpobj.Cost;
-                                objNewLineitem.Description = string.Empty;
-                                objNewLineitem.CreatedBy = Sessions.User.UserId;
-                                objNewLineitem.CreatedDate = DateTime.Now;
-                                db.Entry(objNewLineitem).State = EntityState.Added;
-                                db.SaveChanges();
+                                if (pcpobj.Cost > 0)
+                                {
+                                    Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
+                                    objNewLineitem.PlanTacticId = tacticId;
+                                    objNewLineitem.Title = Common.DefaultLineItemTitle;
+                                    objNewLineitem.Cost = pcpobj.Cost;
+                                    objNewLineitem.Description = string.Empty;
+                                    objNewLineitem.CreatedBy = Sessions.User.UserId;
+                                    objNewLineitem.CreatedDate = DateTime.Now;
+                                    db.Entry(objNewLineitem).State = EntityState.Added;
+                                    db.SaveChanges();
+                                }
                                 // End Added by dharmraj for ticket #644
 
                                 ////Start - Added by : Mitesh Vaishnav on 25-06-2014    for PL ticket 554 Home & Plan Pages: Program and Campaign Blocks are not covering newly added Tactic.
