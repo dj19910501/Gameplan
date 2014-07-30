@@ -147,11 +147,11 @@
 
 
             <div class="content-row ">
-                <label class="padding-left4" title="Cost">Tactic Planned Cost</label>
+                <label class="padding-left4" title="Tactic Planned Cost">Tactic Planned Cost</label>
                 @Html.TextBoxFor(model => model.TacticCost, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", id = "txtTacticPlannedCost" })
             </div>
             <div class="content-row alternate">
-                <label class="padding-left4" title="Budget">Remaining Program Budget</label>
+                <label class="padding-left4" title="Remaining Program Budget">Remaining Program Budget</label>
                 @*<input id="txtCost" class="currency_dollar margin-top3px"  type="text" value="1,500,000" placeholder="$1,500,000" name="Cost" maxlength="13" data-val-required="The Cost field is required." data-val-number="The field Cost must be a number." data-val="true" readonly myvalue="$1,500,000" title="$1,500,000">                      *@
                 @Html.TextBox("txtRemainingBudget", "$0", new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
             </div>
