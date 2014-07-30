@@ -597,7 +597,7 @@
 
             ////Start added by Kalpesh  #608: Budget allocation for Program
             var allocationValue = [];
-            var lstAllocInputs = $(".budget-section input");
+            var lstAllocInputs = $(".budget-section input").not('.unallocated-text');
             for (var i = 0; i < lstAllocInputs.length; i++) {
                 allocationValue.push(ReplaceCC($(lstAllocInputs[i]).val()));
             }

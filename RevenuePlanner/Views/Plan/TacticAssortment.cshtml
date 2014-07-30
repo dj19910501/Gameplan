@@ -642,7 +642,7 @@
 
             //Start by Kalpesh Sharma #605: Cost allocation for Tactic
             var allocationValue = [];
-            var lstAllocInputs = $(".budget-section input");
+            var lstAllocInputs = $(".budget-section input").not('.unallocated-text');
             for (var i = 0; i < lstAllocInputs.length; i++) {
                 allocationValue.push(ReplaceCC($(lstAllocInputs[i]).val()));
             }
