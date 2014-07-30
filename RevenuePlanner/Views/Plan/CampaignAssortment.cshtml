@@ -198,7 +198,9 @@
 
                         <!--inputs elements created dynamically-->
                     </div>
+                     <div id="divAddNewTactics">
                     <span class="c-add-program link-blue">Add New Program</span>
+                         </div>
                 </div>					
             }
             @if ((bool)ViewBag.RedirectType)
@@ -375,7 +377,7 @@
 
 
         $(".c-add-program").click(function () {
-            $("#c_programs").append('<div class="content-row"><input class="delete-icon" type="text" require="true" placeholder="Program Title" maxlength="255" /><span class="delete-temp-program"></span></div>');
+            $("#c_programs").append('<div class="content-row" style="width: 45% !important;float:left;"><input class="delete-icon" type="text" require="true" placeholder="Program Title" maxlength="255" /><span class="delete-temp-program"></span></div>');
         });
 
         $('#c_programs').on('click', '.delete-temp-program', function () {
