@@ -3431,7 +3431,7 @@ namespace RevenuePlanner.Controllers
                                         if (arrBudgetInputValues[i] != "")
                                         {
                                             Plan_Campaign_Program_Tactic_Cost obPlanCampaignProgramTacticCost = new Plan_Campaign_Program_Tactic_Cost();
-                                            obPlanCampaignProgramTacticCost.PlanTacticId = form.PlanTacticId;
+                                            obPlanCampaignProgramTacticCost.PlanTacticId = tacticId;
                                             obPlanCampaignProgramTacticCost.Period = "Y" + (i + 1);
                                             obPlanCampaignProgramTacticCost.Value = Convert.ToDouble(arrBudgetInputValues[i]);
                                             obPlanCampaignProgramTacticCost.CreatedBy = Sessions.User.UserId;
@@ -3449,7 +3449,7 @@ namespace RevenuePlanner.Controllers
                                         if (arrBudgetInputValues[i] != "")
                                         {
                                             Plan_Campaign_Program_Tactic_Cost obPlanCampaignProgramTacticCost = new Plan_Campaign_Program_Tactic_Cost();
-                                            obPlanCampaignProgramTacticCost.PlanTacticId = form.PlanTacticId;
+                                            obPlanCampaignProgramTacticCost.PlanTacticId = tacticId;
                                             obPlanCampaignProgramTacticCost.Period = "Y" + BudgetInputValuesCounter;
                                             obPlanCampaignProgramTacticCost.Value = Convert.ToDouble(arrBudgetInputValues[i]);
                                             obPlanCampaignProgramTacticCost.CreatedBy = Sessions.User.UserId;
