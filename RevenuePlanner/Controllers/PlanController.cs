@@ -2014,6 +2014,18 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IsCampaignDeleteble = false;
             }
             ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
+
+            //Plan proj = db.Plans.AsNoTracking().First(p => p.PlanId == Sessions.PlanId);
+            //var plancapmign = proj.Plan_Campaign.Select(s => s.PlanCampaignId); 
+
+            //if (proj != null)
+            //{
+            //    proj.Plan_Campaign = (ICollection<Plan_Campaign>)db.Plan_Campaign.AsNoTracking().Where(p => plancapmign.Contains(p.PlanCampaignId)).ToList();
+            //}
+
+            //db.Plans.Add(proj);
+            //db.SaveChanges();
+            
             return PartialView("CampaignAssortment", pcm);
         }
 
@@ -2775,6 +2787,7 @@ namespace RevenuePlanner.Controllers
                                         int tacid = Convert.ToInt32(tac);
                                         pcptobj.TacticTypeId = tacid;
                                         TacticType mt = db.TacticTypes.Where(m => m.TacticTypeId == tacid).FirstOrDefault();
+
                                         pcptobj.IsDeployedToIntegration = mt.IsDeployedToIntegration;//mt.Model.IntegrationInstanceId == null ? false : true;
                                         pcptobj.Title = mt.Title;
                                         /* changed by Nirav on 11 APR for PL 322*/
@@ -2819,6 +2832,21 @@ namespace RevenuePlanner.Controllers
                                         db.Entry(pcptobj).State = EntityState.Added;
                                         result = db.SaveChanges();
                                         int tid = pcptobj.PlanTacticId;
+
+                                        //Start by Kalpesh Sharma #605: Cost allocation for Tactic 07/30/2014
+                                        if (mt.ProjectedRevenue > 0)
+                                        {
+                                            Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();
+                                            objNewLineitem.PlanTacticId = tid;
+                                            objNewLineitem.Title = Common.DefaultLineItemTitle;
+                                            objNewLineitem.Cost = Convert.ToDouble(mt.ProjectedRevenue);
+                                            objNewLineitem.Description = string.Empty;
+                                            objNewLineitem.CreatedBy = Sessions.User.UserId;
+                                            objNewLineitem.CreatedDate = DateTime.Now;
+                                            db.Entry(objNewLineitem).State = EntityState.Added;
+                                            db.SaveChanges();
+                                        }
+
                                         result = Common.InsertChangeLog(Sessions.PlanId, null, tid, pcptobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                                     }
                                 }
