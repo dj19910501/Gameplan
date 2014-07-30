@@ -17,7 +17,8 @@
     
 }
 <style type="text/css">
-    #c_tactics .verticalIdSelectBox .sbHolder {
+    #c_tactics .verticalIdSelectBox .sbHolder
+    {
         width: 90%;
     }
 </style>
@@ -75,14 +76,11 @@
             @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
             @Html.HiddenFor(model => model.StageId, new { id = "hdnStageId" })
             @Html.HiddenFor(model => model.TacticCost, new { id = "hdnOldTacticBudget" })
-            @Html.Hidden("hdnIsBudgetAllocated",IsBudgetAllocated)
+            @Html.Hidden("hdnIsBudgetAllocated", IsBudgetAllocated)
 
 
             <label class="t_title">Tactic Title</label>
             @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true", maxlength = "255" })
-
-            <label>Tactic Type</label>
-            <span class="verticalIdSelectBox" style="  margin-left: -2px;">@Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true", Id = "ddlTacticType" })</span>
 
             <label style="margin-top:6px;">Description</label>
             @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", rows = "3", maxlength = "4000" })
@@ -95,15 +93,22 @@
                 @Html.TextBox("txtProgram", (string)ViewBag.Program, new { @readonly = "true" });
             }
 
+        <div class="content-row">
+            <label>Tactic Type</label>
+            <span class="verticalIdSelectBox" style="  margin-left: -2px;">@Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true", Id = "ddlTacticType" })</span>
+        </div>
+        <div class="content-row alternate">
             <label >Vertical</label>
             <span class="verticalIdSelectBox" style="  margin-left: -2px;">@Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
-
+        </div>
+        <div class="content-row">
             <label style="margin-top:6px;">Audience</label>
             <span class="verticalIdSelectBox" style="  margin-left: -2px;">@Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
-
+        </div>
+        <div class="content-row alternate">
             <label style="margin-top:6px;">Geography</label>
             <span class="verticalIdSelectBox" style="  margin-left: -2px;">@Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
-            
+         </div>
 
             @if (ExtIntService != string.Empty)
             {
@@ -317,8 +322,8 @@
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
         //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-            $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
-            $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
+        $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
+        $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
         //}
         $("span.tool-tip").tooltip();
 
@@ -329,11 +334,11 @@
             $(this).closest(".alert").slideUp(400);
         });
         //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-            $('.datepicker.dropdown-menu').css("display", "none");
+        $('.datepicker.dropdown-menu').css("display", "none");
         //}
         $('.close-form', this.$panel).click(function (e) {
             //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                $('.datepicker.dropdown-menu').css("display", "none");
+            $('.datepicker.dropdown-menu').css("display", "none");
             //}
             $("#slidepanel").css("display", "none");
             $("#slidepanel-container").empty();
@@ -544,10 +549,10 @@
                 return false;
             }
             //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                var sdate = $('#t_startdate').val();
-                var edate = $('#t_enddate').val();
-                if (!isDate(sdate)) {
-                    alert('@Common.objCached.ValidateStartDate');
+            var sdate = $('#t_startdate').val();
+            var edate = $('#t_enddate').val();
+            if (!isDate(sdate)) {
+                alert('@Common.objCached.ValidateStartDate');
                     return false;
                 }
                 if (!isDate(edate)) {
@@ -555,16 +560,16 @@
                     return false;
                 }
                 if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
-                if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
-                //var psdate = $('#hdnPStartDate').val();
-                //var pedate = $('#hdnPEndDate').val();
-                //var csdate = $('#hdnCStartDate').val();
-                //var cedate = $('#hdnCEndDate').val();
-                if (!validateDateCompare(sdate, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) return false;
-                //if (!validateDateCompare(psdate, sdate, "Program Start Date")) return false;
-                //if (!validateDateCompare(csdate, sdate, "Campaign Start Date")) return false;
-                //if (!validateDateCompare(edate, pedate, "Program End Date")) return false;
-                //if (!validateDateCompare(edate, cedate, "Campaign End Date")) return false;
+            if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
+            //var psdate = $('#hdnPStartDate').val();
+            //var pedate = $('#hdnPEndDate').val();
+            //var csdate = $('#hdnCStartDate').val();
+            //var cedate = $('#hdnCEndDate').val();
+            if (!validateDateCompare(sdate, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) return false;
+            //if (!validateDateCompare(psdate, sdate, "Program Start Date")) return false;
+            //if (!validateDateCompare(csdate, sdate, "Campaign Start Date")) return false;
+            //if (!validateDateCompare(edate, pedate, "Program End Date")) return false;
+            //if (!validateDateCompare(edate, cedate, "Campaign End Date")) return false;
 
 
             //}
@@ -632,7 +637,7 @@
                 $("#txtmql").val(ReplaceCC($("#txtmql").val()));
             }
 
-          
+
             $("#txtTacticPlannedCost").val(ReplaceCC($("#txtTacticPlannedCost").val()));
             var arrClosedTaskString = null;
             if (typeof arrClosedTask != 'undefined') {
