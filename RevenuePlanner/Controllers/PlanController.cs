@@ -2015,7 +2015,7 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
 
-            Clonehelper.PlanClone(Sessions.PlanId);
+            //Clonehelper.PlanClone(Sessions.PlanId);
             
             return PartialView("CampaignAssortment", pcm);
         }
