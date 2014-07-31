@@ -1656,9 +1656,9 @@ namespace RevenuePlanner.Controllers
             PlanModel pm = new PlanModel();
             pm.ModelTitle = plan.Model.Title + " " + plan.Model.Version;
             pm.Title = plan.Title;
-            //pm.MQLDisplay = plan.MQLs;
             var GoalTypeList = Common.GetGoalTypeList(Sessions.User.ClientId);
-            pm.GoalType = GoalTypeList.Where(a => a.Value == plan.GoalType).Select(a => a.Text).FirstOrDefault();
+            pm.GoalType = plan.GoalType;
+            pm.GoalTypeDisplay = GoalTypeList.Where(a => a.Value == plan.GoalType).Select(a => a.Text).FirstOrDefault();
             pm.GoalValue = plan.GoalValue.ToString();
             pm.AllocatedBy = plan.AllocatedBy;
             pm.ModelId = plan.ModelId;

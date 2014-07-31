@@ -377,7 +377,6 @@
                       else {
                           $(this).children('a').removeClass("error-form");
                       }
-
                   }
                   else if ($(this).next().attr('datadefault') == "GoalValue") { @* Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
                       var tValue = $(this).children('a').text();
@@ -400,7 +399,6 @@
                       }
                   }
                   else if ($(this).next().attr('datadefault') == "SelectModel") {
-                      //if ($("#PlanId").val() == '' || $("#PlanId").val() == '0') {
                           var tValue = $(this).children('a').text();
                           if (tValue == 'select') {
                               $(this).children('a').addClass("error-form");
@@ -410,11 +408,9 @@
                           else {
                               $(this).children('a').removeClass("error-form");
                           }
-                      //}
                   }
                   @* Start - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
                   else if ($(this).next().attr('datadefault') == "SelectGoalType") {
-                      //if ($("#PlanId").val() == '' || $("#PlanId").val() == '0') {
                           var tValue = $(this).children('a').text();
                           if (tValue == 'select') {
                               $(this).children('a').addClass("error-form");
@@ -424,10 +420,8 @@
                           else {
                               $(this).children('a').removeClass("error-form");
                           }
-                      //}
                   }
                   else if ($(this).next().attr('datadefault') == "SelectAllocatedBy") {
-                      //if ($("#PlanId").val() == '' || $("#PlanId").val() == '0') {
                           var tValue = $(this).children('a').text();
                           if (tValue == 'select') {
                               $(this).children('a').addClass("error-form");
@@ -437,7 +431,6 @@
                           else {
                               $(this).children('a').removeClass("error-form");
                           }
-                      //}
                   }
                   @* End - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
               });
@@ -634,6 +627,8 @@
                   $('#divMonthlyBudget').hide();
                   $('#spnTotalBudget').html(FormatCurrency(totalBudget));
                   $('#divQuarterlyBudget').show();
+                  $('#spnThisQuarter').show();
+                  $('#spnThisMonth').hide();
               }
           GetAllocatedBudgetForPlan('@strPlanId');
               // Added by dharmraj to focus first month/Quarter
@@ -699,7 +694,7 @@
             success: function (data) {
                 $('#msg1').html(data.msg1);
                 $('#msg2').html(data.msg2);
-                $('#input1').html(data.input1.toString());
+                $('#input1').html(FormatCommas(data.input1.toString(), false));
                 SetPriceValue("#input1");
                 if (_goalType.toLowerCase() != "revenue") {
                     $('#input2').html(FormatCurrency(data.input2.toString(), false));
@@ -747,6 +742,17 @@
                 changed = true;
             }
         });
+        // Start - Added by Sohel Pathan on 31/07/2014 for Internal Review Point
+        if ($('#divPlanBudgetAllocation').css('display') != "none") {
+            $('.myValue-budget').each(function () {
+                var iv = $(this).attr("oldValue");
+                if ($(this).val() != iv) {
+                    changed = true;
+                    return false;
+                }
+            });
+        }
+        // End - Added by Sohel Pathan on 31/07/2014 for Internal Review Point
         return changed;
     }
     $(document).on("click", "#confirmClose, .confirmClose", function (e) {
@@ -805,7 +811,7 @@
         checkCampaignBudget(this);
         }
     });
-
+    
     $('.budget-month .priceValue').keyup(function () {
         if (this.id.toString() != 'unallocatedBudget') {
         var allocatedBudget = calculateAllocatedBudgetMonthly();
@@ -825,7 +831,7 @@
     function checkCampaignBudget(input)
     {
         var inputHdn = $(input).next();
-        var campaignBudget = parseInt(inputHdn.val());
+        var campaignBudget = inputHdn.val() == '' ? 0 : parseInt(inputHdn.val());
         $('#spnCampaignAllocatedBudget').html(FormatCurrency(campaignBudget.toString(), false));
         var selectedMonthBudget = parseInt($(input).val().trim().replace(/,/g, '').replace('$', ''));
         if (campaignBudget > selectedMonthBudget) {
@@ -1059,6 +1065,10 @@
                                         var allocatedAmount = data.planBudgetAllocationList[i - 1].Value.toString();
                                         if (parseInt(allocatedAmount) > 0) {
                                             $('#M' + data.planBudgetAllocationList[i - 1].Period.toString()).val(FormatCommas(allocatedAmount, false));
+                                            $('#M' + data.planBudgetAllocationList[i - 1].Period.toString()).attr('oldValue', FormatCommas(allocatedAmount, false));
+                                        }
+                                        else {
+                                            $('#M' + data.planBudgetAllocationList[i - 1].Period.toString()).attr('oldValue', '');
                                         }
                                         if (data.planCampaignBudgetAllocationList != 'undefined') {
                                             if (data.planCampaignBudgetAllocationList.length > 0) {
@@ -1078,14 +1088,18 @@
                                                 }
                                             }
                                         }
+                                        $('#MY' + i).addClass('myValue-budget');
                                     }
 
                                     // Added by dharmraj to focus first month
-                                        var My1Val = $("#MY1").val() == '' ? '0' : $("#MY1").val();
-                                        var cam1Val = $("#hdnMY1").val() == '' ? '0' : $("#hdnMY1").val();
-                                        if (parseInt(My1Val) < parseInt(cam1Val)) {
-                                            $("#spnCampaignAllocatedBudget").addClass('error-text');
-                                        }
+                                    var My1Val = $("#MY1").val() == '' ? '0' : $("#MY1").val();
+                                    var cam1Val = $("#hdnMY1").val() == '' ? '0' : $("#hdnMY1").val();
+                                    if (parseInt(My1Val) < parseInt(cam1Val)) {
+                                        $("#spnCampaignAllocatedBudget").addClass('error-text');
+                                    }
+                                    else {
+                                        $("#spnCampaignAllocatedBudget").removeClass('error-text');
+                                    }
 
                                     var allocatedBudget = calculateAllocatedBudgetMonthly();
                                     $('#spnTotalAllocatedBudget').html(FormatCurrency(allocatedBudget, false));
@@ -1097,6 +1111,10 @@
                                         var allocatedAmount = data.planBudgetAllocationList[i - 1].Value.toString();
                                         if (parseInt(allocatedAmount) > 0) {
                                             $('#Q' + data.planBudgetAllocationList[i - 1].Period.toString()).val(FormatCommas(allocatedAmount, false));
+                                            $('#Q' + data.planBudgetAllocationList[i - 1].Period.toString()).attr('oldValue', FormatCommas(allocatedAmount, false));
+                                        }
+                                        else {
+                                            $('#Q' + data.planBudgetAllocationList[i - 1].Period.toString()).attr('oldValue', '');
                                         }
                                         if (data.planCampaignBudgetAllocationList != 'undefined') {
                                             if (data.planCampaignBudgetAllocationList.length > 0) {
@@ -1115,6 +1133,7 @@
                                                 }
                                             }
                                         }
+                                        $('#QY' + i).addClass('myValue-budget');
                                     }
 
                                     // Added by dharmraj to focus first Quarter
@@ -1123,6 +1142,10 @@
                                     if (parseInt(My1Val) < parseInt(cam1Val)) {
                                         $("#spnCampaignAllocatedBudget").addClass('error-text');
                                     }
+                                    else {
+                                        $("#spnCampaignAllocatedBudget").removeClass('error-text');
+                                    }
+
 
                                     var allocatedBudget = calculateAllocatedBudgetQuarterly();
                                     $('#spnTotalAllocatedBudget').html(FormatCurrency(allocatedBudget, false));
@@ -1158,13 +1181,19 @@
     {
         $('.budget-month .priceValue').each(function () {
             if (this.id.toString() != 'unallocatedBudget') {
-            $(this).val('');
+                $(this).val('');
+                $(this).attr('oldValue', '');
+                $(this).removeClass('myValue-budget');
+                $(this).next().val('');
             }
         });
 
         $('.budget-quarters .priceValue').each(function () {
             if (this.id.toString() != 'unallocatedBudget') {
-            $(this).val('');
+                $(this).val('');
+                $(this).attr('oldValue', '');
+                $(this).removeClass('myValue-budget');
+                $(this).next().val('');
             }
         });            
     }

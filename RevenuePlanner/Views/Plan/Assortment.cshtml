@@ -30,6 +30,7 @@
 </div>
 @Html.Hidden("hdnYear", pm.Year, new { id = "hdnYear" })
 @Html.Hidden("hdnModelId", pm.ModelId, new { id = "hdnModelId" })   @* Added by Sohel Pathan on 15/07/2014 for PL ticket #566*@
+@Html.Hidden("hdnGoalType", pm.GoalType, new { id = "hdnGoalType" }) @* Added by Sohel Pathan on 31/07/2014 for PL ticket #566 *@
 <!--error message-->
 <table class="light-blue-background margin5 element-disable">
     <tbody>
@@ -41,7 +42,7 @@
                         @* Start - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
                         I'm using the <span>@pm.ModelTitle</span> model to create a plan called <span id="spanTitle">@pm.Title</span> in <span>@pm.Year</span> 
                         with a
-                        <span id="spanGoalType">@pm.GoalType</span>
+                        <span id="spanGoalType">@pm.GoalTypeDisplay</span>
                         goal of
                         @if(@pm.GoalType.ToLower() == "revenue")
                         {
@@ -233,7 +234,7 @@
         hdnPlanId = "@RevenuePlanner.Helpers.Sessions.PlanId";
         if (hdnPlanId != 0) {
             var modelId = 0;
-            var goalType = $("#spanGoalType").html();
+            var goalType = $("#hdnGoalType").val();
             var goalValue = $("#spanGoalValue").html();
 
             if ($('#hdnModelId').val() != '')

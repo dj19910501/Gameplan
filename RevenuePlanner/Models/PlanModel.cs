@@ -41,6 +41,7 @@ namespace RevenuePlanner.Models
         public string GoalValue { get; set; }
         public string AllocatedBy { get; set; }
         public string AverageDealSize { get; set; }
+        public string GoalTypeDisplay { get; set; }
         /* End - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 */
 
         public double TotalAllocatedCampaignBudget { get; set; }
