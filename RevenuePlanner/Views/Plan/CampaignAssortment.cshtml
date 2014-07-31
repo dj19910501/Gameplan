@@ -257,15 +257,15 @@
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         //start added by dharmraj #567: Budget allocation for campaign
         if ($("#hdnIsBudgetAllocated").val() == "True") {
-            $("#lblTotalBudget").html(FormatCommasBudget($("#lblTotalBudget").html(), false,true));
+            $("#lblTotalBudget").html(FormatCommasBudget($("#lblTotalBudget").html(), false, true));
         }
 
         $("#txtRemainingBudget").val(FormatCommasBudget($("#txtRemainingBudget").val(), false, true));
 
         //end added by dharmraj #567: Budget allocation for campaign
         //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-            $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
-            $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
+        $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
+        $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
         //}
 
         //// Added by :- Sohel Pathan on 24/04/2014 for internal review point to stop form posting on ENTERKEY (Keycode = 13) press event for Title textBox
@@ -311,11 +311,11 @@
             $(this).closest(".alert").slideUp(400);
         });
         //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-            $('.datepicker.dropdown-menu').css("display", "none");
+        $('.datepicker.dropdown-menu').css("display", "none");
         //}
         $('.close-form', this.$panel).click(function (e) {
             //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                $('.datepicker.dropdown-menu').css("display", "none");
+            $('.datepicker.dropdown-menu').css("display", "none");
             //}
             $("#slidepanel").css("display", "none");
             $("#slidepanel-container").empty();
@@ -358,24 +358,7 @@
             });
         });
 
-        var isOwner = "@ViewBag.IsOwner";
-        if (isOwner == 'False') {
-            $('form').find(".sbSelector").each(function () {
-                $(this).unbind("click");
-                $(this).removeAttr("href");
-                $(this).prev().unbind("click");
-                $(this).prev().removeAttr("href");
-            });
-            $('form').find("input[type=text], textarea").each(function () {
-                $(this).prop('readonly', true);
-            });
-            $('form').find(".add-on").each(function () {
-                $(this).unbind("click");
-            });
-            return false;
-        }
-
-
+        
         $(".c-add-program").click(function () {
             $("#c_programs").append('<div class="content-row" style="width: 45% !important;float:left;"><input class="delete-icon" type="text" require="true" placeholder="Program Title" maxlength="255" /><span class="delete-temp-program"></span></div>');
         });
@@ -446,45 +429,45 @@
 
 
             //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                sdate = $('#t_startdate').val();
-                edate = $('#t_enddate').val();
-                var psdate = $('#hdnPStartDate').val();
-                var pedate = $('#hdnPEndDate').val();
-                var tsdate = $('#hdnTStartDate').val();
-                var tedate = $('#hdnTEndDate').val();
-                $('#t_enddate').removeClass("error");
-                $('#t_startdate').removeClass("error");
-                if (!isDate(sdate)) {
-                    alert('@Common.objCached.ValidateStartDate');
-                    return false;
-                }
-                if (!isDate(edate)) {
-                    alert('@Common.objCached.ValidateEndDate');
-                    return false;
-                }
-                if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
-                if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
-                if (!validateDateCompare(sdate, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) {
-                    // $('#t_enddate').addClass("error");
-                    // $('#t_startdate').addClass("error");
-                    return false;
-                }
-                if (!validateDateCompare(sdate, psdate, "@RevenuePlanner.Helpers.Common.objCached.ProgramStartDateCompareWithParentStartDate")) {
-                    //  $('#t_startdate').addClass("error");
-                    return false;
-                }
-                if (!validateDateCompare(pedate, edate, "@RevenuePlanner.Helpers.Common.objCached.ProgramEndDateCompareWithParentEndDate")) {
-                    //  $('#t_enddate').addClass("error");
-                    return false;
-                }
-                if (!validateDateCompare(sdate, tsdate, "@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate")) {
-                    // $('#t_startdate').addClass("error");
-                    return false;
-                }
-                if (!validateDateCompare(tedate, edate, "@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate")) {
-                    //  $('#t_enddate').addClass("error");
-                    return false;
-                }
+            sdate = $('#t_startdate').val();
+            edate = $('#t_enddate').val();
+            var psdate = $('#hdnPStartDate').val();
+            var pedate = $('#hdnPEndDate').val();
+            var tsdate = $('#hdnTStartDate').val();
+            var tedate = $('#hdnTEndDate').val();
+            $('#t_enddate').removeClass("error");
+            $('#t_startdate').removeClass("error");
+            if (!isDate(sdate)) {
+                alert('@Common.objCached.ValidateStartDate');
+                return false;
+            }
+            if (!isDate(edate)) {
+                alert('@Common.objCached.ValidateEndDate');
+                return false;
+            }
+            if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
+            if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
+            if (!validateDateCompare(sdate, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) {
+                // $('#t_enddate').addClass("error");
+                // $('#t_startdate').addClass("error");
+                return false;
+            }
+            if (!validateDateCompare(sdate, psdate, "@RevenuePlanner.Helpers.Common.objCached.ProgramStartDateCompareWithParentStartDate")) {
+                //  $('#t_startdate').addClass("error");
+                return false;
+            }
+            if (!validateDateCompare(pedate, edate, "@RevenuePlanner.Helpers.Common.objCached.ProgramEndDateCompareWithParentEndDate")) {
+                //  $('#t_enddate').addClass("error");
+                return false;
+            }
+            if (!validateDateCompare(sdate, tsdate, "@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate")) {
+                // $('#t_startdate').addClass("error");
+                return false;
+            }
+            if (!validateDateCompare(tedate, edate, "@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate")) {
+                //  $('#t_enddate').addClass("error");
+                return false;
+            }
 
             // Start check error related to budget section, By Dharmraj #567
             if ($("#txtRemainingBudget").hasClass('error-text')) {
@@ -593,7 +576,7 @@
             //if (reason == 'user') {
             //    return false;
             //}
-            
+
 
             var allocationValue = [];
             var lstAllocInputs = $(".budget-section input").not('.unallocated-text');
@@ -618,7 +601,7 @@
                     }
                     else {
                         if (data.redirect) {
-                           
+
                             window.location.href = data.redirect;
                             return;
                         }
@@ -635,7 +618,7 @@
 
 
 
-                @* TFS Point 253,206 : Model/Plan - sidebars - integrate gear icon with feature to delete/duplicate tactic
+        @* TFS Point 253,206 : Model/Plan - sidebars - integrate gear icon with feature to delete/duplicate tactic
     Added by Nirav Shah on 17 feb 2014
  *@
         $("#deleteCampaign").click(function () {
@@ -686,7 +669,7 @@
             autoclose: true,
         }).on('changeDate', function (ev) {
             $(this).datepicker('hide');
-        });;
+        });
 
 
         /*hide the other datepicker in input onclick*/
@@ -695,20 +678,20 @@
             $('#dp_start').datepicker('show');
             $('#dp_end').datepicker('hide');
 
-        })
+        });
         $('#dp_end .add-on').click(function () {
             $('#dp_start').datepicker('hide');
             $('#dp_end').datepicker('show');
 
-        })
+        });
 
         $('#t_startdate').click(function () {
             $('#dp_end').datepicker('hide');
-        })
+        });
 
         $('#t_enddate').click(function () {
             $('#dp_start').datepicker('hide');
-        })
+        });
 
         // Start Added By Dharmraj #567 : Budget allocation for campaign
         if ($("#hdnIsBudgetAllocated").val() == "True") {
@@ -738,14 +721,14 @@
                 calculateUnallocatedBudget();
             }
 
-    });
+        });
 
         $('.budget-section').find('input').not('.unallocated-text').each(function () {
             $(this).keyup(function () {
                 if ($(this).val().trim() != '') {
                     var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
                     if (currentValue.match('^(0|[1-9][0-9]*)$')) {
-                        
+
                         var OldBudgetValue = parseInt($(this).attr("ov"));
                         var RemainingBudgetValue = parseInt($(this).attr("rmb"));
                         var differenceVal = OldBudgetValue - parseInt(currentValue);
@@ -779,7 +762,7 @@
                         }
                         $("#lblTotalAllocated").html(FormatCommasBudget(TotalallocationValue.toString(), false, true));
                         calculateUnallocatedBudget();
-                    }   
+                    }
                 }
             });
         });
@@ -795,8 +778,8 @@
                 else {
                     $("#lblRemainingMonthlyBudget").removeClass('error-text');
                 }
-                $("#lblRemainingMonthlyBudget").html(FormatCommasBudget(remainingValue.toString(), false,true));
-                $("#lblAllocatedProgramsBudget").html(FormatCommasBudget(AllocatedProgramsBudget.toString(), false,true));
+                $("#lblRemainingMonthlyBudget").html(FormatCommasBudget(remainingValue.toString(), false, true));
+                $("#lblAllocatedProgramsBudget").html(FormatCommasBudget(AllocatedProgramsBudget.toString(), false, true));
 
             });
 
@@ -806,6 +789,25 @@
         });
 
         // End Added By Dharmraj #567 : Budget allocation for campaign
+
+
+        var isOwner = "@ViewBag.IsOwner";
+        if (isOwner == 'False') {
+            $('form').find(".sbSelector").each(function () {
+                $(this).unbind("click");
+                $(this).removeAttr("href");
+                $(this).prev().unbind("click");
+                $(this).prev().removeAttr("href");
+            });
+            $('form').find("input[type=text], textarea").each(function () {
+                $(this).prop('readonly', true);
+            });
+            $('form').find(".add-on").each(function () {
+                $(this).unbind("click");
+            });
+            //return false; // Commented by Dharmraj for ticket #567
+        }
+
     });
 
     // Start Added By Dharmraj #567 : Budget allocation for campaign
