@@ -3649,9 +3649,9 @@ namespace RevenuePlanner.Controllers
                                 /* TFS Bug 207 : Cant override the Cost from the defaults coming out of the model
                                  * changed by Nirav shah on 10 feb 2014  
                                  */
-                                if (pcpobj.Cost != form.Cost)
+                                if (pcpobj.Cost != form.TacticCost)
                                 {
-                                    pcpobj.Cost = form.Cost;
+                                    pcpobj.Cost = form.TacticCost;
                                     if (!isDirectorLevelUser) isReSubmission = true;
                                 }
                                 /* TFS Bug 207 : end changes */
