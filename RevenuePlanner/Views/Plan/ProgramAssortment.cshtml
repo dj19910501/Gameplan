@@ -412,7 +412,7 @@
         });
 
         $('#c_tactics').on('click', '.delete-tactic', function () {
-            $(this).prev().remove();
+            $(this).parent().remove();
             $(this).remove();
         });
         $('form').find('input[type=text], select, textarea').each(function () {
