@@ -7548,4 +7548,9 @@ a:hover, a:focus{text-decoration: none !important;}
 #divAddNewTactics {
     width: 40%;
 }
+
+#c_tactics .delete-tactic
+{
+    margin-right: 4px;
+}
 /*End By : Kalpesh Sharma : PL #605 : 07/29/2014*/

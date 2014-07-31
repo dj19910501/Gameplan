@@ -251,7 +251,9 @@
                     <div id="c_tactics">
                         <!--selects elements created dynamically-->
                     </div>
+                     <div id="divAddNewTactics">
                     <span class="c-add-lineitem link-blue " style="margin-top:3px;">Add New Line Items</span>
+                         </div>
                 </div>	
             }
 
@@ -364,7 +366,7 @@
                 }
             }
 
-            $("#c_tactics").append('<div  style="margin-bottom: 5px;"><span class="verticalIdSelectBox"><select id="LineItemTypeId" class="ddlStyle" require="true" name="lineitemTypeId" data-val-required="The LineItemTypeId field is required." data-val-number="The field LineItemTypeId must be a number." data-val="true">' +
+            $("#c_tactics").append('<div  style="margin-bottom: 5px;width: 50% !important;float:left;"><span class="verticalIdSelectBox"><select id="LineItemTypeId" class="ddlStyle" require="true" name="lineitemTypeId" data-val-required="The LineItemTypeId field is required." data-val-number="The field LineItemTypeId must be a number." data-val="true">' +
                '<option value="">Please Select</option>' + lineitemString +
                '</select></span>' +
           '<span class="delete-tactic"></span></div>');
@@ -372,7 +374,8 @@
         });
 
         $('#c_tactics').on('click', '.delete-tactic', function () {
-            $(this).prev().remove();
+            //Added By : Kalpesh Sharma
+            $(this).parent().remove();
             $(this).remove();
         });
 
