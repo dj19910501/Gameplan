@@ -3721,8 +3721,13 @@ namespace RevenuePlanner.Controllers
 
                                 // Start Added by dharmraj for ticket #644
                                 var objOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == pcpobj.PlanTacticId && l.Title == Common.DefaultLineItemTitle && l.LineItemTypeId == null);
-                                var objtotalLoneitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == pcpobj.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).Sum(l => l.Cost); 
-                                double totalLoneitemCost =  !string.IsNullOrEmpty(Convert.ToString(objtotalLoneitemCost)) ? objtotalLoneitemCost : 0 ;
+                                var objtotalLoneitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == pcpobj.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false); 
+                                double totalLoneitemCost = 0;
+                                if (objtotalLoneitemCost != null && objtotalLoneitemCost.Count() > 0)
+                                {
+                                    totalLoneitemCost = objtotalLoneitemCost.Sum(l => l.Cost);
+                                }
+
                                 if (pcpobj.Cost > totalLoneitemCost)
                                 {
                                     double diffCost = pcpobj.Cost - totalLoneitemCost;
