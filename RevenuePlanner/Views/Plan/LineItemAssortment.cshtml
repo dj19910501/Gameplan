@@ -18,19 +18,20 @@
         <h2 class="source-sans-prolight">Line Item Detail</h2>
         @if (!(bool)ViewBag.IsCreated && (bool)ViewBag.IsAllowCustomRestriction)
         {
-            <div class="btn-group pull-left margin-left20 gear-dropdown">
-                <span class="gear-sidebar dropdown-toggle" data-toggle="dropdown"></span>
-                @if (!IsOtherLineItem)
-                {
-                <ul class="dropdown-menu">
+            if (!IsOtherLineItem)
+            {
+                <div class="btn-group pull-left margin-left20 gear-dropdown">
+                    <span class="gear-sidebar dropdown-toggle" data-toggle="dropdown"></span>
+                
+                    <ul class="dropdown-menu">
                         @*<li><a id="spanDuplicate">Duplicate Tactic</a></li>*@
                         @if ((bool)ViewBag.IsOwner && !(bool)ViewBag.IsCreated)
                         {
                             <li><a id="deleteTactic">Delete Tactic</a></li>                        
-                        }   
-                </ul>
-                }
-            </div>
+                        }
+                    </ul>
+                </div>
+            }
         }
     </div>
 </div>
@@ -96,7 +97,7 @@
                 }
             </div>
             <div class="cf"></div>
-            <label style="margin-top: 6px;">Description</label>
+            <label>Description</label>
             @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", rows = "3", maxlength = "4000" })
 
             @if (!IsOtherLineItem)
@@ -111,7 +112,7 @@
                 @Html.TextBox("txtTactic", (string)ViewBag.Tactic, new { @readonly = "true" });
                 }
 
-                <div class="cf margin-top10 margin-left-4">
+                <div class="cf margin-left-4">
                     <div class="pull-left width50">
                         <label class="padding-left4">Start date</label>
                         <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.dateFormat">
@@ -510,6 +511,7 @@
                 if (typeof data.otherLineItemCost != 'undefined') {
                     $("#txtOtherLineItemCost").val(FormatCommasBudget(data.otherLineItemCost.toString(), false,true));
                     $("#txtOtherLineItemCost").attr('title', $("#txtOtherLineItemCost").val());
+                    $("#txtOtherLineItemCost").attr('myvalue', $("#txtOtherLineItemCost").val());
                 }
             },
             error: function () {

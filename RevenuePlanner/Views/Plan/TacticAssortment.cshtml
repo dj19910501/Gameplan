@@ -101,11 +101,11 @@
             <label >Vertical</label>
             <span class="verticalIdSelectBox" style="  margin-left: -2px;">@Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
         </div>
-        <div class="content-row">
+        <div class="content-row margin-bottom10">
             <label style="margin-top:6px;">Audience</label>
             <span class="verticalIdSelectBox" style="  margin-left: -2px;">@Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
         </div>
-        <div class="content-row alternate">
+        <div class="content-row alternate margin-bottom10">
             <label style="margin-top:6px;">Geography</label>
             <span class="verticalIdSelectBox" style="  margin-left: -2px;">@Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
          </div>
@@ -128,7 +128,7 @@
             @Html.Hidden("hdnRedirect", (bool)ViewBag.RedirectType, new { id = "hdnRedirectType" })
             @*@if ((bool)ViewBag.RedirectType)  // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
             {
-                *@<div class="cf margin-top10 margin-left-4">
+                *@<div class="cf margin-left-4">
                     <div class="pull-left width50">
                         <label class="padding-left4">Start date</label>
                         <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.dateFormat">
@@ -973,6 +973,7 @@
 
                 $("#txtRemainingBudget").val(FormatCommasBudget(data.planRemainingBudget.toString(), false, true));
                 $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
+                $("#txtRemainingBudget").attr('myvalue', $("#txtRemainingBudget").val());
 
                 var TotalallocationValue = 0;
                 var lstAllocInputs = $(".budget-section input");
