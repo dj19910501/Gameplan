@@ -609,6 +609,8 @@
                             document.getElementById("txtTitle").value = htmlDecode($('#txtTitle').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
                             document.getElementById("Description").value = htmlDecode($('#Description').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
                             ShowError(data.errormsg);
+                            //Added By : Kalpesh Sharma Functional and Review Points 07/31/2014
+                            $("#divBudgetError").slideUp(30);
                             return false;
                         }
                     }

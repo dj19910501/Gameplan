@@ -601,6 +601,8 @@
                         document.getElementById("Title").value = htmlDecode($('#Title').val());
                         document.getElementById("Description").value = htmlDecode($('#Description').val());
                         ShowError(data.errormsg);
+                        //Added By : Kalpesh Sharma Functional and Review Points 07/31/2014
+                        $("#divBudgetError").slideUp(30);
                         return;
                     }
                 }

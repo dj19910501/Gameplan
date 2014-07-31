@@ -2015,16 +2015,7 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
 
-            //Plan proj = db.Plans.AsNoTracking().First(p => p.PlanId == Sessions.PlanId);
-            //var plancapmign = proj.Plan_Campaign.Select(s => s.PlanCampaignId); 
-
-            //if (proj != null)
-            //{
-            //    proj.Plan_Campaign = (ICollection<Plan_Campaign>)db.Plan_Campaign.AsNoTracking().Where(p => plancapmign.Contains(p.PlanCampaignId)).ToList();
-            //}
-
-            //db.Plans.Add(proj);
-            //db.SaveChanges();
+            Clonehelper.PlanClone(Sessions.PlanId);
             
             return PartialView("CampaignAssortment", pcm);
         }
@@ -3730,7 +3721,8 @@ namespace RevenuePlanner.Controllers
 
                                 // Start Added by dharmraj for ticket #644
                                 var objOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == pcpobj.PlanTacticId && l.Title == Common.DefaultLineItemTitle && l.LineItemTypeId == null);
-                                double totalLoneitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == pcpobj.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).Sum(l => l.Cost);
+                                var objtotalLoneitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == pcpobj.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).Sum(l => l.Cost); 
+                                double totalLoneitemCost =  !string.IsNullOrEmpty(Convert.ToString(objtotalLoneitemCost)) ? objtotalLoneitemCost : 0 ;
                                 if (pcpobj.Cost > totalLoneitemCost)
                                 {
                                     double diffCost = pcpobj.Cost - totalLoneitemCost;
@@ -7079,6 +7071,10 @@ namespace RevenuePlanner.Controllers
 
                 var lstPlanProgramTactics = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == PlanProgramId).Select(c => c.PlanTacticId).ToList();
 
+
+                var CostTacticsBudget = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == PlanProgramId).ToList().Sum(c=> c.Cost);
+
+
                 var lstTacticsBudget = db.Plan_Campaign_Program_Tactic_Cost.Where(c => lstPlanProgramTactics.Contains(c.PlanTacticId)).ToList()
                                                                .Select(c => new
                                                                {
@@ -7116,7 +7112,7 @@ namespace RevenuePlanner.Controllers
 
                 double allProgramBudget = lstSelectedProgram.Sum(c => c.ProgramBudget);
 
-                double planRemainingBudget = (objPlanCampaignProgram.ProgramBudget -  (!string.IsNullOrEmpty(Convert.ToString(objPlanCampaignProgramTactic)) ? objPlanCampaignProgramTactic.Cost : 0));
+                double planRemainingBudget = (objPlanCampaignProgram.ProgramBudget - (!string.IsNullOrEmpty(Convert.ToString(CostTacticsBudget)) ? CostTacticsBudget : 0));
 
                 var objBudgetAllocationData = new { budgetData = budgetData, planRemainingBudget = planRemainingBudget };
 
