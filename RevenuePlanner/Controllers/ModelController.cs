@@ -3323,7 +3323,7 @@ namespace RevenuePlanner.Controllers
                                     //    db.Entry(rejobj).State = EntityState.Modified;
                                     //    result = db.SaveChanges();
                                     //}/*end 6 feb change*/
-                                    Common.InsertChangeLog(Sessions.ModelId, 0, rejobj.TacticTypeId, rejobj.Title, Enums.ChangeLog_ComponentType.tactictype, Enums.ChangeLog_TableName.Model, Enums.ChangeLog_Actions.removed);
+                                    //Common.InsertChangeLog(Sessions.ModelId, 0, rejobj.TacticTypeId, rejobj.Title, Enums.ChangeLog_ComponentType.tactictype, Enums.ChangeLog_TableName.Model, Enums.ChangeLog_Actions.removed);
                                     /*
                                      * changed by : Nirav Shah on 31 Jan 2013
                                      * Bug 19:Model - should not be able to publish a model with no tactics selected */
