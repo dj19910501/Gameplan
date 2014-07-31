@@ -1669,6 +1669,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.ActiveMenu = Enums.ActiveMenu.Plan;
             ViewBag.CampaignID = campaignId;
             ViewBag.ProgramID = programId;
+            ViewBag.TacticID = tacticId;
             //ViewBag.SuccessMessageDuplicatePlan = TempData["SuccessMessageDuplicatePlan"];
             //ViewBag.ErrorMessageDuplicatePlan = TempData["ErrorMessageDuplicatePlan"];
             if (TempData["SuccessMessageDuplicatePlan"] != null)
@@ -4324,7 +4325,7 @@ namespace RevenuePlanner.Controllers
                                 int lineitemId = objLineitem.PlanLineItemId;
 
                                 var objOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == form.PlanTacticId && l.Title == Common.DefaultLineItemTitle && l.LineItemTypeId == null);
-                                double totalLoneitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == form.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).Sum(l => l.Cost);
+                                double totalLoneitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == form.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
                                 if (objTactic.Cost > totalLoneitemCost)
                                 {
                                     double diffCost = objTactic.Cost - totalLoneitemCost;
@@ -4404,7 +4405,7 @@ namespace RevenuePlanner.Controllers
                                     db.SaveChanges();
                                 }
                                 scope.Complete();
-                                return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
+                                return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid,tacticId=tid }) });
                             }
                         }
                     }
@@ -4479,7 +4480,7 @@ namespace RevenuePlanner.Controllers
                                 if (!form.IsOtherLineItem)
                                 {
                                     var objOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == form.PlanTacticId && l.Title == Common.DefaultLineItemTitle && l.LineItemTypeId == null);
-                                    double totalLoneitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == form.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).Sum(l => l.Cost);
+                                    double totalLoneitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == form.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
                                     if (objTactic.Cost > totalLoneitemCost)
                                     {
                                         double diffCost = objTactic.Cost - totalLoneitemCost;
@@ -4573,7 +4574,7 @@ namespace RevenuePlanner.Controllers
                                     }
                                     else
                                     {
-                                        return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
+                                        return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid, tacticId = tid }) });
                                     }
                                 }
                             }
@@ -4638,7 +4639,7 @@ namespace RevenuePlanner.Controllers
 
                             // Start added by dharmraj to handle "Other" line item
                             var objOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == pcptl.Plan_Campaign_Program_Tactic.PlanTacticId && l.Title == Common.DefaultLineItemTitle && l.LineItemTypeId == null);
-                            double totalLoneitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == pcptl.Plan_Campaign_Program_Tactic.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).Sum(l => l.Cost);
+                            double totalLoneitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == pcptl.Plan_Campaign_Program_Tactic.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
                             if (pcptl.Plan_Campaign_Program_Tactic.Cost > totalLoneitemCost)
                             {
                                 double diffCost = pcptl.Plan_Campaign_Program_Tactic.Cost - totalLoneitemCost;
@@ -4710,7 +4711,7 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else
                                 {
-                                    return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
+                                    return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid, tacticId=tid }) });
                                 }
                             }
 

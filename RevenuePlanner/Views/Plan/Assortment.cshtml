@@ -158,6 +158,7 @@
     var isApply = false;
     CampaignID = @ViewBag.CampaignID
     ProgramID = @ViewBag.ProgramID
+    TacticID=@ViewBag.TacticID
     ImprovementPlanProgramId = @ViewBag.ImprovementPlanProgramId
     $("#spanGoalValue").text(FormatCommas($("#spanGoalValue").text(), false));  @* Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
     /*Added by Mitesh Vaishnav on 25/07/2014 for PL ticket 619*/
@@ -1359,7 +1360,7 @@
                                '<span class="pull-right width50px"><div class="add-icon campaign" ></div></span>' +
                                 '<span class="pull-right width100px text-right font-black ">' + FormatCommas(_programCount.toString(), false) + '</span>' +
                                 '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_cost.toString(), false) + '</span>' +
-                                '<span class="pull-right width100px text-right font-black tipsyclass">' + FormatCommas(_mqls.toString(), false) + '</span>' +
+                                '<span class="pull-right width100px text-right font-black tipsyclass costAssotment">' + FormatCommas(_mqls.toString(), false) + '</span>' +
                             '</a>' +
                         '</div>' +
                         '<div id="collapse' + _index + '" class="accordion-body';
@@ -1392,7 +1393,7 @@
                          '<span class="pull-right width50px"><div class="add-icon program" ></div></span>' +
                          '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
                          '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].cost.toString(), false) + '</span>' +
-                         '<span class="pull-right width100px text-right font-black tipsyclass">' + FormatCommas(_programs[i].mqls.toString(), false) + '</span>' +
+                         '<span class="pull-right width100px text-right font-black tipsyclass costAssotment">' + FormatCommas(_programs[i].mqls.toString(), false) + '</span>' +
                      '</a>' +
                  '</div>' +
 
@@ -1425,7 +1426,14 @@
                                     $html += '<div id="' + _programs[i].tactics[k].id + '" class="accordion-header">';
                                     if (typeof _programs[i].tactics[k].lineitems != 'undefined') {
                                         if (_programs[i].tactics[k].lineitems.length > 0) {
-                                            $html += '<a id="program_' + _programs[i].tactics[k].id + '" index="' + _programs[i].tactics[k].id + '" data-id-campaing="' + _programs[i].id + '" data-id-tactic="' + _programs[i].tactics[k].id + '" class="background-position30 accordion-toggle font-black chevron-right" data-toggle="collapse" href="#collapseThree' + _programs[i].tactics[k].id + '">';
+                                            $html += '<a id="program_' + _programs[i].tactics[k].id + '" index="' + _programs[i].tactics[k].id + '" data-id-campaing="' + _programs[i].id + '" data-id-tactic="' + _programs[i].tactics[k].id + '" class="background-position30 accordion-toggle font-black';
+                                            if (TacticID == _programs[i].tactics[k].id) {
+                                                $html += ' chevron-down';
+                                            }
+                                            else {
+                                                $html += ' chevron-right';
+                                            }
+                                            $html +='"data-toggle="collapse" href="#collapseThree' + _programs[i].tactics[k].id + '">';
                                         }
                                         else {
                                             $html += '<a id="program_' + _programs[i].tactics[k].id + '" index="' + _programs[i].tactics[k].id + '" data-id-campaing="' + _programs[i].id + '" data-id-tactic="' + _programs[i].tactics[k].id + '" class="background-position30 accordion-toggle font-black" data-toggle="collapse" href="#collapseThree' + _programs[i].tactics[k].id + '">';
@@ -1438,14 +1446,18 @@
                                                     '<span class="pull-right width50px text-right font-black">&nbsp;</span>' +
                                               '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
                                               '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].tactics[k].cost.toString(), false) + '</span>' +
-                                              '<span class="pull-right width100px text-right font-black tipsyclass">' + displayTacticMQL(_programs[i].tactics[k].mqls.toString()) + '</span>' +
+                                              '<span class="pull-right width100px text-right font-black tipsyclass costAssotment">' + displayTacticMQL(_programs[i].tactics[k].mqls.toString()) + '</span>' +
                                               '<span class="pull-right btn-gray" id="createlineitem">Add Line Item</span>' +
                                                 '</a>' +
 
                                                 '</div>' +
 
                                     /*Line item area */
-                                    '<div id="collapseThree' + _programs[i].tactics[k].id + '" class="accordion-body collapse lineitem-level "' + 'program_' + _programs[i].tactics[k].id + '>' +
+                                    '<div id="collapseThree' + _programs[i].tactics[k].id + '" class="accordion-body ';
+                                    if (TacticID == _programs[i].tactics[k].id) {
+                                        $html += 'in ';
+                                    }
+                                    $html +='collapse lineitem-level "' + 'program_' + _programs[i].tactics[k].id + '>' +
                                   '<div class="accordion-inner">' +
                                       '<div class="accordion-group">';
                                     /*  alert(_programs[i].tactics[k].lineitems);*/
