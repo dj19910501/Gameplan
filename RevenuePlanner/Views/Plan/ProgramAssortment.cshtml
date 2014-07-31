@@ -803,6 +803,7 @@
     //Added By : Kalpesh Sharma : PL #605 : 07/29/2014
     $('.budget-section').find('input').not('.unallocated-text').each(function () {
         $(this).focus(function () {
+            $('.budget-section').find('input').not('.unallocated-text').parent().removeClass('border000000');
             $(this).parent().addClass('border000000');
             var remainingValue = parseInt($(this).attr("rmb"));
             var AllocatedProgramsBudget = parseInt($(this).attr("pmb"));
@@ -817,9 +818,9 @@
 
         });
 
-        $(this).focusout(function () {
-            $(this).parent().removeClass('border000000');
-        });
+        //$(this).focusout(function () {
+        //    $(this).parent().removeClass('border000000');
+        //});
     });
 
     //Start added by Kalpesh  #608: Budget allocation for Program
@@ -861,6 +862,7 @@
                 $("#lblTotalAllocated").html('$' + TotalallocationValue);
                 calculateUnallocatedBudget();
                 $("#Y1").focus();
+                $("#txtTitle").focus();
             },
             error: function () {
                 ShowError('');
