@@ -132,7 +132,7 @@
 
          <div class="content-row">
                 <label class="padding-left4" title="Program Budget">Program Budget</label>
-                @Html.TextBoxFor(model => model.ProgramBudget, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", id = "txtProgramBudget" })
+                @Html.TextBoxFor(model => model.ProgramBudget, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", id = "txtProgramBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
             </div>
             <div class="content-row alternate">
                 <label class="padding-left4" title="Remaining Campaign Budget">Remaining Campaign Budget</label>

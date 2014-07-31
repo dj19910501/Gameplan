@@ -133,7 +133,7 @@
                 </div>
                 <div class="content-row">
                     <label class="padding-left4" title="Cost">Line Item Cost</label>
-                    @Html.TextBoxFor(model => model.Cost, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", id = "txtLineItemCost" })
+                    @Html.TextBoxFor(model => model.Cost, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", id = "txtLineItemCost", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
                 </div>
                 <div class="content-row alternate">
                     <label class="padding-left4" title="Cost">Other Line Item Cost</label>
