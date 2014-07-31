@@ -32,7 +32,7 @@
  *@
         @if (!(bool)ViewBag.IsCreated && (bool)ViewBag.IsAllowCustomRestriction)
         {
-            <div class="btn-group pull-right gear-dropdown">
+             <div class="btn-group pull-left margin-left20 gear-dropdown">
                 <span class="gear-sidebar dropdown-toggle" data-toggle="dropdown"></span>
                 <ul class="dropdown-menu">
                     <li><a id="spanDuplicate">Duplicate Tactic</a></li>
@@ -168,7 +168,7 @@
             {
 		    <div class="budget-section">
                 <div class="budget-head clearfix">
-                    <p>Budget Allocation</p>
+                    <p>Cost Allocation</p>
                     <a href="javascript:void(0)">- Collapse</a>
                 </div>
                 <div class="budget-collapse">
@@ -612,11 +612,11 @@
                     return false;
                 }
 
-                if ($("#txtRemainingBudget").hasClass('error-text')) {
+                @*if ($("#txtRemainingBudget").hasClass('error-text')) {
                     //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
                     ShowBudgetError("@RevenuePlanner.Helpers.Common.objCached.AllocateMoreThanRemainingBudgeted");
                     return false;
-                }
+                }*@
 
                 if (parseInt(ReplaceCC($("#lblUnallocatedBudget").val())) < 0) {
                     //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
