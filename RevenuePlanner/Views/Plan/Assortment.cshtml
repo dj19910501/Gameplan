@@ -78,7 +78,7 @@
 </script>
  <div class=" margin5 padding15 element-disable">
 						<div class="gray-title-steps source-sans-probold cf">
-							<span class="pull-left width60">2. Allocate Monthly Budgets</span>		
+							<span class="pull-left width60">2. Allocate Plan Budgets</span>		
 							<a href="#" class="btn-gray" onclick="EditPlan();">Back</a>
 												
 						</div>
@@ -1460,7 +1460,7 @@
                                                 $html += '<span class="underline tipsyclassTitle">' + _programs[i].tactics[k].lineitems[z].title + '</span>' +
                                                             '<span class="pull-right width50px text-right font-black">&nbsp;</span>' +
                                                             '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
-                                                            '<span class="pull-right width150px text-right font-black">$' + _programs[i].tactics[k].lineitems[z].cost + '</span>' +
+                                                            '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].tactics[k].lineitems[z].cost.toString(), false) + '</span>' +
                                                           '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
                                                   '</div>' +
                                             '</div>';
