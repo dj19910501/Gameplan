@@ -331,6 +331,10 @@ namespace RevenuePlanner.Helpers
             if (objtacticLineItemOthers != null)
             {
                 objtacticLineItemOthers.Cost = (ObjTactic.Cost > CostSum) ? (ObjTactic.Cost - CostSum) : 0;
+                if (objtacticLineItemOthers.Cost == 0)
+                {
+                    objtacticLineItemOthers.IsDeleted = true;
+                }
                 db.Entry(objtacticLineItemOthers).State = EntityState.Modified;
                 int result = db.SaveChanges();
             }
