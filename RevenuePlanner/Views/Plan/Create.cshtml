@@ -1079,6 +1079,13 @@
                                                 if (i == 1)
                                                 {
                                                     $('#spnCampaignAllocatedBudget').html(FormatCurrency($('#hdnMY' + i).val(), false));
+
+                                                    if (parseInt(campaignAllocatedAmount) > parseInt(allocatedAmount)) {
+                                                        $("#spnCampaignAllocatedBudget").addClass('error-text');
+                                                    }
+                                                    else {
+                                                        $("#spnCampaignAllocatedBudget").removeClass('error-text');
+                                                    }
                                                 }
                                                 if (parseInt(campaignAllocatedAmount) > parseInt(allocatedAmount)) {
                                                     $('#MY' + i).addClass('campaignBudgetError');
@@ -1089,16 +1096,6 @@
                                             }
                                         }
                                         $('#MY' + i).addClass('myValue-budget');
-                                    }
-
-                                    // Added by dharmraj to focus first month
-                                    var My1Val = $("#MY1").val() == '' ? '0' : $("#MY1").val();
-                                    var cam1Val = $("#hdnMY1").val() == '' ? '0' : $("#hdnMY1").val();
-                                    if (parseInt(My1Val) < parseInt(cam1Val)) {
-                                        $("#spnCampaignAllocatedBudget").addClass('error-text');
-                                    }
-                                    else {
-                                        $("#spnCampaignAllocatedBudget").removeClass('error-text');
                                     }
 
                                     var allocatedBudget = calculateAllocatedBudgetMonthly();
@@ -1124,6 +1121,13 @@
                                                 }
                                                 if (i == 1) {
                                                     $('#spnCampaignAllocatedBudget').html(FormatCurrency($('#hdnQY' + i).val(), false));
+
+                                                    if (parseInt(campaignAllocatedAmoount) > parseInt(allocatedAmount)) {
+                                                        $("#spnCampaignAllocatedBudget").addClass('error-text');
+                                                    }
+                                                    else {
+                                                        $("#spnCampaignAllocatedBudget").removeClass('error-text');
+                                                    }
                                                 }
                                                 if (parseInt(campaignAllocatedAmoount) > parseInt(allocatedAmount)) {
                                                     $('#QY' + i).addClass('campaignBudgetError');
@@ -1135,18 +1139,7 @@
                                         }
                                         $('#QY' + i).addClass('myValue-budget');
                                     }
-
-                                    // Added by dharmraj to focus first Quarter
-                                    var My1Val = $("#QY1").val() == '' ? '0' : $("#QY1").val();
-                                    var cam1Val = $("#hdnQY1").val() == '' ? '0' : $("#hdnQY1").val();
-                                    if (parseInt(My1Val) < parseInt(cam1Val)) {
-                                        $("#spnCampaignAllocatedBudget").addClass('error-text');
-                                    }
-                                    else {
-                                        $("#spnCampaignAllocatedBudget").removeClass('error-text');
-                                    }
-
-
+                                    
                                     var allocatedBudget = calculateAllocatedBudgetQuarterly();
                                     $('#spnTotalAllocatedBudget').html(FormatCurrency(allocatedBudget, false));
                                     checkBudgetDifference(allocatedBudget, $('#divQuarterlyBudget'));
@@ -1213,6 +1206,7 @@
         }
         $('#disabledBudgetValue').html($('#txtBudget').prev().find('.nl-field-toggle').html());
         $('#disabledAllocatedBy').html($('#AllocatedBy').prev().find('.nl-field-toggle').html());
+        $('#AllocatedBy').attr('placeholder', $('#AllocatedBy').val());
     }
 
     $('.ErrCampaignBudgetAllocation').click(function () {
