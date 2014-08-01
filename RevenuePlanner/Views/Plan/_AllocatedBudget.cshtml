@@ -89,7 +89,7 @@
         $("div[allocated]").each(function () {
             var num = $(this).attr('allocated');
             if (num < 0) {
-                //$(this).prop('title', 'Remaining: ' + num.replace('-','-$'));
+                $(this).prop('title', 'Remaining: ' + num.replace('-','-$'));
             }
             else {
                 $(this).prop('title', 'Remaining: $' + num);

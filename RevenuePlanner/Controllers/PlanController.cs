@@ -7320,7 +7320,6 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult GetAllocatedBugetData(int PlanId)
         {
-            Sessions.PlanId = PlanId;
             //PlanId = 334;
             List<UserCustomRestrictionModel> lstUserCustomRestriction = Common.GetUserCustomRestriction();
             var campaign = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
@@ -7453,7 +7452,7 @@ namespace RevenuePlanner.Controllers
             PercAllocated.Dec = (a.Dec == 0 && b.Dec == 0) ? 0 : (a.Dec == 0 && b.Dec > 0) ? 101 : b.Dec / a.Dec * 100;
 
             ViewBag.PercAllocated = PercAllocated;
-
+            Sessions.PlanId = PlanId;
             return PartialView("_AllocatedBudget", model);
         }
 
@@ -7806,6 +7805,7 @@ namespace RevenuePlanner.Controllers
             PercAllocated.Dec = (a.Dec == 0 && child.Dec == 0) ? 0 : (a.Dec == 0 && child.Dec > 0) ? 101 : child.Dec / a.Dec * 100;
 
             ViewBag.PercAllocated = PercAllocated;
+            Sessions.PlanId = PlanId;
             return PartialView("_Budget", model);
         }
 
