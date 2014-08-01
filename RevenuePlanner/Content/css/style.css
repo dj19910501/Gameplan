@@ -7538,6 +7538,13 @@ a:hover, a:focus{text-decoration: none !important;}
 }*/
 #divBudgetSummary {
     padding-top:20px;
+    margin-right: 30px !important;
+}
+#divPlanDefinationEnabled {
+     margin-right: 30px !important;
+}
+#divPlanDefinationDisabled {
+     margin-right: 30px !important;
 }
 /* End added by Sohel for #566 and #597 */
 

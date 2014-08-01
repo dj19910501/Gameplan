@@ -40,29 +40,36 @@
                     <div class="gray-title-steps source-sans-probold">1.Plan definition</div>
                     <div class="spanPlanDefinition">
                         @* Start - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
-                        I'm using the <span>@pm.ModelTitle</span> model to create a plan called <span id="spanTitle">@pm.Title</span> in <span>@pm.Year</span> 
+                        I'm using the <span class="source-sans-proregular">@pm.ModelTitle</span> model to create a plan called <span id="spanTitle" class="source-sans-proregular">@pm.Title</span> in <span class="source-sans-proregular">@pm.Year</span> 
                         with a
-                        <span id="spanGoalType">@pm.GoalTypeDisplay</span>
+                        <span id="spanGoalType" class="source-sans-proregular">@pm.GoalTypeDisplay</span>
                         goal of
                         @if(@pm.GoalType.ToLower() == "revenue")
                         {
-                            <span> $ </span>
+                            <span class="source-sans-proregular"> $ </span>
                         }
-                        <span id="spanGoalValue">@pm.GoalValue</span>
+                        <span id="spanGoalValue" class="source-sans-proregular">@pm.GoalValue</span>
                         and a budget of
-                        <span id="spanBudget">@pm.Budget</span>
+                        <span id="spanBudget" class="source-sans-proregular">@pm.Budget</span>
                         allocated by
-                        <span id="spanAllocatedBy">@pm.AllocatedBy</span>.
+                        <span id="spanAllocatedBy" class="source-sans-proregular">@pm.AllocatedBy</span>.
                     </div>
                     <div id="divBudgetSummary">
                         Based on my goal, this plan will require
-                        <span id="input1" class="highlighted-budget-fields"></span>
-                        <span id="msg1" class="highlighted-budget-fields"></span>
-                        and 
-                        <span id="input2" class="highlighted-budget-fields"></span>
-                        <span id="msg2" class="highlighted-budget-fields"></span>
-                        with an <span class="highlighted-budget-fields"> average deal size of</span>
-                        <span id="averageDealSize" class="highlighted-budget-fields"></span>
+                        <span id="input1" class="source-sans-prosemibold"></span>
+                        <span id="msg1" class="source-sans-prosemibold"></span>
+                        @if(@pm.GoalType.ToLower() == "revenue")
+                        {
+                            <span>and </span>
+                        }
+                        else
+                        {
+                            <span>to deliver </span>
+                        }
+                        <span id="input2" class="source-sans-prosemibold"></span>
+                        <span id="msg2" class="source-sans-prosemibold"></span>
+                        with an <span class="source-sans-prosemibold"> average deal size of</span>
+                        <span id="averageDealSize" class="source-sans-prosemibold"></span>.
                         @* End - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
                     </div>
                 </div>
@@ -2553,14 +2560,12 @@
             success: function (data) {
                 $('#msg1').html(data.msg1);
                 $('#msg2').html(data.msg2);
-                $('#input1').html(FormatCommas(data.input1.toString(), false));
-                SetPriceValue("#input1");
+                $('#input1').html(number_format(data.input1.toString(), 0, '.', ','));
                 if (_goalType.toLowerCase() != "revenue") {
-                    $('#input2').html(FormatCurrency(data.input2.toString(), false));
+                    $('#input2').html('$' + number_format(data.input2.toString(), 0, '.', ','));
                 }
                 else {
-                    $('#input2').html(FormatCommas(data.input2.toString(), false));
-                    SetPriceValue("#input2");
+                    $('#input2').html(number_format(data.input2.toString(), 0, '.', ','));
                 }
                 $('#averageDealSize').html(FormatCurrency(data.ADS, false));
             }

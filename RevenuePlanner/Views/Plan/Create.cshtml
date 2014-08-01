@@ -57,11 +57,12 @@
                         @{
                         if (strPlanId == "" || strPlanId == "0")//if (strPlanId == "" || strPlanId == "0" || Model.IsDirector)
                         {
-                            @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], new { datadefault = "SelectModel", @class = "myValue", placeholder = @Model.ModelId })
+                            @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], new { datadefault = "SelectModel", @class = "myValue calculateBudget", placeholder = @Model.ModelId })
+                            @Html.HiddenFor(model => model.ModelTitle)
                         }
                         else
                         {      
-                            <span id="spandef">@Model.ModelTitle</span>
+                            <span id="ModelTitle" class="source-sans-proregular">@Model.ModelTitle</span>
                         }
                         }
                         model to create a plan called						
@@ -91,7 +92,7 @@
                         }
                         goal of
                         <span id="revenueSign"> $ </span>
-                        @Html.TextBoxFor(model => model.GoalValue, new { placeholder = @Model.GoalValue, datadefault = "GoalValue", datamask = "ddd-dddd", formatType = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @class = "myValueFormat" })    
+                        @Html.TextBoxFor(model => model.GoalValue, new { placeholder = @Model.GoalValue, datasubline = "For example: <em>800,000</em>", datadefault = "GoalValue", datamask = "ddd-dddd", formatType = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @class = "myValueFormat" })    
                         and a budget of
                         @Html.TextBoxFor(model => model.Budget, new { placeholder = @Model.Budget, datasubline = "For example: <em>$800,000</em>", datadefault = "Budget", formatType = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, id = "txtBudget", @class = "myValueFormat" })
                         allocated by
@@ -109,48 +110,38 @@
                         </div>
                         <div id="divPlanDefinationDisabled">
                             I'm using the 
-                            <span id="disabledModelTitle"></span> 
+                            <span id="disabledModelTitle" class="source-sans-proregular"></span> 
                             model to create a plan called 
-                            <span id="disabledPlanTitle"></span> in 
-                            <span id="disabledPlanYear"></span> 
+                            <span id="disabledPlanTitle" class="source-sans-proregular"></span> in 
+                            <span id="disabledPlanYear" class="source-sans-proregular"></span> 
                             with a
-                            <span id="disabledGoalType"></span>
+                            <span id="disabledGoalType" class="source-sans-proregular"></span>
                             goal of
-                            <span id="disabledGoalValue"></span>
+                            <span id="disabledGoalValue" class="source-sans-proregular"></span>
                             and a budget of
-                            <span id="disabledBudgetValue"></span>
+                            <span id="disabledBudgetValue" class="source-sans-proregular"></span>
                             allocated by
-                            <span id="disabledAllocatedBy"></span>.
+                            <span id="disabledAllocatedBy" class="source-sans-proregular"></span>.
                         </div>
                         <div id="divBudgetSummary">
                             Based on my goal, this plan will require
-                            <span id="input1" class="highlighted-budget-fields"></span>
-                            <span id="msg1" class="highlighted-budget-fields"></span>
-                            and 
-                            <span id="input2" class="highlighted-budget-fields"></span>
-                            <span id="msg2" class="highlighted-budget-fields"></span>
-                            with an<span class="highlighted-budget-fields"> average deal size of</span>
-                            <span id="averageDealSize" class="highlighted-budget-fields">@Model.AverageDealSize</span>
+                            <span id="input1" class="source-sans-prosemibold"></span>
+                            <span id="msg1" class="source-sans-prosemibold"></span>
+                            <span id="conjuntionWord">and </span>
+                            <span id="input2" class="source-sans-prosemibold"></span>
+                            <span id="msg2" class="source-sans-prosemibold"></span>
+                            with an<span class="source-sans-prosemibold"> average deal size of</span>
+                            <span id="averageDealSize" class="source-sans-prosemibold">@Model.AverageDealSize</span>.
                         </div>
                         @* End - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
                         <!--To call js for forms animations-->
                         <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
                         <script>
                             var nlform = new NLForm(document.getElementById('nl-form'));
-                            // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
-                            //if ($('#IsBusinessUnitEditable').val().toLowerCase() == 'false') {
-                            //    $('#nl-form :input').each(function () {
-                            //        if ($(this).attr('type') == 'text') {
-                            //            $(this).attr('readonly', 'readonly');
-                            //        }
-                            //    });
-                            //}
-                            // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units - isViewOnly parameter added
                         </script>
                     </div>
                 </td>
                 <td class="width100px bg-content-blue">
-                    @*<button class="btn btn-blue text-shadow-blue source-sans-proregular padding-side20" type="button">Next </button>*@
                     <input type="button" value="Next" id="button-save" class="btn btn-blue text-shadow-blue source-sans-proregular padding-side20" />
                     <input type="button" value="Back" id="button-back" class="btn btn-gray text-shadow-blue source-sans-proregular padding-side20" />
                 </td>
@@ -233,7 +224,7 @@
                             <input type="hidden" id="hdnMY12" value="0" />
                         </div>
                         <div class="budget-month">
-                            <span class="month">Unallocaed</span>
+                            <span class="month">Unallocated</span>
                             <input id="unallocatedBudget" placeholder="---" maxlength="12" readonly="true" class="backgroundC6EBF3 text-align-right width75px input-table priceValue gray-input"/>
                     </div>
                     </div>
@@ -566,10 +557,14 @@
               if (goalType != '')
                   calculateBudget(modelId, goalType, goalValue);
 
-              if (goalType.toLowerCase() == "revenue")
+              if (goalType.toLowerCase() == "revenue") {
                   $('#revenueSign').show();
-              else
+                  $('#conjuntionWord').html('and ');
+              }
+              else {
                   $('#revenueSign').hide();
+                  $('#conjuntionWord').html('to deliver ');
+              }
 
               //GetAllocatedBudgetForPlan(hdnPlanId);
           }
@@ -658,9 +653,11 @@
         if (element.hasClass('calculateBudget')) {
             if ($("#GoalType").val().toLowerCase() == 'revenue') {
                 $('#revenueSign').show();
+                $('#conjuntionWord').html('and ');
             }
             else {
                 $('#revenueSign').hide();
+                $('#conjuntionWord').html('to deliver ');
             }
 
             if ($("#GoalType").val().toLowerCase() == '') {
@@ -677,6 +674,7 @@
             if ($('#ModelId').val() != '') {
                 modelId = $('#ModelId').val();
                 $('#averageDealSize').html("0");
+                $('#ModelTitle').val($('#ModelId').prev().find('.nl-field-toggle').html());
             }
 
             if (goalType != '')
@@ -694,21 +692,19 @@
             success: function (data) {
                 $('#msg1').html(data.msg1);
                 $('#msg2').html(data.msg2);
-                $('#input1').html(FormatCommas(data.input1.toString(), false));
-                SetPriceValue("#input1");
+                $('#input1').html(number_format(data.input1.toString(), 0, '.', ','));
                 if (_goalType.toLowerCase() != "revenue") {
-                    $('#input2').html(FormatCurrency(data.input2.toString(), false));
+                    $('#input2').html('$' + number_format(data.input2.toString(), 0, '.', ','));
                 }
                 else {
-                    $('#input2').html(FormatCommas(data.input2.toString(), false));
-                    SetPriceValue("#input2");
+                    $('#input2').html(number_format(data.input2.toString(), 0, '.', ','));
                 }
                 $('#averageDealSize').html(FormatCurrency(data.ADS, false));
             }
         });
     }
     
-    $('#GoalValue').parent().find('.priceValue').change(function () {
+    $('#GoalValue').parent().find('.priceValue').blur(function () {
         if (!$(this).parent().hasClass('budget-month') && !$(this).parent().hasClass('budget-quarters')) {
             var modelId = 0;
             var goalType = $("#GoalType").val();
@@ -804,12 +800,26 @@
     });
 
     $('.budget-month .priceValue').focus(function () {
+
+        $('.budget-month .priceValue').each(function () {
+            $(this).removeClass('border000000');
+        });
+        
+        $(this).addClass('border000000');
+
         if (this.id.toString() != 'unallocatedBudget') {
         checkCampaignBudget(this);
         }
     });
 
     $('.budget-quarters .priceValue').focus(function () {
+
+        $('.budget-quarters .priceValue').each(function () {
+            $(this).removeClass('border000000');
+        });
+
+        $(this).addClass('border000000');
+
         if (this.id.toString() != 'unallocatedBudget') {
         checkCampaignBudget(this);
         }
@@ -1079,8 +1089,7 @@
                                                 if (parseInt(campaignAllocatedAmount) > 0) {
                                                     $('#hdnM' + data.planCampaignBudgetAllocationList[i - 1].Period.toString()).val(campaignAllocatedAmount);
                                                 }
-                                                if (i == 1)
-                                                {
+                                                if (i == 1) {
                                                     $('#spnCampaignAllocatedBudget').html(FormatCurrency($('#hdnMY' + i).val(), false));
 
                                                     if (parseInt(campaignAllocatedAmount) > parseInt(allocatedAmount)) {
@@ -1089,6 +1098,8 @@
                                                     else {
                                                         $("#spnCampaignAllocatedBudget").removeClass('error-text');
                                                     }
+
+                                                    $('#MY' + i).addClass('border000000');
                                                 }
                                                 if (parseInt(campaignAllocatedAmount) > parseInt(allocatedAmount)) {
                                                     $('#MY' + i).addClass('campaignBudgetError');
@@ -1131,6 +1142,7 @@
                                                     else {
                                                         $("#spnCampaignAllocatedBudget").removeClass('error-text');
                                                     }
+                                                    $('#QY' + i).addClass('border000000');
                                                 }
                                                 if (parseInt(campaignAllocatedAmoount) > parseInt(allocatedAmount)) {
                                                     $('#QY' + i).addClass('campaignBudgetError');
@@ -1197,7 +1209,7 @@
     function renderDisablePlanDefinationSection()
     {
         $('table').addClass('element-disable');
-        $('#disabledModelTitle').html($('#spandef').html());
+        $('#disabledModelTitle').html($('#ModelTitle').html());
         $('#disabledPlanTitle').html($('#Title').prev().find('.nl-field-toggle').html());
         $('#disabledPlanYear').html($('#Year').val());
         $('#disabledGoalType').html($('#GoalType').prev().find('.nl-field-toggle').html());
