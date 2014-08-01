@@ -28,6 +28,7 @@
                 
                     <ul class="dropdown-menu">
                         @*<li><a id="spanDuplicate">Duplicate Tactic</a></li>*@
+                         <li><a id="CloneLineItemTactic">Duplicate Tactic</a></li>
                         @if ((bool)ViewBag.IsOwner && !(bool)ViewBag.IsCreated)
                         {
                             <li><a id="deleteTactic">Delete Tactic</a></li>                        
@@ -165,7 +166,7 @@
                              <div class="budget-result source-sans-prolight">
                                 <p>
                                     Total Line Item Cost: 
-                                    <span id="lblTotalLineItemCost" class="source-sans-proregular">@Model.Cost</span>
+                                    <span id="lblTotalLineItemCost" class="source-sans-proregular"></span>
                                 </p>
                             </div>
                         </div>
@@ -219,9 +220,9 @@
             $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
         }
 
-        if ($("#hdnIsBudgetAllocated").val() == "True" && $("#hdnIsOtherLineItem").val() == "False") {
-            $("#lblTotalLineItemCost").html(FormatCommasBudget($("#lblTotalLineItemCost").html(), false,true));
-        }
+        //if ($("#hdnIsBudgetAllocated").val() == "True" && $("#hdnIsOtherLineItem").val() == "False") {
+        //    $("#lblTotalLineItemCost").html(FormatCommasBudget($("#lblTotalLineItemCost").html(), false,true));
+        //}
         
         $("span.tool-tip").tooltip();
 
@@ -244,6 +245,35 @@
         $("#slidepanel").css("display", "none");
         $("#slidepanel-container").empty();
     });
+
+        //Added : By Kalpesh Sharma Ticket #648 Cloning icon for tactics with allocation
+    $("#CloneLineItemTactic").click(function () {
+        var idLineitem = $("#hdnPlanLineItemId").val();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/Clone")',
+                data: {
+                    CloneType: 'LineItem',
+                    Id: idLineitem,
+                    title: '@Model.Title'
+                    },
+                success: function (data) {
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
+                        }
+                        else {
+                            if (data.redirect) {
+                                window.location.href = data.redirect;
+                                return;
+                            }
+                            if (data.errormsg) {
+                                alert(data.errormsg);
+                                return;
+                            }
+                        }
+                    }
+            });
+        });
 
         $("#spanDuplicate").click(function () {
             CheckUserSession("#spanDuplicate", true);
@@ -486,7 +516,7 @@
 
             $("#hdnTotalLineItemCost").val(newAllLineItemCost);
             $("#hdnOldLineitemCost").val(LineitemCostValue);
-            $("#lblTotalLineItemCost").html($("#txtLineItemCost").val());
+            //$("#lblTotalLineItemCost").html($("#txtLineItemCost").val());
         });
 
         $('.budget-section').find('input').each(function () {
@@ -507,6 +537,14 @@
                         else {
                             $(this).removeClass('error-text');
                         }
+
+
+                        var TotalallocationValue = 0;
+                        var lstAllocInputs = $(".budget-section input").not('.unallocated-text');
+                        for (var i = 0; i < lstAllocInputs.length; i++) {
+                            TotalallocationValue += parseInt($(lstAllocInputs[i]).val() == '' ? 0 : ReplaceCC($(lstAllocInputs[i]).val()));
+                        }
+                        $("#lblTotalLineItemCost").html(FormatCommasBudget(TotalallocationValue.toString(), false, true));
                     }
                 }
             });
@@ -545,6 +583,14 @@
                     $("#txtOtherLineItemCost").attr('title', $("#txtOtherLineItemCost").val());
                     $("#txtOtherLineItemCost").attr('myvalue', $("#txtOtherLineItemCost").val());
                 }
+
+                var TotalallocationValue = 0;
+                var lstAllocInputs = $(".budget-section input").not('.unallocated-text');
+                for (var i = 0; i < lstAllocInputs.length; i++) {
+                    TotalallocationValue += parseInt($(lstAllocInputs[i]).val() == '' ? 0 : ReplaceCC($(lstAllocInputs[i]).val()));
+                }
+                $("#lblTotalLineItemCost").html(FormatCommasBudget(TotalallocationValue.toString(), false, true));
+
             },
             error: function () {
                 ShowError('');

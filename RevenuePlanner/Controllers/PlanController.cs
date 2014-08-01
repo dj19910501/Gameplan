@@ -7883,5 +7883,44 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 
+        /// <summary>
+        /// Added : By Kalpesh Sharma Ticket #648 Cloning icon for tactics with allocation
+        /// </summary>
+        /// <param name="CloneType"></param>
+        /// <param name="Id"></param>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        public ActionResult Clone(string CloneType, int Id, string title)
+        {
+            int rtResult = 0;
+
+            if (Sessions.User == null)
+            {
+                TempData["ErrorMessage"] = Common.objCached.SessionExpired;
+                return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+            }
+
+            try
+            {
+                if (!string.IsNullOrEmpty(CloneType) && Id > 0)
+                {
+                    rtResult = Clonehelper.ToClone(0, "", CloneType, Id);
+                    TempData["SuccessMessageDeletedPlan"] = string.Format("{0} {1} successfully Duplicated.", CloneType, title);
+                }
+
+                if (rtResult >= 1)
+                {
+                    return Json(new { redirect = Url.Action("Assortment") });
+                }
+                return Json(new { });
+
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+                return Json(new { returnValue = rtResult });
+            }
+        }
+
     }
 }
