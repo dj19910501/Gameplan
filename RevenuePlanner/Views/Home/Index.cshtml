@@ -1709,7 +1709,7 @@
          }
 
          CountTacticForRenderChart(task.id, '');
-     })
+     });
 
      //// Modified by :- Maninder Singh for PL ticket #203 	Performance issue - Home screen taking too long to load.
      gantt.refreshData();
@@ -1735,15 +1735,15 @@
              var a = gantt.getChildren(leftNavTaskID);
              $("#accordion-element-improvement-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
                  var taskid = $(this).attr('taskid');
-                 var taskVisible = $("#gantt_here").find('div[task_id="' + taskid + '"]');
+                 var taskVisible = gantt.getTask(taskid).$open;     // Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
                  if (CampaignID == '') {
-                     if (taskid == leftNavTaskID && (typeof taskVisible != 'undefined') && taskVisible.length > 0) {
+                     if (taskid == leftNavTaskID && (typeof taskVisible != 'undefined') && taskVisible == true) {   // Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
                          cnt = cnt + 1;
                      }
                  }
                  else {
                      if (taskid.indexOf(CampaignID) >= 0 && leftNavTaskID.indexOf("_I") > 0 && !(leftNavTaskID.indexOf("_Y") > 0) &&
-                         (typeof taskVisible != 'undefined') && taskVisible.length > 0) {
+                         (typeof taskVisible != 'undefined') && taskVisible == true) { // Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
                          cnt = cnt + 1;
                      }
                  }
@@ -1760,15 +1760,15 @@
              cnt = 0;
              $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index1) {
                  var taskid = $(this).attr('taskid');
-                 var taskVisible = $("#gantt_here").find('div[task_id="' + taskid + '"]');
+                 var taskVisible = gantt.getTask(taskid).$open; // Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
                  if (CampaignID == '') {
-                     if (taskid == leftNavTaskID && (typeof taskVisible != 'undefined') && taskVisible.length > 0) {
+                     if (taskid == leftNavTaskID && (typeof taskVisible != 'undefined') && taskVisible == true) { // Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
                          cnt = cnt + 1;
                      }
                  }
                  else {
                      if (taskid.indexOf(CampaignID) >= 0 && leftNavTaskID.indexOf("_T") > 0 && !(leftNavTaskID.indexOf("_Y") > 0) &&
-                         (typeof taskVisible != 'undefined') && taskVisible.length > 0) {
+                         (typeof taskVisible != 'undefined') && taskVisible == true) { // Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
                          cnt = cnt + 1;
                      }
                  }
@@ -2403,14 +2403,20 @@ function OnTaskExapnd(id) {
                 $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index1) {
                     var taskid = $(this).attr('taskid');
                     var taskVisible = $("#gantt_here").find('div[task_id="' + taskid + '"]');
-                    $.each(a, function (index2, value2) {
-                        if (taskid == value2 && (typeof taskVisible != 'undefined') && taskVisible.length > 0) {
-                            cnt = cnt + 1;
+                    // Start - Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
+                    if (typeof taskVisible != 'undefined') {
+                        if (taskVisible.length > 0) {
+                            $.each(a, function (index2, value2) {
+                                if (taskid == value2) {
+                                    cnt = cnt + 1;
+                                }
+                            });
                         }
-                    });
+                    }
+                    // End - Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
                 });
 
-                if ($("#" + this.id).text() != '') {
+                if ($("#" + this.id).text() != '' && cnt != 0) {    // Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
                     updateCountOnExpand($("#" + this.id), cnt);
                 }
             });
@@ -2423,19 +2429,30 @@ function OnTaskExapnd(id) {
                     var cnt = 0;
                     var a = gantt.getChildren(id);
                     $.each(a, function (index1, value1) {
-                        var child = gantt.getChildren(value1);
-                        $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
-                            var taskid = $(this).attr('taskid');
-                            var taskVisible = $("#gantt_here").find('div[task_id="' + taskid + '"]');
-                            $.each(child, function (index3, value3) {
-                                if (taskid == value3 && (typeof taskVisible != 'undefined') && taskVisible.length > 0) {
-                                    cnt = cnt + 1;
-                                }
-                            });
-                        });
+                        // Start - Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
+                        var childVisible = gantt.getTask(value1).$open;
+                        if (typeof childVisible != undefined) {
+                            if (childVisible == true) {
+                                var child = gantt.getChildren(value1);
+                                $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
+                                    var taskid = $(this).attr('taskid');
+                                    var taskVisible = $("#gantt_here").find('div[task_id="' + taskid + '"]');
+                                    if (typeof taskVisible != 'undefined') {
+                                        if (taskVisible.length > 0) {
+                                            $.each(child, function (index3, value3) {
+                                                if (taskid == value3) {
+                                                    cnt = cnt + 1;
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                        // End - Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
                     });
 
-                    if ($("#" + this.id).text() != '') {
+                    if ($("#" + this.id).text() != '' && cnt != 0) {    // Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
                         updateCountOnExpand($("#" + this.id), cnt);
                     }
                 });
@@ -2447,29 +2464,41 @@ function OnTaskExapnd(id) {
                     var cnt = 0;
                     var a = gantt.getChildren(id);
                     $.each(a, function (index1, value1) {
-                        var child1 = gantt.getChildren(value1);
-                        $.each(child1, function (index4, value4) {
-                            var child = gantt.getChildren(value4);
-                            $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
-                                var taskid = $(this).attr('taskid');
-                                var taskVisible = $("#gantt_here").find('div[task_id="' + taskid + '"]');
-                                if (child.length > 0) {
-                                    $.each(child, function (index3, value3) {
-                                        if (taskid == value3 && (typeof taskVisible != 'undefined') && taskVisible.length > 0) {
-                                            cnt = cnt + 1;
+                        // Start - Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
+                        var childVisibleMain = gantt.getTask(value1).$open;
+                        if (typeof childVisibleMain != undefined) {
+                            if (childVisibleMain == true) {
+                                var child1 = gantt.getChildren(value1);
+                                $.each(child1, function (index4, value4) {
+                                    var childVisible = gantt.getTask(value4).$open;
+                                    if (typeof childVisible != undefined) {
+                                        if (childVisible == true) {
+                                            var child = gantt.getChildren(value4);
+                                            $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
+                                                var taskid = $(this).attr('taskid');
+                                                var taskVisible = $("#gantt_here").find('div[task_id="' + taskid + '"]');
+                                                if (child.length > 0) {
+                                                    $.each(child, function (index3, value3) {
+                                                        if (taskid == value3 && (typeof taskVisible != 'undefined') && taskVisible.length > 0) {
+                                                            cnt = cnt + 1;
+                                                        }
+                                                    });
+                                                }
+                                                else {
+                                                    if (taskid == value4 && (typeof taskVisible != 'undefined') && taskVisible.length > 0) {
+                                                        cnt = cnt + 1;
+                                                    }
+                                                }
+                                            });
                                         }
-                                    });
-                                }
-                                else {
-                                    if (taskid == value4 && (typeof taskVisible != 'undefined') && taskVisible.length > 0) {
-                                        cnt = cnt + 1;
                                     }
-                                }
-                            });
-                        });
+                                });
+                            }
+                        }
+                        // End - Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
                     });
 
-                    if ($("#" + this.id).text() != '') {
+                    if ($("#" + this.id).text() != '' && cnt != 0) {    // Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
                         updateCountOnExpand($("#" + this.id), cnt);
                     }
                 });
@@ -2493,7 +2522,7 @@ function OnTaskExapnd(id) {
                 });
             });
 
-            if ($("#" + this.id).text() != '') {
+            if ($("#" + this.id).text() != '' && cnt != 0) {    // Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
                 updateCountOnExpand($("#" + this.id), cnt);
             }
         });
@@ -2549,7 +2578,7 @@ function OnTaskCollapse(id) {
                         }
                     });
                 });
-
+                                
                 updateTacticCountOnCollapse($("#" + this.id), cnt);
             });
         }
@@ -2561,17 +2590,24 @@ function OnTaskCollapse(id) {
                     var cnt = 0;
                     var a = gantt.getChildren(id);
                     $.each(a, function (index1, value1) {
-                        var child = gantt.getChildren(value1);
-                        $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
-                            var taskid = $(this).attr('taskid');
-                            $.each(child, function (index3, value3) {
-                                if (taskid == value3) {
-                                    cnt = cnt + 1;
-                                }
-                            });
-                        });
+                        // Start - Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
+                        var childVisible = gantt.getTask(value1).$open;
+                        if (typeof childVisible != undefined) {
+                            if (childVisible == true) {
+                                var child = gantt.getChildren(value1);
+                                $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
+                                    var taskid = $(this).attr('taskid');
+                                    $.each(child, function (index3, value3) {
+                                        if (taskid == value3) {
+                                            cnt = cnt + 1;
+                                        }
+                                    });
+                                });
+                            }
+                        }
+                        // End - Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
                     });
-
+                                        
                     updateTacticCountOnCollapse($("#" + this.id), cnt);
                 });
             }
@@ -2582,25 +2618,37 @@ function OnTaskCollapse(id) {
                     var cnt = 0;
                     var a = gantt.getChildren(id);
                     $.each(a, function (index1, value1) {
-                        var b = gantt.getChildren(value1);
-                        $.each(b, function (index4, value4) {
-                            var child = gantt.getChildren(value4);
-                            $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
-                                var taskid = $(this).attr('taskid');
-                                if (child.length > 0) {
-                                    $.each(child, function (index3, value3) {
-                                        if (taskid == value3) {
-                                            cnt = cnt + 1;
+                        // Start - Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
+                        var childVisibleMain = gantt.getTask(value1).$open;
+                        if (typeof childVisibleMain != undefined) {
+                            if (childVisibleMain == true) {
+                                var b = gantt.getChildren(value1);
+                                $.each(b, function (index4, value4) {
+                                    var childVisible = gantt.getTask(value4).$open;
+                                    if (typeof childVisible != undefined) {
+                                        if (childVisible == true) {
+                                            var child = gantt.getChildren(value4);
+                                            $("#accordion-element-" + tid).find('a[class^="accordion-inner"]').each(function (index2) {
+                                                var taskid = $(this).attr('taskid');
+                                                if (child.length > 0) {
+                                                    $.each(child, function (index3, value3) {
+                                                        if (taskid == value3) {
+                                                            cnt = cnt + 1;
+                                                        }
+                                                    });
+                                                }
+                                                else {
+                                                    if (taskid == value4) {
+                                                        cnt = cnt + 1;
+                                                    }
+                                                }
+                                            });
                                         }
-                                    });
-                                }
-                                else {
-                                    if (taskid == value4) {
-                                        cnt = cnt + 1;
                                     }
-                                }
-                            });
-                        });
+                                });
+                            }
+                        }
+                        // End - Modified By :- Sohel Pathan on 30/07/2014 for PL ticket #649
                     });
 
                     updateTacticCountOnCollapse($("#" + this.id), cnt);
