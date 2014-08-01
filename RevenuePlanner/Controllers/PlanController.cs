@@ -36,7 +36,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <returns></returns>
         /// added id parameter by kunal on 01/17/2014 for edit plan
-        public ActionResult Create(int id = 0,bool isBackFromAssortment=false)
+        public ActionResult Create(int id = 0, bool isBackFromAssortment = false)
         {
             /*Added by Mitesh Vaishnav on 25/07/2014 for PL ticket 619*/
             if (isBackFromAssortment == true)
@@ -1751,7 +1751,7 @@ namespace RevenuePlanner.Controllers
                         id = pcptj.PlanTacticId,
                         title = pcptj.Title,
                         description = pcptj.Description,
-                        cost = db.Plan_Campaign_Program_Tactic_LineItem.ToList().Where(lc=>lc.PlanTacticId.Equals(pcptj.PlanTacticId)&& lc.IsDeleted.Equals(false)).Select(lc=>lc.Cost).Sum()>pcptj.Cost?db.Plan_Campaign_Program_Tactic_LineItem.ToList().Where(lc=>lc.PlanTacticId.Equals(pcptj.PlanTacticId)&& lc.IsDeleted.Equals(false)).Select(lc=>lc.Cost).Sum():pcptj.Cost,//Modified by mitesh Vaishnav on 29-07-2014 for PL ticket #619
+                        cost = db.Plan_Campaign_Program_Tactic_LineItem.ToList().Where(lc => lc.PlanTacticId.Equals(pcptj.PlanTacticId) && lc.IsDeleted.Equals(false)).Select(lc => lc.Cost).Sum() > pcptj.Cost ? db.Plan_Campaign_Program_Tactic_LineItem.ToList().Where(lc => lc.PlanTacticId.Equals(pcptj.PlanTacticId) && lc.IsDeleted.Equals(false)).Select(lc => lc.Cost).Sum() : pcptj.Cost,//Modified by mitesh Vaishnav on 29-07-2014 for PL ticket #619
                         //inqs = pcptj.INQs,
                         mqls = GetTacticMQL(pcptj),
                         /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid
@@ -2017,7 +2017,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
 
             //Clonehelper.PlanClone(Sessions.PlanId);
-            
+
             return PartialView("CampaignAssortment", pcm);
         }
 
@@ -2592,7 +2592,7 @@ namespace RevenuePlanner.Controllers
             //Added By : Kalpesh Sharma : PL #605 : 07/29/2014
             List<Plan_Tactic_Values> PlanTacticValuesList = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == pcp.PlanCampaignId &&
                 t.Plan_Campaign_Program.PlanProgramId == pcp.PlanProgramId && t.IsDeleted == false).ToList());
-            pcpm.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue)); 
+            pcpm.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue));
 
             /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
 
@@ -2653,7 +2653,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveProgram(Plan_Campaign_ProgramModel form, string tactics, bool RedirectType, string closedTask,string BudgetInputValues,string UserId = "")
+        public ActionResult SaveProgram(Plan_Campaign_ProgramModel form, string tactics, bool RedirectType, string closedTask, string BudgetInputValues, string UserId = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -2703,7 +2703,7 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.CreatedDate = DateTime.Now;
                                 pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString(); //status field added for Plan_Campaign_Program table
                                 pcpobj.IsDeployedToIntegration = form.IsDeployedToIntegration;
-                                
+
                                 //Added By : Kalpesh Sharma : PL #604 : 07/29/2014
                                 pcpobj.ProgramBudget = form.ProgramBudget;
 
@@ -2747,7 +2747,7 @@ namespace RevenuePlanner.Controllers
                                         BudgetInputValuesCounter = BudgetInputValuesCounter + 3;
                                     }
                                 }
-                                
+
                                 int result = db.SaveChanges();
                                 int programid = pcpobj.PlanProgramId;
                                 // Start - Added by Sohel Pathan on 09/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
@@ -3131,7 +3131,7 @@ namespace RevenuePlanner.Controllers
             //Start by Kalpesh Sharma #605: Cost allocation for Tactic
             pcptm.TacticCost = 0;
             pcptm.AllocatedBy = objPlan.AllocatedBy;
-            
+
             return PartialView("TacticAssortment", pcptm);
         }
 
@@ -3325,7 +3325,7 @@ namespace RevenuePlanner.Controllers
             //Added By : Kalpesh Sharma : PL #605 : 07/29/2014
             List<Plan_Tactic_Values> PlanTacticValuesList = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcpt.PlanProgramId &&
                 t.PlanTacticId == pcpt.PlanTacticId && t.IsDeleted == false).ToList());
-            pcptm.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue)); 
+            pcptm.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue));
 
             return PartialView("TacticAssortment", pcptm);
         }
@@ -3339,7 +3339,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveTactic(Plan_Campaign_Program_TacticModel form,string lineitems, bool RedirectType, string closedTask, string BudgetInputValues,  string UserId = "")
+        public ActionResult SaveTactic(Plan_Campaign_Program_TacticModel form, string lineitems, bool RedirectType, string closedTask, string BudgetInputValues, string UserId = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -3480,7 +3480,7 @@ namespace RevenuePlanner.Controllers
                                         BudgetInputValuesCounter = BudgetInputValuesCounter + 3;
                                     }
                                 }
-                                
+
                                 db.SaveChanges();
 
                                 ////End - Added by : Mitesh Vaishnav on 25-06-2014    for PL ticket 554 Home & Plan Pages: Program and Campaign Blocks are not covering newly added Tactic.
@@ -3722,7 +3722,7 @@ namespace RevenuePlanner.Controllers
 
                                 // Start Added by dharmraj for ticket #644
                                 var objOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == pcpobj.PlanTacticId && l.Title == Common.DefaultLineItemTitle && l.LineItemTypeId == null);
-                                var objtotalLoneitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == pcpobj.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false); 
+                                var objtotalLoneitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == pcpobj.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false);
                                 double totalLoneitemCost = 0;
                                 if (objtotalLoneitemCost != null && objtotalLoneitemCost.Count() > 0)
                                 {
@@ -4058,9 +4058,9 @@ namespace RevenuePlanner.Controllers
             List<UserCustomRestrictionModel> lstUserCustomRestriction = Common.GetUserCustomRestriction();
             // Line item Type
             var lineItemTypes = from lit in db.LineItemTypes
-                          where lit.ModelId == objPlan.ModelId && lit.IsDeleted == false
-                          orderby lit.Title
-                          select lit;
+                                where lit.ModelId == objPlan.ModelId && lit.IsDeleted == false
+                                orderby lit.Title
+                                select lit;
             foreach (var item in lineItemTypes)
             {
                 item.Title = HttpUtility.HtmlDecode(item.Title);
@@ -4203,7 +4203,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="id">Plan line item Id.</param>
         /// <returns>Returns Json Result of line item cost allocation Value.</returns>
-        public JsonResult GetCostAllocationLineItemData(int id,int tid)
+        public JsonResult GetCostAllocationLineItemData(int id, int tid)
         {
             try
             {
@@ -4424,7 +4424,7 @@ namespace RevenuePlanner.Controllers
                                     db.SaveChanges();
                                 }
                                 scope.Complete();
-                                return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid,tacticId=tid }) });
+                                return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid, tacticId = tid }) });
                             }
                         }
                     }
@@ -4646,12 +4646,12 @@ namespace RevenuePlanner.Controllers
 
                         int returnValue;
                         Int32.TryParse(parameterReturnValue.Value.ToString(), out returnValue);
-                        
+
                         int cid = 0;
                         int pid = 0;
                         int tid = 0;
                         string Title = "";
-                        
+
                         if (returnValue != 0)
                         {
                             Plan_Campaign_Program_Tactic_LineItem pcptl = db.Plan_Campaign_Program_Tactic_LineItem.Where(p => p.PlanLineItemId == id).SingleOrDefault();
@@ -4699,7 +4699,7 @@ namespace RevenuePlanner.Controllers
                             }
                             // End added by dharmraj to handle "Other" line item
 
-                            
+
                             cid = pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId;
                             pid = pcptl.Plan_Campaign_Program_Tactic.PlanProgramId;
                             tid = pcptl.PlanTacticId;
@@ -4730,7 +4730,7 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else
                                 {
-                                    return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid, tacticId=tid }) });
+                                    return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid, tacticId = tid }) });
                                 }
                             }
 
@@ -6592,51 +6592,102 @@ namespace RevenuePlanner.Controllers
                 {
                     using (TransactionScope scope = new TransactionScope())
                     {
-                        //-- Delete previous budget allocation for plan if exists
-                        var PrevPlanBedgetAllocationList = db.Plan_Budget.Where(pb => pb.PlanId == planId).Select(pb => pb).ToList();
-                        if (PrevPlanBedgetAllocationList != null)
-                        {
-                            if (PrevPlanBedgetAllocationList.Count > 0)
-                            {
-                                PrevPlanBedgetAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-                                isDBSaveChanges = true;
-                            }
-                        }
+                        ////-- Delete previous budget allocation for plan if exists
+                        //var PrevPlanBedgetAllocationList = db.Plan_Budget.Where(pb => pb.PlanId == planId).Select(pb => pb).ToList();
+                        //if (PrevPlanBedgetAllocationList != null)
+                        //{
+                        //    if (PrevPlanBedgetAllocationList.Count > 0)
+                        //    {
+                        //        PrevPlanBedgetAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                        //        isDBSaveChanges = true;
+                        //    }
+                        //}
+
+                        var isValueInserted = inputValues.Where(a => Convert.ToInt64(a) > 0).Any();
 
                         //-- Insert new budget allocation for plan
-                        if (inputValues.Length == 12 && inputValues.Where(a => Convert.ToInt64(a) > 0).Any())
+                        if (inputValues.Length == 12 && isValueInserted)
                         {
+                            var PrevPlanBedgetAllocationList = db.Plan_Budget.Where(pb => pb.PlanId == planId).Select(pb => pb).ToList();
+
                             //-- Monthly Budget Allocation
                             for (int i = 0; i < 12; i++)
                             {
-                                Plan_Budget objPlan_Budget = new Plan_Budget();
+                                bool isExists = false;
+                                if (PrevPlanBedgetAllocationList != null)
+                                {
+                                    if (PrevPlanBedgetAllocationList.Count > 0)
+                                    {
+                                        var updatePlanBudget = PrevPlanBedgetAllocationList.Where(pb => pb.Period == ("Y" + (i + 1))).FirstOrDefault();
+                                        if (updatePlanBudget != null)
+                                        {
+                                            var newValue = Convert.ToInt64(inputValues[i]);
+                                            if (updatePlanBudget.Value != newValue)
+                                            {
+                                                updatePlanBudget.Value = newValue;
+                                                db.Entry(updatePlanBudget).State = EntityState.Modified;
+                                                isDBSaveChanges = true;
+                                            }
+                                            isExists = true;
+                                        }
+                                    }
+                                }
+                                if (!isExists)
+                                {
+                                    Plan_Budget objPlan_Budget = new Plan_Budget();
 
-                                objPlan_Budget.PlanId = planId;
-                                objPlan_Budget.Period = "Y" + (i + 1).ToString();
-                                objPlan_Budget.Value = Convert.ToInt64(inputValues[i]);
-                                objPlan_Budget.CreatedDate = DateTime.Now;
-                                objPlan_Budget.CreatedBy = Sessions.User.UserId;
-                                db.Plan_Budget.Add(objPlan_Budget);
+                                    objPlan_Budget.PlanId = planId;
+                                    objPlan_Budget.Period = "Y" + (i + 1).ToString();
+                                    objPlan_Budget.Value = Convert.ToInt64(inputValues[i]);
+                                    objPlan_Budget.CreatedDate = DateTime.Now;
+                                    objPlan_Budget.CreatedBy = Sessions.User.UserId;
+                                    db.Plan_Budget.Add(objPlan_Budget);
+                                    isDBSaveChanges = true;
+                                }
                             }
-                            isDBSaveChanges = true;
                         }
-                        else if (inputValues.Length == 4 && inputValues.Where(a => Convert.ToInt64(a) > 0).Any())
+                        else if (inputValues.Length == 4 && isValueInserted)
                         {
+                            var PrevPlanBedgetAllocationList = db.Plan_Budget.Where(pb => pb.PlanId == planId).Select(pb => pb).ToList();
+
                             //-- Quarterly Budget Allocation
                             int j = 0;
                             for (int i = 0; i < 12; i = i + 3)
                             {
-                                Plan_Budget objPlan_Budget = new Plan_Budget();
+                                bool isExists = false;
+                                if (PrevPlanBedgetAllocationList != null)
+                                {
+                                    if (PrevPlanBedgetAllocationList.Count > 0)
+                                    {
+                                        var updatePlanBudget = PrevPlanBedgetAllocationList.Where(pb => pb.Period == ("Y" + (i + 1))).FirstOrDefault();
+                                        if (updatePlanBudget != null)
+                                        {
+                                            var newValue = Convert.ToInt64(inputValues[j]);
+                                            if (updatePlanBudget.Value != newValue)
+                                            {
+                                                updatePlanBudget.Value = Convert.ToInt64(inputValues[j]);
+                                                db.Entry(updatePlanBudget).State = EntityState.Modified;
+                                                isDBSaveChanges = true;
+                                            }
+                                            j = j + 1;
+                                            isExists = true;
+                                        }
+                                    }
+                                }
+                                if (!isExists)
+                                {
+                                    Plan_Budget objPlan_Budget = new Plan_Budget();
 
-                                objPlan_Budget.PlanId = planId;
-                                objPlan_Budget.Period = "Y" + (i + 1).ToString();
-                                objPlan_Budget.Value = Convert.ToInt64(inputValues[j]);
-                                objPlan_Budget.CreatedDate = DateTime.Now;
-                                objPlan_Budget.CreatedBy = Sessions.User.UserId;
-                                db.Plan_Budget.Add(objPlan_Budget);
-                                j = j + 1;
+                                    objPlan_Budget.PlanId = planId;
+                                    objPlan_Budget.Period = "Y" + (i + 1).ToString();
+                                    objPlan_Budget.Value = Convert.ToInt64(inputValues[j]);
+                                    objPlan_Budget.CreatedDate = DateTime.Now;
+                                    objPlan_Budget.CreatedBy = Sessions.User.UserId;
+                                    db.Plan_Budget.Add(objPlan_Budget);
+                                    isDBSaveChanges = true;
+                                    j = j + 1;
+                                }
                             }
-                            isDBSaveChanges = true;
                         }
 
                         if (isDBSaveChanges)
@@ -6745,36 +6796,39 @@ namespace RevenuePlanner.Controllers
                         {
                             if (PrevPlanAllocationList.Count > 0)
                             {
-                                if (newAllocationBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower())
+                                //if (newAllocationBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower())
+                                //{
+                                //    //-- Delete previous budget allocation of plan
+                                //    PrevPlanAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                                //    isDBSaveChanges = true;
+                                //}
+                                if (newAllocationBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
                                 {
                                     //-- Delete previous budget allocation of plan
                                     PrevPlanAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                                     isDBSaveChanges = true;
-                                }
-                                if (newAllocationBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
-                                {
-                                    //-- update budget allocation of plan from monthly to quarterly
-                                    if (PrevPlanAllocationList.Count == 12)
-                                    {
-                                        double rollupValue = 0;
-                                        for (int i = 0; i < 12; i++)
-                                        {
-                                            rollupValue = rollupValue + PrevPlanAllocationList[i].Value;
 
-                                            if ((i + 1) % 3 == 0)
-                                            {
-                                                Plan_Budget objPlan_Budget = new Plan_Budget();
-                                                objPlan_Budget.PlanId = planId;
-                                                objPlan_Budget.Period = "Y" + (i - 1).ToString();
-                                                objPlan_Budget.Value = Convert.ToInt64(rollupValue);
-                                                objPlan_Budget.CreatedDate = DateTime.Now;
-                                                objPlan_Budget.CreatedBy = Sessions.User.UserId;
-                                                db.Plan_Budget.Add(objPlan_Budget);
-                                                rollupValue = 0;
-                                            }
+                                    //-- update budget allocation of plan from monthly to quarterly
+                                    double rollupValue = 0;
+                                    var quarterPeriods = new string[] { "Y1", "Y2", "Y3" };
+                                    for (int i = 0; i < 12; i++)
+                                    {
+                                        if ((i + 1) % 3 == 0)
+                                        {
+                                            rollupValue = PrevPlanAllocationList.Where(a => quarterPeriods.Contains(a.Period)).Select(a => a.Value).Sum();
+
+                                            Plan_Budget objPlan_Budget = new Plan_Budget();
+                                            objPlan_Budget.PlanId = planId;
+                                            objPlan_Budget.Period = "Y" + (i - 1).ToString();
+                                            objPlan_Budget.Value = Convert.ToInt64(rollupValue);
+                                            objPlan_Budget.CreatedDate = DateTime.Now;
+                                            objPlan_Budget.CreatedBy = Sessions.User.UserId;
+                                            db.Plan_Budget.Add(objPlan_Budget);
+                                            rollupValue = 0;
+                                            quarterPeriods = new string[] { "Y" + (i + 2), "Y" + (i + 3), "Y" + (i + 4) };
                                         }
-                                        isDBSaveChanges = true;
                                     }
+                                    isDBSaveChanges = true;
                                 }
                             }
                         }
@@ -6790,15 +6844,19 @@ namespace RevenuePlanner.Controllers
 
                                 if (PrevCampaignAllocationList.Count > 0)
                                 {
-                                    if (newAllocationBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower())
+                                    //if (newAllocationBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower())
+                                    //{
+                                    //    //-- Delete previous budget allocation of campaign
+                                    //    PrevCampaignAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                                    //    isDBSaveChanges = true;
+                                    //}
+
+                                    if (newAllocationBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
                                     {
                                         //-- Delete previous budget allocation of campaign
                                         PrevCampaignAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                                         isDBSaveChanges = true;
-                                    }
 
-                                    if (newAllocationBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
-                                    {
                                         //-- update budget allocation of campaign from monthly to quarterly
                                         double rollupValue = 0;
                                         var quarterPeriods = new string[] { "Y1", "Y2", "Y3" };
@@ -6834,15 +6892,19 @@ namespace RevenuePlanner.Controllers
 
                                         if (PrevCampaignProgramAllocationList.Count > 0)
                                         {
-                                            if (newAllocationBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower())
+                                            //if (newAllocationBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower())
+                                            //{
+                                            //    //-- Delete previous budget allocation of program
+                                            //    PrevCampaignProgramAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                                            //    isDBSaveChanges = true;
+                                            //}
+
+                                            if (newAllocationBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
                                             {
                                                 //-- Delete previous budget allocation of program
                                                 PrevCampaignProgramAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                                                 isDBSaveChanges = true;
-                                            }
 
-                                            if (newAllocationBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
-                                            {
                                                 //-- update budget allocation of program from monthly to quarterly
                                                 double rollupValue = 0;
                                                 var quarterPeriods = new string[] { "Y1", "Y2", "Y3" };
@@ -6878,15 +6940,19 @@ namespace RevenuePlanner.Controllers
 
                                                 if (PrevCampaignProgramTacticAllocationList.Count > 0)
                                                 {
-                                                    if (newAllocationBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower())
+                                                    //if (newAllocationBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower())
+                                                    //{
+                                                    //    //-- Delete previous budget allocation of tactic
+                                                    //    PrevCampaignProgramTacticAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                                                    //    isDBSaveChanges = true;
+                                                    //}
+
+                                                    if (newAllocationBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
                                                     {
                                                         //-- Delete previous budget allocation of tactic
                                                         PrevCampaignProgramTacticAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                                                         isDBSaveChanges = true;
-                                                    }
 
-                                                    if (newAllocationBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
-                                                    {
                                                         //-- update budget allocation of tactic from monthly to quarterly
                                                         double rollupValue = 0;
                                                         var quarterPeriods = new string[] { "Y1", "Y2", "Y3" };
@@ -6922,15 +6988,19 @@ namespace RevenuePlanner.Controllers
 
                                                         if (PrevCampaignProgramTacticLineItemAllocationList.Count > 0)
                                                         {
-                                                            if (newAllocationBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower())
+                                                            //if (newAllocationBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower())
+                                                            //{
+                                                            //    //-- Delete previous budget allocation of tactic
+                                                            //    PrevCampaignProgramTacticLineItemAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                                                            //    isDBSaveChanges = true;
+                                                            //}
+
+                                                            if (newAllocationBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
                                                             {
                                                                 //-- Delete previous budget allocation of tactic
                                                                 PrevCampaignProgramTacticLineItemAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                                                                 isDBSaveChanges = true;
-                                                            }
 
-                                                            if (newAllocationBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
-                                                            {
                                                                 //-- update budget allocation of tactic lineitem from monthly to quarterly
                                                                 double rollupValue = 0;
                                                                 var quarterPeriods = new string[] { "Y1", "Y2", "Y3" };
@@ -7097,7 +7167,7 @@ namespace RevenuePlanner.Controllers
                 var lstPlanProgramTactics = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == PlanProgramId).Select(c => c.PlanTacticId).ToList();
 
 
-                var CostTacticsBudget = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == PlanProgramId).ToList().Sum(c=> c.Cost);
+                var CostTacticsBudget = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == PlanProgramId).ToList().Sum(c => c.Cost);
 
 
                 var lstTacticsBudget = db.Plan_Campaign_Program_Tactic_Cost.Where(c => lstPlanProgramTactics.Contains(c.PlanTacticId)).ToList()
