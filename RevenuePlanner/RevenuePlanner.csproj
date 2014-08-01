@@ -585,13 +585,26 @@
     <Content Include="Properties\DataSources\Integration.BDSService.Role.datasource" />
     <Content Include="Properties\DataSources\Integration.BDSService.SecurityQuestion.datasource" />
     <Content Include="Properties\DataSources\Integration.BDSService.User.datasource" />
-    <Content Include="Service References\BDSService\BDSService.disco" />
-    <Content Include="Service References\BDSService\configuration91.svcinfo" />
-    <Content Include="Service References\BDSService\configuration.svcinfo" />
-    <Content Include="Service References\BDSService\Reference.svcmap">
+    <None Include="Service References\BDSService\BDSService1.wsdl" />
+    <None Include="Service References\BDSService\BDSService4.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\BDSService41.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\BDSService42.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\BDSService43.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\BDSService\configuration91.svcinfo" />
+    <None Include="Service References\BDSService\configuration.svcinfo" />
+    <None Include="Service References\BDSService\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
-    </Content>
+    </None>
+    <None Include="Service References\BDSService\BDSService1.disco" />
     <Content Include="Views\Plan\PlanSelector.cshtml">
       <SubType>Code</SubType>
     </Content>
@@ -773,26 +786,19 @@
     <Content Include="Views\Model\_DuplicateModel.cshtml" />
     <Content Include="Views\Plan\_NoModel.cshtml" />
     <Content Include="Views\Plan\LineItemAssortment.cshtml" />
-    <Content Include="Service References\BDSService\BDSService.wsdl" />
-    <None Include="Service References\BDSService\BDSService.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\BDSService\BDSService1.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\BDSService\BDSService2.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\BDSService\BDSService3.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.ApplicationActivity.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
-    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.Client.datasource">
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.CustomRestriction.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
-    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.CustomRestriction.datasource">
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserApplicationPermission.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserHierarchy.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.Client.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.Menu.datasource">
@@ -811,12 +817,6 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.User.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserApplicationPermission.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\BDSService\RevenuePlanner.BDSService.UserHierarchy.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
     <None Include="Web.BulldogProduction.config" />

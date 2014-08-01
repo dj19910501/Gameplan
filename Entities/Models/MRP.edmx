@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="MRPModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="MRPModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityContainer Name="MRPModelStoreContainer">
           <EntitySet Name="Audience" EntityType="MRPModel.Store.Audience" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="BestInClass" EntityType="MRPModel.Store.BestInClass" store:Type="Tables" Schema="dbo" />
@@ -22,20 +22,7 @@
           <EntitySet Name="IntegrationInstance_Attribute" EntityType="MRPModel.Store.IntegrationInstance_Attribute" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationInstanceDataTypeMapping" EntityType="MRPModel.Store.IntegrationInstanceDataTypeMapping" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationInstanceLog" EntityType="MRPModel.Store.IntegrationInstanceLog" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="IntegrationInstancePlanEntityLog" EntityType="MRPModel.Store.IntegrationInstancePlanEntityLog" store:Type="Tables" store:Schema="dbo" store:Name="IntegrationInstancePlanEntityLog">
-            <DefiningQuery>SELECT 
-      [IntegrationInstancePlanEntityLog].[IntegrationInstanceLogId] AS [IntegrationInstanceLogId], 
-      [IntegrationInstancePlanEntityLog].[IntegrationInstanceId] AS [IntegrationInstanceId], 
-      [IntegrationInstancePlanEntityLog].[EntityId] AS [EntityId], 
-      [IntegrationInstancePlanEntityLog].[EntityType] AS [EntityType], 
-      [IntegrationInstancePlanEntityLog].[SyncTimeStamp] AS [SyncTimeStamp], 
-      [IntegrationInstancePlanEntityLog].[Operation] AS [Operation], 
-      [IntegrationInstancePlanEntityLog].[Status] AS [Status], 
-      [IntegrationInstancePlanEntityLog].[ErrorDescription] AS [ErrorDescription], 
-      [IntegrationInstancePlanEntityLog].[CreatedDate] AS [CreatedDate], 
-      [IntegrationInstancePlanEntityLog].[CreatedBy] AS [CreatedBy]
-      FROM [dbo].[IntegrationInstancePlanEntityLog] AS [IntegrationInstancePlanEntityLog]</DefiningQuery>
-          </EntitySet>
+          <EntitySet Name="IntegrationInstancePlanEntityLog" EntityType="MRPModel.Store.IntegrationInstancePlanEntityLog" store:Type="Tables" Schema="dbo"></EntitySet>
           <EntitySet Name="IntegrationType" EntityType="MRPModel.Store.IntegrationType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationTypeAttribute" EntityType="MRPModel.Store.IntegrationTypeAttribute" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="LineItemType" EntityType="MRPModel.Store.LineItemType" store:Type="Tables" Schema="dbo" />
@@ -2080,7 +2067,8 @@
           <Parameter Name="CreatedBy" Type="uniqueidentifier" Mode="In" />
           <Parameter Name="ReturnValue" Type="int" Mode="InOut" />
         </Function>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="MRPModel" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -2456,7 +2444,7 @@
             <End Role="Stage" EntitySet="Stages" />
             <End Role="TacticType" EntitySet="TacticTypes" />
           </AssociationSet>
-          </EntityContainer>
+        </EntityContainer>
         <EntityType Name="Audience">
           <Key>
             <PropertyRef Name="AudienceId" />
@@ -4285,7 +4273,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        </Schema>
+      </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -5174,7 +5162,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          </EntityContainerMapping>
+        </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>

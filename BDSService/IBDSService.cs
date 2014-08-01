@@ -103,7 +103,7 @@ namespace BDSService
         int UpdateUserSecurityQuestion(BDSEntities.User user);
 
         [OperationContract]
-        List<BDSEntities.User> GetUserListByClientId(Guid clientId, Guid applicationId);
+        List<BDSEntities.User> GetUserListByClientId(Guid clientId);
 
         [OperationContract]
         string GetApplicationReleaseVersion(Guid applicationId);

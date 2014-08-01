@@ -187,10 +187,10 @@ namespace BDSService
             BDSUserRepository obj = new BDSUserRepository();
             return obj.UpdateUserSecurityQuestion(user);
         }
-        public List<BDSEntities.User> GetUserListByClientId(Guid clientId, Guid applicationId)
+        public List<BDSEntities.User> GetUserListByClientId(Guid clientId)
         {
             BDSUserRepository obj = new BDSUserRepository();
-            return obj.GetUserListByClientId(clientId, applicationId);
+            return obj.GetUserListByClientId(clientId);
         }
 
         public string GetApplicationReleaseVersion(Guid applicationId)
