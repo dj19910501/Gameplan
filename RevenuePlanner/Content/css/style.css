@@ -7636,4 +7636,10 @@ div.sub{display:none; transition: height 0.35s ease 0s; padding:0;}
 .progressBar.error{background:#ff1e26;}
 .campaignLevel.error{border-bottom:none !important;}
 .campaignLevel.open.error{ border-bottom:1px solid #ccc !important;}
+.nav-gray-plan li.active a.budget span, .nav-gray-plan li:hover a.budget span {
+    background-position: -266px -30px !important;
+}
+.nav-gray-plan li a.budget span {
+    background-position: -266px 0 !important;
+}
 /* */

@@ -87,6 +87,9 @@
         <li id="liCalender" class="item">
             <a class="source-sans-probold calendar" id="aApplyToCalender"><span></span>@Html.Raw("APPLY TO CALENDAR")</a>
         </li>
+        <li id="liBudgeting" class="item">
+            <a class="source-sans-probold budget" id="aBudgeting"><span></span>@Html.Raw("BUDGETING")</a>
+        </li>
     </ul>
 
 
@@ -168,6 +171,14 @@
                 }
                 else {
                     $('#Addactivityarea').show();
+                }
+            }
+            else if ('@ViewBag.PageTitle' == 'Budgeting') {
+                if (!$('#liBudgeting').hasClass('active')) {
+                    $('#liBudgeting').addClass('active');
+                    $('#aBudgeting').removeAttr('id');
+                    $('#aBudgeting').attr("href", "#");
+                    $('#aBudgeting').removeAttr('id');
                 }
             }
 

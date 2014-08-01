@@ -381,7 +381,9 @@
     $(document).on("click", "#LeftNavAddActivity", function (e) {
         displayconfirm('@Url.Action("Assortment", "Plan")');
     });
-
+    $(document).on("click", "#aBudgeting", function (e) {
+        displayconfirm('@Url.Action("Budgeting", "Plan")');
+     });
     //Dharmraj Start 7July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
     $("#header a").not("#ContactSupport").click(function () {
         //alert($(this).attr('href'));

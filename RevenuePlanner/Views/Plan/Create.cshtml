@@ -765,6 +765,9 @@
     $(document).on("click", "#LeftNavCampaigns", function (e) {
         displayconfirm('@Url.Action("Assortment", "Plan")');
     });
+    $(document).on("click", "#aBudgeting", function (e) {
+        displayconfirm('@Url.Action("Budgeting", "Plan")');
+    });
     function displayconfirm(strURL) {
         if (isDataChanged()) {
             $('#errorMessage').html("<strong>Error! </strong> <span id='spanMessageError'>You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a></span><a id='aclose' class='close confirmClose'>×</a>");

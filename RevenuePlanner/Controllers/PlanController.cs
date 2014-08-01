@@ -7320,6 +7320,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public ActionResult GetAllocatedBugetData(int PlanId)
         {
+            Sessions.PlanId = PlanId;
             //PlanId = 334;
             List<UserCustomRestrictionModel> lstUserCustomRestriction = Common.GetUserCustomRestriction();
             var campaign = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
@@ -7424,6 +7425,7 @@ namespace RevenuePlanner.Controllers
             BudgetMonth b = new BudgetMonth();
             BudgetMonth PercAllocated = new BudgetMonth();
             a = model.Where(m => m.ActivityType == ActivityPlan).Select(m => m.Month).SingleOrDefault();
+            //b = model.Where(m => m.ActivityType == ActivityPlan).Select(m => m.ParentMonth).SingleOrDefault();
             b.Jan = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Jan);
             b.Feb = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Feb);
             b.Mar = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Mar);
@@ -7493,12 +7495,14 @@ namespace RevenuePlanner.Controllers
             BudgetModel plan = model.Where(p => p.ActivityType == ActivityPlan).SingleOrDefault();
             if (plan != null)
             {
-                plan.ParentMonth = plan.Month;
+                plan.ParentMonth = new BudgetMonth();
+                plan.Allocated = plan.Budgeted;
                 plan.SumMonth = plan.Month;
                 List<BudgetModel> campaigns = model.Where(p => p.ActivityType == ActivityCampaign && p.ParentActivityId == plan.ActivityId).ToList();
                 BudgetMonth SumCampaign = new BudgetMonth();
                 foreach (BudgetModel c in campaigns)
                 {
+                    c.Allocated = c.Budgeted;
                     SumCampaign.Jan += c.Month.Jan;
                     SumCampaign.Feb += c.Month.Feb;
                     SumCampaign.Mar += c.Month.Mar;
@@ -7511,12 +7515,13 @@ namespace RevenuePlanner.Controllers
                     SumCampaign.Oct += c.Month.Oct;
                     SumCampaign.Nov += c.Month.Nov;
                     SumCampaign.Dec += c.Month.Dec;
-                    c.ParentMonth = plan.Month;
                     c.SumMonth = SumCampaign;
+                    c.ParentMonth = new BudgetMonth();
                     List<BudgetModel> programs = model.Where(p => p.ActivityType == ActivityProgram && p.ParentActivityId == c.ActivityId).ToList();
                     BudgetMonth SumProgram = new BudgetMonth();
                     foreach (BudgetModel p in programs)
                     {
+                        p.Allocated = p.Budgeted;
                         SumProgram.Jan += p.Month.Jan;
                         SumProgram.Feb += p.Month.Feb;
                         SumProgram.Mar += p.Month.Mar;
@@ -7529,8 +7534,45 @@ namespace RevenuePlanner.Controllers
                         SumProgram.Oct += p.Month.Oct;
                         SumProgram.Nov += p.Month.Nov;
                         SumProgram.Dec += p.Month.Dec;
-                        p.ParentMonth = c.Month;
                         p.SumMonth = SumProgram;
+                        p.ParentMonth = new BudgetMonth();
+                    }
+                }
+                //finding remaining
+                campaigns = model.Where(p => p.ActivityType == ActivityCampaign && p.ParentActivityId == plan.ActivityId).ToList();
+                SumCampaign = new BudgetMonth();
+                foreach (BudgetModel c in campaigns)
+                {
+                    
+                    c.ParentMonth.Jan = plan.Month.Jan - c.SumMonth.Jan;
+                    c.ParentMonth.Feb = plan.Month.Feb - c.Month.Feb;
+                    c.ParentMonth.Mar = plan.Month.Mar - c.Month.Mar;
+                    c.ParentMonth.Apr = plan.Month.Apr - c.Month.Apr;
+                    c.ParentMonth.May = plan.Month.May - c.Month.May;
+                    c.ParentMonth.Jun = plan.Month.Jun - c.Month.Jun;
+                    c.ParentMonth.Jul = plan.Month.Jul - c.Month.Jul;
+                    c.ParentMonth.Aug = plan.Month.Aug - c.Month.Aug;
+                    c.ParentMonth.Sep = plan.Month.Sep - c.Month.Sep;
+                    c.ParentMonth.Oct = plan.Month.Oct - c.Month.Oct;
+                    c.ParentMonth.Nov = plan.Month.Nov - c.Month.Nov;
+                    c.ParentMonth.Dec = plan.Month.Dec - c.Month.Dec;
+                    
+                    List<BudgetModel> programs = model.Where(p => p.ActivityType == ActivityProgram && p.ParentActivityId == c.ActivityId).ToList();
+                    BudgetMonth SumProgram = new BudgetMonth();
+                    foreach (BudgetModel p in programs)
+                    {
+                        p.ParentMonth.Jan = c.Month.Jan - p.SumMonth.Jan;
+                        p.ParentMonth.Feb = c.Month.Feb - p.Month.Feb;
+                        p.ParentMonth.Mar = c.Month.Mar - p.Month.Mar;
+                        p.ParentMonth.Apr = c.Month.Apr - p.Month.Apr;
+                        p.ParentMonth.May = c.Month.May - p.Month.May;
+                        p.ParentMonth.Jun = c.Month.Jun - p.Month.Jun;
+                        p.ParentMonth.Jul = c.Month.Jul - p.Month.Jul;
+                        p.ParentMonth.Aug = c.Month.Aug - p.Month.Aug;
+                        p.ParentMonth.Sep = c.Month.Sep - p.Month.Sep;
+                        p.ParentMonth.Oct = c.Month.Oct - p.Month.Oct;
+                        p.ParentMonth.Nov = c.Month.Nov - p.Month.Nov;
+                        p.ParentMonth.Dec = c.Month.Dec - p.Month.Dec;
                     }
                 }
             }
