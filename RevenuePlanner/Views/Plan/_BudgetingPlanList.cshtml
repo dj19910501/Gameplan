@@ -1,0 +1,32 @@
+﻿@model RevenuePlanner.Models.HomePlan
+<ul class="nav nav-tabs">
+    <li class="title-header source-sans-proregular bold font-size25px">
+        <form id="nl-form2" class="nl-form-plan-title without-margin plantitle">
+            <select id="dropdown-plan-title" data-default="0%" class="" maxlength="40">
+                <script>
+                    var plans = @Html.Raw(Json.Encode(Model.plans))
+                    populateNF(plans, "dropdown-plan-title");
+                </script>
+            </select>
+            <div class="nl-overlay"></div>
+            <script>
+                var nlform = new NLForm(document.getElementById('nl-form2'));
+            </script>
+        </form>
+    </li>
+    <li id="aAllocated" class="pull-right" onclick="TabLoad('aAllocated');">
+        <a href="#">Allocated</a>
+    </li>
+    <li id="aPlanned" class="pull-right" onclick="TabLoad('aPlanned');">
+        <a href="#">Planned</a>
+    </li>
+    @*<li id="aActuals" class="pull-right" onclick="TabLoad('aActuals');">
+        <a href="#">Actuals</a>
+    </li>*@
+</ul>
+<script src="~/Scripts/js/scripts.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        onClickPlanTitle();
+    });
+</script>

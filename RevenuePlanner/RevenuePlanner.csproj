@@ -214,6 +214,7 @@
     <Compile Include="Models\AudiencePlanModel.cs" />
     <Compile Include="Models\BaselineModel.cs" />
     <Compile Include="Models\BoostModel.cs" />
+    <Compile Include="Models\BudgetModel.cs" />
     <Compile Include="Models\ChangeLog_ViewModel.cs" />
     <Compile Include="Models\CustomRestrictionModel.cs" />
     <Compile Include="Models\ExtrenalServiceModel.cs" />
@@ -377,6 +378,8 @@
     <Content Include="Content\images\horizontal-shadow-right.png" />
     <Content Include="Content\images\icon-check-accordion.png" />
     <Content Include="Content\images\icon-check-fill.png" />
+    <Content Include="Content\images\icon-collapse.png" />
+    <Content Include="Content\images\icon-expand.png" />
     <Content Include="Content\images\icon-return-to-sign-in-blue.png" />
     <Content Include="Content\images\icons-accept-reject.png" />
     <Content Include="Content\images\icons-nav-blue-model-long.png" />
@@ -819,6 +822,10 @@
     <Content Include="Service References\BDSService\RevenuePlanner.BDSService.User.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
+    <Content Include="Views\Plan\Budgeting.cshtml" />
+    <Content Include="Views\Plan\_AllocatedBudget.cshtml" />
+    <Content Include="Views\Plan\_Budget.cshtml" />
+    <Content Include="Views\Plan\_BudgetingPlanList.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

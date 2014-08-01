@@ -7555,3 +7555,85 @@ a:hover, a:focus{text-decoration: none !important;}
     margin-right: 4px;
 }
 /*End By : Kalpesh Sharma : PL #605 : 07/29/2014*/
+/* ---------- Budget Planned ---------- */
+.budgetColums{display:block; padding:20px; padding-bottom:5px;}
+.budgetColums > div{/*display:table-cell;*/ /*float:left;*/ display:inline-block; border:1px solid #ccc; min-height:85px; padding:10px; vertical-align:top;}
+.plannedCost{min-width:410px; width:36%; margin-right:20px; padding-left:20px !important; padding-right:10px !important;}
+.budgetCompare{/*min-width:513px;*/ width:57%;}
+
+.budgetColums h3{font-weight:normal; padding-left:5px; margin:0; line-height:normal; padding-bottom:6px;}
+.plannedCost h3{padding-left:0;}
+.progressPlanned{min-width:200px; height:37px; background:#ccc; width:52%; margin-right:24px; float:left;}
+.progressPlanned .progress{width:75%; display:block; background:#3fa9f5; border-radius:0; height:100%;}
+.progressText{width:40%; float:left; font-size:26px; line-height:36px;}
+
+.budgetCompareInner{width:100%; height:45px;}
+.budgetCompareInner .mCSB_horizontal > .mCSB_container{margin-bottom:10px;}
+.budgetCompareInner .mCSB_horizontal.mCustomScrollBox > .mCSB_scrollTools{bottom:-10px;}
+.budgetMonth{width:66px; margin:0 14px; float:left; text-align:center;}
+.budgetMonth .title{padding-bottom:8px; line-height:22px;}
+.budgetMonth > div{background:#ccc; width:100%; float:left; height:10px;}
+.budgetMonth div span{background:#3fa9f5; display:block; height:10px; max-width:100%;}
+.budgetMonth div span.error{background:#ff0000; border:none !important;}
+/* Budget Table */
+.budget-table{min-width:967px; /*width:80%;*/ font-size:14px; padding-right:10px;}
+.budget-table table{width:100%; border-collapse:collapse;}
+.budget-table tbody{float:left; border-right:1px solid #CCC; border-top:1px solid #CCC;}
+.budget-table table tr{width:100%; display:inline-table;}
+.budget-table table tr.displayInline{}
+.budget-table table tr.displayRow{display:table-row;}
+.budget-table table td{border-bottom:1px solid #CCC; border-right:1px solid #CCC; text-align:center;}
+.budget-table table td a {
+    color: #3fa9f5;
+    display: inline-block;
+    /*overflow: hidden;*/
+    text-decoration: underline;
+    /*text-overflow: ellipsis;*/
+    white-space: nowrap;
+    line-height:14px;
+    padding-top:2px;
+
+}
+
+tbody.column1{width:25%; max-width:265px; overflow-x:auto; border-right:1px solid #808080; border-left:1px solid #CCC;}
+.budget-table tbody.column1 td{border-right:none;}
+tbody.column1 div{text-align:left; white-space:nowrap;}
+tbody.column2{overflow-x:auto; border-right:1px solid #808080; max-width:1067px;}
+tbody.column3{max-width:178px; width:20%; border-right:none;}
+
+.column1 div, .column2 div, .column3 div{min-height:24px; line-height:24px; text-align:center; padding-top:11px; padding-bottom:11px; position:relative; font-size:14px;}
+.column2 div, .column3 div{min-width:88px;}
+.column2 tr td:last-child{border-right:none;}
+
+.event-row{background:#e6e6e6;}
+.campaign-row{background:#f2f2f2;}
+.accordionClick{text-decoration:none; float:left; margin-top:5px; margin-right:6px; cursor:pointer; width:13px; height:13px; display:inline-block; text-align:center; background:url(../images/icon-expand.png) left top no-repeat;}
+.accordionClick.collapse {
+    background: url("../images/icon-collapse.png") no-repeat scroll left top rgba(0, 0, 0, 0);
+    width: 13px;
+}
+div.sub{display:none; transition: height 0.35s ease 0s; padding:0;}
+.campaign-row .open, .campaignLevel.open, .lineItem-lvl{border-bottom:1px solid #CCC;}
+
+.programLevel, .tacticLevel, .lineitemLevel{background:white;}
+
+.column1 .event-row div,
+.column1 .campaignLevel,
+.column1 .programLevel,
+.column1 .tacticLevel,
+.column1 .lineitemLevel
+{padding:11px 15px;}
+
+.column1 .programLevel{padding-left:50px;}
+.column1 .tacticLevel{padding-left:82px;}
+.column1 .lineitemLevel{padding-left:138px;}
+
+.program-lvl .programLevel, .tactic-lvl .tacticLevel, .lineItem-lvl .lineitemLevel{border-bottom:1px solid #ccc;}
+.program-lvl .programLevel:last-of-type, .tactic-lvl .tacticLevel:last-child, .lineItem-lvl .lineitemLevel:last-child{border-bottom:none;}
+
+.budget-table .error{color:#ff1e26; border:none !important; border-bottom:1px solid #ccc !important;}
+.budget-table .progressBar{height:2px !important; position:absolute; left:0; bottom:0; background:#3fa9f5; max-width:100%; margin:0; padding:0;}
+.progressBar.error{background:#ff1e26;}
+.campaignLevel.error{border-bottom:none !important;}
+.campaignLevel.open.error{ border-bottom:1px solid #ccc !important;}
+/* */

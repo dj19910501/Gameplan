@@ -7151,5 +7151,625 @@ namespace RevenuePlanner.Controllers
             return Json(new { }, JsonRequestBehavior.AllowGet);
         }
 
+        #region Budget Review Section
+
+        #region Constant variable declaration those needs to move to common
+        public const string Jan = "Y1";
+        public const string Feb = "Y2";
+        public const string Mar = "Y3";
+        public const string Apr = "Y4";
+        public const string May = "Y5";
+        public const string Jun = "Y6";
+        public const string Jul = "Y7";
+        public const string Aug = "Y8";
+        public const string Sep = "Y9";
+        public const string Oct = "Y10";
+        public const string Nov = "Y11";
+        public const string Dec = "Y12";
+        public const string ActivityPlan = "plan";
+        public const string ActivityCampaign = "campaign";
+        public const string ActivityProgram = "program";
+        public const string ActivityTactic = "tactic";
+        public const string ActivityLineItem = "lineitem";
+
+        public enum BudgetTab
+        {
+            Allocated = 0,
+            Planned = 1,
+            Actual = 2
+        }
+
+        #endregion
+
+        /// <summary>
+        /// View fro the initial render page 
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Budgeting()
+        {
+            ViewBag.ActiveMenu = Enums.ActiveMenu.Plan;
+            try
+            {
+                ViewBag.IsPlanCreateAuthorized = true; // AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+                // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(db.Plans.Where(a => a.PlanId == Sessions.PlanId).Select(a => a.Model.BusinessUnitId).FirstOrDefault());
+                if (!IsBusinessUnitEditable)
+                    return AuthorizeUserAttribute.RedirectToNoAccess();
+
+                ViewBag.PlanId = Sessions.PlanId;
+
+                #region Business Unit Ids
+                List<Guid> businessUnitIds = new List<Guid>();
+                var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
+                if (lstAllowedBusinessUnits.Count > 0)
+                    lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
+                if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnits.Count == 0)
+                {
+                    var clientBusinessUnit = db.BusinessUnits.Where(b => b.ClientId.Equals(Sessions.User.ClientId) && b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();
+                    businessUnitIds = clientBusinessUnit.ToList();
+                    ViewBag.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId);
+                    if (businessUnitIds.Count > 1)
+                        ViewBag.showBid = true;
+                    else
+                        ViewBag.showBid = false;
+                }
+                else
+                {
+                    if (lstAllowedBusinessUnits.Count > 0)
+                    {
+                        lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
+                        var lstClientBusinessUnits = Common.GetBussinessUnitIds(Sessions.User.ClientId);
+                        ViewBag.BusinessUnitIds = lstClientBusinessUnits.Where(a => businessUnitIds.Contains(Guid.Parse(a.Value)));
+                        if (businessUnitIds.Count > 1)
+                            ViewBag.showBid = true;
+                        else
+                            ViewBag.showBid = false;
+                    }
+                    else
+                    {
+                        businessUnitIds.Add(Sessions.User.BusinessUnitId);
+                        ViewBag.BusinessUnitIds = Sessions.User.BusinessUnitId;//Added by Nirav for Custom Dropdown - 388
+                        ViewBag.showBid = false;
+                    }
+                }
+                #endregion
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            return View();
+
+        }
+
+        /// <summary>
+        /// model for the allocated tab
+        /// </summary>
+        /// <param name="PlanId"></param>
+        /// <param name="budgetTab"></param>
+        /// <returns></returns>
+        public ActionResult GetAllocatedBugetData(int PlanId)
+        {
+            //PlanId = 334;
+            List<UserCustomRestrictionModel> lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            var campaign = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
+            var campaignobj = campaign.Select(p => new
+            {
+                id = p.PlanCampaignId,
+                title = p.Title,
+                description = p.Description,
+                isOwner = Sessions.User.UserId == p.CreatedBy ? 0 : 1,
+                Budget = p.Plan_Campaign_Budget.Select(b1 => new BudgetedValue { Period = b1.Period, Value = b1.Value }).ToList(),
+                programs = (db.Plan_Campaign_Program.Where(pcp => pcp.PlanCampaignId.Equals(p.PlanCampaignId) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp).ToList()).Select(pcpj => new
+                {
+                    id = pcpj.PlanProgramId,
+                    title = pcpj.Title,
+                    description = pcpj.Description,
+                    Budget = pcpj.Plan_Campaign_Program_Budget.Select(b1 => new BudgetedValue { Period = b1.Period, Value = b1.Value }).ToList(),
+                    isOwner = Sessions.User.UserId == pcpj.CreatedBy ? 0 : 1
+
+                }).Select(pcpj => pcpj).Distinct().OrderBy(pcpj => pcpj.id)
+            }).Select(p => p).Distinct().OrderBy(p => p.id);
+
+            var lstCampaignTmp = campaignobj.Select(c => new
+            {
+                id = c.id,
+                title = c.title,
+                description = c.description,
+                isOwner = c.isOwner,
+                Budget = c.Budget,
+                programs = c.programs.Select(p => new
+                {
+                    id = p.id,
+                    title = p.title,
+                    description = p.description,
+                    Budget = p.Budget,
+                    isOwner = p.isOwner
+                })
+            });
+
+            var lstCampaign = lstCampaignTmp.Select(c => new
+            {
+                id = c.id,
+                title = c.title,
+                description = c.description,
+                Budget = c.Budget,
+                isOwner = c.isOwner == 0 ? (c.programs.Any(p => p.isOwner == 1) ? 1 : 0) : 1,
+                programs = c.programs
+            });
+
+            string AllocatedBy = "default";
+            List<BudgetModel> model = new List<BudgetModel>();
+            BudgetModel obj;
+            Plan objPlan = db.Plans.Single(p => p.PlanId.Equals(PlanId));
+            int parentPlanId = 0, parentCampaignId = 0;
+            if (objPlan != null)
+            {
+                AllocatedBy = objPlan.AllocatedBy;
+                List<BudgetedValue> lst = (from bv in objPlan.Plan_Budget
+                                           select new BudgetedValue
+                                           {
+                                               Period = bv.Period,
+                                               Value = bv.Value
+                                           }).ToList();
+                obj = new BudgetModel();
+                obj.ActivityId = objPlan.PlanId;
+                obj.ActivityName = objPlan.Title;
+                obj.ActivityType = ActivityPlan;
+                obj.ParentActivityId = 0;
+                obj.Budgeted = objPlan.Budget;
+                obj.IsOwner = true;
+                obj = GetMonthWiseData(obj, lst);
+                model.Add(obj);
+                parentPlanId = objPlan.PlanId;
+                foreach (var c in lstCampaign)
+                {
+                    obj = new BudgetModel();
+                    obj.ActivityId = c.id;
+                    obj.ActivityName = c.title;
+                    obj.ActivityType = ActivityCampaign;
+                    obj.ParentActivityId = parentPlanId;
+                    obj.IsOwner = Convert.ToBoolean(c.isOwner);
+                    obj = GetMonthWiseData(obj, c.Budget);
+                    model.Add(obj);
+                    parentCampaignId = c.id;
+                    foreach (var p in c.programs)
+                    {
+                        obj = new BudgetModel();
+                        obj.ActivityId = p.id;
+                        obj.ActivityName = p.title;
+                        obj.ActivityType = ActivityProgram;
+                        obj.ParentActivityId = parentCampaignId;
+                        obj.IsOwner = Convert.ToBoolean(p.isOwner);
+                        obj = GetMonthWiseData(obj, p.Budget);
+                        model.Add(obj);
+                    }
+                }
+            }
+            ViewBag.AllocatedBy = AllocatedBy;
+            model = SetupValues(model);
+
+            //Month wise allocated for header 
+            BudgetMonth a = new BudgetMonth();
+            BudgetMonth b = new BudgetMonth();
+            BudgetMonth PercAllocated = new BudgetMonth();
+            a = model.Where(m => m.ActivityType == ActivityPlan).Select(m => m.Month).SingleOrDefault();
+            b.Jan = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Jan);
+            b.Feb = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Feb);
+            b.Mar = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Mar);
+            b.Apr = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Apr);
+            b.May = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.May);
+            b.Jun = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Jun);
+            b.Jul = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Jul);
+            b.Aug = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Aug);
+            b.Sep = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Sep);
+            b.Oct = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Oct);
+            b.Nov = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Nov);
+            b.Dec = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Dec);
+
+            PercAllocated.Jan = (a.Jan == 0 && b.Jan == 0) ? 0 : (a.Jan == 0 && b.Jan > 0) ? 101 : b.Jan / a.Jan * 100;
+            PercAllocated.Feb = (a.Feb == 0 && b.Feb == 0) ? 0 : (a.Feb == 0 && b.Feb > 0) ? 101 : b.Feb / a.Feb * 100;
+            PercAllocated.Mar = (a.Mar == 0 && b.Mar == 0) ? 0 : (a.Mar == 0 && b.Mar > 0) ? 101 : b.Mar / a.Mar * 100;
+            PercAllocated.Apr = (a.Apr == 0 && b.Apr == 0) ? 0 : (a.Apr == 0 && b.Apr > 0) ? 101 : b.Apr / a.Apr * 100;
+            PercAllocated.May = (a.May == 0 && b.May == 0) ? 0 : (a.May == 0 && b.May > 0) ? 101 : b.May / a.May * 100;
+            PercAllocated.Jun = (a.Jun == 0 && b.Jun == 0) ? 0 : (a.Jun == 0 && b.Jun > 0) ? 101 : b.Jun / a.Jun * 100;
+            PercAllocated.Jul = (a.Jul == 0 && b.Jul == 0) ? 0 : (a.Jul == 0 && b.Jul > 0) ? 101 : b.Jul / a.Jul * 100;
+            PercAllocated.Aug = (a.Aug == 0 && b.Aug == 0) ? 0 : (a.Aug == 0 && b.Aug > 0) ? 101 : b.Aug / a.Aug * 100;
+            PercAllocated.Sep = (a.Sep == 0 && b.Sep == 0) ? 0 : (a.Sep == 0 && b.Sep > 0) ? 101 : b.Sep / a.Sep * 100;
+            PercAllocated.Oct = (a.Oct == 0 && b.Oct == 0) ? 0 : (a.Oct == 0 && b.Oct > 0) ? 101 : b.Oct / a.Oct * 100;
+            PercAllocated.Nov = (a.Nov == 0 && b.Nov == 0) ? 0 : (a.Nov == 0 && b.Nov > 0) ? 101 : b.Nov / a.Nov * 100;
+            PercAllocated.Dec = (a.Dec == 0 && b.Dec == 0) ? 0 : (a.Dec == 0 && b.Dec > 0) ? 101 : b.Dec / a.Dec * 100;
+
+            ViewBag.PercAllocated = PercAllocated;
+
+            return PartialView("_AllocatedBudget", model);
+        }
+
+        /// <summary>
+        /// set monthly data for the object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="lst"></param>
+        /// <returns></returns>
+        private BudgetModel GetMonthWiseData(BudgetModel obj, List<BudgetedValue> lst)
+        {
+            BudgetMonth month = new BudgetMonth();
+            month.Jan = lst.Where(v => v.Period.ToUpper() == Jan).Select(v => v.Value).SingleOrDefault();
+            month.Feb = lst.Where(v => v.Period.ToUpper() == Feb).Select(v => v.Value).SingleOrDefault();
+            month.Mar = lst.Where(v => v.Period.ToUpper() == Mar).Select(v => v.Value).SingleOrDefault();
+            month.Apr = lst.Where(v => v.Period.ToUpper() == Apr).Select(v => v.Value).SingleOrDefault();
+            month.May = lst.Where(v => v.Period.ToUpper() == May).Select(v => v.Value).SingleOrDefault();
+            month.Jun = lst.Where(v => v.Period.ToUpper() == Jun).Select(v => v.Value).SingleOrDefault();
+            month.Jul = lst.Where(v => v.Period.ToUpper() == Jul).Select(v => v.Value).SingleOrDefault();
+            month.Aug = lst.Where(v => v.Period.ToUpper() == Aug).Select(v => v.Value).SingleOrDefault();
+            month.Sep = lst.Where(v => v.Period.ToUpper() == Sep).Select(v => v.Value).SingleOrDefault();
+            month.Oct = lst.Where(v => v.Period.ToUpper() == Oct).Select(v => v.Value).SingleOrDefault();
+            month.Nov = lst.Where(v => v.Period.ToUpper() == Nov).Select(v => v.Value).SingleOrDefault();
+            month.Dec = lst.Where(v => v.Period.ToUpper() == Dec).Select(v => v.Value).SingleOrDefault();
+            obj.Month = month;
+
+            obj.Allocated = lst.Sum(v => v.Value);
+
+            return obj;
+        }
+
+        /// <summary>
+        /// set other data for model
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        private List<BudgetModel> SetupValues(List<BudgetModel> model)
+        {
+            BudgetModel plan = model.Where(p => p.ActivityType == ActivityPlan).SingleOrDefault();
+            if (plan != null)
+            {
+                plan.ParentMonth = plan.Month;
+                plan.SumMonth = plan.Month;
+                List<BudgetModel> campaigns = model.Where(p => p.ActivityType == ActivityCampaign && p.ParentActivityId == plan.ActivityId).ToList();
+                BudgetMonth SumCampaign = new BudgetMonth();
+                foreach (BudgetModel c in campaigns)
+                {
+                    SumCampaign.Jan += c.Month.Jan;
+                    SumCampaign.Feb += c.Month.Feb;
+                    SumCampaign.Mar += c.Month.Mar;
+                    SumCampaign.Apr += c.Month.Apr;
+                    SumCampaign.May += c.Month.May;
+                    SumCampaign.Jun += c.Month.Jun;
+                    SumCampaign.Jul += c.Month.Jul;
+                    SumCampaign.Aug += c.Month.Aug;
+                    SumCampaign.Sep += c.Month.Sep;
+                    SumCampaign.Oct += c.Month.Oct;
+                    SumCampaign.Nov += c.Month.Nov;
+                    SumCampaign.Dec += c.Month.Dec;
+                    c.ParentMonth = plan.Month;
+                    c.SumMonth = SumCampaign;
+                    List<BudgetModel> programs = model.Where(p => p.ActivityType == ActivityProgram && p.ParentActivityId == c.ActivityId).ToList();
+                    BudgetMonth SumProgram = new BudgetMonth();
+                    foreach (BudgetModel p in programs)
+                    {
+                        SumProgram.Jan += p.Month.Jan;
+                        SumProgram.Feb += p.Month.Feb;
+                        SumProgram.Mar += p.Month.Mar;
+                        SumProgram.Apr += p.Month.Apr;
+                        SumProgram.May += p.Month.May;
+                        SumProgram.Jun += p.Month.Jun;
+                        SumProgram.Jul += p.Month.Jul;
+                        SumProgram.Aug += p.Month.Aug;
+                        SumProgram.Sep += p.Month.Sep;
+                        SumProgram.Oct += p.Month.Oct;
+                        SumProgram.Nov += p.Month.Nov;
+                        SumProgram.Dec += p.Month.Dec;
+                        p.ParentMonth = c.Month;
+                        p.SumMonth = SumProgram;
+                    }
+                }
+            }
+
+            return model;
+        }
+
+        /// <summary>
+        /// Get the plan list for the selected business unit
+        /// </summary>
+        /// <param name="Bid"></param>
+        /// <returns></returns>
+        public ActionResult BudgetPlanList(string Bid)
+        {
+            HomePlan objHomePlan = new HomePlan();
+            //objHomePlan.IsDirector = Sessions.IsDirector;
+            List<SelectListItem> planList;
+            if (Bid == "false")
+            {
+                planList = Common.GetPlan().Select(p => new SelectListItem() { Text = p.Title, Value = p.PlanId.ToString() }).OrderBy(p => p.Text).ToList();
+                if (planList.Count > 0)
+                {
+                    var objexists = planList.Where(p => p.Value == Sessions.PlanId.ToString()).ToList();
+                    if (objexists.Count != 0)
+                    {
+                        planList.Single(p => p.Value.Equals(Sessions.PlanId.ToString())).Selected = true;
+                    }
+                    /*changed by Nirav for plan consistency on 14 apr 2014*/
+                    Sessions.BusinessUnitId = Common.GetPlan().Where(m => m.PlanId == Sessions.PlanId).Select(m => m.Model.BusinessUnitId).FirstOrDefault();
+                    if (!Common.IsPlanPublished(Sessions.PlanId))
+                    {
+                        string planPublishedStatus = Enums.PlanStatus.Published.ToString();
+                        var activeplan = db.Plans.Where(p => p.PlanId == Sessions.PlanId && p.IsDeleted == false && p.Status == planPublishedStatus).ToList();
+                        if (activeplan.Count > 0)
+                        {
+                            Sessions.PublishedPlanId = Sessions.PlanId;
+                        }
+                        else
+                        {
+                            Sessions.PublishedPlanId = 0;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                /*changed by Nirav for plan consistency on 14 apr 2014*/
+                Guid bId = new Guid(Bid);
+                if (Sessions.BusinessUnitId == bId)
+                {
+                    bId = Common.GetPlan().Where(m => m.PlanId == Sessions.PlanId).Select(m => m.Model.BusinessUnitId).FirstOrDefault();
+                }
+                Sessions.BusinessUnitId = bId;
+                planList = Common.GetPlan().Where(s => s.Model.BusinessUnitId == bId).Select(p => new SelectListItem() { Text = p.Title, Value = p.PlanId.ToString() }).OrderBy(p => p.Text).ToList();
+                if (planList.Count > 0)
+                {
+                    var objexists = planList.Where(p => p.Value == Sessions.PlanId.ToString()).ToList();
+                    if (objexists.Count != 0)
+                    {
+                        planList.Single(p => p.Value.Equals(Sessions.PlanId.ToString())).Selected = true;
+                    }
+                    else
+                    {
+                        planList.FirstOrDefault().Selected = true;
+                        int planID = 0;
+                        int.TryParse(planList.Select(s => s.Value).FirstOrDefault(), out planID);
+                        Sessions.PlanId = planID;
+                        if (!Common.IsPlanPublished(Sessions.PlanId))
+                        {
+                            string planPublishedStatus = Enums.PlanStatus.Published.ToString();
+                            var activeplan = db.Plans.Where(p => p.PlanId == Sessions.PlanId && p.IsDeleted == false && p.Status == planPublishedStatus).ToList();
+                            if (activeplan.Count > 0)
+                            {
+                                Sessions.PublishedPlanId = planID;
+                            }
+                            else
+                            {
+                                Sessions.PublishedPlanId = 0;
+                            }
+                        }
+                    }
+                }
+            }
+            objHomePlan.plans = planList;
+
+            return PartialView("_BudgetingPlanList", objHomePlan);
+        }
+
+        /// <summary>
+        /// Set the model for planned and actuals
+        /// </summary>
+        /// <param name="PlanId"></param>
+        /// <param name="budgetTab"></param>
+        /// <returns></returns>
+        public ActionResult GetBudgetedData(int PlanId, BudgetTab budgetTab = BudgetTab.Planned)
+        {
+            //PlanId = 443;
+            List<UserCustomRestrictionModel> lstUserCustomRestriction = Common.GetUserCustomRestriction();
+            var campaign = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
+            var campaignobj = campaign.Select(p => new
+            {
+                id = p.PlanCampaignId,
+                title = p.Title,
+                description = p.Description,
+                isOwner = Sessions.User.UserId == p.CreatedBy ? 0 : 1,
+                Budget = p.Plan_Campaign_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(),
+                programs = (db.Plan_Campaign_Program.Where(pcp => pcp.PlanCampaignId.Equals(p.PlanCampaignId) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp).ToList()).Select(pcpj => new
+                {
+                    id = pcpj.PlanProgramId,
+                    title = pcpj.Title,
+                    description = pcpj.Description,
+                    isOwner = Sessions.User.UserId == pcpj.CreatedBy ? 0 : 1,
+                    Budget = pcpj.Plan_Campaign_Program_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(),
+                    tactic = (db.Plan_Campaign_Program_Tactic.Where(pcp => pcp.PlanProgramId.Equals(pcpj.PlanProgramId) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp).ToList()).Select(pctj => new
+                    {
+                        id = pctj.PlanTacticId,
+                        title = pctj.Title,
+                        description = pctj.Description,
+                        isOwner = Sessions.User.UserId == pctj.CreatedBy ? 0 : 1,
+                        Budget = pctj.Plan_Campaign_Program_Tactic_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(),
+                        lineitems = (db.Plan_Campaign_Program_Tactic_LineItem.Where(pcp => pcp.PlanTacticId.Equals(pctj.PlanTacticId) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp).ToList()).Select(pclj => new
+                        {
+                            id = pclj.PlanLineItemId,
+                            title = pclj.Title,
+                            description = pclj.Description,
+                            isOwner = Sessions.User.UserId == pclj.CreatedBy ? 0 : 1,
+                            Budget = pclj.Plan_Campaign_Program_Tactic_LineItem_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(),
+                        }).Select(pclj => pclj).Distinct().OrderBy(pclj => pclj.id)
+                    }).Select(pctj => pctj).Distinct().OrderBy(pctj => pctj.id)
+                }).Select(pcpj => pcpj).Distinct().OrderBy(pcpj => pcpj.id)
+            }).Select(p => p).Distinct().OrderBy(p => p.id);
+
+            string AllocatedBy = "default";
+            List<BudgetModel> model = new List<BudgetModel>();
+            BudgetModel obj;
+            Plan objPlan = db.Plans.Single(p => p.PlanId.Equals(PlanId));
+            int parentPlanId = 0, parentCampaignId = 0, parentProgramId = 0, parentTacticId = 0;
+            if (objPlan != null)
+            {
+                AllocatedBy = objPlan.AllocatedBy;
+                List<BudgetedValue> lst = (from bv in objPlan.Plan_Budget
+                                           select new BudgetedValue
+                                           {
+                                               Period = bv.Period,
+                                               Value = bv.Value
+                                           }).ToList();
+                obj = new BudgetModel();
+                obj.ActivityId = objPlan.PlanId;
+                obj.ActivityName = objPlan.Title;
+                obj.ActivityType = ActivityPlan;
+                obj.ParentActivityId = 0;
+                obj.Budgeted = objPlan.Budget;
+                obj.IsOwner = true;
+                obj = GetMonthWiseData(obj, lst);
+                model.Add(obj);
+                parentPlanId = objPlan.PlanId;
+                foreach (var c in campaignobj)
+                {
+                    obj = new BudgetModel();
+                    obj.ActivityId = c.id;
+                    obj.ActivityName = c.title;
+                    obj.ActivityType = ActivityCampaign;
+                    obj.ParentActivityId = parentPlanId;
+                    obj.IsOwner = Convert.ToBoolean(c.isOwner);
+                    obj = GetMonthWiseData(obj, c.Budget);
+                    model.Add(obj);
+                    parentCampaignId = c.id;
+                    foreach (var p in c.programs)
+                    {
+                        obj = new BudgetModel();
+                        obj.ActivityId = p.id;
+                        obj.ActivityName = p.title;
+                        obj.ActivityType = ActivityProgram;
+                        obj.ParentActivityId = parentCampaignId;
+                        obj.IsOwner = Convert.ToBoolean(p.isOwner);
+                        obj = GetMonthWiseData(obj, p.Budget);
+                        model.Add(obj);
+                        parentProgramId = p.id;
+                        foreach (var t in p.tactic)
+                        {
+                            obj = new BudgetModel();
+                            obj.ActivityId = t.id;
+                            obj.ActivityName = t.title;
+                            obj.ActivityType = ActivityTactic;
+                            obj.ParentActivityId = parentProgramId;
+                            obj.IsOwner = Convert.ToBoolean(t.isOwner);
+                            obj = GetMonthWiseData(obj, t.Budget);
+                            model.Add(obj);
+                            parentTacticId = t.id;
+                            foreach (var l in t.lineitems)
+                            {
+                                obj = new BudgetModel();
+                                obj.ActivityId = l.id;
+                                obj.ActivityName = l.title;
+                                obj.ActivityType = ActivityLineItem;
+                                obj.ParentActivityId = parentTacticId;
+                                obj.IsOwner = Convert.ToBoolean(l.isOwner);
+                                obj = GetMonthWiseData(obj, l.Budget);
+                                obj.ParentMonth = obj.Month;
+                                model.Add(obj);
+                            }
+                        }
+                    }
+                }
+            }
+            model = ManageLineItems(model);
+            ViewBag.AllocatedBy = AllocatedBy;
+            model = CalculateBottomUp(model, ActivityTactic, ActivityLineItem);
+            model = CalculateBottomUp(model, ActivityProgram, ActivityTactic);
+            model = CalculateBottomUp(model, ActivityCampaign, ActivityProgram);
+            model = CalculateBottomUp(model, ActivityPlan, ActivityCampaign);
+
+            BudgetMonth a = new BudgetMonth();
+            BudgetMonth child = new BudgetMonth();
+            BudgetMonth PercAllocated = new BudgetMonth();
+            child = model.Where(m => m.ActivityType == ActivityPlan).Select(m => m.Month).SingleOrDefault();
+            a = model.Where(m => m.ActivityType == ActivityPlan).Select(m => m.ParentMonth).SingleOrDefault();
+
+
+            PercAllocated.Jan = (a.Jan == 0 && child.Jan == 0) ? 0 : (a.Jan == 0 && child.Jan > 0) ? 101 : child.Jan / a.Jan * 100;
+            PercAllocated.Feb = (a.Feb == 0 && child.Feb == 0) ? 0 : (a.Feb == 0 && child.Feb > 0) ? 101 : child.Feb / a.Feb * 100;
+            PercAllocated.Mar = (a.Mar == 0 && child.Mar == 0) ? 0 : (a.Mar == 0 && child.Mar > 0) ? 101 : child.Mar / a.Mar * 100;
+            PercAllocated.Apr = (a.Apr == 0 && child.Apr == 0) ? 0 : (a.Apr == 0 && child.Apr > 0) ? 101 : child.Apr / a.Apr * 100;
+            PercAllocated.May = (a.May == 0 && child.May == 0) ? 0 : (a.May == 0 && child.May > 0) ? 101 : child.May / a.May * 100;
+            PercAllocated.Jun = (a.Jun == 0 && child.Jun == 0) ? 0 : (a.Jun == 0 && child.Jun > 0) ? 101 : child.Jun / a.Jun * 100;
+            PercAllocated.Jul = (a.Jul == 0 && child.Jul == 0) ? 0 : (a.Jul == 0 && child.Jul > 0) ? 101 : child.Jul / a.Jul * 100;
+            PercAllocated.Aug = (a.Aug == 0 && child.Aug == 0) ? 0 : (a.Aug == 0 && child.Aug > 0) ? 101 : child.Aug / a.Aug * 100;
+            PercAllocated.Sep = (a.Sep == 0 && child.Sep == 0) ? 0 : (a.Sep == 0 && child.Sep > 0) ? 101 : child.Sep / a.Sep * 100;
+            PercAllocated.Oct = (a.Oct == 0 && child.Oct == 0) ? 0 : (a.Oct == 0 && child.Oct > 0) ? 101 : child.Oct / a.Oct * 100;
+            PercAllocated.Nov = (a.Nov == 0 && child.Nov == 0) ? 0 : (a.Nov == 0 && child.Nov > 0) ? 101 : child.Nov / a.Nov * 100;
+            PercAllocated.Dec = (a.Dec == 0 && child.Dec == 0) ? 0 : (a.Dec == 0 && child.Dec > 0) ? 101 : child.Dec / a.Dec * 100;
+
+            ViewBag.PercAllocated = PercAllocated;
+            return PartialView("_Budget", model);
+        }
+
+        /// <summary>
+        /// Calculate the bottom up planeed cost
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="ParentActivityType"></param>
+        /// <param name="ChildActivityType"></param>
+        /// <returns></returns>
+        public List<BudgetModel> CalculateBottomUp(List<BudgetModel> model, string ParentActivityType, string ChildActivityType)
+        {
+            foreach (BudgetModel l in model.Where(l => l.ActivityType == ParentActivityType))
+            {
+                BudgetMonth parent = new BudgetMonth();
+                parent.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Jan) ?? 0;
+                parent.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Feb) ?? 0;
+                parent.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Mar) ?? 0;
+                parent.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Apr) ?? 0;
+                parent.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.May) ?? 0;
+                parent.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Jun) ?? 0;
+                parent.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Jul) ?? 0;
+                parent.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Aug) ?? 0;
+                parent.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Sep) ?? 0;
+                parent.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Oct) ?? 0;
+                parent.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Nov) ?? 0;
+                parent.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Dec) ?? 0;
+                model.Where(m => m.ActivityId == l.ActivityId).SingleOrDefault().ParentMonth = model.Where(m => m.ActivityId == l.ActivityId).SingleOrDefault().Month;
+                model.Where(m => m.ActivityId == l.ActivityId).SingleOrDefault().Month = parent;
+                //l.ParentMonth = parent;
+            }
+            return model;
+        }
+
+        /// <summary>
+        /// Manage lines items if cost is allocated to other
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        private List<BudgetModel> ManageLineItems(List<BudgetModel> model)
+        {
+            foreach (BudgetModel l in model.Where(l => l.ActivityType == ActivityTactic))
+            {
+                BudgetMonth lineDiff = new BudgetMonth();
+                List<BudgetModel> lines = model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId).ToList();
+                BudgetModel otherLine = lines.Where(ol => ol.ActivityName == "Other").SingleOrDefault();
+                lines = lines.Where(ol => ol.ActivityName != "Other").ToList();
+                if (otherLine != null)
+                {
+                    if (lines.Count > 0)
+                    {
+                        lineDiff.Jan = l.Month.Jan - lines.Sum(lmon => (double?)lmon.Month.Jan) ?? 0;
+                        lineDiff.Feb = l.Month.Feb - lines.Sum(lmon => (double?)lmon.Month.Feb) ?? 0;
+                        lineDiff.Mar = l.Month.Mar - lines.Sum(lmon => (double?)lmon.Month.Mar) ?? 0;
+                        lineDiff.Apr = l.Month.Apr - lines.Sum(lmon => (double?)lmon.Month.Apr) ?? 0;
+                        lineDiff.May = l.Month.May - lines.Sum(lmon => (double?)lmon.Month.May) ?? 0;
+                        lineDiff.Jun = l.Month.Jun - lines.Sum(lmon => (double?)lmon.Month.Jun) ?? 0;
+                        lineDiff.Jul = l.Month.Jul - lines.Sum(lmon => (double?)lmon.Month.Jul) ?? 0;
+                        lineDiff.Aug = l.Month.Aug - lines.Sum(lmon => (double?)lmon.Month.Aug) ?? 0;
+                        lineDiff.Sep = l.Month.Sep - lines.Sum(lmon => (double?)lmon.Month.Sep) ?? 0;
+                        lineDiff.Oct = l.Month.Oct - lines.Sum(lmon => (double?)lmon.Month.Oct) ?? 0;
+                        lineDiff.Nov = l.Month.Nov - lines.Sum(lmon => (double?)lmon.Month.Nov) ?? 0;
+                        lineDiff.Dec = l.Month.Dec - lines.Sum(lmon => (double?)lmon.Month.Dec) ?? 0;
+
+                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == "Other").SingleOrDefault().Month = lineDiff;
+                    }
+                    else
+                    {
+                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == "Other").SingleOrDefault().Month = l.Month;
+                    }
+                }
+            }
+            return model;
+        }
+
+        #endregion
+
     }
 }

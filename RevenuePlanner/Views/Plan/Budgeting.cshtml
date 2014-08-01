@@ -1,0 +1,119 @@
+﻿@using RevenuePlanner.Helpers
+@{
+    ViewBag.Title = ViewBag.ActiveMenu;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Budgeting";
+    ViewBag.PageTitle = "Budgeting";
+    bool showBid = ViewBag.showBid;
+    int CurrentPlanId = ViewBag.PlanId;
+    bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
+}
+@section Sidebar
+{
+    @Html.Partial("~/Views/Plan/_plan.cshtml")
+}
+@section nlFormContent{
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
+
+}
+<link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.mCustomScrollbar.css")" type="text/css" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.slimscroll.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/slimScrollHorizontal.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.mCustomScrollbar.concat.min.js")"></script>
+ 
+<div class="budgetColums">
+    <div class="plannedCost">
+        <h3 class="source-sans-proregular" id="planCostTitle"></h3>
+        <div class="progressPlanned">
+            <div id="divPlanProgress" class="progress"></div>
+        </div>
+        <div class="progressText source-sans-proregular" id="planCostValue"></div>
+        <div style="clear: both;"></div>
+    </div>
+    <div class="budgetCompare">
+        <h3 class="source-sans-proregular" id="monthCompareTitle"></h3>
+        <div class="budgetCompareInner" id="monthContainer">
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+</div>
+@{
+    if (showBid == true)
+    {
+    <span class="selectBox dropdown-businessUnit" id="dropdown-business-unit">
+        @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId != Guid.Empty)
+        {
+            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text", Sessions.BusinessUnitId))
+        }
+        else
+        {
+            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text"))
+        }
+    </span>
+    }
+}
+
+<div id="DivloadPlan"></div>
+<div id="divTabData" style="margin-top:20px;"></div>
+<script>
+    var CurrentPlanId = '@CurrentPlanId';
+    var Bid;
+    var currentTab = 'aAllocated';
+    $(document).ready(function () {
+            $(".selectBox select").selectbox();
+            LoadPlanBuBusinessUnit($('#ddlBusinessUnit').val());
+        //('.nav-tabs').css('margin-bottom', '25px;')
+    });
+
+    $('#ddlBusinessUnit').change(function () {
+        Bid = $('#ddlBusinessUnit').val();
+        LoadPlanBuBusinessUnit(Bid);
+    });
+    function TabLoad(sender) {
+        //alert(currentTab);
+        currentTab = sender;
+        $('.pull-right').removeClass('active');
+        $('#' + sender).addClass('active');
+        if (currentTab == 'aAllocated') {
+            $('#divTabData').load('@Url.Action("GetAllocatedBugetData", "Plan")' + '?PlanId=' + CurrentPlanId);
+        }
+        else if (currentTab == 'aPlanned') {
+            $('#divTabData').load('@Url.Action("GetBudgetedData", "Plan")' + '?PlanId=' + CurrentPlanId);
+        }
+        else if (sender == 'aActuals') {
+        }
+    }
+    
+    function LoadPlanBuBusinessUnit(Bid) {
+        $('#DivloadPlan').load('@Url.Action("BudgetPlanList", "Plan")' + '?Bid=' + Bid, function () { TabLoad(currentTab); });
+    }
+    function populateNF(items, id) {
+        var $dropdown = $("#" + id);
+        var $html = '';
+        if (items.length > 0) {
+            $.each(items, function (index, plan) {
+                if (plan.Selected) {
+                    $html += '<option value="' + plan.Value + '" selected>' + plan.Text + '</option>';
+                    CurrentPlanId = plan.Value;
+                } else {
+                    $html += '<option value="' + plan.Value + '">' + plan.Text + '</option>';
+                }
+            });
+        } else {
+            $html += '<option value=' + 0 + ' selected>' + "Plan Title" + '</option>';
+            CurrentPlanId = 0;
+        }
+        $dropdown.append($html);
+    }
+    function onClickPlanTitle() {
+        $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+            CurrentPlanId = $(this).attr('value');
+            $("#CurrentPlanId").val(CurrentPlanId);
+            TabLoad(currentTab);
+        });
+    }
+
+</script>
