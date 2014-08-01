@@ -10,6 +10,9 @@
         IsBudgetAllocated = true;
     }
     bool IsOtherLineItem = Model.IsOtherLineItem;
+    string tacticCost = Convert.ToString(ViewBag.tacticCost);
+    string totalLineItemCost = Convert.ToString(ViewBag.totalLineItemCost);
+    string otherLineItemCost = Convert.ToString(ViewBag.otherLineItemCost);
 }
 
 <div class="head">
@@ -72,6 +75,9 @@
             @Html.HiddenFor(model => model.IsOtherLineItem, new { id = "hdnIsOtherLineItem" })
             @Html.Hidden("hdnIsBudgetAllocated", IsBudgetAllocated)
             @Html.Hidden("hdnRedirect", (bool)ViewBag.RedirectType, new { id = "hdnRedirectType" })
+            @Html.HiddenFor(model => model.Cost, new { id = "hdnOldLineitemCost" })
+            @Html.Hidden("hdnTacticCost", tacticCost)
+            @Html.Hidden("hdnTotalLineItemCost", totalLineItemCost)
 
             <div class="content-row">
                 <label class="t_title">Line Item Title</label>
@@ -137,7 +143,7 @@
                 </div>
                 <div class="content-row alternate">
                     <label class="padding-left4" title="Cost">Other Line Item Cost</label>
-                    @Html.TextBox("txtOtherLineItemCost", "$0", new { @class = "currency_dollar margin-top3px", id = "txtOtherLineItemCost", @readonly = "true" })
+                    @Html.TextBox("txtOtherLineItemCost", otherLineItemCost, new { @class = "currency_dollar margin-top3px", id = "txtOtherLineItemCost", @readonly = "true" })
                 </div>
             }
         </div>
@@ -149,7 +155,7 @@
                 {
                     <div class="budget-section">
                         <div class="budget-head clearfix">
-                            <p>Budget Allocation</p>
+                            <p>Cost Allocation</p>
                             <a href="javascript:void(0)">- Collapse</a>
                         </div>
                         <div class="budget-collapse">
@@ -220,6 +226,9 @@
         $("span.tool-tip").tooltip();
 
         $("#Title").focus();
+        if (typeof $("#txtOtherLineItemCost").val() != "undefined") {
+            $("#txtOtherLineItemCost").val(FormatCommasBudget($("#txtOtherLineItemCost").val(), false, true));
+        }
 
         $(".alert").find(".close").on("click", function (e) {
 
@@ -456,6 +465,27 @@
         }
 
         $("#txtLineItemCost").keyup(function () {
+
+            $("#txtLineItemCost").attr('title', $("#txtLineItemCost").val());
+            var LineitemCostValue = ReplaceCC($("#txtLineItemCost").val());
+            var OldLineitemCostValue = $("#hdnOldLineitemCost").val();
+            var totalLineItemCost = $("#hdnTotalLineItemCost").val();
+            var differenceVal = parseInt(totalLineItemCost) - parseInt(OldLineitemCostValue);
+
+            var newAllLineItemCost = parseInt(differenceVal) + parseInt(LineitemCostValue);
+            var newDifferenceCost = parseInt($("#hdnTacticCost").val()) - newAllLineItemCost;
+
+            if (newDifferenceCost > 0) {
+                $("#txtOtherLineItemCost").val(FormatCommasBudget(newDifferenceCost.toString(), false, true));
+                $("#txtOtherLineItemCost").attr('title', $("#txtOtherLineItemCost").val());
+            }
+            else {
+                $("#txtOtherLineItemCost").val("$0");
+                $("#txtOtherLineItemCost").attr('title', $("#txtOtherLineItemCost").val());
+            }
+
+            $("#hdnTotalLineItemCost").val(newAllLineItemCost);
+            $("#hdnOldLineitemCost").val(LineitemCostValue);
             $("#lblTotalLineItemCost").html($("#txtLineItemCost").val());
         });
 

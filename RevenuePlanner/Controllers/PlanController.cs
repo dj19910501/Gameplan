@@ -4074,6 +4074,16 @@ namespace RevenuePlanner.Controllers
                 return null;
             }
 
+            double totalLineItemCost = pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
+            double TacticCost = pcpt.Cost;
+            double diffCost = TacticCost - totalLineItemCost;
+            double otherLineItemCost = diffCost < 0 ? 0 : diffCost;
+
+            ViewBag.tacticCost = TacticCost;
+            ViewBag.totalLineItemCost = totalLineItemCost;
+            ViewBag.otherLineItemCost = otherLineItemCost;
+
+
             Plan_Campaign_Program_Tactic_LineItemModel pcptlm = new Plan_Campaign_Program_Tactic_LineItemModel();
             pcptlm.PlanTacticId = id;
             ViewBag.IsOwner = true;
@@ -4158,6 +4168,15 @@ namespace RevenuePlanner.Controllers
             ViewBag.Campaign = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title);
             ViewBag.RedirectType = false;
 
+            double totalLineItemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == pcptl.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
+            double TacticCost = pcptl.Cost;
+            double diffCost = TacticCost - totalLineItemCost;
+            double otherLineItemCost = diffCost < 0 ? 0 : diffCost;
+
+            ViewBag.tacticCost = TacticCost;
+            ViewBag.totalLineItemCost = totalLineItemCost;
+            ViewBag.otherLineItemCost = otherLineItemCost;
+
             pcptlm.PlanLineItemId = pcptl.PlanLineItemId;
             pcptlm.PlanTacticId = pcptl.PlanTacticId;
             pcptlm.LineItemTypeId = pcptl.LineItemTypeId == null ? 0 : Convert.ToInt32(pcptl.LineItemTypeId);
@@ -4216,7 +4235,7 @@ namespace RevenuePlanner.Controllers
                     remainingMonthlyCost = (lstTacticCost.SingleOrDefault(p => p.Period == m) == null ? 0 : lstTacticCost.SingleOrDefault(p => p.Period == m).Value) - (lstLineItemCost.Where(c => c.Period == m).Sum(c => c.Value))
                 });
 
-                double totalLoneitemCost = lstAllLineItem.Where(l => l.LineItemTypeId != null && l.IsDeleted == false).Sum(l => l.Cost);
+                double totalLoneitemCost = lstAllLineItem.Where(l => l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
                 double TacticCost = objPlanTactic.Cost;
                 double diffCost = TacticCost - totalLoneitemCost;
                 double otherLineItemCost = diffCost < 0 ? 0 : diffCost;
