@@ -58,7 +58,7 @@
                         if (strPlanId == "" || strPlanId == "0")//if (strPlanId == "" || strPlanId == "0" || Model.IsDirector)
                         {
                             @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], new { datadefault = "SelectModel", @class = "myValue calculateBudget", placeholder = @Model.ModelId })
-                            @Html.HiddenFor(model => model.ModelTitle)
+                            <span id="ModelTitle" class="source-sans-proregular"></span>
                         }
                         else
                         {      
@@ -674,7 +674,7 @@
             if ($('#ModelId').val() != '') {
                 modelId = $('#ModelId').val();
                 $('#averageDealSize').html("0");
-                $('#ModelTitle').val($('#ModelId').prev().find('.nl-field-toggle').html());
+                $('#ModelTitle').html($('#ModelId').prev().find('.nl-field-toggle').html());
             }
 
             if (goalType != '')
