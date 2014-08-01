@@ -28,6 +28,7 @@
                 
                     <ul class="dropdown-menu">
                         @*<li><a id="spanDuplicate">Duplicate Tactic</a></li>*@
+                         <li><a id="CloneLineItemTactic">Duplicate Tactic</a></li>
                         @if ((bool)ViewBag.IsOwner && !(bool)ViewBag.IsCreated)
                         {
                             <li><a id="deleteTactic">Delete Tactic</a></li>                        
@@ -381,6 +382,35 @@
             }
 
 
+        });
+
+        //Added : By Kalpesh Sharma Ticket #648 Cloning icon for tactics with allocation
+        $("#CloneLineItemTactic").click(function () {
+            var idLineitem = $("#hdnPlanLineItemId").val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/Clone")',
+                    data: {
+                        CloneType: 'LineItem',
+                        Id: idLineitem,
+                        title: '@Model.Title'
+                    },
+                    success: function (data) {
+                        if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                            window.location = '@Url.Content("~/Login/Index")';
+                        }
+                        else {
+                            if (data.redirect) {
+                                window.location.href = data.redirect;
+                                return;
+                            }
+                            if (data.errormsg) {
+                                alert(data.errormsg);
+                                return;
+                            }
+                        }
+                    }
+                });
         });
 
         $("#deleteTactic").click(function () {
