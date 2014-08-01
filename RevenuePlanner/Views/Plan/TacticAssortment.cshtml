@@ -380,6 +380,36 @@
             $(this).remove();
         });
 
+        //Added : By Kalpesh Sharma Ticket #648 Cloning icon for tactics with allocation
+        $("#tacticClone").click(function () {
+            var idPlanTactic = $("#hdnPlanTacticId").val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/Clone")',
+                data: {
+                    CloneType: 'Tactic',
+                    Id: idPlanTactic,
+                    title: '@Model.Title'
+                },
+                success: function (data) {
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
+                    }
+                    else {
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                            return;
+                        }
+                        if (data.errormsg) {
+                            alert(data.errormsg);
+                            return;
+                        }
+                    }
+                }
+            });
+        });
+
+
         $("#spanDuplicate").click(function () {
             CheckUserSession("#spanDuplicate", true);
             if (reason == 'user') {
@@ -752,37 +782,6 @@
             }
 
         });
-
-
-        //Added : By Kalpesh Sharma Ticket #648 Cloning icon for tactics with allocation
-        $("#tacticClone").click(function () {
-            var idPlanTactic = $("#hdnPlanTacticId").val();
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Plan/Clone")',
-                data: {
-                    CloneType: 'Tactic',
-                    Id: idPlanTactic,
-                    title: '@Model.Title'
-                },
-                success: function (data) {
-                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                        window.location = '@Url.Content("~/Login/Index")';
-                    }
-                    else {
-                        if (data.redirect) {
-                            window.location.href = data.redirect;
-                            return;
-                        }
-                        if (data.errormsg) {
-                            alert(data.errormsg);
-                            return;
-                        }
-                    }
-                }
-            });
-        });
-
 
 @* TFS Point 253,206 : Model/Plan - sidebars - integrate gear icon with feature to delete/duplicate tactic
     Added by Nirav Shah on 17 feb 2014
