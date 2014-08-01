@@ -481,6 +481,7 @@
                                   $('#button-saveContinue').show();
                                   $('#divPlanDefinationEnabled').hide();
                                   $('#divPlanDefinationDisabled').show();
+                                  $('#ModelTitle').html($('#divPlanDefinationEnabled').find('#ModelTitle').html());
                                   renderDisablePlanDefinationSection();
                                   $('#divErrCampaignBudgetAllocation').hide();
                                   $('#divErrMoreAllocation').hide();
@@ -595,6 +596,7 @@
               $('#button-saveContinue').show();
               $('#divPlanDefinationEnabled').hide();
               $('#divPlanDefinationDisabled').show();
+              $('#ModelTitle').html($('#divPlanDefinationEnabled').find('#ModelTitle').html());
               renderDisablePlanDefinationSection();
               $('#divErrCampaignBudgetAllocation').hide();
               $('#divErrMoreAllocation').hide();
@@ -675,6 +677,7 @@
                 modelId = $('#ModelId').val();
                 $('#averageDealSize').html("0");
                 $('#ModelTitle').html($('#ModelId').prev().find('.nl-field-toggle').html());
+                $('#ModelTitle').hide();
             }
 
             if (goalType != '')
