@@ -76,6 +76,7 @@ namespace RevenuePlanner.Helpers
                     proj.Status = PlanStatus;
                     proj.Model = null;
                     proj.Plan_Improvement_Campaign = null;
+                    proj.Plan_Budget = proj.Plan_Budget.ToList(); 
                     proj.Plan_Team = null;
                     proj.Plan_Campaign.Where(s => s.IsDeleted == false).ToList().ForEach(
                         t =>
@@ -152,24 +153,21 @@ namespace RevenuePlanner.Helpers
                 return returnFlag;
             try
             {
-                var objPlanCampaign = db.Plan_Campaign.AsNoTracking().Where(p => p.PlanId == PlanId && p.PlanCampaignId == ID && p.IsDeleted == false).ToList();
-                if (objPlanCampaign != null && objPlanCampaign.Count > 0)
+                Plan_Campaign objPlanCampaign = db.Plan_Campaign.AsNoTracking().First(p => p.PlanId == PlanId && p.PlanCampaignId == ID && p.IsDeleted == false);
+                if (objPlanCampaign != null )
                 {
-                    objPlanCampaign.ForEach(
-                    pc =>
-                    {
-                        title = (pc.Title + Suffix);
-                        pc.Tactic_Share = null;
-                        pc.CreatedBy = UserId;
-                        pc.CreatedDate = DateTime.Now;
-                        pc.Title = title;
-                        pc.Plan_Campaign_Program_Tactic_Comment = null;
-                        pc.Plan = null;
-                        pc.Audience = null;
-                        pc.Geography = null;
-                        pc.Plan_Campaign_Program_Tactic_Comment = null;
-                        pc.Vertical = null;
-                        pc.Plan_Campaign_Program.Where(s => s.IsDeleted == false).ToList().ForEach(
+                        objPlanCampaign.Tactic_Share = null;
+                        objPlanCampaign.CreatedBy = UserId;
+                        objPlanCampaign.CreatedDate = DateTime.Now;
+                        objPlanCampaign.Title = (objPlanCampaign.Title + Suffix);
+                        objPlanCampaign.Plan_Campaign_Program_Tactic_Comment = null;
+                        objPlanCampaign.Plan = null;
+                        objPlanCampaign.Audience = null;
+                        objPlanCampaign.Geography = null;
+                        objPlanCampaign.Plan_Campaign_Budget = objPlanCampaign.Plan_Campaign_Budget.ToList();
+                        objPlanCampaign.Plan_Campaign_Program_Tactic_Comment = null;
+                        objPlanCampaign.Vertical = null;
+                        objPlanCampaign.Plan_Campaign_Program.Where(s => s.IsDeleted == false).ToList().ForEach(
                             t =>
                             {
                                 t.Tactic_Share = null;
@@ -193,20 +191,13 @@ namespace RevenuePlanner.Helpers
                                     pcpt.Stage = null;
                                     pcpt.TacticType = null;
                                     pcpt.Status = TacticStatus;
-                                    pcpt.Plan_Campaign_Program_Tactic_Cost = pcpt.Plan_Campaign_Program_Tactic_Cost.ToList();
-                                    pcpt.Plan_Campaign_Program_Tactic_LineItem = pcpt.Plan_Campaign_Program_Tactic_LineItem.ToList();
-                                    pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
-                                    {
-                                        pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
-                                    });
                                 });
                             });
-                        pc.Plan_Campaign_Program = pc.Plan_Campaign_Program.ToList();
-                        db.Plan_Campaign.Add(pc);
-                    });
-                    
+                
+                    objPlanCampaign.Plan_Campaign_Program = objPlanCampaign.Plan_Campaign_Program.ToList();
+                    db.Plan_Campaign.Add(objPlanCampaign);
                     db.SaveChanges();
-                    Common.InsertChangeLog(Sessions.PlanId, null, returnFlag, title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                    Common.InsertChangeLog(Sessions.PlanId, null, returnFlag, objPlanCampaign.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                     returnFlag = 1;
                     return returnFlag;
                 }
@@ -230,30 +221,26 @@ namespace RevenuePlanner.Helpers
         public static int ProgramClone(string Suffix, Guid UserId, int ID , string TacticStatus)
         {
             int returnFlag = 0;
-            string title = string.Empty;
-
+            
             if (ID == 0)
                 return returnFlag;
             try
             {
-                var objPlanCampaignPrograms = db.Plan_Campaign_Program.AsNoTracking().Where(p => p.PlanProgramId == ID && p.IsDeleted == false).ToList();
+                Plan_Campaign_Program objPlanCampaignPrograms = db.Plan_Campaign_Program.AsNoTracking().First(p => p.PlanProgramId == ID && p.IsDeleted == false);
 
-                if (objPlanCampaignPrograms != null && objPlanCampaignPrograms.Count > 0)
+                if (objPlanCampaignPrograms != null)
                 {
-                    objPlanCampaignPrograms.ForEach(
-                        pcp =>
-                        {
-                            title = (pcp.Title + Suffix); 
-                            pcp.CreatedBy = UserId;
-                            pcp.CreatedDate = DateTime.Now;
-                            pcp.Title = title;
-                            pcp.Plan_Campaign_Program_Tactic_Comment = null;
-                            pcp.Plan_Campaign = null;
-                            pcp.Audience = null;
-                            pcp.Geography = null;
-                            pcp.Tactic_Share = null;
-                            pcp.Vertical = null;
-                            pcp.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(
+                            objPlanCampaignPrograms.CreatedBy = UserId;
+                            objPlanCampaignPrograms.CreatedDate = DateTime.Now;
+                            objPlanCampaignPrograms.Title = (objPlanCampaignPrograms.Title + Suffix);
+                            objPlanCampaignPrograms.Plan_Campaign_Program_Tactic_Comment = null;
+                            objPlanCampaignPrograms.Plan_Campaign = null;
+                            objPlanCampaignPrograms.Audience = null;
+                            objPlanCampaignPrograms.Geography = null;
+                            objPlanCampaignPrograms.Tactic_Share = null;
+                            objPlanCampaignPrograms.Vertical = null;
+                            objPlanCampaignPrograms.Plan_Campaign_Program_Budget = objPlanCampaignPrograms.Plan_Campaign_Program_Budget.ToList();
+                            objPlanCampaignPrograms.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(
                                 t =>
                                 {
                                     t.CreatedDate = DateTime.Now;
@@ -276,11 +263,10 @@ namespace RevenuePlanner.Helpers
                                         pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
                                     });
                                 });
-                            pcp.Plan_Campaign_Program_Tactic = pcp.Plan_Campaign_Program_Tactic.ToList();
-                            db.Plan_Campaign_Program.Add(pcp);
-                        });
-                    db.SaveChanges();   
-                    Common.InsertChangeLog(Sessions.PlanId, null, returnFlag, title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                            objPlanCampaignPrograms.Plan_Campaign_Program_Tactic = objPlanCampaignPrograms.Plan_Campaign_Program_Tactic.ToList();
+                            db.Plan_Campaign_Program.Add(objPlanCampaignPrograms);
+                            db.SaveChanges();
+                            Common.InsertChangeLog(Sessions.PlanId, null, returnFlag, objPlanCampaignPrograms.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                     returnFlag = 1;
                     return returnFlag;
                 }
