@@ -4169,7 +4169,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.RedirectType = false;
 
             double totalLineItemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == pcptl.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
-            double TacticCost = pcptl.Cost;
+            double TacticCost = pcptl.Plan_Campaign_Program_Tactic.Cost;
             double diffCost = TacticCost - totalLineItemCost;
             double otherLineItemCost = diffCost < 0 ? 0 : diffCost;
 
