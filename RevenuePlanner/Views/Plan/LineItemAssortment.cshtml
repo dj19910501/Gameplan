@@ -253,7 +253,7 @@
             type: 'POST',
             url: '@Url.Content("~/Plan/Clone")',
                 data: {
-                    CloneType: 'LineItem',
+                    CloneType: '@Enums.DuplicationModule.LineItem',
                     Id: idLineitem,
                     title: '@Model.Title'
                     },

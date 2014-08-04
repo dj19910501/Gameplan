@@ -387,7 +387,7 @@
                 type: 'POST',
                 url: '@Url.Content("~/Plan/Clone")',
                 data: {
-                    CloneType: 'Tactic',
+                    CloneType: '@Enums.DuplicationModule.Tactic',
                     Id: idPlanTactic,
                     title: '@Model.Title'
                 },

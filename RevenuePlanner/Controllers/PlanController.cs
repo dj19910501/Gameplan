@@ -7904,7 +7904,13 @@ namespace RevenuePlanner.Controllers
             {
                 if (!string.IsNullOrEmpty(CloneType) && Id > 0)
                 {
-                    rtResult = Clonehelper.ToClone(0, "", CloneType, Id);
+                    rtResult = Clonehelper.ToClone("", CloneType, Id);
+                    if (CloneType == Enums.DuplicationModule.Plan.ToString())
+                    {
+                        Plan objPlan = db.Plans.Where(p => p.PlanId == Id).FirstOrDefault();
+                        title = objPlan != null ? objPlan.Title : string.Empty;
+                    }
+
                     TempData["SuccessMessageDeletedPlan"] = string.Format("{0} {1} successfully Duplicated.", CloneType, title);
                 }
 

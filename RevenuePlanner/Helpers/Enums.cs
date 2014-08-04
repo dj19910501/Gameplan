@@ -685,6 +685,15 @@ namespace RevenuePlanner.Helpers
             {PlanGoalType.Revenue.ToString(), "revenue"}
         };
 
+        public enum DuplicationModule
+        {
+            Plan,
+            Campaign,
+            Program,
+            Tactic,
+            LineItem
+        }
+
         /// <summary>
         /// Added by: Sohel Pathan
         /// Date:14/07/2014
@@ -733,4 +742,10 @@ namespace RevenuePlanner.Helpers
         Request = 5
     }
     #endregion
+
+
+
+
+
+
 }
