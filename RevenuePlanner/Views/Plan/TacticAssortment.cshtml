@@ -609,7 +609,7 @@
             //}
             if ($("#hdnIsBudgetAllocated").val() == "True") {
                 //Start by Kalpesh Sharma #605: Cost allocation for Tactic
-                var lstAllocInputs = $(".budget-section input.error-text").not('.unallocated-text');
+@*                var lstAllocInputs = $(".budget-section input.error-text").not('.unallocated-text');
                 if (lstAllocInputs.length > 0) {
                     var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted for ";
                     var inputLength = lstAllocInputs.length;
@@ -641,7 +641,7 @@
 
                     ShowBudgetError(errorMsg);
                     return false;
-                }
+                }*@
 
                 @*if ($("#txtRemainingBudget").hasClass('error-text')) {
                     //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
@@ -649,7 +649,7 @@
                     return false;
                 }*@
 
-                if (parseInt(ReplaceCC($("#lblUnallocatedBudget").val())) < 0) {
+              @*  if (parseInt(ReplaceCC($("#lblUnallocatedBudget").val())) < 0) {
                     //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
                     ShowBudgetError("@RevenuePlanner.Helpers.Common.objCached.BudgetLessThanAllocated");
                     return false;
@@ -659,7 +659,7 @@
                     //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
                     ShowBudgetError("@RevenuePlanner.Helpers.Common.objCached.AllocateMoreThanBudgeted");
                     return false;
-                }
+                }*@
 
             }
 
