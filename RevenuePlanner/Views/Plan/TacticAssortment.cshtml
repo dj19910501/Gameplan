@@ -992,7 +992,7 @@
                     if (r.length) {
                         for (i in r) {
                             var remainingMonthlyBudget = r[i].remainingMonthlyBudget == '' ? '0' : r[i].remainingMonthlyBudget;
-                            $("#" + r[i].periodTitle).val(r[i].budgetValue);
+                            $("#" + r[i].periodTitle).val(FormatCommas(r[i].budgetValue,false));
                             $("#" + r[i].periodTitle).attr('ov', r[i].budgetValue == '' ? '0' : r[i].budgetValue);
                             $("#" + r[i].periodTitle).attr('rmb', remainingMonthlyBudget);
                             $("#" + r[i].periodTitle).attr('pmb', r[i].programMonthlyBudget);

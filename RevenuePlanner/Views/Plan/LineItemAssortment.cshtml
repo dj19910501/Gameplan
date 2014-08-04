@@ -568,7 +568,7 @@
                     if (r.length) {
                         for (i in r) {
                             var remainingMonthlyCost = r[i].remainingMonthlyCost == '' ? '0' : r[i].remainingMonthlyCost;
-                            $("#" + r[i].periodTitle).val(r[i].costValue);
+                            $("#" + r[i].periodTitle).val(FormatCommas(r[i].costValue,false));
                             $("#" + r[i].periodTitle).attr('ov', r[i].costValue == '' ? '0' : r[i].costValue);
                             $("#" + r[i].periodTitle).attr('rmb', remainingMonthlyCost);
                             if (parseInt(remainingMonthlyCost) < 0) {
