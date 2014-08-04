@@ -92,6 +92,10 @@
 		<Name>DuplicateTacticExits</Name>
 		<value>Tactic with same title exits.</value>
 	</Field>
+  <Field>
+    <Name>DuplicateLineItemExits</Name>
+    <value>Line Item with same title exits.</value>
+  </Field>
 	<Field>
 		<Name>DeleteCampaignDependency</Name>
 		<value>Dependency with other entities exits, cannot be deleted.</value>

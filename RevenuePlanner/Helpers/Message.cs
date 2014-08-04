@@ -315,6 +315,19 @@ namespace RevenuePlanner.Helpers
             }
         }
 
+        private string _DuplicateLineItemExits;
+        public string DuplicateLineItemExits
+        {
+            get
+            {
+                return _DuplicateLineItemExits;
+            }
+            set
+            {
+                _DuplicateLineItemExits = value;
+            }
+        }
+
         private string _DeleteCampaignDependency;
         public string DeleteCampaignDependency
         {
@@ -2229,6 +2242,9 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             break;
                                         case "DuplicateTacticExits":
                                             _DuplicateTacticExits = strMsgValue;
+                                            break;
+                                        case "DuplicateLineItemExits":
+                                            _DuplicateLineItemExits = strMsgValue;
                                             break;
                                         case "DeleteCampaignDependency":
                                             _DeleteCampaignDependency = strMsgValue;

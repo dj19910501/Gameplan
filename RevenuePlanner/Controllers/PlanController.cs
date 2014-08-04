@@ -4296,7 +4296,7 @@ namespace RevenuePlanner.Controllers
 
                             if (pcptvar != null)
                             {
-                                return Json(new { errormsg = Common.objCached.DuplicateTacticExits });
+                                return Json(new { errormsg = Common.objCached.DuplicateLineItemExits});
                             }
                             else
                             {
@@ -7910,7 +7910,10 @@ namespace RevenuePlanner.Controllers
                         Plan objPlan = db.Plans.Where(p => p.PlanId == Id).FirstOrDefault();
                         title = objPlan != null ? objPlan.Title : string.Empty;
                     }
-
+                    if (CloneType == Enums.DuplicationModule.LineItem.ToString())
+                    {
+                        CloneType = "Line Item";
+                    }
                     TempData["SuccessMessageDeletedPlan"] = string.Format("{0} {1} successfully Duplicated.", CloneType, title);
                 }
 
