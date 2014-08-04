@@ -1562,8 +1562,10 @@
          var date = new Date(), m = date.getMonth();
          gantt.config.start_date = new Date(date.getFullYear(), m, 01);
          gantt.config.end_date = new Date(date.getFullYear(), m + 1, 01);
-
-
+         /*Added by Mitesh Vaishnav for PL ticket #671 Plan: Freezing of Application with Please Wait Dialog Box (This Month Option)*/
+         var startDate = new Date(date.getFullYear(), m, 01);
+         var endDate = new Date(date.getFullYear(), m + 1, 01);
+         /*End :Added by Mitesh Vaishnav for PL ticket #671 Plan: Freezing of Application with Please Wait Dialog Box (This Month Option)*/
          var filteredData = $.grep(tasks.data,
                                    function (value) {
                                        return (value.start_date >= startDate && value.start_date <= endDate)
@@ -1592,8 +1594,9 @@
          gantt.templates.task_class = function (start, end, task) {
              return getCSSForTask(task);
          };
-
-         gantt.parse(tasks);
+        
+         gantt.parse(filteredTasks);//Modified by Mitesh Vaishnav on 04/08/2014 for PL ticket #671 Plan: Freezing of Application with Please Wait Dialog Box (This Month Option)
+       
      }
      else if (isQuater == "nextyear") {
 

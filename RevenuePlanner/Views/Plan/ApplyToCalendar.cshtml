@@ -815,7 +815,16 @@
            gantt.config.start_date = new Date(date.getFullYear(), m, 01);
            gantt.config.end_date = new Date(date.getFullYear(), m + 1, 01);
            gantt.init("gantt_here");
-
+           /*Added by Mitesh Vaishnav for PL ticket #671 Plan: Freezing of Application with Please Wait Dialog Box (This Month Option)*/
+           var startDate = new Date(date.getFullYear(), m, 01);
+           var endDate = new Date(date.getFullYear(), m + 1, 01);
+           var filteredData = $.grep(tasks.data,
+                                     function (value) {
+                                         return (value.start_date >= startDate && value.start_date <= endDate)
+                                     }
+                                   );
+           var filteredTasks = { data: filteredData };
+           /*End :Added by Mitesh Vaishnav for PL ticket #671 Plan: Freezing of Application with Please Wait Dialog Box (This Month Option)*/
            var json_length = tasks.data.length;
            var gantt_div = document.getElementById("gantt_here");
            ////Modified by Sohel on 31st March 2014 for PL ticket #362, To set the scroll for Gantt chart
@@ -825,8 +834,7 @@
            else {
                gantt_div.style.height = "409px"; //No scroll required for max of 9 Records, so default height = (9*35) + 94 = 409
            }
-           ////
-           gantt.parse(tasks);
+           gantt.parse(filteredTasks);//Modified by Mitesh Vaishnav on 04/08/2014 for PL ticket #671 Plan: Freezing of Application with Please Wait Dialog Box (This Month Option)
        }
        else if (isQuater == "nextyear") {
            var date = new Date();
