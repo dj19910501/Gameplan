@@ -752,6 +752,14 @@
                         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
                         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
+                        //Added By : Kalpesh Sharma Reintilaize the Remaining Budget Value 08/04/2014
+                        var ProgramBudgetValue = ReplaceCC($("#txtTacticPlannedCost").val());
+                        var OldProgramBudgetValue = ReplaceCC($("#hdnOldTacticBudget").val());
+                        var differenceVal = parseInt(OldProgramBudgetValue) - parseInt(ProgramBudgetValue);
+                        var newRemainingBudget = parseInt(ReplaceCC($("#txtRemainingBudget").val())) + differenceVal;
+                        $("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false, true));
+                        $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
+
                         if (data.IsDeployedToIntegration) {
                             $("#t_integration_status").val("Sync to @ExtIntService");
                             $("#t_integration_status").addClass("icon-check-blue");
