@@ -165,7 +165,6 @@ namespace RevenuePlanner.Helpers
                         objPlanCampaign.Audience = null;
                         objPlanCampaign.Geography = null;
                         objPlanCampaign.Plan_Campaign_Budget = objPlanCampaign.Plan_Campaign_Budget.ToList();
-                        objPlanCampaign.Plan_Campaign_Program_Tactic_Comment = null;
                         objPlanCampaign.Vertical = null;
                         objPlanCampaign.Plan_Campaign_Program.Where(s => s.IsDeleted == false).ToList().ForEach(
                             t =>
@@ -191,6 +190,12 @@ namespace RevenuePlanner.Helpers
                                     pcpt.Stage = null;
                                     pcpt.TacticType = null;
                                     pcpt.Status = TacticStatus;
+                                    pcpt.Plan_Campaign_Program_Tactic_Cost = pcpt.Plan_Campaign_Program_Tactic_Cost.ToList();
+                                    pcpt.Plan_Campaign_Program_Tactic_LineItem = pcpt.Plan_Campaign_Program_Tactic_LineItem.ToList();
+                                    pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
+                                    {
+                                        pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
+                                    });
                                 });
                             });
                 
