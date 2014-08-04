@@ -44,7 +44,11 @@ namespace RevenuePlanner.Models
         public string GoalTypeDisplay { get; set; }
         /* End - Added by Sohel Pathan on 15/07/2014 for PL ticket #566 */
 
+        /* Added by Sohel Pathan on 22/07/2014 for PL ticket #597 */  
         public double TotalAllocatedCampaignBudget { get; set; }
+
+        /* Added by Sohel Pathan on 04/08/2014 for PL ticket #623 */
+        public string Description { get; set; }
     }
 
     public class Plan_CampaignModel

@@ -7650,3 +7650,27 @@ div.sub{display:none; transition: height 0.35s ease 0s; padding:0;}
     background-position: -266px 0 !important;
 }
 /* */
+
+/* Start - Added by Sohel Pathan on 31/07/2014 for PL ticket #623 */
+.content-row.float-right{
+    margin-right: 4px;
+    width: 48%;
+    float: right;
+}
+.content-row.float-right.sbHolder {
+    margin-top: 3px;
+}
+.width22per {
+    width: 22% !important;
+}
+.width99per {
+    width: 99% !important;
+}
+.event-row a:hover {
+    cursor:pointer;
+}
+.content-row .verticalIdSelectBox {
+    position: relative !important;
+    top: 3px !important;
+}
+/* End - Added by Sohel Pathan on 31/07/2014 for PL ticket #623 */
