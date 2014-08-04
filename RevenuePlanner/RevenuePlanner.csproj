@@ -827,6 +827,7 @@
     <Content Include="Views\Plan\_AllocatedBudget.cshtml" />
     <Content Include="Views\Plan\_Budget.cshtml" />
     <Content Include="Views\Plan\_BudgetingPlanList.cshtml" />
+    <Content Include="Views\Plan\PlanAssortment.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

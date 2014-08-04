@@ -129,6 +129,9 @@ namespace RevenuePlanner.Helpers
         // Default Other line item title
         public static string DefaultLineItemTitle = "Other";
 
+        // Label text for Unallocated Budget label
+        public static string UnallocatedBudgetLabelText = "Unallocated";
+
         #endregion
 
         //#region Enums

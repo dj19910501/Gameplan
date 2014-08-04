@@ -27,7 +27,7 @@
                             </tr>
                             <tr>
                                 <td class="event-row">
-                                    <div>@plan.ActivityName</div>
+                                    <div><a id="aPlanDetails">@plan.ActivityName</a></div>
                                 </td>
                             </tr>
                             @Html.ActivityCampaign("campaign", plan.ActivityId, Model, "allocated")
@@ -267,4 +267,25 @@ else if ('@AllocatedBy' == 'quarters') {
             advanced: { autoExpandHorizontalScroll: true, updateOnContentResize: true }
         });
     });
+
+    $('#aPlanDetails').click(function (e) {
+        e.stopPropagation();
+        $.ajaxSetup({ cache: false });
+        $("#slidepanel").css("display", "block");
+        var url = '@Url.Content("~/Plan/PlanDetails")';
+        var Assortment = 'Budgeting';
+        var id = @Sessions.PlanId
+        $('#slidepanel-container').load(url + '?id=' + id + '&RedirectType=' + Assortment, AssignDefaultValue);
+        $("#slidepanel").css("right", "0px");
+        $("#slidepanel").addClass('sidebar-wide');
+        myApp.hidePleaseWait();
+        e.preventDefault();
+    });
+
+    function AssignDefaultValue() {
+        $('#slidepanel-container').find("input[type=text],textarea,select").each(function () {
+            $(this).attr("title", $(this).val());
+        });
+    }
+
 </script>
