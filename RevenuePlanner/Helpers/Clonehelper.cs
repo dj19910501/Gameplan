@@ -12,7 +12,7 @@ namespace RevenuePlanner.Helpers
 {
     public class Clonehelper
     {
-        public static MRPEntities db = new MRPEntities();
+        public MRPEntities db = new MRPEntities();
 
         /// <summary>
         /// This method is identify the clone type 
@@ -23,7 +23,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="CopyClone"></param>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public static int ToClone(string Suffix = "", string CopyClone = "", int ID = 0)
+        public  int ToClone(string Suffix = "", string CopyClone = "", int ID = 0)
         {
             Guid UserId = Sessions.User.UserId;
             int PlanID = Sessions.PlanId;
@@ -60,7 +60,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="PlanStatus"></param>
         /// <param name="TacticStatus"></param>
         /// <returns></returns>
-        public static int PlanClone(int PlanId, string Suffix, Guid UserId, string PlanStatus, string TacticStatus)
+        public  int PlanClone(int PlanId, string Suffix, Guid UserId, string PlanStatus, string TacticStatus)
         {
             int returnFlag = 0;
             if (PlanId == 0)
@@ -144,7 +144,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ID"></param>
         /// <param name="TacticStatus"></param>
         /// <returns></returns>
-        public static int CampaignClone(int PlanId, string Suffix, Guid UserId, int ID, string TacticStatus)
+        public  int CampaignClone(int PlanId, string Suffix, Guid UserId, int ID, string TacticStatus)
         {
             int returnFlag = 0;
             string title = string.Empty;
@@ -223,7 +223,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="UserId"></param>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public static int ProgramClone(string Suffix, Guid UserId, int ID , string TacticStatus)
+        public  int ProgramClone(string Suffix, Guid UserId, int ID , string TacticStatus)
         {
             int returnFlag = 0;
             
@@ -294,7 +294,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ID"></param>
         /// <param name="TacticStatus"></param>
         /// <returns></returns>
-        public static int TacticClone(string Suffix, Guid UserId, int ID, string TacticStatus)
+        public  int TacticClone(string Suffix, Guid UserId, int ID, string TacticStatus)
         {
             int returnFlag = 0;
 
@@ -317,8 +317,8 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignProgramTactic.Audience = null;
                     objPlanCampaignProgramTactic.BusinessUnit = null;
                     objPlanCampaignProgramTactic.Geography = null;
-                    objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic1 = null;
-                    objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic2 = null;
+                    //objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic1 = null;
+                    //objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic2 = null;
                     objPlanCampaignProgramTactic.Vertical = null;
                     objPlanCampaignProgramTactic.TacticType = null;
                     objPlanCampaignProgramTactic.Tactic_Share = null;
@@ -353,7 +353,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ID"></param>
         /// <param name="TacticStatus"></param>
         /// <returns></returns>
-        public static int LineItemClone(string Suffix, Guid UserId, int ID, string TacticStatus)
+        public  int LineItemClone(string Suffix, Guid UserId, int ID, string TacticStatus)
         {
             int returnFlag = 0;
 
@@ -390,7 +390,7 @@ namespace RevenuePlanner.Helpers
         /// Added : By Kalpesh Sharma Ticket #648 Cloning icon for tactics with allocation
         /// </summary>
         /// <param name="TacticId"></param>
-        public static void CostCalculacation(int TacticId)
+        public  void CostCalculacation(int TacticId)
         {
             Plan_Campaign_Program_Tactic ObjTactic = db.Plan_Campaign_Program_Tactic.SingleOrDefault(t => t.PlanTacticId == TacticId);
             var objtacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == TacticId && s.IsDeleted == false && s.LineItemTypeId != null).ToList();

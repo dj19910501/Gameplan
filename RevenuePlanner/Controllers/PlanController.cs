@@ -8187,7 +8187,8 @@ namespace RevenuePlanner.Controllers
             {
                 if (!string.IsNullOrEmpty(CloneType) && Id > 0)
                 {
-                    rtResult = Clonehelper.ToClone("", CloneType, Id);
+                    Clonehelper objClonehelper = new Clonehelper();
+                    rtResult = objClonehelper.ToClone("", CloneType, Id);
                     if (CloneType == Enums.DuplicationModule.Plan.ToString())
                     {
                         Plan objPlan = db.Plans.Where(p => p.PlanId == Id).FirstOrDefault();

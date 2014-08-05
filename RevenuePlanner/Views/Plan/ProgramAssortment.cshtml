@@ -536,7 +536,7 @@
                 //Added By : Kalpesh Sharma : PL #605 : 07/29/2014
                 var lstAllocInputs = $(".budget-section input.error-text").not('.unallocated-text');
                 if (lstAllocInputs.length > 0) {
-                    var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CampaignBudgetIsLowerthanTotalAllocatedPrograms";
+                    var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted for ";
                     var inputLength = lstAllocInputs.length;
                     var removeLength = 0;
                     for (var i = 0; i < lstAllocInputs.length; i++) {
@@ -568,10 +568,9 @@
                     return false;
                 }
 
-
-                if ($("#txtRemainingBudget").hasClass('error-text')) {
+                if ($("#lblTotalAllocated").hasClass('error-text')) {
                     //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
-                    ShowBudgetError("@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorethanRemainingBudgeted");
+                    ShowBudgetError("@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted");
                     return false;
                 }
 
@@ -581,9 +580,9 @@
                     return false;
                 }
 
-                if ($("#lblTotalAllocated").hasClass('error-text')) {
+                if ($("#txtRemainingBudget").hasClass('error-text')) {
                     //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
-                    ShowBudgetError("@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted");
+                    ShowBudgetError("@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorethanRemainingBudgeted");
                     return false;
                 }
             }
