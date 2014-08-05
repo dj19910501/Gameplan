@@ -5,7 +5,7 @@
 @{
     string AllocatedBy = Model.AllocatedBy;
     bool IsBudgetAllocated = false;
-    if (AllocatedBy != Enums.PlanAllocatedBy.defaults.ToString().TrimEnd('s'))
+    if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
     {
         IsBudgetAllocated = true;
     }
@@ -152,7 +152,7 @@
         <!-- Start Cost allocation for line item -->
             if (!IsOtherLineItem)
             {
-                if (AllocatedBy != Enums.PlanAllocatedBy.defaults.ToString().TrimEnd('s'))
+                if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
                 {
                     <div class="budget-section">
                         <div class="budget-head clearfix">

@@ -6,7 +6,7 @@
     string AllocatedBy = Model.AllocatedBy;
 
     bool IsBudgetAllocated = false;
-    if (AllocatedBy != Enums.PlanAllocatedBy.defaults.ToString().TrimEnd('s'))
+    if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
     {
         IsBudgetAllocated = true;
     }
@@ -145,7 +145,7 @@
         <!--End content-->
         
            <!-- Start added by Kalpesh #604: Budget allocation for campaign  -->
-            if (AllocatedBy != Enums.PlanAllocatedBy.defaults.ToString().TrimEnd('s'))
+            if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
             {
 		    <div class="budget-section">
                 <div class="budget-head clearfix">
@@ -163,11 +163,11 @@
                     </div>
                     <div class="budget-result source-sans-prolight">
                          <p>
-                            Remaining @(AllocatedBy == Enums.PlanAllocatedBy.months.ToString() ? "Monthly" : "Quarter") Budget: 
+                            Remaining @(AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Monthly" : "Quarter") Budget: 
                                     	<span id="lblRemainingMonthlyBudget" class="source-sans-proregular"></span>
                         </p>
                        <p>
-                            Allocated Tactic Cost (this  @(AllocatedBy == Enums.PlanAllocatedBy.months.ToString() ? "Month" : "Quarter")): 
+                            Allocated Tactic Cost (this  @(AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Month" : "Quarter")): 
                             <span id="lblAllocatedProgramsBudget" class="source-sans-proregular"></span>
                         </p>
                         <p>

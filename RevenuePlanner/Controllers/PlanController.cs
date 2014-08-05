@@ -130,6 +130,7 @@ namespace RevenuePlanner.Controllers
                 /*End :Modified by Mitesh Vaishnav for PL ticket #622*/
 
                 var GoalTypeList = Common.GetGoalTypeList(Sessions.User.ClientId);
+                var AllocatedByList = Common.GetAllocatedByList();      // Added by Sohel Pathan on 05/08/2014
 
                 //added by kunal to fill the plan data in edit mode - 01/17/2014
                 if (id != 0)
@@ -180,7 +181,7 @@ namespace RevenuePlanner.Controllers
                 //end
 
                 TempData["goalTypeList"] = GoalTypeList;
-                TempData["allocatedByList"] = new SelectList(Enums.PlanAllocatedByList.ToList(), "Key", "Value");
+                TempData["allocatedByList"] = Common.GetAllocatedByList(); // Modified by Sohel Pathan on 05/08/2014
             }
             catch (Exception e)
             {
@@ -621,7 +622,6 @@ namespace RevenuePlanner.Controllers
             objPlanModel.AllocatedBy = objPlanData.AllocatedBy;
             objPlanModel.Budget = objPlanData.Budget;
             objPlanModel.Description = objPlanData.Description;    /* Added by Sohel Pathan on 04/08/2014 for PL ticket #623 */
-            //objPlanModel.ModelTitle = objPlanData.Model.Title + " " + objPlanData.Model.Version;
             double TotalAllocatedCampaignBudget = 0;
             var PlanCampaignBudgetList = db.Plan_Campaign_Budget.Where(pcb => pcb.Plan_Campaign.PlanId == objPlanData.PlanId).Select(a => a.Value).ToList();
             if (PlanCampaignBudgetList.Count > 0)
@@ -7651,7 +7651,7 @@ namespace RevenuePlanner.Controllers
                 programs = c.programs
             });
 
-            string AllocatedBy = "default";
+            string AllocatedBy = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
             List<BudgetModel> model = new List<BudgetModel>();
             BudgetModel obj;
             Plan objPlan = db.Plans.Single(p => p.PlanId.Equals(PlanId));
@@ -7987,7 +7987,7 @@ namespace RevenuePlanner.Controllers
                 }).Select(pcpj => pcpj).Distinct().OrderBy(pcpj => pcpj.id)
             }).Select(p => p).Distinct().OrderBy(p => p.id);
 
-            string AllocatedBy = "default";
+            string AllocatedBy = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
             List<BudgetModel> model = new List<BudgetModel>();
             BudgetModel obj;
             Plan objPlan = db.Plans.Single(p => p.PlanId.Equals(PlanId));

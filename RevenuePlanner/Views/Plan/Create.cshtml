@@ -99,7 +99,7 @@
                         @{
                         if (strPlanId == "" || strPlanId == "0" || (bool)ViewBag.IsBusinessUnitEditable == true)    
                         {
-                            @Html.DropDownListFor(m => m.AllocatedBy, (SelectList)TempData["allocatedByList"], "select", new { datadefault = "SelectAllocatedBy", @class = "myValue", placeholder = @Model.AllocatedBy})
+                            @Html.DropDownListFor(m => m.AllocatedBy, new SelectList((System.Collections.IEnumerable)TempData["allocatedByList"], "Value", "Text"), "select", new { datadefault = "SelectAllocatedBy", @class = "myValue", placeholder = @Model.AllocatedBy})
                         }
                         else
                         {
@@ -487,7 +487,7 @@
                                   $('#divErrCampaignBudgetAllocation').hide();
                                   $('#divErrMoreAllocation').hide();
                                   var totalBudget = FormatCurrency($("#txtBudget").val(), false);
-                                  if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString().TrimEnd('s')].ToString().ToLower()') {
+                                  if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower()') {
                                       $('#divDefaultBudget').show();
                                       $('#spnTotalAllocatedBudget').html('---');
                                       $('#spnTotalBudget').html(totalBudget);
@@ -602,7 +602,7 @@
               $('#divErrCampaignBudgetAllocation').hide();
               $('#divErrMoreAllocation').hide();
               var totalBudget = FormatCurrency($("#txtBudget").val(), false);
-              if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString().TrimEnd('s')].ToString().ToLower()') {
+              if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower()') {
                   $('#divDefaultBudget').show();
                   $('#spnTotalAllocatedBudget').html('---');
                   $('#spnTotalBudget').html(totalBudget);
@@ -1163,7 +1163,7 @@
                                     $('#spnTotalAllocatedBudget').html(FormatCurrency(allocatedBudget, false));
                                     checkBudgetDifference(allocatedBudget, $('#divQuarterlyBudget'));
                                 }
-                                else if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString().TrimEnd('s')].ToString().ToLower()')
+                                else if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower()')
                                 {
                                     checkBudgetDifference(0, $('#divMonthlyBudget'));
                                 }

@@ -4,7 +4,7 @@
 @{
     string AllocatedBy = Model.AllocatedBy;
     bool IsBudgetAllocated = false;
-    if (AllocatedBy != Enums.PlanAllocatedBy.defaults.ToString().TrimEnd('s'))
+    if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
     {
         IsBudgetAllocated = true;
     }
@@ -55,7 +55,7 @@
                 @Html.TextBoxFor(model => model.Budget, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", id = "txtPlanBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
             </div>
         </div>
-        if (AllocatedBy != Enums.PlanAllocatedBy.defaults.ToString().TrimEnd('s'))
+        if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
         {
 		    <div class="budget-section">
                 <div class="budget-head clearfix">
@@ -72,7 +72,7 @@
                     </div>
                     <div class="budget-result source-sans-prolight">
                         <p>
-                            Allocated Campaign Budget (this @(AllocatedBy == Enums.PlanAllocatedBy.months.ToString() ? "Month" : "Quarter")): 
+                            Allocated Campaign Budget (this @(AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Month" : "Quarter")): 
                                     	<span id="lblAllocatedCampaignsBudget" class="source-sans-proregular"></span>
                         </p>
                         <p>

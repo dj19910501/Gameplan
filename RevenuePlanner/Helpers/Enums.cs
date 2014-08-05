@@ -713,9 +713,9 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         public static Dictionary<string, string> PlanAllocatedByList = new Dictionary<string, string>()
         {
-            {PlanAllocatedBy.defaults.ToString().TrimEnd('s'), PlanAllocatedBy.defaults.ToString().TrimEnd('s')},
-            {PlanAllocatedBy.months.ToString(), PlanAllocatedBy.months.ToString()},
-            {PlanAllocatedBy.quarters.ToString(), PlanAllocatedBy.quarters.ToString()}
+            {PlanAllocatedBy.defaults.ToString(), "default"},
+            {PlanAllocatedBy.months.ToString(), "months"},
+            {PlanAllocatedBy.quarters.ToString(), "quarters"}
         };
     }
 
