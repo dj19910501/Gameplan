@@ -131,6 +131,8 @@
         <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Comment_Plan_Improvement_Campaign_Program_Tactic" />
         <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Share_Plan_Improvement_Campaign_Program_Tactic" />
         <AssociationConnector Association="MRPModel.fk_TacticType_Stage" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationInstanceExternalServer" Width="1.5" PointX="4.0285384003205866" PointY="0.26764972520417057" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationInstanceExternalServer_IntegrationInstance" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

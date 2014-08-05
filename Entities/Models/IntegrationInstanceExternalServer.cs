@@ -12,17 +12,21 @@ namespace RevenuePlanner.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Plan_Campaign_Program_Tactic_Actual
+    public partial class IntegrationInstanceExternalServer
     {
-        public int PlanTacticId { get; set; }
-        public string StageTitle { get; set; }
-        public string Period { get; set; }
-        public double Actualvalue { get; set; }
+        public int IntegrationInstanceExternalServerId { get; set; }
+        public int IntegrationInstanceId { get; set; }
+        public string SFTPServerName { get; set; }
+        public string SFTPFileLocation { get; set; }
+        public string SFTPUserName { get; set; }
+        public string SFTPPassword { get; set; }
+        public string SFTPPort { get; set; }
+        public bool IsDeleted { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.Guid> ModifiedBy { get; set; }
     
-        public virtual Plan_Campaign_Program_Tactic Plan_Campaign_Program_Tactic { get; set; }
+        public virtual IntegrationInstance IntegrationInstance { get; set; }
     }
 }

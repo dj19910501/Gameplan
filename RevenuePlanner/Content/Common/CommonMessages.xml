@@ -728,3 +728,17 @@
 	</Field>
 	<!-- End - Added By Dharmraj #574 -->
 </Messages>
+<!-- Start - Manoj #679 -->
+<Field>
+  <Name>DuplicateFileLocation</Name>
+  <value>Server configuration with same file location {0} already exist</value>
+</Field>
+<Field>
+  <Name>ConnectionFail</Name>
+  <value>Not able to connect to the serrver with provided details</value>
+</Field>
+<Field>
+  <Name>ServerConfigurationSaved</Name>
+  <value>External Server Configuration saved successfully</value>
+</Field>
+<!-- End - Manoj #679 -->

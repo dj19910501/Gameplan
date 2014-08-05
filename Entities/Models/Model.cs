@@ -43,6 +43,9 @@ namespace RevenuePlanner.Models
         public Nullable<bool> IsBenchmarked { get; set; }
         public Nullable<System.DateTime> EffectiveDate { get; set; }
         public Nullable<int> IntegrationInstanceId { get; set; }
+        public Nullable<int> IntegrationInstanceIdINQ { get; set; }
+        public Nullable<int> IntegrationInstanceIdMQL { get; set; }
+        public Nullable<int> IntegrationInstanceIdCW { get; set; }
     
         public virtual BusinessUnit BusinessUnit { get; set; }
         public virtual IntegrationInstance IntegrationInstance { get; set; }

@@ -88,6 +88,9 @@
     <Compile Include="Models\IntegrationInstanceDataTypeMapping.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\IntegrationInstanceExternalServer.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\IntegrationInstanceLog.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>

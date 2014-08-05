@@ -2078,6 +2078,26 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             set { _ConfirmationForDeleteLineItem = value; }
         }
 
+        #region Start - Manoj PL#679
+        private string _DuplicateFileLocation;
+        public string DuplicateFileLocation
+        {
+            get { return _DuplicateFileLocation; }
+            set { _DuplicateFileLocation = value; }
+        }
+        private string _ConnectionFail;
+        public string ConnectionFail
+        {
+            get { return _ConnectionFail; }
+            set { _ConnectionFail = value; }
+        }
+        private string _ServerConfigurationSaved;
+        public string ServerConfigurationSaved
+        {
+            get { return _ServerConfigurationSaved; }
+            set { _ServerConfigurationSaved = value; }
+        }
+        #endregion
         #endregion
 
         #region  Functions
@@ -2693,6 +2713,17 @@ private string _CannotAllocateMorethanRemainingBudgeted;
 											case "ConfirmationForDeleteLineItem":
                                             _ConfirmationForDeleteLineItem = strMsgValue;
                                             break;
+                                            //Start Manoj PL#679
+                                            case "DuplicateFileLocation":
+                                            _DuplicateFileLocation = strMsgValue;
+                                            break;
+                                            case "ConnectionFail":
+                                            _ConnectionFail = strMsgValue;
+                                            break;
+                                            case "ServerConfigurationSaved":
+                                            _ServerConfigurationSaved = strMsgValue;
+                                            break;
+                                        //End Manoj PL#679
                                     }
                                 }
                                 i = i + 1;

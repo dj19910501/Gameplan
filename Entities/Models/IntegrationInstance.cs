@@ -21,6 +21,7 @@ namespace RevenuePlanner.Models
             this.IntegrationInstanceLogs = new HashSet<IntegrationInstanceLog>();
             this.IntegrationInstancePlanEntityLogs = new HashSet<IntegrationInstancePlanEntityLog>();
             this.Models = new HashSet<Model>();
+            this.IntegrationInstanceExternalServers = new HashSet<IntegrationInstanceExternalServer>();
         }
     
         public int IntegrationInstanceId { get; set; }
@@ -46,5 +47,6 @@ namespace RevenuePlanner.Models
         public virtual ICollection<IntegrationInstancePlanEntityLog> IntegrationInstancePlanEntityLogs { get; set; }
         public virtual ICollection<Model> Models { get; set; }
         public virtual SyncFrequency SyncFrequency { get; set; }
+        public virtual ICollection<IntegrationInstanceExternalServer> IntegrationInstanceExternalServers { get; set; }
     }
 }

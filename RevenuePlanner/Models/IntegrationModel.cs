@@ -66,5 +66,9 @@ namespace RevenuePlanner.Models
         public SyncFrequencyModel SyncFrequency { get; set; }
 
         public bool IsActiveStatuChanged { get; set; }
+
+        //Manoj Start PL#579 Server Configuration
+        public IntegrationInstanceExternalServerModel ExternalServer { get; set; }
+        //Manoj End PL#579 Server Configuration
     }
 }

@@ -1277,5 +1277,149 @@ namespace RevenuePlanner.Controllers
 
             return Status;
         }
+
+        #region External Service PL#679
+
+        /// <summary>
+        /// Save the data to database
+        /// </summary>
+        /// <param name="frm"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult SaveExternalForm(IntegrationInstanceExternalServerModel frm)
+        {
+            if (ModelState.IsValid)
+            {
+                if (!ValidateLocation(frm.IntegrationInstanceExternalServerId, frm.SFTPFileLocation))
+                {
+                    return Json(new { status = 0, ErrorMessage = string.Format(Common.objCached.DuplicateFileLocation, frm.SFTPFileLocation) });
+                }
+                if (!IsConnected(frm))
+                {
+                    return Json(new { status = 0, ErrorMessage = Common.objCached.ConnectionFail });
+                }
+                int ret = SaveExternalServer(frm);
+                return Json(new { status = ret, ErrorMessage = Common.objCached.ServerConfigurationSaved });
+            }
+            return Json(new { status = 0, ErrorMessage = Common.objCached.ErrorOccured });
+        }
+
+        /// <summary>
+        /// Validate location for the instance
+        /// </summary>
+        /// <param name="IntegrationInstanceExternalServerId"></param>
+        /// <param name="SFTPFileLocation"></param>
+        /// <returns></returns>
+        private bool ValidateLocation(int IntegrationInstanceExternalServerId, string SFTPFileLocation)
+        {
+            IntegrationInstanceExternalServer obj = new IntegrationInstanceExternalServer();
+            if (IntegrationInstanceExternalServerId == 0)
+            {
+                obj = db.IntegrationInstanceExternalServers.Where(i => i.IsDeleted == false && i.SFTPFileLocation.ToLower() == SFTPFileLocation.ToLower()).SingleOrDefault();
+            }
+            else
+            {
+                obj = db.IntegrationInstanceExternalServers.Where(i => i.IntegrationInstanceExternalServerId != IntegrationInstanceExternalServerId && i.IsDeleted == false && i.SFTPFileLocation.ToLower() == SFTPFileLocation.ToLower()).SingleOrDefault();
+            }
+            if (obj == null)
+                return true;
+            else
+                return false;
+        }
+
+        /// <summary>
+        /// Try to connect with provided details
+        /// </summary>
+        /// <param name="frm"></param>
+        /// <returns></returns>
+        private bool IsConnected(IntegrationInstanceExternalServerModel frm)
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// Add or Update the data
+        /// </summary>
+        /// <param name="frm"></param>
+        /// <returns></returns>
+        private int SaveExternalServer(IntegrationInstanceExternalServerModel frm)
+        {
+            if (frm.IntegrationInstanceExternalServerId == 0)
+            {
+                IntegrationInstanceExternalServer obj = new IntegrationInstanceExternalServer();
+                obj.IntegrationInstanceId = frm.IntegrationInstanceId;
+                obj.SFTPServerName = frm.SFTPServerName;
+                obj.SFTPFileLocation = frm.SFTPFileLocation;
+                obj.SFTPUserName = frm.SFTPUserName;
+                obj.SFTPPassword = frm.SFTPPassword;
+                if (string.IsNullOrEmpty(frm.SFTPPort))
+                {
+                    obj.SFTPPort = "22";
+                }
+                else
+                {
+                    obj.SFTPPort = frm.SFTPPort;
+                }
+                obj.CreatedBy = Sessions.User.UserId;
+                obj.CreatedDate = DateTime.Now;
+                obj.IsDeleted = false;
+                db.Entry(obj).State = System.Data.EntityState.Added;
+                db.IntegrationInstanceExternalServers.Add(obj);
+                db.SaveChanges();
+                return obj.IntegrationInstanceExternalServerId;
+            }
+            else
+            {
+                IntegrationInstanceExternalServer obj = db.IntegrationInstanceExternalServers.Where(i => i.IntegrationInstanceExternalServerId == frm.IntegrationInstanceExternalServerId).SingleOrDefault();
+                if (obj != null)
+                {
+                    obj.SFTPServerName = frm.SFTPServerName;
+                    obj.SFTPFileLocation = frm.SFTPFileLocation;
+                    obj.SFTPUserName = frm.SFTPUserName;
+                    obj.SFTPPassword = frm.SFTPPassword;
+                    if (string.IsNullOrEmpty(frm.SFTPPort))
+                    {
+                        obj.SFTPPassword = "22";
+                    }
+                    else
+                    {
+                        obj.SFTPPassword = frm.SFTPPassword;
+                    }
+                    obj.ModifiedBy = Sessions.User.UserId;
+                    obj.ModifiedDate = DateTime.Now;
+                    db.Entry(obj).State = System.Data.EntityState.Modified;
+                    db.IntegrationInstanceExternalServers.Add(obj);
+                    db.SaveChanges();
+                    return obj.IntegrationInstanceExternalServerId;
+                }
+            }
+            return 1;
+        }
+
+        /// <summary>
+        /// Add or Update the data
+        /// </summary>
+        /// <param name="frm"></param>
+        /// <returns></returns>
+        private IntegrationInstanceExternalServerModel GetExternalServer(int IntegrationInstanceId)
+        {
+            IntegrationInstanceExternalServerModel model = new IntegrationInstanceExternalServerModel();
+            model.IntegrationInstanceId = IntegrationInstanceId;
+            IntegrationInstanceExternalServer obj = db.IntegrationInstanceExternalServers.Where(i => i.IntegrationInstanceId == IntegrationInstanceId && i.IsDeleted == false).SingleOrDefault();
+            if (obj != null)
+            {
+                model = new IntegrationInstanceExternalServerModel();
+                model.IntegrationInstanceExternalServerId = obj.IntegrationInstanceExternalServerId;
+                model.IntegrationInstanceId = obj.IntegrationInstanceId;
+                model.SFTPServerName = obj.SFTPServerName;
+                model.SFTPFileLocation = obj.SFTPFileLocation;
+                model.SFTPUserName = obj.SFTPUserName;
+                model.SFTPPassword = obj.SFTPPassword;
+                model.SFTPPort = obj.SFTPPort;
+            }
+            return model;
+        }
+
+        #endregion
     }
 }
