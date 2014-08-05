@@ -4663,7 +4663,7 @@ namespace RevenuePlanner.Controllers
 
                             if (pcptvar != null)
                             {
-                                return Json(new { errormsg = Common.objCached.DuplicateTacticExits });
+                                return Json(new { errormsg = Common.objCached.DuplicateLineItemExits });
                             }
                             else
                             {

@@ -297,7 +297,7 @@ namespace RevenuePlanner.Helpers
                 int quarterCounter = 1;
                 for (int i = 0; i < 4; i++)
                 {
-                    sb += "<div class=\"budget-month\"><span class=\"month\">" + lstQuarters[i] + "</span><span class=\"light-blue-background\"><input id=\"Y" + quarterCounter + "\" class=\"priceValue\" placeholder=\"- - -\" =\"" + Common.maxLengthPriceValue + "\" /></span></div>";
+                    sb += "<div class=\"budget-month\"><span class=\"month\">" + lstQuarters[i] + "</span><span class=\"light-blue-background\"><input id=\"Y" + quarterCounter + "\" class=\"priceValue\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\" /></span></div>";
                     quarterCounter = quarterCounter + 3; 
                 }
             }
