@@ -139,7 +139,7 @@ namespace RevenuePlanner.Controllers
             objModelToView.IntegrationTypeId = integrationTypeId;
 
             populateSyncFreqData();
-
+            objModelToView.ExternalServer = GetExternalServer(0);
             return View(objModelToView);
         }
 
@@ -512,7 +512,7 @@ namespace RevenuePlanner.Controllers
             objView.IntegrationType = objIntegrationTypeModel;
 
             populateSyncFreqData();
-
+            objView.ExternalServer = GetExternalServer(id);
             return View(objView);
         }
 
