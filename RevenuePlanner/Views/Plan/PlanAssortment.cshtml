@@ -557,17 +557,17 @@
                 {
                     $('#txtINQ').val(number_format(_goalValue.toString(), 0, '.', ','));
                     $('#txtMQL').val(number_format(data.input1.toString(), 0, '.', ','));
-                    $('#txtRevenue').val(number_format(data.input2.toString(), 0, '.', ','));
+                    $('#txtRevenue').val('$' + number_format(data.input2.toString(), 0, '.', ','));
                 }
                 else if (_goalType.toLowerCase() == '@Enums.PlanGoalType.MQL.ToString().ToLower()')
                 {
                     $('#txtMQL').val(number_format(_goalValue.toString(), 0, '.', ','));
                     $('#txtINQ').val(number_format(data.input1.toString(), 0, '.', ','));
-                    $('#txtRevenue').val(number_format(data.input2.toString(), 0, '.', ','));
+                    $('#txtRevenue').val('$' + number_format(data.input2.toString(), 0, '.', ','));
                 }
                 else if (_goalType.toLowerCase() == '@Enums.PlanGoalType.Revenue.ToString().ToLower()')
                 {
-                    $('#txtRevenue').val(number_format(_goalValue.toString(), 0, '.', ','));
+                    $('#txtRevenue').val('$' + number_format(_goalValue.toString(), 0, '.', ','));
                     $('#txtINQ').val(number_format(data.input1.toString(), 0, '.', ','));
                     $('#txtMQL').val(number_format(data.input2.toString(), 0, '.', ','));
                 }
