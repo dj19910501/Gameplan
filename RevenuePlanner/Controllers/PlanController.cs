@@ -3967,7 +3967,6 @@ namespace RevenuePlanner.Controllers
                                     {
                                         objOtherLineItem.IsDeleted = false;
                                         objOtherLineItem.Cost = diffCost;
-                                        objOtherLineItem.Description = string.Empty;
                                         db.Entry(objOtherLineItem).State = EntityState.Modified;
                                         db.SaveChanges();
                                     }
