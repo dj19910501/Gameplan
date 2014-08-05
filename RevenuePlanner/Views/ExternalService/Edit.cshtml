@@ -272,68 +272,6 @@
         }
     }
 
-    $('#btnSave').click(function (e) {
-        var isValidate = true;
-        $('#content :input').each(function () {
-            if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
-                if (this.id != 'importActuals' && this.id != 'integrationStatus' && this.id != 'SyncFrequency_Day') {
-                    var input = $(this).val();
-                    if (input == '') {
-                        $(this).addClass("error");
-                        isValidate = false;
-                    } else {
-                        $(this).removeClass("error");
-                    }
-                }
-            }
-        });
-
-        if ($("#ddlSyncFrequency").val() == "Monthly" && $("#SyncFrequency_Day").val() == "") {
-            $('#SyncFrequency_Day').addClass("error");
-            isValidate = false;
-        }
-        else {
-            $('#SyncFrequency_Day').removeClass("error");
-        }
-
-        if (isValidate == false)
-            return false;
-
-        if (($('#hdnIsActiveIntact').val().toLowerCase().toString() == $('#IsActive').val().toLowerCase().toString()) &&
-            ($('#IsActive').val().toLowerCase().toString()) == "false") {
-            alert("@Common.objCached.ValidateIntegretionCredential");
-                return false;
-            }
-        CheckUserSession("#btnSave", true);
-        if (reason == 'user') {
-            return false;
-        }
-    });
-
-        $('#integrationForm').submit(function (e) {
-            if (($('#hdnIsActiveIntact').val().toLowerCase().toString() != $('#IsActive').val().toLowerCase().toString()) &&
-                ($('#IsActive').val().toLowerCase().toString()) == "false" && ($('#hdnIsActiveIntact').val().toLowerCase().toString() == "true")) {
-                if (confirm($("#InActiveConfirmationMsg").val())) {
-                    $('#IsActiveStatuChanged').val(true);
-                    return true;
-                }
-                else {
-                    $('#IsActiveStatuChanged').val(false);
-                    e.preventDefault();
-                    return false;
-                }
-            }
-            if ($('#IsDeleted').val().toLowerCase() == 'true') {
-                if (confirm($("#DeleteConfirmationMsg").val())) {
-                    return true;
-                }
-                else {
-                    e.preventDefault();
-                    return false;
-                }
-            }
-        });
-
         //function to add or remove class ERROR when inputs text are empty.
         $('input').blur(function () {
             if ($(this).attr('type') == 'text' || $(this).attr('type') == 'password') {
