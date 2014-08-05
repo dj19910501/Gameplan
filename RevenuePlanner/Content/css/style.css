@@ -7674,3 +7674,27 @@ div.sub{display:none; transition: height 0.35s ease 0s; padding:0;}
     top: 3px !important;
 }
 /* End - Added by Sohel Pathan on 31/07/2014 for PL ticket #623 */
+
+/* Added By : Kalpesh Sharma Integration Type Settings - 682 */
+.integrationAccordion.span10{width:490px; margin-left:70px; border:1px solid #cccccc; border-bottom:none;}
+.integrationAccordion .accordion-heading{padding:0;}
+.integrationAccordion .accordion-toggle{padding:0 16px 0 20px !important; border-bottom:1px solid #cccccc; line-height:32px;}
+.integrationAccordion .accordion-toggle, .integrationAccordion .accordion-toggle:hover, .integrationAccordion .accordion-toggle:focus{color:#000; outline:none;}
+.integrationAccordion .accordion-toggle span{float:right; color:#0088CC; text-decoration:underline;}
+
+.integrationAccordion .accordion-body.in{border-bottom:1px solid #cccccc;}
+.integrationAccordion .accordion-body > *{padding:22px 0 20px 38px;}
+.integrationAccordion .accordion-body form{margin-bottom:0;}
+.integrationAccordion .small-dropdown {width: calc(29% - 20px) !important;}
+.integrationAccordion .btn-link{line-height:31px;}
+
+#accordion .inputs-aligned-horizontal p,#accordion .inputs-aligned-horizontal .container-button, #accordion .inputs-aligned-horizontal .delete-container {
+    float: left;
+    margin-left: calc(25% + 20px) !important;
+    width: 253px;
+}
+.integrationAccordion #accordion #ddlIsDeletedSelectBox {
+    margin-top: 0px !important;
+    width: 71px !important;
+}
+/* */

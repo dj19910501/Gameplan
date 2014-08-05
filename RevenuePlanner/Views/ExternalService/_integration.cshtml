@@ -2,22 +2,24 @@
 
 <!DOCTYPE html>
 
-   
-        <div class="span2 myaccount-colum">
+     <div class="span2 myaccount-colum">
             <div class="width216">
                 <ul class="nav nav-pills nav-stacked width216">
                     <li id="Icredential" class="active">
                         @if (ViewBag.PageTitle == "MapDataType")
                         {
-                            <a href="@Url.Content("~/ExternalService/Edit/")@ViewBag.IntegrationInstanceId.ToString()">Integration Credentials</a>
+                            /* Added By : Kalpesh Sharma Integration Type Settings - 682 */
+                            @*<a href="@Url.Content("~/ExternalService/Edit/")@ViewBag.IntegrationInstanceId.ToString()">Integration Credentials</a>*@
+                            <a href="@Url.Content("~/ExternalService/Edit/")@ViewBag.IntegrationInstanceId.ToString()">Integration Type Settings</a>
                         }
                         else
                         {
-                             
-                        <a href="#">Integration Credentials</a>
+                            /* Added By : Kalpesh Sharma Integration Type Settings - 682 */
+                        @*<a href="#">Integration Credentials</a>*@
+                            <a href="#">Integration Type Settings</a>
                         }
                     </li>
-                    <li id="MdataType">
+                    <li id="MdataType" style="display:none;">
                         @if (ViewBag.PageTitle == "Edit")
                         {
                         <a href="@Url.Content("~/ExternalService/MapDataTypes/")@Model.IntegrationInstanceId.ToString()">Map Data Types</a>
