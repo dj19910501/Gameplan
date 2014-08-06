@@ -176,6 +176,7 @@ namespace RevenuePlanner.Helpers
                                 t.Vertical = null;
                                 t.Audience = null;
                                 t.Geography = null;
+                                t.Plan_Campaign_Program_Budget = t.Plan_Campaign_Program_Budget;
                                 t.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(pcpt =>
                                 {
                                     pcpt.Plan_Campaign_Program_Tactic_Actual = null;
@@ -197,6 +198,7 @@ namespace RevenuePlanner.Helpers
                                         pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
                                     });
                                 });
+                                t.Plan_Campaign_Program_Tactic = t.Plan_Campaign_Program_Tactic.ToList();
                             });
                 
                     objPlanCampaign.Plan_Campaign_Program = objPlanCampaign.Plan_Campaign_Program.ToList();

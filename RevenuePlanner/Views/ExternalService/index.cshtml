@@ -142,12 +142,19 @@
                     }
 
                     // New Mode
-                    window.location.href = '@Url.Action("create", "ExternalService")' + '?integrationTypeId=' + selectedIntegrationTypeId;
+                    //window.location.href = '@Url.Action("create", "ExternalService")' + '?integrationTypeId=' + selectedIntegrationTypeId;
+                    var URL = "@Url.Content("~/ExternalService/edit/")";
+                        URL = URL + "?id=0&TypeId=" + selectedIntegrationTypeId;
+                        window.location.href = URL;
                 }
                 else
                 {
+                    if (selectedIntegrationTypeId == null) {
+                        selectedIntegrationTypeId = 0;
+                    }
+
                     // Edit Mode
-                    window.location.href = "@Url.Content("~/ExternalService/edit?id=")" + index;
+                    window.location.href = "@Url.Content("~/ExternalService/edit?id=")" + index + '&TypeId=' + selectedIntegrationTypeId;
                 }
             }
 

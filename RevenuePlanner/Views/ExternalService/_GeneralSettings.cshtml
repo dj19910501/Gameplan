@@ -9,9 +9,9 @@
         @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "integrationForm", style = "margin-bottom:5px !important;" }))
         {
             @Html.ValidationSummary(true)
-            @Html.HiddenFor(model => model.IntegrationTypeId);
-            @Html.HiddenFor(model => model.IntegrationInstanceId);
-            @Html.HiddenFor(model => model.IsActiveStatuChanged);
+            @Html.HiddenFor(model => Model.IntegrationTypeId);
+            @Html.HiddenFor(model => Model.IntegrationInstanceId);
+            @Html.HiddenFor(model => Model.IsActiveStatuChanged);
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.IntegrationType.Title)
 
@@ -127,8 +127,18 @@
                 </div>
             </div>		
             
+            <!--success message-->
+            <div id="successMessageGeneralSettings" class="alert hide alert-success">
+                <a class="close">×</a>
+                <div id="cSuccessGeneralSettings"><strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))</div>
+            </div>
+            <div id="errorMessageGeneralSettings" class="alert alert-error hide">
+                <a class="close">×</a>
+                <div id="cErrorGeneralSettings"><strong>Error!</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))</div>
+            </div>
+            <!--success message-->
+            
             <div class="cf inputs-aligned-horizontal" style="margin-top: 10px;">
-
                 <div class="container-button">
                     <span class="span5">
                         <input id="btnSave" type="button" value="Save" title="Save" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" style="margin-left: 0px;" tabindex="12" />
@@ -144,6 +154,60 @@
 
 <script>
     $(document).ready(function () {
+
+        function testIntegration() {
+            //alert("Test integration");
+            $('#content #integrationForm :input').each(function () {
+                if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
+                    if (this.id == 'Instance' || this.id == 'Username' || this.id == 'Password') {
+                        var input = $(this).val();
+                        if (input == '') {
+                            $(this).addClass("error");
+                        } else {
+                            $(this).removeClass("error");
+                        }
+                    }
+                }
+            });
+
+            if ($('#Instance').val().trim() != "" && $('#Username').val().trim() != "" && $('#Password').val().trim() != "") {
+                $.ajax({
+                    cache: false,
+                    cache: false,
+                    type: 'POST',
+                    url: '@Url.Content("~/ExternalService/TestIntegration")',
+                data: $("form").serialize(),
+                success: function (data) {
+                    if (data != null) {
+                        if (data.status == 1) {
+                            $("#cSuccess").html('');
+                            $('#cSuccess').append("<strong>Success. </strong>" + data.SuccessMessage.toString());
+                            $("#successMessage").slideDown(1200);
+                            // $("#successMessage").slideUp(3000);
+                            $("#errorMessage").slideUp(1);
+
+                            $('#integrationStatus').val("Active");
+                            $('#IsActive').val(true);
+                            $('#integrationStatus').addClass("icon-check-blue");
+                            $('#integrationStatus').removeClass("icon-check-gray");
+
+                            return true;
+                        }
+                        else {
+                            $('#cError').html('');
+                            $('#cError').append("<strong>Error! </strong>" + data.ErrorMessage.toString());
+                            $("#errorMessage").slideDown(400);
+                            $("html, body").animate({ scrollTop: 0 }, 1000);
+                            return true;
+                        }
+                    }
+                }
+            });
+
+            return false;
+        }
+    }
+
         $("#integrationForm #t_status").click(function () {
             //var index=parseInt($('#table_tactics tbody tr').attr("index"));
             /*change status checkmark according to JSON data*/
@@ -162,13 +226,26 @@
 
         $('#btnSave').click(function (e) {
             var isValidate = true;
-            $('#content :input').each(function () {
+            $('#integrationForm #content :input').each(function () {
                 if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
                     if (this.id != 'importActuals' && this.id != 'integrationStatus' && this.id != 'SyncFrequency_Day') {
                         var input = $(this).val();
                         if (input == '') {
                             $(this).addClass("error");
                             isValidate = false;
+                        } else {
+                            $(this).removeClass("error");
+                        }
+                    }
+                }
+            });
+
+            //function to add or remove class ERROR when inputs text are empty.
+            $('#integrationForm input').blur(function () {
+                if ($(this).attr('type') == 'text' || $(this).attr('type') == 'password') {
+                    if (this.id != 'importActuals' && this.id != 'integrationStatus') {
+                        if ($(this).val() == '') {
+                            $(this).addClass("error");
                         } else {
                             $(this).removeClass("error");
                         }
@@ -196,7 +273,7 @@
               //if (reason == 'user') {
               //    return false;
             //}
-
+            CheckActiveStatus();
             SaveGeneralSetting();
 
         });
@@ -213,23 +290,21 @@
                 success: function (data) {
                     if (data != null) {
                         if (data.status == 1) {
-                            $("#cSuccess").html('');
-                            $('#cSuccess').append("<strong>Success. </strong>" + data.SuccessMessage.toString());
-                            $("#successMessage").slideDown(1200);
-                            // $("#successMessage").slideUp(3000);
-                            $("#errorMessage").slideUp(1);
-
+                            $("#cSuccessGeneralSettings").html('');
+                            $('#cSuccessGeneralSettings').append("<strong>Success. </strong>" + data.SuccessMessage.toString());
+                            $("#successMessageGeneralSettings").slideDown(1200);
+                            $("#errorMessageGeneralSettings").slideUp(1);
                             $('#integrationStatus').val("Active");
                             $('#IsActive').val(true);
                             $('#integrationStatus').addClass("icon-check-blue");
                             $('#integrationStatus').removeClass("icon-check-gray");
-
+                            $('#IntegrationInstanceId').val(data.id);
                             return true;
                         }
                         else {
-                            $('#cError').html('');
-                            $('#cError').append("<strong>Error! </strong>" + data.ErrorMessage.toString());
-                            $("#errorMessage").slideDown(400);
+                            $('#cErrorGeneralSettings').html('');
+                            $('#cErrorGeneralSettings').append("<strong>Error! </strong>" + data.ErrorMessage.toString());
+                            $("#errorMessageGeneralSettings").slideDown(400);
                             $("html, body").animate({ scrollTop: 0 }, 1000);
                             return true;
                         }
@@ -239,7 +314,7 @@
 
         }
 
-        $('#integrationForm').submit(function (e) {
+        function CheckActiveStatus() {
             if (($('#hdnIsActiveIntact').val().toLowerCase().toString() != $('#IsActive').val().toLowerCase().toString()) &&
                 ($('#IsActive').val().toLowerCase().toString()) == "false" && ($('#hdnIsActiveIntact').val().toLowerCase().toString() == "true")) {
                 if (confirm($("#InActiveConfirmationMsg").val())) {
@@ -261,7 +336,7 @@
                     return false;
                 }
             }
-        });
+        }
 
     });
 </script>

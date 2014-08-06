@@ -43,16 +43,32 @@
 <div class="padding-content cf source-sans-proregular" id="content" style="padding-bottom: 0px !important">
     <div class="row">
         @Html.Partial("~/Views/ExternalService/_integration.cshtml")
-         @*Added By : Kalpesh Sharma Integration Type Settings - 682 *@
+        @*Added By : Kalpesh Sharma Integration Type Settings - 682 *@
         <div class="integrationAccordion span10">
             <div id="accordion" class="accordion">
-                @Html.Partial("~/Views/ExternalService/_GeneralSettings.cshtml",Model)
+                @Html.Partial("~/Views/ExternalService/_GeneralSettings.cshtml", Model)
                 @* Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681*@
-                @Html.Partial("~/Views/ExternalService/_DataMapping.cshtml", Model.GameplanDataTypeModelList)
-                @* Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681*@
-                @Html.Partial("~/Views/ExternalService/_ExternalServer.cshtml",Model.ExternalServer)
+                @if (Model.IntegrationInstanceId > 0)
+                { 
+                    @Html.Partial("~/Views/ExternalService/_DataMapping.cshtml", Model.GameplanDataTypeModelList)
+                    @* Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681*@
+                    @Html.Partial("~/Views/ExternalService/_ExternalServer.cshtml", Model.ExternalServer)
+                }
+                else
+                {
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseGrp2">Pushing Tactic Data<span href="javascript:void(0)">+ Expand</span></a>
+                        </div>
+                    </div>
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseGrpServer">Response Pulling<span href="javascript:void(0)">+ Expand</span></a>
+                        </div>
+                    </div>
+                }
             </div>
-         </div>
+        </div>
     </div>
 </div>
 
@@ -68,6 +84,7 @@
             } else {
                 $(this).children('span').text('- Collapse');
             }
+
         });
         $('.integrationAccordion .accordion-group:last-child').addClass('last');
         //End By : Kalpesh Sharma : PL#682 Integration - UI - Integration Type Settings
@@ -223,111 +240,45 @@
         }
     });
 
-    function testIntegration() {
-        //alert("Test integration");
-        $('#content :input').each(function () {
-            if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
-                if (this.id == 'Instance' || this.id == 'Username' || this.id == 'Password') {
-                    var input = $(this).val();
-                    if (input == '') {
-                        $(this).addClass("error");
-                    } else {
-                        $(this).removeClass("error");
-                    }
-                }
-            }
-        });
-
-        if ($('#Instance').val().trim() != "" && $('#Username').val().trim() != "" && $('#Password').val().trim() != "") {
-            $.ajax({
-                cache: false,
-                cache: false,
-                type: 'POST',
-                url: '@Url.Content("~/ExternalService/TestIntegration")',
-                data: $("form").serialize(),
-                success: function (data) {
-                    if (data != null) {
-                        if (data.status == 1) {
-                            $("#cSuccess").html('');
-                            $('#cSuccess').append("<strong>Success. </strong>" + data.SuccessMessage.toString());
-                            $("#successMessage").slideDown(1200);
-                            // $("#successMessage").slideUp(3000);
-                            $("#errorMessage").slideUp(1);
-
-                            $('#integrationStatus').val("Active");
-                            $('#IsActive').val(true);
-                            $('#integrationStatus').addClass("icon-check-blue");
-                            $('#integrationStatus').removeClass("icon-check-gray");
-
-                            return true;
-                        }
-                        else {
-                            $('#cError').html('');
-                            $('#cError').append("<strong>Error! </strong>" + data.ErrorMessage.toString());
-                            $("#errorMessage").slideDown(400);
-                            $("html, body").animate({ scrollTop: 0 }, 1000);
-                            return true;
-                        }
-                    }
-                }
-            });
-
-            return false;
+    $('select').blur(function () {
+        if ($(this).val() == '') {
+            $(this).addClass("error");
+        } else {
+            $(this).removeClass("error");
         }
-    }
+    });
 
-        //function to add or remove class ERROR when inputs text are empty.
-        $('input').blur(function () {
-            if ($(this).attr('type') == 'text' || $(this).attr('type') == 'password') {
-                if (this.id != 'importActuals' && this.id != 'integrationStatus') {
-                    if ($(this).val() == '') {
-                        $(this).addClass("error");
-                    } else {
-                        $(this).removeClass("error");
-                    }
-                }
-            }
-        });
+    $("#integrationStatus").click(function () {
+        if ($(this).hasClass("icon-check-blue")) {
+            $(this).val("Inactive");
+            $('#IsActive').val(false);
+            $(this).addClass("icon-check-gray");
+            $(this).removeClass("icon-check-blue");
+        } else {
+            $(this).val("Active");
+            $('#IsActive').val(true);
+            $(this).addClass("icon-check-blue");
+            $(this).removeClass("icon-check-gray");
+        }
+    });
 
-        $('select').blur(function () {
-            if ($(this).val() == '') {
-                $(this).addClass("error");
-            } else {
-                $(this).removeClass("error");
-            }
-        });
-
-        $("#integrationStatus").click(function () {
-            if ($(this).hasClass("icon-check-blue")) {
-                $(this).val("Inactive");
-                $('#IsActive').val(false);
-                $(this).addClass("icon-check-gray");
-                $(this).removeClass("icon-check-blue");
-            } else {
-                $(this).val("Active");
-                $('#IsActive').val(true);
-                $(this).addClass("icon-check-blue");
-                $(this).removeClass("icon-check-gray");
-            }
-        });
-
-        $("#importActuals").click(function () {
-            if ($(this).hasClass("icon-check-blue")) {
-                $(this).val("Inactive");
-                $('#IsImportActuals').val(false);
-                $(this).addClass("icon-check-gray");
-                $(this).removeClass("icon-check-blue");
-            } else {
-                $(this).val("Active");
-                $('#IsImportActuals').val(true);
-                $(this).addClass("icon-check-blue");
-                $(this).removeClass("icon-check-gray");
-            }
-        });
+    $("#importActuals").click(function () {
+        if ($(this).hasClass("icon-check-blue")) {
+            $(this).val("Inactive");
+            $('#IsImportActuals').val(false);
+            $(this).addClass("icon-check-gray");
+            $(this).removeClass("icon-check-blue");
+        } else {
+            $(this).val("Active");
+            $('#IsImportActuals').val(true);
+            $(this).addClass("icon-check-blue");
+            $(this).removeClass("icon-check-gray");
+        }
+    });
 
 
-        function populateTimeOptions() {
-            $.getJSON("@Url.Content("~/ExternalService/populateTimeOptions")",
+    function populateTimeOptions() {
+        $.getJSON("@Url.Content("~/ExternalService/populateTimeOptions")",
         function (TimeData) {
             var select = $("#timeOptions");
             select.empty();
@@ -358,6 +309,6 @@
             $(".selectBox select").selectbox('detach');
             $(".selectBox select").selectbox("attach");
         });
-    }
+        }
 
 </script>
