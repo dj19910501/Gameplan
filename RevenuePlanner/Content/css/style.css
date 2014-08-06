@@ -7698,3 +7698,39 @@ div.sub{display:none; transition: height 0.35s ease 0s; padding:0;}
     width: 71px !important;
 }
 /* */
+
+/* Start - Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681 */
+#tblDataMapping {
+    width: 100%;
+}
+#tblDataMapping tr {
+    padding: 5px;
+    line-height: 45px;
+}
+#tblDataMapping td.width40 {
+    width: 40%;
+    text-align: right;
+}
+#tblDataMapping td.width60 {
+    width: 60%;
+    text-align: left;
+}
+#tblDataMapping td.title1 {
+    color:#333333 !important;
+    font-size: 14px !important;
+}
+#tblDataMapping .verticalIdSelectBox .sbHolder {
+    top: 9px !important;
+}
+#tblDataMapping .title-header {
+    border-bottom: 1px solid #ddd;
+}
+#frmDataMapping .messages {
+    width:82%;
+    float:left;
+    margin: 10px 0px 10px 0px;
+}
+.float-left {
+    float:left !important;
+}
+/* End -Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681 */ 

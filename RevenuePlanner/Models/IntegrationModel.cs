@@ -67,6 +67,10 @@ namespace RevenuePlanner.Models
 
         public bool IsActiveStatuChanged { get; set; }
 
+        // Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681
+        public IList<GameplanDataTypeModel> GameplanDataTypeModelList { get; set; }
+        // Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681
+
         //Manoj Start PL#579 Server Configuration
         public IntegrationInstanceExternalServerModel ExternalServer { get; set; }
         //Manoj End PL#579 Server Configuration

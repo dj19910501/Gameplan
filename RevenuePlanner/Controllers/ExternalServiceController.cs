@@ -512,6 +512,7 @@ namespace RevenuePlanner.Controllers
             objView.IntegrationType = objIntegrationTypeModel;
 
             populateSyncFreqData();
+            objView.GameplanDataTypeModelList = GetGameplanDataTypeList(record.IntegrationInstanceId);   // Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681
             objView.ExternalServer = GetExternalServer(id);
             return View(objView);
         }
@@ -1021,6 +1022,192 @@ namespace RevenuePlanner.Controllers
             }
             return RedirectToAction("MapDataTypes", new { id = id });
         }
+
+        #region Get Gampeplan DataType List
+        /// <summary>
+        /// Get list of gameplan DataType Mapping list
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy>
+        /// <CreatedDate>05/08/2014</CreatedDate>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public IList<GameplanDataTypeModel> GetGameplanDataTypeList(int id)
+        {
+            // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+
+            try
+            {
+                ExternalIntegration objEx = new ExternalIntegration(id);
+                List<string> ExternalFields = objEx.GetTargetDataMember();
+                if (ExternalFields == null)
+                {
+                    ExternalFields = new List<string>();
+                }
+                ViewData["ExternalFieldList"] = ExternalFields;
+                ViewBag.IntegrationInstanceId = id;
+                string integrationTypeName = (from i in db.IntegrationInstances
+                                              join t in db.IntegrationTypes on i.IntegrationTypeId equals t.IntegrationTypeId
+                                              where i.IsDeleted == false && t.IsDeleted == false && i.IntegrationInstanceId == id
+                                              select t.Title).SingleOrDefault();
+                if (string.IsNullOrEmpty(integrationTypeName))
+                {
+                    ViewBag.IntegrationTypeName = "";
+                }
+                else
+                {
+                    ViewBag.IntegrationTypeName = integrationTypeName;
+                }
+
+                //// Start - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id 
+                var lstStages = db.Stages.Where(a => a.IsDeleted == false && a.ClientId == Sessions.User.ClientId).Select(a => new { Code = a.Code, Title = a.Title }).ToList();
+                var listStageCode = lstStages.Select(s => s.Code).ToList();
+                string Eloqua = Enums.IntegrationType.Eloqua.ToString();
+                string Plan_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program_Tactic.ToString();
+                string Plan_Improvement_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Improvement_Campaign_Program_Tactic.ToString();
+
+                List<GameplanDataTypeModel> listGameplanDataTypeStageZero = new List<GameplanDataTypeModel>();
+                listGameplanDataTypeStageZero = (from i in db.IntegrationInstances
+                                                 join d in db.GameplanDataTypes on i.IntegrationTypeId equals d.IntegrationTypeId
+                                                 where d.IsGet != true &&
+                                                 (integrationTypeName == Eloqua ? (d.TableName == Plan_Campaign_Program_Tactic || d.TableName == Plan_Improvement_Campaign_Program_Tactic) : 1 == 1)
+                                                 join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
+                                                 from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
+                                                 where i.IntegrationInstanceId == id && d.IsDeleted == false && d.IsStage == false
+                                                 select new GameplanDataTypeModel
+                                                 {
+                                                     GameplanDataTypeId = d.GameplanDataTypeId,
+                                                     IntegrationTypeId = d.IntegrationTypeId,
+                                                     TableName = d.TableName,
+                                                     ActualFieldName = d.ActualFieldName,
+                                                     DisplayFieldName = d.DisplayFieldName,
+                                                     IsGet = d.IsGet,
+                                                     IntegrationInstanceDataTypeMappingId = m.IntegrationInstanceDataTypeMappingId,
+                                                     IntegrationInstanceId = i.IntegrationInstanceId,
+                                                     TargetDataType = m.TargetDataType
+                                                 }).ToList();
+
+                List<GameplanDataTypeModel> listGameplanDataTypeStageOne = new List<GameplanDataTypeModel>();
+                listGameplanDataTypeStageOne = (from i in db.IntegrationInstances
+                                                join d in db.GameplanDataTypes on i.IntegrationTypeId equals d.IntegrationTypeId
+                                                where d.IsGet != true &&
+                                                (integrationTypeName == Eloqua ? (d.TableName == Plan_Campaign_Program_Tactic || d.TableName == Plan_Improvement_Campaign_Program_Tactic) : 1 == 1)
+                                                join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
+                                                from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
+                                                where i.IntegrationInstanceId == id && d.IsDeleted == false && d.IsStage == true && listStageCode.Contains(d.ActualFieldName)
+                                                select new GameplanDataTypeModel
+                                                {
+                                                    GameplanDataTypeId = d.GameplanDataTypeId,
+                                                    IntegrationTypeId = d.IntegrationTypeId,
+                                                    TableName = d.TableName,
+                                                    ActualFieldName = d.ActualFieldName,
+                                                    DisplayFieldName = d.DisplayFieldName,
+                                                    IsGet = d.IsGet,
+                                                    IntegrationInstanceDataTypeMappingId = m.IntegrationInstanceDataTypeMappingId,
+                                                    IntegrationInstanceId = i.IntegrationInstanceId,
+                                                    TargetDataType = m.TargetDataType
+                                                }).ToList();
+
+                foreach (var item in listGameplanDataTypeStageOne)
+                {
+                    item.DisplayFieldName = item.DisplayFieldName + "[" + lstStages.Where(a => a.Code == item.ActualFieldName).Select(a => a.Title).FirstOrDefault() + "]";
+                }
+
+                listGameplanDataTypeStageZero.AddRange(listGameplanDataTypeStageOne);
+
+                if (listGameplanDataTypeStageZero != null && listGameplanDataTypeStageZero.Count > 0)
+                {
+                    TempData["TargetFieldInvalidMsg"] = Common.objCached.TargetFieldInvalidMsg;
+                    return listGameplanDataTypeStageZero.OrderBy(map => map.TableName).ToList();
+                }
+                //// End - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id
+                else
+                {
+                    TempData["TargetFieldInvalidMsg"] = "";
+                    TempData["DataMappingErrorMessage"] = Common.objCached.DataTypeMappingNotConfigured;
+                    return null;
+                }
+            }
+            catch (Exception e)
+            {
+                TempData["DataMappingErrorMessage"] = Common.objCached.DataTypeMappingNotConfigured + e.Message;
+                ErrorSignal.FromCurrentContext().Raise(e);
+                return null;
+            }
+        }
+        #endregion
+
+        #region Save DataType Mapping using Ajax call
+        /// <summary>
+        /// Save gameplan mapping data type using ajax call
+        /// </summary>
+        /// <CreatedBy>Sohel Pathan</CreatedBy>
+        /// <CreatedDate>05/08/2014</CreatedDate>
+        /// <param name="id"></param>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult SaveDataMapping(IList<GameplanDataTypeModel> form, int IntegrationInstanceId, string UserId = "")
+        {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+
+            try
+            {
+                using (MRPEntities mrp = new MRPEntities())
+                {
+                    using (var scope = new TransactionScope())
+                    {
+                        List<int> lstIds = mrp.IntegrationInstanceDataTypeMappings.Where(m => m.IntegrationInstanceId == IntegrationInstanceId).Select(m => m.IntegrationInstanceDataTypeMappingId).ToList();
+                        if (lstIds != null && lstIds.Count > 0)
+                        {
+                            foreach (int ids in lstIds)
+                            {
+                                IntegrationInstanceDataTypeMapping obj = mrp.IntegrationInstanceDataTypeMappings.Where(m => m.IntegrationInstanceDataTypeMappingId == ids).SingleOrDefault();
+                                if (obj != null)
+                                {
+                                    mrp.Entry(obj).State = EntityState.Deleted;
+                                    mrp.SaveChanges();
+                                }
+                            }
+
+                        }
+                        foreach (GameplanDataTypeModel obj in form)
+                        {
+                            if (!string.IsNullOrEmpty(obj.TargetDataType))
+                            {
+                                IntegrationInstanceDataTypeMapping objMapping = new IntegrationInstanceDataTypeMapping();
+                                int instanceId;
+                                int.TryParse(Convert.ToString(obj.IntegrationInstanceId), out instanceId);
+                                objMapping.IntegrationInstanceId = instanceId;
+                                objMapping.GameplanDataTypeId = obj.GameplanDataTypeId;
+                                objMapping.TargetDataType = obj.TargetDataType;
+                                objMapping.CreatedDate = DateTime.Now;
+                                objMapping.CreatedBy = Sessions.User.UserId;
+                                mrp.Entry(objMapping).State = EntityState.Added;
+                                mrp.SaveChanges();
+                            }
+                        }
+                        scope.Complete();
+                    }
+                }
+                return Json(new { status = 1, Message = Common.objCached.DataTypeMappingSaveSuccess }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            return Json(new { status = 0, Message = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
 
         #endregion
 

@@ -717,6 +717,33 @@ namespace RevenuePlanner.Helpers
             {PlanAllocatedBy.months.ToString(), "months"},
             {PlanAllocatedBy.quarters.ToString(), "quarters"}
         };
+
+        /// <summary>
+        /// Added by: Sohel Pathan
+        /// Date:05/08/2014
+        /// Enum for Integration DataType Mapping
+        /// </summary>
+        public enum IntegrantionDataTypeMappingTableName
+        {
+            Plan_Campaign,
+            Plan_Campaign_Program,
+            Plan_Campaign_Program_Tactic,
+            Plan_Improvement_Campaign,
+            Plan_Improvement_Campaign_Program,
+            Plan_Improvement_Campaign_Program_Tactic
+        }
+
+        /// <summary>
+        /// Added by: Sohel Pathan
+        /// Date:05/08/2014
+        /// Enum for Integration Types
+        /// </summary>
+        public enum IntegrationType
+        {
+            Eloqua,
+            Salesforce,
+            Marketo,
+        }
     }
 
     #region Authorization
