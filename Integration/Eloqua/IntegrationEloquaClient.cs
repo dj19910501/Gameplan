@@ -203,6 +203,7 @@ namespace Integration.Eloqua
             else
             {
                 SyncInstanceData();
+                GetDataForTacticandUpdate();
             }
 
             return _isResultError;
@@ -277,6 +278,21 @@ namespace Integration.Eloqua
             catch (Exception e)
             {
                 throw;
+            }
+        }
+
+        private void GetDataForTacticandUpdate()
+        {
+            try
+            {
+                // Get All responses from integration instance external server
+                EloquaResponse objEloquaResponse = new EloquaResponse();
+                objEloquaResponse.GetTacticResponse(_integrationInstanceId, _userId, _integrationInstanceLogId);
+            }
+            catch (Exception ex)
+            {
+                _ErrorMessage = Common.GetErrorMessage(ex);
+                _isResultError = true;
             }
         }
 

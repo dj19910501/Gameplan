@@ -49,6 +49,9 @@ namespace RevenuePlanner.Models
     
         public virtual BusinessUnit BusinessUnit { get; set; }
         public virtual IntegrationInstance IntegrationInstance { get; set; }
+        public virtual IntegrationInstance IntegrationInstance1 { get; set; }
+        public virtual IntegrationInstance IntegrationInstance2 { get; set; }
+        public virtual IntegrationInstance IntegrationInstance3 { get; set; }
         public virtual ICollection<LineItemType> LineItemTypes { get; set; }
         public virtual ICollection<Model_Audience_Event> Model_Audience_Event { get; set; }
         public virtual ICollection<Model_Audience_Inbound> Model_Audience_Inbound { get; set; }

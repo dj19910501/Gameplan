@@ -42,4 +42,12 @@ namespace Integration.Eloqua
         public string id { get; set; }
         public string value { get; set; }
     }
+
+    public class EloquaResponseModel
+    {
+        public string eloquaTacticId { get; set; }
+        public string externalTacticId { get; set; }
+        public DateTime peroid { get; set; }
+        public int responseCount { get; set; }
+    }
 }

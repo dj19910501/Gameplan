@@ -92,10 +92,10 @@
 		<Name>DuplicateTacticExits</Name>
 		<value>Tactic with same title exits.</value>
 	</Field>
-  <Field>
-    <Name>DuplicateLineItemExits</Name>
-    <value>Line Item with same title exits.</value>
-  </Field>
+	<Field>
+		<Name>DuplicateLineItemExits</Name>
+		<value>Line Item with same title exits.</value>
+	</Field>
 	<Field>
 		<Name>DeleteCampaignDependency</Name>
 		<value>Dependency with other entities exits, cannot be deleted.</value>
@@ -399,7 +399,7 @@
 	<!--End - Added by : Sohel Pathan on 09/05/2014 for PL #430-->
 	<Field>
 		<Name>DataTypeMappingSaveSuccess</Name>
-		<value>External service integration data mapping saved successfully.</value>
+		<value>Data Mapping have been saved.</value>
 	</Field>
 	<Field>
 		<Name>DataTypeMappingNotConfigured</Name>
@@ -692,7 +692,7 @@
 	</Field>
 	<Field>
 		<Name>CampaignBudgetIsLowerthanTotalAllocatedPrograms</Name>
-		<value>Your campaign budget is lower than the total allocated programs month budget in </value>
+		<value>Your campaign budget is lower than the total allocated programs month budget in</value>
 	</Field>
 	<!--End Added By Dharmraj #567 : Budget allocation for campaign-->
 	<!-- Start - Added By Sohel Pathan #597 -->
@@ -727,18 +727,18 @@
 		<value>Are you sure you want to delete this line item?</value>
 	</Field>
 	<!-- End - Added By Dharmraj #574 -->
-  <!-- Start - Manoj #679 -->
-  <Field>
-    <Name>DuplicateFileLocation</Name>
-    <value>Server configuration with same file location {0} already exist</value>
-  </Field>
-  <Field>
-    <Name>ConnectionFail</Name>
-    <value>Not able to connect to the serrver with provided details</value>
-  </Field>
-  <Field>
-    <Name>ServerConfigurationSaved</Name>
-    <value>External Server Configuration saved successfully</value>
-  </Field>
-  <!-- End - Manoj #679 -->
+	<!-- Start - Manoj #679 -->
+	<Field>
+		<Name>DuplicateFileLocation</Name>
+		<value>Server configuration with same file location {0} already exist</value>
+	</Field>
+	<Field>
+		<Name>ConnectionFail</Name>
+		<value>Not able to connect to the serrver with provided details</value>
+	</Field>
+	<Field>
+		<Name>ServerConfigurationSaved</Name>
+		<value>External Server Configuration saved successfully</value>
+	</Field>
+	<!-- End - Manoj #679 -->
 </Messages>

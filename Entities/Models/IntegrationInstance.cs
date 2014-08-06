@@ -18,10 +18,13 @@ namespace RevenuePlanner.Models
         {
             this.IntegrationInstance_Attribute = new HashSet<IntegrationInstance_Attribute>();
             this.IntegrationInstanceDataTypeMappings = new HashSet<IntegrationInstanceDataTypeMapping>();
+            this.IntegrationInstanceExternalServers = new HashSet<IntegrationInstanceExternalServer>();
             this.IntegrationInstanceLogs = new HashSet<IntegrationInstanceLog>();
             this.IntegrationInstancePlanEntityLogs = new HashSet<IntegrationInstancePlanEntityLog>();
             this.Models = new HashSet<Model>();
-            this.IntegrationInstanceExternalServers = new HashSet<IntegrationInstanceExternalServer>();
+            this.Models1 = new HashSet<Model>();
+            this.Models2 = new HashSet<Model>();
+            this.Models3 = new HashSet<Model>();
         }
     
         public int IntegrationInstanceId { get; set; }
@@ -43,10 +46,13 @@ namespace RevenuePlanner.Models
         public virtual ICollection<IntegrationInstance_Attribute> IntegrationInstance_Attribute { get; set; }
         public virtual IntegrationType IntegrationType { get; set; }
         public virtual ICollection<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
+        public virtual ICollection<IntegrationInstanceExternalServer> IntegrationInstanceExternalServers { get; set; }
         public virtual ICollection<IntegrationInstanceLog> IntegrationInstanceLogs { get; set; }
         public virtual ICollection<IntegrationInstancePlanEntityLog> IntegrationInstancePlanEntityLogs { get; set; }
         public virtual ICollection<Model> Models { get; set; }
+        public virtual ICollection<Model> Models1 { get; set; }
+        public virtual ICollection<Model> Models2 { get; set; }
+        public virtual ICollection<Model> Models3 { get; set; }
         public virtual SyncFrequency SyncFrequency { get; set; }
-        public virtual ICollection<IntegrationInstanceExternalServer> IntegrationInstanceExternalServers { get; set; }
     }
 }

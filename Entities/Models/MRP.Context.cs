@@ -43,6 +43,7 @@ namespace RevenuePlanner.Models
         public DbSet<IntegrationInstance> IntegrationInstances { get; set; }
         public DbSet<IntegrationInstance_Attribute> IntegrationInstance_Attribute { get; set; }
         public DbSet<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
+        public DbSet<IntegrationInstanceExternalServer> IntegrationInstanceExternalServers { get; set; }
         public DbSet<IntegrationInstanceLog> IntegrationInstanceLogs { get; set; }
         public DbSet<IntegrationInstancePlanEntityLog> IntegrationInstancePlanEntityLogs { get; set; }
         public DbSet<IntegrationType> IntegrationTypes { get; set; }
@@ -83,7 +84,6 @@ namespace RevenuePlanner.Models
         public DbSet<User_Filter> User_Filter { get; set; }
         public DbSet<User_Notification> User_Notification { get; set; }
         public DbSet<Vertical> Verticals { get; set; }
-        public DbSet<IntegrationInstanceExternalServer> IntegrationInstanceExternalServers { get; set; }
     
         public virtual int Plan_Campaign_Program_Tactic_ActualDelete(Nullable<int> planTacticId, ObjectParameter returnValue)
         {
