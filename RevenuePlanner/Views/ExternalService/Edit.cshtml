@@ -87,6 +87,10 @@
                 if ($(this).attr("href") == '#collapseGrp1') {
                     $('#Instance').focus();
                 }
+                //Added By : Sohel Pathan
+                else if ($(this).attr("href") == '#collapseGrpDataMapping') {
+                    $("#frmDataMapping").find('#0').focus();
+                }
             }
         });
         $('.integrationAccordion .accordion-group:last-child').addClass('last');

@@ -3,7 +3,7 @@
 
 <div class="accordion-group">
     <div class="accordion-heading">
-        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseGrpDataMapping">Pushing Tactic Data<span href="javascript:void(0)">- Collapse</span></a>
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseGrpDataMapping">Pushing Tactic Data<span href="javascript:void(0)">+ Expand</span></a>
     </div>
     <div class="accordion-body collapse out" id="collapseGrpDataMapping">
         @using (Html.BeginForm("SaveDataMapping", "ExternalService", FormMethod.Post, new { name = "frmDataMapping", id = "frmDataMapping" }))
@@ -144,21 +144,27 @@
 
     $(document).ready(function () {
         $(".verticalIdSelectBox select").selectbox();
-        $('.ddlStyle').each(function () {
+        var focusSet = false;
+        $("#frmDataMapping").find('.ddlStyle').each(function () {
+            if (!focusSet)
+            {
+                $(this).focus();
+                focusSet = true;
+            }
             if ($(this).next('.sbHolder').hasClass("error")) {
                 $(this).next('.sbHolder').removeClass("error");
             }
         });
     });
 
-    $('.ddlStyle').change(function () {
+    $("#frmDataMapping").find('.ddlStyle').change(function () {
         var sbValue = $(this).attr('sb');
         var selValue = $('#sbSelector_' + $(this).attr('sb')).html();
         $('select[sb="' + sbValue + '"]').val(selValue);
     });
 
-    $('.ddlStyle').change(function (e) {
-        $('.ddlStyle').each(function () {
+    $("#frmDataMapping").find('.ddlStyle').change(function (e) {
+        $("#frmDataMapping").find('.ddlStyle').each(function () {
             var isError = false;
             var currentDdl = this;
             var currentTargetValue = $(this).val();
@@ -195,7 +201,7 @@
 
     $("#btnSaveDataMappings").click(function (e) {
         var isError = false;
-        $('.ddlStyle').each(function (e) {
+        $("#frmDataMapping").find('.ddlStyle').each(function (e) {
             if ($(this).next('.sbHolder').hasClass("error")) {
                 isError = true;
                 return false;
