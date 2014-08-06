@@ -7714,16 +7714,20 @@ div.sub{display:none; transition: height 0.35s ease 0s; padding:0;}
 #tblDataMapping td.width60 {
     width: 60%;
     text-align: left;
+    padding-right:10%;
 }
 #tblDataMapping td.title1 {
     color:#333333 !important;
     font-size: 14px !important;
+    font-family:'source_sans_proregular',Arial,"sans-serif" !important;
 }
 #tblDataMapping .verticalIdSelectBox .sbHolder {
     top: 9px !important;
 }
 #tblDataMapping .title-header {
     border-bottom: 1px solid #ddd;
+    padding-right:5%;
+    margin-left:-20px;
 }
 #frmDataMapping .messages {
     width:82%;
@@ -7732,5 +7736,12 @@ div.sub{display:none; transition: height 0.35s ease 0s; padding:0;}
 }
 .float-left {
     float:left !important;
+}
+.padding-right5 {
+    padding-right:5%;
+}
+#tblDataMapping h5 {
+    color:#333333 !important;
+    font-weight:normal !important;
 }
 /* End -Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681 */ 

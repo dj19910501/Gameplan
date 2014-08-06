@@ -537,12 +537,6 @@ namespace RevenuePlanner.Controllers
             if (id > 0)
             {
                 objView.GameplanDataTypeModelList = GetGameplanDataTypeList(id);   // Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681
-
-                if (objView.GameplanDataTypeModelList == null)
-                {
-                    objView.GameplanDataTypeModelList  = new List<GameplanDataTypeModel>(); 
-                }
-
                 objView.ExternalServer = GetExternalServer(id);    
             }
             return View(objView);
@@ -1091,8 +1085,6 @@ namespace RevenuePlanner.Controllers
                 }
 
                 //// Start - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id 
-                var lstStages = db.Stages.Where(a => a.IsDeleted == false && a.ClientId == Sessions.User.ClientId).Select(a => new { Code = a.Code, Title = a.Title }).ToList();
-                var listStageCode = lstStages.Select(s => s.Code).ToList();
                 string Eloqua = Enums.IntegrationType.Eloqua.ToString();
                 string Plan_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program_Tactic.ToString();
                 string Plan_Improvement_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Improvement_Campaign_Program_Tactic.ToString();
@@ -1100,11 +1092,11 @@ namespace RevenuePlanner.Controllers
                 List<GameplanDataTypeModel> listGameplanDataTypeStageZero = new List<GameplanDataTypeModel>();
                 listGameplanDataTypeStageZero = (from i in db.IntegrationInstances
                                                  join d in db.GameplanDataTypes on i.IntegrationTypeId equals d.IntegrationTypeId
-                                                 where d.IsGet != true &&
-                                                 (integrationTypeName == Eloqua ? (d.TableName == Plan_Campaign_Program_Tactic || d.TableName == Plan_Improvement_Campaign_Program_Tactic) : 1 == 1)
                                                  join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
                                                  from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
-                                                 where i.IntegrationInstanceId == id && d.IsDeleted == false && d.IsStage == false
+                                                 where i.IntegrationInstanceId == id && d.IsDeleted == false //&& d.IsStage == false
+                                                 && d.IsGet != true &&
+                                                 (integrationTypeName == Eloqua ? (d.TableName == Plan_Campaign_Program_Tactic || d.TableName == Plan_Improvement_Campaign_Program_Tactic) : 1 == 1)
                                                  select new GameplanDataTypeModel
                                                  {
                                                      GameplanDataTypeId = d.GameplanDataTypeId,
@@ -1118,34 +1110,6 @@ namespace RevenuePlanner.Controllers
                                                      TargetDataType = m.TargetDataType
                                                  }).ToList();
 
-                List<GameplanDataTypeModel> listGameplanDataTypeStageOne = new List<GameplanDataTypeModel>();
-                listGameplanDataTypeStageOne = (from i in db.IntegrationInstances
-                                                join d in db.GameplanDataTypes on i.IntegrationTypeId equals d.IntegrationTypeId
-                                                where d.IsGet != true &&
-                                                (integrationTypeName == Eloqua ? (d.TableName == Plan_Campaign_Program_Tactic || d.TableName == Plan_Improvement_Campaign_Program_Tactic) : 1 == 1)
-                                                join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
-                                                from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
-                                                where i.IntegrationInstanceId == id && d.IsDeleted == false && d.IsStage == true && listStageCode.Contains(d.ActualFieldName)
-                                                select new GameplanDataTypeModel
-                                                {
-                                                    GameplanDataTypeId = d.GameplanDataTypeId,
-                                                    IntegrationTypeId = d.IntegrationTypeId,
-                                                    TableName = d.TableName,
-                                                    ActualFieldName = d.ActualFieldName,
-                                                    DisplayFieldName = d.DisplayFieldName,
-                                                    IsGet = d.IsGet,
-                                                    IntegrationInstanceDataTypeMappingId = m.IntegrationInstanceDataTypeMappingId,
-                                                    IntegrationInstanceId = i.IntegrationInstanceId,
-                                                    TargetDataType = m.TargetDataType
-                                                }).ToList();
-
-                foreach (var item in listGameplanDataTypeStageOne)
-                {
-                    item.DisplayFieldName = item.DisplayFieldName + "[" + lstStages.Where(a => a.Code == item.ActualFieldName).Select(a => a.Title).FirstOrDefault() + "]";
-                }
-
-                listGameplanDataTypeStageZero.AddRange(listGameplanDataTypeStageOne);
-
                 if (listGameplanDataTypeStageZero != null && listGameplanDataTypeStageZero.Count > 0)
                 {
                     TempData["TargetFieldInvalidMsg"] = Common.objCached.TargetFieldInvalidMsg;
@@ -1156,14 +1120,14 @@ namespace RevenuePlanner.Controllers
                 {
                     TempData["TargetFieldInvalidMsg"] = "";
                     TempData["DataMappingErrorMessage"] = Common.objCached.DataTypeMappingNotConfigured;
-                    return null;
+                    return listGameplanDataTypeStageZero = new List<GameplanDataTypeModel>();
                 }
             }
             catch (Exception e)
             {
+                ViewData["ExternalFieldList"] = new List<string>();
                 TempData["DataMappingErrorMessage"] = Common.objCached.DataTypeMappingNotConfigured + e.Message;
-                ErrorSignal.FromCurrentContext().Raise(e);
-                return null;
+                return new List<GameplanDataTypeModel>();
             }
         }
         #endregion
