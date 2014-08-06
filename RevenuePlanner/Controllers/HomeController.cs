@@ -85,6 +85,18 @@ namespace RevenuePlanner.Controllers
             ViewBag.SuccessMessageDuplicatePlan = TempData["SuccessMessageDuplicatePlan"];
             ViewBag.ErrorMessageDuplicatePlan = TempData["ErrorMessageDuplicatePlan"];
 
+            if (TempData["SuccessMessageDeletedPlan"] != null)
+            {
+                ViewBag.SuccessMessageDuplicatePlan = TempData["SuccessMessageDeletedPlan"];
+                TempData["SuccessMessageDeletedPlan"] = string.Empty;
+            }
+
+            if (TempData["ErrorMessage"] != null)
+            {
+                ViewBag.ErrorMessageDuplicatePlan = TempData["ErrorMessage"];
+                TempData["ErrorMessage"] = string.Empty;
+            }
+            
             HomePlanModel planmodel = new Models.HomePlanModel();
 
             //    planmodel.objHomePlan.IsDirector = Sessions.IsDirector;

@@ -58,12 +58,12 @@
                 {
                     <div class="accordion-group">
                         <div class="accordion-heading">
-                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseGrp2">Pushing Tactic Data<span href="javascript:void(0)">+ Expand</span></a>
+                            <a class="accordion-toggle"  data-parent="#accordion" >Pushing Tactic Data<span >+ Expand</span></a>
                         </div>
                     </div>
                     <div class="accordion-group">
                         <div class="accordion-heading">
-                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseGrpServer">Response Pulling<span href="javascript:void(0)">+ Expand</span></a>
+                            <a class="accordion-toggle" data-parent="#accordion" >Response Pulling<span>+ Expand</span></a>
                         </div>
                     </div>
                 }
@@ -83,8 +83,11 @@
                 $(this).children('span').text('+ Expand');
             } else {
                 $(this).children('span').text('- Collapse');
+                //Added By : Kalpesh Sharma
+                if ($(this).attr("href") == '#collapseGrp1') {
+                    $('#Instance').focus();
+                }
             }
-
         });
         $('.integrationAccordion .accordion-group:last-child').addClass('last');
         //End By : Kalpesh Sharma : PL#682 Integration - UI - Integration Type Settings
@@ -109,18 +112,18 @@
 
         $('#hdnIsActiveIntact').val($('#IsActive').val());
 
-        $('#content :input').each(function () {
-            if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
-                if (this.id != 'importActuals' && this.id != 'integrationStatus') {
-                    var input = $(this).val();
-                    if (input == '') {
-                        $(this).addClass("error");
-                    } else {
-                        $(this).removeClass("error");
-                    }
-                }
-            }
-        });
+        //$('#content :input').each(function () {
+        //    if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
+        //        if (this.id != 'importActuals' && this.id != 'integrationStatus') {
+        //            var input = $(this).val();
+        //            if (input == '') {
+        //                $(this).addClass("error");
+        //            } else {
+        //                $(this).removeClass("error");
+        //            }
+        //        }
+        //    }
+        //});
 
         var selectedSpan = $('#ddlSyncFrequency').val();
         if (selectedSpan != "") {

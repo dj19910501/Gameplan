@@ -748,7 +748,44 @@
     }
 
     function SetPlanButtons() {
+
+        //Added : By Kalpesh Sharma Ticket #638 Cloning icon for plans, campaigns, programs and tactics
         $('#BtnGroup').click(function (e) {
+            if ($(this).html().toLowerCase() == "duplicate") {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Plan/Clone")',
+                    data: {
+                        CloneType: '@Enums.DuplicationModule.Plan',
+                        Id: '@Model.PlanId',
+                        title: ''
+                    },
+                    success: function (data) {
+                        if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                            window.location = '@Url.Content("~/Login/Index")';
+                        }
+                        else {
+                            if (data.redirect) {
+                                var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + $('#ActiveMenu').val() + '&currentPlanId=' + data.planId;
+                                window.location.href = url;
+                                return;
+                            }
+                            if (data.errormsg) {
+                                alert(data.errormsg);
+                                return;
+                            }
+                        }
+                    }
+                });
+            }
+            else {
+                var url = '@Url.Content("~/Plan/Create/0")';
+                window.location.href = url;
+            }
+        });
+
+            @*$('#BtnGroup').click(function (e) {
+            alert("called");
             if ($(this).html().toLowerCase() == "duplicate") {
                 CheckUserSession("#BtnGroup", true);
                 if (reason == 'user') {
@@ -760,7 +797,7 @@
                 var url = '@Url.Content("~/Plan/Create/0")';
                 window.location.href = url;
             }
-        });
+        });*@
     }
 
     function ShowChangeLog() {

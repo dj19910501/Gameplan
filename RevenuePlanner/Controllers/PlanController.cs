@@ -8235,7 +8235,7 @@ namespace RevenuePlanner.Controllers
 
                 if (rtResult >= 1)
                 {
-                    return Json(new { redirect = Url.Action("Assortment") });
+                    return Json(new { redirect = Url.Action("Assortment"), planId = Sessions.PlanId });
                 }
                 return Json(new { });
 

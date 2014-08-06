@@ -88,6 +88,7 @@ namespace RevenuePlanner.Helpers
                             t.Vertical = null;
                             t.Audience = null;
                             t.Geography = null;
+                            t.Plan_Campaign_Budget = t.Plan_Campaign_Budget.ToList();
                             t.Plan_Campaign_Program.Where(s => s.IsDeleted == false).ToList().ForEach(pcp =>
                             {
                                 pcp.Plan_Campaign_Program_Tactic_Comment = null;
@@ -95,6 +96,7 @@ namespace RevenuePlanner.Helpers
                                 pcp.Audience = null;
                                 pcp.Geography = null;
                                 pcp.Vertical = null;
+                                pcp.Plan_Campaign_Program_Budget = pcp.Plan_Campaign_Program_Budget.ToList();
                                 pcp.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(pcpt =>
                                 {
                                     pcpt.Plan_Campaign_Program_Tactic_Actual = null;
@@ -121,6 +123,7 @@ namespace RevenuePlanner.Helpers
                     proj.Plan_Campaign = proj.Plan_Campaign.ToList();
                     db.Plans.Add(proj);
                     db.SaveChanges();
+                    Sessions.PlanId = proj.PlanId; 
                     Common.InsertChangeLog(Sessions.PlanId, null, returnFlag, proj.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                     returnFlag = 1;
                     return returnFlag;

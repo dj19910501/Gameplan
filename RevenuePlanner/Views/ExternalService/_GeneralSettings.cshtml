@@ -155,8 +155,7 @@
 <script>
     $(document).ready(function () {
 
-        function testIntegration() {
-            //alert("Test integration");
+        function testIntegration() {    
             $('#content #integrationForm :input').each(function () {
                 if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
                     if (this.id == 'Instance' || this.id == 'Username' || this.id == 'Password') {
@@ -226,7 +225,7 @@
 
         $('#btnSave').click(function (e) {
             var isValidate = true;
-            $('#integrationForm #content :input').each(function () {
+            $('#content #integrationForm :input').each(function () {
                 if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
                     if (this.id != 'importActuals' && this.id != 'integrationStatus' && this.id != 'SyncFrequency_Day') {
                         var input = $(this).val();
@@ -291,6 +290,13 @@
                     if (data != null) {
                         if (data.status == 1) {
                             $("#cSuccessGeneralSettings").html('');
+
+                            if ('@Model.IntegrationInstanceId' == 0) {
+                                var URL = "@Url.Content("~/ExternalService/edit/")";
+                                URL = URL + "?id=" + data.id + "&TypeId=" + '@Model.IntegrationTypeId';
+                                window.location.href = URL;
+                            }
+
                             $('#cSuccessGeneralSettings').append("<strong>Success. </strong>" + data.SuccessMessage.toString());
                             $("#successMessageGeneralSettings").slideDown(1200);
                             $("#errorMessageGeneralSettings").slideUp(1);
