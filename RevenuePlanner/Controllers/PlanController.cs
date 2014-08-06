@@ -7612,12 +7612,14 @@ namespace RevenuePlanner.Controllers
                 title = p.Title,
                 description = p.Description,
                 isOwner = Sessions.User.UserId == p.CreatedBy ? 0 : 1,
+                Budgeted = p.CampaignBudget,
                 Budget = p.Plan_Campaign_Budget.Select(b1 => new BudgetedValue { Period = b1.Period, Value = b1.Value }).ToList(),
                 programs = (db.Plan_Campaign_Program.Where(pcp => pcp.PlanCampaignId.Equals(p.PlanCampaignId) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp).ToList()).Select(pcpj => new
                 {
                     id = pcpj.PlanProgramId,
                     title = pcpj.Title,
                     description = pcpj.Description,
+                    Budgeted = pcpj.ProgramBudget,
                     Budget = pcpj.Plan_Campaign_Program_Budget.Select(b1 => new BudgetedValue { Period = b1.Period, Value = b1.Value }).ToList(),
                     isOwner = Sessions.User.UserId == pcpj.CreatedBy ? 0 : 1
 
@@ -7630,12 +7632,14 @@ namespace RevenuePlanner.Controllers
                 title = c.title,
                 description = c.description,
                 isOwner = c.isOwner,
+                Budgeted = c.Budgeted,
                 Budget = c.Budget,
                 programs = c.programs.Select(p => new
                 {
                     id = p.id,
                     title = p.title,
                     description = p.description,
+                    Budgeted = p.Budgeted,
                     Budget = p.Budget,
                     isOwner = p.isOwner
                 })
@@ -7647,6 +7651,7 @@ namespace RevenuePlanner.Controllers
                 title = c.title,
                 description = c.description,
                 Budget = c.Budget,
+                Budgeted = c.Budgeted,
                 isOwner = c.isOwner == 0 ? (c.programs.Any(p => p.isOwner == 1) ? 1 : 0) : 1,
                 programs = c.programs
             });
@@ -7684,6 +7689,7 @@ namespace RevenuePlanner.Controllers
                     obj.ParentActivityId = parentPlanId;
                     obj.IsOwner = Convert.ToBoolean(c.isOwner);
                     obj = GetMonthWiseData(obj, c.Budget);
+                    obj.Budgeted = c.Budgeted;
                     model.Add(obj);
                     parentCampaignId = c.id;
                     foreach (var p in c.programs)
@@ -7695,6 +7701,7 @@ namespace RevenuePlanner.Controllers
                         obj.ParentActivityId = parentCampaignId;
                         obj.IsOwner = Convert.ToBoolean(p.isOwner);
                         obj = GetMonthWiseData(obj, p.Budget);
+                        obj.Budgeted = p.Budgeted;
                         model.Add(obj);
                     }
                 }
@@ -7827,34 +7834,34 @@ namespace RevenuePlanner.Controllers
                 {
                     
                     c.ParentMonth.Jan = plan.Month.Jan - c.SumMonth.Jan;
-                    c.ParentMonth.Feb = plan.Month.Feb - c.Month.Feb;
-                    c.ParentMonth.Mar = plan.Month.Mar - c.Month.Mar;
-                    c.ParentMonth.Apr = plan.Month.Apr - c.Month.Apr;
-                    c.ParentMonth.May = plan.Month.May - c.Month.May;
-                    c.ParentMonth.Jun = plan.Month.Jun - c.Month.Jun;
-                    c.ParentMonth.Jul = plan.Month.Jul - c.Month.Jul;
-                    c.ParentMonth.Aug = plan.Month.Aug - c.Month.Aug;
-                    c.ParentMonth.Sep = plan.Month.Sep - c.Month.Sep;
-                    c.ParentMonth.Oct = plan.Month.Oct - c.Month.Oct;
-                    c.ParentMonth.Nov = plan.Month.Nov - c.Month.Nov;
-                    c.ParentMonth.Dec = plan.Month.Dec - c.Month.Dec;
+                    c.ParentMonth.Feb = plan.Month.Feb - c.SumMonth.Feb;
+                    c.ParentMonth.Mar = plan.Month.Mar - c.SumMonth.Mar;
+                    c.ParentMonth.Apr = plan.Month.Apr - c.SumMonth.Apr;
+                    c.ParentMonth.May = plan.Month.May - c.SumMonth.May;
+                    c.ParentMonth.Jun = plan.Month.Jun - c.SumMonth.Jun;
+                    c.ParentMonth.Jul = plan.Month.Jul - c.SumMonth.Jul;
+                    c.ParentMonth.Aug = plan.Month.Aug - c.SumMonth.Aug;
+                    c.ParentMonth.Sep = plan.Month.Sep - c.SumMonth.Sep;
+                    c.ParentMonth.Oct = plan.Month.Oct - c.SumMonth.Oct;
+                    c.ParentMonth.Nov = plan.Month.Nov - c.SumMonth.Nov;
+                    c.ParentMonth.Dec = plan.Month.Dec - c.SumMonth.Dec;
                     
                     List<BudgetModel> programs = model.Where(p => p.ActivityType == ActivityProgram && p.ParentActivityId == c.ActivityId).ToList();
                     BudgetMonth SumProgram = new BudgetMonth();
                     foreach (BudgetModel p in programs)
                     {
                         p.ParentMonth.Jan = c.Month.Jan - p.SumMonth.Jan;
-                        p.ParentMonth.Feb = c.Month.Feb - p.Month.Feb;
-                        p.ParentMonth.Mar = c.Month.Mar - p.Month.Mar;
-                        p.ParentMonth.Apr = c.Month.Apr - p.Month.Apr;
-                        p.ParentMonth.May = c.Month.May - p.Month.May;
-                        p.ParentMonth.Jun = c.Month.Jun - p.Month.Jun;
-                        p.ParentMonth.Jul = c.Month.Jul - p.Month.Jul;
-                        p.ParentMonth.Aug = c.Month.Aug - p.Month.Aug;
-                        p.ParentMonth.Sep = c.Month.Sep - p.Month.Sep;
-                        p.ParentMonth.Oct = c.Month.Oct - p.Month.Oct;
-                        p.ParentMonth.Nov = c.Month.Nov - p.Month.Nov;
-                        p.ParentMonth.Dec = c.Month.Dec - p.Month.Dec;
+                        p.ParentMonth.Feb = c.Month.Feb - p.SumMonth.Feb;
+                        p.ParentMonth.Mar = c.Month.Mar - p.SumMonth.Mar;
+                        p.ParentMonth.Apr = c.Month.Apr - p.SumMonth.Apr;
+                        p.ParentMonth.May = c.Month.May - p.SumMonth.May;
+                        p.ParentMonth.Jun = c.Month.Jun - p.SumMonth.Jun;
+                        p.ParentMonth.Jul = c.Month.Jul - p.SumMonth.Jul;
+                        p.ParentMonth.Aug = c.Month.Aug - p.SumMonth.Aug;
+                        p.ParentMonth.Sep = c.Month.Sep - p.SumMonth.Sep;
+                        p.ParentMonth.Oct = c.Month.Oct - p.SumMonth.Oct;
+                        p.ParentMonth.Nov = c.Month.Nov - p.SumMonth.Nov;
+                        p.ParentMonth.Dec = c.Month.Dec - p.SumMonth.Dec;
                     }
                 }
             }

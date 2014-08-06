@@ -71,7 +71,7 @@
         var mainTableWidth = $('.budget-table').width();
         var columnWidth1 = $('.column1').width();
         var columnWidth3 = $('.column3').width();
-        $('.column2').width(mainTableWidth - columnWidth1 - columnWidth3 - 4);
+        $('.column2').width(mainTableWidth - columnWidth1 - columnWidth3 - 24);
         AddTipsy();
         SetHeader();
     });
@@ -134,77 +134,77 @@
                         strMonthHTML += '<div title="@PercAllocated.Jan%"><span style="width:@PercAllocated.Jan%;" class="error"></span></div>';
                 }
                 else if (i == 2) {
-                    strMonthHTML += '<span class="title source-sans-proregular">Feb</span>';
+                    strMonthHTML += '<span class="title source-sans-proregular">FEB</span>';
                     if ('@PercAllocated.Feb' <= 100)
                         strMonthHTML += '<div title="@PercAllocated.Feb%"><span style="width:@PercAllocated.Feb%;"></span></div>';
                     else
                         strMonthHTML += '<div title="@PercAllocated.Feb%"><span style="width:@PercAllocated.Feb%;" class="error"></span></div>';
                 }
                 else if (i == 3) {
-                    strMonthHTML += '<span class="title source-sans-proregular">Mar</span>';
+                    strMonthHTML += '<span class="title source-sans-proregular">MAR</span>';
                     if ('@PercAllocated.Mar' <= 100)
                         strMonthHTML += '<div title="@PercAllocated.Mar%"><span style="width:@PercAllocated.Mar%;"></span></div>';
                     else
                         strMonthHTML += '<div title="@PercAllocated.Mar%"><span style="width:@PercAllocated.Mar%;" class="error"></span></div>';
                 }
                 else if (i == 4) {
-                    strMonthHTML += '<span class="title source-sans-proregular">Apr</span>';
+                    strMonthHTML += '<span class="title source-sans-proregular">APR</span>';
                     if ('@PercAllocated.Apr' <= 100)
                     strMonthHTML += '<div title="@PercAllocated.Apr%"><span style="width:@PercAllocated.Apr%;"></span></div>';
                 else
                     strMonthHTML += '<div title="@PercAllocated.Apr%"><span style="width:@PercAllocated.Apr%;" class="error"></span></div>';
             }
             else if (i == 5) {
-                strMonthHTML += '<span class="title source-sans-proregular">May</span>';
+                strMonthHTML += '<span class="title source-sans-proregular">MAY</span>';
                 if ('@PercAllocated.May' <= 100)
                     strMonthHTML += '<div title="@PercAllocated.May%"><span style="width:@PercAllocated.May%;"></span></div>';
                 else
                     strMonthHTML += '<div title="@PercAllocated.May%"><span style="width:@PercAllocated.May%;" class="error"></span></div>';
             }
             else if (i == 6) {
-                strMonthHTML += '<span class="title source-sans-proregular">Jun</span>';
+                strMonthHTML += '<span class="title source-sans-proregular">JUN</span>';
                 if ('@PercAllocated.Jun' <= 100)
                     strMonthHTML += '<div title="@PercAllocated.Jun%"><span style="width:@PercAllocated.Jun%;"></span></div>';
                 else
                     strMonthHTML += '<div title="@PercAllocated.Jun%"><span style="width:@PercAllocated.Jun%;" class="error"></span></div>';
             }
             else if (i == 7) {
-                strMonthHTML += '<span class="title source-sans-proregular">Jul</span>';
+                strMonthHTML += '<span class="title source-sans-proregular">JUL</span>';
                 if ('@PercAllocated.Jul' <= 100)
                     strMonthHTML += '<div title="@PercAllocated.Jul%"><span style="width:@PercAllocated.Jul%;"></span></div>';
                 else
                     strMonthHTML += '<div title="@PercAllocated.Jul%"><span style="width:@PercAllocated.Jul%;" class="error"></span></div>';
             }
             else if (i == 8) {
-                strMonthHTML += '<span class="title source-sans-proregular">Aug</span>';
+                strMonthHTML += '<span class="title source-sans-proregular">AUG</span>';
                 if ('@PercAllocated.Aug' <= 100)
                     strMonthHTML += '<div title="@PercAllocated.Aug%"><span style="width:@PercAllocated.Aug%;"></span></div>';
                 else
                     strMonthHTML += '<div title="@PercAllocated.Aug%"><span style="width:@PercAllocated.Aug%;" class="error"></span></div>';
             }
             else if (i == 9) {
-                strMonthHTML += '<span class="title source-sans-proregular">Sep</span>';
+                strMonthHTML += '<span class="title source-sans-proregular">SEP</span>';
                 if ('@PercAllocated.Sep' <= 100)
                     strMonthHTML += '<div title="@PercAllocated.Sep%"><span style="width:@PercAllocated.Sep%;"></span></div>';
                 else
                     strMonthHTML += '<div title="@PercAllocated.Sep%"><span style="width:@PercAllocated.Sep%;" class="error"></span></div>';
             }
             else if (i == 10) {
-                strMonthHTML += '<span class="title source-sans-proregular">Oct</span>';
+                strMonthHTML += '<span class="title source-sans-proregular">OCT</span>';
                 if ('@PercAllocated.Oct' <= 100)
                     strMonthHTML += '<div title="@PercAllocated.Oct%"><span style="width:@PercAllocated.Oct%;"></span></div>';
                 else
                     strMonthHTML += '<div title="@PercAllocated.Oct%"><span style="width:@PercAllocated.Oct%;" class="error"></span></div>';
             }
             else if (i == 11) {
-                strMonthHTML += '<span class="title source-sans-proregular">Nov</span>';
+                strMonthHTML += '<span class="title source-sans-proregular">NOV</span>';
                 if ('@PercAllocated.Nov' <= 100)
                     strMonthHTML += '<div title="@PercAllocated.Nov%"><span style="width:@PercAllocated.Nov%;"></span></div>';
                 else
                     strMonthHTML += '<div title="@PercAllocated.Nov%"><span style="width:@PercAllocated.Nov%;" class="error"></span></div>';
             }
             else if (i == 12) {
-                strMonthHTML += '<span class="title source-sans-proregular">Dec</span>';
+                strMonthHTML += '<span class="title source-sans-proregular">DEC</span>';
                 if ('@PercAllocated.Dec' <= 100)
                     strMonthHTML += '<div title="@PercAllocated.Dec%"><span style="width:@PercAllocated.Dec%;"></span></div>';
                 else
