@@ -8068,6 +8068,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
             model = ManageLineItems(model);
+
             ViewBag.AllocatedBy = AllocatedBy;
             model = CalculateBottomUp(model, ActivityTactic, ActivityLineItem);
             model = CalculateBottomUp(model, ActivityProgram, ActivityTactic);
@@ -8160,14 +8161,38 @@ namespace RevenuePlanner.Controllers
                         lineDiff.Nov = l.Month.Nov - lines.Sum(lmon => (double?)lmon.Month.Nov) ?? 0;
                         lineDiff.Dec = l.Month.Dec - lines.Sum(lmon => (double?)lmon.Month.Dec) ?? 0;
 
+                        lineDiff.Jan = lineDiff.Jan < 0 ? 0 : lineDiff.Jan;
+                        lineDiff.Feb = lineDiff.Feb < 0 ? 0 : lineDiff.Feb;
+                        lineDiff.Mar = lineDiff.Mar < 0 ? 0 : lineDiff.Mar;
+                        lineDiff.Apr = lineDiff.Apr < 0 ? 0 : lineDiff.Apr;
+                        lineDiff.May = lineDiff.May < 0 ? 0 : lineDiff.May;
+                        lineDiff.Jun = lineDiff.Jun < 0 ? 0 : lineDiff.Jun;
+                        lineDiff.Jul = lineDiff.Jul < 0 ? 0 : lineDiff.Jul;
+                        lineDiff.Aug = lineDiff.Aug < 0 ? 0 : lineDiff.Aug;
+                        lineDiff.Sep = lineDiff.Sep < 0 ? 0 : lineDiff.Sep;
+                        lineDiff.Oct = lineDiff.Oct < 0 ? 0 : lineDiff.Oct;
+                        lineDiff.Nov = lineDiff.Nov < 0 ? 0 : lineDiff.Nov;
+                        lineDiff.Dec = lineDiff.Dec < 0 ? 0 : lineDiff.Dec;
+ 
                         model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == "Other").SingleOrDefault().Month = lineDiff;
+                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == "Other").SingleOrDefault().ParentMonth = lineDiff;
+                        
+                        double allocated = l.Allocated - lines.Sum(l1 => l1.Allocated);
+                        allocated = allocated < 0 ? 0 : allocated;
+                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == "Other").SingleOrDefault().Allocated = allocated;
                     }
                     else
                     {
                         model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == "Other").SingleOrDefault().Month = l.Month;
+                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == "Other").SingleOrDefault().ParentMonth = l.Month;
+                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == "Other").SingleOrDefault().Allocated = l.Allocated < 0 ? 0 : l.Allocated;
                     }
                 }
             }
+            //foreach (BudgetModel l in model.Where(l => l.ActivityType == ActivityLineItem && l.ActivityName == "Other"))
+            //{
+            //    l.Allocated = l.Month.Jan + l.Month.Feb + l.Month.Mar + l.Month.Apr + l.Month.May + l.Month.Jun + l.Month.Jul + l.Month.Aug + l.Month.Sep + l.Month.Oct + l.Month.Nov + l.Month.Dec;
+            //}
             return model;
         }
 
