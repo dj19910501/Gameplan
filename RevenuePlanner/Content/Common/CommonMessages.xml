@@ -741,4 +741,10 @@
 		<value>External Server Configuration saved successfully</value>
 	</Field>
 	<!-- End - Manoj #679 -->
+  <!-- Start - Added By Mitesh #559 -->
+  <Field>
+    <Name>IntegrationSelectionSaved</Name>
+    <value>Integration selection have been saved successfully.</value>
+  </Field>
+  <!-- End - Added By Mitesh #559 -->
 </Messages>

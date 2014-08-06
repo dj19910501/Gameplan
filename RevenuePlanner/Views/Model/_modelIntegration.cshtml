@@ -1,0 +1,35 @@
+﻿@{
+    string modelId = Convert.ToString(ViewBag.ModelId);
+}
+<div id="internalLink" class="span2 myaccount-colum">
+    <div class="padding-right70">
+        <ul class="nav nav-pills nav-stacked width216">
+
+            <li id="liSelection"><a href="@Url.Action("IntegrationSelection", "Model",new { id=modelId})">Integration Selection</a></li>
+
+            <li id="liOverview"><a href="@Url.Action("IntegrationOverview", "Model", new { id=modelId})">Integration Overview</a></li>
+        </ul>
+    </div>
+
+</div>
+<script>
+    $(document).ready(function () {
+        $('.nav nav-pills nav-stacked width216 li').each(function () {
+            $(this).removeClass('active');
+        });
+        if ('@ViewBag.PageChildTitle' == 'IntegrationSelection') {
+            $('#liSelection a').attr('href', '#');
+            if (!$('#liSelection').hasClass('active')) {
+                $('#liSelection').addClass('active');
+            }
+        }
+        else if ('@ViewBag.PageChildTitle' == 'IntegrationOverview') {
+            $('#liOverview a').attr('href', '#');
+            if (!$('#liOverview').hasClass('active')) {
+                $('#liOverview').addClass('active');
+            }
+        }
+    });
+
+
+</script>

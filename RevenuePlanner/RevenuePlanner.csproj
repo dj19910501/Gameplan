@@ -831,6 +831,9 @@
     <Content Include="Views\ExternalService\_GeneralSettings.cshtml" />
     <Content Include="Views\ExternalService\_ExternalServer.cshtml" />
     <Content Include="Views\ExternalService\_DataMapping.cshtml" />
+    <Content Include="Views\Model\IntegrationOverview.cshtml" />
+    <Content Include="Views\Model\IntegrationSelection.cshtml" />
+    <Content Include="Views\Model\_modelIntegration.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

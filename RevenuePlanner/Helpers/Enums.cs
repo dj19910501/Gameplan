@@ -320,7 +320,21 @@ namespace RevenuePlanner.Helpers
             MyPermission
         }
         /* End Added by Mitesh Vaishnav for PL ticket #521 */
-
+        /*Added by Mitesh Vaishnav for PL ticket #659*/
+        public enum IntegrationInstanceType
+        {
+            Eloqua,
+            Salesforce,
+            Marketo
+        }
+        public static Dictionary<string, string> IntegrationActivity = new Dictionary<string, string>()
+        {
+            {"IntegrationInstanceId","Push Tactics Data"},
+            {"IntegrationInstanceIdINQ","Pull Response"},
+            {"IntegrationInstanceIdMQL","Pull Qualified Leads"},
+            {"IntegrationInstanceIdCW","Pull Closed/Won Deals"}
+        };
+        /*End :Added by Mitesh Vaishnav for PL ticket #659*/
         #region Notification
         /// <summary>
         /// Added By: Maninder Singh Wadhva.

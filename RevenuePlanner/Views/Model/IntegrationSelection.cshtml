@@ -1,0 +1,361 @@
+﻿@model RevenuePlanner.Models.BaselineModel
+@using RevenuePlanner.Models
+@using RevenuePlanner.Helpers
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string modelId = Convert.ToString(ViewBag.ModelId);
+    ViewBag.ModelIdPartial = ViewBag.ModelId;//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
+    ViewBag.PageTitle = "Integration";//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
+    ViewBag.PageChildTitle = "IntegrationSelection";
+    string ModelStatus = Convert.ToString(ViewBag.ModelStatus);
+    string ModelTitle = Convert.ToString(ViewBag.ModelTitle);
+    string ShowModelResultsTab = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ShowModelResultsTab"]);
+    int LatestModelID = Convert.ToInt32(ViewBag.LatestModelID);
+    string BusinessUnitId = Convert.ToString(ViewBag.BusinessUnitId);
+    @Html.Hidden("hdnShowModelResultsTab", ShowModelResultsTab);
+                                                               string PublishedMsg = ViewBag.ModelPublishComfirmation;
+    @Html.Hidden("PublishedMsg", PublishedMsg);
+                                              bool PublisheStatus = ViewBag.Flag;
+    @Html.Hidden("PublisheStatus", PublisheStatus);
+                                                  var currentdate = System.DateTime.Today.ToShortDateString();
+                                                  string IsViewEditBusinessUnit = Convert.ToString(ViewBag.IsViewEditBusinessUnit);
+    @Html.Hidden("IsViewEditBusinessUnit", IsViewEditBusinessUnit);
+                                                                  string IsOwner = Convert.ToString(ViewBag.IsOwner);
+    @Html.Hidden("IsOwner", IsOwner);
+}
+
+
+@section nlFormContent{
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.slidepanel.css")" type="text/css" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/dropdown-info-user.js")"></script>
+}
+
+@section Sidebar
+{
+    @Html.Partial("~/Views/Model/_model.cshtml")
+}
+@Html.Hidden("hdnMsg", (string)TempData["ErrorMessage"], new { id = "hdnMsg" })
+<!--success message-->
+<div id="successMessage" class="alert hide alert-success message-position">
+    <a class="close">×</a>
+    <div id="cSuccess">@Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))</div>
+</div>
+<div id="errorMessage" class="alert alert-error hide message-position">
+    <a class="close">×</a>
+    <div id="cError">@Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))</div>
+</div>
+
+@Html.HiddenFor(model => ModelStatus, new { id = "hdnStatus" })
+@Html.Hidden("EffectiveDate", currentdate)
+<div id="DivBackgroundModel" class="modal-backdrop fade in" style="z-index: 2000; display: none;"></div>
+<div id="DivNoIntegrationModelPopup" class="form-inspect-share hide fade in" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none; height: 220px; z-index: 1502;">
+    <h2 class="primary-title source-sans-prosemibold">No Integration Exists</h2>
+    <p class="source-sans-prosemi" style="font-weight: normal; color: #FFFFFF; font-size: 17px; margin-bottom: 40px;">
+        Gameplan syncs activities to existing external automation systems via API integration. To utilize this ability, you must add an integration.
+    </p>
+    <div style="width: 100%; margin: 0px auto;">
+        <button class="form-inspect-share-button btn btn-large" id="Add-Integration" value="Submit" style="margin-top: 0px !important; margin-right: 10px; width: 80px;">Add Integration</button>
+        &nbsp;
+        <button class="btn-link" id="integration-cancel-button" type="button" style="margin-top: 0px !important; width: 80px; line-height: 41px;">Cancel</button>
+    </div>
+</div>
+<div id="DivPublishModelPopup" class="form-inspect-share hide fade in" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none; height: 205px; z-index: 2005;">
+    <h2 class="primary-title source-sans-prosemibold">Select effective date</h2>
+    <div class="dp datepicker input-append date  calendar-width" id="dp_start" data-date="today();" data-date-format="@RevenuePlanner.Helpers.Common.dateFormat">
+        <input id="t_startdate" class="black-border-right font-size13 height30px" style="background-color: #ffffff; border-color: #f3f3f3; color: #000000; width: 240px; margin-top: 0px; border-radius: 4px;" size="16" type="text">
+        <span class="add-on height30" style="border-radius: 4px;">
+            <img src="~/Content/images/gray-calendar-icon-big.png"></span>
+    </div>
+    <div style="width: 100%; margin: 0px auto;">
+        <button class="form-inspect-share-button btn btn-large" id="Save-publish" value="Submit" style="margin-top: 0px !important; margin-right: 10px; width: 80px;">Save</button>
+        &nbsp;
+        <button class="btn-link" id="cancel-button" type="button" style="margin-top: 0px !important; width: 80px; line-height: 41px;">Cancel</button>
+    </div>
+</div>
+<div class="padding-content cf source-sans-proregular">
+    <ul class="nav nav-tabs" style="margin-bottom: 20px; padding-bottom: 10px;">
+        <input type="hidden" value="@ViewBag.ModelId" id="latestModelId" />
+        <li class="title-header source-sans-proregular" title="@ViewBag.ModelTitle">
+            <h2 id="lblTitle">@ViewBag.ModelTitle @ViewBag.ModelVersion <span class="gray source-sans-prolight" title="Published">@ViewBag.ModelStatus</span></h2>
+        </li>
+    </ul>
+    <div class="row">
+        @Html.Partial("~/Views/Model/_modelIntegration.cshtml")
+
+        <div class="span10 content-colum-info-user">
+            @using (Html.BeginForm("SaveIntegration", "Model", new { id = @modelId }, FormMethod.Post))
+            {
+                 
+                   
+                <h5 style="display: block; margin-left: 180px; margin-bottom: 20px;">Instance Selection</h5>                
+                     
+                    
+
+                
+                <div class="cf inputs-aligned-horizontal">
+                    <label>Push Tactic Data</label>
+
+                    <div class="selectBox" id="ddlIntegrationInstance">
+                        @Html.DropDownListFor(model => model.IntegrationInstanceId, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstances"], "InstanceId", "InstanceName"), "None")
+                    </div>
+
+                </div>
+                <div class="cf inputs-aligned-horizontal">
+                    <label>Pull Responses</label>
+
+                    <div class="selectBox" id="ddlIntegrationInstanceINQ">
+                        @Html.DropDownListFor(model => model.IntegrationInstanceIdINQ, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstances"], "InstanceId", "InstanceName"), "None")
+                    </div>
+
+                </div>
+                <div class="cf inputs-aligned-horizontal">
+                    <label>Pull Qualified Leads</label>
+
+                    <div class="selectBox" id="ddlIntegrationInstanceMQL">
+                        @Html.DropDownListFor(model => model.IntegrationInstanceIdMQL, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstancesSalesforce"], "InstanceId", "InstanceName"), "None")
+                    </div>
+
+                </div>
+                <div class="cf inputs-aligned-horizontal">
+                    <label>Pull Closed/Won Deals</label>
+
+                    <div class="selectBox" id="ddlIntegrationInstanceCW">
+                        @Html.DropDownListFor(model => model.IntegrationInstanceIdCW, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstancesSalesforce"], "InstanceId", "InstanceName"), "None")
+                    </div>
+
+                </div>
+                <div class="cf inputs-aligned-horizontal">
+                    <div>
+                        <input id="btnSubmit" type="submit" value="Save" title="save" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" style="margin-left: 179px; float: left; margin-right: 30px;" />
+                        <button id="btnCancel" class="close-form btn-link source-sans-proregular" style="padding-top: 8px; color: #999999; text-decoration: underline;" type="button" tabindex="12">Cancel</button>
+                    </div>
+                </div>
+                
+               
+            }
+        </div>
+
+        @if ((bool)ViewBag.IsIntegrationCredentialCreateEditAuthorized && Convert.ToString(ViewBag.IsViewEditBusinessUnit) == "True")   // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic    
+        {
+            <p class="small-content source-sans-prolight" style="clear: both;">Model integration instance in <a href="@Url.Action("Index", "ExternalService")" style="text-decoration:underline;">Preferences > Integrations.</a></p>
+        }
+    </div>
+
+</div>
+     @Html.Partial("~/Views/Model/_DuplicateModel.cshtml")
+<script type="text/javascript">
+    var lastModelId = '@modelId';
+    $(document).ready(function () {
+        if ('@TempData["SuccessMessageIntegration"]' != null && '@TempData["SuccessMessageIntegration"]' != '') {
+            var msgspan = '@TempData["SuccessMessageIntegration"]';
+            $("#cSuccess").text(msgspan);
+            $("#successMessage").slideDown(600);
+        }
+        var ismsg = $("#hdnMsg").val();
+        if ($('#cSuccess').html() != '') {
+            $('#cSuccess').html('<strong>Success.</strong> ' + $('#cSuccess').html())
+            $("#successMessage").slideDown(1200);
+            // $("#successMessage").slideUp(3000);
+        }
+        if ($('#cError').html() != '') {
+            $("#errorMessage").slideDown(1200);
+        }
+        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+        $(".selectBox select").selectbox();
+        $('#DivBackgroundModel').css("display", "none");
+        $('#DivPublishModelPopup').css("display", "none");
+        $('#DivNoIntegrationModelPopup').css("display", "none");
+        $('#NewModel').click(function (e) {
+            window.location.href = "@Url.Action("Create", "Model")";
+        });
+
+
+        if ('@ModelStatus' == "Draft" && ('@IsViewEditBusinessUnit.ToString().ToLower()' == 'true' || '@IsOwner.ToString().ToLower()' == 'true')) {
+            $("#publish").removeClass('btn-blue-disable');
+            $("#publish").addClass('btn-blue');
+        }
+
+        $('#publish').click(function (e) {
+            if ('@LatestModelID' == lastModelId && '@ModelStatus' == "Draft") {
+                if ($('#PublisheStatus').val().toLocaleLowerCase() == 'true') {
+                    if (confirm($("#PublishedMsg").val())) {
+                        $('#DivBackgroundModel').css("display", "block");
+                        $('#DivPublishModelPopup').css("display", "block");
+                        var date = $("#EffectiveDate").val();
+                        $("#t_startdate").val(date);
+                        return false;
+                    }
+                    else {
+                        $('#DivBackgroundModel').css("display", "none");
+                        $('#DivPublishModelPopup').css("display", "none");
+                        return false;
+                    }
+                }
+                else {
+                    $('#DivBackgroundModel').css("display", "block");
+                    $('#DivPublishModelPopup').css("display", "block");
+                    var date = $("#EffectiveDate").val();
+                    $("#t_startdate").val(date);
+                    return false;
+                }
+            }
+            else {
+                $('#DivBackgroundModel').css("display", "none");
+                $('#DivPublishModelPopup').css("display", "none");
+                return false;
+            }
+        });
+        $("#cancel-button").click(function () {
+            $('#DivBackgroundModel').css("display", "none");
+            $('#DivPublishModelPopup').css("display", "none");
+            return false;
+        });
+
+        $("#Save-publish").click(function () {
+            var date = $("#t_startdate").val();
+            $("#EffectiveDate").val(date);
+            publishModel();
+            return true;
+        });
+        $('#BtnGroup').click(function (e) {
+            if ($(this).html().toLowerCase() == "duplicate") {
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Model/GetDefaultDuplicateModelName/")',
+                //data: { modelId: $('#hdnModelId').val() },
+                //Added By Kalpesh Sharma Functional and code review #560 07-16-2014
+                data: { modelId: '@LatestModelID' },
+                dataType: "json",
+                success: function (data) {
+                    if (data.status == 1) {
+
+                        //Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-15-2014
+                        $("#copymodeldesc").val(htmlDecode(data.msg));
+                        $("#original").text(htmlDecode(data.name));
+
+                        //07/14/2014 Functional and Code review comments
+                        $("#errorMessagecopy").css("display", "none");
+                        $("#copymodeldesc").removeClass("error");
+                        $('#DivPartialShareModelDuplicate').show();
+                    }
+                    else {
+                        $("#cError").html('<strong>Error! </strong>' + data.msg)
+                        $("#errorMessage").slideDown(400);
+                        $("html, body").animate({ scrollTop: 0 }, 1000);
+                    }
+                }
+            });
+        }
+        else {
+            var url = '@Url.Content("~/Model/Create")';
+            window.location.href = url;
+        }
+        });
+        $('#copymodelbtn').click(function () {
+            $(".copymodeldesc").removeClass("error");
+            var flag = 0;
+
+            if ($("#copymodeldesc").val() == "") {
+                $("#copymodeldesc").addClass("error");
+                flag = 1;
+            }
+
+            if (flag == 1) {
+                var msgspan = "@Common.objCached.ValidateEnteredField";
+                $("#errorMessagecopy").css("display", "block");
+                $("#spanErrorMessageModelcopy").text(msgspan);
+            } else {
+
+                //added by : Kalpesh Sharma - 14/07/2014 #560 Method to Specify a Name for Cloned Model
+                var titleName = htmlEncode($("#copymodeldesc").val().trim());
+
+                $.ajax(
+                {
+                    type: "GET",
+                    cache: false,
+                    url: '@Url.Content("~/Model/CheckDuplicateModelTitle")',
+                        data: { Title: titleName, BusinessUnitId: '@BusinessUnitId' },
+                        dataType: "json",
+                        success: function (data) {
+                            if (data == 'exist') {
+                                var msgspan = "@Common.objCached.ModelAlreadyExits";
+                            $("#errorMessagecopy").css("display", "block");
+                            $("#spanErrorMessageModelcopy").text(msgspan);
+                        }
+                        else {
+                            $('#DivPartialShareModelDuplicate').hide();
+                            DuplicateModel();
+                        }
+                        }
+                    });
+            }
+                 return false;
+        });
+        $('#cancelbtncopy').click(function () {
+            $('#DivPartialShareModelDuplicate').hide();
+        });
+
+    });
+        function publishModel() {
+
+            var ModelId = '@modelId';
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Model/ModelPublish/")',
+            data: 'ModelId=' + ModelId + '&EffectiveDate=' + $("#EffectiveDate").val(),
+            success: function (data) {
+                if (data.errorMessage != undefined) {
+                    url = '@Url.Content("~/Model/IntegrationSelection")';
+                        window.location.href = url + '?id=' + ModelId;
+                    }
+                    else if (data.successMessage != undefined) {
+                        var hdnShowModelResultsTab = $("#hdnShowModelResultsTab").val();
+                        if (hdnShowModelResultsTab == null || hdnShowModelResultsTab == '' || hdnShowModelResultsTab.toLowerCase() == 'true') {
+                            url = '@Url.Content("~/Model/Results")';
+                            window.location.href = url + '?mid1=' + ModelId + '&mid2=' + ModelId;
+                            return;
+                        }
+                        else {
+                            url = '@Url.Content("~/Model/ModelZero")';
+                            window.location.href = url;
+                        }
+
+                    }
+                    else {
+                        url = '@Url.Content("~/Model/ModelZero")';
+                        window.location.href = url;
+                    }
+                }
+        });
+
+        }
+
+    function DuplicateModel() {
+
+        //added by : Kalpesh Sharma - 14/07/2014 #560 Method to Specify a Name for Cloned Model
+        var titleName = htmlEncode($("#copymodeldesc").val().trim());
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Model/DuplicateModel/")',
+            //data: { modelId: $('#hdnModelId').val(), title: titleName },
+            //Added By Kalpesh Sharma Functional and code review #560 07-16-2014 
+            data: { modelId: '@LatestModelID', title: titleName },
+            dataType: "json",
+            success: function (data) {
+                if (data.status == 1) {
+                    var url = '@Url.Content("~/Model/ModelZero")';
+                    window.location.href = url;
+                }
+                else {
+                    $("#cError").html('<strong>Error! </strong>' + data.msg)
+                    $("#errorMessage").slideDown(400);
+                    $("html, body").animate({ scrollTop: 0 }, 1000);
+                }
+            }
+        });
+    }
+</script>
+

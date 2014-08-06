@@ -74,5 +74,14 @@ namespace RevenuePlanner.Models
         //Manoj Start PL#579 Server Configuration
         public IntegrationInstanceExternalServerModel ExternalServer { get; set; }
         //Manoj End PL#579 Server Configuration
+    } 
+//Added by Mitesh Vaishnav for PL ticket #659
+    public class IntegrationSelectionModel
+    {
+        public string Setup { get; set; }
+        public string Instance { get; set; }
+        public string IntegrationType { get; set; }
+        public string LastSync { get; set; }
     }
+//End : Added by Mitesh Vaishnav for PL ticket #659
 }

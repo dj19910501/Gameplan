@@ -2097,7 +2097,15 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             get { return _ServerConfigurationSaved; }
             set { _ServerConfigurationSaved = value; }
         }
-        #endregion
+        #endregion 
+        //Added by Mitesh for PL ticket #559
+        private string _IntegrationSelectionSaved;
+        public string IntegrationSelectionSaved
+        {
+            get { return _IntegrationSelectionSaved; }
+            set { _IntegrationSelectionSaved = value; }
+        }
+        //End :Added by Mitesh for PL ticket #559
         #endregion
 
         #region  Functions
@@ -2723,7 +2731,12 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             case "ServerConfigurationSaved":
                                             _ServerConfigurationSaved = strMsgValue;
                                             break;
-                                        //End Manoj PL#679
+                                        //End Manoj PL#679	
+                                             //Added by Mitesh for PL ticket #559
+                                                 case "IntegrationSelectionSaved":
+                                            _IntegrationSelectionSaved = strMsgValue;
+                                            break;
+                                            //End :Added by Mitesh for PL ticket #559
                                     }
                                 }
                                 i = i + 1;

@@ -21,7 +21,10 @@ namespace RevenuePlanner.Models
         public int TeleprospectingDealSize { get; set; }
         public int SalesLeads { get; set; }
         public int SalesDealSize { get; set; }
-
+        public int? IntegrationInstanceId { get; set; }
+        public int? IntegrationInstanceIdINQ { get; set; }
+        public int? IntegrationInstanceIdMQL { get; set; }
+        public int? IntegrationInstanceIdCW { get; set; }
         public List<ModelStage> lstmodelstage { get; set; }
         public List<ModelVersion> Versions { get; set; }
     }
