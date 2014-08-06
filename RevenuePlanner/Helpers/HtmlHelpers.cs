@@ -855,74 +855,162 @@ namespace RevenuePlanner.Helpers
                     {
                         if (month == 1)
                         {
-                            divProgram.Attributes.Add("allocated", p.ParentMonth.Jan.ToString(formatThousand));
-                            divProgram.InnerHtml = p.Month.Jan.ToString(formatThousand);
+                            if (ActivityType == "lineitem" && p.Month.Jan <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                divProgram.Attributes.Add("allocated", p.ParentMonth.Jan.ToString(formatThousand));
+                                divProgram.InnerHtml = p.Month.Jan.ToString(formatThousand);
+                            }
                             className = p.Month.Jan <= p.ParentMonth.Jan ? className : className + " error";
                         }
                         else if (month == 2)
                         {
-                            divProgram.Attributes.Add("allocated", p.ParentMonth.Feb.ToString(formatThousand));
-                            divProgram.InnerHtml = p.Month.Feb.ToString(formatThousand);
+                            if (ActivityType == "lineitem" && p.Month.Feb <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                divProgram.Attributes.Add("allocated", p.ParentMonth.Feb.ToString(formatThousand));
+                                divProgram.InnerHtml = p.Month.Feb.ToString(formatThousand);
+                            }
                             className = p.Month.Feb <= p.ParentMonth.Feb ? className : className + " error";
                         }
                         else if (month == 3)
                         {
-                            divProgram.Attributes.Add("allocated", p.ParentMonth.Mar.ToString(formatThousand));
-                            divProgram.InnerHtml = p.Month.Mar.ToString(formatThousand);
+                            
+                            if (ActivityType == "lineitem" && p.Month.Mar <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                divProgram.Attributes.Add("allocated", p.ParentMonth.Mar.ToString(formatThousand));
+                                divProgram.InnerHtml = p.Month.Mar.ToString(formatThousand);
+                            }
                             className = p.Month.Mar <= p.ParentMonth.Mar ? className : className + " error";
                         }
                         else if (month == 4)
                         {
-                            divProgram.Attributes.Add("allocated", p.ParentMonth.Apr.ToString(formatThousand));
-                            divProgram.InnerHtml = p.Month.Apr.ToString(formatThousand);
+                            if (ActivityType == "lineitem" && p.Month.Apr <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                divProgram.Attributes.Add("allocated", p.ParentMonth.Apr.ToString(formatThousand));
+                                divProgram.InnerHtml = p.Month.Apr.ToString(formatThousand);
+                            }
                             className = p.Month.Apr <= p.ParentMonth.Apr ? className : className + " error";
                         }
                         else if (month == 5)
                         {
-                            divProgram.Attributes.Add("allocated", p.ParentMonth.May.ToString(formatThousand));
-                            divProgram.InnerHtml = p.Month.May.ToString();
+                            if (ActivityType == "lineitem" && p.Month.May <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                divProgram.Attributes.Add("allocated", p.ParentMonth.May.ToString(formatThousand));
+                                divProgram.InnerHtml = p.Month.May.ToString(formatThousand);
+                            }
                             className = p.Month.May <= p.ParentMonth.May ? className : className + " error";
                         }
                         else if (month == 6)
                         {
-                            divProgram.Attributes.Add("allocated", p.ParentMonth.Jun.ToString(formatThousand));
-                            divProgram.InnerHtml = p.Month.Jun.ToString(formatThousand);
+                            if (ActivityType == "lineitem" && p.Month.Jun <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                divProgram.Attributes.Add("allocated", p.ParentMonth.Jun.ToString(formatThousand));
+                                divProgram.InnerHtml = p.Month.Jun.ToString(formatThousand);
+                            }
                             className = p.Month.Jun <= p.ParentMonth.Jun ? className : className + " error";
                         }
                         else if (month == 7)
                         {
-                            divProgram.Attributes.Add("allocated", p.ParentMonth.Jul.ToString(formatThousand));
-                            divProgram.InnerHtml = p.Month.Jul.ToString(formatThousand);
+                            if (ActivityType == "lineitem" && p.Month.Jul <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                divProgram.Attributes.Add("allocated", p.ParentMonth.Jul.ToString(formatThousand));
+                                divProgram.InnerHtml = p.Month.Jul.ToString(formatThousand);
+                            }
                             className = p.Month.Jul <= p.ParentMonth.Jul ? className : className + " error";
                         }
                         else if (month == 8)
                         {
-                            divProgram.Attributes.Add("allocated", p.ParentMonth.Aug.ToString(formatThousand));
-                            divProgram.InnerHtml = p.Month.Aug.ToString(formatThousand);
+                            if (ActivityType == "lineitem" && p.Month.Aug<= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                divProgram.InnerHtml = p.Month.Aug.ToString(formatThousand);
+                                divProgram.Attributes.Add("allocated", p.ParentMonth.Aug.ToString(formatThousand));
+                            }
                             className = p.Month.Aug <= p.ParentMonth.Aug ? className : className + " error";
                         }
                         else if (month == 9)
                         {
-                            divProgram.Attributes.Add("allocated", p.ParentMonth.Sep.ToString(formatThousand));
-                            divProgram.InnerHtml = p.Month.Sep.ToString(formatThousand);
+                            if (ActivityType == "lineitem" && p.Month.Sep<= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                divProgram.InnerHtml = p.Month.Sep.ToString(formatThousand);
+                                divProgram.Attributes.Add("allocated", p.ParentMonth.Sep.ToString(formatThousand));
+                            }
+                            
                             className = p.Month.Sep <= p.ParentMonth.Sep ? className : className + " error";
                         }
                         else if (month == 10)
                         {
-                            divProgram.Attributes.Add("allocated", p.ParentMonth.Oct.ToString(formatThousand));
-                            divProgram.InnerHtml = p.Month.Oct.ToString();
+                            if (ActivityType == "lineitem" && p.Month.Oct <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                divProgram.Attributes.Add("allocated", p.ParentMonth.Oct.ToString(formatThousand));
+                                divProgram.InnerHtml = p.Month.Oct.ToString();
+                            }
                             className = p.Month.Oct <= p.ParentMonth.Oct ? className : className + " error";
                         }
                         else if (month == 11)
                         {
-                            divProgram.Attributes.Add("allocated", p.ParentMonth.Nov.ToString(formatThousand));
-                            divProgram.InnerHtml = p.Month.Nov.ToString(formatThousand);
+                            if (ActivityType == "lineitem" && p.Month.Nov <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                divProgram.Attributes.Add("allocated", p.ParentMonth.Nov.ToString(formatThousand));
+                                divProgram.InnerHtml = p.Month.Nov.ToString(formatThousand);
+                            }
+                            
                             className = p.Month.Nov <= p.ParentMonth.Nov ? className : className + " error";
                         }
                         else if (month == 12)
                         {
-                            divProgram.Attributes.Add("allocated", p.ParentMonth.Dec.ToString(formatThousand));
-                            divProgram.InnerHtml = p.Month.Dec.ToString(formatThousand);
+                            if (ActivityType == "lineitem" && p.Month.Dec <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                divProgram.Attributes.Add("allocated", p.ParentMonth.Dec.ToString(formatThousand));
+                                divProgram.InnerHtml = p.Month.Dec.ToString(formatThousand);
+                            }
+                            
                             className = p.Month.Dec <= p.ParentMonth.Dec ? className : className + " error";
                         }
                     }
@@ -930,26 +1018,55 @@ namespace RevenuePlanner.Helpers
                     {
                         if (month == 1)
                         {
-                            divProgram.Attributes.Add("allocated", p.ParentMonth.Jan.ToString(formatThousand));
-                            divProgram.InnerHtml = p.Month.Jan.ToString(formatThousand);
+                            if (ActivityType == "lineitem" && p.Month.Jan <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                divProgram.Attributes.Add("allocated", p.ParentMonth.Jan.ToString(formatThousand));
+                                divProgram.InnerHtml = p.Month.Jan.ToString(formatThousand);
+                            }
                             className = p.Month.Jan <= p.ParentMonth.Jan ? className : className + " error";
                         }
                         else if (month == 2)
                         {
-                            divProgram.Attributes.Add("allocated", p.ParentMonth.Apr.ToString(formatThousand));
-                            divProgram.InnerHtml = p.Month.Apr.ToString(formatThousand);
+                            if (ActivityType == "lineitem" && p.Month.Apr <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                divProgram.Attributes.Add("allocated", p.ParentMonth.Apr.ToString(formatThousand));
+                                divProgram.InnerHtml = p.Month.Apr.ToString(formatThousand);
+                            }
                             className = p.Month.Apr <= p.ParentMonth.Apr ? className : className + " error";
                         }
                         else if (month == 3)
                         {
-                            divProgram.Attributes.Add("allocated", p.ParentMonth.Jul.ToString(formatThousand));
-                            divProgram.InnerHtml = p.Month.Jul.ToString(formatThousand);
+                            if (ActivityType == "lineitem" && p.Month.Jul <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                divProgram.Attributes.Add("allocated", p.ParentMonth.Jul.ToString(formatThousand));
+                                divProgram.InnerHtml = p.Month.Jul.ToString(formatThousand);
+                            }
                             className = p.Month.Jul <= p.ParentMonth.Jul ? className : className + " error";
                         }
                         else if (month == 4)
                         {
-                            divProgram.Attributes.Add("allocated", p.ParentMonth.Oct.ToString(formatThousand));
-                            divProgram.InnerHtml = p.Month.Oct.ToString(formatThousand);
+                            
+                            if (ActivityType == "lineitem" && p.Month.Oct <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                divProgram.Attributes.Add("allocated", p.ParentMonth.Oct.ToString(formatThousand));
+                                divProgram.InnerHtml = p.Month.Oct.ToString(formatThousand);
+                            }
                             className = p.Month.Oct <= p.ParentMonth.Oct ? className : className + " error";
                         }
                     }
@@ -1155,14 +1272,15 @@ namespace RevenuePlanner.Helpers
                     }
                     else
                     {
-                        if (ActivityType == "lineitem" && p.ActivityName.ToLower() == "other")
-                        {
-                            divProgram.InnerHtml += "---";
-                        }
-                        else
-                        {
-                            divProgram.InnerHtml += p.Allocated.ToString(formatThousand);                            
-                        }
+                        //if (ActivityType == "lineitem" && p.ActivityName.ToLower() == "other")
+                        //{
+                        //    divProgram.InnerHtml += "---";
+                        //}
+                        //else
+                        //{
+                        //    divProgram.InnerHtml += p.Allocated.ToString(formatThousand);                            
+                        //}
+                        divProgram.InnerHtml += p.Allocated.ToString(formatThousand);
                         divProgram.AddCssClass(innerClass);
                     }
                     div.InnerHtml += divProgram.ToString();
