@@ -5,16 +5,11 @@
         <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseGrpServer">Response Pulling<span href="javascript:void(0)">+ Expand</span></a>
     </div>
     <div class="accordion-body collapse out" id="collapseGrpServer">
+        <div>
+            <h5 style="border-bottom: 1px solid #ddd; margin: 0px 20px 0px -20px;">External Server Info</h5>
+        </div>
         @using (Html.BeginForm("SaveExternalForm", "ExternalService", FormMethod.Post, new { id = "extServer" }))
         {
-            <div id="sucExtSrv" class="alert hide alert-success">
-                <a class="close">×</a>
-                <div id="cSucExtSrv"></div>
-            </div>
-            <div id="errExtSrv" class="alert hide alert-error">
-                <a class="close">×</a>
-                <div id="cErrExtSrv"></div>
-            </div>
             @Html.HiddenFor(model => model.IntegrationInstanceExternalServerId)
             @Html.HiddenFor(model => model.IntegrationInstanceId)
             <div class="cf inputs-aligned-horizontal">
@@ -26,16 +21,25 @@
                 @Html.TextBoxFor(model => model.SFTPFileLocation, new { placeholder = "File Location", maxlength = "1000" })
             </div>
             <div class="cf inputs-aligned-horizontal">
+                @Html.LabelFor(model => model.SFTPPort)
+                @Html.TextBoxFor(model => model.SFTPPort, new { placeholder = "22", maxlength = "4" })
+            </div>
+            <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.SFTPUserName)
-                @Html.TextBoxFor(model => model.SFTPUserName, new { placeholder = "User Name" , maxlength = "255"})
+                @Html.TextBoxFor(model => model.SFTPUserName, new { placeholder = "User Name", maxlength = "255" })
             </div>
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.SFTPPassword)
-                @Html.TextBoxFor(model => model.SFTPPassword, new { placeholder = "*********" , maxlength = "50"})
+                @Html.PasswordFor(model => model.SFTPPassword, new { placeholder = "*********", maxlength = "50" })
             </div>
-            <div class="cf inputs-aligned-horizontal">
-                @Html.LabelFor(model => model.SFTPPort)
-                @Html.TextBoxFor(model => model.SFTPPort, new { placeholder = "22", maxlength = "4" })
+            
+            <div id="sucExtSrv" class="alert hide alert-success">
+                <a class="close">×</a>
+                <div id="cSucExtSrv"></div>
+            </div>
+            <div id="errExtSrv" class="alert hide alert-error">
+                <a class="close">×</a>
+                <div id="cErrExtSrv"></div>
             </div>
             <div class="cf inputs-aligned-horizontal" style="margin-top: 10px;">
                 <div class="container-button">
@@ -51,10 +55,12 @@
     </div>
 </div>
 <script type="text/javascript">
-    $(document).ready(function () {
-        
-    });
     $('#btnExtServerSave').click(function () {
+        $('#cErrExtSrv').html('')
+        $("#errExtSrv").slideUp(100);
+        $('#cErrExtSrv').html('')
+        $("#errExtSrv").slideDown(100);
+
         var isError = false;
         var ErrMsg = '';
         if ($('#SFTPServerName').val() == '') {
@@ -82,7 +88,7 @@
             $('#SFTPPassword').addClass('error');
         }
         if (isError) {
-            $('#cErrExtSrv').html('<strong>Error! </strong> '+ ErrMsg)
+            $('#cErrExtSrv').html('<strong>Error! </strong> ' + ErrMsg)
             $("#errExtSrv").slideDown(400);
             return;
         }
@@ -103,7 +109,6 @@
                     $('#IntegrationInstanceExternalServerId').val(data.status);
                     $('#cSucExtSrv').html('<strong>Success! </strong> ' + data.ErrorMessage)
                     $("#sucExtSrv").slideDown(400);
-                    
                 }
             },
             error: function () {

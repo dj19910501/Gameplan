@@ -1639,7 +1639,20 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         private bool IsConnected(IntegrationInstanceExternalServerModel frm)
         {
-            return true;
+            try
+            {
+                EloquaResponse er = new EloquaResponse();
+                int Port = 0;
+                int.TryParse(Convert.ToString(frm.SFTPPort), out Port);
+                if (Port == 0)
+                    Port = 22;
+                string Password = Common.Decrypt(frm.SFTPPassword);
+                return er.AuthenticateSFTP(frm.SFTPServerName, frm.SFTPUserName, Password, Port);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -1656,7 +1669,7 @@ namespace RevenuePlanner.Controllers
                 obj.SFTPServerName = frm.SFTPServerName;
                 obj.SFTPFileLocation = frm.SFTPFileLocation;
                 obj.SFTPUserName = frm.SFTPUserName;
-                obj.SFTPPassword = frm.SFTPPassword;
+                obj.SFTPPassword = Common.Encrypt(frm.SFTPPassword);
                 if (string.IsNullOrEmpty(frm.SFTPPort))
                 {
                     obj.SFTPPort = "22";
@@ -1681,19 +1694,19 @@ namespace RevenuePlanner.Controllers
                     obj.SFTPServerName = frm.SFTPServerName;
                     obj.SFTPFileLocation = frm.SFTPFileLocation;
                     obj.SFTPUserName = frm.SFTPUserName;
-                    obj.SFTPPassword = frm.SFTPPassword;
+                    obj.SFTPPassword = Common.Encrypt(frm.SFTPPassword);
                     if (string.IsNullOrEmpty(frm.SFTPPort))
                     {
-                        obj.SFTPPassword = "22";
+                        obj.SFTPPort = "22";
                     }
                     else
                     {
-                        obj.SFTPPassword = frm.SFTPPassword;
+                        obj.SFTPPort = frm.SFTPPort;
                     }
                     obj.ModifiedBy = Sessions.User.UserId;
                     obj.ModifiedDate = DateTime.Now;
                     db.Entry(obj).State = System.Data.EntityState.Modified;
-                    db.IntegrationInstanceExternalServers.Add(obj);
+                    //db.IntegrationInstanceExternalServers.Add(obj);
                     db.SaveChanges();
                     return obj.IntegrationInstanceExternalServerId;
                 }
@@ -1710,7 +1723,7 @@ namespace RevenuePlanner.Controllers
         {
             IntegrationInstanceExternalServerModel model = new IntegrationInstanceExternalServerModel();
             model.IntegrationInstanceId = IntegrationInstanceId;
-            IntegrationInstanceExternalServer obj = db.IntegrationInstanceExternalServers.Where(i => i.IntegrationInstanceId == IntegrationInstanceId && i.IsDeleted == false).SingleOrDefault();
+            IntegrationInstanceExternalServer obj = db.IntegrationInstanceExternalServers.Where(i => i.IntegrationInstanceId == IntegrationInstanceId && i.IsDeleted == false).FirstOrDefault();
             if (obj != null)
             {
                 model = new IntegrationInstanceExternalServerModel();
@@ -1719,7 +1732,7 @@ namespace RevenuePlanner.Controllers
                 model.SFTPServerName = obj.SFTPServerName;
                 model.SFTPFileLocation = obj.SFTPFileLocation;
                 model.SFTPUserName = obj.SFTPUserName;
-                model.SFTPPassword = obj.SFTPPassword;
+                model.SFTPPassword = Common.Decrypt(obj.SFTPPassword); 
                 model.SFTPPort = obj.SFTPPort;
             }
             return model;
