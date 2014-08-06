@@ -1646,8 +1646,7 @@ namespace RevenuePlanner.Controllers
                 int.TryParse(Convert.ToString(frm.SFTPPort), out Port);
                 if (Port == 0)
                     Port = 22;
-                string Password = Common.Decrypt(frm.SFTPPassword);
-                return er.AuthenticateSFTP(frm.SFTPServerName, frm.SFTPUserName, Password, Port);
+                return er.AuthenticateSFTP(frm.SFTPServerName, frm.SFTPUserName, frm.SFTPPassword, Port);
             }
             catch (Exception)
             {

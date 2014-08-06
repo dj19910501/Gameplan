@@ -12,6 +12,7 @@ using System.Web;
 using System.Data;
 using RevenuePlanner.Models;
 using Excel;
+using Integration.Helper;
 
 namespace Integration.Eloqua
 {
@@ -64,11 +65,11 @@ namespace Integration.Eloqua
             {
                 var objIntegrationInstanceExternalServer = db.IntegrationInstanceExternalServers.FirstOrDefault(i => i.IntegrationInstanceId == IntegrationInstanceId);
                 string InstanceId = IntegrationInstanceId.ToString();
-                string _ftpURL = objIntegrationInstanceExternalServer.SFTPServerName;//"192.168.100.52";
-                string _UserName = objIntegrationInstanceExternalServer.SFTPUserName;//"root";
-                string _Password = objIntegrationInstanceExternalServer.SFTPPassword;//"indusa123";
-                int _Port = Convert.ToInt32(objIntegrationInstanceExternalServer.SFTPPort);//22;
-                string SFTPSourcePath = objIntegrationInstanceExternalServer.SFTPFileLocation;//"Gameplan/";
+                string _ftpURL = objIntegrationInstanceExternalServer.SFTPServerName;
+                string _UserName = objIntegrationInstanceExternalServer.SFTPUserName;
+                string _Password = Common.Decrypt(objIntegrationInstanceExternalServer.SFTPPassword);
+                int _Port = Convert.ToInt32(objIntegrationInstanceExternalServer.SFTPPort);
+                string SFTPSourcePath = objIntegrationInstanceExternalServer.SFTPFileLocation;
                 if (SFTPSourcePath.Substring(SFTPSourcePath.Length - 1) != "/")
                 {
                     SFTPSourcePath = SFTPSourcePath + "/";
