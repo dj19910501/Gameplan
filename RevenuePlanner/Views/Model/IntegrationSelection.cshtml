@@ -2,6 +2,7 @@
 @using RevenuePlanner.Models
 @using RevenuePlanner.Helpers
 @{
+    ViewBag.Title = "Integrations";
     Layout = "~/Views/Shared/_Layout.cshtml";
     string modelId = Convert.ToString(ViewBag.ModelId);
     ViewBag.ModelIdPartial = ViewBag.ModelId;//Added by Mitesh Vaishnav on 11/07/2014 for functional review point 49
@@ -23,13 +24,6 @@
                                                                   string IsOwner = Convert.ToString(ViewBag.IsOwner);
     @Html.Hidden("IsOwner", IsOwner);
 }
-
-
-@section nlFormContent{
-    <link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.slidepanel.css")" type="text/css" />
-    <script type="text/javascript" src="@Url.Content("~/Scripts/js/dropdown-info-user.js")"></script>
-}
-
 @section Sidebar
 {
     @Html.Partial("~/Views/Model/_model.cshtml")
@@ -76,7 +70,7 @@
     <ul class="nav nav-tabs" style="margin-bottom: 20px; padding-bottom: 10px;">
         <input type="hidden" value="@ViewBag.ModelId" id="latestModelId" />
         <li class="title-header source-sans-proregular" title="@ViewBag.ModelTitle">
-            <h2 id="lblTitle">@ViewBag.ModelTitle @ViewBag.ModelVersion <span class="gray source-sans-prolight" title="Published">@ViewBag.ModelStatus</span></h2>
+            <h2 id="lblTitle">@ViewBag.ModelTitle <span class="gray source-sans-prolight" title="Published">@ViewBag.ModelStatus</span></h2>
         </li>
     </ul>
     <div class="row">
@@ -124,12 +118,15 @@
                     </div>
 
                 </div>
+                if (Convert.ToString(ViewBag.IsViewEditBusinessUnit) == "True")
+                {
                 <div class="cf inputs-aligned-horizontal">
                     <div>
                         <input id="btnSubmit" type="submit" value="Save" title="save" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" style="margin-left: 179px; float: left; margin-right: 30px;" />
                         <button id="btnCancel" class="close-form btn-link source-sans-proregular" style="padding-top: 8px; color: #999999; text-decoration: underline;" type="button" tabindex="12">Cancel</button>
                     </div>
                 </div>
+                }
                 
                
             }
@@ -137,7 +134,7 @@
 
         @if ((bool)ViewBag.IsIntegrationCredentialCreateEditAuthorized && Convert.ToString(ViewBag.IsViewEditBusinessUnit) == "True")   // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic    
         {
-            <p class="small-content source-sans-prolight" style="clear: both;">Model integration instance in <a href="@Url.Action("Index", "ExternalService")" style="text-decoration:underline;">Preferences > Integrations.</a></p>
+            <p class="small-content source-sans-prolight" style="clear: both;">Manage integration instances in <a href="@Url.Action("Index", "ExternalService")" style="text-decoration:underline;">Preferences > Integrations.</a></p>
         }
     </div>
 
@@ -146,16 +143,21 @@
 <script type="text/javascript">
     var lastModelId = '@modelId';
     $(document).ready(function () {
+        $("#btnCancel").click(function () {
+            $("#successMessage").slideUp(600);
+            $("#errorMessage").slideUp(600);
+
+        });
         if ('@TempData["SuccessMessageIntegration"]' != null && '@TempData["SuccessMessageIntegration"]' != '') {
             var msgspan = '@TempData["SuccessMessageIntegration"]';
+            $('#cSuccess').html('<strong>Success!</strong> ' + $('#cSuccess').html())
             $("#cSuccess").text(msgspan);
             $("#successMessage").slideDown(600);
         }
         var ismsg = $("#hdnMsg").val();
         if ($('#cSuccess').html() != '') {
-            $('#cSuccess').html('<strong>Success.</strong> ' + $('#cSuccess').html())
+            $('#cSuccess').html('<strong>Success!</strong> ' + $('#cSuccess').html())
             $("#successMessage").slideDown(1200);
-            // $("#successMessage").slideUp(3000);
         }
         if ($('#cError').html() != '') {
             $("#errorMessage").slideDown(1200);
@@ -223,18 +225,12 @@
                 $.ajax({
                     type: 'POST',
                     url: '@Url.Content("~/Model/GetDefaultDuplicateModelName/")',
-                //data: { modelId: $('#hdnModelId').val() },
-                //Added By Kalpesh Sharma Functional and code review #560 07-16-2014
                 data: { modelId: '@LatestModelID' },
                 dataType: "json",
                 success: function (data) {
                     if (data.status == 1) {
-
-                        //Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-15-2014
                         $("#copymodeldesc").val(htmlDecode(data.msg));
                         $("#original").text(htmlDecode(data.name));
-
-                        //07/14/2014 Functional and Code review comments
                         $("#errorMessagecopy").css("display", "none");
                         $("#copymodeldesc").removeClass("error");
                         $('#DivPartialShareModelDuplicate').show();
@@ -267,9 +263,7 @@
                 $("#spanErrorMessageModelcopy").text(msgspan);
             } else {
 
-                //added by : Kalpesh Sharma - 14/07/2014 #560 Method to Specify a Name for Cloned Model
                 var titleName = htmlEncode($("#copymodeldesc").val().trim());
-
                 $.ajax(
                 {
                     type: "GET",
@@ -297,6 +291,7 @@
         });
 
     });
+        /*Function for make model status published*/
         function publishModel() {
 
             var ModelId = '@modelId';
@@ -331,17 +326,13 @@
         });
 
         }
-
+    /*Function for create duplicate model*/
     function DuplicateModel() {
-
-        //added by : Kalpesh Sharma - 14/07/2014 #560 Method to Specify a Name for Cloned Model
         var titleName = htmlEncode($("#copymodeldesc").val().trim());
 
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Model/DuplicateModel/")',
-            //data: { modelId: $('#hdnModelId').val(), title: titleName },
-            //Added By Kalpesh Sharma Functional and code review #560 07-16-2014 
             data: { modelId: '@LatestModelID', title: titleName },
             dataType: "json",
             success: function (data) {

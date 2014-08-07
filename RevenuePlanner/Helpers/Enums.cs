@@ -329,7 +329,7 @@ namespace RevenuePlanner.Helpers
         }
         public static Dictionary<string, string> IntegrationActivity = new Dictionary<string, string>()
         {
-            {"IntegrationInstanceId","Push Tactics Data"},
+            {"IntegrationInstanceId","Push Tactic Data"},
             {"IntegrationInstanceIdINQ","Pull Response"},
             {"IntegrationInstanceIdMQL","Pull Qualified Leads"},
             {"IntegrationInstanceIdCW","Pull Closed/Won Deals"}

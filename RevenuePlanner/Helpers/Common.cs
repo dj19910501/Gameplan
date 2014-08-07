@@ -132,6 +132,10 @@ namespace RevenuePlanner.Helpers
         // Label text for Unallocated Budget label
         public static string UnallocatedBudgetLabelText = "Unallocated";
 
+        //Added by Mitesh Vaishnav for PL ticket #659 - static values for Model integrationinstance,integrationInstancetype ot Last sync are null. 2)dateformate for Last sync values
+        public static string TextForModelIntegrationInstanceNull = "None";
+        public static string TextForModelIntegrationInstanceTypeOrLastSyncNull = "---";
+        public static string DateFormatForModelIntegrationLastSync = "MM/dd/yyyy hh:mm tt";
         #endregion
 
         //#region Enums

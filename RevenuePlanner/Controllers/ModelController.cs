@@ -4387,70 +4387,19 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region New Integration
-
+        /// <summary>
+        /// Added by Mitesh Vaishnav for PL ticket #659 
+        /// action for save integration instance of model
+        /// </summary>
+        /// <returns></returns>
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]
         public ActionResult SaveIntegration(int id, BaselineModel objBaselineModel)
         {
-            
-            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
-         
-            var businessunit = db.Models.Where(b => b.ModelId == id && b.IsDeleted == false).OrderByDescending(c => c.CreatedDate).Select(u => u.BusinessUnitId).FirstOrDefault();
-            var IsBenchmarked = (id == 0) ? true : db.Models.Where(b => b.ModelId == id && b.IsDeleted == false).OrderByDescending(c => c.CreatedDate).Select(u => u.IsBenchmarked).FirstOrDefault();
-            ViewBag.BusinessUnitId = Convert.ToString(businessunit);
-            ViewBag.ActiveMenu = Enums.ActiveMenu.Model;
-            ViewBag.IsBenchmarked = (IsBenchmarked != null) ? IsBenchmarked : true;
-
-            ViewBag.LatestModelID = id;
-            ViewBag.ModelPublishEdit = Common.objCached.ModelPublishEdit;
-            ViewBag.ModelPublishCreateNew = Common.objCached.ModelPublishCreateNew;
-            ViewBag.ModelPublishComfirmation = Common.objCached.ModelPublishComfirmation;
-            ViewBag.Flag = false;
-            if (id != 0)
-            {
-                ViewBag.Flag = chekckParentPublishModel(id);
-                ViewBag.IsOwner = db.Models.Where(a => a.IsDeleted.Equals(false) && a.ModelId == id && a.CreatedBy == Sessions.User.UserId).Any();  // Added by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
-            }
-            else
-            {
-                ViewBag.IsOwner = true;
-            }
-            try
-            {
-                var lstUserCustomRestriction = Common.GetUserCustomRestriction();
-                int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
-                var lstAllowedBusinessUnits = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId).ToList();
-                if (lstAllowedBusinessUnits.Count > 0)
-                {
-                    List<Guid> lstViewEditBusinessUnits = new List<Guid>();
-                    lstAllowedBusinessUnits.ForEach(g => lstViewEditBusinessUnits.Add(Guid.Parse(g)));
-                    ViewBag.IsViewEditBusinessUnit = lstViewEditBusinessUnits.Contains(businessunit);
-                }
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    TempData["ErrorMessage"] = Common.objCached.ServiceUnavailableMessage;
-                    return RedirectToAction("Index", "Login");
-                }
-            }
+            /*set values of db.Model object as per posted values and update db.Model*/
             bool returnValue = false;
             string message = string.Empty;
             try
             {
-
-                var lstInstance = db.IntegrationInstances.Where(inc => inc.ClientId == Sessions.User.ClientId).Select(inc => new
-                {
-                    InstanceName = inc.Instance,
-                    InstanceId = inc.IntegrationInstanceId,
-                    Type = inc.IntegrationType.Title
-                });
-                ViewData["IntegrationInstances"] = lstInstance;
-                string insType = Enums.IntegrationInstanceType.Salesforce.ToString();
-                ViewData["IntegrationInstancesSalesforce"] = lstInstance.Where(inc => inc.Type == insType);
                 var objModel = db.Models.Where(m => m.ModelId == id && m.IsDeleted == false).FirstOrDefault();
                 if (objModel != null)
                 {
@@ -4458,6 +4407,8 @@ namespace RevenuePlanner.Controllers
                     objModel.IntegrationInstanceIdCW = objBaselineModel.IntegrationInstanceIdCW;
                     objModel.IntegrationInstanceIdINQ = objBaselineModel.IntegrationInstanceIdINQ;
                     objModel.IntegrationInstanceIdMQL = objBaselineModel.IntegrationInstanceIdMQL;
+                    objModel.ModifiedBy = Sessions.User.UserId;
+                    objModel.ModifiedDate = DateTime.Now;
                     db.Entry(objModel).State = EntityState.Modified;
                     int result = db.SaveChanges();
                     if (result > 0)
@@ -4465,7 +4416,6 @@ namespace RevenuePlanner.Controllers
                         ViewBag.ModelId = id;
                         ViewBag.ModelStatus = objModel.Status;
                         ViewBag.ModelTitle = objModel.Title;
-                        ViewBag.ModelVersion = "v" + objModel.Version;
                         message = Common.objCached.ModelIntegrationSaveSuccess;
                         TempData["SuccessMessageIntegration"] = Common.objCached.IntegrationSelectionSaved;
                         returnValue = true;
@@ -4478,28 +4428,29 @@ namespace RevenuePlanner.Controllers
                 message = Common.objCached.ErrorOccured;
                 TempData["ErrorMessageIntegration"] = message;
             }
-            return View("IntegrationSelection", objBaselineModel);
-
-
+            return RedirectToAction("IntegrationSelection", new { id = ViewBag.ModelId });
         }
-
+        /// <summary>
+        /// Added by Mitesh Vaishnav for PL ticket #659 
+        /// view for list : Integration instances of model
+        /// </summary>
+        /// <returns></returns>
+        [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]
         public ActionResult IntegrationOverview(int id = 0)
         {
             ViewBag.ModelId = id;
             var objModel = db.Models.FirstOrDefault(m => m.ModelId == id && m.IsDeleted == false);
             ViewBag.ModelStatus = objModel.Status;
             ViewBag.ModelTitle = objModel.Title;
-            ViewBag.ModelVersion = "v" + objModel.Version;
             var businessunit = db.Models.Where(b => b.ModelId == id && b.IsDeleted == false).OrderByDescending(c => c.CreatedDate).Select(u => u.BusinessUnitId).FirstOrDefault();
             var IsBenchmarked = (id == 0) ? true : db.Models.Where(b => b.ModelId == id && b.IsDeleted == false).OrderByDescending(c => c.CreatedDate).Select(u => u.IsBenchmarked).FirstOrDefault();
             ViewBag.BusinessUnitId = Convert.ToString(businessunit);
             ViewBag.ActiveMenu = Enums.ActiveMenu.Model;
-            ViewBag.IsBenchmarked = (IsBenchmarked != null) ? IsBenchmarked : true;
-
             ViewBag.LatestModelID = id;
             ViewBag.ModelPublishEdit = Common.objCached.ModelPublishEdit;
             ViewBag.ModelPublishCreateNew = Common.objCached.ModelPublishCreateNew;
             ViewBag.ModelPublishComfirmation = Common.objCached.ModelPublishComfirmation;
+            /*Set flag for  existing user is owner or not*/
             ViewBag.Flag = false;
             if (id != 0)
             {
@@ -4510,6 +4461,7 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.IsOwner = true;
             }
+            /*Get list of user's business unit in which user have rights of view edit.Set flag for user's right of view edit business unit*/
             try
             {
                 var lstUserCustomRestriction = Common.GetUserCustomRestriction();
@@ -4534,84 +4486,88 @@ namespace RevenuePlanner.Controllers
                 }
             }
             List<IntegrationSelectionModel> lstIntegrationOverview = new List<IntegrationSelectionModel>();
-            var x = db.IntegrationInstances.Where(ins => ins.IntegrationInstanceId == objModel.IntegrationInstanceId).Select(ins => ins.Instance).FirstOrDefault();
+            List<int?> ModelInstances = new List<int?>() { objModel.IntegrationInstanceId, objModel.IntegrationInstanceIdCW, objModel.IntegrationInstanceIdINQ, objModel.IntegrationInstanceIdMQL };
 
+           /*creating List of model integration instance */
+            var lstInstance = (from i in db.IntegrationInstances
+                               where ModelInstances.Contains(i.IntegrationInstanceId)
+                               select i).ToList();
             foreach (var key in Enums.IntegrationActivity.Keys)
             {
                 IntegrationSelectionModel objIntSelection = new IntegrationSelectionModel();
                 if (key.ToString() == "IntegrationInstanceId")
                 {
-                    var objInstance = db.IntegrationInstances.Where(ins => ins.IntegrationInstanceId == objModel.IntegrationInstanceId).FirstOrDefault();
+                    var objInstance = lstInstance.Where(ins => ins.IntegrationInstanceId == objModel.IntegrationInstanceId).FirstOrDefault();
                     objIntSelection.Setup = Enums.IntegrationActivity[key].ToString();
                     if (objInstance != null)
                     {
                         objIntSelection.Instance = objInstance.Instance;
-                        objIntSelection.IntegrationType = objInstance.IntegrationType.Title != null ? objInstance.IntegrationType.Title : "---";
-                        objIntSelection.LastSync = objInstance.LastSyncDate != null ? Convert.ToDateTime(objInstance.LastSyncDate).ToString("MM/dd/yyyy hh:mm tt") : "---";
+                        objIntSelection.IntegrationType = objInstance.IntegrationType.Title != null ? objInstance.IntegrationType.Title : Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                        objIntSelection.LastSync = objInstance.LastSyncDate != null ? Convert.ToDateTime(objInstance.LastSyncDate).ToString(Common.DateFormatForModelIntegrationLastSync) : "---";
 
                     }
                     else
                     {
-                        objIntSelection.Instance = "None";
-                        objIntSelection.IntegrationType = "---";
-                        objIntSelection.LastSync = "---";
+                        objIntSelection.Instance = Common.TextForModelIntegrationInstanceNull;
+                        objIntSelection.IntegrationType = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                        objIntSelection.LastSync = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
                     }
                     lstIntegrationOverview.Add(objIntSelection);
                 }
                 else if (key.ToString() == "IntegrationInstanceIdINQ")
                 {
 
-                    var objInstance = db.IntegrationInstances.Where(ins => ins.IntegrationInstanceId == objModel.IntegrationInstanceIdINQ).FirstOrDefault();
+                    var objInstance = lstInstance.Where(ins => ins.IntegrationInstanceId == objModel.IntegrationInstanceIdINQ).FirstOrDefault();
                     objIntSelection.Setup = Enums.IntegrationActivity[key].ToString();
                     if (objInstance != null)
                     {
                         objIntSelection.Instance = objInstance.Instance;
-                        objIntSelection.IntegrationType = objInstance.IntegrationType.Title != null ? objInstance.IntegrationType.Title : "---";
-                        objIntSelection.LastSync = objIntSelection.LastSync = objInstance.LastSyncDate != null ? Convert.ToDateTime(objInstance.LastSyncDate).ToString("MM/dd/yyyy hh:mm tt") : "---";
+                        objIntSelection.IntegrationType = objInstance.IntegrationType.Title != null ? objInstance.IntegrationType.Title : Common.TextForModelIntegrationInstanceTypeOrLastSyncNull; 
+                        objIntSelection.LastSync = objIntSelection.LastSync = objInstance.LastSyncDate != null ? Convert.ToDateTime(objInstance.LastSyncDate).ToString(Common.DateFormatForModelIntegrationLastSync) : "---";
                     }
                     else
                     {
-                        objIntSelection.Instance = "None";
-                        objIntSelection.IntegrationType = "---";
-                        objIntSelection.LastSync = "---";
+                        objIntSelection.Instance = Common.TextForModelIntegrationInstanceNull;
+                        objIntSelection.IntegrationType = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                        objIntSelection.LastSync = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
                     }
                     lstIntegrationOverview.Add(objIntSelection);
                 }
                 else if (key.ToString() == "IntegrationInstanceIdMQL")
                 {
 
-                    var objInstance = db.IntegrationInstances.Where(ins => ins.IntegrationInstanceId == objModel.IntegrationInstanceIdMQL).FirstOrDefault();
+                    var objInstance = lstInstance.Where(ins => ins.IntegrationInstanceId == objModel.IntegrationInstanceIdMQL).FirstOrDefault();
                     objIntSelection.Setup = Enums.IntegrationActivity[key].ToString();
                     if (objInstance != null)
                     {
                         objIntSelection.Instance = objInstance.Instance;
-                        objIntSelection.IntegrationType = objInstance.IntegrationType.Title != null ? objInstance.IntegrationType.Title : "---";
-                        objIntSelection.LastSync = objIntSelection.LastSync = objInstance.LastSyncDate != null ? Convert.ToDateTime(objInstance.LastSyncDate).ToString("MM/dd/yyyy hh:mm tt") : "---";
+                        objIntSelection.IntegrationType = objInstance.IntegrationType.Title != null ? objInstance.IntegrationType.Title : Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                        objIntSelection.LastSync = objIntSelection.LastSync = objInstance.LastSyncDate != null ? Convert.ToDateTime(objInstance.LastSyncDate).ToString(Common.DateFormatForModelIntegrationLastSync) : "---";
                     }
                     else
                     {
-                        objIntSelection.Instance = "None";
-                        objIntSelection.IntegrationType = "---";
-                        objIntSelection.LastSync = "---";
+                        objIntSelection.Instance = Common.TextForModelIntegrationInstanceNull;
+                        objIntSelection.IntegrationType = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                        objIntSelection.LastSync = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
                     }
                     lstIntegrationOverview.Add(objIntSelection);
                 }
                 else if (key.ToString() == "IntegrationInstanceIdCW")
                 {
 
-                    var objInstance = db.IntegrationInstances.Where(ins => ins.IntegrationInstanceId == objModel.IntegrationInstanceIdCW).FirstOrDefault();
+                    var objInstance = lstInstance.Where(ins => ins.IntegrationInstanceId == objModel.IntegrationInstanceIdCW).FirstOrDefault();
                     objIntSelection.Setup = Enums.IntegrationActivity[key].ToString();
                     if (objInstance != null)
                     {
                         objIntSelection.Instance = objInstance.Instance;
-                        objIntSelection.IntegrationType = objInstance.IntegrationType.Title != null ? objInstance.IntegrationType.Title : "---";
-                        objIntSelection.LastSync = objIntSelection.LastSync = objInstance.LastSyncDate != null ? Convert.ToDateTime(objInstance.LastSyncDate).ToString("MM/dd/yyyy hh:mm tt") : "---";
+                        objIntSelection.IntegrationType = objInstance.IntegrationType.Title != null ? objInstance.IntegrationType.Title : Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                        objIntSelection.LastSync = objIntSelection.LastSync = objInstance.LastSyncDate != null ? Convert.ToDateTime(objInstance.LastSyncDate).ToString(Common.DateFormatForModelIntegrationLastSync) : "---";
                     }
                     else
                     {
-                        objIntSelection.Instance = "None";
-                        objIntSelection.IntegrationType = "---";
-                        objIntSelection.LastSync = "---";
+                        objIntSelection.Instance = Common.TextForModelIntegrationInstanceNull;
+                        objIntSelection.IntegrationType = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                        objIntSelection.LastSync = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
                     }
                     lstIntegrationOverview.Add(objIntSelection);
                 }
@@ -4619,7 +4575,11 @@ namespace RevenuePlanner.Controllers
             }
             return View(lstIntegrationOverview);
         }
-
+        /// <summary>
+        /// Added by Mitesh Vaishnav for PL ticket #659 
+        /// view for Integration instance selection 
+        /// </summary>
+        /// <returns></returns>
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]
         public ActionResult IntegrationSelection(int id = 0)
         {
@@ -4628,19 +4588,11 @@ namespace RevenuePlanner.Controllers
             var objModel = db.Models.SingleOrDefault(b => b.ModelId == id && b.IsDeleted == false);
             ViewBag.ModelStatus = objModel.Status;
             ViewBag.ModelTitle = objModel.Title;
-            ViewBag.ModelVersion = "v" + objModel.Version;
             var businessunit = db.Models.Where(b => b.ModelId == id && b.IsDeleted == false).OrderByDescending(c => c.CreatedDate).Select(u => u.BusinessUnitId).FirstOrDefault();
-            var IsBenchmarked = (id == 0) ? true : db.Models.Where(b => b.ModelId == id && b.IsDeleted == false).OrderByDescending(c => c.CreatedDate).Select(u => u.IsBenchmarked).FirstOrDefault();
             ViewBag.BusinessUnitId = Convert.ToString(businessunit);
             ViewBag.ActiveMenu = Enums.ActiveMenu.Model;
-            ViewBag.IsBenchmarked = (IsBenchmarked != null) ? IsBenchmarked : true;
             BaselineModel objBaselineModel = FillInitialData(id, businessunit);
-            string Title = objBaselineModel.Versions.Where(s => s.IsLatest == true).Select(s => s.Title).FirstOrDefault();
             ViewBag.LatestModelID = objBaselineModel.Versions.Where(s => s.IsLatest == true).Select(s => s.ModelId).FirstOrDefault();
-            if (Title != null && Title != string.Empty)
-            {
-                ViewBag.Msg = string.Format(Common.objCached.ModelTacticTypeNotexist, Title);
-            }
             objBaselineModel.IntegrationInstanceId = objModel.IntegrationInstanceId;
             objBaselineModel.IntegrationInstanceIdCW = objModel.IntegrationInstanceIdCW;
             objBaselineModel.IntegrationInstanceIdINQ = objModel.IntegrationInstanceIdINQ;
@@ -4648,17 +4600,18 @@ namespace RevenuePlanner.Controllers
             ViewBag.ModelPublishEdit = Common.objCached.ModelPublishEdit;
             ViewBag.ModelPublishCreateNew = Common.objCached.ModelPublishCreateNew;
             ViewBag.ModelPublishComfirmation = Common.objCached.ModelPublishComfirmation;
+            /*Set flag for  existing user is owner or not*/
             ViewBag.Flag = false;
             if (id != 0)
             {
                 ViewBag.Flag = chekckParentPublishModel(id);
-                ViewBag.IsOwner = db.Models.Where(a => a.IsDeleted.Equals(false) && a.ModelId == id && a.CreatedBy == Sessions.User.UserId).Any();  // Added by Sohel Pathan on 07/07/2014 for Internal Review Points to implement custom restriction logic on Business unit.
+                ViewBag.IsOwner = db.Models.Where(a => a.IsDeleted.Equals(false) && a.ModelId == id && a.CreatedBy == Sessions.User.UserId).Any();  
             }
             else
             {
                 ViewBag.IsOwner = true;
             }
-
+             /*Get list of user's business unit in which user have rights of view edit.Set flag for user's right of view edit business unit*/
             try
             {
                 var lstUserCustomRestriction = Common.GetUserCustomRestriction();
@@ -4682,7 +4635,8 @@ namespace RevenuePlanner.Controllers
                     return RedirectToAction("Index", "Login");
                 }
             }
-            var lstInstance = db.IntegrationInstances.Where(inc => inc.ClientId == Sessions.User.ClientId).Select(inc => new
+            /*List of integration instance of model*/
+            var lstInstance = db.IntegrationInstances.Where(inc => inc.ClientId == Sessions.User.ClientId && inc.IsDeleted==false).Select(inc => new
             {
                 InstanceName = inc.Instance,
                 InstanceId = inc.IntegrationInstanceId,
