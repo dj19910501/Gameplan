@@ -1723,10 +1723,13 @@ namespace RevenuePlanner.Controllers
             IntegrationInstanceExternalServer obj = db.IntegrationInstanceExternalServers.Where(i => i.IntegrationInstanceId == IntegrationInstanceId).FirstOrDefault();
             if (obj != null)
             {
-                db.Entry(obj).State = System.Data.EntityState.Deleted;
+                obj.IsDeleted = true;
+                obj.ModifiedBy = Sessions.User.UserId;
+                obj.ModifiedDate = DateTime.Now;
+                db.Entry(obj).State = System.Data.EntityState.Modified;
                 return db.SaveChanges();
             }
-            return 1;
+            return 0;
         }
 
         /// <summary>
