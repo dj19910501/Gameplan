@@ -210,12 +210,6 @@
     });
 
 
-    $('#btnCancel').click(function () {
-        var url = '';
-        url = '@Url.Action("Index", "ExternalService")';
-        window.location.href = url;
-    });
-
     $("#ddlSyncFrequency").change(function () {
         var selectedSpan = $(this).val();
         if (selectedSpan != "") {

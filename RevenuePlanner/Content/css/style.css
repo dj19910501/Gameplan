@@ -7676,7 +7676,7 @@ div.sub{display:none; transition: height 0.35s ease 0s; padding:0;}
 /* End - Added by Sohel Pathan on 31/07/2014 for PL ticket #623 */
 
 /* Added By : Kalpesh Sharma Integration Type Settings - 682 */
-.integrationAccordion.span10{width:490px; margin-left:70px; border:1px solid #cccccc; border-bottom:none;}
+.integrationAccordion.span10{width:490px; margin-left:70px; border:1px solid #cccccc; border-bottom:none;border-radius: 8px;}
 .integrationAccordion .accordion-heading{padding:0;}
 .integrationAccordion .accordion-toggle{padding:0 16px 0 20px !important; border-bottom:1px solid #cccccc; line-height:32px;}
 .integrationAccordion .accordion-toggle, .integrationAccordion .accordion-toggle:hover, .integrationAccordion .accordion-toggle:focus{color:#000; outline:none;}
