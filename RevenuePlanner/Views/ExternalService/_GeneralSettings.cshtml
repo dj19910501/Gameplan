@@ -128,11 +128,11 @@
             </div>		
             
             <!--success message-->
-            <div id="successMessageGeneralSettings" class="alert hide alert-success">
+            <div id="successMessageGeneralSettings" class="alert hide alert-success messages">
                 <a class="close">×</a>
                 <div id="cSuccessGeneralSettings"><strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessageGeneralSetting"]))</div>
             </div>
-            <div id="errorMessageGeneralSettings" class="alert alert-error hide">
+            <div id="errorMessageGeneralSettings" class="alert alert-error hide messages">
                 <a class="close">×</a>
                 <div id="cErrorGeneralSettings"><strong>Error!</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessageGeneralSetting"]))</div>
             </div>
@@ -168,7 +168,7 @@
             }
         });
 
-        if ($('#Instance').val().trim() != "" && $('#Username').val().trim() != "" && $('#Password').val().trim() != "") {
+        if ($('#integrationForm #Instance').val().trim() != "" && $('#integrationForm #Username').val().trim() != "" && $('#integrationForm #Password').val().trim() != "") {
             $.ajax({
                 cache: false,
                 cache: false,

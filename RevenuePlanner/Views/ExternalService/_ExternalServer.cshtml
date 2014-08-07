@@ -33,11 +33,11 @@
                 @Html.TextBoxFor(model => model.SFTPPassword, new {type="password", placeholder = "*********", maxlength = "50" })
             </div>
             
-            <div id="sucExtSrv" class="alert hide alert-success">
+            <div id="sucExtSrv" class="alert hide alert-success messages">
                 <a class="close">×</a>
                 <div id="cSucExtSrv"></div>
             </div>
-            <div id="errExtSrv" class="alert hide alert-error">
+            <div id="errExtSrv" class="alert hide alert-error messages">
                 <a class="close">×</a>
                 <div id="cErrExtSrv"></div>
             </div>
@@ -56,10 +56,11 @@
 </div>
 <script type="text/javascript">
     $('#btnExtServerSave').click(function () {
-        $('#cErrExtSrv').html('')
-        $("#errExtSrv").slideUp(100);
-        $('#cErrExtSrv').html('')
-        $("#errExtSrv").slideDown(100);
+        
+        $('#SFTPServerName').removeClass('error');
+        $('#SFTPFileLocation').removeClass('error');
+        $('#SFTPUserName').removeClass('error');
+        $('#SFTPPassword').removeClass('error');
 
         var isError = false;
         var ErrMsg = '';
@@ -96,7 +97,7 @@
             $("#errExtSrv").slideUp(100);
         }
         $.ajax({
-            url: 'SaveExternalForm',
+            url: '@Url.Content("~/ExternalService/SaveExternalForm")',
             type: 'post',
             dataType: 'json',
             data: $('#extServer').serialize(),
@@ -104,11 +105,17 @@
                 if (data.status == 0) {
                     $('#cErrExtSrv').html('<strong>Error! </strong> ' + data.ErrorMessage)
                     $("#errExtSrv").slideDown(400);
+                    $("#sucExtSrv").slideUp(1);
+                    $('#SFTPServerName').removeClass('error');
+                    $('#SFTPFileLocation').removeClass('error');
+                    $('#SFTPUserName').removeClass('error');
+                    $('#SFTPPassword').removeClass('error');
                 }
                 else {
                     $('#IntegrationInstanceExternalServerId').val(data.status);
                     $('#cSucExtSrv').html('<strong>Success! </strong> ' + data.ErrorMessage)
                     $("#sucExtSrv").slideDown(400);
+                    $("#errExtSrv").slideUp(1);
                 }
             },
             error: function () {
