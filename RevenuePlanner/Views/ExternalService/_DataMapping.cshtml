@@ -124,16 +124,16 @@
                     </div>
                     <!--error message-->
                
-                    <div class="cf inputs-aligned-horizontal">
-                        <div class="container-button margin-top10">
-                            <span class="span5">
+                    
+                        <div class="margin-left40per">
+                            <span class="span5 margin-top10">
                                 <button id="btnSaveDataMappings" type="button" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" name="button-save">Save</button>
                             </span>
-                            <span class="span5">
+                            <span class="span5 margin-top10">
                                 <button id="btnCancelDataMappins" type="button" class="close-form btn-link source-sans-proregular">Cancel</button>
                             </span>
                         </div>
-                    </div>
+                    
                  }
             </div>   
         }
@@ -144,11 +144,11 @@
 
     $(document).ready(function () {
         $(".verticalIdSelectBox select").selectbox();
-        $("#frmDataMapping").find('.ddlStyle').each(function () {
-            if ($(this).next('.sbHolder').hasClass("error")) {
-                $(this).next('.sbHolder').removeClass("error");
-            }
-        });
+        //$("#frmDataMapping").find('.ddlStyle').each(function () {
+        //    if ($(this).next('.sbHolder').hasClass("error")) {
+        //        $(this).next('.sbHolder').removeClass("error");
+        //    }
+        //});
     });
 
     $("#frmDataMapping").find('.ddlStyle').change(function () {
