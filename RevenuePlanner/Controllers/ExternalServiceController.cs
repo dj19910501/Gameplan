@@ -1060,6 +1060,8 @@ namespace RevenuePlanner.Controllers
         {
             // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+            
+            List<GameplanDataTypeModel> listGameplanDataTypeStageZero = new List<GameplanDataTypeModel>();
 
             try
             {
@@ -1070,6 +1072,29 @@ namespace RevenuePlanner.Controllers
                     ExternalFields = new List<string>();
                 }
                 ViewData["ExternalFieldList"] = ExternalFields;
+            }
+            catch
+            {
+                ViewData["ExternalFieldList"] = new List<string>();
+            }
+            finally
+            {
+                listGameplanDataTypeStageZero = GetGameplanDataTypeListFromDB(id);
+            }
+            return listGameplanDataTypeStageZero;
+        }
+        #endregion
+
+        #region Function get Gameplan DataTypes list from DB.
+        /// <summary>
+        /// Get gameplan datatype list from database based on IntegrationInstanceId
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public List<GameplanDataTypeModel> GetGameplanDataTypeListFromDB(int id)
+        {
+            try
+            {
                 ViewBag.IntegrationInstanceId = id;
                 string integrationTypeName = (from i in db.IntegrationInstances
                                               join t in db.IntegrationTypes on i.IntegrationTypeId equals t.IntegrationTypeId
@@ -1083,6 +1108,8 @@ namespace RevenuePlanner.Controllers
                 {
                     ViewBag.IntegrationTypeName = integrationTypeName;
                 }
+
+                TempData["TargetFieldInvalidMsg"] = Common.objCached.TargetFieldInvalidMsg;
 
                 //// Start - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id 
                 string Eloqua = Enums.IntegrationType.Eloqua.ToString();
@@ -1112,21 +1139,19 @@ namespace RevenuePlanner.Controllers
 
                 if (listGameplanDataTypeStageZero != null && listGameplanDataTypeStageZero.Count > 0)
                 {
-                    TempData["TargetFieldInvalidMsg"] = Common.objCached.TargetFieldInvalidMsg;
                     return listGameplanDataTypeStageZero.OrderBy(map => map.TableName).ToList();
                 }
                 //// End - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id
                 else
                 {
-                    TempData["TargetFieldInvalidMsg"] = "";
                     TempData["DataMappingErrorMessage"] = Common.objCached.DataTypeMappingNotConfigured;
                     return listGameplanDataTypeStageZero = new List<GameplanDataTypeModel>();
                 }
             }
-            catch (Exception e)
+            catch
             {
-                ViewData["ExternalFieldList"] = new List<string>();
-                TempData["DataMappingErrorMessage"] = Common.objCached.DataTypeMappingNotConfigured + e.Message;
+                TempData["TargetFieldInvalidMsg"] = "";
+                TempData["DataMappingErrorMessage"] = Common.objCached.ErrorOccured;
                 return new List<GameplanDataTypeModel>();
             }
         }
