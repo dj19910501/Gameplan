@@ -62,10 +62,10 @@
     var CurrentPlanId = '@CurrentPlanId';
     var Bid;
     var currentTab = 'aAllocated';
-    function ShowChangeLog() {
+    function ShowChangeLog(CurrentPlanId) {
         $('.changes').html('');
         var url = '@Url.Content("~/Home/LoadChangeLog/")';
-        $('.changes').load(url + '?objectId=' + '@CurrentPlanId');
+        $('.changes').load(url + '?objectId=' + CurrentPlanId);
     }
     $(document).ready(function () {
         $(".selectBox select").selectbox();
