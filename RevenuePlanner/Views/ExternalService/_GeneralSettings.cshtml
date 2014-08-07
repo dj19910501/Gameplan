@@ -347,7 +347,9 @@
                     return false;
                 }
             }
-            if ($('#IsDeleted').val().toLowerCase() == 'true') {
+
+            if ('@Model.IntegrationInstanceId' > 0 ) {
+                if ($('#IsDeleted').val().toLowerCase() == 'true') {
                 if (confirm($("#DeleteConfirmationMsg").val())) {
                     return true;
                 }
@@ -356,7 +358,8 @@
                     return false;
                 }
             }
-        }
+         }
+    }
 
     });
 </script>
