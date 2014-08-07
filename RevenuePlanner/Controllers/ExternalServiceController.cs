@@ -1576,7 +1576,7 @@ namespace RevenuePlanner.Controllers
             else
             {
                 Status = 0;
-                message = Common.objCached.ErrorOccured;
+                message = Common.objCached.TestIntegrationFail;
             }
 
             return Status;

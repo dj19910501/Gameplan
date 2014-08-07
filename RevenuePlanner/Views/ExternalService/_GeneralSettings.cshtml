@@ -17,26 +17,26 @@
 
                 @Html.TextBoxFor(model => model.IntegrationType.Title, new { style = "background:#F2F2F2;", @readonly = "true" })
                 <p style="margin-top: -10px;"><a href="#" class="font-black">Add Provider credentials to customize your integration.</a></p>
-                @Html.ValidationMessageFor(model => model.IntegrationType.Title)
+               @* @Html.ValidationMessageFor(model => model.IntegrationType.Title)*@
             </div>
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.Instance)
 
                 @Html.TextBoxFor(model => model.Instance, new { maxlength = "255", tabindex = "1" })
-                @Html.ValidationMessageFor(model => model.Instance, "", new { style = "padding-top: 6px; position: absolute;" })
+                @*@Html.ValidationMessageFor(model => model.Instance, "", new { style = "padding-top: 6px; position: absolute;" })*@
             </div>
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.Username)
 
                 @Html.TextBoxFor(model => model.Username, new { maxlength = "255", tabindex = "2" })
                 <span class="field-validation-error" id="isUsernameExist"></span>
-                @Html.ValidationMessageFor(model => model.Username, "", new { style = "padding-top: 6px; position: absolute;" })
+                @*@Html.ValidationMessageFor(model => model.Username, "", new { style = "padding-top: 6px; position: absolute;" })*@
             </div>
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.Password)
 
                 @Html.TextBoxFor(model => model.Password, new { type = "password", maxlength = "255", tabindex = "3" })
-                @Html.ValidationMessageFor(model => model.Password, "", new { style = "padding-top: 6px; position: absolute;" })
+                @*@Html.ValidationMessageFor(model => model.Password, "", new { style = "padding-top: 6px; position: absolute;" })*@
             </div>
             
             
@@ -48,12 +48,12 @@
                 @if (Model.IntegrationTypeAttributes[i].AttributeType == "textbox")
                 { 
                     @Html.TextBoxFor(model => model.IntegrationTypeAttributes[i].Value, new { maxlength = "255", tabindex = "4" })
-                    @Html.ValidationMessageFor(model => model.IntegrationTypeAttributes[i].Value, "", new { style = "padding-top: 6px; position: absolute;" })
+                    @*@Html.ValidationMessageFor(model => model.IntegrationTypeAttributes[i].Value, "", new { style = "padding-top: 6px; position: absolute;" })*@
                 }
                 else if (Model.IntegrationTypeAttributes[i].AttributeType == "dropdown")
                 {
                     @Html.DropDownListFor(model => model.IntegrationTypeAttributes[i].Value, new SelectList((System.Collections.IEnumerable)Model.IntegrationTypeAttributes[i].Value, "Value", "Text"), new { tabindex = "4" })
-                    @Html.ValidationMessageFor(model => model.IntegrationTypeAttributes[i].Value, "", new { style = "padding-top: 6px; position: absolute;" })
+                    @*@Html.ValidationMessageFor(model => model.IntegrationTypeAttributes[i].Value, "", new { style = "padding-top: 6px; position: absolute;" })*@
                 }
             </div>
                                                                 }
