@@ -490,20 +490,22 @@ namespace RevenuePlanner.Controllers
                                         .Select(s => s).FirstOrDefault();
 
                 SyncFrequencyModel objSync = new SyncFrequencyModel();
-                if (recordSync.Day != null)
-                    objSync.Day = recordSync.Day;
-                if (recordSync.DayofWeek != null)
-                    objSync.DayofWeek = recordSync.DayofWeek;
-                objSync.Frequency = recordSync.Frequency;
-                if (recordSync.Time.HasValue == true)
+                if (recordSync != null)
                 {
-                    if (recordSync.Time.Value.Hours > 12)
-                        objSync.Time = recordSync.Time.Value.Hours.ToString().PadLeft(2, '0') + ":00 " + "PM";
-                    else
-                        objSync.Time = recordSync.Time.Value.Hours.ToString().PadLeft(2, '0') + ":00 " + "AM";
+                    if (recordSync.Day != null)
+                        objSync.Day = recordSync.Day;
+                    if (recordSync.DayofWeek != null)
+                        objSync.DayofWeek = recordSync.DayofWeek;
+                    objSync.Frequency = recordSync.Frequency;
+                    if (recordSync.Time.HasValue == true)
+                    {
+                        if (recordSync.Time.Value.Hours > 12)
+                            objSync.Time = recordSync.Time.Value.Hours.ToString().PadLeft(2, '0') + ":00 " + "PM";
+                        else
+                            objSync.Time = recordSync.Time.Value.Hours.ToString().PadLeft(2, '0') + ":00 " + "AM";
+                    }
+                    objSync.IntegrationInstanceId = recordSync.IntegrationInstanceId;    
                 }
-                objSync.IntegrationInstanceId = recordSync.IntegrationInstanceId;
-
                 objView.SyncFrequency = objSync;
 
                 var recordAttribute = db.IntegrationInstance_Attribute
