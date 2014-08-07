@@ -125,7 +125,9 @@
             $('#monthCompareTitle').html('');
             $('.progressPlanned').hide();
         }
-
+        if ('@AllocatedBy' == 'quarters') {
+            $('#monthCompareTitle').html('Quarterly Budget Allocation');
+        }
         var strMonthHTML = '';
         if ('@AllocatedBy' == 'months') {
             for (var i = 1; i <= 12; i++) {
