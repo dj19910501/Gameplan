@@ -321,6 +321,7 @@
                             $('#cErrorGeneralSettings').html('');
                             $('#cErrorGeneralSettings').append("<strong>Error! </strong>" + data.ErrorMessage.toString());
                             $("#errorMessageGeneralSettings").slideDown(400);
+                            $("#successMessageGeneralSettings").slideUp(1);
                             $("html, body").animate({ scrollTop: 0 }, 1000);
                             
                             return true;
