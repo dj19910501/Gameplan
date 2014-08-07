@@ -1713,6 +1713,22 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
+        /// Delete the data
+        /// </summary>
+        /// <param name="frm"></param>
+        /// <returns></returns>
+        private int DeleteExternalServer(int IntegrationInstanceId)
+        {
+            IntegrationInstanceExternalServer obj = db.IntegrationInstanceExternalServers.Where(i => i.IntegrationInstanceId == IntegrationInstanceId).FirstOrDefault();
+            if (obj != null)
+            {
+                db.Entry(obj).State = System.Data.EntityState.Deleted;
+                return db.SaveChanges();
+            }
+            return 1;
+        }
+
+        /// <summary>
         /// Add or Update the data
         /// </summary>
         /// <param name="frm"></param>
