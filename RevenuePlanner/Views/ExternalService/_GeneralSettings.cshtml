@@ -130,11 +130,11 @@
             <!--success message-->
             <div id="successMessageGeneralSettings" class="alert hide alert-success">
                 <a class="close">×</a>
-                <div id="cSuccessGeneralSettings"><strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))</div>
+                <div id="cSuccessGeneralSettings"><strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessageGeneralSetting"]))</div>
             </div>
             <div id="errorMessageGeneralSettings" class="alert alert-error hide">
                 <a class="close">×</a>
-                <div id="cErrorGeneralSettings"><strong>Error!</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))</div>
+                <div id="cErrorGeneralSettings"><strong>Error!</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessageGeneralSetting"]))</div>
             </div>
             <!--success message-->
             
@@ -152,60 +152,69 @@
     </div>
 </div>
 
-<script>
+<script type="text/javascript">
+
+    function testIntegration() {
+        $('#content #integrationForm :input').each(function () {
+            if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
+                if (this.id == 'Instance' || this.id == 'Username' || this.id == 'Password') {
+                    var input = $(this).val();
+                    if (input == '') {
+                        $(this).addClass("error");
+                    } else {
+                        $(this).removeClass("error");
+                    }
+                }
+            }
+        });
+
+        if ($('#Instance').val().trim() != "" && $('#Username').val().trim() != "" && $('#Password').val().trim() != "") {
+            $.ajax({
+                cache: false,
+                cache: false,
+                type: 'POST',
+                url: '@Url.Content("~/ExternalService/TestIntegration")',
+                    data: $("form").serialize(),
+                    success: function (data) {
+                        if (data != null) {
+                            if (data.status == 1) {
+                                $("#cSuccessGeneralSettings").html('');
+                                $('#cSuccessGeneralSettings').append("<strong>Success. </strong>" + data.SuccessMessage.toString());
+                                $("#successMessageGeneralSettings").slideDown(1200);
+                                // $("#successMessage").slideUp(3000);
+                                $("#errorMessageGeneralSettings").slideUp(1);
+
+                                $('#integrationStatus').val("Active");
+                                $('#IsActive').val(true);
+                                $('#integrationStatus').addClass("icon-check-blue");
+                                $('#integrationStatus').removeClass("icon-check-gray");
+
+                                return true;
+                            }
+                            else {
+                                $('#cErrorGeneralSettings').html('');
+                                $('#cErrorGeneralSettings').append("<strong>Error! </strong>" + data.ErrorMessage.toString());
+                                $("#errorMessageGeneralSettings").slideDown(400);
+                                $("html, body").animate({ scrollTop: 0 }, 1000);
+                                return true;
+                            }
+                        }
+                    }
+                });
+
+                return false;
+            }
+        }
+
+
     $(document).ready(function () {
 
-        function testIntegration() {    
-            $('#content #integrationForm :input').each(function () {
-                if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
-                    if (this.id == 'Instance' || this.id == 'Username' || this.id == 'Password') {
-                        var input = $(this).val();
-                        if (input == '') {
-                            $(this).addClass("error");
-                        } else {
-                            $(this).removeClass("error");
-                        }
-                    }
-                }
-            });
-
-            if ($('#Instance').val().trim() != "" && $('#Username').val().trim() != "" && $('#Password').val().trim() != "") {
-                $.ajax({
-                    cache: false,
-                    cache: false,
-                    type: 'POST',
-                    url: '@Url.Content("~/ExternalService/TestIntegration")',
-                data: $("form").serialize(),
-                success: function (data) {
-                    if (data != null) {
-                        if (data.status == 1) {
-                            $("#cSuccess").html('');
-                            $('#cSuccess').append("<strong>Success. </strong>" + data.SuccessMessage.toString());
-                            $("#successMessage").slideDown(1200);
-                            // $("#successMessage").slideUp(3000);
-                            $("#errorMessage").slideUp(1);
-
-                            $('#integrationStatus').val("Active");
-                            $('#IsActive').val(true);
-                            $('#integrationStatus').addClass("icon-check-blue");
-                            $('#integrationStatus').removeClass("icon-check-gray");
-
-                            return true;
-                        }
-                        else {
-                            $('#cError').html('');
-                            $('#cError').append("<strong>Error! </strong>" + data.ErrorMessage.toString());
-                            $("#errorMessage").slideDown(400);
-                            $("html, body").animate({ scrollTop: 0 }, 1000);
-                            return true;
-                        }
-                    }
-                }
-            });
-
-            return false;
+        if (localStorage.Message != undefined) {
+            $("#cSuccessGeneralSettings").html('');
+            $('#cSuccessGeneralSettings').append("<strong>Success. </strong>" + localStorage.Message);
+            $("#successMessageGeneralSettings").slideDown(1200);
+            localStorage.removeItem('Message');
         }
-    }
 
         $("#integrationForm #t_status").click(function () {
             //var index=parseInt($('#table_tactics tbody tr').attr("index"));
@@ -288,23 +297,24 @@
                 data: $("form").serialize(),
                 success: function (data) {
                     if (data != null) {
-                        if (data.status == 1) {
-                            $("#cSuccessGeneralSettings").html('');
-
-                            if ('@Model.IntegrationInstanceId' == 0) {
+                        if (data.status > 0 ) {
+                            if (data.status == 1) {
+                                localStorage.Message = data.SuccessMessage.toString();
                                 var URL = "@Url.Content("~/ExternalService/edit/")";
-                                URL = URL + "?id=" + data.id + "&TypeId=" + '@Model.IntegrationTypeId';
+                                URL = URL + "?id=" + data.Id + "&TypeId=" + '@Model.IntegrationTypeId';
                                 window.location.href = URL;
                             }
-
-                            $('#cSuccessGeneralSettings').append("<strong>Success. </strong>" + data.SuccessMessage.toString());
-                            $("#successMessageGeneralSettings").slideDown(1200);
-                            $("#errorMessageGeneralSettings").slideUp(1);
-                            $('#integrationStatus').val("Active");
-                            $('#IsActive').val(true);
-                            $('#integrationStatus').addClass("icon-check-blue");
-                            $('#integrationStatus').removeClass("icon-check-gray");
-                            $('#IntegrationInstanceId').val(data.id);
+                            else if (data.status == 3) {
+                                var URL = "@Url.Content("~/ExternalService/Index/")";
+                                window.location.href = URL;
+                            }
+                            else {
+                                $("#cSuccessGeneralSettings").html('');
+                                $('#cSuccessGeneralSettings').append("<strong>Success. </strong>" + data.SuccessMessage.toString());
+                                $("#successMessageGeneralSettings").slideDown(1200);
+                                $("#errorMessageGeneralSettings").slideUp(1);
+                                $('#IntegrationInstanceId').val(data.Id);
+                            }
                             return true;
                         }
                         else {
@@ -312,12 +322,12 @@
                             $('#cErrorGeneralSettings').append("<strong>Error! </strong>" + data.ErrorMessage.toString());
                             $("#errorMessageGeneralSettings").slideDown(400);
                             $("html, body").animate({ scrollTop: 0 }, 1000);
+                            
                             return true;
                         }
                     }
                 }
              });
-
         }
 
         function CheckActiveStatus() {

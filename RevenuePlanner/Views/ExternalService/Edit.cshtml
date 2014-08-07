@@ -34,7 +34,7 @@
 
 <ul class="nav nav-tabs margin-bottom0">
     <li class="source-sans-proregular">
-        <h2 class="title-header">Edit External Service Integrations</h2>
+        <h2 class="title-header"> @( Model.IntegrationInstanceId == 0 ? "Create" : "Edit") External Service Integrations</h2>
     </li>
 </ul>
 
@@ -58,12 +58,12 @@
                 {
                     <div class="accordion-group">
                         <div class="accordion-heading">
-                            <a class="accordion-toggle"  data-parent="#accordion" >Pushing Tactic Data<span >+ Expand</span></a>
+                            <a class="accordion-toggle"  data-parent="#accordion" >Pushing Tactic Data</a>
                         </div>
                     </div>
                     <div class="accordion-group">
                         <div class="accordion-heading">
-                            <a class="accordion-toggle" data-parent="#accordion" >Response Pulling<span>+ Expand</span></a>
+                            <a class="accordion-toggle" data-parent="#accordion" >Response Pulling</a>
                         </div>
                     </div>
                 }
@@ -90,6 +90,9 @@
                 //Added By : Sohel Pathan
                 else if ($(this).attr("href") == '#collapseGrpDataMapping') {
                     $("#frmDataMapping").find('#0').focus();
+                }
+                if ($(this).attr("href") == '#collapseGrpServer') {
+                    $('#SFTPServerName').focus();
                 }
             }
         });

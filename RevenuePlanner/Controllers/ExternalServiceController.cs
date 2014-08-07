@@ -1245,10 +1245,17 @@ namespace RevenuePlanner.Controllers
 
             if (result == 0)
             {
+                TempData["ErrorMessageGeneralSetting"] = rtnMessage;
                 return Json(new { status = 0, ErrorMessage = rtnMessage, Id = IntegrationID }, JsonRequestBehavior.AllowGet);
             }
 
-            return Json(new { status = 1, SuccessMessage = rtnMessage, Id = IntegrationID }, JsonRequestBehavior.AllowGet);
+            if (result == 3)
+            {
+                TempData["SuccessMessage"] = rtnMessage;
+            }
+
+            ViewData["SuccessMessageGeneralSetting"] = rtnMessage;
+            return Json(new { status = result, SuccessMessage = rtnMessage, Id = IntegrationID }, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -1273,7 +1280,8 @@ namespace RevenuePlanner.Controllers
 
                     if (IsAddOperation)
                     {
-                        isDuplicate = db.IntegrationInstances.Where(a => a.Instance == form.Instance && a.ClientId == Sessions.User.ClientId && a.IntegrationType.IntegrationTypeId == form.IntegrationTypeId).Any();
+                        isDuplicate = db.IntegrationInstances.Where(a => a.Instance == form.Instance && a.ClientId == Sessions.User.ClientId && a.IntegrationType.IntegrationTypeId == form.IntegrationTypeId &&
+                            a.IsDeleted == false).Any();
                     }
                     else
                     {
@@ -1281,7 +1289,7 @@ namespace RevenuePlanner.Controllers
                          && a.IntegrationInstanceId != form.IntegrationInstanceId).Any();
                     }
 
-                    if (!isDuplicate)
+                    if ((!isDuplicate && form.IntegrationInstanceId == 0) || form.IsDeleted || form.IntegrationInstanceId > 0)
                     {
                         bool IntegrationRemoved = true;
                         int SyncFrequenciesCount = 0, IntegrationInstancesCount = 0;
