@@ -458,8 +458,6 @@
                 return false;
             }
 
-
-
             //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
             sdate = $('#t_startdate').val();
             edate = $('#t_enddate').val();
@@ -604,18 +602,12 @@
             if (typeof arrClosedTask != 'undefined') {
                 arrClosedTaskString = arrClosedTask.toString();
             }
-            //CheckUserSession("#save_campaign", true);
-            //if (reason == 'user') {
-            //    return false;
-            //}
-
-
+            
             var allocationValue = [];
             var lstAllocInputs = $(".budget-section input").not('.unallocated-text');
             for (var i = 0; i < lstAllocInputs.length; i++) {
                 allocationValue.push(ReplaceCC($(lstAllocInputs[i]).val()));
             }
-
 
             document.getElementById("txtTitle").value = htmlEncode($('#txtTitle').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             document.getElementById("Description").value = htmlEncode($('#Description').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
@@ -633,7 +625,6 @@
                     }
                     else {
                         if (data.redirect) {
-
                             window.location.href = data.redirect;
                             return;
                         }
@@ -656,10 +647,6 @@
     Added by Nirav Shah on 17 feb 2014
  *@
         $("#deleteCampaign").click(function () {
-            CheckUserSession("#deleteCampaign", true);
-            if (reason == 'user') {
-                return false;
-            }
             if (confirm('@Common.objCached.ConfirmationForDeleteCampaign')) {
                 var campaignId = $("#hdnPlanCampaignId").val();
                 var isAssortment = $("#hdnRedirectType").val();
@@ -667,7 +654,7 @@
                 if (typeof arrClosedTask != 'undefined') {
                     arrClosedTaskString = arrClosedTask.toString();
                 }
-
+                var uId = $(window).attr('name');   // Added by Sohel Pathan on 07/08/2014 for PL ticket #672
                 $.ajax({
                     type: 'POST',
                     url: '@Url.Content("~/Plan/DeleteCampaign")',
@@ -675,17 +662,24 @@
                         ID: campaignId,
                         RedirectType: isAssortment,
                         closedTask: arrClosedTaskString
+                        ,UserId: uId     // Added by Sohel Pathan on 07/08/2014 for PL ticket #672
                     },
                     success: function (data) {
-                        if (data.redirect) {
-                            window.location.href = data.redirect;
-                            return;
+                        // Start - Modified by Sohel Pathan on 07/08/2014 for PL ticket #672
+                        if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                            window.location = '@Url.Content("~/Login/Index")';
                         }
-                        if (data.errormsg) {
-                            ShowError(data.errormsg);
-                            return;
+                        else {
+                            if (data.redirect) {
+                                window.location.href = data.redirect;
+                                return;
+                            }
+                            if (data.errormsg) {
+                                ShowError(data.errormsg);
+                                return;
+                            }
                         }
-
+                        // End - Modified by Sohel Pathan on 07/08/2014 for PL ticket #672
                     }
                 });
             }

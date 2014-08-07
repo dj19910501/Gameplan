@@ -289,11 +289,24 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// POST: Save Plan
         /// </summary>
-        /// <param name="form"></param>
+        /// <param name="objPlanModel"></param>
+        /// <param name="BudgetInputValues"></param>
+        /// <param name="RedirectType"></param>
+        /// <param name="UserId"></param> Added by Sohel Pathan on 07/08/2014 for PL ticket #672
         /// <returns></returns>
         [HttpPost]
-        public JsonResult SavePlan(PlanModel objPlanModel, string BudgetInputValues = "", string RedirectType = "")
+        public JsonResult SavePlan(PlanModel objPlanModel, string BudgetInputValues = "", string RedirectType = "", string UserId = "")
         {
+            // Start - Added by Sohel Pathan on 07/08/2014 for PL ticket #672
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            // End - Added by Sohel Pathan on 07/08/2014 for PL ticket #672
             try
             {
                 if (ModelState.IsValid)

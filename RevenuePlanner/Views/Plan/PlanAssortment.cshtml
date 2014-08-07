@@ -366,7 +366,7 @@
                 $.ajax({
                     type: 'POST',
                     url: '@Url.Content("~/Plan/SavePlan")',
-                    data: formData + '&BudgetInputValues=' + allocationValue.toString() + '&RedirectType=' + RedirectType,
+                    data: formData + '&BudgetInputValues=' + allocationValue.toString() + '&RedirectType=' + RedirectType + '&UserId=' + uId,
                     success: function (data) {
                         if (data.returnURL != 'undefined' && data.returnURL == '#') {
                             window.location = '@Url.Content("~/Login/Index")';
