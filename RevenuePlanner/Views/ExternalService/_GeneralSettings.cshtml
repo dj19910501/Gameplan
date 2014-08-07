@@ -3,7 +3,7 @@
 
 <div class="accordion-group">
     <div class="accordion-heading">
-        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseGrp1">General Settings<span href="javascript:void(0)">- Collapse</span></a>
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseGrp1" style="font-weight: bold;">General Settings<span style="font-weight: normal;" href="javascript:void(0)">- Collapse</span></a>
     </div>
     <div class="accordion-body collapse in" id="collapseGrp1">
         @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "integrationForm", style = "margin-bottom:5px !important;" }))
@@ -198,7 +198,7 @@
                                 $('#cErrorGeneralSettings').html('');
                                 $('#cErrorGeneralSettings').append("<strong>Error! </strong>" + data.ErrorMessage.toString());
                                 $("#errorMessageGeneralSettings").slideDown(400);
-                                $("html, body").animate({ scrollTop: 0 }, 1000);
+                                //$("html, body").animate({ scrollTop: 0 }, 1000);
                                 return true;
                             }
                         }
@@ -209,8 +209,14 @@
             }
         }
 
-
     $(document).ready(function () {
+
+        $('#btnCancel').click(function () {
+            $("#cSuccessGeneralSettings").html('');
+            $("#errorMessageGeneralSettings").slideUp(1);
+            $('#cErrorGeneralSettings').html('');
+            $("#successMessageGeneralSettings").slideUp(1);
+        });
 
         if (localStorage.Message != undefined) {
             $("#cSuccessGeneralSettings").html('');
@@ -330,7 +336,7 @@
                             $('#cErrorGeneralSettings').append("<strong>Error! </strong>" + data.ErrorMessage.toString());
                             $("#errorMessageGeneralSettings").slideDown(400);
                             $("#successMessageGeneralSettings").slideUp(1);
-                            $("html, body").animate({ scrollTop: 0 }, 1000);
+                            //$("html, body").animate({ scrollTop: 0 }, 1000);
                             
                             return true;
                         }
