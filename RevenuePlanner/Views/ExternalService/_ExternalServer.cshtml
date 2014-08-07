@@ -30,7 +30,7 @@
             </div>
             <div class="cf inputs-aligned-horizontal">
                 @Html.LabelFor(model => model.SFTPPassword)
-                @Html.PasswordFor(model => model.SFTPPassword, new { placeholder = "*********", maxlength = "50" })
+                @Html.TextBoxFor(model => model.SFTPPassword, new {type="password", placeholder = "*********", maxlength = "50" })
             </div>
             
             <div id="sucExtSrv" class="alert hide alert-success">

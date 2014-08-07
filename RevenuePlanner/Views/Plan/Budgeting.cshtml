@@ -62,6 +62,11 @@
     var CurrentPlanId = '@CurrentPlanId';
     var Bid;
     var currentTab = 'aAllocated';
+    function ShowChangeLog() {
+        $('.changes').html('');
+        var url = '@Url.Content("~/Home/LoadChangeLog/")';
+        $('.changes').load(url + '?objectId=' + '@CurrentPlanId');
+    }
     $(document).ready(function () {
         $(".selectBox select").selectbox();
         LoadPlanBuBusinessUnit($('#ddlBusinessUnit').val());
@@ -85,10 +90,11 @@
         }
         else if (sender == 'aActuals') {
         }
+        
 }
 
 function LoadPlanBuBusinessUnit(Bid) {
-    $('#DivloadPlan').load('@Url.Action("BudgetPlanList", "Plan")' + '?Bid=' + Bid, function () { TabLoad(currentTab); });
+    $('#DivloadPlan').load('@Url.Action("BudgetPlanList", "Plan")' + '?Bid=' + Bid, function () { TabLoad(currentTab); ShowChangeLog(CurrentPlanId); });
 }
 function populateNF(items, id) {
     var $dropdown = $("#" + id);
@@ -111,6 +117,7 @@ function populateNF(items, id) {
 function onClickPlanTitle() {
     $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
         CurrentPlanId = $(this).attr('value');
+        ShowChangeLog(CurrentPlanId);
         $("#CurrentPlanId").val(CurrentPlanId);
         TabLoad(currentTab);
     });
