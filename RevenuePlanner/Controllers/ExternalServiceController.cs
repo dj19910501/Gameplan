@@ -1510,6 +1510,7 @@ namespace RevenuePlanner.Controllers
                             if (Convert.ToString(form.IsDeleted).ToLower() == "true" && !IsAddOperation)
                             {
                                 IntegrationRemoved = Common.DeleteIntegrationInstance(form.IntegrationInstanceId, true);
+                                DeleteExternalServer(form.IntegrationInstanceId);
                             }
 
                             // Status changed from Active to InActive, So remove all the integration dependency with Models.
