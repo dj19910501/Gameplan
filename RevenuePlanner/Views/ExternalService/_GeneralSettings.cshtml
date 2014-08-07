@@ -115,8 +115,10 @@
             <div class="cf inputs-aligned-horizontal">
                 <p>Note that imported values override user-generated values.</p>
             </div>
-            										
-            <div class="cf inputs-aligned-horizontal">
+            		
+            if (Model.IntegrationInstanceId > 0)
+            {
+                 <div class="cf inputs-aligned-horizontal">
                 <div class="delete-container">
                     <div class="btn-group">
                         <div class="selectBox" id="ddlIsDeletedSelectBox">
@@ -125,8 +127,9 @@
                     </div>
                     @Html.LabelFor(model => model.IsDeleted, new { style = "float:left;padding-left:20px;padding-top:2px;" })
                 </div>
-            </div>		
-            
+            </div>	    
+            }								
+           	
             <!--success message-->
             <div id="successMessageGeneralSettings" class="alert hide alert-success messages">
                 <a class="close">×</a>
