@@ -205,15 +205,20 @@ namespace Integration.Eloqua
                                             var lstExternalTacticId = lstResponse.Select(t => t.externalTacticId).ToList();
                                             string Stage_INQ = "INQ";
                                             string Stage_ProjectedStageValue = "ProjectedStageValue";
+                                            List<string> lstApproveStatus = Common.GetStatusListAfterApproved();
                                             List<Plan_Campaign_Program_Tactic> lstTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
                                                                                                                                            (lstExternalTacticId.Contains(tactic.IntegrationInstanceTacticId) || lstEloquaTacticId.Contains(tactic.IntegrationInstanceTacticId)) &&
                                                                                                                                            tactic.IsDeployedToIntegration == true &&
+                                                                                                                                           lstApproveStatus.Contains(tactic.Status) &&
                                                                                                                                            tactic.IsDeleted == false &&
                                                                                                                                            tactic.Stage.Code == Stage_INQ).ToList();
                                             // Insert or Update tactic actuals.
                                             foreach (var objTactic in lstTactic)
                                             {
-                                                var lstTacticResponse = lstResponse.Where(r => r.eloquaTacticId == objTactic.IntegrationInstanceTacticId || r.externalTacticId == objTactic.IntegrationInstanceTacticId);
+                                                DateTime tacticStartDate = new DateTime(objTactic.StartDate.Year, objTactic.StartDate.Month, 1);
+                                                DateTime tacticEndDate = new DateTime(objTactic.EndDate.Year, objTactic.EndDate.Month, 1);
+                                                var lstTacticResponse = lstResponse.Where(r => (r.eloquaTacticId == objTactic.IntegrationInstanceTacticId || r.externalTacticId == objTactic.IntegrationInstanceTacticId) &&
+                                                                                                r.peroid >= tacticStartDate && r.peroid <= tacticEndDate);
                                                 foreach (var item in lstTacticResponse)
                                                 {
                                                     string tmpPeriod = "Y" + item.peroid.Month.ToString();
