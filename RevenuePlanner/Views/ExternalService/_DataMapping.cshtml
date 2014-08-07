@@ -144,13 +144,7 @@
 
     $(document).ready(function () {
         $(".verticalIdSelectBox select").selectbox();
-        var focusSet = false;
         $("#frmDataMapping").find('.ddlStyle').each(function () {
-            if (!focusSet)
-            {
-                $(this).focus();
-                focusSet = true;
-            }
             if ($(this).next('.sbHolder').hasClass("error")) {
                 $(this).next('.sbHolder').removeClass("error");
             }
