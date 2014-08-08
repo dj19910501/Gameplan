@@ -540,7 +540,12 @@ namespace RevenuePlanner.Controllers
             {
                 objView.GameplanDataTypeModelList = GetGameplanDataTypeList(id);   // Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681
                 objView.ExternalServer = GetExternalServer(id);    
+
+                // Dharmraj Start : #658: Integration - UI - Pulling Revenue - Salesforce.com
+                objView.GameplanDataTypePullModelList = GetGameplanDataTypePullList(id);
+                // Dharmraj End : #658: Integration - UI - Pulling Revenue - Salesforce.com
             }
+
             return View(objView);
         }
 
@@ -1087,6 +1092,42 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
+        #region Get Gampeplan DataType Pull List
+        /// <summary>
+        /// Get list of gameplan DataType Pull Mapping list
+        /// </summary>
+        /// <CreatedBy>Dharmraj #658</CreatedBy>
+        /// <CreatedDate>07/08/2014</CreatedDate>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public IList<GameplanDataTypePullModel> GetGameplanDataTypePullList(int id)
+        {
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+
+            List<GameplanDataTypePullModel> listGameplanDataTypePullZero = new List<GameplanDataTypePullModel>();
+
+            try
+            {
+                ExternalIntegration objEx = new ExternalIntegration(id);
+                List<string> ExternalFieldsCloseDeal = objEx.GetTargetDataMemberCloseDeal();
+                if (ExternalFieldsCloseDeal == null)
+                {
+                    ExternalFieldsCloseDeal = new List<string>();
+                }
+                ViewData["ExternalFieldListPull"] = ExternalFieldsCloseDeal;
+            }
+            catch
+            {
+                ViewData["ExternalFieldListPull"] = new List<string>();
+            }
+            finally
+            {
+                listGameplanDataTypePullZero = GetGameplanDataTypePullListFromDB(id);
+            }
+            return listGameplanDataTypePullZero;
+        }
+        #endregion
+
         #region Function get Gameplan DataTypes list from DB.
         /// <summary>
         /// Get gameplan datatype list from database based on IntegrationInstanceId
@@ -1159,6 +1200,72 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
+        #region Function get Gameplan DataTypes Pull list from DB.
+        /// <summary>
+        /// Get gameplan datatype list Pull from database based on IntegrationInstanceId
+        /// Dharmraj #658
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public List<GameplanDataTypePullModel> GetGameplanDataTypePullListFromDB(int id)
+        {
+            try
+            {
+                ViewBag.IntegrationInstanceId = id;
+                string integrationTypeName = (from i in db.IntegrationInstances
+                                              join t in db.IntegrationTypes on i.IntegrationTypeId equals t.IntegrationTypeId
+                                              where i.IsDeleted == false && t.IsDeleted == false && i.IntegrationInstanceId == id
+                                              select t.Title).SingleOrDefault();
+                if (string.IsNullOrEmpty(integrationTypeName))
+                {
+                    ViewBag.IntegrationTypeName = "";
+                }
+                else
+                {
+                    ViewBag.IntegrationTypeName = integrationTypeName;
+                }
+
+                TempData["ClosedDealInvalidMsg"] = Common.objCached.CloseDealTargetFieldInvalidMsg;
+                List<GameplanDataTypePullModel> listGameplanDataTypePullZero = new List<GameplanDataTypePullModel>();
+                if (integrationTypeName == Enums.IntegrationType.Salesforce.ToString())
+                {
+                    
+                    listGameplanDataTypePullZero = (from i in db.IntegrationInstances
+                                                    join d in db.GameplanDataTypePulls on i.IntegrationTypeId equals d.IntegrationTypeId
+                                                    join m1 in db.IntegrationInstanceDataTypeMappingPulls on d.GameplanDataTypePullId equals m1.GameplanDataTypePullId into mapping
+                                                    from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
+                                                    where i.IntegrationInstanceId == id && d.IsDeleted == false
+                                                    select new GameplanDataTypePullModel
+                                                    {
+                                                        GameplanDataTypePullId = d.GameplanDataTypePullId,
+                                                        IntegrationTypeId = d.IntegrationTypeId,
+                                                        ActualFieldName = d.ActualFieldName,
+                                                        DisplayFieldName = d.DisplayFieldName,
+                                                        IntegrationInstanceDataTypeMappingPullId = m.IntegrationInstanceDataTypeMappingPullId,
+                                                        IntegrationInstanceId = i.IntegrationInstanceId,
+                                                        TargetDataType = m.TargetDataType
+                                                    }).ToList();
+                }
+
+                if (listGameplanDataTypePullZero != null && listGameplanDataTypePullZero.Count > 0)
+                {
+                    return listGameplanDataTypePullZero.ToList();
+                }
+                else
+                {
+                    TempData["DataMappingPullErrorMessage"] = Common.objCached.DataTypeMappingNotConfigured;
+                    return listGameplanDataTypePullZero = new List<GameplanDataTypePullModel>();
+                }
+            }
+            catch
+            {
+                TempData["ClosedDealInvalidMsg"] = "";
+                TempData["DataMappingPullErrorMessage"] = Common.objCached.ErrorOccured;
+                return new List<GameplanDataTypePullModel>();
+            }
+        }
+        #endregion
+
         #region Save DataType Mapping using Ajax call
         /// <summary>
         /// Save gameplan mapping data type using ajax call
@@ -1215,6 +1322,78 @@ namespace RevenuePlanner.Controllers
                                 objMapping.CreatedDate = DateTime.Now;
                                 objMapping.CreatedBy = Sessions.User.UserId;
                                 mrp.Entry(objMapping).State = EntityState.Added;
+                                mrp.SaveChanges();
+                            }
+                        }
+                        scope.Complete();
+                    }
+                }
+                return Json(new { status = 1, Message = Common.objCached.DataTypeMappingSaveSuccess }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            return Json(new { status = 0, Message = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
+        #region Save DataType Mapping Pull using Ajax call
+        /// <summary>
+        /// Save gameplan mapping data type Pull using ajax call
+        /// </summary>
+        /// <CreatedBy>Dharmraj</CreatedBy>
+        /// <CreatedDate>08/08/2014</CreatedDate>
+        /// <param name="id"></param>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult SaveDataMappingPull(IList<GameplanDataTypePullModel> form, int IntegrationInstanceId, string UserId = "")
+        {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                {
+                    TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+
+            try
+            {
+                using (MRPEntities mrp = new MRPEntities())
+                {
+                    using (var scope = new TransactionScope())
+                    {
+                        List<int> lstIds = mrp.IntegrationInstanceDataTypeMappingPulls.Where(m => m.IntegrationInstanceId == IntegrationInstanceId).Select(m => m.IntegrationInstanceDataTypeMappingPullId).ToList();
+                        if (lstIds != null && lstIds.Count > 0)
+                        {
+                            foreach (int ids in lstIds)
+                            {
+                                IntegrationInstanceDataTypeMappingPull obj = mrp.IntegrationInstanceDataTypeMappingPulls.Where(m => m.IntegrationInstanceDataTypeMappingPullId == ids).SingleOrDefault();
+                                if (obj != null)
+                                {
+                                    mrp.Entry(obj).State = EntityState.Deleted;
+                                    mrp.SaveChanges();
+                                }
+                            }
+
+                        }
+                        foreach (GameplanDataTypePullModel obj in form)
+                        {
+                            if (!string.IsNullOrEmpty(obj.TargetDataType))
+                            {
+                                IntegrationInstanceDataTypeMappingPull objMappingPull = new IntegrationInstanceDataTypeMappingPull();
+                                int instanceId;
+                                int.TryParse(Convert.ToString(obj.IntegrationInstanceId), out instanceId);
+                                objMappingPull.IntegrationInstanceId = instanceId;
+                                objMappingPull.GameplanDataTypePullId = obj.GameplanDataTypePullId;
+                                objMappingPull.TargetDataType = obj.TargetDataType;
+                                objMappingPull.CreatedDate = DateTime.Now;
+                                objMappingPull.CreatedBy = Sessions.User.UserId;
+                                mrp.Entry(objMappingPull).State = EntityState.Added;
                                 mrp.SaveChanges();
                             }
                         }

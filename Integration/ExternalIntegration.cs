@@ -249,7 +249,7 @@ namespace Integration
                 IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0);
                 if (integrationSalesforceClient.IsAuthenticated)
                 {
-                    return integrationSalesforceClient.GetTargetDataType();
+                    return integrationSalesforceClient.GetTargetDataType("Campaign");
                 }
             }
             else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
@@ -258,6 +258,26 @@ namespace Integration
                 if (integrationEloquaClient.IsAuthenticated)
                 {
                     return integrationEloquaClient.GetTargetDataType();
+                }
+            }
+
+            return null;
+        }
+
+        public List<string> GetTargetDataMemberCloseDeal()
+        {
+            _integrationInstanceId = _id;
+            if (_integrationInstanceId.HasValue)
+            {
+                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Title;
+            }
+
+            if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
+            {
+                IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0);
+                if (integrationSalesforceClient.IsAuthenticated)
+                {
+                    return integrationSalesforceClient.GetTargetDataType("Opportunity");
                 }
             }
 

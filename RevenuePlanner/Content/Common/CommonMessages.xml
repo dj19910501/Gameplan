@@ -741,10 +741,16 @@
 		<value>External Server Configuration saved successfully</value>
 	</Field>
 	<!-- End - Manoj #679 -->
-  <!-- Start - Added By Mitesh #559 -->
-  <Field>
-    <Name>IntegrationSelectionSaved</Name>
-    <value>Integration selection have been saved successfully.</value>
-  </Field>
-  <!-- End - Added By Mitesh #559 -->
+	<!-- Start - Added By Mitesh #559 -->
+	<Field>
+		<Name>IntegrationSelectionSaved</Name>
+		<value>Integration selection have been saved successfully.</value>
+	</Field>
+	<!-- End - Added By Mitesh #559 -->
+	<!--Start - Added by :- Dharmraj on 6/08/2014 for PL #658 Integration - UI - Pulling Revenue - Salesforce.com-->
+	<Field>
+		<Name>CloseDealTargetFieldInvalidMsg</Name>
+		<value>Please ensure that a target field is not mapped to more than one Gameplan data type under same plan entity.</value>
+	</Field>
+	<!--End - Added by :- Dharmraj on 6/08/2014 for PL #658 Integration - UI - Pulling Revenue - Salesforce.com-->
 </Messages>

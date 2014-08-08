@@ -2078,6 +2078,14 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             set { _ConfirmationForDeleteLineItem = value; }
         }
 
+        private string _CloseDealTargetFieldInvalidMsg;
+        public string CloseDealTargetFieldInvalidMsg
+        {
+            get { return _CloseDealTargetFieldInvalidMsg; }
+            set { _CloseDealTargetFieldInvalidMsg = value; }
+        }
+        
+
         #region Start - Manoj PL#679
         private string _DuplicateFileLocation;
         public string DuplicateFileLocation
@@ -2737,6 +2745,9 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             _IntegrationSelectionSaved = strMsgValue;
                                             break;
                                             //End :Added by Mitesh for PL ticket #559
+case "CloseDealTargetFieldInvalidMsg":
+                                            _CloseDealTargetFieldInvalidMsg = strMsgValue;
+                                            break;
                                     }
                                 }
                                 i = i + 1;
