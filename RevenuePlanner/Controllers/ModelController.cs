@@ -4231,6 +4231,13 @@ namespace RevenuePlanner.Controllers
                         newModel.AddressableContacts = 0;//Modified by Mitesh Vaishnav for PL Ticket #534
                         newModel.BusinessUnitId = tmpGuid;
                         newModel.IsBenchmarked = IsBenchmarked;
+                        ////Added by Mitesh Vaishnav for PL ticket #659 
+                        var oldModel = mrp.Models.Where(m => m.ModelId == OldModelID && m.IsDeleted.Equals(false)).FirstOrDefault();
+                        newModel.IntegrationInstanceId = oldModel.IntegrationInstanceId;
+                        newModel.IntegrationInstanceIdCW = oldModel.IntegrationInstanceIdCW;
+                        newModel.IntegrationInstanceIdINQ = oldModel.IntegrationInstanceIdINQ;
+                        newModel.IntegrationInstanceIdMQL = oldModel.IntegrationInstanceIdMQL;
+                        ////End :Added by Mitesh Vaishnav for PL ticket #659 
                         //title condition added by uday for review point on 5-6-2014 bcoz version clashes when two users are creating version of same buisiness unit.
                         var version = db.Models.Where(m => m.IsDeleted == false && m.BusinessUnitId == tmpGuid && m.Title == Title).OrderByDescending(t => t.CreatedDate).Select(s => s.Version).FirstOrDefault();
                         if (version != null && version != "")
