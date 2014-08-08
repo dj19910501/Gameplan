@@ -7760,8 +7760,8 @@ div.sub{display:none; transition: height 0.35s ease 0s; padding:0;}
 /* End -Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681 */ 
 
 /* Start -Added by Dharmraj on 06/08/2014 for PL ticket #658 */
-.border-Bottom-ddd {
-    border-bottom: 1px solid #ddd;
+.CloseDealHeader {
+    border-bottom: 1px solid #ddd; margin: 0px 20px 0px 20px;padding-bottom:0px;padding-left:0px;font-weight:normal;
 }
 #frmClosedDealDataMapping .messages {
     width:82%;

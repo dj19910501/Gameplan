@@ -6,7 +6,7 @@
         <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseCloseDeal">Pulling Close Deals<span href="javascript:void(0)">+ Expand</span></a>
     </div>
     <div class="accordion-body collapse out" id="collapseCloseDeal">
-        <h5 style="border-bottom: 1px solid #ddd; margin: 0px 20px 0px 20px;padding-bottom:0px;padding-left:0px;">Gameplan Fields - Data Mapping</h5>
+        <h5 class="CloseDealHeader">Gameplan Fields - Data Mapping</h5>
         @using (Html.BeginForm("SaveClosedDealDataMapping", "ExternalService", FormMethod.Post, new { name = "frmClosedDealDataMapping", id = "frmClosedDealDataMapping" }))
         {
             @Html.Hidden("ClosedDealInvalidMsg", TempData["ClosedDealInvalidMsg"])
