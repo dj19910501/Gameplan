@@ -1252,7 +1252,10 @@ namespace RevenuePlanner.Helpers
                         //div.InnerHtml += p.Budgeted.ToString();
                         double sumMonth = p.Month.Jan + p.Month.Feb + p.Month.Mar + p.Month.Apr + p.Month.May + p.Month.Jun + p.Month.Jul + p.Month.Aug + p.Month.Sep + p.Month.Oct + p.Month.Nov + p.Month.Dec;
                         TagBuilder span = new TagBuilder("span");
-
+                        if (ActivityType == "lineitem" || ActivityType == "tactic")
+                        {
+                            sumMonth = p.Budgeted; //It is lanned tactic or line cost 
+                        }
                         double dblProgress = 0;
                         dblProgress = (sumMonth == 0 && p.Allocated == 0) ? 0 : (sumMonth > 0 && p.Allocated == 0) ? 101 : sumMonth / p.Allocated * 100;
                         span.Attributes.Add("style", "width:" + dblProgress.ToString() + "%;");

@@ -7994,6 +7994,7 @@ namespace RevenuePlanner.Controllers
                         title = pctj.Title,
                         description = pctj.Description,
                         isOwner = Sessions.User.UserId == pctj.CreatedBy ? 0 : 1,
+                        Cost = pctj.Cost,
                         Budget = pctj.Plan_Campaign_Program_Tactic_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(),
                         lineitems = (db.Plan_Campaign_Program_Tactic_LineItem.Where(pcp => pcp.PlanTacticId.Equals(pctj.PlanTacticId) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp).ToList()).Select(pclj => new
                         {
@@ -8001,6 +8002,7 @@ namespace RevenuePlanner.Controllers
                             title = pclj.Title,
                             description = pclj.Description,
                             isOwner = Sessions.User.UserId == pclj.CreatedBy ? 0 : 1,
+                            Cost = pclj.Cost,
                             Budget = pclj.Plan_Campaign_Program_Tactic_LineItem_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(),
                         }).Select(pclj => pclj).Distinct().OrderBy(pclj => pclj.id)
                     }).Select(pctj => pctj).Distinct().OrderBy(pctj => pctj.id)
@@ -8061,6 +8063,7 @@ namespace RevenuePlanner.Controllers
                             obj.ActivityType = ActivityTactic;
                             obj.ParentActivityId = parentProgramId;
                             obj.IsOwner = Convert.ToBoolean(t.isOwner);
+                            obj.Budgeted = t.Cost;
                             obj = GetMonthWiseData(obj, t.Budget);
                             model.Add(obj);
                             parentTacticId = t.id;
@@ -8071,6 +8074,7 @@ namespace RevenuePlanner.Controllers
                                 obj.ActivityName = l.title;
                                 obj.ActivityType = ActivityLineItem;
                                 obj.ParentActivityId = parentTacticId;
+                                obj.Budgeted = l.Cost;
                                 obj.IsOwner = Convert.ToBoolean(l.isOwner);
                                 obj = GetMonthWiseData(obj, l.Budget);
                                 obj.ParentMonth = obj.Month;
