@@ -73,6 +73,9 @@
     <Compile Include="Models\GameplanDataType.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\GameplanDataTypePull.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Geography.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
@@ -86,6 +89,9 @@
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\IntegrationInstanceDataTypeMapping.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\IntegrationInstanceDataTypeMappingPull.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\IntegrationInstanceExternalServer.cs">

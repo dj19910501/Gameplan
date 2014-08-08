@@ -7678,9 +7678,9 @@ div.sub{display:none; transition: height 0.35s ease 0s; padding:0;}
 /* Added By : Kalpesh Sharma Integration Type Settings - 682 */
 .integrationAccordion.span10{width:490px; margin-left:70px; border:1px solid #cccccc; border-bottom:none;border-radius: 8px;}
 .integrationAccordion .accordion-heading{padding:0;}
-.integrationAccordion .accordion-toggle{padding:0 16px 0 20px !important; border-bottom:1px solid #cccccc; line-height:32px;}
+.integrationAccordion .accordion-toggle{padding:0 16px 0 20px !important; border-bottom:1px solid #cccccc; line-height:32px; font-weight:bold;} /* Modified by Sohel Pathan on 08/08/2014 for Internal Review Point */
 .integrationAccordion .accordion-toggle, .integrationAccordion .accordion-toggle:hover, .integrationAccordion .accordion-toggle:focus{color:#000; outline:none;}
-.integrationAccordion .accordion-toggle span{float:right; color:#0088CC; text-decoration:underline;}
+.integrationAccordion .accordion-toggle span{float:right; color:#0088CC; text-decoration:underline; font-weight:normal;}    /* Modified by Sohel Pathan on 08/08/2014 for Internal Review Point */
 
 .integrationAccordion .accordion-body.in{border-bottom:1px solid #cccccc;}
 .integrationAccordion .accordion-body > *{padding:22px 0 20px 38px;}
@@ -7700,31 +7700,31 @@ div.sub{display:none; transition: height 0.35s ease 0s; padding:0;}
 /* */
 
 /* Start - Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681 */
-#tblDataMapping {
+.tblFieldMapping {
     width: 100%;
 }
-#tblDataMapping tr {
+.tblFieldMapping tr {
     padding: 5px;
     line-height: 45px;
 }
-#tblDataMapping td.width40 {
+.tblFieldMapping td.width40 {
     width: 40%;
     text-align: right;
 }
-#tblDataMapping td.width60 {
+.tblFieldMapping td.width60 {
     width: 60%;
     text-align: left;
     padding-right:10%;
 }
-#tblDataMapping td.title1 {
+.tblFieldMapping td.title1 {
     color:#333333 !important;
     font-size: 14px !important;
     font-family:'source_sans_proregular',Arial,"sans-serif" !important;
 }
-#tblDataMapping .verticalIdSelectBox .sbHolder {
+.tblFieldMapping .verticalIdSelectBox .sbHolder {
     top: 9px !important;
 }
-#tblDataMapping .title-header {
+.tblFieldMapping .title-header {
     border-bottom: 1px solid #ddd;
     padding-right:5%;
     margin-left:-20px;
@@ -7758,3 +7758,14 @@ div.sub{display:none; transition: height 0.35s ease 0s; padding:0;}
     margin: 10px 0px 10px 0px;
 }
 /* End -Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681 */ 
+
+/* Start -Added by Dharmraj on 06/08/2014 for PL ticket #658 */
+.CloseDealHeader {
+    border-bottom: 1px solid #ddd; margin: 0px 20px 0px 20px;padding-bottom:0px;padding-left:0px;font-weight:normal;
+}
+#frmClosedDealDataMapping .messages {
+    width:82%;
+    float:left;
+    margin: 10px 0px 10px 0px;
+}
+/* End -Added by Dharmraj on 06/08/2014 for PL ticket #658 */ 

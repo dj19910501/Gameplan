@@ -1,0 +1,188 @@
+﻿@model IList<RevenuePlanner.Models.GameplanDataTypePullModel>
+@using RevenuePlanner.Helpers
+
+<div class="accordion-group">
+    <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseCloseDeal">Pulling Close Deals<span href="javascript:void(0)">+ Expand</span></a>
+    </div>
+    <div class="accordion-body collapse out" id="collapseCloseDeal">
+        <h5 class="CloseDealHeader">Gameplan Fields - Data Mapping</h5>
+        @using (Html.BeginForm("SaveClosedDealDataMapping", "ExternalService", FormMethod.Post, new { name = "frmClosedDealDataMapping", id = "frmClosedDealDataMapping" }))
+        {
+            @Html.Hidden("ClosedDealInvalidMsg", TempData["ClosedDealInvalidMsg"])
+            <div class="row">
+                @if (Model.Count > 0)
+                {
+                    <div class="content-colum-mapDataTypes width100 float-left">
+                        <table id="tblDataMapping" class="tblFieldMapping">
+                            <tbody>
+                                @for (var i = 0; i < Model.Count; i++)
+                                {
+                                    @Html.HiddenFor(x => x[i].GameplanDataTypePullId)   
+                                    @Html.HiddenFor(x => x[i].IntegrationTypeId)   
+                                    @Html.HiddenFor(x => x[i].ActualFieldName)   
+                                    @Html.HiddenFor(x => x[i].DisplayFieldName)   
+                                    @Html.HiddenFor(x => x[i].IntegrationInstanceDataTypeMappingPullId)   
+                                    @Html.HiddenFor(x => x[i].IntegrationInstanceId) 
+                                    <tr class="fieldRow">
+                                        <td class="title1 width40">
+                                            @Html.DisplayFor(x => x[i].DisplayFieldName)
+                                        </td>
+                                        <td class="width60">
+                                            <span class="verticalIdSelectBox" style="  margin-left: -2px;">  @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)ViewData["ExternalFieldListPull"], Model[i].TargetDataType), "Select", new { @class = "ddlStyle", id = i.ToString() })</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                
+                    <!--success message-->
+                    <div id="ClosedDealSuccessMessage" class="alert hide alert-success messages">
+                        <a class="close">×</a>
+                        <strong>Success.</strong> <span id="spanMessageSuccess"></span>
+                    </div>
+                    <!--success message-->
+
+                    <!--error message-->
+                    <div id="ClosedDealErrorMessage" class="alert hide alert-error messages">
+                        <a class="close">×</a>
+                        <strong>Error!</strong> <span id="spanMessageError">@TempData["DataMappingPullErrorMessage"]</span>
+                    </div>
+                    <!--error message-->
+               
+                    
+                        <div class="margin-left40per">
+                            <span class="span5 margin-top10">
+                                <button id="btnSaveCloseDealMappings" type="button" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" name="button-save">Save</button>
+                            </span>
+                            <span class="span5 margin-top10">
+                                <button id="btnCancelCloseDealMappins" type="button" class="close-form btn-link source-sans-proregular">Cancel</button>
+                            </span>
+                        </div>
+                    
+                }
+            </div>   
+        }
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $(".verticalIdSelectBox select").selectbox();
+        $('.ddlStyle').each(function () {
+            if ($(this).next('.sbHolder').hasClass("error")) {
+                $(this).next('.sbHolder').removeClass("error");
+            }
+        });
+    });
+
+    $('.ddlStyle').change(function () {
+        var sbValue = $(this).attr('sb');
+        var selValue = $('#sbSelector_' + $(this).attr('sb')).html();
+        $('select[sb="' + sbValue + '"]').val(selValue);
+    });
+
+    $('.ddlStyle').change(function (e) {
+        $('.ddlStyle').each(function () {
+            var isError = false;
+            var currentDdl = this;
+            var currentTargetValue = $(this).val();
+            var currentTableName = $('#hdnTableName_' + currentDdl.id);
+            if (currentTargetValue != null) {
+                if (currentTargetValue.toLowerCase() != 'select' || currentTargetValue.toLowerCase() != '') {
+                    $('.ddlStyle').each(function () {
+
+                        var SourceTableName = $('#hdnTableName_' + this.id);
+                        var SourceTargetValue = $(this).val();
+
+                        if (currentDdl.id != this.id) {
+                            if (currentTargetValue == SourceTargetValue && currentTableName.val() == SourceTableName.val() && SourceTargetValue.toLowerCase() != 'select' && SourceTargetValue != '') {
+
+                                $(currentDdl).next('.sbHolder').addClass("error");
+                                $(this).next('.sbHolder').addClass("error");
+                                isError = true;
+                            }
+                        }
+                        if (!isError) {
+                            $(currentDdl).next('.sbHolder').removeClass("error");
+                        }
+                    });
+                }
+                else {
+                    $(currentDdl).next('.sbHolder').removeClass("error");
+                }
+            }
+            else {
+                $(currentDdl).next('.sbHolder').removeClass("error");
+            }
+        });
+    });
+
+    $("#btnSaveCloseDealMappings").click(function (e) {
+        var isError = false;
+        $('.ddlStyle').each(function (e) {
+            if ($(this).next('.sbHolder').hasClass("error")) {
+                isError = true;
+                return false;
+            }
+        });
+        if (isError) {
+            $('#ClosedDealErrorMessage').find('#spanMessageError').html($('#ClosedDealInvalidMsg').val());
+            $("#ClosedDealErrorMessage").slideDown(400);
+            $('#ClosedDealSuccessMessage').find('#spanMessageSuccess').html('');
+            $("#ClosedDealSuccessMessage").hide()
+            e.preventDefault();
+            return false;
+        }
+
+        var formData = $("#frmClosedDealDataMapping").serialize();
+        var IntegrationInstanceId = '@ViewBag.IntegrationInstanceId';
+        var uId = $(window).attr('name');
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/ExternalService/SaveDataMappingPull")',
+            data: formData + '&IntegrationInstanceId=' + parseInt(IntegrationInstanceId) + '&UserId=' + uId,
+            success: function (data) {
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
+                }
+                else {
+                    if (data.status == 0) {
+                        $('#ClosedDealSuccessMessage').find('#spanMessageSuccess').html('');
+                        $("#ClosedDealSuccessMessage").hide()
+                        $('#ClosedDealErrorMessage').find('#spanMessageError').html(data.Message);
+                        $("#ClosedDealErrorMessage").slideDown(400);
+                        return false;
+                    }
+                    else if (data.status == 1) {
+                        $('#ClosedDealErrorMessage').find('#spanMessageError').html('');
+                        $("#ClosedDealErrorMessage").hide();
+                        $('#ClosedDealSuccessMessage').find('#spanMessageSuccess').html(data.Message);
+                        $("#ClosedDealSuccessMessage").slideDown(400);
+                        return true;
+                    }
+                }
+            },
+            error: function () {
+                $('#ClosedDealErrorMessage').find('#spanMessageError').html('@TempData["ClosedDealErrorMessage"]');
+                $("#ClosedDealErrorMessage").slideDown(400);
+                return false;
+            }
+        });
+    });
+
+    $('#btnCancelCloseDealMappins').click(function () {
+        $('#ClosedDealSuccessMessage').find('#spanMessageSuccess').html('');
+        $("#ClosedDealSuccessMessage").hide()
+        $('#ClosedDealErrorMessage').find('#spanMessageError').html('');
+        $("#ClosedDealErrorMessage").hide();
+    });
+
+    $("#frmDataMapping").find(".alert").find(".close").click(function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        $(this).closest(".alert").slideUp(400);
+    });
+</script>

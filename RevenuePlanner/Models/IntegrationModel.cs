@@ -74,7 +74,11 @@ namespace RevenuePlanner.Models
         //Manoj Start PL#579 Server Configuration
         public IntegrationInstanceExternalServerModel ExternalServer { get; set; }
         //Manoj End PL#579 Server Configuration
+        //Dharmraj Start PL#658 Integration - UI - Pulling Revenue - Salesforce.com
+        public IList<GameplanDataTypePullModel> GameplanDataTypePullModelList { get; set; }
+        //Dharmraj End PL#658 Integration - UI - Pulling Revenue - Salesforce.com
     } 
+
 //Added by Mitesh Vaishnav for PL ticket #659
     public class IntegrationSelectionModel
     {

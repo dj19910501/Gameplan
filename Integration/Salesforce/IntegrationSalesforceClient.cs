@@ -128,10 +128,11 @@ namespace Integration.Salesforce
             }
         }
 
-        public List<string> GetTargetDataType()
+        //Modified By Dharmraj on 6-8-2014, #658
+        public List<string> GetTargetDataType(string objectName)
         {
             List<string> TargetDataTypeList = new List<string>();
-            string metadata = _client.ReadMetaData(this.objectName);
+            string metadata = _client.ReadMetaData(objectName);
             JObject data = JObject.Parse(metadata);
             foreach (var result in data["fields"])
             {
