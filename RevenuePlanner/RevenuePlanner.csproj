@@ -220,6 +220,7 @@
     <Compile Include="Models\CustomRestrictionModel.cs" />
     <Compile Include="Models\ExtrenalServiceModel.cs" />
     <Compile Include="Models\ForgotPasswordModel.cs" />
+    <Compile Include="Models\GameplanDataTypePullModel.cs" />
     <Compile Include="Models\HomePlanModel.cs" />
     <Compile Include="Models\ImprovementModel.cs" />
     <Compile Include="Models\InspectModel.cs" />
@@ -831,6 +832,7 @@
     <Content Include="Views\ExternalService\_GeneralSettings.cshtml" />
     <Content Include="Views\ExternalService\_ExternalServer.cshtml" />
     <Content Include="Views\ExternalService\_DataMapping.cshtml" />
+    <Content Include="Views\ExternalService\_ClosedDeals.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>
