@@ -203,6 +203,7 @@ namespace Integration.Eloqua
             else
             {
                 SyncInstanceData();
+                // Pull responses from Eloqua
                 GetDataForTacticandUpdate();
             }
 
@@ -281,11 +282,11 @@ namespace Integration.Eloqua
             }
         }
 
+        // Get All responses from integration instance external server
         private void GetDataForTacticandUpdate()
         {
             try
             {
-                // Get All responses from integration instance external server
                 EloquaResponse objEloquaResponse = new EloquaResponse();
                 objEloquaResponse.GetTacticResponse(_integrationInstanceId, _userId, _integrationInstanceLogId);
             }

@@ -60,10 +60,15 @@ namespace Integration.Eloqua
         /// <returns></returns>
         public void GetTacticResponse(int IntegrationInstanceId, Guid _userId, int _integrationInstanceLogId)
         {
+            // PlanIDs which has configured for "Pull response" from Eloqua instances
             List<int> planIds = db.Plans.Where(p => p.Model.IntegrationInstanceIdINQ == IntegrationInstanceId && p.Model.Status.Equals("Published")).Select(p => p.PlanId).ToList();
             if (planIds.Count > 0)
             {
                 var objIntegrationInstanceExternalServer = db.IntegrationInstanceExternalServers.FirstOrDefault(i => i.IntegrationInstanceId == IntegrationInstanceId);
+                if (objIntegrationInstanceExternalServer == null)
+                {
+                    throw new Exception("Error: External Server was not configured");
+                }
                 string InstanceId = IntegrationInstanceId.ToString();
                 string _ftpURL = objIntegrationInstanceExternalServer.SFTPServerName;
                 string _UserName = objIntegrationInstanceExternalServer.SFTPUserName;
@@ -82,15 +87,23 @@ namespace Integration.Eloqua
                 ArrayList Listpath = new ArrayList();
                 DataTable dt = new DataTable();
 
-                //Create local directory
-                if (!Directory.Exists(localDestpath + InstanceId))
+                if (Directory.Exists(localDestpath))
                 {
-                    Directory.CreateDirectory(localDestpath + InstanceId);
+                    //Create local directory
+                    if (!Directory.Exists(localDestpath + InstanceId))
+                    {
+                        Directory.CreateDirectory(localDestpath + InstanceId);
+                    }
+                    if (!Directory.Exists(localDestpath + InstanceId + archiveFolder))
+                    {
+                        Directory.CreateDirectory(localDestpath + InstanceId + archiveFolder);
+                    }
                 }
-                if (!Directory.Exists(localDestpath + InstanceId + archiveFolder))
+                else
                 {
-                    Directory.CreateDirectory(localDestpath + InstanceId + archiveFolder);
+                    throw new Exception("Error: Directory " + localDestpath + " not found");
                 }
+
                 string localRunnungPath = localDestpath + InstanceId + "/";
                 string localArchivePath = localDestpath + InstanceId + archiveFolder;
 
@@ -114,6 +127,7 @@ namespace Integration.Eloqua
 
                     if (srclist.Count > 0)
                     {
+                        // Download all files in local folder
                         foreach (var objfiles in srclist)
                         {
                             extension = Path.GetExtension(objfiles.ToString());
@@ -129,55 +143,10 @@ namespace Integration.Eloqua
                             foreach (string FullfileName in Listpath)
                             {
                                 string fileName = System.IO.Path.GetFileName(FullfileName).ToString();
-                                string ext = Path.GetExtension(fileName);
                                 dt = new DataTable();
 
-                                #region create DataTable from Excel
-                                if (ext.ToLower() == ".csv")
-                                {
-                                    StreamReader sr = new StreamReader(FullfileName);
-                                    string line = sr.ReadLine();
-                                    string[] value = line.Replace("\"", "").Split(',');
-                                    if (value.Length > 0)
-                                    {
-                                        dt.TableName = fileName.ToString();
-                                        DataRow row;
-                                        foreach (string dc in value)
-                                        {
-                                            dt.Columns.Add(new DataColumn(dc));
-                                        }
-                                        if (!sr.EndOfStream)
-                                        {
-                                            while (!sr.EndOfStream)
-                                            {
-                                                value = sr.ReadLine().Replace("\"", "").Split(',');
-                                                if (value.Length == dt.Columns.Count)
-                                                {
-                                                    row = dt.NewRow();
-                                                    row.ItemArray = value;
-                                                    dt.Rows.Add(row);
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    sr.Close();
-                                    sr.Dispose();
-                                }
-                                else
-                                {
-                                    System.IO.FileStream fs = new System.IO.FileStream(FullfileName, System.IO.FileMode.Open);
-                                    IExcelDataReader excelReader2007 = ExcelReaderFactory.CreateOpenXmlReader(fs);
-                                    excelReader2007.IsFirstRowAsColumnNames = true;
-                                    DataSet result = excelReader2007.AsDataSet();
-                                    if (result.Tables.Count > 0)
-                                    {
-                                        dt = result.Tables[0];
-                                    }
-                                    fs.Close();
-                                    fs.Dispose();
-                                }
-                                #endregion
+                                //Convert Excel file to DataTable object
+                                dt = Common.ToDataTable(FullfileName);
 
                                 if (dt != null && dt.Rows.Count > 0)
                                 {
@@ -270,6 +239,7 @@ namespace Integration.Eloqua
                                     }
                                 }
 
+                                // Move local file to local archived folder
                                 string ProcssingFilePath = FullfileName;
                                 string fileext = Path.GetExtension(fileName);
                                 string filen = fileName.Replace(fileext, "");
@@ -284,6 +254,7 @@ namespace Integration.Eloqua
 
                                     try
                                     {
+                                        // Make directory on external server if not exist
                                         client.Mkdir(SFTPArchivePath.Remove(SFTPArchivePath.Length - 1));
                                     }
                                     catch (Exception ex)
@@ -291,6 +262,7 @@ namespace Integration.Eloqua
 
                                     }
 
+                                    // Upload processed local file to external server archived folder
                                     client.Put(ArchiveFilePath, SFTPArchiveFilePathNew);
 
                                     var prop = client.GetType().GetProperty("SftpChannel", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);

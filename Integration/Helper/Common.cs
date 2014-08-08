@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Excel;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -92,6 +94,66 @@ namespace Integration.Helper
             {
                 return Enums.Mode.None;
             }
+        }
+
+        /// <summary>
+        /// Dharmraj, #658, 8-8-2014
+        /// Function to convert CSV or xls file to data table
+        /// </summary>
+        /// <param name="FullfilePath"></param>
+        /// <returns></returns>
+        public static DataTable ToDataTable(string FullfilePath)
+        {
+            string fileName = System.IO.Path.GetFileName(FullfilePath).ToString();
+            string ext = Path.GetExtension(fileName);
+            DataTable dt = new DataTable();
+
+            if (ext.ToLower() == ".csv")
+            {
+                StreamReader sr = new StreamReader(FullfilePath);
+                string line = sr.ReadLine();
+                string[] value = line.Replace("\"", "").Split(',');
+                if (value.Length > 0)
+                {
+                    dt.TableName = fileName.ToString();
+                    DataRow row;
+                    foreach (string dc in value)
+                    {
+                        dt.Columns.Add(new DataColumn(dc));
+                    }
+                    if (!sr.EndOfStream)
+                    {
+                        while (!sr.EndOfStream)
+                        {
+                            value = sr.ReadLine().Replace("\"", "").Split(',');
+                            if (value.Length == dt.Columns.Count)
+                            {
+                                row = dt.NewRow();
+                                row.ItemArray = value;
+                                dt.Rows.Add(row);
+                            }
+                        }
+                    }
+                }
+
+                sr.Close();
+                sr.Dispose();
+            }
+            else
+            {
+                System.IO.FileStream fs = new System.IO.FileStream(FullfilePath, System.IO.FileMode.Open);
+                IExcelDataReader excelReader2007 = ExcelReaderFactory.CreateOpenXmlReader(fs);
+                excelReader2007.IsFirstRowAsColumnNames = true;
+                DataSet result = excelReader2007.AsDataSet();
+                if (result.Tables.Count > 0)
+                {
+                    dt = result.Tables[0];
+                }
+                fs.Close();
+                fs.Dispose();
+            }
+
+            return dt;
         }
     }
 }
