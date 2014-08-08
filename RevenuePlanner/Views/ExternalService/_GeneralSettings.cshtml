@@ -198,6 +198,7 @@
                                 $('#cErrorGeneralSettings').html('');
                                 $('#cErrorGeneralSettings').append("<strong>Error! </strong>" + data.ErrorMessage.toString());
                                 $("#errorMessageGeneralSettings").slideDown(400);
+                                $("#successMessageGeneralSettings").slideUp(1);
                                 //$("html, body").animate({ scrollTop: 0 }, 1000);
                                 return true;
                             }
@@ -243,6 +244,7 @@
 
         $('#btnSave').click(function (e) {
             var isValidate = true;
+
             $('#content #integrationForm :input').each(function () {
                 if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
                     if (this.id != 'importActuals' && this.id != 'integrationStatus' && this.id != 'SyncFrequency_Day') {
