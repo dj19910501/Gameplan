@@ -7678,9 +7678,9 @@ div.sub{display:none; transition: height 0.35s ease 0s; padding:0;}
 /* Added By : Kalpesh Sharma Integration Type Settings - 682 */
 .integrationAccordion.span10{width:490px; margin-left:70px; border:1px solid #cccccc; border-bottom:none;border-radius: 8px;}
 .integrationAccordion .accordion-heading{padding:0;}
-.integrationAccordion .accordion-toggle{padding:0 16px 0 20px !important; border-bottom:1px solid #cccccc; line-height:32px;}
+.integrationAccordion .accordion-toggle{padding:0 16px 0 20px !important; border-bottom:1px solid #cccccc; line-height:32px; font-weight:bold;} /* Modified by Sohel Pathan on 08/08/2014 for Internal Review Point */
 .integrationAccordion .accordion-toggle, .integrationAccordion .accordion-toggle:hover, .integrationAccordion .accordion-toggle:focus{color:#000; outline:none;}
-.integrationAccordion .accordion-toggle span{float:right; color:#0088CC; text-decoration:underline;}
+.integrationAccordion .accordion-toggle span{float:right; color:#0088CC; text-decoration:underline; font-weight:normal;}    /* Modified by Sohel Pathan on 08/08/2014 for Internal Review Point */
 
 .integrationAccordion .accordion-body.in{border-bottom:1px solid #cccccc;}
 .integrationAccordion .accordion-body > *{padding:22px 0 20px 38px;}
