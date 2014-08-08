@@ -1439,6 +1439,33 @@ namespace RevenuePlanner.Controllers
             return Json(new { status = result, SuccessMessage = rtnMessage, Id = IntegrationID }, JsonRequestBehavior.AllowGet);
         }
 
+        // Delete the Integration Instance
+        // Added By : Kalpesh Sharma 08/08/2014
+        public int DeleteIntegrationSettings(IntegrationModel form, ref string message)
+        { 
+           int Result = 0;
+         
+               IntegrationInstance objIntegrationInstance = db.IntegrationInstances.Where(a => a.IntegrationInstanceId == form.IntegrationInstanceId && a.IsDeleted.Equals(false) &&
+                               a.ClientId == Sessions.User.ClientId).FirstOrDefault();
+
+               if (objIntegrationInstance != null)
+               {
+                   objIntegrationInstance.IsDeleted = true;
+                   Common.DeleteIntegrationInstance(form.IntegrationInstanceId, true);
+                   DeleteExternalServer(form.IntegrationInstanceId);
+                   db.SaveChanges();
+                   message = Common.objCached.IntegrationDeleted;
+                   Result = 3;
+               }
+               else
+               {
+                   message = Common.objCached.ErrorOccured;
+               }
+
+               return Result;
+        }
+
+
         /// <summary>
         /// /// Added By : Kalpesh Sharma Save the value of General Settings in Integration #682
         /// </summary>
@@ -1453,7 +1480,14 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
 
-            if (TestIntegrationCredentialsWithForm(form))
+            //Check the Form action is requested to deleted operation or not. 
+            if (Convert.ToString(form.IsDeleted).ToLower() == "true" && !IsAddOperation)
+            {
+                ID = form.IntegrationInstanceId;
+                return (DeleteIntegrationSettings(form , ref message));
+            }
+
+            if (TestIntegrationCredentialsWithForm(form) && !form.IsDeleted)
             {
                 try
                 {
@@ -1470,9 +1504,8 @@ namespace RevenuePlanner.Controllers
                          && a.IntegrationInstanceId != form.IntegrationInstanceId).Any();
                     }
 
-                    if ((!isDuplicate && form.IntegrationInstanceId == 0) || form.IsDeleted || form.IntegrationInstanceId > 0)
+                    if ((!isDuplicate && form.IntegrationInstanceId == 0) || form.IntegrationInstanceId > 0)
                     {
-                        bool IntegrationRemoved = true;
                         int SyncFrequenciesCount = 0, IntegrationInstancesCount = 0;
 
                         using (var scope = new TransactionScope())
@@ -1523,39 +1556,39 @@ namespace RevenuePlanner.Controllers
                                 objSyncFrequency.CreatedBy = Sessions.User.UserId;
                                 objSyncFrequency.CreatedDate = DateTime.Now;
 
-                                if (form.SyncFrequency.Frequency == "Weekly")
+                                if (form.SyncFrequency.Frequency == SyncFrequencys.Weekly)
                                     objSyncFrequency.DayofWeek = form.SyncFrequency.DayofWeek;
-                                else if (form.SyncFrequency.Frequency == "Monthly")
+                                else if (form.SyncFrequency.Frequency == SyncFrequencys.Monthly)
                                     objSyncFrequency.Day = form.SyncFrequency.Day;
-                                if (form.SyncFrequency.Frequency != "Hourly")
+                                if (form.SyncFrequency.Frequency != SyncFrequencys.Hourly)
                                 {
                                     if (form.SyncFrequency.Time.Length == 8)
                                     {
                                         int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
-                                        if (form.SyncFrequency.Time.Substring(5, 2) == "PM" && hour != 12)
+                                        if (form.SyncFrequency.Time.Substring(5, 2) == SyncFrequencys.PM && hour != 12)
                                             hour = hour + 12;
                                         objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
                                     }
                                 }
 
-                                if (form.SyncFrequency.Frequency == "Hourly")
+                                if (form.SyncFrequency.Frequency == SyncFrequencys.Hourly)
                                 {
                                     DateTime currentDateTime = DateTime.Now.AddHours(1);
                                     objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, currentDateTime.Hour, 0, 0);
                                 }
-                                else if (form.SyncFrequency.Frequency == "Daily")
+                                else if (form.SyncFrequency.Frequency == SyncFrequencys.Daily)
                                 {
                                     DateTime currentDateTime = DateTime.Now.AddDays(1);
                                     TimeSpan time = (TimeSpan)objSyncFrequency.Time;
                                     objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, time.Hours, time.Minutes, time.Seconds);
                                 }
-                                else if (form.SyncFrequency.Frequency == "Weekly")
+                                else if (form.SyncFrequency.Frequency == SyncFrequencys.Weekly)
                                 {
                                     DateTime nextDate = GetNextDateForDay(DateTime.Now, (DayOfWeek)Enum.Parse(typeof(DayOfWeek), objSyncFrequency.DayofWeek));
                                     TimeSpan time = (TimeSpan)objSyncFrequency.Time;
                                     objSyncFrequency.NextSyncDate = new DateTime(nextDate.Year, nextDate.Month, nextDate.Day, time.Hours, time.Minutes, time.Seconds);
                                 }
-                                else if (form.SyncFrequency.Frequency == "Monthly")
+                                else if (form.SyncFrequency.Frequency == SyncFrequencys.Monthly)
                                 {
                                     DateTime currentDateTime = DateTime.Now;
                                     if (Convert.ToInt32(objSyncFrequency.Day) <= currentDateTime.Day)
@@ -1574,42 +1607,42 @@ namespace RevenuePlanner.Controllers
                                 if (objSyncFrequency != null)
                                 {
 
-                                    if (form.SyncFrequency.Frequency == "Hourly")
+                                    if (form.SyncFrequency.Frequency == SyncFrequencys.Hourly)
                                     {
                                         objSyncFrequency.Time = null;
                                         objSyncFrequency.DayofWeek = null;
                                         objSyncFrequency.Day = null;
                                     }
-                                    else if (form.SyncFrequency.Frequency == "Daily")
+                                    else if (form.SyncFrequency.Frequency == SyncFrequencys.Daily)
                                     {
                                         if (form.SyncFrequency.Time.Length == 8)
                                         {
                                             int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
-                                            if (form.SyncFrequency.Time.Substring(6, 2) == "PM" && hour != 12)
+                                            if (form.SyncFrequency.Time.Substring(6, 2) == SyncFrequencys.PM && hour != 12)
                                                 hour = hour + 12;
                                             objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
                                         }
                                         objSyncFrequency.DayofWeek = null;
                                         objSyncFrequency.Day = null;
                                     }
-                                    else if (form.SyncFrequency.Frequency == "Weekly")
+                                    else if (form.SyncFrequency.Frequency == SyncFrequencys.Weekly)
                                     {
                                         if (form.SyncFrequency.Time.Length == 8)
                                         {
                                             int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
-                                            if (form.SyncFrequency.Time.Substring(6, 2) == "PM" && hour != 12)
+                                            if (form.SyncFrequency.Time.Substring(6, 2) == SyncFrequencys.PM && hour != 12)
                                                 hour = hour + 12;
                                             objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
                                         }
                                         objSyncFrequency.Day = null;
                                         objSyncFrequency.DayofWeek = form.SyncFrequency.DayofWeek;
                                     }
-                                    else if (form.SyncFrequency.Frequency == "Monthly")
+                                    else if (form.SyncFrequency.Frequency == SyncFrequencys.Monthly)
                                     {
                                         if (form.SyncFrequency.Time.Length == 8)
                                         {
                                             int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
-                                            if (form.SyncFrequency.Time.Substring(6, 2) == "PM" && hour != 12)
+                                            if (form.SyncFrequency.Time.Substring(6, 2) == SyncFrequencys.PM && hour != 12)
                                                 hour = hour + 12;
                                             objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
                                         }
@@ -1617,24 +1650,24 @@ namespace RevenuePlanner.Controllers
                                         objSyncFrequency.Day = form.SyncFrequency.Day;
                                     }
 
-                                    if (form.SyncFrequency.Frequency == "Hourly")
+                                    if (form.SyncFrequency.Frequency == SyncFrequencys.Hourly)
                                     {
                                         DateTime currentDateTime = DateTime.Now.AddHours(1);
                                         objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, currentDateTime.Hour, 0, 0);
                                     }
-                                    else if (form.SyncFrequency.Frequency == "Daily")
+                                    else if (form.SyncFrequency.Frequency == SyncFrequencys.Daily)
                                     {
                                         DateTime currentDateTime = DateTime.Now.AddDays(1);
                                         TimeSpan time = (TimeSpan)objSyncFrequency.Time;
                                         objSyncFrequency.NextSyncDate = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, time.Hours, time.Minutes, time.Seconds);
                                     }
-                                    else if (form.SyncFrequency.Frequency == "Weekly")
+                                    else if (form.SyncFrequency.Frequency == SyncFrequencys.Weekly)
                                     {
                                         DateTime nextDate = GetNextDateForDay(DateTime.Now, (DayOfWeek)Enum.Parse(typeof(DayOfWeek), objSyncFrequency.DayofWeek));
                                         TimeSpan time = (TimeSpan)objSyncFrequency.Time;
                                         objSyncFrequency.NextSyncDate = new DateTime(nextDate.Year, nextDate.Month, nextDate.Day, time.Hours, time.Minutes, time.Seconds);
                                     }
-                                    else if (form.SyncFrequency.Frequency == "Monthly")
+                                    else if (form.SyncFrequency.Frequency == SyncFrequencys.Monthly)
                                     {
                                         DateTime currentDateTime = DateTime.Now;
                                         if (Convert.ToInt32(objSyncFrequency.Day) <= currentDateTime.Day)
@@ -1686,30 +1719,49 @@ namespace RevenuePlanner.Controllers
                                 db.SaveChanges();
                             }
 
-                            if (Convert.ToString(form.IsDeleted).ToLower() == "true" && !IsAddOperation)
-                            {
-                                IntegrationRemoved = Common.DeleteIntegrationInstance(form.IntegrationInstanceId, true);
-                                DeleteExternalServer(form.IntegrationInstanceId);
-                            }
-
                             // Status changed from Active to InActive, So remove all the integration dependency with Models.
                             if (form.IsActiveStatuChanged == true && form.IsActive == false && !IsAddOperation)
                             {
                                 // Remove association of Integrartion from Plan
-
-                                var objModelList = db.Models.Where(a => a.IsDeleted.Equals(false) && a.IntegrationInstanceId == form.IntegrationInstanceId).ToList();
-
-                                if (objModelList != null)
-                                {
-                                    foreach (var item in objModelList)
+                                db.Models.Where(a => a.IsDeleted.Equals(false) && a.IntegrationInstanceId == form.IntegrationInstanceId).ToList().ForEach(
+                                    ObjIntegrationInstance =>
                                     {
-                                        item.IntegrationInstanceId = null;
-                                        item.ModifiedDate = DateTime.Now;
-                                        item.ModifiedBy = Sessions.User.UserId;
-                                        db.Entry(item).State = EntityState.Modified;
-                                        db.SaveChanges();
-                                    }
-                                }
+                                        ObjIntegrationInstance.IntegrationInstanceIdINQ = null;
+                                        ObjIntegrationInstance.ModifiedDate = DateTime.Now;
+                                        ObjIntegrationInstance.ModifiedBy = Sessions.User.UserId;
+                                        db.Entry(ObjIntegrationInstance).State = EntityState.Modified;
+                                    });
+
+                                //Identify IntegrationInstanceId for INQ in Model Table and set reference null
+                                db.Models.Where(a => a.IsDeleted.Equals(false) && a.IntegrationInstanceIdINQ == form.IntegrationInstanceId).ToList().ForEach(
+                                    INQ => {
+                                        INQ.IntegrationInstanceIdINQ = null;
+                                        INQ.ModifiedDate = DateTime.Now;
+                                        INQ.ModifiedBy = Sessions.User.UserId;
+                                        db.Entry(INQ).State = EntityState.Modified;
+                                    });
+
+                                //Identify IntegrationInstanceId for MQL in Model Table and set reference null
+                                db.Models.Where(a => a.IsDeleted.Equals(false) && a.IntegrationInstanceIdMQL == form.IntegrationInstanceId).ToList().ForEach(
+                                    MQL =>
+                                    {
+                                        MQL.IntegrationInstanceIdMQL = null;
+                                        MQL.ModifiedDate = DateTime.Now;
+                                        MQL.ModifiedBy = Sessions.User.UserId;
+                                        db.Entry(MQL).State = EntityState.Modified;
+                                    });
+
+                                //Identify IntegrationInstanceId for CW in Model Table and set reference null
+                                db.Models.Where(a => a.IsDeleted.Equals(false) && a.IntegrationInstanceIdCW == form.IntegrationInstanceId).ToList().ForEach(
+                                    CW =>
+                                    {
+                                        CW.IntegrationInstanceIdINQ = null;
+                                        CW.ModifiedDate = DateTime.Now;
+                                        CW.ModifiedBy = Sessions.User.UserId;
+                                        db.Entry(CW).State = EntityState.Modified;
+                                    });
+
+                                db.SaveChanges();
                             }
 
                             scope.Complete();
@@ -1722,12 +1774,7 @@ namespace RevenuePlanner.Controllers
                                 message = Common.objCached.IntegrationAdded;
                                 Status = 1;
                             }
-                            else if (Convert.ToString(form.IsDeleted).ToLower() == "true" && IntegrationRemoved != false)
-                            {
-                                message = Common.objCached.IntegrationDeleted;
-                                Status = 3;
-                            }
-                            else if (!IsAddOperation)
+                            else
                             {
                                 message = Common.objCached.IntegrationEdited;
                                 Status = 2;

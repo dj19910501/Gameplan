@@ -382,7 +382,8 @@
 	</Field>
 	<Field>
 		<Name>IntegrationDuplicate</Name>
-		<value>Integration with same Instance already exists in our database.</value>
+		<!--<value>Integration with same Instance already exists in our database.</value>-->
+    <value>Same Instance already exists.</value>
 	</Field>
 	<Field>
 		<Name>IntegrationDeleteConfirmationMsg</Name>

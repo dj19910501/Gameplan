@@ -784,9 +784,15 @@ namespace RevenuePlanner.Helpers
     }
     #endregion
 
-
-
-
-
-
+    /// <summary>
+    /// Added By : Kalpesh Sharma PL#582
+    /// </summary>
+    public static class SyncFrequencys
+    {
+        public static string Hourly = "Hourly";
+        public static string Daily = "Daily";
+        public static string Weekly = "Weekly";
+        public static string Monthly = "Monthly";
+        public static string PM = "PM";
+    }
 }

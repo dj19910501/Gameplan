@@ -245,6 +245,15 @@
         $('#btnSave').click(function (e) {
             var isValidate = true;
 
+
+            if ('@Model.IntegrationInstanceId' > 0) {
+                if ($('#IsDeleted').val().toLowerCase() == 'true') {
+                    CheckActiveStatus();
+                    SaveGeneralSetting();
+                    return true;
+                }
+            }
+
             $('#content #integrationForm :input').each(function () {
                 if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
                     if (this.id != 'importActuals' && this.id != 'integrationStatus' && this.id != 'SyncFrequency_Day') {
