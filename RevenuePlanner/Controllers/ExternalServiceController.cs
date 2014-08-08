@@ -66,8 +66,8 @@ namespace RevenuePlanner.Controllers
                 IntegrationTypeId = a.IntegrationTypeId,
                 Instance = (a.Instance == null || a.Instance.ToString() == "null") ? "" : a.Instance.ToString(),
                 Provider = (a.IntegrationType.Title == null || a.IntegrationType.Title.ToString() == "null") ? "" : a.IntegrationType.Title.ToString(),
-                LastSyncStatus = string.IsNullOrWhiteSpace(a.LastSyncStatus) ? "" : a.LastSyncStatus.ToString(),
-                LastSyncDate = (a.LastSyncDate.HasValue ? Convert.ToDateTime(a.LastSyncDate).ToString(DateFormat) : ""),
+                LastSyncStatus = string.IsNullOrWhiteSpace(a.LastSyncStatus) ? Common.TextForModelIntegrationInstanceTypeOrLastSyncNull : a.LastSyncStatus.ToString(),
+                LastSyncDate = (a.LastSyncDate.HasValue ? Convert.ToDateTime(a.LastSyncDate).ToString(DateFormat) : Common.TextForModelIntegrationInstanceTypeOrLastSyncNull),
             }).OrderByDescending(a => a.Instance).ToList();
 
             return Json(returnList, JsonRequestBehavior.AllowGet);
