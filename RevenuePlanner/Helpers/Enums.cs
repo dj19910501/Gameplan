@@ -718,7 +718,8 @@ namespace RevenuePlanner.Helpers
         {
             defaults,
             months,
-            quarters
+            quarters,
+            none
         }
 
         /// <summary>
@@ -730,7 +731,8 @@ namespace RevenuePlanner.Helpers
         {
             {PlanAllocatedBy.defaults.ToString(), "default"},
             {PlanAllocatedBy.months.ToString(), "months"},
-            {PlanAllocatedBy.quarters.ToString(), "quarters"}
+            {PlanAllocatedBy.quarters.ToString(), "quarters"},
+            {PlanAllocatedBy.none.ToString(), "none"},
         };
 
         /// <summary>
