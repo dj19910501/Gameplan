@@ -1436,6 +1436,11 @@
                     $(this).prev().unbind("click");
                     $(this).prev().removeAttr("href");
                 });
+                /*Start :Added by Mitesh Vaishnav For PL ticket #606*/
+                $("#ddlBusinessUnitSelectBox").find('.sbToggle').each(function () {
+                    $(this).attr('style', 'cursor:default');
+                });
+                /*End :Added by Mitesh Vaishnav For PL ticket #606*/
             }
         },
         error: function () {
