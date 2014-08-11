@@ -1892,7 +1892,8 @@ namespace RevenuePlanner.Controllers
             pm.GoalType = plan.GoalType;
             pm.GoalTypeDisplay = GoalTypeList.Where(a => a.Value == plan.GoalType).Select(a => a.Text).FirstOrDefault();
             pm.GoalValue = plan.GoalValue.ToString();
-            pm.AllocatedBy = plan.AllocatedBy;
+            var AllocatedByList = Common.GetAllocatedByList();      // Added by Sohel Pathan on 11/08/2014 for PL ticket #566
+            pm.AllocatedBy = AllocatedByList.Where(a => a.Value == plan.AllocatedBy).Select(a => a.Text).FirstOrDefault(); // Modified by Sohel Pathan on 11/08/2014 for PL ticket #566
             pm.ModelId = plan.ModelId;
             pm.Budget = plan.Budget;
             pm.Year = plan.Year;

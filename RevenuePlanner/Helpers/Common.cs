@@ -3737,7 +3737,7 @@ namespace RevenuePlanner.Helpers
         public static List<SelectListItem> GetAllocatedByList()
         {
             List<SelectListItem> items = new List<SelectListItem>();
-            items.Add(new SelectListItem { Text = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString(), Value = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString(), Selected = false });
+            items.Add(new SelectListItem { Text = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString(), Value = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString(), Selected = false });
             items.Add(new SelectListItem { Text = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString(), Value = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString(), Selected = true });
             items.Add(new SelectListItem { Text = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString(), Value = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString(), Selected = false });
             return items;

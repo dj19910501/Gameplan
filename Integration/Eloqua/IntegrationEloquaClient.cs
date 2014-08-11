@@ -834,11 +834,38 @@ namespace Integration.Eloqua
             return keyvaluepair;
         }
 
-        private static DateTime _unixEpochTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        //// Modified By: Maninder Singh Wadhva
+        //// Modified Date: 08/11/2014  	
+        //// Ticket: #675 Integration - Verify tactic data push from GP to Eloqua with recent UI changes
+        //private static DateTime _unixEpochTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private static DateTime _unixEpochTime = new DateTime(1970, 1, 1, 0, 0, 0);
+
+        //// Modified By: Maninder Singh Wadhva
+        //// Modified Date: 08/11/2014  	
+        //// Ticket: #675 Integration - Verify tactic data push from GP to Eloqua with recent UI changes
+        //private static long ConvertToUnixEpoch(DateTime date)
+        //{
+        //    return (long)new TimeSpan(date.Ticks - _unixEpochTime.Ticks).TotalSeconds;
+        //}
 
         private static long ConvertToUnixEpoch(DateTime date)
         {
-            return (long)new TimeSpan(date.Ticks - _unixEpochTime.Ticks).TotalSeconds;
+            try
+            {
+                TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+                DateTime _unixEpochTimeOtherTimeZone = TimeZoneInfo.ConvertTimeFromUtc(_unixEpochTime, timeZone);
+                DateTime dateOtherTimeZone = TimeZoneInfo.ConvertTimeFromUtc(date, timeZone);
+                double difference = date.Subtract(dateOtherTimeZone).TotalSeconds;
+                return (long)(new TimeSpan(dateOtherTimeZone.Ticks - _unixEpochTimeOtherTimeZone.Ticks).TotalSeconds + difference);
+            }
+            catch (TimeZoneNotFoundException)
+            {
+                throw new Exception("The registry does not define the Central Standard Time zone.");
+            }
+            catch (InvalidTimeZoneException)
+            {
+                throw new Exception("Registry data on the Central Standard Time zone has been corrupted.");
+            }
         }
 
         /// <summary>

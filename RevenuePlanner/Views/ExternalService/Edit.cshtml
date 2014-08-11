@@ -60,17 +60,17 @@
                 {
                     <div class="accordion-group">
                         <div class="accordion-heading">
-                            <a class="accordion-toggle"  data-parent="#accordion" >Pushing Tactic Data</a>
+                            <div class="accordion-toggle CreateMode" >Pushing Tactic Data</div>
                         </div>
                     </div>
                     <div class="accordion-group">
                         <div class="accordion-heading">
-                            <a class="accordion-toggle" data-parent="#accordion" >Response Pulling</a>
+                            <a class="accordion-toggle CreateMode" data-parent="#accordion" >Response Pulling</a>
                         </div>
                     </div>
                     <div class="accordion-group">
                         <div class="accordion-heading">
-                            <a class="accordion-toggle" data-parent="#accordion" >Pulling Close Deals</a>
+                            <a class="accordion-toggle CreateMode" data-parent="#accordion" >Pulling Close Deals</a>
                         </div>
                     </div>
                 }
@@ -84,7 +84,7 @@
     $(document).ready(function () {
 
         //Added By : Kalpesh Sharma : PL#682 Integration - UI - Integration Type Settings
-        $('.integrationAccordion .accordion-toggle').click(function () {
+        $('.integrationAccordion .accordion-toggle').not('.CreateMode').click(function () {
             $('.accordion-toggle span').text('+ Expand');
             if ($(this).parent().next('.accordion-body').hasClass('in')) {
                 $(this).children('span').text('+ Expand');

@@ -7809,3 +7809,8 @@ footer a {
 {
     width : 60px !important;
 }
+
+#integrationForm .delete-container .btn-group
+{
+    margin-left:5px;
+}
