@@ -3292,12 +3292,63 @@ namespace RevenuePlanner.Helpers
                     if (IsTacticApproveForPeersAuthorized)
                     {
                         lstSubordinaresId = lstSubordinaresId.Concat(lstPeersSubOrdinatesId).ToList();
+                        lstSubordinaresId = lstSubordinaresId.Concat(lstPeersId).ToList(); /// Added by Sohel Pathan on 08/08/201 for PL ticket #689.
                     }
                 }
             }
+            /*Start :Added by Mitesh Vaishnav for PL ticket #688 and #689*/
+            bool IsTacticApproveOwn = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticApproveOwn);
+            if (IsTacticApproveOwn)
+            {
+                lstSubordinaresId.Add(Sessions.User.UserId);
+            }
+            /*End :Added by Mitesh Vaishnav for PL ticket #688 and #689*/
 
             return lstSubordinaresId;
         }
+       
+        /// <summary>
+        /// Function to check for campaign/Program is approvable with given subordinates
+        /// </summary>
+        /// Created by Mitesh Vaishnav on 11/08/2014 for PL ticket #688 and #689 
+        /// <param name="lstSubordinates"></param>
+        /// <param name="id"></param>
+        /// <param name="section"></param>
+        /// <returns></returns>
+        public static bool IsSectionApprovable(List<Guid> lstSubordinates,int id,string section)
+        {
+            bool IsApprovable = false;
+            MRPEntities db = new MRPEntities();
+            if (section == Enums.Section.Campaign.ToString())
+            {
+                 var AllTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == id && t.IsDeleted == false).ToList();
+                if (AllTactic.Count > 0)
+                {
+                    var OthersTactic = AllTactic.Where(t => !lstSubordinates.Contains(t.CreatedBy)).ToList();
+                    if (OthersTactic.Count == 0)
+                    {
+                        IsApprovable = true;
+                    }
+                    
+                }
+            }
+            else if (section == Enums.Section.Program.ToString())
+            {
+                var AllTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == id && t.IsDeleted == false).ToList();
+                if (AllTactic.Count > 0)
+                {
+                    var OthersTactic = AllTactic.Where(t => !lstSubordinates.Contains(t.CreatedBy)).ToList();
+                    if (OthersTactic.Count == 0)
+                    {
+                        IsApprovable = true;
+                    }
+
+                }
+            } 
+            return IsApprovable;
+
+        }
+        
 
         /// <summary>
         /// Function to get all subirdinates upto n level

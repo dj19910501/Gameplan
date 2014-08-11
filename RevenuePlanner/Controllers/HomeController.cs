@@ -3554,7 +3554,7 @@ namespace RevenuePlanner.Controllers
             var lstSubOrdinatesPeers = Common.GetSubOrdinatesWithPeersNLevel();
 
             bool isValidManagerUser = false;
-            if (lstSubOrdinatesPeers.Contains(im.OwnerId))
+            if (lstSubOrdinatesPeers.Contains(im.OwnerId) && Common.IsSectionApprovable(lstSubOrdinatesPeers, id, Enums.Section.Program.ToString()))////Modified by Sohel Pathan for PL ticket #688 and #689
             {
                 isValidManagerUser = true;
             }
@@ -3726,7 +3726,7 @@ namespace RevenuePlanner.Controllers
             //To get permission status for Approve campaign , By dharmraj PL #538
             var lstSubOrdinatesPeers = Common.GetSubOrdinatesWithPeersNLevel();
             bool isValidManagerUser = false;
-            if (lstSubOrdinatesPeers.Contains(im.OwnerId))
+            if (lstSubOrdinatesPeers.Contains(im.OwnerId) && Common.IsSectionApprovable(lstSubOrdinatesPeers, id, Enums.Section.Campaign.ToString()))////Modified by Sohel Pathan for PL ticket #688 and #689
             {
                 isValidManagerUser = true;
             }

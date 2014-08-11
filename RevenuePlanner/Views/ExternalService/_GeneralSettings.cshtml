@@ -16,7 +16,8 @@
                 @Html.LabelFor(model => model.IntegrationType.Title)
 
                 @Html.TextBoxFor(model => model.IntegrationType.Title, new { style = "background:#F2F2F2;", @readonly = "true" })
-                <p style="margin-top: -10px;"><a href="#" class="font-black">Add Provider credentials to customize your integration.</a></p>
+                @*<p style="margin-top: -10px;"><a href="#" class="font-black">Add Provider credentials to customize your integration.</a></p>*@
+                <p style="margin-top: -10px;"><span class="font-black">Add Provider credentials to customize your integration.</span></p>
                @* @Html.ValidationMessageFor(model => model.IntegrationType.Title)*@
             </div>
             <div class="cf inputs-aligned-horizontal">
@@ -164,6 +165,12 @@
                     var input = $(this).val();
                     if (input == '') {
                         $(this).addClass("error");
+                        var ErrMsg = this.id + ' cannot be blank.';
+                        $('#cErrorGeneralSettings').html('<strong>Error! </strong> ' + ErrMsg)
+                        $("#cSuccessGeneralSettings").html('');
+                        $("#successMessageGeneralSettings").slideUp(1);
+                        $("#errorMessageGeneralSettings").slideDown(400);
+                        return false;
                     } else {
                         $(this).removeClass("error");
                     }
@@ -211,6 +218,44 @@
         }
 
     $(document).ready(function () {
+
+        $("#SyncFrequency_Day").keydown(function (e) {
+            var count = $(this).val();
+
+            // Allow: backspace, delete, tab, escape, enter and .
+            if (($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
+                // Allow: Ctrl+A
+                (e.keyCode == 65 && e.ctrlKey === true) ||
+                // Allow: home, end, left, right
+                (e.keyCode >= 35 && e.keyCode <= 39))) {
+                // let it happen, don't do anything
+                return;
+            }
+            // Ensure that it is a number and stop the keypress
+            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105) || count.length >= 2) {
+                e.preventDefault();
+            }
+        });
+
+        $("#SyncFrequency_Day").blur(function (e) {
+            var count = $(this).val();
+            if (parseInt(count) > 31 || count.length > 2) {
+                //$(this).val('');
+                $('#SyncFrequency_Day').addClass("error");
+                var ErrMsg = 'Please enter valid SyncFrequency Day.';
+                $('#cErrorGeneralSettings').html('<strong>Error! </strong> ' + ErrMsg)
+                $("#cSuccessGeneralSettings").html('');
+                $("#successMessageGeneralSettings").slideUp(1);
+                $("#errorMessageGeneralSettings").slideDown(400);
+                e.preventDefault();
+            }
+            else {
+                $('#SyncFrequency_Day').removeClass("error");
+                $("#cErrorGeneralSettings").html('');
+                $("#errorMessageGeneralSettings").slideUp(1);
+                e.preventDefault();
+            }
+        });
 
         $('#btnCancel').click(function () {
             $("#cSuccessGeneralSettings").html('');
@@ -281,13 +326,51 @@
                 }
             });
 
-            if ($("#ddlSyncFrequency").val() == "Monthly" && $("#SyncFrequency_Day").val() == "") {
-                $('#SyncFrequency_Day').addClass("error");
-                isValidate = false;
+            if ($("#ddlSyncFrequency").val() == "Monthly") {
+                if ($("#SyncFrequency_Day").val() == "") {
+                    $('#SyncFrequency_Day').addClass("error");
+                     var ErrMsg = 'SyncFrequency Day cannot be blank.';
+                    $('#cErrorGeneralSettings').html('<strong>Error! </strong> ' + ErrMsg)
+                    $("#cSuccessGeneralSettings").html('');
+                    $("#successMessageGeneralSettings").slideUp(1);
+                    $("#errorMessageGeneralSettings").slideDown(400);
+                    isValidate = false;
+                }
+                else if ($("#SyncFrequency_Day").val() > 31) {
+                    $('#SyncFrequency_Day').addClass("error");
+                    var ErrMsg = 'Please enter valid SyncFrequency Day.';
+                    $('#cErrorGeneralSettings').html('<strong>Error! </strong> ' + ErrMsg)
+                    $("#cSuccessGeneralSettings").html('');
+                    $("#successMessageGeneralSettings").slideUp(1);
+                    $("#errorMessageGeneralSettings").slideDown(400);
+                    isValidate = false;
+                }
+                else {
+                    $('#SyncFrequency_Day').removeClass("error");
+                    $("#cErrorGeneralSettings").html('');
+                    $("#errorMessageGeneralSettings").slideUp(1);
+                }
             }
-            else {
-                $('#SyncFrequency_Day').removeClass("error");
-            }
+
+            //added By : Kalpesh Sharma
+            $('#content #integrationForm :input').each(function () {
+                if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
+                    if (this.id != 'importActuals' && this.id != 'integrationStatus' && this.id != 'SyncFrequency_Day') {
+                        var input = $(this).val();
+                        if (input == '') {
+                            $(this).addClass("error");
+                            var ErrMsg = this.id + ' cannot be blank.';
+                            $('#cErrorGeneralSettings').html('<strong>Error! </strong> ' + ErrMsg)
+                            $("#cSuccessGeneralSettings").html('');
+                            $("#successMessageGeneralSettings").slideUp(1);
+                            $("#errorMessageGeneralSettings").slideDown(400);
+                            return false;
+                        } else {
+                            $(this).removeClass("error");
+                        }
+                    }
+                }
+            });
 
             if (isValidate == false)
                 return false;
@@ -384,4 +467,5 @@
     }
 
     });
+
 </script>
