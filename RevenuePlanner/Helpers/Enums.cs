@@ -267,7 +267,8 @@ namespace RevenuePlanner.Helpers
             Report = 1 << 15,
             ReportView = 1 << 16,
             Comments = 1 << 17,
-            CommentsViewEdit = 1 << 18
+            CommentsViewEdit = 1 << 18 ,
+			TacticApproveOwn = 1 << 19
         }
 
 
