@@ -7791,3 +7791,20 @@ footer a {
     margin:0 5px;
 }
 /*End -Added by Mitesh Vaishnav on 11/08/2014 for PL ticket #539*/
+
+
+/*Added By : Kalpesh Sharma PL #682*/
+#divSyncFrequency .sbSelector
+{
+    width : 100px !important;
+}
+
+#divTimeOptions .sbSelector
+{
+    width : 100px !important;
+}
+
+#ddlIsDeletedSelectBox .sbSelector
+{
+    width : 60px !important;
+}
