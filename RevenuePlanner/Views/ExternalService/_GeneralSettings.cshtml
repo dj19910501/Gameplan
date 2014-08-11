@@ -165,8 +165,7 @@
                     var input = $(this).val();
                     if (input == '') {
                         $(this).addClass("error");
-                        var ErrMsg = this.id + ' cannot be blank.';
-                        $('#cErrorGeneralSettings').html('<strong>Error! </strong> ' + ErrMsg)
+                        $('#cErrorGeneralSettings').html('<strong>Error! </strong> ' + '@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField')
                         $("#cSuccessGeneralSettings").html('');
                         $("#successMessageGeneralSettings").slideUp(1);
                         $("#errorMessageGeneralSettings").slideDown(400);
@@ -352,28 +351,34 @@
                 }
             }
 
-            //added By : Kalpesh Sharma
-            $('#content #integrationForm :input').each(function () {
-                if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
-                    if (this.id != 'importActuals' && this.id != 'integrationStatus' && this.id != 'SyncFrequency_Day') {
-                        var input = $(this).val();
-                        if (input == '') {
-                            $(this).addClass("error");
-                            var ErrMsg = this.id + ' cannot be blank.';
-                            $('#cErrorGeneralSettings').html('<strong>Error! </strong> ' + ErrMsg)
-                            $("#cSuccessGeneralSettings").html('');
-                            $("#successMessageGeneralSettings").slideUp(1);
-                            $("#errorMessageGeneralSettings").slideDown(400);
-                            return false;
-                        } else {
-                            $(this).removeClass("error");
-                        }
-                    }
-                }
-            });
+            ////added By : Kalpesh Sharma
+            //$('#content #integrationForm :input').each(function () {
+            //    if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
+            //        if (this.id != 'importActuals' && this.id != 'integrationStatus' && this.id != 'SyncFrequency_Day') {
+            //            var input = $(this).val();
+            //            if (input == '') {
 
-            if (isValidate == false)
+            //                $(this).addClass("error");
+            //                var ErrMsg = this.id + ' cannot be blank.';
+            //                $('#cErrorGeneralSettings').html('<strong>Error! </strong> ' + ErrMsg)
+            //                $("#cSuccessGeneralSettings").html('');
+            //                $("#successMessageGeneralSettings").slideUp(1);
+            //                $("#errorMessageGeneralSettings").slideDown(400);
+            //                return false;
+            //            } else {
+            //                $(this).removeClass("error");
+            //            }
+            //        }
+            //    }
+            //});
+
+            if (isValidate == false) {
+                $('#cErrorGeneralSettings').html('<strong>Error! </strong> ' + '@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField');
+                $("#cSuccessGeneralSettings").html('');
+                $("#successMessageGeneralSettings").slideUp(1);
+                $("#errorMessageGeneralSettings").slideDown(400);
                 return false;
+            }
 
             if (($('#hdnIsActiveIntact').val().toLowerCase().toString() == $('#IsActive').val().toLowerCase().toString()) &&
                 ($('#IsActive').val().toLowerCase().toString()) == "false") {
