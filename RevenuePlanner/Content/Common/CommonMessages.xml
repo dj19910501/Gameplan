@@ -735,7 +735,7 @@
 	</Field>
 	<Field>
 		<Name>ConnectionFail</Name>
-		<value>Not able to connect to the serrver with provided details</value>
+		<value>Not able to connect to the server with provided details</value>
 	</Field>
 	<Field>
 		<Name>ServerConfigurationSaved</Name>

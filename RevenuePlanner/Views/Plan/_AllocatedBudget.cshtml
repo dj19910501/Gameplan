@@ -45,7 +45,7 @@
                                     <div>Budgeted</div>
                                 </td>
                             </tr>
-                            @Html.CampaignSummary("campaign", plan.ActivityId, Model)
+                            @Html.CampaignSummary("campaign", plan.ActivityId, Model, AllocatedBy, "0")
                         </tbody>
                     </table>
                     <div style="clear: both;"></div>
@@ -89,7 +89,7 @@
         $("div[allocated]").each(function () {
             var num = $(this).attr('allocated');
             if (parseInt(num) < 0) {
-                $(this).prop('title', 'Remaining: ' + num.replace('-','-$'));
+                $(this).prop('title', 'Remaining: ' + num.replace('-', '-$'));
             }
             else {
                 $(this).prop('title', 'Remaining: $' + num);
@@ -99,32 +99,35 @@
         });
     }
     function SetHeader() {
-       
-        if ('@AllocatedBy' != 'default') {
-            $('#planCostTitle').html('Planned Budget Allocation');
-            var sumMonth = number_format('@sumMonth', 0, '.', ',');
-            var allocated = number_format('@plan.Budgeted', 0, '.', ',');
-            $('#planCostValue').prop('title', '$' + sumMonth + '/' + '$' + allocated);
-            $('#planCostValue').addClass('north');
-            $('.north').tipsy({ gravity: 's' });
 
-            sumMonth = FormatNumber('@sumMonth', false);
-            allocated = FormatNumber('@plan.Budgeted', false);
-            $('#planCostValue').html(sumMonth + '/' + allocated);
-            $('#divPlanProgress').css("width", "@planAllocation%");
+        //if ('@AllocatedBy' != 'default') {
+        $('#planCostTitle').html('Planned Budget Allocation');
+        var sumMonth = number_format('@sumMonth', 0, '.', ',');
+        var allocated = number_format('@plan.Budgeted', 0, '.', ',');
+        $('#planCostValue').prop('title', '$' + sumMonth + '/' + '$' + allocated);
+        $('#planCostValue').addClass('north');
+        $('.north').tipsy({ gravity: 's' });
+
+        sumMonth = FormatNumber('@sumMonth', false);
+        allocated = FormatNumber('@plan.Budgeted', false);
+
+        $('#planCostValue').html(sumMonth + '/' + allocated);
+        $('#divPlanProgress').css("width", "@planAllocation%");
             if ('@planAllocation' > 100) {
-                $('#divPlanProgress').css("width", "100%");
-                $('#divPlanProgress').css("background", "#ff1e26");
-            }
-            $('#monthCompareTitle').html('Monthly Budget Allocation');
-            $('.progressPlanned').show();
+            $('#divPlanProgress').css("width", "100%");
+            $('#divPlanProgress').css("background", "#ff1e26");
         }
-        else {
-            $('#planCostTitle').html('');
-            $('#planCostValue').html('');
-            $('#monthCompareTitle').html('');
-            $('.progressPlanned').hide();
-        }
+
+
+        $('#monthCompareTitle').html('Monthly Budget Allocation');
+        $('.progressPlanned').show();
+        //}
+        //else {
+        //    $('#planCostTitle').html('');
+        //    $('#planCostValue').html('');
+        //    $('#monthCompareTitle').html('');
+        //    $('.progressPlanned').hide();
+        //}
         if ('@AllocatedBy' == 'quarters') {
             $('#monthCompareTitle').html('Quarterly Budget Allocation');
         }
@@ -135,13 +138,13 @@
                 if (i == 1) {
                     strMonthHTML += '<span class="title source-sans-proregular">JAN</span>';
                     if ('@PercAllocated.Jan' <= 100)
-                        strMonthHTML += '<div title="@PercAllocated.Jan%"><span style="width:@PercAllocated.Jan%;"></span></div>';
-                    else
-                        strMonthHTML += '<div title="@PercAllocated.Jan%"><span style="width:@PercAllocated.Jan%;" class="error"></span></div>';
-                }
-                else if (i == 2) {
-                    strMonthHTML += '<span class="title source-sans-proregular">FEB</span>';
-                    if ('@PercAllocated.Feb' <= 100)
+                            strMonthHTML += '<div title="@PercAllocated.Jan%"><span style="width:@PercAllocated.Jan%;"></span></div>';
+                        else
+                            strMonthHTML += '<div title="@PercAllocated.Jan%"><span style="width:@PercAllocated.Jan%;" class="error"></span></div>';
+                    }
+                    else if (i == 2) {
+                        strMonthHTML += '<span class="title source-sans-proregular">FEB</span>';
+                        if ('@PercAllocated.Feb' <= 100)
                         strMonthHTML += '<div title="@PercAllocated.Feb%"><span style="width:@PercAllocated.Feb%;"></span></div>';
                     else
                         strMonthHTML += '<div title="@PercAllocated.Feb%"><span style="width:@PercAllocated.Feb%;" class="error"></span></div>';
@@ -170,27 +173,27 @@
                 else if (i == 6) {
                     strMonthHTML += '<span class="title source-sans-proregular">JUN</span>';
                     if ('@PercAllocated.Jun' <= 100)
-                    strMonthHTML += '<div title="@PercAllocated.Jun%"><span style="width:@PercAllocated.Jun%;"></span></div>';
-                else
-                    strMonthHTML += '<div title="@PercAllocated.Jun%"><span style="width:@PercAllocated.Jun%;" class="error"></span></div>';
-            }
-            else if (i == 7) {
-                strMonthHTML += '<span class="title source-sans-proregular">JUL</span>';
-                if ('@PercAllocated.Jul' <= 100)
-                    strMonthHTML += '<div title="@PercAllocated.Jul%"><span style="width:@PercAllocated.Jul%;"></span></div>';
-                else
-                    strMonthHTML += '<div title="@PercAllocated.Jul%"><span style="width:@PercAllocated.Jul%;" class="error"></span></div>';
-            }
-            else if (i == 8) {
-                strMonthHTML += '<span class="title source-sans-proregular">AUG</span>';
-                if ('@PercAllocated.Aug' <= 100)
-                    strMonthHTML += '<div title="@PercAllocated.Aug%"><span style="width:@PercAllocated.Aug%;"></span></div>';
-                else
-                    strMonthHTML += '<div title="@PercAllocated.Aug%"><span style="width:@PercAllocated.Aug%;" class="error"></span></div>';
-            }
-            else if (i == 9) {
-                strMonthHTML += '<span class="title source-sans-proregular">SEP</span>';
-                if ('@PercAllocated.Sep' <= 100)
+                        strMonthHTML += '<div title="@PercAllocated.Jun%"><span style="width:@PercAllocated.Jun%;"></span></div>';
+                    else
+                        strMonthHTML += '<div title="@PercAllocated.Jun%"><span style="width:@PercAllocated.Jun%;" class="error"></span></div>';
+                }
+                else if (i == 7) {
+                    strMonthHTML += '<span class="title source-sans-proregular">JUL</span>';
+                    if ('@PercAllocated.Jul' <= 100)
+                        strMonthHTML += '<div title="@PercAllocated.Jul%"><span style="width:@PercAllocated.Jul%;"></span></div>';
+                    else
+                        strMonthHTML += '<div title="@PercAllocated.Jul%"><span style="width:@PercAllocated.Jul%;" class="error"></span></div>';
+                }
+                else if (i == 8) {
+                    strMonthHTML += '<span class="title source-sans-proregular">AUG</span>';
+                    if ('@PercAllocated.Aug' <= 100)
+                        strMonthHTML += '<div title="@PercAllocated.Aug%"><span style="width:@PercAllocated.Aug%;"></span></div>';
+                    else
+                        strMonthHTML += '<div title="@PercAllocated.Aug%"><span style="width:@PercAllocated.Aug%;" class="error"></span></div>';
+                }
+                else if (i == 9) {
+                    strMonthHTML += '<span class="title source-sans-proregular">SEP</span>';
+                    if ('@PercAllocated.Sep' <= 100)
                     strMonthHTML += '<div title="@PercAllocated.Sep%"><span style="width:@PercAllocated.Sep%;"></span></div>';
                 else
                     strMonthHTML += '<div title="@PercAllocated.Sep%"><span style="width:@PercAllocated.Sep%;" class="error"></span></div>';
@@ -225,13 +228,13 @@ else if ('@AllocatedBy' == 'quarters') {
                 if (i == 1) {
                     strMonthHTML += '<span class="title source-sans-proregular">Q1</span>';
                     if ('@PercAllocated.Jan' <= 100)
-                        strMonthHTML += '<div title="@PercAllocated.Jan%"><span style="width:@PercAllocated.Jan%;"></span></div>';
-                    else
-                        strMonthHTML += '<div title="@PercAllocated.Jan%"><span style="width:@PercAllocated.Jan%;" class="error"></span></div>';
-                }
-                else if (i == 2) {
-                    strMonthHTML += '<span class="title source-sans-proregular">Q2</span>';
-                    if ('@PercAllocated.Apr' <= 100)
+                            strMonthHTML += '<div title="@PercAllocated.Jan%"><span style="width:@PercAllocated.Jan%;"></span></div>';
+                        else
+                            strMonthHTML += '<div title="@PercAllocated.Jan%"><span style="width:@PercAllocated.Jan%;" class="error"></span></div>';
+                    }
+                    else if (i == 2) {
+                        strMonthHTML += '<span class="title source-sans-proregular">Q2</span>';
+                        if ('@PercAllocated.Apr' <= 100)
                         strMonthHTML += '<div title="@PercAllocated.Apr%"><span style="width:@PercAllocated.Apr%;"></span></div>';
                     else
                         strMonthHTML += '<div title="@PercAllocated.Apr%"><span style="width:@PercAllocated.Apr%;" class="error"></span></div>';
@@ -253,6 +256,67 @@ else if ('@AllocatedBy' == 'quarters') {
 
     strMonthHTML += '</div>';
 }
+}
+else {
+    for (var i = 1; i <= 12; i++) {
+        strMonthHTML += '<div class="budgetMonth">';
+        if (i == 1) {
+            strMonthHTML += '<span class="title source-sans-proregular">JAN</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+        }
+        else if (i == 2) {
+            strMonthHTML += '<span class="title source-sans-proregular">FEB</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+        }
+        else if (i == 3) {
+            strMonthHTML += '<span class="title source-sans-proregular">MAR</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+        }
+        else if (i == 4) {
+            strMonthHTML += '<span class="title source-sans-proregular">APR</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+        }
+        else if (i == 5) {
+            strMonthHTML += '<span class="title source-sans-proregular">MAY</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+        }
+        else if (i == 6) {
+            strMonthHTML += '<span class="title source-sans-proregular">JUN</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+
+        }
+        else if (i == 7) {
+            strMonthHTML += '<span class="title source-sans-proregular">JUL</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+
+        }
+        else if (i == 8) {
+            strMonthHTML += '<span class="title source-sans-proregular">AUG</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+
+        }
+        else if (i == 9) {
+            strMonthHTML += '<span class="title source-sans-proregular">SEP</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+
+        }
+        else if (i == 10) {
+            strMonthHTML += '<span class="title source-sans-proregular">OCT</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+
+        }
+        else if (i == 11) {
+            strMonthHTML += '<span class="title source-sans-proregular">NOV</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+
+        }
+        else if (i == 12) {
+            strMonthHTML += '<span class="title source-sans-proregular">DEC</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+
+        }
+        strMonthHTML += '</div>';
+    }
 }
     $('#monthContainer').html(strMonthHTML);
 
