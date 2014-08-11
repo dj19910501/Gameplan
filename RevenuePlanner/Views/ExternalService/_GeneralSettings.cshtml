@@ -261,6 +261,13 @@
             $("#errorMessageGeneralSettings").slideUp(1);
             $('#cErrorGeneralSettings').html('');
             $("#successMessageGeneralSettings").slideUp(1);
+            $('#content #integrationForm :input').each(function () {
+                if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
+                    if (this.id != 'importActuals' && this.id != 'integrationStatus') {
+                            $(this).removeClass("error");
+                    }
+                }
+            });
         });
 
         if (localStorage.Message != undefined) {
@@ -328,21 +335,20 @@
             if ($("#ddlSyncFrequency").val() == "Monthly") {
                 if ($("#SyncFrequency_Day").val() == "") {
                     $('#SyncFrequency_Day').addClass("error");
-                     var ErrMsg = 'SyncFrequency Day cannot be blank.';
-                    $('#cErrorGeneralSettings').html('<strong>Error! </strong> ' + ErrMsg)
+                    $('#cErrorGeneralSettings').html('<strong>Error! </strong> ' + '@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField');
                     $("#cSuccessGeneralSettings").html('');
                     $("#successMessageGeneralSettings").slideUp(1);
                     $("#errorMessageGeneralSettings").slideDown(400);
-                    isValidate = false;
+                    return false;
                 }
                 else if ($("#SyncFrequency_Day").val() > 31) {
                     $('#SyncFrequency_Day').addClass("error");
-                    var ErrMsg = 'Please enter valid SyncFrequency Day.';
+                    var ErrMsg = 'Please enter valid SyncFrequency day.';
                     $('#cErrorGeneralSettings').html('<strong>Error! </strong> ' + ErrMsg)
                     $("#cSuccessGeneralSettings").html('');
                     $("#successMessageGeneralSettings").slideUp(1);
                     $("#errorMessageGeneralSettings").slideDown(400);
-                    isValidate = false;
+                    return false;
                 }
                 else {
                     $('#SyncFrequency_Day').removeClass("error");
