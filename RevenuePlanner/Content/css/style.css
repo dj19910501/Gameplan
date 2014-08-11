@@ -7565,7 +7565,7 @@ a:hover, a:focus{text-decoration: none !important;}
 /* ---------- Budget Planned ---------- */
 .budgetColums{display:block; padding:20px; padding-bottom:5px;}
 .budgetColums > div{/*display:table-cell;*/ /*float:left;*/ display:inline-block; border:1px solid #ccc; min-height:85px; padding:10px; vertical-align:top;}
-.plannedCost{min-width:410px; width:36%; margin-right:20px; padding-left:20px !important; padding-right:10px !important;}
+.plannedCost{/*min-width:410px;*/min-width:36%; width:36%; margin-right:20px; padding-left:20px !important; padding-right:10px !important;}
 .budgetCompare{/*min-width:513px;*/ width:57%;}
 
 .budgetColums h3{font-weight:normal; padding-left:5px; margin:0; line-height:normal; padding-bottom:6px;}
@@ -7602,11 +7602,11 @@ a:hover, a:focus{text-decoration: none !important;}
 
 }
 
-tbody.column1{width:25%; max-width:265px; overflow-x:auto; border-right:1px solid #808080; border-left:1px solid #CCC;}
+tbody.column1{width:20%; /*max-width:265px;*/ max-width:20%; overflow-x:auto; border-right:1px solid #808080; border-left:1px solid #CCC;}
 .budget-table tbody.column1 td{border-right:none;}
 tbody.column1 div{text-align:left; white-space:nowrap;}
-tbody.column2{overflow-x:auto; border-right:1px solid #808080; max-width:1067px;}
-tbody.column3{max-width:178px; width:20%; border-right:none;}
+tbody.column2{overflow-x:auto; border-right:1px solid #808080; /*max-width:1067px;*/max-width:61%;}
+tbody.column3{/*max-width:178px;*/max-width:17%; width:17%; border-right:none;}
 
 .column1 div, .column2 div, .column3 div{min-height:24px; line-height:24px; text-align:center; padding-top:11px; padding-bottom:11px; position:relative; font-size:14px;}
 .column2 div, .column3 div{min-width:88px;}
