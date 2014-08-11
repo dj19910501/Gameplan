@@ -7563,10 +7563,11 @@ a:hover, a:focus{text-decoration: none !important;}
 }
 /*End By : Kalpesh Sharma : PL #605 : 07/29/2014*/
 /* ---------- Budget Planned ---------- */
-.budgetColums{display:block; padding:20px; padding-bottom:5px;}
+.budgetColums{/*display:block; padding:20px; padding-bottom:5px;*/display: block;min-width: 943px;padding: 20px 20px 5px;width: 94%;}
 .budgetColums > div{/*display:table-cell;*/ /*float:left;*/ display:inline-block; border:1px solid #ccc; min-height:85px; padding:10px; vertical-align:top;}
-.plannedCost{/*min-width:410px;*/min-width:36%; width:36%; margin-right:20px; padding-left:20px !important; padding-right:10px !important;}
-.budgetCompare{/*min-width:513px;*/ width:57%;}
+.plannedCost{/*min-width:410px;*//*min-width:36%; width:36%; margin-right:20px; padding-left:20px !important; padding-right:10px !important;*/margin-right: 20px;
+    min-width: 380px;padding-left: 20px !important;padding-right: 10px !important;width: 32%;}
+.budgetCompare{/*min-width:513px;*/ width:51%;}
 
 .budgetColums h3{font-weight:normal; padding-left:5px; margin:0; line-height:normal; padding-bottom:6px;}
 .plannedCost h3{padding-left:0;}

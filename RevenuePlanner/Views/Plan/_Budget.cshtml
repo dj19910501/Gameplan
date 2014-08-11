@@ -4,6 +4,9 @@
 @{
     string AllocatedBy = ViewBag.AllocatedBy;
     BudgetModel plan = Model.Where(p => p.ActivityType == "plan").SingleOrDefault();
+    string strDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
+    string strMonths = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower();
+    string strQuarters = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower();
 }
 @{
     BudgetMonth PercAllocated = ViewBag.PercAllocated;
@@ -46,7 +49,7 @@
                                     <div>Allocated</div>
                                 </td>
                             </tr>
-                            @Html.CampaignSummary("campaign", plan.ActivityId, Model,AllocatedBy,"1")
+                            @Html.CampaignSummary("campaign", plan.ActivityId, Model, AllocatedBy, "1")
                         </tbody>
                     </table>
                     <div style="clear: both;"></div>
@@ -96,7 +99,8 @@
     }
 
     function SetHeader() {
-        if ('@AllocatedBy' != 'default') {
+        
+        if ('@AllocatedBy' != '@strDefault') {
             $('#planCostTitle').html('Total Planned Cost');
 
             var sumMonth = number_format('@sumMonth', 0, '.', ',');
@@ -131,7 +135,7 @@
     //    $('.progressPlanned').hide();
     //}
         var strMonthHTML = '';
-        if ('@AllocatedBy' == 'months') {
+        if ('@AllocatedBy' == '@strMonths') {
             for (var i = 1; i <= 12; i++) {
                 strMonthHTML += '<div class="budgetMonth">';
                 if (i == 1) {
@@ -221,7 +225,7 @@
     strMonthHTML += '</div>';
 }
 }
-else if ('@AllocatedBy' == 'quarters') {
+else if ('@AllocatedBy' == '@strQuarters') {
             for (var i = 1; i <= 4; i++) {
                 strMonthHTML += '<div class="budgetMonth">';
                 if (i == 1) {

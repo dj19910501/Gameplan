@@ -8157,8 +8157,8 @@ namespace RevenuePlanner.Controllers
             {
                 BudgetMonth lineDiff = new BudgetMonth();
                 List<BudgetModel> lines = model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId).ToList();
-                BudgetModel otherLine = lines.Where(ol => ol.ActivityName == "Other").SingleOrDefault();
-                lines = lines.Where(ol => ol.ActivityName != "Other").ToList();
+                BudgetModel otherLine = lines.Where(ol => ol.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault();
+                lines = lines.Where(ol => ol.ActivityName != Common.DefaultLineItemTitle).ToList();
                 if (otherLine != null)
                 {
                     if (lines.Count > 0)
@@ -8188,19 +8188,19 @@ namespace RevenuePlanner.Controllers
                         lineDiff.Oct = lineDiff.Oct < 0 ? 0 : lineDiff.Oct;
                         lineDiff.Nov = lineDiff.Nov < 0 ? 0 : lineDiff.Nov;
                         lineDiff.Dec = lineDiff.Dec < 0 ? 0 : lineDiff.Dec;
- 
-                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == "Other").SingleOrDefault().Month = lineDiff;
-                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == "Other").SingleOrDefault().ParentMonth = lineDiff;
+
+                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Month = lineDiff;
+                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().ParentMonth = lineDiff;
                         
                         double allocated = l.Allocated - lines.Sum(l1 => l1.Allocated);
                         allocated = allocated < 0 ? 0 : allocated;
-                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == "Other").SingleOrDefault().Allocated = allocated;
+                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Allocated = allocated;
                     }
                     else
                     {
-                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == "Other").SingleOrDefault().Month = l.Month;
-                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == "Other").SingleOrDefault().ParentMonth = l.Month;
-                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == "Other").SingleOrDefault().Allocated = l.Allocated < 0 ? 0 : l.Allocated;
+                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Month = l.Month;
+                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().ParentMonth = l.Month;
+                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Allocated = l.Allocated < 0 ? 0 : l.Allocated;
                     }
                 }
             }

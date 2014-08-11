@@ -453,7 +453,7 @@ namespace RevenuePlanner.Helpers
             StringBuilder sb = new StringBuilder();
             TagBuilder trHeader = new TagBuilder("tr");
             TagBuilder trValue = new TagBuilder("tr");
-            if (AllocatedBy == "months")
+            if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower())
             {
                 for (int i = 1; i <= 12; i++)
                 {
@@ -552,7 +552,7 @@ namespace RevenuePlanner.Helpers
                     trValue.InnerHtml += tdValue.ToString();
                 }
             }
-            else if (AllocatedBy == "quarters")
+            else if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
             {
                 for (int i = 1; i <= 4; i++)
                 {
@@ -648,7 +648,7 @@ namespace RevenuePlanner.Helpers
             foreach (BudgetModel c in model.Where(p => p.ActivityType == "campaign" && p.ParentActivityId == ParentActivityId).ToList())
             {
                 TagBuilder tr = new TagBuilder("tr");
-                if (AllocatedBy == "months")
+                if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower())
                 {
                     for (int i = 1; i <= 12; i++)
                     {
@@ -738,7 +738,7 @@ namespace RevenuePlanner.Helpers
                         tr.InnerHtml += td.ToString();
                     }
                 }
-                else if (AllocatedBy == "quarters")
+                else if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
                 {
                     for (int i = 1; i <= 4; i++)
                     {
@@ -852,7 +852,7 @@ namespace RevenuePlanner.Helpers
                     TagBuilder divProgram = new TagBuilder("div");
                     divProgram.Attributes.Add("id", ActivityType + p.ActivityId.ToString());
                     string className = innerClass;
-                    if (AllocatedBy == "months")
+                    if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower())
                     {
                         if (month == 1)
                         {
@@ -1056,7 +1056,7 @@ namespace RevenuePlanner.Helpers
                             }
                         }
                     }
-                    else if (AllocatedBy == "quarters")
+                    else if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
                     {
                         if (month == 1)
                         {
@@ -1172,7 +1172,7 @@ namespace RevenuePlanner.Helpers
                 TagBuilder td = new TagBuilder("td");
                 td.AddCssClass("event-row");
                 TagBuilder div = new TagBuilder("div");
-                if (AllocatedBy != "default")
+                if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
                 {
                     double sumMonth = plan.Month.Jan + plan.Month.Feb + plan.Month.Mar + plan.Month.Apr + plan.Month.May + plan.Month.Jun + plan.Month.Jul + plan.Month.Aug + plan.Month.Sep + plan.Month.Oct + plan.Month.Nov + plan.Month.Dec;
                     div.InnerHtml = sumMonth.ToString(formatThousand);
@@ -1209,7 +1209,7 @@ namespace RevenuePlanner.Helpers
                 }
                 else
                 {
-                    if (AllocatedBy != "default")
+                    if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
                     {
                         div.InnerHtml = plan.Allocated.ToString(formatThousand);
                     }
@@ -1234,7 +1234,7 @@ namespace RevenuePlanner.Helpers
                 TagBuilder div = new TagBuilder("div");
                 div.Attributes.Add("id", ActivityType + c.ActivityId.ToString());
 
-                if (AllocatedBy != "default")
+                if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
                 {
                     //div.InnerHtml = c.Budgeted.ToString();
                     double sumMonth = c.Month.Jan + c.Month.Feb + c.Month.Mar + c.Month.Apr + c.Month.May + c.Month.Jun + c.Month.Jul + c.Month.Aug + c.Month.Sep + c.Month.Oct + c.Month.Nov + c.Month.Dec;
@@ -1347,7 +1347,7 @@ namespace RevenuePlanner.Helpers
 
                     if (mode == "first")
                     {
-                        if (AllocatedBy != "default")
+                        if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
                         {
                             //div.InnerHtml += p.Budgeted.ToString();
                             double sumMonth = p.Month.Jan + p.Month.Feb + p.Month.Mar + p.Month.Apr + p.Month.May + p.Month.Jun + p.Month.Jul + p.Month.Aug + p.Month.Sep + p.Month.Oct + p.Month.Nov + p.Month.Dec;
@@ -1457,7 +1457,7 @@ namespace RevenuePlanner.Helpers
             StringBuilder sb = new StringBuilder();
             TagBuilder trHeader = new TagBuilder("tr");
             TagBuilder trValue = new TagBuilder("tr");
-            if (AllocatedBy == "months")
+            if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower())
             {
                 for (int i = 1; i <= 12; i++)
                 {
@@ -1556,7 +1556,7 @@ namespace RevenuePlanner.Helpers
                     trValue.InnerHtml += tdValue.ToString();
                 }
             }
-            else if (AllocatedBy == "quarters")
+            else if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
             {
                 for (int i = 1; i <= 4; i++)
                 {
@@ -1655,7 +1655,7 @@ namespace RevenuePlanner.Helpers
             foreach (BudgetModel c in model.Where(p => p.ActivityType == "campaign" && p.ParentActivityId == ParentActivityId).ToList())
             {
                 TagBuilder tr = new TagBuilder("tr");
-                if (AllocatedBy == "months")
+                if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower())
                 {
                     for (int i = 1; i <= 12; i++)
                     {
@@ -1745,7 +1745,7 @@ namespace RevenuePlanner.Helpers
                         tr.InnerHtml += td.ToString();
                     }
                 }
-                else if (AllocatedBy == "quarters")
+                else if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
                 {
                     for (int i = 1; i <= 4; i++)
                     {
@@ -1858,7 +1858,7 @@ namespace RevenuePlanner.Helpers
                     TagBuilder divProgram = new TagBuilder("div");
                     divProgram.Attributes.Add("id", ActivityType + p.ActivityId.ToString());
                     string className = innerClass;
-                    if (AllocatedBy == "months")
+                    if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower())
                     {
                         if (month == 1)
                         {
@@ -1933,7 +1933,7 @@ namespace RevenuePlanner.Helpers
                             className = p.ParentMonth.Dec >= 0 ? className : className + " error";
                         }
                     }
-                    else if (AllocatedBy == "quarters")
+                    else if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
                     {
                         if (month == 1)
                         {
