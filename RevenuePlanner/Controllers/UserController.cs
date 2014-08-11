@@ -887,7 +887,7 @@ namespace RevenuePlanner.Controllers
             {
                 userId = Guid.Parse(usrid);
             }
-
+            
             BDSService.User objUser = new BDSService.User();
             UserModel objUserModel = new UserModel();
             try
