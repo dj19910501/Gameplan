@@ -103,7 +103,7 @@
     }
     function SetHeader() {
 
-        //if ('@AllocatedBy' != 'default') {
+        if ('@AllocatedBy' != '@strDefault') {
         $('#planCostTitle').html('Planned Budget Allocation');
         var sumMonth = number_format('@sumMonth', 0, '.', ',');
         var allocated = number_format('@plan.Budgeted', 0, '.', ',');
@@ -124,7 +124,15 @@
 
         $('#monthCompareTitle').html('Monthly Budget Allocation');
         $('.progressPlanned').show();
-        //}
+        }
+        else {
+            $('#planCostTitle').html('Planned Budget Allocation');
+
+            $('#planCostValue').html('');
+            $('#divPlanProgress').css("width", "0%");
+            $('#monthCompareTitle').html('Monthly Budget Allocation');
+            $('.progressPlanned').show();
+        }
         //else {
         //    $('#planCostTitle').html('');
         //    $('#planCostValue').html('');
