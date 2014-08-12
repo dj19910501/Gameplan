@@ -1475,7 +1475,7 @@
                                         if (_programs[i].tactics[k].lineitems.length > 0) {
                                             for (z in _programs[i].tactics[k].lineitems) {
                                                 $html += '<div id="lineitem_' + _programs[i].tactics[k].lineitems[z].id + '" class="accordion-body collapse in lineitem">' +
-                                                  '<div id="divlineitem" class="accordion-inner" index="' + _programs[i].tactics[k].lineitems[z].id + '">' ;
+                                                  '<div id="divlineitem" class="accordion-inner cursor-pointer" index="' + _programs[i].tactics[k].lineitems[z].id + '">';
                                                   if (_programs[i].tactics[k].lineitems[z].title!='@Common.DefaultLineItemTitle'){
                                                       $html += '<span class="delete-program width5 " id="delLineItem"></span>';
                                                     }
