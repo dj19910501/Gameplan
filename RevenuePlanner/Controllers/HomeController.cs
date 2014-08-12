@@ -2375,7 +2375,7 @@ namespace RevenuePlanner.Controllers
             }
 
             ViewBag.TacticDetail = im;
-            ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
+            ViewBag.IsModelDeploy = im.IsIntegrationInstanceExist == "No" ? false : true;////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
 
             var businessunittitle = (from bun in db.BusinessUnits
                                      where bun.BusinessUnitId == im.BusinessUnitId
@@ -2573,7 +2573,7 @@ namespace RevenuePlanner.Controllers
 
                               }).SingleOrDefault();
 
-                    imodel.IntegrationType = GetIntegrationTypeTitleByModel(db.Plan_Campaign_Program_Tactic.SingleOrDefault(varT => varT.PlanTacticId == id).TacticType.Model);
+                    imodel.IsIntegrationInstanceExist = CheckIntegrationInstanceExist(db.Plan_Campaign_Program_Tactic.SingleOrDefault(varT => varT.PlanTacticId == id).TacticType.Model);
                 }
                 if (section == Convert.ToString(Enums.Section.Program).ToLower())
                 {
@@ -2622,7 +2622,7 @@ namespace RevenuePlanner.Controllers
                     imodel.IsDeployedToIntegration = objPlan_Campaign_Program.IsDeployedToIntegration;
                     imodel.LastSyncDate = objPlan_Campaign_Program.LastSyncDate;
 
-                    imodel.IntegrationType = GetIntegrationTypeTitleByModel(objPlan_Campaign_Program.Plan_Campaign.Plan.Model);
+                    imodel.IsIntegrationInstanceExist = CheckIntegrationInstanceExist(objPlan_Campaign_Program.Plan_Campaign.Plan.Model);
                 }
 
                 if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
@@ -2684,7 +2684,7 @@ namespace RevenuePlanner.Controllers
                     imodel.EndDate = objPlan_Campaign.EndDate;
 
                     imodel.IsDeployedToIntegration = objPlan_Campaign.IsDeployedToIntegration;
-                    imodel.IntegrationType = GetIntegrationTypeTitleByModel(objPlan_Campaign.Plan.Model);
+                    imodel.IsIntegrationInstanceExist = CheckIntegrationInstanceExist(objPlan_Campaign.Plan.Model);
                     imodel.LastSyncDate = objPlan_Campaign.LastSyncDate;
 
                 }
@@ -2714,7 +2714,7 @@ namespace RevenuePlanner.Controllers
                                   LastSyncDate = pcpt.LastSyncDate
                               }).SingleOrDefault();
 
-                    imodel.IntegrationType = GetIntegrationTypeTitleByModel(db.Plan_Improvement_Campaign_Program_Tactic.SingleOrDefault(varT => varT.ImprovementPlanTacticId == id).Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model);
+                    imodel.IsIntegrationInstanceExist = CheckIntegrationInstanceExist(db.Plan_Improvement_Campaign_Program_Tactic.SingleOrDefault(varT => varT.ImprovementPlanTacticId == id).Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model);
 
                 }
 
@@ -2727,27 +2727,20 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
-        /// Return integration type title by model
+        /// Return integration instance exist for model
+        /// Added by Mitesh Vaishnav on 12/08/2014 for PL ticket #690
         /// </summary>
         /// <param name="objModel"></param>
         /// <returns></returns>
-        public string GetIntegrationTypeTitleByModel(Model objModel)
+        public string CheckIntegrationInstanceExist(Model objModel)
         {
             string returnValue = string.Empty;
 
-            if (objModel.IntegrationInstanceId == null)
-                returnValue = "N/A";
+            if (objModel.IntegrationInstanceId == null && objModel.IntegrationInstanceIdCW == null && objModel.IntegrationInstanceIdINQ == null && objModel.IntegrationInstanceIdMQL == null)////Modiefied by Mitesh Vaishnav on 12/08/2014 for PL ticket #690
+                returnValue = "No";
             else
             {
-                var IntegrationInstance = db.IntegrationInstances.SingleOrDefault(varI => varI.IntegrationInstanceId == objModel.IntegrationInstanceId);
-                if (IntegrationInstance == null)
-                {
-                    returnValue = "N/A";
-                }
-                else
-                {
-                    returnValue = IntegrationInstance.IntegrationType.Title;
-                }
+                returnValue= "Yes";
             }
 
             return returnValue;
@@ -2845,10 +2838,10 @@ namespace RevenuePlanner.Controllers
             //}
             ViewBag.IsValidUser = isValidUser;
 
-            ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
+            ViewBag.IsModelDeploy = im.IsIntegrationInstanceExist == "No" ? false : true;////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
             if (im.LastSyncDate != null)
             {
-                ViewBag.LastSync = "Last synced with " + im.IntegrationType + " " + Common.GetFormatedDate(im.LastSyncDate) + ".";
+                ViewBag.LastSync = "Last synced with integration " + Common.GetFormatedDate(im.LastSyncDate) + ".";////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
             }
             else
             {
@@ -3465,7 +3458,7 @@ namespace RevenuePlanner.Controllers
             {
                 TimeZone localZone = TimeZone.CurrentTimeZone;
 
-                ViewBag.LastSync = "Last synced with " + im.IntegrationType + " " + Common.GetFormatedDate(im.LastSyncDate) + ".";
+                ViewBag.LastSync = "Last synced with integration " + Common.GetFormatedDate(im.LastSyncDate) + ".";////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
             }
             else
             {
@@ -3548,7 +3541,7 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.IsValidOwner = isValidOwner;
 
-            ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
+            ViewBag.IsModelDeploy = im.IsIntegrationInstanceExist == "No" ? false : true;////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
 
             //To get permission status for Approve campaign , By dharmraj PL #538
             var lstSubOrdinatesPeers = Common.GetSubOrdinatesWithPeersNLevel();
@@ -3631,7 +3624,7 @@ namespace RevenuePlanner.Controllers
             {
                 TimeZone localZone = TimeZone.CurrentTimeZone;
 
-                ViewBag.LastSync = "Last synced with " + im.IntegrationType + " " + Common.GetFormatedDate(im.LastSyncDate) + ".";
+                ViewBag.LastSync = "Last synced with integration " + Common.GetFormatedDate(im.LastSyncDate) + ".";////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
             }
             else
             {
@@ -3721,7 +3714,7 @@ namespace RevenuePlanner.Controllers
             //ViewBag.IsValidDirectorUser = isValidDirectorUser;
             ViewBag.IsValidOwner = isValidOwner;
 
-            ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
+            ViewBag.IsModelDeploy = im.IsIntegrationInstanceExist == "No" ? false : true;////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
 
             //To get permission status for Approve campaign , By dharmraj PL #538
             var lstSubOrdinatesPeers = Common.GetSubOrdinatesWithPeersNLevel();
@@ -4355,7 +4348,7 @@ namespace RevenuePlanner.Controllers
                     UpdateBy = string.Format("{0} {1} by {2} {3}", "Last updated", pcpt.CreatedDate.ToString("MMM dd"), userName.Where(u => u.UserId == pcpt.CreatedBy).Select(u => u.FirstName).FirstOrDefault(), userName.Where(u => u.UserId == pcpt.CreatedBy).Select(u => u.LastName).FirstOrDefault()),
                     IsUpdate = status
                 }).Select(pcp => pcp).Distinct(),
-                LastSync = t.LastSyncDate == null ? string.Empty : ("Last synced with " + GetIntegrationTypeTitleByModel(t.TacticType.Model) + " " + Common.GetFormatedDate(t.LastSyncDate) + "."),
+                LastSync = t.LastSyncDate == null ? string.Empty : ("Last synced with integration " + Common.GetFormatedDate(t.LastSyncDate) + "."),////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
                 stageTitle = Common.GetTacticStageTitle(t.PlanTacticId),
                 tacticStageId = t.Stage.StageId,
                 tacticStageTitle = t.Stage.Title,
@@ -4658,12 +4651,12 @@ namespace RevenuePlanner.Controllers
             ViewBag.NoOfTacticBoosts = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && t.StartDate >= im.StartDate && t.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId).ToList().Count();
 
 
-            ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
+            ViewBag.IsModelDeploy = im.IsIntegrationInstanceExist == "No" ? false : true;////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
             if (im.LastSyncDate != null)
             {
                 TimeZone localZone = TimeZone.CurrentTimeZone;
 
-                ViewBag.LastSync = "Last synced with " + im.IntegrationType + " " + Common.GetFormatedDate(im.LastSyncDate) + ".";
+                ViewBag.LastSync = "Last synced with integration " + Common.GetFormatedDate(im.LastSyncDate) + ".";////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
             }
             else
             {
@@ -4727,7 +4720,7 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.TacticDetail = im;
 
-            ViewBag.IsModelDeploy = im.IntegrationType == "N/A" ? false : true;
+            ViewBag.IsModelDeploy = im.IsIntegrationInstanceExist == "No" ? false : true;
 
             var businessunittitle = (from bun in db.BusinessUnits
                                      where bun.BusinessUnitId == im.BusinessUnitId

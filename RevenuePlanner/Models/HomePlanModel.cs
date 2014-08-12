@@ -129,7 +129,7 @@ namespace RevenuePlanner.Models
 
         public double? ROIActual { get; set; }
 
-        public string IntegrationType { get; set; }
+        public string IsIntegrationInstanceExist { get; set; }
 
         public bool IsDeployedToIntegration { get; set; }
 

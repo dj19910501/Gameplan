@@ -3,7 +3,7 @@
 @*<script type="text/javascript" src="~/Scripts/js/Mask.js"></script>*@
 
 @{
-    string ExtIntService = ViewBag.ExtIntService;
+    bool ExtIntService = (bool)ViewBag.ExtIntService;
 
     //Start by Kalpesh Sharma #605: Cost allocation for Tactic
     string AllocatedBy = Model.AllocatedBy;
@@ -111,18 +111,18 @@
             <span class="verticalIdSelectBox" style="  margin-left: -2px;">@Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
          </div>
 
-            @if (ExtIntService != string.Empty)
+            @if (ExtIntService)
             {
 
                 if (Model.IsDeployedToIntegration)
                 {
                  <label style="margin-top:6px;">Status</label>
-                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to @ExtIntService" maxlength="18" readonly />
+                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
                 }
                 else
                 {
                  <label style="margin-top:6px;">Status</label>
-                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to @ExtIntService" maxlength="18" readonly />
+                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to integration" maxlength="18" readonly />
                 }
             }
 
@@ -449,13 +449,13 @@
 
         $("#t_integration_status").click(function () {
             if ($(this).hasClass("icon-check-blue")) {
-                $(this).val("Not Sync to @ExtIntService");
+                $(this).val("Not Sync to integration");
                 $(this).addClass("icon-check-gray");
                 $(this).removeClass("icon-check-blue");
                 $("#hdnIsDeployedToIntegration").val(false);
             }
             else {
-                $(this).val("Sync to @ExtIntService");
+                $(this).val("Sync to integration");
                 $(this).addClass("icon-check-blue");
                 $(this).removeClass("icon-check-gray");
                 $("#hdnIsDeployedToIntegration").val(true);
@@ -761,13 +761,13 @@
                         $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
 
                         if (data.IsDeployedToIntegration) {
-                            $("#t_integration_status").val("Sync to @ExtIntService");
+                            $("#t_integration_status").val("Sync to integration");
                             $("#t_integration_status").addClass("icon-check-blue");
                             $("#t_integration_status").removeClass("icon-check-gray");
                             $("#hdnIsDeployedToIntegration").val(true);
                         }
                         else {
-                            $("#t_integration_status").val("Not Sync to @ExtIntService");
+                            $("#t_integration_status").val("Not Sync to integration");
                             $("#t_integration_status").addClass("icon-check-gray");
                             $("#t_integration_status").removeClass("icon-check-blue");
                             $("#hdnIsDeployedToIntegration").val(false);

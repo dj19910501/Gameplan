@@ -2079,15 +2079,14 @@ namespace RevenuePlanner.Controllers
 
             // added by Dharmraj for ticket #435 MAP/CRM Integration - Tactic Creation
             var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-            if (objPlan.Model.IntegrationInstanceId != null)
+            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
+            if (objPlan.Model.IntegrationInstanceId != null || objPlan.Model.IntegrationInstanceIdCW != null || objPlan.Model.IntegrationInstanceIdINQ != null || objPlan.Model.IntegrationInstanceIdMQL != null)
             {
-                int integrationInstanceId = Convert.ToInt32(objPlan.Model.IntegrationInstanceId);
-                string ExternalIntegrationService = db.IntegrationInstances.SingleOrDefault(varI => varI.IntegrationInstanceId == integrationInstanceId).IntegrationType.Title;
-                ViewBag.ExtIntService = ExternalIntegrationService;
+                ViewBag.ExtIntService = true;
             }
             else
             {
-                ViewBag.ExtIntService = string.Empty;
+                ViewBag.ExtIntService = false;
             }
 
             ViewBag.IsDeployedToIntegration = false;
@@ -2147,16 +2146,14 @@ namespace RevenuePlanner.Controllers
                 return null;
             }
 
-            // added by Dharmraj for ticket #435 MAP/CRM Integration - Tactic Creation
-            if (pc.Plan.Model.IntegrationInstanceId != null)
+            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
+            if (pc.Plan.Model.IntegrationInstanceId != null || pc.Plan.Model.IntegrationInstanceIdCW != null || pc.Plan.Model.IntegrationInstanceIdINQ != null || pc.Plan.Model.IntegrationInstanceIdMQL != null)
             {
-                int integrationInstanceId = Convert.ToInt32(pc.Plan.Model.IntegrationInstanceId);
-                string ExternalIntegrationService = db.IntegrationInstances.SingleOrDefault(varI => varI.IntegrationInstanceId == integrationInstanceId).IntegrationType.Title;
-                ViewBag.ExtIntService = ExternalIntegrationService;
+                ViewBag.ExtIntService = true;
             }
             else
             {
-                ViewBag.ExtIntService = string.Empty;
+                ViewBag.ExtIntService = false;
             }
 
             Plan_CampaignModel pcm = new Plan_CampaignModel();
@@ -2676,17 +2673,15 @@ namespace RevenuePlanner.Controllers
             //ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
             ViewBag.IsCreated = true;
 
-            // added by Dharmraj for ticket #435 MAP/CRM Integration - Tactic Creation
+            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
             var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-            if (objPlan.Model.IntegrationInstanceId != null)
+            if (objPlan.Model.IntegrationInstanceId != null || objPlan.Model.IntegrationInstanceIdCW != null || objPlan.Model.IntegrationInstanceIdINQ != null || objPlan.Model.IntegrationInstanceIdMQL != null)
             {
-                int integrationInstanceId = Convert.ToInt32(objPlan.Model.IntegrationInstanceId);
-                string ExternalIntegrationService = db.IntegrationInstances.SingleOrDefault(varI => varI.IntegrationInstanceId == integrationInstanceId).IntegrationType.Title;
-                ViewBag.ExtIntService = ExternalIntegrationService;
+               ViewBag.ExtIntService = true;
             }
             else
             {
-                ViewBag.ExtIntService = string.Empty;
+                ViewBag.ExtIntService = false;
             }
 
             Plan_Campaign pcp = db.Plan_Campaign.Where(pcpobj => pcpobj.PlanCampaignId.Equals(id) && pcpobj.IsDeleted.Equals(false)).SingleOrDefault();
@@ -2779,16 +2774,14 @@ namespace RevenuePlanner.Controllers
                 return null;
             }
 
-            // added by Dharmraj for ticket #435 MAP/CRM Integration - Tactic Creation
-            if (pcp.Plan_Campaign.Plan.Model.IntegrationInstanceId != null)
+            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
+            if (pcp.Plan_Campaign.Plan.Model.IntegrationInstanceId != null || pcp.Plan_Campaign.Plan.Model.IntegrationInstanceIdCW != null ||pcp.Plan_Campaign.Plan.Model.IntegrationInstanceIdINQ != null ||pcp.Plan_Campaign.Plan.Model.IntegrationInstanceIdMQL != null)
             {
-                int integrationInstanceId = Convert.ToInt32(pcp.Plan_Campaign.Plan.Model.IntegrationInstanceId);
-                string ExternalIntegrationService = db.IntegrationInstances.SingleOrDefault(varI => varI.IntegrationInstanceId == integrationInstanceId).IntegrationType.Title;
-                ViewBag.ExtIntService = ExternalIntegrationService;
+                ViewBag.ExtIntService = true;
             }
             else
             {
-                ViewBag.ExtIntService = string.Empty;
+                ViewBag.ExtIntService = false;
             }
 
             Plan_Campaign_ProgramModel pcpm = new Plan_Campaign_ProgramModel();
@@ -3318,17 +3311,15 @@ namespace RevenuePlanner.Controllers
             ////End :Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             ViewBag.IsCreated = true;
 
-            // added by Dharmraj for ticket #435 MAP/CRM Integration - Tactic Creation
+            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
             var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-            if (objPlan.Model.IntegrationInstanceId != null)
+            if (objPlan.Model.IntegrationInstanceId != null || objPlan.Model.IntegrationInstanceIdCW != null ||objPlan.Model.IntegrationInstanceIdINQ != null ||objPlan.Model.IntegrationInstanceIdMQL != null)
             {
-                int integrationInstanceId = Convert.ToInt32(objPlan.Model.IntegrationInstanceId);
-                string ExternalIntegrationService = db.IntegrationInstances.SingleOrDefault(varI => varI.IntegrationInstanceId == integrationInstanceId).IntegrationType.Title;
-                ViewBag.ExtIntService = ExternalIntegrationService;
+                ViewBag.ExtIntService = true;
             }
             else
             {
-                ViewBag.ExtIntService = string.Empty;
+                ViewBag.ExtIntService = false;
             }
 
             Plan_Campaign_Program pcpt = db.Plan_Campaign_Program.Where(pcpobj => pcpobj.PlanProgramId.Equals(id)).SingleOrDefault();
@@ -3449,18 +3440,14 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
             }
-            // added by Dharmraj for ticket #435 MAP/CRM Integration - Tactic Creation
-            if (pcpt.TacticType.Model.IntegrationInstanceId != null)
+            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
+            if (pcpt.TacticType.Model.IntegrationInstanceId != null || pcpt.TacticType.Model.IntegrationInstanceIdCW != null ||pcpt.TacticType.Model.IntegrationInstanceIdINQ != null ||pcpt.TacticType.Model.IntegrationInstanceIdMQL != null)
             {
-                int integrationInstanceId = Convert.ToInt32(pcpt.TacticType.Model.IntegrationInstanceId);
-
-                string ExternalIntegrationService = db.IntegrationInstances.SingleOrDefault(varI => varI.IntegrationInstanceId == integrationInstanceId).IntegrationType.Title;
-
-                ViewBag.ExtIntService = ExternalIntegrationService;
+                ViewBag.ExtIntService = true;
             }
             else
             {
-                ViewBag.ExtIntService = string.Empty;
+                ViewBag.ExtIntService = false;
             }
 
             Plan_Campaign_Program_TacticModel pcptm = new Plan_Campaign_Program_TacticModel();
@@ -5553,17 +5540,15 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsCreated = true;
 
 
-            // added by Dharmraj for ticket #470 MAP/CRM Integration - Improvement Tactic Creation
+            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
             var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-            if (objPlan.Model.IntegrationInstanceId != null)
+            if (objPlan.Model.IntegrationInstanceId != null || objPlan.Model.IntegrationInstanceIdCW != null || objPlan.Model.IntegrationInstanceIdINQ != null || objPlan.Model.IntegrationInstanceIdMQL != null)
             {
-                int integrationInstanceId = Convert.ToInt32(objPlan.Model.IntegrationInstanceId);
-                string ExternalIntegrationService = db.IntegrationInstances.SingleOrDefault(varI => varI.IntegrationInstanceId == integrationInstanceId).IntegrationType.Title;
-                ViewBag.ExtIntService = ExternalIntegrationService;
+                ViewBag.ExtIntService =true;
             }
             else
             {
-                ViewBag.ExtIntService = string.Empty;
+                ViewBag.ExtIntService = false;
             }
 
             PlanImprovementTactic pitm = new PlanImprovementTactic();
@@ -5611,17 +5596,15 @@ namespace RevenuePlanner.Controllers
 
             }
 
-            // added by Dharmraj for ticket #470 MAP/CRM Integration - Improvement Tactic Creation
+            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
             var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-            if (objPlan.Model.IntegrationInstanceId != null)
+            if (objPlan.Model.IntegrationInstanceId != null || objPlan.Model.IntegrationInstanceIdCW != null ||objPlan.Model.IntegrationInstanceIdINQ != null ||objPlan.Model.IntegrationInstanceIdMQL != null)
             {
-                int integrationInstanceId = Convert.ToInt32(objPlan.Model.IntegrationInstanceId);
-                string ExternalIntegrationService = db.IntegrationInstances.SingleOrDefault(varI => varI.IntegrationInstanceId == integrationInstanceId).IntegrationType.Title;
-                ViewBag.ExtIntService = ExternalIntegrationService;
+                ViewBag.ExtIntService = true;
             }
             else
             {
-                ViewBag.ExtIntService = string.Empty;
+                ViewBag.ExtIntService = false;
             }
 
             Plan_Improvement_Campaign_Program_Tactic pcpt = db.Plan_Improvement_Campaign_Program_Tactic.Where(pcptobj => pcptobj.ImprovementPlanTacticId.Equals(id)).SingleOrDefault();

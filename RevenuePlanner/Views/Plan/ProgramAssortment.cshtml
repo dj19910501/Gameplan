@@ -2,7 +2,7 @@
 @using RevenuePlanner.Helpers
 
 @{
-    string ExtIntService = ViewBag.ExtIntService;
+    bool ExtIntService = (bool)ViewBag.ExtIntService;
     string AllocatedBy = Model.AllocatedBy;
 
     bool IsBudgetAllocated = false;
@@ -77,16 +77,16 @@
             @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", rows = "3", maxlength = "4000" })
 
 
-            @if (ExtIntService != string.Empty)
+            @if (ExtIntService)
             {
                 <label>Status</label>
                 if (Model.IsDeployedToIntegration)
                 {
-                     <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to @ExtIntService" maxlength="18" readonly />
+                     <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
                 }
                 else
                 {    
-                     <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to @ExtIntService" maxlength="18" readonly />
+                     <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to integration" maxlength="18" readonly />
                 }
             }
 
@@ -300,13 +300,13 @@
         $("#t_integration_status").click(function () {
             if (isOwner == 'True') {
                 if ($(this).hasClass("icon-check-blue")) {
-                    $(this).val("Not Sync to @ExtIntService");
+                    $(this).val("Not Sync to integration");
                     $(this).addClass("icon-check-gray");
                     $(this).removeClass("icon-check-blue");
                     $("#hdnIsDeployedToIntegration").val(false);
                 }
                 else {
-                    $(this).val("Sync to @ExtIntService");
+                    $(this).val("Sync to integration");
                     $(this).addClass("icon-check-blue");
                     $(this).removeClass("icon-check-gray");
                     $("#hdnIsDeployedToIntegration").val(true);
