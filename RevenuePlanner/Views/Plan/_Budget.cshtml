@@ -29,9 +29,7 @@
                             </tr>
                             <tr>
                                 <td class="event-row">
-                                    <div id='@plan.ActivityType@plan.ActivityId'>
-                                        @plan.ActivityName
-                                    </div>
+                                    <div><a id="aPlanDetails">@plan.ActivityName</a></div>
                                 </td>
                             </tr>
                             @Html.ActivityCampaign("campaign", plan.ActivityId, Model)
@@ -316,7 +314,68 @@ else {
 
     $('#monthContainer').html(strMonthHTML);
 
-}
+    }
+    var Assortment = 'Budgeting';
+    $('#aPlanDetails').click(function (e) {
+        e.stopPropagation();
+        $.ajaxSetup({ cache: false });
+        $("#slidepanel").css("display", "block");
+        var url = '@Url.Content("~/Plan/PlanDetails")';
+
+        //var id = @Sessions.PlanId
+        var id = CurrentPlanId;
+        $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=plan', AssignDefaultValue);
+        $("#slidepanel").css("right", "0px");
+        $("#slidepanel").addClass('sidebar-wide');
+        myApp.hidePleaseWait();
+        e.preventDefault();
+    });
+    function AssignDefaultValue() {
+        $('#slidepanel-container').find("input[type=text],textarea,select").each(function () {
+            $(this).attr("myValue", $(this).val());
+        });
+    }
+    $("[linktype=campaign]").click(function (e) {
+        var id = $(this).attr('id');
+        var url = '@Url.Content("~/Plan/EditCampaign")';
+        $("#slidepanel").css("display", "block");
+        $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=plan', AssignDefaultValue);
+        $("#slidepanel").css("right", "0px");
+        $("#slidepanel").addClass('sidebar-wide');
+        myApp.hidePleaseWait();
+        e.preventDefault();
+    });
+
+    $("[linktype=program]").click(function (e) {
+        var id = $(this).attr('id');
+        var url = '@Url.Content("~/Plan/EditProgram")';
+        $("#slidepanel").css("display", "block");
+        $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=plan', AssignDefaultValue);
+        $("#slidepanel").css("right", "0px");
+        $("#slidepanel").addClass('sidebar-wide');
+        myApp.hidePleaseWait();
+        e.preventDefault();
+    });
+    $("[linktype=tactic]").click(function (e) {
+        var id = $(this).attr('id');
+        var url = '@Url.Content("~/Plan/EditTactic")';
+        $("#slidepanel").css("display", "block");
+        $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=plan', AssignDefaultValue);
+        $("#slidepanel").css("right", "0px");
+        $("#slidepanel").addClass('sidebar-wide');
+        myApp.hidePleaseWait();
+        e.preventDefault();
+     });
+    $("[linktype=lineitem]").click(function (e) {
+        var id = $(this).attr('id');
+        var url = '@Url.Content("~/Plan/EditLineItem")';
+        $("#slidepanel").css("display", "block");
+        $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=plan', AssignDefaultValue);
+        $("#slidepanel").css("right", "0px");
+        $("#slidepanel").addClass('sidebar-wide');
+        myApp.hidePleaseWait();
+        e.preventDefault();
+    });
 </script>
 
 <script type="text/javascript">

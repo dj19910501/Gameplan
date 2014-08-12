@@ -10,7 +10,7 @@
     {
         IsBudgetAllocated = true;
     }
-    
+    string CalledFromBudget = ViewBag.CalledFromBudget;
 }
 
 <style type="text/css">
@@ -354,7 +354,8 @@
                 data: {
                     CloneType: '@Enums.DuplicationModule.Program',
                     Id: idPlanProgram,
-                    title: '@Model.Title'
+                    title: '@Model.Title',
+                    CalledFromBudget: '@CalledFromBudget'
                 },
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
@@ -394,7 +395,8 @@
                         id: hdnPlanProgramId,
                         RedirectType: isAssortment,
                         CopyClone: 'Program',
-                        closedTask: arrClosedTaskString
+                        closedTask: arrClosedTaskString,
+                        CalledFromBudget: '@CalledFromBudget'
                     },
                 success: function (data) {
                     if (data.redirect) {
@@ -640,7 +642,7 @@
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/SaveProgram")',
-                data: $("form").serialize() + '&tactics=' + arTactic + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&BudgetInputValues=' + allocationValue.toString() + '&UserId=' + uId,
+                data: $("form").serialize() + '&tactics=' + arTactic + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&BudgetInputValues=' + allocationValue.toString() + '&UserId=' + uId + '&CalledFromBudget=' + '@CalledFromBudget',
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
                         window.location = '@Url.Content("~/Login/Index")';
@@ -690,7 +692,8 @@
                         ID: idProgram,
                         RedirectType: isAssortment,
                         closedTask: arrClosedTaskString,
-                        UserId: uId
+                        UserId: uId,
+                        CalledFromBudget: '@CalledFromBudget'
                     },
                     success: function (data) {
                         if (data.returnURL != 'undefined' && data.returnURL == '#') {

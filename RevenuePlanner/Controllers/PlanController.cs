@@ -492,6 +492,7 @@ namespace RevenuePlanner.Controllers
 
                     if (RedirectType.ToLower() == "budgeting")
                     {
+                        TempData["SuccessMessage"] = "Plan Saved Successfully";
                         return Json(new { id = Sessions.PlanId, redirect = Url.Action("Budgeting") });
                     }
                     else
@@ -577,8 +578,9 @@ namespace RevenuePlanner.Controllers
         /// <param name="id"></param>
         /// <param name="RedirectType"></param>
         /// <returns></returns>
-        public PartialViewResult PlanDetails(int id = 0, string RedirectType = "")
+        public PartialViewResult PlanDetails(int id = 0, string RedirectType = "", string CalledFromBudget ="")
         {
+            ViewBag.CalledFromBudget = CalledFromBudget;
             if (id > 0)
             {
                 TempData["selectList"] = GetModelName();
@@ -2120,8 +2122,9 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">Campaign Id.</param>
         /// <param name="RedirectType">Redirect Type</param>
         /// <returns>Returns Partial View Of Campaign.</returns>
-        public PartialViewResult EditCampaign(int id = 0, string RedirectType = "")
+        public PartialViewResult EditCampaign(int id = 0, string RedirectType = "",string CalledFromBudget ="")
         {
+            ViewBag.CalledFromBudget = CalledFromBudget;
             // Dropdown for Verticals
             //ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false);
             //ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false);
@@ -2339,7 +2342,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveCampaign(Plan_CampaignModel form, string programs, bool RedirectType, string closedTask, string BudgetInputValues, string UserId = "")
+        public ActionResult SaveCampaign(Plan_CampaignModel form, string programs, bool RedirectType, string closedTask, string BudgetInputValues, string UserId = "",string CalledFromBudget = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -2465,7 +2468,14 @@ namespace RevenuePlanner.Controllers
 
                                 }
                                 scope.Complete();
+                                if (!string.IsNullOrEmpty(CalledFromBudget))
+                                {
+                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                                }
+                                else
+                                {
                                 return Json(new { redirect = Url.Action("Assortment") });
+                                }
                             }
                         }
                     }
@@ -2552,6 +2562,13 @@ namespace RevenuePlanner.Controllers
 
 
                                     scope.Complete();
+                                    if (!string.IsNullOrEmpty(CalledFromBudget))
+                                    {
+                                        TempData["SuccessMessage"] = "Campaign Saved Successfully";
+                                        return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                                    }
+                                    else
+                                    {
                                     if (RedirectType)
                                     {
                                         TempData["ClosedTask"] = closedTask;
@@ -2560,6 +2577,7 @@ namespace RevenuePlanner.Controllers
                                     else
                                     {
                                         return Json(new { redirect = Url.Action("Assortment") });
+                                        }
                                     }
                                 }
                             }
@@ -2586,7 +2604,7 @@ namespace RevenuePlanner.Controllers
             changed by : Nirav Shah on 13 feb 2014
             Changed : add new Parameter  RedirectType
          */
-        public ActionResult DeleteCampaign(int id = 0, bool RedirectType = false, string closedTask = null, string UserId = "")
+        public ActionResult DeleteCampaign(int id = 0, bool RedirectType = false, string closedTask = null, string UserId = "", string CalledFromBudget= "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -2631,6 +2649,13 @@ namespace RevenuePlanner.Controllers
                                 TempData["SuccessMessageDeletedPlan"] = string.Format(Common.objCached.CampaignDeleteSuccess, Title);
 
                                 //return Json(new { redirect = Url.Action("Assortment") });
+                                if (!string.IsNullOrEmpty(CalledFromBudget))
+                                {
+                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                                }
+                                else
+                                {
+
                                 if (RedirectType)
                                 {
                                     if (closedTask != null)
@@ -2642,6 +2667,7 @@ namespace RevenuePlanner.Controllers
                                 else
                                 {
                                     return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
+                                    }
                                 }
                             }
                         }
@@ -2749,8 +2775,9 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">Program Id.</param>
         /// <param name="RedirectType">Redirect Type</param>
         /// <returns>Returns Partial View Of Program.</returns>
-        public PartialViewResult EditProgram(int id = 0, string RedirectType = "")
+        public PartialViewResult EditProgram(int id = 0, string RedirectType = "", string CalledFromBudget = "")
         {
+            ViewBag.CalledFromBudget = CalledFromBudget;
             // Dropdown for Verticals
             //ViewBag.Verticals = db.Verticals.Where(vertical => vertical.IsDeleted == false);
             //ViewBag.Audience = db.Audiences.Where(audience => audience.IsDeleted == false);
@@ -2877,7 +2904,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveProgram(Plan_Campaign_ProgramModel form, string tactics, bool RedirectType, string closedTask, string BudgetInputValues, string UserId = "")
+        public ActionResult SaveProgram(Plan_Campaign_ProgramModel form, string tactics, bool RedirectType, string closedTask, string BudgetInputValues, string UserId = "", string CalledFromBudget = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -3171,6 +3198,13 @@ namespace RevenuePlanner.Controllers
                                 {
                                     Common.ChangeCampaignStatus(pcpobj.PlanCampaignId);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                     scope.Complete();
+                                    if (!string.IsNullOrEmpty(CalledFromBudget))
+                                    {
+                                        TempData["SuccessMessage"] = "Program saved successfully";
+                                        return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                                    }
+                                    else
+                                    {
                                     if (RedirectType)
                                     {
                                         TempData["ClosedTask"] = closedTask;
@@ -3179,6 +3213,7 @@ namespace RevenuePlanner.Controllers
                                     else
                                     {
                                         return Json(new { redirect = Url.Action("Assortment", new { campaignId = form.PlanCampaignId }) });
+                                        }
                                     }
                                 }
                             }
@@ -3202,7 +3237,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
         /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
-        public ActionResult DeleteProgram(int id = 0, bool RedirectType = false, string closedTask = null, string UserId = "")
+        public ActionResult DeleteProgram(int id = 0, bool RedirectType = false, string closedTask = null, string UserId = "", string CalledFromBudget = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -3247,6 +3282,13 @@ namespace RevenuePlanner.Controllers
                                 TempData["SuccessMessageDeletedPlan"] = string.Format(Common.objCached.ProgramDeleteSuccess, Title);
 
                                 //return Json(new { redirect = Url.Action("Assortment", new { campaignId = pc.PlanCampaignId }) });
+                                if (!string.IsNullOrEmpty(CalledFromBudget))
+                                {
+                                    TempData["SuccessMessage"] = string.Format(Common.objCached.ProgramDeleteSuccess, Title);
+                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                                }
+                                else
+                                {
                                 if (RedirectType)
                                 {
                                     if (closedTask != null)
@@ -3258,6 +3300,7 @@ namespace RevenuePlanner.Controllers
                                 else
                                 {
                                     return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
+                                    }
                                 }
                             }
                         }
@@ -3364,8 +3407,9 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">Tactic Id.</param>
         /// <param name="RedirectType">Redirect Type</param>
         /// <returns>Returns Partial View Of Tactic.</returns>
-        public PartialViewResult EditTactic(int id = 0, string RedirectType = "")
+        public PartialViewResult EditTactic(int id = 0, string RedirectType = "", string CalledFromBudget = "")
         {
+            ViewBag.CalledFromBudget = CalledFromBudget;
             var tList = from t in db.TacticTypes
                         join p in db.Plans on t.ModelId equals p.ModelId
                         where p.PlanId == Sessions.PlanId && (t.IsDeleted == null || t.IsDeleted == false) && t.IsDeployedToModel == true //// Modified by Sohel Pathan on 17/07/2014 for PL ticket #594
@@ -3557,7 +3601,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveTactic(Plan_Campaign_Program_TacticModel form, string lineitems, bool RedirectType, string closedTask, string BudgetInputValues, string UserId = "")
+        public ActionResult SaveTactic(Plan_Campaign_Program_TacticModel form, string lineitems, bool RedirectType, string closedTask, string BudgetInputValues, string UserId = "", string CalledFromBudget = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -3993,7 +4037,13 @@ namespace RevenuePlanner.Controllers
                                     //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
 
                                     scope.Complete();
-
+                                    if (!string.IsNullOrEmpty(CalledFromBudget))
+                                    {
+                                        TempData["SuccessMessage"] = "Tactic saved successfully";
+                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                                    }
+                                    else
+                                    {
                                     if (RedirectType)
                                     {
                                         TempData["ClosedTask"] = closedTask;
@@ -4002,6 +4052,7 @@ namespace RevenuePlanner.Controllers
                                     else
                                     {
                                         return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
+                                        }
                                     }
                                 }
                             }
@@ -4022,7 +4073,7 @@ namespace RevenuePlanner.Controllers
            Add delete tactic feature
          */
         [HttpPost]
-        public ActionResult DeleteTactic(int id = 0, bool RedirectType = false, string closedTask = null, string UserId = "")
+        public ActionResult DeleteTactic(int id = 0, bool RedirectType = false, string closedTask = null, string UserId = "",string CalledFromBudget = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -4072,7 +4123,13 @@ namespace RevenuePlanner.Controllers
                                 scope.Complete();
                                 TempData["SuccessMessageDeletedPlan"] = string.Format(Common.objCached.TacticDeleteSuccess, Title);
 
-
+                                if (!string.IsNullOrEmpty(CalledFromBudget))
+                                {
+                                     TempData["SuccessMessage"] = string.Format(Common.objCached.TacticDeleteSuccess, Title);
+                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                                }
+                                else
+                                {
                                 if (RedirectType)
                                 {
                                     if (closedTask != null)
@@ -4084,6 +4141,7 @@ namespace RevenuePlanner.Controllers
                                 else
                                 {
                                     return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
+                                    }
                                 }
                             }
 
@@ -4327,8 +4385,9 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public PartialViewResult EditLineItem(int id = 0, string RedirectType = "")
+        public PartialViewResult EditLineItem(int id = 0, string RedirectType = "", string CalledFromBudget = "")
         {
+            ViewBag.CalledFromBudget = CalledFromBudget;
             ViewBag.IsCreated = false;
             if (RedirectType == "Assortment")
             {
@@ -4478,7 +4537,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveLineitem(Plan_Campaign_Program_Tactic_LineItemModel form, bool RedirectType, string closedTask, string CostInputValues, string UserId = "")
+        public ActionResult SaveLineitem(Plan_Campaign_Program_Tactic_LineItemModel form, bool RedirectType, string closedTask, string CostInputValues, string UserId = "", string CalledFromBudget = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -4800,7 +4859,13 @@ namespace RevenuePlanner.Controllers
                                     }
 
                                     scope.Complete();
-
+                                    if (!string.IsNullOrEmpty(CalledFromBudget))
+                                    {
+                                        TempData["SuccessMessage"] = "Line item saved successfully";
+                                        return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                                    }
+                                    else
+                                    {
                                     if (RedirectType)
                                     {
                                         TempData["ClosedTask"] = closedTask;
@@ -4809,6 +4874,7 @@ namespace RevenuePlanner.Controllers
                                     else
                                     {
                                         return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid, tacticId = tid }) });
+                                        }
                                     }
                                 }
                             }
@@ -4833,7 +4899,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="closedTask"></param>
         /// <param name="UserId"></param>
         /// <returns></returns>
-        public ActionResult DeleteLineItem(int id = 0, bool RedirectType = false, string closedTask = null, string UserId = "")
+        public ActionResult DeleteLineItem(int id = 0, bool RedirectType = false, string closedTask = null, string UserId = "", string CalledFromBudget = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -4933,7 +4999,13 @@ namespace RevenuePlanner.Controllers
                                 scope.Complete();
                                 TempData["SuccessMessageDeletedPlan"] = string.Format("Line Item {0} deleted successfully", Title);
 
-
+                                if (!string.IsNullOrEmpty(CalledFromBudget))
+                                {
+                                    TempData["SuccessMessage"] = string.Format("Line Item {0} deleted successfully", Title);
+                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                                }
+                                else
+                                {
                                 if (RedirectType)
                                 {
                                     if (closedTask != null)
@@ -4945,6 +5017,7 @@ namespace RevenuePlanner.Controllers
                                 else
                                 {
                                     return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid, tacticId = tid }) });
+                                    }
                                 }
                             }
 
@@ -5020,7 +5093,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="CopyClone">copy of .</param>
         /// <returns>Returns action result.</returns>
         [HttpPost]
-        public ActionResult DuplicateCopyClone(int id, bool RedirectType, string CopyClone, string closedTask)
+        public ActionResult DuplicateCopyClone(int id, bool RedirectType, string CopyClone, string closedTask,string CalledFromBudget = "")
         {
             try
             {
@@ -5058,6 +5131,12 @@ namespace RevenuePlanner.Controllers
                         if (returnValue >= 1)
                         {
                             scope.Complete();
+                            if (!string.IsNullOrEmpty(CalledFromBudget))
+                            {
+                                return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                            }
+                            else
+                            {
                             if (RedirectType)
                             {
                                 TempData["ClosedTask"] = closedTask;
@@ -5066,6 +5145,7 @@ namespace RevenuePlanner.Controllers
                             else
                             {
                                 return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
+                                }
                             }
                         }
                     }
@@ -8201,7 +8281,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="Id"></param>
         /// <param name="title"></param>
         /// <returns></returns>
-        public ActionResult Clone(string CloneType, int Id, string title)
+        public ActionResult Clone(string CloneType, int Id, string title,string CalledFromBudget= "")
         {
             int rtResult = 0;
 
@@ -8231,7 +8311,15 @@ namespace RevenuePlanner.Controllers
 
                 if (rtResult >= 1)
                 {
+                    if (!string.IsNullOrEmpty(CalledFromBudget))
+                    {
+                        TempData["SuccessMessage"] = string.Format("{0} {1} successfully Duplicated.", CloneType, title);
+                        return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                    }
+                    else
+                    {
                     return Json(new { redirect = Url.Action("Assortment"), planId = Sessions.PlanId });
+                    }
                 }
                 return Json(new { });
 

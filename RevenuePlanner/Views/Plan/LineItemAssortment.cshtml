@@ -13,6 +13,7 @@
     string tacticCost = Convert.ToString(ViewBag.tacticCost);
     string totalLineItemCost = Convert.ToString(ViewBag.totalLineItemCost);
     string otherLineItemCost = Convert.ToString(ViewBag.otherLineItemCost);
+    string CalledFromBudget = ViewBag.CalledFromBudget;
 }
 
 <div class="head">
@@ -255,7 +256,8 @@
                 data: {
                     CloneType: '@Enums.DuplicationModule.LineItem',
                     Id: idLineitem,
-                    title: '@Model.Title'
+                    title: '@Model.Title',
+                    CalledFromBudget: '@CalledFromBudget'
                     },
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
@@ -295,7 +297,8 @@
                         id: hdnPlanTacticId,
                         RedirectType: isAssortment,
                         CopyClone: 'Tactic',
-                        closedTask: arrClosedTaskString
+                        closedTask: arrClosedTaskString,
+                        CalledFromBudget: '@CalledFromBudget'
                     },
                 success: function (data) {
                     if (data.redirect) {
@@ -434,7 +437,8 @@
                         ID: idLineitem,
                         RedirectType: isAssortment,
                         closedTask: arrClosedTaskString,
-                        UserId: uId
+                        UserId: uId,
+                        CalledFromBudget: '@CalledFromBudget'
                     },
                     success: function (data) {
                         if (data.returnURL != 'undefined' && data.returnURL == '#') {
@@ -665,7 +669,7 @@
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Plan/SaveLineitem")',
-            data: $("form").serialize() + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&CostInputValues=' + allocationValue.toString() + '&UserId=' + uId,
+            data: $("form").serialize() + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&CostInputValues=' + allocationValue.toString() + '&UserId=' + uId + '&CalledFromBudget=' + '@CalledFromBudget',
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';

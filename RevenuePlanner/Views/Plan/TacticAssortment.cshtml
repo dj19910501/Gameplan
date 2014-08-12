@@ -13,7 +13,9 @@
     {
         IsBudgetAllocated = true;
     }
+    string CalledFromBudget = ViewBag.CalledFromBudget;
     string strTacticCost = Model.TacticCost.ToString();     //// Added by Sohel Pathan on 12/08/2014 for PL ticket #605
+
 }
 <style type="text/css">
     #c_tactics .verticalIdSelectBox .sbHolder
@@ -394,7 +396,8 @@
                 data: {
                     CloneType: '@Enums.DuplicationModule.Tactic',
                     Id: idPlanTactic,
-                    title: '@Model.Title'
+                    title: '@Model.Title',
+                    CalledFromBudget: '@CalledFromBudget'
                 },
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
@@ -435,7 +438,8 @@
                         id: hdnPlanTacticId,
                         RedirectType: isAssortment,
                         CopyClone: 'Tactic',
-                        closedTask: arrClosedTaskString
+                        closedTask: arrClosedTaskString,
+                        CalledFromBudget: '@CalledFromBudget'
                     },
                 success: function (data) {
                     if (data.redirect) {
@@ -704,7 +708,7 @@
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/SaveTactic")',
-                data: $("form").serialize() + '&lineitems=' + arLineitem + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&BudgetInputValues=' + allocationValue.toString() + '&UserId=' + uId,
+                data: $("form").serialize() + '&lineitems=' + arLineitem + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&BudgetInputValues=' + allocationValue.toString() + '&UserId=' + uId + '&CalledFromBudget=' + '@CalledFromBudget',
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
                         window.location = '@Url.Content("~/Login/Index")';
@@ -828,7 +832,8 @@
                         ID: idTactic,
                         RedirectType: isAssortment,
                         closedTask: arrClosedTaskString,
-                        UserId: uId
+                        UserId: uId,
+                        CalledFromBudget: '@CalledFromBudget'
                     },
                     success: function (data) {
                         if (data.returnURL != 'undefined' && data.returnURL == '#') {

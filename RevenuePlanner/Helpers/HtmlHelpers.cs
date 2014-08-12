@@ -343,6 +343,9 @@ namespace RevenuePlanner.Helpers
 
                 TagBuilder aLink = new TagBuilder("a");
                 //aLink.Attributes.Add("href", "#");
+                aLink.Attributes.Add("style", "cursor:pointer;");
+                aLink.Attributes.Add("id", c.ActivityId.ToString());
+                aLink.Attributes.Add("linktype", "campaign");
                 aLink.InnerHtml = c.ActivityName;
 
                 div.InnerHtml = aAccordian.ToString();
@@ -413,11 +416,17 @@ namespace RevenuePlanner.Helpers
                         //aAccordian.Attributes.Add("href", "#");
                         aAccordian.AddCssClass("accordionClick");
                         divProgram.InnerHtml = aAccordian.ToString();
+
                     }
 
                     TagBuilder aLink = new TagBuilder("a");
                     //aLink.Attributes.Add("href", "#");
                     aLink.InnerHtml = p.ActivityName;
+
+                    aLink.Attributes.Add("style", "cursor:pointer;");
+                    aLink.Attributes.Add("id", p.ActivityId.ToString());
+                    aLink.Attributes.Add("linktype", ActivityType);
+
                     divProgram.InnerHtml += aLink.ToString();
 
                     div.InnerHtml += divProgram.ToString();
@@ -932,10 +941,13 @@ namespace RevenuePlanner.Helpers
                             else
                             {
                                 if (ActivityType != "lineitem" && ActivityType != "tactic")
+                                {
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.May.ToString(formatThousand));
+                                    className = p.Month.May <= p.ParentMonth.May ? className : className + " error";
+                                }
                                 divProgram.InnerHtml = p.Month.May.ToString(formatThousand);
                             }
-                            className = p.Month.May <= p.ParentMonth.May ? className : className + " error";
+                            
                         }
                         else if (month == 6)
                         {
@@ -1073,7 +1085,7 @@ namespace RevenuePlanner.Helpers
                                 }
                                 divProgram.InnerHtml = p.Month.Jan.ToString(formatThousand);
                             }
-                            
+
                         }
                         else if (month == 2)
                         {
@@ -1090,7 +1102,7 @@ namespace RevenuePlanner.Helpers
                                 }
                                 divProgram.InnerHtml = p.Month.Apr.ToString(formatThousand);
                             }
-                            
+
                         }
                         else if (month == 3)
                         {
@@ -1107,7 +1119,7 @@ namespace RevenuePlanner.Helpers
                                 }
                                 divProgram.InnerHtml = p.Month.Jul.ToString(formatThousand);
                             }
-                            
+
                         }
                         else if (month == 4)
                         {
@@ -1125,7 +1137,7 @@ namespace RevenuePlanner.Helpers
                                 }
                                 divProgram.InnerHtml = p.Month.Oct.ToString(formatThousand);
                             }
-                            
+
                         }
                     }
                     else

@@ -8,6 +8,7 @@
     {
         IsBudgetAllocated = true;
     }
+    string CalledFromBudget = ViewBag.CalledFromBudget;
 }
 
 <div class="head">
@@ -373,7 +374,13 @@
                         }
                         else {
                             if (data.redirect) {
-                                window.location.href = data.redirect;
+                                if ('@CalledFromBudget' != '') {
+                                    var strURL = '@Url.Content("~/Plan/Budgeting")';
+                                    window.location.href = strURL + '?type=' + '@CalledFromBudget';
+                                }
+                                else {
+                                    window.location.href = data.redirect;
+                                }
                                 return;
                             }
                             if (data.errormsg) {

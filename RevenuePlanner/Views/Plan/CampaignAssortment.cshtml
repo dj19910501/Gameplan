@@ -10,6 +10,7 @@
     {
         IsBudgetAllocated=true;
     }
+    string CalledFromBudget = ViewBag.CalledFromBudget;
 }
 
 @*<div id="slidepanel-container">*@
@@ -332,7 +333,8 @@
 
                     CloneType: '@Enums.DuplicationModule.Campaign',
                     Id: idPlanCamaign,
-                    title: '@Model.Title'
+                    title: '@Model.Title',
+                    CalledFromBudget: '@CalledFromBudget'
                 },
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
@@ -370,7 +372,8 @@
                         RedirectType: isAssortment,
                         CopyClone: 'Campaign',
                         closedTask: arrClosedTaskString,
-                        UserId: uId
+                        UserId: uId,
+                        CalledFromBudget:'@CalledFromBudget'
                     },
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
@@ -618,7 +621,7 @@
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/SaveCampaign")',
-                data: formData + '&programs=' + escape(arProgram) + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&BudgetInputValues=' + allocationValue.toString() + '&UserId=' + uId,
+                data: formData + '&programs=' + escape(arProgram) + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&BudgetInputValues=' + allocationValue.toString() + '&UserId=' + uId + '&CalledFromBudget=' + '@CalledFromBudget',
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
                         window.location = '@Url.Content("~/Login/Index")';
@@ -663,6 +666,7 @@
                         RedirectType: isAssortment,
                         closedTask: arrClosedTaskString
                         ,UserId: uId     // Added by Sohel Pathan on 07/08/2014 for PL ticket #672
+                        , CalledFromBudget: '@CalledFromBudget'
                     },
                     success: function (data) {
                         // Start - Modified by Sohel Pathan on 07/08/2014 for PL ticket #672
