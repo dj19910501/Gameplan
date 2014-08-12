@@ -3950,12 +3950,16 @@ span.arrow-down-results-icon {
         background-color: #f0be29;
     }
 
-.tactic-level .accordion-group .accordion-inner {
+.tactic-level > .accordion-group > .accordion-inner {
+    border-bottom: 1px solid #a8a8a8;
+    line-height: 45px;
+}
+.lineitem-level > .accordion-inner > .accordion-group > .accordion-body {
     border-bottom: 1px solid #a8a8a8;
     line-height: 45px;
 }
 
-    .tactic-level .accordion-group .accordion-inner:hover {
+    .tactic-level > .accordion-inner > .accordion-body:hover {
         background: #f6d87f;
     }
 
@@ -7482,7 +7486,7 @@ background: linear-gradient(0deg, rgb(236, 236, 236) 4%, rgb(254, 254, 254) 98%)
 .accordion-campaign .tactic-level a.accordion-toggle.chevron-right, .accordion-campaign .tactic-level a.accordion-toggle.chevron-down{background-position: 69px 0 !important;}
 a:hover, a:focus{text-decoration: none !important;}
 .tactic-level .accordion-inner{background:#E6E6E6;}
-.lineitem-level > .accordion-inner{border-bottom:none !important;padding-left:0 !important;}
+.lineitem-level > .accordion-inner{/*border-bottom:none !important;*/padding-left:0 !important;}
 .unallocated-text {background-color:#f2f2f2 !important;color: #666666 !important;padding: 0px !important;}
 .unallocated-span {background-color:#f2f2f2 !important;border:1px solid #CCCCCC !important;}
 .border000000 {border:1px solid #000000 !important;}
@@ -7816,4 +7820,101 @@ footer a {
 #integrationForm .delete-container .btn-group
 {
     margin-left:5px;
+}
+
+/*Added By : Kalpesh Sharma #646 Cloning icon for campaigns with allocation*/
+#campaignAccordion span.duplicate-icon-campaignCopy {
+    background: url("../images/duplicate_icon.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    display: block;
+    float: left;
+    height: 16px;
+    margin-left: 15px;
+    margin-top: 18px;
+    visibility: hidden;
+    width: 16px;
+}
+
+.accordion-campaign .accordion-header .accordion-toggle:hover span.duplicate-icon-campaignCopy {
+    visibility: visible !important;
+}
+
+#campaignAccordion span.duplicate-icon-ProgramCopy {
+    background: url("../images/duplicate_icon.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    display: block;
+    float: left;
+    height: 16px;
+    margin-left: 15px;
+    margin-top: 16px;
+    visibility: hidden;
+    width: 16px;
+}
+
+.accordion-campaign .accordion-header .accordion-toggle:hover span.duplicate-icon-ProgramCopy {
+    visibility: visible !important;
+}
+.underline.tipsyclassTitle.tactictitle {
+    float: left;
+}
+
+.lineitem-level span.duplicate-icon-LineItemCopy
+{
+    background: url("../images/duplicate_icon.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    display: block;
+    float: left;
+    height: 16px;
+    margin-left: 15px;
+    margin-top: 13px;
+    visibility: hidden;
+    width: 16px;
+    cursor: pointer;
+}
+
+.accordion-campaign .accordion-body.lineitem-level .accordion-body:hover span.duplicate-icon-LineItemCopy {
+    visibility: visible !important;
+}
+
+/*.accordion-campaign .accordion-body.lineitem-level .accordion-body:hover #tacticTitle {
+    float:left !important;
+}*/
+
+#campaignAccordion span.duplicate-icon-TacticCopy {
+    background: url("../images/duplicate_icon.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    display: block;
+    float: left;
+    height: 16px;
+    margin-left: 15px;
+    margin-top: 14px;
+    visibility: hidden;
+    width: 16px;
+}
+
+.accordion-campaign .accordion-header .accordion-toggle:hover span.duplicate-icon-TacticCopy {
+    visibility: visible !important;
+}
+
+.LineItem-widthAuto {
+    width: auto;
+}
+
+/*.tactic-level .accordion-group .accordion-inner .accordion-group .accordion-body .lineitem:hover {
+    background: none repeat scroll 0 0 #f6d87f;
+}*/
+
+#tacticTitle
+{
+    float:left;
+}
+.lineitem-level .accordion-inner .accordion-group .accordion-body:hover
+{
+    background:none repeat scroll 0 0 #f6d87f;
+}
+.lineitem-level > .accordion-inner
+{
+   border-bottom:none;
+}
+
+#divTactic
+{
+    line-height:45px;
+     border-bottom: 1px solid #a8a8a8;
 }

@@ -159,23 +159,29 @@
 <script type="text/javascript">
 
     function testIntegration() {
+        var testIntegrationValidation = true;
         $('#content #integrationForm :input').each(function () {
             if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
-                if (this.id == 'Instance' || this.id == 'Username' || this.id == 'Password') {
+                //if (this.id == 'Instance' || this.id == 'Username' || this.id == 'Password') {
+                if (this.id != 'importActuals' && this.id != 'integrationStatus' && this.id != 'SyncFrequency_Day') {
                     var input = $(this).val();
                     if (input == '') {
                         $(this).addClass("error");
-                        $('#cErrorGeneralSettings').html('<strong>Error! </strong> ' + '@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField')
-                        $("#cSuccessGeneralSettings").html('');
-                        $("#successMessageGeneralSettings").slideUp(1);
-                        $("#errorMessageGeneralSettings").slideDown(400);
-                        return false;
+                        testIntegrationValidation = false;
                     } else {
                         $(this).removeClass("error");
                     }
                 }
             }
         });
+
+        if (testIntegrationValidation == false) {
+            $('#cErrorGeneralSettings').html('<strong>Error! </strong> ' + '@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField');
+              $("#cSuccessGeneralSettings").html('');
+              $("#successMessageGeneralSettings").slideUp(1);
+              $("#errorMessageGeneralSettings").slideDown(400);
+              return false;
+          }
 
         if ($('#integrationForm #Instance').val().trim() != "" && $('#integrationForm #Username').val().trim() != "" && $('#integrationForm #Password').val().trim() != "") {
             $.ajax({
@@ -241,7 +247,7 @@
             if (parseInt(count) > 31 || count.length > 2) {
                 //$(this).val('');
                 $('#SyncFrequency_Day').addClass("error");
-                var ErrMsg = 'Please enter valid SyncFrequency Day.';
+                var ErrMsg = 'Please enter valid Sync Frequency day.';
                 $('#cErrorGeneralSettings').html('<strong>Error! </strong> ' + ErrMsg)
                 $("#cSuccessGeneralSettings").html('');
                 $("#successMessageGeneralSettings").slideUp(1);
@@ -343,7 +349,7 @@
                 }
                 else if ($("#SyncFrequency_Day").val() > 31) {
                     $('#SyncFrequency_Day').addClass("error");
-                    var ErrMsg = 'Please enter valid SyncFrequency day.';
+                    var ErrMsg = 'Please enter valid Sync Frequency day.';
                     $('#cErrorGeneralSettings').html('<strong>Error! </strong> ' + ErrMsg)
                     $("#cSuccessGeneralSettings").html('');
                     $("#successMessageGeneralSettings").slideUp(1);

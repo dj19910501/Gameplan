@@ -223,6 +223,81 @@
     }
 
     $(document).ready(function () {
+
+        function DuplicateOpt(id, title, duplicateModule) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/Clone")',
+                data: {
+                    CloneType: duplicateModule,
+                    Id: id,
+                    title: title
+                },
+                success: function (data) {
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
+                    }
+                    else {
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                            return;
+                        }
+                        if (data.errormsg) {
+                            alert(data.errormsg);
+                            return;
+                        }
+                    }
+                }
+            });
+
+        }
+
+        //Added By : Kalpesh Sharma : Duplicate  08/11/2014
+        $(document).on("click", "#campaignAccordion .accordion-header .duplicate-icon-campaignCopy", function (e) {
+            e.stopPropagation();
+            $.ajaxSetup({ cache: false });
+            var IdCampaing = $(this).attr('id');
+            var CampaingTitle = $(this).attr('titles');
+            DuplicateOpt(IdCampaing, CampaingTitle, '@Enums.DuplicationModule.Campaign')
+            myApp.hidePleaseWait();
+            e.preventDefault();
+        });
+
+
+        //Added By : Kalpesh Sharma : Duplicate  08/11/2014
+        $(document).on("click", "#campaignAccordion .accordion-header .duplicate-icon-ProgramCopy", function (e) {
+            e.stopPropagation();
+            $.ajaxSetup({ cache: false });
+            var IdProgram = $(this).attr('id');
+            var ProgramTitle = $(this).attr('titles');
+            DuplicateOpt(IdProgram, ProgramTitle, '@Enums.DuplicationModule.Program')
+            myApp.hidePleaseWait();
+            e.preventDefault();
+        });
+
+        //Added By : Kalpesh Sharma : Duplicate  08/11/2014
+        $(document).on("click", "#campaignAccordion .accordion-header .duplicate-icon-TacticCopy", function (e) {
+            e.stopPropagation();
+            $.ajaxSetup({ cache: false });
+            var IdTactic = $(this).attr('id');
+            var TacticTitle = $(this).attr('titles');
+            DuplicateOpt(IdTactic, TacticTitle, '@Enums.DuplicationModule.Tactic')
+            myApp.hidePleaseWait();
+            e.preventDefault();
+        });
+
+        //Added By : Kalpesh Sharma : Duplicate  08/11/2014
+        $(document).on("click", ".lineitem-level .duplicate-icon-LineItemCopy", function (e) {
+            e.stopPropagation();
+            $.ajaxSetup({ cache: false });
+            var IdLineItem = $(this).attr('id');
+            var LineItemTitle = $(this).attr('titles');
+            DuplicateOpt(IdLineItem,LineItemTitle,'@Enums.DuplicationModule.LineItem')
+            myApp.hidePleaseWait();
+            e.preventDefault();
+        });
+
+
         $('.grey-container-full .gray-container-button a.more').click(function () {
             $('.grey-container-content').slideDown();
             $(this).hide();
@@ -1365,7 +1440,8 @@
             if (_isOwner == 0) {
                 $html += '<span class="delete-program width5" id="delCampaign"></span>';
             }
-            $html += '<span class="pull-left width55"><span class="pull-left font-black">' + num + '.</span><span class="blue-bg-text campaign-name campaign-name-span tipsyclassTitle">' + _title + '</span></span>' +
+            $html += '<span class="pull-left font-black">' + num + '.</span><span class="blue-bg-text campaign-name campaign-name-span tipsyclassTitle">' + _title + '</span>' +
+                          '<span id="' + _id + '" class="duplicate-icon-campaignCopy" titles="' + _title + '" ></span>' +
                                '<span class="pull-right width50px"><div class="add-icon campaign" ></div></span>' +
                                 '<span class="pull-right width100px text-right font-black ">' + FormatCommas(_programCount.toString(), false) + '</span>' +
                                 '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_cost.toString(), false) + '</span>' +
@@ -1398,7 +1474,8 @@
                         if (_programs[i].isOwner == 0) {
                             $html += '<span class="delete-program width5" id="delprogram"></span>';
                         }
-                        $html += '<span class="pull-left width55"><span class="gray-bg-text campaign-name campaign-name-span tipsyclassTitle">' + _programs[i].title + '</span></span>' +
+                        $html += '<span class="pull-left width55"><span class="gray-bg-text campaign-name campaign-name-span tipsyclassTitle">' + _programs[i].title + '</span>' +
+                        '<span id="' + _programs[i].id + '" class="duplicate-icon-ProgramCopy" titles="' + _programs[i].title + '" ></span></span>' +
                          '<span class="pull-right width50px"><div class="add-icon program" ></div></span>' +
                          '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
                          '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].cost.toString(), false) + '</span>' +
@@ -1451,7 +1528,8 @@
                                     if (_programs[i].tactics[k].isOwner == 0) {
                                         $html += '<span class="delete-program width5" id="delTactic"></span>';
                                     }
-                                    $html += '<span class="underline tipsyclassTitle tactictitle">' + _programs[i].tactics[k].title + '</span>' +
+                                    $html += '<span class="pull-left width55"><span class="underline tipsyclassTitle tactictitle">' + _programs[i].tactics[k].title + '</span>' +
+                                         '<span id="' + _programs[i].tactics[k].id + '" class="duplicate-icon-TacticCopy" titles="' + _programs[i].tactics[k].title + '" ></span></span>' +
                                                     '<span class="pull-right width50px text-right font-black">&nbsp;</span>' +
                                               '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
                                               '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].tactics[k].cost.toString(), false) + '</span>' +
@@ -1479,8 +1557,11 @@
                                                   if (_programs[i].tactics[k].lineitems[z].title!='@Common.DefaultLineItemTitle'){
                                                       $html += '<span class="delete-program width5 " id="delLineItem"></span>';
                                                     }
-                                                $html += '<span class="underline tipsyclassTitle">' + _programs[i].tactics[k].lineitems[z].title + '</span>' +
-                                                            '<span class="pull-right width50px text-right font-black">&nbsp;</span>' +
+                                                $html += '<span class="LineItem-widthAuto"> <span id="tacticTitle" class="underline tipsyclassTitle ">' + _programs[i].tactics[k].lineitems[z].title + '</span>';
+                                                if (_programs[i].tactics[k].lineitems[z].title != "Other") {
+                                                    $html += '<span id="' + _programs[i].tactics[k].lineitems[z].id + '" class="duplicate-icon-LineItemCopy" titles="' + _programs[i].tactics[k].lineitems[z].title + '" ></span>';
+                                                }
+                                                $html += '</span><span class="pull-right width50px text-right font-black">&nbsp;</span>' +
                                                             '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
                                                             '<span class="pull-right width150px text-right font-black tipsyclass costAssotment">$' + FormatCommas(_programs[i].tactics[k].lineitems[z].cost.toString(), false) + '</span>' +
                                                           '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
