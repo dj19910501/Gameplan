@@ -91,6 +91,7 @@
         $('#spanMessageSuccess').html('');
         $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
     }
+    var hideAllMessages = false;
     $(document).ready(function () {
         $("#errorMessageDuplicatePlan").slideUp(300);
         if ('@sucMsg' != '') {
@@ -105,11 +106,13 @@
         }
         $(".selectBox select").selectbox();
         LoadPlanBuBusinessUnit($('#ddlBusinessUnit').val());
+        
     });
 
     $('#ddlBusinessUnit').change(function () {
         Bid = $('#ddlBusinessUnit').val();
         LoadPlanBuBusinessUnit(Bid);
+
         $('.datepicker.dropdown-menu').css("display", "none");
         $("#slidepanel").css("display", "none");
         $("#slidepanel-container").empty();
@@ -117,6 +120,7 @@
         HideMessages();
     });
     function TabLoad(sender) {
+
         //alert(currentTab);
         currentTab = sender;
         $('.pull-right').removeClass('active');
@@ -129,11 +133,17 @@
         }
         else if (sender == 'aActuals') {
         }
-       
+        if (hideAllMessages) {
+            $('.datepicker.dropdown-menu').css("display", "none");
+            $("#slidepanel").css("display", "none");
+            $("#slidepanel-container").empty();
+            $("#errorMessageDuplicatePlan").slideUp(300);
+            HideMessages();
+        }
 }
 
 function LoadPlanBuBusinessUnit(Bid) {
-    $('#DivloadPlan').load('@Url.Action("BudgetPlanList", "Plan")' + '?Bid=' + Bid, function () { TabLoad(currentTab); ShowChangeLog(CurrentPlanId); });
+    $('#DivloadPlan').load('@Url.Action("BudgetPlanList", "Plan")' + '?Bid=' + Bid, function () { TabLoad(currentTab); ShowChangeLog(CurrentPlanId); hideAllMessages = true; });
     }
     function populateNF(items, id) {
         var $dropdown = $("#" + id);

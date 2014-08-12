@@ -639,7 +639,7 @@
         $(document).on("click", ".tactictitle", function (e) {
             e.stopPropagation();
             $.ajaxSetup({ cache: false });
-            var idTactic = $(this).parent().parent().attr("index");
+            var idTactic = $(this).parent().attr("index");
            // alert(idTactic);
             if (idTactic == 0) {
                 $('div[index=0]').removeClass('1');
@@ -1382,7 +1382,7 @@
 
                     $html += '<div class="accordion-header campaign-default">' +
                             '<a id="0" class="accordion-toggle chevron-right" data-toggle="collapse">' +
-                                '<span class="pull-left width55"><span class="pull-left font-black">1.</span><span class="blue-bg-text campaign-name campaign-name-span">Campaign Title</span></span>' +
+                                '<span id="0" class="pull-left width55"><span class="pull-left font-black">1.</span><span class="blue-bg-text campaign-name campaign-name-span">Campaign Title</span></span>' +
                                 '<span class="pull-right width50px"><div class="add-icon campaign"></div></span>' +
                                 '<span class="pull-right width100px text-right font-black">' + 0 + '</span>' +
                                 '<span class="pull-right width150px text-right font-black tipsyclass">$' + 0 + '</span>' +
@@ -1528,7 +1528,7 @@
                                     if (_programs[i].tactics[k].isOwner == 0) {
                                         $html += '<span class="delete-program width5" id="delTactic"></span>';
                                     }
-                                    $html += '<span class="pull-left width55"><span class="underline tipsyclassTitle tactictitle">' + _programs[i].tactics[k].title + '</span>' +
+                                    $html += '<span class="pull-left width55" index="' + _programs[i].tactics[k].id + '"><span class="underline tipsyclassTitle tactictitle">' + _programs[i].tactics[k].title + '</span>' +
                                          '<span id="' + _programs[i].tactics[k].id + '" class="duplicate-icon-TacticCopy" titles="' + _programs[i].tactics[k].title + '" ></span></span>' +
                                                     '<span class="pull-right width50px text-right font-black">&nbsp;</span>' +
                                               '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
