@@ -497,9 +497,9 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                    return Json(new { id = Sessions.PlanId, redirect = Url.Action("Assortment", new { ismsg = "Plan Saved Successfully." }) });
+                        return Json(new { id = Sessions.PlanId, redirect = Url.Action("Assortment", new { ismsg = "Plan Saved Successfully." }) });
+                    }
                 }
-            }
             }
             catch (Exception e)
             {
@@ -578,7 +578,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="id"></param>
         /// <param name="RedirectType"></param>
         /// <returns></returns>
-        public PartialViewResult PlanDetails(int id = 0, string RedirectType = "", string CalledFromBudget ="")
+        public PartialViewResult PlanDetails(int id = 0, string RedirectType = "", string CalledFromBudget = "")
         {
             ViewBag.CalledFromBudget = CalledFromBudget;
             if (id > 0)
@@ -619,14 +619,14 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.RedirectType = true;
             }
-            
+
             var objPlanData = db.Plans.Where(m => m.PlanId == id && m.IsDeleted == false).FirstOrDefault();
 
             if (objPlanData == null)
             {
                 return null;
             }
-            
+
             PlanModel objPlanModel = new PlanModel();
             objPlanModel.PlanId = objPlanData.PlanId;
             objPlanModel.ModelId = objPlanData.ModelId;
@@ -686,7 +686,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IsOwner = false;
                 ViewBag.IsCampaignDeleteble = false;
             }
-            
+
             return PartialView("PlanAssortment", objPlanModel);
         }
         #endregion
@@ -2122,7 +2122,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">Campaign Id.</param>
         /// <param name="RedirectType">Redirect Type</param>
         /// <returns>Returns Partial View Of Campaign.</returns>
-        public PartialViewResult EditCampaign(int id = 0, string RedirectType = "",string CalledFromBudget ="")
+        public PartialViewResult EditCampaign(int id = 0, string RedirectType = "", string CalledFromBudget = "")
         {
             ViewBag.CalledFromBudget = CalledFromBudget;
             // Dropdown for Verticals
@@ -2342,7 +2342,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveCampaign(Plan_CampaignModel form, string programs, bool RedirectType, string closedTask, string BudgetInputValues, string UserId = "",string CalledFromBudget = "")
+        public ActionResult SaveCampaign(Plan_CampaignModel form, string programs, bool RedirectType, string closedTask, string BudgetInputValues, string UserId = "", string CalledFromBudget = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -2474,7 +2474,7 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else
                                 {
-                                return Json(new { redirect = Url.Action("Assortment") });
+                                    return Json(new { redirect = Url.Action("Assortment") });
                                 }
                             }
                         }
@@ -2569,14 +2569,14 @@ namespace RevenuePlanner.Controllers
                                     }
                                     else
                                     {
-                                    if (RedirectType)
-                                    {
-                                        TempData["ClosedTask"] = closedTask;
-                                        return Json(new { redirect = Url.Action("ApplyToCalendar") });
-                                    }
-                                    else
-                                    {
-                                        return Json(new { redirect = Url.Action("Assortment") });
+                                        if (RedirectType)
+                                        {
+                                            TempData["ClosedTask"] = closedTask;
+                                            return Json(new { redirect = Url.Action("ApplyToCalendar") });
+                                        }
+                                        else
+                                        {
+                                            return Json(new { redirect = Url.Action("Assortment") });
                                         }
                                     }
                                 }
@@ -2604,7 +2604,7 @@ namespace RevenuePlanner.Controllers
             changed by : Nirav Shah on 13 feb 2014
             Changed : add new Parameter  RedirectType
          */
-        public ActionResult DeleteCampaign(int id = 0, bool RedirectType = false, string closedTask = null, string UserId = "", string CalledFromBudget= "")
+        public ActionResult DeleteCampaign(int id = 0, bool RedirectType = false, string closedTask = null, string UserId = "", string CalledFromBudget = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -2646,27 +2646,28 @@ namespace RevenuePlanner.Controllers
                                   changed by : Nirav Shah on 13 feb 2014
                                   Changed : set message and based on request redirect page.
                                 */
-                                TempData["SuccessMessageDeletedPlan"] = string.Format(Common.objCached.CampaignDeleteSuccess, Title);
+                                
 
                                 //return Json(new { redirect = Url.Action("Assortment") });
                                 if (!string.IsNullOrEmpty(CalledFromBudget))
                                 {
+                                    TempData["SuccessMessage"] = string.Format(Common.objCached.CampaignDeleteSuccess, Title);
                                     return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
                                 }
                                 else
                                 {
-
-                                if (RedirectType)
-                                {
-                                    if (closedTask != null)
+                                    TempData["SuccessMessageDeletedPlan"] = string.Format(Common.objCached.CampaignDeleteSuccess, Title);
+                                    if (RedirectType)
                                     {
-                                        TempData["ClosedTask"] = closedTask;
+                                        if (closedTask != null)
+                                        {
+                                            TempData["ClosedTask"] = closedTask;
+                                        }
+                                        return Json(new { redirect = Url.Action("ApplyToCalendar") });
                                     }
-                                    return Json(new { redirect = Url.Action("ApplyToCalendar") });
-                                }
-                                else
-                                {
-                                    return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
+                                    else
+                                    {
+                                        return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
                                     }
                                 }
                             }
@@ -2703,7 +2704,7 @@ namespace RevenuePlanner.Controllers
             var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
             if (objPlan.Model.IntegrationInstanceId != null || objPlan.Model.IntegrationInstanceIdCW != null || objPlan.Model.IntegrationInstanceIdINQ != null || objPlan.Model.IntegrationInstanceIdMQL != null)
             {
-               ViewBag.ExtIntService = true;
+                ViewBag.ExtIntService = true;
             }
             else
             {
@@ -2802,7 +2803,7 @@ namespace RevenuePlanner.Controllers
             }
 
             ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
-            if (pcp.Plan_Campaign.Plan.Model.IntegrationInstanceId != null || pcp.Plan_Campaign.Plan.Model.IntegrationInstanceIdCW != null ||pcp.Plan_Campaign.Plan.Model.IntegrationInstanceIdINQ != null ||pcp.Plan_Campaign.Plan.Model.IntegrationInstanceIdMQL != null)
+            if (pcp.Plan_Campaign.Plan.Model.IntegrationInstanceId != null || pcp.Plan_Campaign.Plan.Model.IntegrationInstanceIdCW != null || pcp.Plan_Campaign.Plan.Model.IntegrationInstanceIdINQ != null || pcp.Plan_Campaign.Plan.Model.IntegrationInstanceIdMQL != null)
             {
                 ViewBag.ExtIntService = true;
             }
@@ -3205,14 +3206,14 @@ namespace RevenuePlanner.Controllers
                                     }
                                     else
                                     {
-                                    if (RedirectType)
-                                    {
-                                        TempData["ClosedTask"] = closedTask;
-                                        return Json(new { redirect = Url.Action("ApplyToCalendar") });
-                                    }
-                                    else
-                                    {
-                                        return Json(new { redirect = Url.Action("Assortment", new { campaignId = form.PlanCampaignId }) });
+                                        if (RedirectType)
+                                        {
+                                            TempData["ClosedTask"] = closedTask;
+                                            return Json(new { redirect = Url.Action("ApplyToCalendar") });
+                                        }
+                                        else
+                                        {
+                                            return Json(new { redirect = Url.Action("Assortment", new { campaignId = form.PlanCampaignId }) });
                                         }
                                     }
                                 }
@@ -3279,7 +3280,7 @@ namespace RevenuePlanner.Controllers
                                 Common.ChangeCampaignStatus(pc.PlanCampaignId);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 scope.Complete();
                                 /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
-                                TempData["SuccessMessageDeletedPlan"] = string.Format(Common.objCached.ProgramDeleteSuccess, Title);
+
 
                                 //return Json(new { redirect = Url.Action("Assortment", new { campaignId = pc.PlanCampaignId }) });
                                 if (!string.IsNullOrEmpty(CalledFromBudget))
@@ -3289,17 +3290,18 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else
                                 {
-                                if (RedirectType)
-                                {
-                                    if (closedTask != null)
+                                    TempData["SuccessMessageDeletedPlan"] = string.Format(Common.objCached.ProgramDeleteSuccess, Title);
+                                    if (RedirectType)
                                     {
-                                        TempData["ClosedTask"] = closedTask;
+                                        if (closedTask != null)
+                                        {
+                                            TempData["ClosedTask"] = closedTask;
+                                        }
+                                        return Json(new { redirect = Url.Action("ApplyToCalendar") });
                                     }
-                                    return Json(new { redirect = Url.Action("ApplyToCalendar") });
-                                }
-                                else
-                                {
-                                    return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
+                                    else
+                                    {
+                                        return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
                                     }
                                 }
                             }
@@ -3356,7 +3358,7 @@ namespace RevenuePlanner.Controllers
 
             ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
             var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-            if (objPlan.Model.IntegrationInstanceId != null || objPlan.Model.IntegrationInstanceIdCW != null ||objPlan.Model.IntegrationInstanceIdINQ != null ||objPlan.Model.IntegrationInstanceIdMQL != null)
+            if (objPlan.Model.IntegrationInstanceId != null || objPlan.Model.IntegrationInstanceIdCW != null || objPlan.Model.IntegrationInstanceIdINQ != null || objPlan.Model.IntegrationInstanceIdMQL != null)
             {
                 ViewBag.ExtIntService = true;
             }
@@ -3485,7 +3487,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
             }
             ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
-            if (pcpt.TacticType.Model.IntegrationInstanceId != null || pcpt.TacticType.Model.IntegrationInstanceIdCW != null ||pcpt.TacticType.Model.IntegrationInstanceIdINQ != null ||pcpt.TacticType.Model.IntegrationInstanceIdMQL != null)
+            if (pcpt.TacticType.Model.IntegrationInstanceId != null || pcpt.TacticType.Model.IntegrationInstanceIdCW != null || pcpt.TacticType.Model.IntegrationInstanceIdINQ != null || pcpt.TacticType.Model.IntegrationInstanceIdMQL != null)
             {
                 ViewBag.ExtIntService = true;
             }
@@ -4040,18 +4042,18 @@ namespace RevenuePlanner.Controllers
                                     if (!string.IsNullOrEmpty(CalledFromBudget))
                                     {
                                         TempData["SuccessMessage"] = "Tactic saved successfully";
-                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                                        return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
                                     }
                                     else
                                     {
-                                    if (RedirectType)
-                                    {
-                                        TempData["ClosedTask"] = closedTask;
-                                        return Json(new { redirect = Url.Action("ApplyToCalendar") });
-                                    }
-                                    else
-                                    {
-                                        return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
+                                        if (RedirectType)
+                                        {
+                                            TempData["ClosedTask"] = closedTask;
+                                            return Json(new { redirect = Url.Action("ApplyToCalendar") });
+                                        }
+                                        else
+                                        {
+                                            return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
                                         }
                                     }
                                 }
@@ -4073,7 +4075,7 @@ namespace RevenuePlanner.Controllers
            Add delete tactic feature
          */
         [HttpPost]
-        public ActionResult DeleteTactic(int id = 0, bool RedirectType = false, string closedTask = null, string UserId = "",string CalledFromBudget = "")
+        public ActionResult DeleteTactic(int id = 0, bool RedirectType = false, string closedTask = null, string UserId = "", string CalledFromBudget = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -4121,26 +4123,27 @@ namespace RevenuePlanner.Controllers
                                 //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
 
                                 scope.Complete();
-                                TempData["SuccessMessageDeletedPlan"] = string.Format(Common.objCached.TacticDeleteSuccess, Title);
+
 
                                 if (!string.IsNullOrEmpty(CalledFromBudget))
                                 {
-                                     TempData["SuccessMessage"] = string.Format(Common.objCached.TacticDeleteSuccess, Title);
+                                    TempData["SuccessMessage"] = string.Format(Common.objCached.TacticDeleteSuccess, Title);
                                     return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
                                 }
                                 else
                                 {
-                                if (RedirectType)
-                                {
-                                    if (closedTask != null)
+                                    TempData["SuccessMessageDeletedPlan"] = string.Format(Common.objCached.TacticDeleteSuccess, Title);
+                                    if (RedirectType)
                                     {
-                                        TempData["ClosedTask"] = closedTask;
+                                        if (closedTask != null)
+                                        {
+                                            TempData["ClosedTask"] = closedTask;
+                                        }
+                                        return Json(new { redirect = Url.Action("ApplyToCalendar") });
                                     }
-                                    return Json(new { redirect = Url.Action("ApplyToCalendar") });
-                                }
-                                else
-                                {
-                                    return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
+                                    else
+                                    {
+                                        return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
                                     }
                                 }
                             }
@@ -4572,7 +4575,7 @@ namespace RevenuePlanner.Controllers
 
                             if (pcptvar != null)
                             {
-                                return Json(new { errormsg = Common.objCached.DuplicateLineItemExits});
+                                return Json(new { errormsg = Common.objCached.DuplicateLineItemExits });
                             }
                             else
                             {
@@ -4866,14 +4869,14 @@ namespace RevenuePlanner.Controllers
                                     }
                                     else
                                     {
-                                    if (RedirectType)
-                                    {
-                                        TempData["ClosedTask"] = closedTask;
-                                        return Json(new { redirect = Url.Action("ApplyToCalendar") });
-                                    }
-                                    else
-                                    {
-                                        return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid, tacticId = tid }) });
+                                        if (RedirectType)
+                                        {
+                                            TempData["ClosedTask"] = closedTask;
+                                            return Json(new { redirect = Url.Action("ApplyToCalendar") });
+                                        }
+                                        else
+                                        {
+                                            return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid, tacticId = tid }) });
                                         }
                                     }
                                 }
@@ -4997,7 +5000,7 @@ namespace RevenuePlanner.Controllers
                                 //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
 
                                 scope.Complete();
-                                TempData["SuccessMessageDeletedPlan"] = string.Format("Line Item {0} deleted successfully", Title);
+                                
 
                                 if (!string.IsNullOrEmpty(CalledFromBudget))
                                 {
@@ -5006,17 +5009,18 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else
                                 {
-                                if (RedirectType)
-                                {
-                                    if (closedTask != null)
+                                    TempData["SuccessMessageDeletedPlan"] = string.Format("Line Item {0} deleted successfully", Title);
+                                    if (RedirectType)
                                     {
-                                        TempData["ClosedTask"] = closedTask;
+                                        if (closedTask != null)
+                                        {
+                                            TempData["ClosedTask"] = closedTask;
+                                        }
+                                        return Json(new { redirect = Url.Action("ApplyToCalendar") });
                                     }
-                                    return Json(new { redirect = Url.Action("ApplyToCalendar") });
-                                }
-                                else
-                                {
-                                    return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid, tacticId = tid }) });
+                                    else
+                                    {
+                                        return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid, tacticId = tid }) });
                                     }
                                 }
                             }
@@ -5093,7 +5097,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="CopyClone">copy of .</param>
         /// <returns>Returns action result.</returns>
         [HttpPost]
-        public ActionResult DuplicateCopyClone(int id, bool RedirectType, string CopyClone, string closedTask,string CalledFromBudget = "")
+        public ActionResult DuplicateCopyClone(int id, bool RedirectType, string CopyClone, string closedTask, string CalledFromBudget = "")
         {
             try
             {
@@ -5137,14 +5141,14 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
-                            if (RedirectType)
-                            {
-                                TempData["ClosedTask"] = closedTask;
-                                return Json(new { redirect = Url.Action("ApplyToCalendar") });
-                            }
-                            else
-                            {
-                                return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
+                                if (RedirectType)
+                                {
+                                    TempData["ClosedTask"] = closedTask;
+                                    return Json(new { redirect = Url.Action("ApplyToCalendar") });
+                                }
+                                else
+                                {
+                                    return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid }) });
                                 }
                             }
                         }
@@ -5624,7 +5628,7 @@ namespace RevenuePlanner.Controllers
             var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
             if (objPlan.Model.IntegrationInstanceId != null || objPlan.Model.IntegrationInstanceIdCW != null || objPlan.Model.IntegrationInstanceIdINQ != null || objPlan.Model.IntegrationInstanceIdMQL != null)
             {
-                ViewBag.ExtIntService =true;
+                ViewBag.ExtIntService = true;
             }
             else
             {
@@ -5678,7 +5682,7 @@ namespace RevenuePlanner.Controllers
 
             ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
             var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-            if (objPlan.Model.IntegrationInstanceId != null || objPlan.Model.IntegrationInstanceIdCW != null ||objPlan.Model.IntegrationInstanceIdINQ != null ||objPlan.Model.IntegrationInstanceIdMQL != null)
+            if (objPlan.Model.IntegrationInstanceId != null || objPlan.Model.IntegrationInstanceIdCW != null || objPlan.Model.IntegrationInstanceIdINQ != null || objPlan.Model.IntegrationInstanceIdMQL != null)
             {
                 ViewBag.ExtIntService = true;
             }
@@ -6898,90 +6902,90 @@ namespace RevenuePlanner.Controllers
                         {
                             var isValueProvided = inputValues.Where(a => Convert.ToInt64(a) > 0).Any();
 
-                        //-- Insert new budget allocation for plan
+                            //-- Insert new budget allocation for plan
                             if (inputValues.Length == 12 && isValueProvided)
-                        {
+                            {
                                 var PrevPlanBudgetAllocationList = db.Plan_Budget.Where(pb => pb.PlanId == planId).Select(pb => pb).ToList();
 
-                            //-- Monthly Budget Allocation
-                            for (int i = 0; i < 12; i++)
-                            {
-                                bool isExists = false;
+                                //-- Monthly Budget Allocation
+                                for (int i = 0; i < 12; i++)
+                                {
+                                    bool isExists = false;
                                     if (PrevPlanBudgetAllocationList != null)
                                     {
                                         if (PrevPlanBudgetAllocationList.Count > 0)
                                         {
                                             var updatePlanBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == ("Y" + (i + 1))).FirstOrDefault();
-                                        if (updatePlanBudget != null)
-                                        {
-                                            var newValue = Convert.ToInt64(inputValues[i]);
-                                            if (updatePlanBudget.Value != newValue)
+                                            if (updatePlanBudget != null)
                                             {
-                                                updatePlanBudget.Value = newValue;
-                                                db.Entry(updatePlanBudget).State = EntityState.Modified;
-                                                isDBSaveChanges = true;
+                                                var newValue = Convert.ToInt64(inputValues[i]);
+                                                if (updatePlanBudget.Value != newValue)
+                                                {
+                                                    updatePlanBudget.Value = newValue;
+                                                    db.Entry(updatePlanBudget).State = EntityState.Modified;
+                                                    isDBSaveChanges = true;
+                                                }
+                                                isExists = true;
                                             }
-                                            isExists = true;
                                         }
                                     }
-                                }
-                                if (!isExists)
-                                {
-                                    Plan_Budget objPlan_Budget = new Plan_Budget();
+                                    if (!isExists)
+                                    {
+                                        Plan_Budget objPlan_Budget = new Plan_Budget();
 
-                                    objPlan_Budget.PlanId = planId;
-                                    objPlan_Budget.Period = "Y" + (i + 1).ToString();
-                                    objPlan_Budget.Value = Convert.ToInt64(inputValues[i]);
-                                    objPlan_Budget.CreatedDate = DateTime.Now;
-                                    objPlan_Budget.CreatedBy = Sessions.User.UserId;
-                                    db.Plan_Budget.Add(objPlan_Budget);
-                                    isDBSaveChanges = true;
+                                        objPlan_Budget.PlanId = planId;
+                                        objPlan_Budget.Period = "Y" + (i + 1).ToString();
+                                        objPlan_Budget.Value = Convert.ToInt64(inputValues[i]);
+                                        objPlan_Budget.CreatedDate = DateTime.Now;
+                                        objPlan_Budget.CreatedBy = Sessions.User.UserId;
+                                        db.Plan_Budget.Add(objPlan_Budget);
+                                        isDBSaveChanges = true;
+                                    }
                                 }
                             }
-                        }
                             else if (inputValues.Length == 4 && isValueProvided)
-                        {
+                            {
                                 var PrevPlanBudgetAllocationList = db.Plan_Budget.Where(pb => pb.PlanId == planId).Select(pb => pb).ToList();
 
-                            //-- Quarterly Budget Allocation
-                            int j = 0;
-                            for (int i = 0; i < 12; i = i + 3)
-                            {
-                                bool isExists = false;
+                                //-- Quarterly Budget Allocation
+                                int j = 0;
+                                for (int i = 0; i < 12; i = i + 3)
+                                {
+                                    bool isExists = false;
                                     if (PrevPlanBudgetAllocationList != null)
                                     {
                                         if (PrevPlanBudgetAllocationList.Count > 0)
                                         {
                                             var updatePlanBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == ("Y" + (i + 1))).FirstOrDefault();
-                                        if (updatePlanBudget != null)
-                                        {
-                                            var newValue = Convert.ToInt64(inputValues[j]);
-                                            if (updatePlanBudget.Value != newValue)
+                                            if (updatePlanBudget != null)
                                             {
-                                                updatePlanBudget.Value = Convert.ToInt64(inputValues[j]);
-                                                db.Entry(updatePlanBudget).State = EntityState.Modified;
-                                                isDBSaveChanges = true;
+                                                var newValue = Convert.ToInt64(inputValues[j]);
+                                                if (updatePlanBudget.Value != newValue)
+                                                {
+                                                    updatePlanBudget.Value = Convert.ToInt64(inputValues[j]);
+                                                    db.Entry(updatePlanBudget).State = EntityState.Modified;
+                                                    isDBSaveChanges = true;
+                                                }
+                                                j = j + 1;
+                                                isExists = true;
                                             }
-                                            j = j + 1;
-                                            isExists = true;
                                         }
                                     }
-                                }
-                                if (!isExists)
-                                {
-                                    Plan_Budget objPlan_Budget = new Plan_Budget();
+                                    if (!isExists)
+                                    {
+                                        Plan_Budget objPlan_Budget = new Plan_Budget();
 
-                                    objPlan_Budget.PlanId = planId;
-                                    objPlan_Budget.Period = "Y" + (i + 1).ToString();
-                                    objPlan_Budget.Value = Convert.ToInt64(inputValues[j]);
-                                    objPlan_Budget.CreatedDate = DateTime.Now;
-                                    objPlan_Budget.CreatedBy = Sessions.User.UserId;
-                                    db.Plan_Budget.Add(objPlan_Budget);
-                                    isDBSaveChanges = true;
-                                    j = j + 1;
+                                        objPlan_Budget.PlanId = planId;
+                                        objPlan_Budget.Period = "Y" + (i + 1).ToString();
+                                        objPlan_Budget.Value = Convert.ToInt64(inputValues[j]);
+                                        objPlan_Budget.CreatedDate = DateTime.Now;
+                                        objPlan_Budget.CreatedBy = Sessions.User.UserId;
+                                        db.Plan_Budget.Add(objPlan_Budget);
+                                        isDBSaveChanges = true;
+                                        j = j + 1;
+                                    }
                                 }
                             }
-                        }
                         }
 
                         if (isDBSaveChanges)
@@ -7369,7 +7373,7 @@ namespace RevenuePlanner.Controllers
                 {
                     lstMonthly = new List<string>() { "Y1", "Y4", "Y7", "Y10" };
                 }
-                var lstPlanBudget = db.Plan_Budget.Where(pb => pb.PlanId == id) 
+                var lstPlanBudget = db.Plan_Budget.Where(pb => pb.PlanId == id)
                                                                .Select(pb => new
                                                                {
                                                                    pb.PlanBudgetId,
@@ -7904,7 +7908,7 @@ namespace RevenuePlanner.Controllers
                 SumCampaign = new BudgetMonth();
                 foreach (BudgetModel c in campaigns)
                 {
-                    
+
                     c.ParentMonth.Jan = plan.Month.Jan - c.SumMonth.Jan;
                     c.ParentMonth.Feb = plan.Month.Feb - c.SumMonth.Feb;
                     c.ParentMonth.Mar = plan.Month.Mar - c.SumMonth.Mar;
@@ -7917,7 +7921,7 @@ namespace RevenuePlanner.Controllers
                     c.ParentMonth.Oct = plan.Month.Oct - c.SumMonth.Oct;
                     c.ParentMonth.Nov = plan.Month.Nov - c.SumMonth.Nov;
                     c.ParentMonth.Dec = plan.Month.Dec - c.SumMonth.Dec;
-                    
+
                     List<BudgetModel> programs = model.Where(p => p.ActivityType == ActivityProgram && p.ParentActivityId == c.ActivityId).ToList();
                     BudgetMonth SumProgram = new BudgetMonth();
                     foreach (BudgetModel p in programs)
@@ -8252,7 +8256,7 @@ namespace RevenuePlanner.Controllers
 
                         model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Month = lineDiff;
                         model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().ParentMonth = lineDiff;
-                        
+
                         double allocated = l.Allocated - lines.Sum(l1 => l1.Allocated);
                         allocated = allocated < 0 ? 0 : allocated;
                         model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Allocated = allocated;
@@ -8281,7 +8285,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="Id"></param>
         /// <param name="title"></param>
         /// <returns></returns>
-        public ActionResult Clone(string CloneType, int Id, string title,string CalledFromBudget= "")
+        public ActionResult Clone(string CloneType, int Id, string title, string CalledFromBudget = "")
         {
             int rtResult = 0;
 
@@ -8314,11 +8318,12 @@ namespace RevenuePlanner.Controllers
                     if (!string.IsNullOrEmpty(CalledFromBudget))
                     {
                         TempData["SuccessMessage"] = string.Format("{0} {1} successfully Duplicated.", CloneType, title);
+                        TempData["SuccessMessageDeletedPlan"] = "";
                         return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
                     }
                     else
                     {
-                    return Json(new { redirect = Url.Action("Assortment"), planId = Sessions.PlanId });
+                        return Json(new { redirect = Url.Action("Assortment"), planId = Sessions.PlanId });
                     }
                 }
                 return Json(new { });
