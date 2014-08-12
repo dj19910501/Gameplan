@@ -13,8 +13,7 @@
     {
         IsBudgetAllocated = true;
     }
-    
-    
+    string strTacticCost = Model.TacticCost.ToString();     //// Added by Sohel Pathan on 12/08/2014 for PL ticket #605
 }
 <style type="text/css">
     #c_tactics .verticalIdSelectBox .sbHolder
@@ -76,7 +75,7 @@
             @Html.HiddenFor(model => model.CEndDate, new { id = "hdnCEndDate" })
             @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
             @Html.HiddenFor(model => model.StageId, new { id = "hdnStageId" })
-            @Html.HiddenFor(model => model.TacticCost, new { id = "hdnOldTacticBudget" })
+            @Html.Hidden("hdnOldTacticBudget", strTacticCost, new { id = "hdnOldTacticBudget" })    @* Modified by Sohel Pathan on 12/08/2014 for PL ticket #605 *@
             @Html.Hidden("hdnIsBudgetAllocated", IsBudgetAllocated)
 
 
@@ -154,7 +153,7 @@
 
             <div class="content-row ">
                 <label class="padding-left4" title="Tactic Planned Cost">Tactic Planned Cost</label>
-                @Html.TextBoxFor(model => model.TacticCost, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", id = "txtTacticPlannedCost", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
+                @Html.TextBoxFor(model => model.TacticCost, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })   @* Modified by Sohel Pathan on 12/08/2014 for PL ticket #605 *@
             </div>
             <div class="content-row alternate">
                 <label class="padding-left4" title="Remaining Program Budget">Remaining Program Budget</label>
@@ -286,6 +285,12 @@
     }
 
 </div>
+@* Start - Added by Sohel Pathan on 12/08/2014 for PL ticket #605 *@
+<div style="display:none;">
+    <input type="hidden" id="hdnPrevTacticTypeId" />
+    <input type="hidden" id="hdnTotalPlanBudget" value="0" />
+</div>
+@* End - Added by Sohel Pathan on 12/08/2014 for PL ticket #605 *@
 <script type="text/javascript">
 
     $(document).ready(function () {
@@ -671,8 +676,7 @@
                 $("#txtmql").val(ReplaceCC($("#txtmql").val()));
             }
 
-
-            $("#txtTacticPlannedCost").val(ReplaceCC($("#txtTacticPlannedCost").val()));
+            $("#TacticCost").val(ReplaceCC($("#TacticCost").val()));    // Modified by Sohel Pathan on 12/08/2014 for PL ticket #605
             var arrClosedTaskString = null;
             if (typeof arrClosedTask != 'undefined') {
                 arrClosedTaskString = arrClosedTask.toString();
@@ -731,62 +735,71 @@
             var projectedStageValue = 0;
             //alert(tacticTypeId);
             if (tacticTypeId != '') {
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Content("~/Plan/LoadTacticTypeValue")',
-                    data: { tacticTypeId: tacticTypeId },
-                    success: function (data) {
-                        //pinq = data.inq;
-                        //pmql = data.mql;
-                        pcost = data.revenue;
-                        projectedStageValue = data.projectedStageValue;
-                        $("#lblStageTitle").text(data.stageTitle);
-                        $("#hdnStageId").val(data.stageId);
-                        $("#txtProjectedStageValue").val(projectedStageValue);
-                        GetConversionRate(projectedStageValue, true); //GetConversionRate(pinq);
-                        // $("#txtmql").val(FormatCommas(Math.round(mqlConversion * pinq).toString(), false));
-                        //$("#txtCost").val(pcost);
-                        //Start by Kalpesh Sharma #605: Cost allocation for Tactic 07/30/2014
-                        $("#txtTacticPlannedCost").val(pcost);
+                if (parseInt($('#hdnPrevTacticTypeId').val()) != parseInt($('#ddlTacticType').val())) {     // Added by Sohel Pathan on 12/08/2014 for PL ticket #605
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/Plan/LoadTacticTypeValue")',
+                        data: { tacticTypeId: tacticTypeId },
+                        success: function (data) {
+                            //pinq = data.inq;
+                            //pmql = data.mql;
+                            pcost = data.revenue;
+                            projectedStageValue = data.projectedStageValue;
+                            $("#lblStageTitle").text(data.stageTitle);
+                            $("#hdnStageId").val(data.stageId);
+                            $("#txtProjectedStageValue").val(projectedStageValue);
+                            GetConversionRate(projectedStageValue, true); //GetConversionRate(pinq);
+                            // $("#txtmql").val(FormatCommas(Math.round(mqlConversion * pinq).toString(), false));
+                            //$("#txtCost").val(pcost);
+                            //Start by Kalpesh Sharma #605: Cost allocation for Tactic 07/30/2014
+                            $("#TacticCost").val(pcost);    // Modified by Sohel Pathan on 12/08/2014 for PL ticket #605
 
-                        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-                        $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+                            $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+                            $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
-                        //Added By : Kalpesh Sharma Reintilaize the Remaining Budget Value 08/04/2014
-                        var ProgramBudgetValue = ReplaceCC($("#txtTacticPlannedCost").val());
-                        var OldProgramBudgetValue = ReplaceCC($("#hdnOldTacticBudget").val());
-                        var differenceVal = parseInt(OldProgramBudgetValue) - parseInt(ProgramBudgetValue);
-                        var newRemainingBudget = parseInt(ReplaceCC($("#txtRemainingBudget").val())) + differenceVal;
-                        $("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false, true));
-                        $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
+                            //Added By : Kalpesh Sharma Reintilaize the Remaining Budget Value 08/04/2014
+                            // Start - Modified by Sohel Pathan on 12/08/2014 for PL ticket #605
+                            var ProgramBudgetValue = ReplaceCC($("#TacticCost").val());
+                            //var OldProgramBudgetValue = ReplaceCC($("#hdnOldTacticBudget").val());
+                            //var differenceVal = parseInt(OldProgramBudgetValue) - parseInt(ProgramBudgetValue);
+                            //var newRemainingBudget = parseInt(ReplaceCC($("#txtRemainingBudget").val())) + differenceVal;
+                            var newRemainingBudget = parseInt($("#hdnTotalPlanBudget").val()) - ProgramBudgetValue; // + differenceVal;
+                            // End - Modified by Sohel Pathan on 12/08/2014 for PL ticket #605
+                            $("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false, true));
+                            $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
 
-                        if (data.IsDeployedToIntegration) {
-                            $("#t_integration_status").val("Sync to integration");
-                            $("#t_integration_status").addClass("icon-check-blue");
-                            $("#t_integration_status").removeClass("icon-check-gray");
-                            $("#hdnIsDeployedToIntegration").val(true);
+                            if (data.IsDeployedToIntegration) {
+                                $("#t_integration_status").val("Sync to integration");
+                                $("#t_integration_status").addClass("icon-check-blue");
+                                $("#t_integration_status").removeClass("icon-check-gray");
+                                $("#hdnIsDeployedToIntegration").val(true);
+                            }
+                            else {
+                                $("#t_integration_status").val("Not Sync to integration");
+                                $("#t_integration_status").addClass("icon-check-gray");
+                                $("#t_integration_status").removeClass("icon-check-blue");
+                                $("#hdnIsDeployedToIntegration").val(false);
+                            }
+                            $('#hdnPrevTacticTypeId').val($('#ddlTacticType').val());   // Added by Sohel Pathan on 12/08/2014 for PL ticket #605
                         }
-                        else {
-                            $("#t_integration_status").val("Not Sync to integration");
-                            $("#t_integration_status").addClass("icon-check-gray");
-                            $("#t_integration_status").removeClass("icon-check-blue");
-                            $("#hdnIsDeployedToIntegration").val(false);
-                        }
-
-                    }
-                });
+                    });
+                }
             }
             else {
                 $("#txtProjectedStageValue").val(projectedStageValue);
                 $("#txtmql").val(pmql);
                 //$("#txtCost").val(pcost);
                 //Start by Kalpesh Sharma #605: Cost allocation for Tactic 07/30/2014
-                $("#txtTacticPlannedCost").val(txtTacticPlannedCost);
+                $("#TacticCost").val('0');  // Modified by Sohel Pathan on 12/08/2014 for PL ticket #605
                 $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
                 $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
                 $("#lblStageTitle").text("Stage");
                 $("#hdnStageId").val("0");
-
+                // Start - Added by Sohel Pathan on 12/08/2014 for PL ticket #605
+                var newRemainingBudget = parseInt($("#hdnTotalPlanBudget").val());
+                $("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false, true));
+                $('#hdnPrevTacticTypeId').val('0');
+                // End - Added by Sohel Pathan on 12/08/2014 for PL ticket #605
             }
 
         });
@@ -880,6 +893,13 @@
 
         })
         NumberFormatterTipsyTitle(".displaytitle", 31);// uday PL Ticket #550 3-7-2014
+
+        // Start - Added by Sohel Pathan on 12/08/2014 for PL ticket #605
+        if (parseInt($('#hdnPlanTacticId').val()) > 0)
+        {
+            $('#hdnPrevTacticTypeId').val($('#ddlTacticType').val());
+        }
+        // End - Added by Sohel Pathan on 12/08/2014 for PL ticket #605
     });
 
 
@@ -888,12 +908,14 @@
         fillBudgetAllocationData();
     }
 
-    $("#txtTacticPlannedCost").keyup(function () {
-        var ProgramBudgetValue = ReplaceCC($("#txtTacticPlannedCost").val());
-        var OldProgramBudgetValue = ReplaceCC($("#hdnOldTacticBudget").val());
-        var differenceVal = parseInt(OldProgramBudgetValue) - parseInt(ProgramBudgetValue);
-        var newRemainingBudget = parseInt(ReplaceCC($("#txtRemainingBudget").val())) + differenceVal;
-
+    $("#TacticCost").keyup(function () {    // Modified by Sohel Pathan on 12/08/2014 for PL ticket #605
+        // Start - Modified by Sohel Pathan on 12/08/2014 for PL ticket #605
+        var ProgramBudgetValue = ReplaceCC($("#TacticCost").val());
+        //var OldProgramBudgetValue = ReplaceCC($("#hdnOldTacticBudget").val());
+        //var differenceVal = parseInt(OldProgramBudgetValue) - parseInt(ProgramBudgetValue);
+        //var newRemainingBudget = parseInt(ReplaceCC($("#txtRemainingBudget").val())) + differenceVal;
+        var newRemainingBudget = parseInt($("#hdnTotalPlanBudget").val()) - ProgramBudgetValue; //+ differenceVal;
+        // End - Modified by Sohel Pathan on 12/08/2014 for PL ticket #605
 
         $("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false, true));
         $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
@@ -1012,6 +1034,10 @@
                 }
 
                 $("#txtRemainingBudget").val(FormatCommasBudget(data.planRemainingBudget.toString(), false, true));
+                // Start - Added by Sohel Pathan on 12/08/2014 for PL ticket #605
+                var TotalPlanBudget = parseInt(data.planRemainingBudget.toString()) + parseInt(ReplaceCC($('#TacticCost').val()));
+                $("#hdnTotalPlanBudget").val(TotalPlanBudget);
+                // End - Added by Sohel Pathan on 12/08/2014 for PL ticket #605
                 $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
                 $("#txtRemainingBudget").attr('myvalue', $("#txtRemainingBudget").val());
 
@@ -1033,7 +1059,7 @@
     }
 
     function calculateUnallocatedBudget() {
-        var CampaignBudgetValue = $("#txtTacticPlannedCost").val().trim().replace(/,/g, '').replace('$', '');
+        var CampaignBudgetValue = $("#TacticCost").val().trim().replace(/,/g, '').replace('$', '');     // Modified by Sohel Pathan on 12/08/2014 for PL ticket #605
         var CampaignAllocatedBudgetValue = $("#lblTotalAllocated").html().trim().replace(/,/g, '').replace('$', '');
         var unallocatedBudget = parseInt(CampaignBudgetValue) - parseInt(CampaignAllocatedBudgetValue);
 
