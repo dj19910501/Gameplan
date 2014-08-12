@@ -932,7 +932,7 @@ namespace RevenuePlanner.Controllers
                                                  join d in db.GameplanDataTypes on i.IntegrationTypeId equals d.IntegrationTypeId
                                                  join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
                                                  from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
-                                                 where i.IntegrationInstanceId == id && d.IsDeleted == false && d.IsStage == false
+                                                 where i.IntegrationInstanceId == id && d.IsDeleted == false
                                                  select new GameplanDataTypeModel
                                                  {
                                                      GameplanDataTypeId = d.GameplanDataTypeId,
@@ -951,7 +951,7 @@ namespace RevenuePlanner.Controllers
                                                  join d in db.GameplanDataTypes on i.IntegrationTypeId equals d.IntegrationTypeId
                                                  join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
                                                  from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
-                                                where i.IntegrationInstanceId == id && d.IsDeleted == false && d.IsStage == true && listStageCode.Contains(d.ActualFieldName)
+                                                where i.IntegrationInstanceId == id && d.IsDeleted == false && listStageCode.Contains(d.ActualFieldName)
                                                  select new GameplanDataTypeModel
                                                  {
                                                      GameplanDataTypeId = d.GameplanDataTypeId,
@@ -1164,8 +1164,7 @@ namespace RevenuePlanner.Controllers
                                                  join d in db.GameplanDataTypes on i.IntegrationTypeId equals d.IntegrationTypeId
                                                  join m1 in db.IntegrationInstanceDataTypeMappings on d.GameplanDataTypeId equals m1.GameplanDataTypeId into mapping
                                                  from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
-                                                 where i.IntegrationInstanceId == id && d.IsDeleted == false //&& d.IsStage == false
-                                                 && d.IsGet != true &&
+                                                 where i.IntegrationInstanceId == id && d.IsDeleted == false &&
                                                  (integrationTypeName == Eloqua ? (d.TableName == Plan_Campaign_Program_Tactic || d.TableName == Plan_Improvement_Campaign_Program_Tactic) : 1 == 1)
                                                  select new GameplanDataTypeModel
                                                  {
