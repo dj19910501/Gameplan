@@ -184,7 +184,7 @@
         $('.pull-right').removeClass('active');
         $('#' + sender).addClass('active');
         if (currentTab == 'aAllocated') {
-            $('#divTabData').load('@Url.Action("GetAllocatedBugetData", "Plan")' + '?PlanId=' + CurrentPlanId);
+            $('#divTabData').load('@Url.Action("GetAllocatedBugetData", "Plan")' + '?PlanId=' + CurrentPlanId, function () { ExpandItems(); });
         }
         else if (currentTab == 'aPlanned') {
             $('#divTabData').load('@Url.Action("GetBudgetedData", "Plan")' + '?PlanId=' + CurrentPlanId, function () { ExpandItems(); });
