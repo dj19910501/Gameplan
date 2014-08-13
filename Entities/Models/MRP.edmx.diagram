@@ -13,7 +13,6 @@
         <EntityTypeShape EntityType="MRPModel.Field" Width="1.5" PointX="7.9784248769182833" PointY="4.6140508822230863" />
         <EntityTypeShape EntityType="MRPModel.Funnel" Width="1.5" PointX="2.8452038685070367" PointY="13.326196974760945" />
         <EntityTypeShape EntityType="MRPModel.Funnel_Field" Width="1.5" PointX="6.7502781705699295" PointY="15.923785038256918" />
-        <EntityTypeShape EntityType="MRPModel.GameplanDataType" Width="1.5" PointX="9.3500589306233728" PointY="27.778691602767768" />
         <EntityTypeShape EntityType="MRPModel.GameplanDataTypePull" Width="1.5" PointX="6.7355963283849869" PointY="8.4472511599060383" />
         <EntityTypeShape EntityType="MRPModel.Geography" Width="1.5" PointX="8.6073021742549258" PointY="19.805289888663818" />
         <EntityTypeShape EntityType="MRPModel.ImprovementTacticType" Width="1.5" PointX="1.4300571649475291" PointY="25.862003874900754" />
@@ -47,7 +46,7 @@
         <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_Actual" Width="1.5" PointX="1.3963601483946482" PointY="8.6928148459144" />
         <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_Comment" Width="1.5" PointX="1.6947410263562301" PointY="29.044630719835233" />
         <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_Cost" Width="1.5" PointX="2.6032085505329112" PointY="22.736014987684793" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_LineItem" Width="1.5" PointX="5.7253783502268512" PointY="31.503601893551462" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_LineItem" Width="1.5" PointX="9.375" PointY="31.875" />
         <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_LineItem_Cost" Width="1.5" PointX="1.3681888456308231" PointY="27.197414649276723" />
         <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign" Width="1.5" PointX="10.46512528623693" PointY="2.79411107431823" />
         <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign_Program" Width="1.5" PointX="0.89353754971806776" PointY="7.2839482162538678" />
@@ -74,8 +73,6 @@
         <AssociationConnector Association="MRPModel.FK_Funnel_Field_Funnel" />
         <AssociationConnector Association="MRPModel.FK_Model_Funnel_Funnel" />
         <AssociationConnector Association="MRPModel.FK_ModelReview_Funnel_Field" />
-        <AssociationConnector Association="MRPModel.FK_GameplanDataType_IntegrationType" />
-        <AssociationConnector Association="MRPModel.FK_IntegrationInstanceDataTypeMapping_GameplanDataType" />
         <AssociationConnector Association="MRPModel.FK_GameplanDataTypePull_IntegrationType" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceDataTypeMappingPull_GameplanDataTypePull" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Geography" />
@@ -141,6 +138,9 @@
         <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Comment_Plan_Improvement_Campaign_Program_Tactic" />
         <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Share_Plan_Improvement_Campaign_Program_Tactic" />
         <AssociationConnector Association="MRPModel.fk_TacticType_Stage" />
+        <EntityTypeShape EntityType="MRPModel.GameplanDataType" Width="1.5" PointX="2.006379096771767" PointY="26.265322220635284" />
+        <AssociationConnector Association="MRPModel.FK_GameplanDataType_IntegrationType" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationInstanceDataTypeMapping_GameplanDataType" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

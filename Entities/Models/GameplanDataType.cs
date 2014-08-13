@@ -25,7 +25,6 @@ namespace RevenuePlanner.Models
         public string ActualFieldName { get; set; }
         public string DisplayFieldName { get; set; }
         public bool IsGet { get; set; }
-        public bool IsStage { get; set; }
         public bool IsDeleted { get; set; }
     
         public virtual IntegrationType IntegrationType { get; set; }
