@@ -34,7 +34,10 @@ namespace Integration
         Create,
         Update,
         Delete,
-        Import_Actuals
+        Import_Actuals,
+        Pull_Responses,
+        Pull_ClosedWon,
+        Import_Cost
     }
 
 

@@ -12,6 +12,13 @@ namespace Integration.Helper
 {
     class Common
     {
+        public static string StageINQ = "INQ";
+        public static string StageProjectedStageValue = "ProjectedStageValue";
+        public static string Responded = "Responded";
+        public static string ClosedWon = "Closed Won";
+        public static string StageCW = "CW";
+        public static string StageRevenue = "Revenue";
+        
         public static string UnableToUpdate = "Unable to update";
         public static string UnableToDelete = "Unable to delete";
         public static string TacticSyncedComment = "Tactic synced with ";

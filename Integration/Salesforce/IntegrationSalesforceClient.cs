@@ -62,7 +62,6 @@ namespace Integration.Salesforce
         private string ColumnId = "Id";
         private string UnableToUpdate = "Unable to update";
         private string UnableToDelete = "Unable to delete";
-        private List<string> IntegrationInstanceTacticIds { get; set; }
         private bool _isAuthenticated { get; set; }
         private bool _isResultError { get; set; }
         public string _ErrorMessage { get; set; }
@@ -173,201 +172,330 @@ namespace Integration.Salesforce
             else
             {
                 SyncInstanceData();
-            }
-            // When isimport actual flag true then allow to get actual.
             bool isImport = false;
             isImport = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId.Equals(_integrationInstanceId)).IsImportActuals;
             if (isImport)
             {
-                if (IntegrationInstanceTacticIds.Count > 0)
-                {
                     GetDataForTacticandUpdate();
+                    PullingResponses();
+                    PullingCWRevenue();
                 }
             }
 
             return _isResultError;
         }
 
-        private void GetDataForTacticandUpdate()
+        private class CampaignMember
         {
-            string actualCost = "CostActual";
-            string Stage_CW = "CW";
-            string Stage_Revenue = "Revenue";
-            string Stage_MQL = "MQL";
-            string Stage_ProjectedStageValue = "ProjectedStageValue";
-            List<IntegrationInstanceDataTypeMapping> dataTypeMapping = db.IntegrationInstanceDataTypeMappings.Where(mapping => mapping.IntegrationInstanceId.Equals(_integrationInstanceId)).ToList();
-            Dictionary<string, string> mappingGetTactic = dataTypeMapping.Where(gameplandata => gameplandata.GameplanDataType.TableName == "Plan_Campaign_Program_Tactic" &&
-                                                                   gameplandata.GameplanDataType.IsGet)
-                                            .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
-                                            .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+            public string CampaignId { get; set; }
+            public DateTime FirstRespondedDate { get; set; }
+        }
 
-            string columnList = String.Join(",", (from r in mappingGetTactic.AsEnumerable() select r.Value));
-            if (columnList != string.Empty)
+        private void PullingResponses()
+        {
+            List<int> planIds = db.Plans.Where(p => p.Model.IntegrationInstanceIdINQ == _integrationInstanceId && p.Model.Status.Equals("Published")).Select(p => p.PlanId).ToList();
+            Guid ClientId = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
+            int INQStageId = db.Stages.SingleOrDefault(s => s.ClientId == ClientId && s.Code == Common.StageINQ).StageId;
+            // Get List of status after Approved Status
+            List<string> statusList = Common.GetStatusListAfterApproved();
+            List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(t => planIds.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId) && t.StageId == INQStageId && statusList.Contains(t.Status) && t.IsDeployedToIntegration && !t.IsDeleted && t.IntegrationInstanceTacticId != null).ToList();
+            string integrationTacticIds = String.Join("','", (from tactic in tacticList select tactic.IntegrationInstanceTacticId));
+            //For Testing
+            //integrationTacticIds = "'701f00000003S9R','701f00000002cGG','701f00000002cGL'";
+            if (integrationTacticIds != string.Empty)
             {
-                columnList += " , " + ColumnId;
-            }
-            string integrationTacticIds = String.Join("','", (from r in IntegrationInstanceTacticIds select r));
-            List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(t => IntegrationInstanceTacticIds.Contains(t.IntegrationInstanceTacticId)).ToList();
-            try
-            {
-                var AllRecords = _client.Query<object>("SELECT " + columnList + " FROM " + this.objectName + " WHERE " + ColumnId + " in ('" + integrationTacticIds + "')");
-
-                //put below code in transaction
-                List<Plan_Campaign_Program_Tactic_Actual> actualTacicList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => IntegrationInstanceTacticIds.Contains(ta.Plan_Campaign_Program_Tactic.IntegrationInstanceTacticId)).ToList();
-                actualTacicList.ForEach(t => db.Entry(t).State = EntityState.Deleted);
-                db.SaveChanges();
-
-                foreach (var resultin in AllRecords)
+                try
                 {
-                    string TacticResult = resultin.ToString();
-                    JObject jobj = JObject.Parse(TacticResult);
-                    string idvalue = Convert.ToString(jobj[ColumnId]);
-                    Plan_Campaign_Program_Tactic tactic = tacticList.Where(t => t.IntegrationInstanceTacticId == idvalue).Single();
-                    int tacticStageLevel = Convert.ToInt32(tactic.Stage.Level);
-                    string tacticStageCode = tactic.Stage.Code;
-                    Guid ClientId = (Guid)tactic.BusinessUnit.ClientId;//.TacticType.ClientId; // Modified by dharmraj, #593 : Tactic type data model - Tactic screen
-                    int MQLStageLevel = Convert.ToInt32(db.Stages.FirstOrDefault(s => s.ClientId == ClientId && s.Code == Stage_MQL).Level);
+                    string CampaignId = "CampaignId";
+                    string FirstRespondedDate = "FirstRespondedDate";
+                    string Status = "Status";
+                    List<CampaignMember> CampaignMemberList = new List<CampaignMember>();
+                    var responsePull = _client.Query<CampaignMember>("SELECT " + CampaignId + "," + FirstRespondedDate + " FROM CampaignMember WHERE " + CampaignId + " IN ('" + integrationTacticIds + "') AND " + Status  + "= '" + Common.Responded + "'");
 
-                    tactic.CostActual = 0;
-
-                    foreach (var mapping in mappingGetTactic)
+                    foreach (var resultin in responsePull)
                     {
-                        if (jobj[mapping.Value] != null && Convert.ToString(jobj[mapping.Value]) != string.Empty)
-                        {
-                            if (mapping.Key == actualCost)
+                        string TacticResult = resultin.ToString();
+                        JObject jobj = JObject.Parse(TacticResult);
+                        CampaignMember objCampaign = new CampaignMember();
+                        objCampaign.CampaignId = Convert.ToString(jobj[CampaignId]);
+                        objCampaign.FirstRespondedDate = Convert.ToDateTime(jobj[FirstRespondedDate]);
+                        CampaignMemberList.Add(objCampaign);
+                    }
+                    
+                    if (CampaignMemberList.Count > 0)
+                    {
+                        var CampaignMemberListGroup = CampaignMemberList.GroupBy(cl => new { CampaignId = cl.CampaignId, Month = cl.FirstRespondedDate.ToString("MM/yyyy") }).Select(cl =>
+                            new
                             {
-
-                                int index = tacticList.IndexOf(tactic);
-                                if (index >= 0)
-                                {
-                                    tactic.CostActual = Convert.ToDouble(jobj[mapping.Value]);
-                                    tacticList[index] = tactic;
-                                }
+                                CampaignId = cl.Key.CampaignId,
+                                TacticId = tacticList.Single(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).PlanTacticId,
+                                Period = "Y" + Convert.ToDateTime(cl.Key.Month).Month,
+                                Count = cl.Count()
                             }
-                            else
+                            ).ToList();
+
+                        List<int> PlanTacticIds = CampaignMemberListGroup.Select(campaign => campaign.TacticId).Distinct().ToList();
+                        List<Plan_Campaign_Program_Tactic_Actual> actualTacticList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => PlanTacticIds.Contains(ta.PlanTacticId)).ToList();
+                        List<Plan_Campaign_Program_Tactic> innerTacticList = tacticList.Where(t => PlanTacticIds.Contains(t.PlanTacticId)).ToList();
+                        foreach (var tactic in innerTacticList)
+                        {
+                            var innerCampaignMember = CampaignMemberListGroup.Where(cm => cm.TacticId == tactic.PlanTacticId).ToList();
+                            foreach (var objCampaignMember in innerCampaignMember)
                             {
-                                double actualValue = Convert.ToDouble(jobj[mapping.Value]);
-                                int totalMonth = 0;
-                                if (tactic.StartDate.Month == tactic.EndDate.Month)
+                                Plan_Campaign_Program_Tactic_Actual objPlanTacticActual = new Plan_Campaign_Program_Tactic_Actual();
+                                objPlanTacticActual = actualTacticList.Where(actualTactic => actualTactic.PlanTacticId == objCampaignMember.TacticId && actualTactic.Period == objCampaignMember.Period && actualTactic.StageTitle == Common.StageProjectedStageValue).FirstOrDefault();
+                                if (objPlanTacticActual != null)
                                 {
-                                    totalMonth = 1;
+                                    objPlanTacticActual.Actualvalue = objCampaignMember.Count;
+                                    objPlanTacticActual.ModifiedBy = _userId;
+                                    objPlanTacticActual.ModifiedDate = DateTime.Now;
+                                    db.Entry(objPlanTacticActual).State = EntityState.Modified;
                                 }
                                 else
                                 {
-                                    totalMonth = tactic.EndDate.Month - tactic.StartDate.Month + 1;
-                                }
-
-                                if (mapping.Key == Stage_CW || mapping.Key == Stage_Revenue)
-                                {
-                                    // Modified by dharmraj for ticket #524 : Actual value Splitting across months.
-                                    double actualValueTotalTemp = 0;
-                                    for (int iMonth = tactic.StartDate.Month; iMonth <= tactic.EndDate.Month; iMonth++)
-                                    {
-                                        // Modified by dharmraj for ticket #524 : Actual value Splitting across months.
-                                        double actualValueMonthWise = Math.Round(actualValue / totalMonth);
-                                        actualValueTotalTemp += actualValueMonthWise;
-                                        if (iMonth == tactic.EndDate.Month && actualValueTotalTemp != actualValue)
-                                        {
-                                            actualValueMonthWise = actualValueMonthWise - (actualValueTotalTemp - actualValue);
-                                        }
-
-                                        Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
-                                        actualTactic.Actualvalue = actualValueMonthWise;//Math.Round(actualValue / totalMonth);
-                                        actualTactic.PlanTacticId = tactic.PlanTacticId;
-                                        actualTactic.Period = "Y" + iMonth;
-                                        actualTactic.StageTitle = mapping.Key;
-                                        //change date & created by
-                                        actualTactic.CreatedDate = DateTime.Now;
-                                        actualTactic.CreatedBy = _userId;
-                                        db.Entry(actualTactic).State = EntityState.Added;
-                                    }
-                                }
-                                else if (mapping.Key == tacticStageCode)
-                                {
-                                    // Modified by dharmraj for ticket #524 : Actual value Splitting across months.
-                                    double actualValueTotalTemp = 0;
-                                    for (int iMonth = tactic.StartDate.Month; iMonth <= tactic.EndDate.Month; iMonth++)
-                                    {
-                                        // Modified by dharmraj for ticket #524 : Actual value Splitting across months.
-                                        double actualValueMonthWise = Math.Round(actualValue / totalMonth);
-                                        actualValueTotalTemp += actualValueMonthWise;
-                                        if (iMonth == tactic.EndDate.Month && actualValueTotalTemp != actualValue)
-                                        {
-                                            actualValueMonthWise = actualValueMonthWise - (actualValueTotalTemp - actualValue);
-                                        }
-
-                                        Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
-                                        actualTactic.Actualvalue = actualValueMonthWise;//Math.Round(actualValue / totalMonth);
-                                        actualTactic.PlanTacticId = tactic.PlanTacticId;
-                                        actualTactic.Period = "Y" + iMonth;
-                                        actualTactic.StageTitle = Stage_ProjectedStageValue;
-                                        //change date & created by
-                                        actualTactic.CreatedDate = DateTime.Now;
-                                        actualTactic.CreatedBy = _userId;
-                                        db.Entry(actualTactic).State = EntityState.Added;
-                                    }
-
-                                    if (tacticStageLevel == MQLStageLevel)
-                                    {
-                                        // Modified by dharmraj for ticket #524 : Actual value Splitting across months.
-                                        actualValueTotalTemp = 0;
-                                        for (int iMonth = tactic.StartDate.Month; iMonth <= tactic.EndDate.Month; iMonth++)
-                                        {
-                                            // Modified by dharmraj for ticket #524 : Actual value Splitting across months.
-                                            double actualValueMonthWise = Math.Round(actualValue / totalMonth);
-                                            actualValueTotalTemp += actualValueMonthWise;
-                                            if (iMonth == tactic.EndDate.Month && actualValueTotalTemp != actualValue)
-                                            {
-                                                actualValueMonthWise = actualValueMonthWise - (actualValueTotalTemp - actualValue);
-                                            }
-
-                                            Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
-                                            actualTactic.Actualvalue = actualValueMonthWise;//Math.Round(actualValue / totalMonth);
-                                            actualTactic.PlanTacticId = tactic.PlanTacticId;
-                                            actualTactic.Period = "Y" + iMonth;
-                                            actualTactic.StageTitle = Stage_MQL;
-                                            //change date & created by
-                                            actualTactic.CreatedDate = DateTime.Now;
-                                            actualTactic.CreatedBy = _userId;
-                                            db.Entry(actualTactic).State = EntityState.Added;
-                                        }
-                                    }
-                                }
-                                else if (mapping.Key == Stage_MQL)
-                                {
-                                    if (tacticStageLevel < MQLStageLevel)
-                                    {
-                                        // Modified by dharmraj for ticket #524 : Actual value Splitting across months.
-                                        double actualValueTotalTemp = 0;
-                                        for (int iMonth = tactic.StartDate.Month; iMonth <= tactic.EndDate.Month; iMonth++)
-                                        {
-                                            // Modified by dharmraj for ticket #524 : Actual value Splitting across months.
-                                            double actualValueMonthWise = Math.Round(actualValue / totalMonth);
-                                            actualValueTotalTemp += actualValueMonthWise;
-                                            if (iMonth == tactic.EndDate.Month && actualValueTotalTemp != actualValue)
-                                            {
-                                                actualValueMonthWise = actualValueMonthWise - (actualValueTotalTemp - actualValue);
-                                            }
-
-                                            Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
-                                            actualTactic.Actualvalue = actualValueMonthWise;//Math.Round(actualValue / totalMonth);
-                                            actualTactic.PlanTacticId = tactic.PlanTacticId;
-                                            actualTactic.Period = "Y" + iMonth;
-                                            actualTactic.StageTitle = Stage_MQL;
-                                            //change date & created by
-                                            actualTactic.CreatedDate = DateTime.Now;
-                                            actualTactic.CreatedBy = _userId;
-                                            db.Entry(actualTactic).State = EntityState.Added;
-                                        }
-                                    }
+                                    objPlanTacticActual = new Plan_Campaign_Program_Tactic_Actual();
+                                    objPlanTacticActual.PlanTacticId = objCampaignMember.TacticId;
+                                    objPlanTacticActual.Period = objCampaignMember.Period;
+                                    objPlanTacticActual.StageTitle = Common.StageProjectedStageValue;
+                                    objPlanTacticActual.Actualvalue = objCampaignMember.Count;
+                                    objPlanTacticActual.CreatedBy = _userId;
+                                    objPlanTacticActual.CreatedDate = DateTime.Now;
+                                    db.Entry(objPlanTacticActual).State = EntityState.Added;
                                 }
                             }
+
+                            tactic.LastSyncDate = DateTime.Now;
+                            tactic.ModifiedDate = DateTime.Now;
+                            tactic.ModifiedBy = _userId;
+
+                            IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
+                            instanceTactic.IntegrationInstanceLogId = _integrationInstanceLogId;
+                            instanceTactic.IntegrationInstanceId = _integrationInstanceId;
+                            instanceTactic.EntityId = tactic.PlanTacticId;
+                            instanceTactic.EntityType = EntityType.Tactic.ToString();
+                            instanceTactic.Status = StatusResult.Success.ToString();
+                            instanceTactic.Operation = Operation.Pull_Responses.ToString();
+                            instanceTactic.SyncTimeStamp = DateTime.Now;
+                            instanceTactic.CreatedDate = DateTime.Now;
+                            instanceTactic.CreatedBy = _userId;
+                            db.Entry(instanceTactic).State = EntityState.Added;
+                        }
+
+                        db.SaveChanges();
+                    }
+                }
+                catch (SalesforceException e)
+                {
+                    string msg = GetErrorMessage(e);
+                    foreach (var t in tacticList)
+                    {
+                        IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
+                        instanceTactic.IntegrationInstanceLogId = _integrationInstanceLogId;
+                        instanceTactic.IntegrationInstanceId = _integrationInstanceId;
+                        instanceTactic.EntityId = t.PlanTacticId;
+                        instanceTactic.EntityType = EntityType.Tactic.ToString();
+                        instanceTactic.Status = StatusResult.Error.ToString();
+                        instanceTactic.ErrorDescription = msg;
+                        instanceTactic.Operation = Operation.Pull_Responses.ToString();
+                        instanceTactic.SyncTimeStamp = DateTime.Now;
+                        instanceTactic.CreatedDate = DateTime.Now;
+                        instanceTactic.CreatedBy = _userId;
+                        db.Entry(instanceTactic).State = EntityState.Added;
+                    }
+                    db.SaveChanges();
+                }
+            }
+
+        }
+
+        private class OpportunityMember
+        {
+            public string CampaignId { get; set; }
+            public DateTime CloseDate { get; set; }
+            public double Amount { get; set; }
+        }
+
+        private void PullingCWRevenue()
+        {
+            List<int> planIds = db.Plans.Where(p => p.Model.IntegrationInstanceIdCW == _integrationInstanceId && p.Model.Status.Equals("Published")).Select(p => p.PlanId).ToList();
+            Guid ClientId = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
+            // Get List of status after Approved Status
+            List<string> statusList = Common.GetStatusListAfterApproved();
+            List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(t => planIds.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId) && statusList.Contains(t.Status) && t.IsDeployedToIntegration && !t.IsDeleted && t.IntegrationInstanceTacticId != null).ToList();
+            string integrationTacticIds = String.Join("','", (from tactic in tacticList select tactic.IntegrationInstanceTacticId));
+            if (integrationTacticIds != string.Empty)
+            {
+                try
+                {
+                    string CampaignId = "CampaignId";
+                    string CloseDate = "CloseDate";
+                    string Amount = "Amount";
+                    string StageName = "StageName";
+                    var listPullMapping = db.IntegrationInstanceDataTypeMappingPulls.Where(instance => instance.IntegrationInstanceId == _integrationInstanceId)
+                        .Select(mapping => new { mapping.GameplanDataTypePull.ActualFieldName, mapping.TargetDataType }).ToList();
+                    CampaignId = listPullMapping.SingleOrDefault(mapping => mapping.ActualFieldName == Enums.PullCWActualField.CampaignID.ToString()).TargetDataType;
+                    CloseDate = listPullMapping.SingleOrDefault(mapping => mapping.ActualFieldName == Enums.PullCWActualField.Timestamp.ToString()).TargetDataType;
+                    Amount = listPullMapping.SingleOrDefault(mapping => mapping.ActualFieldName == Enums.PullCWActualField.Amount.ToString()).TargetDataType;
+                    StageName = listPullMapping.SingleOrDefault(mapping => mapping.ActualFieldName == Enums.PullCWActualField.Stage.ToString()).TargetDataType;
+
+                    if (CampaignId != string.Empty && CloseDate != string.Empty && Amount != string.Empty && StageName != string.Empty)
+                    {
+
+                        string qu = "SELECT " + CampaignId + "," + CloseDate + "," + Amount + " FROM Opportunity WHERE " + CampaignId + " IN ('" + integrationTacticIds + "') AND " + StageName + "= '" + Common.ClosedWon + "'";
+                        List<OpportunityMember> OpportunityMemberList = new List<OpportunityMember>();
+                        var cwRecords = _client.Query<object>("SELECT " + CampaignId + "," + CloseDate + "," + Amount + " FROM Opportunity WHERE " + CampaignId + " IN ('" + integrationTacticIds + "') AND " + StageName + "= '" + Common.ClosedWon + "'");
+                        foreach (var resultin in cwRecords)
+                        {
+                            string TacticResult = resultin.ToString();
+                            JObject jobj = JObject.Parse(TacticResult);
+                            OpportunityMember objOpp = new OpportunityMember();
+                            objOpp.CampaignId = Convert.ToString(jobj[CampaignId]);
+                            objOpp.CloseDate = Convert.ToDateTime(jobj[CloseDate]);
+                            objOpp.Amount = Convert.ToDouble(jobj[Amount]);
+                            OpportunityMemberList.Add(objOpp);
+                        }
+
+                        if (OpportunityMemberList.Count > 0)
+                        {
+                            var OpportunityMemberListGroup = OpportunityMemberList.GroupBy(cl => new { CampaignId = cl.CampaignId, Month = cl.CloseDate.ToString("MM/yyyy") }).Select(cl =>
+                                new
+                                {
+                                    CampaignId = cl.Key.CampaignId,
+                                    TacticId = tacticList.Single(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).PlanTacticId,
+                                    Period = "Y" + Convert.ToDateTime(cl.Key.Month).Month,
+                                    Count = cl.Count(),
+                                    Revenue = cl.Sum(c => c.Amount)
+                                }
+                                ).ToList();
+
+                            List<int> PlanTacticIds = OpportunityMemberListGroup.Select(opportunity => opportunity.TacticId).Distinct().ToList();
+                            List<Plan_Campaign_Program_Tactic_Actual> actualTacticList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => PlanTacticIds.Contains(ta.PlanTacticId)).ToList();
+                            List<Plan_Campaign_Program_Tactic> innerTacticList = tacticList.Where(t => PlanTacticIds.Contains(t.PlanTacticId)).ToList();
+                            foreach (var tactic in innerTacticList)
+                            {
+                                var innerOpportunityMember = OpportunityMemberListGroup.Where(cm => cm.TacticId == tactic.PlanTacticId).ToList();
+                                foreach (var objOpportunityMember in innerOpportunityMember)
+                                {
+                                    Plan_Campaign_Program_Tactic_Actual objPlanTacticActual = new Plan_Campaign_Program_Tactic_Actual();
+                                    objPlanTacticActual = actualTacticList.Where(actualTactic => actualTactic.PlanTacticId == objOpportunityMember.TacticId && actualTactic.Period == objOpportunityMember.Period && actualTactic.StageTitle == Common.StageCW).FirstOrDefault();
+                                    if (objPlanTacticActual != null)
+                                    {
+                                        objPlanTacticActual.Actualvalue = objOpportunityMember.Count;
+                                        objPlanTacticActual.ModifiedBy = _userId;
+                                        objPlanTacticActual.ModifiedDate = DateTime.Now;
+                                        db.Entry(objPlanTacticActual).State = EntityState.Modified;
+                                    }
+                                    else
+                                    {
+                                        objPlanTacticActual = new Plan_Campaign_Program_Tactic_Actual();
+                                        objPlanTacticActual.PlanTacticId = objOpportunityMember.TacticId;
+                                        objPlanTacticActual.Period = objOpportunityMember.Period;
+                                        objPlanTacticActual.StageTitle = Common.StageCW;
+                                        objPlanTacticActual.Actualvalue = objOpportunityMember.Count;
+                                        objPlanTacticActual.CreatedBy = _userId;
+                                        objPlanTacticActual.CreatedDate = DateTime.Now;
+                                        db.Entry(objPlanTacticActual).State = EntityState.Added;
+                                    }
+
+                                    Plan_Campaign_Program_Tactic_Actual objPlanTacticActualRevenue = new Plan_Campaign_Program_Tactic_Actual();
+                                    objPlanTacticActualRevenue = actualTacticList.Where(actualTactic => actualTactic.PlanTacticId == objOpportunityMember.TacticId && actualTactic.Period == objOpportunityMember.Period && actualTactic.StageTitle == Common.StageRevenue).FirstOrDefault();
+                                    if (objPlanTacticActualRevenue != null)
+                                    {
+                                        objPlanTacticActualRevenue.Actualvalue = objOpportunityMember.Revenue;
+                                        objPlanTacticActualRevenue.ModifiedBy = _userId;
+                                        objPlanTacticActualRevenue.ModifiedDate = DateTime.Now;
+                                        db.Entry(objPlanTacticActualRevenue).State = EntityState.Modified;
+                                    }
+                                    else
+                                    {
+                                        objPlanTacticActualRevenue = new Plan_Campaign_Program_Tactic_Actual();
+                                        objPlanTacticActualRevenue.PlanTacticId = objOpportunityMember.TacticId;
+                                        objPlanTacticActualRevenue.Period = objOpportunityMember.Period;
+                                        objPlanTacticActualRevenue.StageTitle = Common.StageRevenue;
+                                        objPlanTacticActualRevenue.Actualvalue = objOpportunityMember.Revenue;
+                                        objPlanTacticActualRevenue.CreatedBy = _userId;
+                                        objPlanTacticActualRevenue.CreatedDate = DateTime.Now;
+                                        db.Entry(objPlanTacticActualRevenue).State = EntityState.Added;
+                                    }
+                                }
+
+                                tactic.LastSyncDate = DateTime.Now;
+                                tactic.ModifiedDate = DateTime.Now;
+                                tactic.ModifiedBy = _userId;
+
+                                IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
+                                instanceTactic.IntegrationInstanceLogId = _integrationInstanceLogId;
+                                instanceTactic.IntegrationInstanceId = _integrationInstanceId;
+                                instanceTactic.EntityId = tactic.PlanTacticId;
+                                instanceTactic.EntityType = EntityType.Tactic.ToString();
+                                instanceTactic.Status = StatusResult.Success.ToString();
+                                instanceTactic.Operation = Operation.Pull_ClosedWon.ToString();
+                                instanceTactic.SyncTimeStamp = DateTime.Now;
+                                instanceTactic.CreatedDate = DateTime.Now;
+                                instanceTactic.CreatedBy = _userId;
+                                db.Entry(instanceTactic).State = EntityState.Added;
+                            }
+                            db.SaveChanges();
                         }
                     }
+                }
+                catch (SalesforceException e)
+                {
+                    string msg = GetErrorMessage(e);
+                    foreach (var t in tacticList)
+                    {
+                        IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
+                        instanceTactic.IntegrationInstanceLogId = _integrationInstanceLogId;
+                        instanceTactic.IntegrationInstanceId = _integrationInstanceId;
+                        instanceTactic.EntityId = t.PlanTacticId;
+                        instanceTactic.EntityType = EntityType.Tactic.ToString();
+                        instanceTactic.Status = StatusResult.Error.ToString();
+                        instanceTactic.ErrorDescription = msg;
+                        instanceTactic.Operation = Operation.Pull_ClosedWon.ToString();
+                        instanceTactic.SyncTimeStamp = DateTime.Now;
+                        instanceTactic.CreatedDate = DateTime.Now;
+                        instanceTactic.CreatedBy = _userId;
+                        db.Entry(instanceTactic).State = EntityState.Added;
+                    }
+                    db.SaveChanges();
+                }
+            }
 
-                    tactic.LastSyncDate = DateTime.Now;
-                    tactic.ModifiedDate = DateTime.Now;
+        }
+
+        private class ImportCostMember
+        {
+            public string CampaignId { get; set; }
+            public double actualCost { get; set; }
+        }
+
+        private void GetDataForTacticandUpdate()
+        {
+            string actualCost = "CostActual";
+
+            var fieldname = db.IntegrationInstanceDataTypeMappings.Where(mapping => mapping.IntegrationInstanceId.Equals(_integrationInstanceId) && mapping.GameplanDataType.TableName == "Plan_Campaign_Program_Tactic" &&
+                                                                            mapping.GameplanDataType.ActualFieldName == actualCost).Select(mapping => mapping.TargetDataType).FirstOrDefault();
+            if (fieldname != null)
+            {
+                // Change id for in which it get actual value
+                List<int> planIds = db.Plans.Where(p => p.Model.IntegrationInstanceId == _integrationInstanceId && p.Model.Status.Equals("Published")).Select(p => p.PlanId).ToList();
+                Guid ClientId = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
+                // Get List of status after Approved Status
+                List<string> statusList = Common.GetStatusListAfterApproved();
+                List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(t => planIds.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId) && statusList.Contains(t.Status) && t.IsDeployedToIntegration && t.IntegrationInstanceTacticId != null).ToList();
+                string integrationTacticIds = String.Join("','", (from tactic in tacticList select tactic.IntegrationInstanceTacticId));
+            try
+            {
+                    List<ImportCostMember> ImportCostMemberList = new List<ImportCostMember>(_client.Query<ImportCostMember>("SELECT " + actualCost + "," + ColumnId + " FROM " + this.objectName + " WHERE " + ColumnId + " in ('" + integrationTacticIds + "')"));
+                    List<string> IntegrationTacticIdList = ImportCostMemberList.Select(import => import.CampaignId).Distinct().ToList();
+                    List<Plan_Campaign_Program_Tactic> innerTacticList = tacticList.Where(t => IntegrationTacticIdList.Contains(t.IntegrationInstanceTacticId)).ToList();
+
+                    foreach (var tactic in innerTacticList)
+                    {
+                        tactic.CostActual = ImportCostMemberList.SingleOrDefault(import => import.CampaignId == tactic.IntegrationInstanceTacticId).actualCost;
                     tactic.ModifiedBy = _userId;
+                        tactic.ModifiedDate = DateTime.Now;
+                        tactic.LastSyncDate = DateTime.Now;
 
                     IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
                     instanceTactic.IntegrationInstanceLogId = _integrationInstanceLogId;
@@ -375,7 +503,7 @@ namespace Integration.Salesforce
                     instanceTactic.EntityId = tactic.PlanTacticId;
                     instanceTactic.EntityType = EntityType.Tactic.ToString();
                     instanceTactic.Status = StatusResult.Success.ToString();
-                    instanceTactic.Operation = Operation.Import_Actuals.ToString();
+                        instanceTactic.Operation = Operation.Import_Cost.ToString();
                     instanceTactic.SyncTimeStamp = DateTime.Now;
                     instanceTactic.CreatedDate = DateTime.Now;
                     instanceTactic.CreatedBy = _userId;
@@ -395,13 +523,14 @@ namespace Integration.Salesforce
                     instanceTactic.EntityType = EntityType.Tactic.ToString();
                     instanceTactic.Status = StatusResult.Error.ToString();
                     instanceTactic.ErrorDescription = msg;
-                    instanceTactic.Operation = Operation.Import_Actuals.ToString();
+                        instanceTactic.Operation = Operation.Import_Cost.ToString();
                     instanceTactic.SyncTimeStamp = DateTime.Now;
                     instanceTactic.CreatedDate = DateTime.Now;
                     instanceTactic.CreatedBy = _userId;
                     db.Entry(instanceTactic).State = EntityState.Added;
                 }
                 db.SaveChanges();
+                }
             }
         }
 
@@ -409,37 +538,31 @@ namespace Integration.Salesforce
         {
             List<IntegrationInstanceDataTypeMapping> dataTypeMapping = db.IntegrationInstanceDataTypeMappings.Where(mapping => mapping.IntegrationInstanceId.Equals(_integrationInstanceId)).ToList();
             _mappingTactic = dataTypeMapping.Where(gameplandata => gameplandata.GameplanDataType.TableName == "Plan_Campaign_Program_Tactic" &&
-                                                                   !gameplandata.GameplanDataType.IsStage &&
                                                                    !gameplandata.GameplanDataType.IsGet)
                                             .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
                                             .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
 
             _mappingProgram = dataTypeMapping.Where(gameplandata => gameplandata.GameplanDataType.TableName == "Plan_Campaign_Program" &&
-                                                       !gameplandata.GameplanDataType.IsStage &&
                                                        !gameplandata.GameplanDataType.IsGet)
                                 .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
                                 .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
 
             _mappingCampaign = dataTypeMapping.Where(gameplandata => gameplandata.GameplanDataType.TableName == "Plan_Campaign" &&
-                                           !gameplandata.GameplanDataType.IsStage &&
                                            !gameplandata.GameplanDataType.IsGet)
                     .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
                     .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
 
             _mappingImprovementTactic = dataTypeMapping.Where(gameplandata => gameplandata.GameplanDataType.TableName == "Plan_Improvement_Campaign_Program_Tactic" &&
-                                                                   !gameplandata.GameplanDataType.IsStage &&
                                                                    !gameplandata.GameplanDataType.IsGet)
                                             .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
                                             .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
 
             _mappingImprovementProgram = dataTypeMapping.Where(gameplandata => gameplandata.GameplanDataType.TableName == "Plan_Improvement_Campaign_Program" &&
-                                                                  !gameplandata.GameplanDataType.IsStage &&
                                                                   !gameplandata.GameplanDataType.IsGet)
                                            .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
                                            .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
 
             _mappingImprovementCampaign = dataTypeMapping.Where(gameplandata => gameplandata.GameplanDataType.TableName == "Plan_Improvement_Campaign" &&
-                                                                  !gameplandata.GameplanDataType.IsStage &&
                                                                   !gameplandata.GameplanDataType.IsGet)
                                            .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
                                            .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
@@ -457,7 +580,6 @@ namespace Integration.Salesforce
             BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
             _mappingUser = objBDSservice.GetUserListByClientId(clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
 
-            IntegrationInstanceTacticIds = new List<string>();
         }
 
         private Plan_Campaign SyncCampaingData(Plan_Campaign planCampaign)
@@ -1536,7 +1658,6 @@ namespace Integration.Salesforce
         private bool UpdateTactic(Plan_Campaign_Program_Tactic planTactic)
         {
             Dictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Update);
-            IntegrationInstanceTacticIds.Add(Convert.ToString(planTactic.IntegrationInstanceTacticId));
             return _client.Update(objectName, planTactic.IntegrationInstanceTacticId, tactic);
         }
 
