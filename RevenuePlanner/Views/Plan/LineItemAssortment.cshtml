@@ -24,18 +24,18 @@
         {
             if (!IsOtherLineItem)
             {
-                <div class="btn-group pull-left margin-left20 gear-dropdown">
-                    <span class="gear-sidebar dropdown-toggle" data-toggle="dropdown"></span>
-                
-                    <ul class="dropdown-menu">
-                        @*<li><a id="spanDuplicate">Duplicate Tactic</a></li>*@
-                         <li><a id="CloneLineItemTactic">Duplicate Line Item</a></li>
-                        @if ((bool)ViewBag.IsOwner && !(bool)ViewBag.IsCreated)
-                        {
-                            <li><a id="deleteTactic">Delete Line Item</a></li>                        
-                        }
-                    </ul>
-                </div>
+            <div class="btn-group pull-left margin-left20 gear-dropdown">
+                <span class="gear-sidebar dropdown-toggle" data-toggle="dropdown"></span>
+
+                <ul class="dropdown-menu">
+                    @*<li><a id="spanDuplicate">Duplicate Tactic</a></li>*@
+                    <li><a id="CloneLineItemTactic">Duplicate Line Item</a></li>
+                    @if ((bool)ViewBag.IsOwner && !(bool)ViewBag.IsCreated)
+                    {
+                        <li><a id="deleteTactic">Delete Line Item</a></li>                        
+                    }
+                </ul>
+            </div>
             }
         }
     </div>
@@ -48,7 +48,7 @@
 <div id="frm_campaigns" name="frm_campaigns">
     @using (Html.BeginForm(new { @id = "frmSaveLineitem" }))
     {
-<script type="text/javascript">
+        <script type="text/javascript">
             $(document).ready(function () {
                 $(".verticalIdSelectBox select").selectbox();
             });
@@ -112,12 +112,15 @@
             {
                 if ((bool)ViewBag.RedirectType)
                 {
+                    if (string.IsNullOrEmpty(CalledFromBudget))
+                    {
                 <label>Parent Campaign</label>
                 @Html.TextBox("txtCampaign", (string)ViewBag.Campaign, new { @readonly = "true" });
                 <label>Parent Program</label>
                 @Html.TextBox("txtProgram", (string)ViewBag.Program, new { @readonly = "true" });
                 <label>Parent Tactic</label>
                 @Html.TextBox("txtTactic", (string)ViewBag.Tactic, new { @readonly = "true" });
+                    }
                 }
 
                 <div class="cf margin-left-4">
@@ -155,23 +158,23 @@
             {
                 if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
                 {
-                    <div class="budget-section">
-                        <div class="budget-head clearfix">
-                            <p>Cost Allocation</p>
-                            <a href="javascript:void(0)">- Collapse</a>
-                        </div>
-                        <div class="budget-collapse">
-                            <div class="white-bg">
-                                @HtmlHelpers.GenerateBudgetAllocationControl(AllocatedBy)
-                            </div>
-                             <div class="budget-result source-sans-prolight">
-                                <p>
-                                    Total Line Item Cost: 
+        <div class="budget-section">
+            <div class="budget-head clearfix">
+                <p>Cost Allocation</p>
+                <a href="javascript:void(0)">- Collapse</a>
+            </div>
+            <div class="budget-collapse">
+                <div class="white-bg">
+                    @HtmlHelpers.GenerateBudgetAllocationControl(AllocatedBy)
+                </div>
+                <div class="budget-result source-sans-prolight">
+                    <p>
+                        Total Line Item Cost: 
                                     <span id="lblTotalLineItemCost" class="source-sans-proregular"></span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+                    </p>
+                </div>
+            </div>
+        </div>
                 }
             }
         <!-- End Cost allocation for line item -->
@@ -224,7 +227,7 @@
         //if ($("#hdnIsBudgetAllocated").val() == "True" && $("#hdnIsOtherLineItem").val() == "False") {
         //    $("#lblTotalLineItemCost").html(FormatCommasBudget($("#lblTotalLineItemCost").html(), false,true));
         //}
-        
+
         $("span.tool-tip").tooltip();
 
         $("#Title").focus();
@@ -241,41 +244,41 @@
 
         $('.datepicker.dropdown-menu').css("display", "none");
 
-    $('.close-form', this.$panel).click(function (e) {
-        $('.datepicker.dropdown-menu').css("display", "none");
-        $("#slidepanel").css("display", "none");
-        $("#slidepanel-container").empty();
-    });
+        $('.close-form', this.$panel).click(function (e) {
+            $('.datepicker.dropdown-menu').css("display", "none");
+            $("#slidepanel").css("display", "none");
+            $("#slidepanel-container").empty();
+        });
 
         //Added : By Kalpesh Sharma Ticket #648 Cloning icon for tactics with allocation
-    $("#CloneLineItemTactic").click(function () {
-        var idLineitem = $("#hdnPlanLineItemId").val();
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Plan/Clone")',
-                data: {
-                    CloneType: '@Enums.DuplicationModule.LineItem',
+        $("#CloneLineItemTactic").click(function () {
+            var idLineitem = $("#hdnPlanLineItemId").val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/Clone")',
+            data: {
+                CloneType: '@Enums.DuplicationModule.LineItem',
                     Id: idLineitem,
                     title: '@Model.Title',
                     CalledFromBudget: '@CalledFromBudget'
-                    },
-                success: function (data) {
-                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                        window.location = '@Url.Content("~/Login/Index")';
+                },
+            success: function (data) {
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
+                    }
+                    else {
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                            return;
                         }
-                        else {
-                            if (data.redirect) {
-                                window.location.href = data.redirect;
-                                return;
-                            }
-                            if (data.errormsg) {
-                                alert(data.errormsg);
-                                return;
-                            }
+                        if (data.errormsg) {
+                            alert(data.errormsg);
+                            return;
                         }
                     }
-            });
+                }
         });
+    });
 
         $("#spanDuplicate").click(function () {
             CheckUserSession("#spanDuplicate", true);
@@ -572,7 +575,7 @@
                     if (r.length) {
                         for (i in r) {
                             var remainingMonthlyCost = r[i].remainingMonthlyCost == '' ? '0' : r[i].remainingMonthlyCost;
-                            $("#" + r[i].periodTitle).val(FormatCommas(r[i].costValue,false));
+                            $("#" + r[i].periodTitle).val(FormatCommas(r[i].costValue, false));
                             $("#" + r[i].periodTitle).attr('ov', r[i].costValue == '' ? '0' : r[i].costValue);
                             $("#" + r[i].periodTitle).attr('rmb', remainingMonthlyCost);
                             if (parseInt(remainingMonthlyCost) < 0) {
@@ -583,7 +586,7 @@
                 }
 
                 if (typeof data.otherLineItemCost != 'undefined') {
-                    $("#txtOtherLineItemCost").val(FormatCommasBudget(data.otherLineItemCost.toString(), false,true));
+                    $("#txtOtherLineItemCost").val(FormatCommasBudget(data.otherLineItemCost.toString(), false, true));
                     $("#txtOtherLineItemCost").attr('title', $("#txtOtherLineItemCost").val());
                     $("#txtOtherLineItemCost").attr('myvalue', $("#txtOtherLineItemCost").val());
                 }

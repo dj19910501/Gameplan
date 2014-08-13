@@ -18,8 +18,7 @@
 
 }
 <style type="text/css">
-    #c_tactics .verticalIdSelectBox .sbHolder
-    {
+    #c_tactics .verticalIdSelectBox .sbHolder {
         width: 90%;
     }
 </style>
@@ -33,11 +32,11 @@
  *@
         @if (!(bool)ViewBag.IsCreated && (bool)ViewBag.IsAllowCustomRestriction)
         {
-             <div class="btn-group pull-left margin-left20 gear-dropdown">
+            <div class="btn-group pull-left margin-left20 gear-dropdown">
                 <span class="gear-sidebar dropdown-toggle" data-toggle="dropdown"></span>
                 <ul class="dropdown-menu">
                     @*<li><a id="spanDuplicate">Duplicate Tactic</a></li>*@
-                     <li><a id="tacticClone">Duplicate Tactic</a></li>
+                    <li><a id="tacticClone">Duplicate Tactic</a></li>
                     @if ((bool)ViewBag.IsOwner && !(bool)ViewBag.IsCreated)
                     {
                         <li><a id="deleteTactic">Delete Tactic</a></li>                        
@@ -84,46 +83,49 @@
             <label class="t_title">Tactic Title</label>
             @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true", maxlength = "255" })
 
-            <label style="margin-top:6px;">Description</label>
+            <label style="margin-top: 6px;">Description</label>
             @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", rows = "3", maxlength = "4000" })
 
             @if ((bool)ViewBag.RedirectType)
             {
+                if (string.IsNullOrEmpty(CalledFromBudget))
+                {
                 <label>Parent Campaign</label>
                 @Html.TextBox("txtCampaign", (string)ViewBag.Campaign, new { @readonly = "true" });
                 <label>Parent Program</label>
                 @Html.TextBox("txtProgram", (string)ViewBag.Program, new { @readonly = "true" });
+                }
             }
 
-        <div class="content-row">
-            <label>Tactic Type</label>
-            <span class="verticalIdSelectBox" style="  margin-left: -2px;">@Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true", Id = "ddlTacticType" })</span>
-        </div>
-        <div class="content-row alternate">
-            <label >Vertical</label>
-            <span class="verticalIdSelectBox" style="  margin-left: -2px;">@Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
-        </div>
-        <div class="content-row margin-bottom10">
-            <label style="margin-top:6px;">Audience</label>
-            <span class="verticalIdSelectBox" style="  margin-left: -2px;">@Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
-        </div>
-        <div class="content-row alternate margin-bottom10">
-            <label style="margin-top:6px;">Geography</label>
-            <span class="verticalIdSelectBox" style="  margin-left: -2px;">@Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
-         </div>
+            <div class="content-row">
+                <label>Tactic Type</label>
+                <span class="verticalIdSelectBox" style="margin-left: -2px;">@Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true", Id = "ddlTacticType" })</span>
+            </div>
+            <div class="content-row alternate">
+                <label>Vertical</label>
+                <span class="verticalIdSelectBox" style="margin-left: -2px;">@Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
+            </div>
+            <div class="content-row margin-bottom10">
+                <label style="margin-top: 6px;">Audience</label>
+                <span class="verticalIdSelectBox" style="margin-left: -2px;">@Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
+            </div>
+            <div class="content-row alternate margin-bottom10">
+                <label style="margin-top: 6px;">Geography</label>
+                <span class="verticalIdSelectBox" style="margin-left: -2px;">@Html.DropDownListFor(model => model.GeographyId, new SelectList((System.Collections.IEnumerable)ViewBag.Geography, "GeographyId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
+            </div>
 
             @if (ExtIntService)
             {
 
                 if (Model.IsDeployedToIntegration)
                 {
-                 <label style="margin-top:6px;">Status</label>
-                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
+                <label style="margin-top: 6px;">Status</label>
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
                 }
                 else
                 {
-                 <label style="margin-top:6px;">Status</label>
-                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to integration" maxlength="18" readonly />
+                <label style="margin-top: 6px;">Status</label>
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to integration" maxlength="18" readonly />
                 }
             }
 
@@ -165,50 +167,51 @@
         </div>
         <!--End content-->
         
-          <!-- Start by Kalpesh Sharma #605: Cost allocation for Tactic  -->
+        <!-- Start by Kalpesh Sharma #605: Cost allocation for Tactic  -->
             if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
             {
-		    <div class="budget-section">
-                <div class="budget-head clearfix">
-                    <p>Cost Allocation</p>
-                    <a href="javascript:void(0)">- Collapse</a>
-                </div>
-                <div class="budget-collapse">
-                    <div class="white-bg">
-                        @HtmlHelpers.GenerateBudgetAllocationControl(AllocatedBy)
+        <div class="budget-section">
+            <div class="budget-head clearfix">
+                <p>Cost Allocation</p>
+                <a href="javascript:void(0)">- Collapse</a>
+            </div>
+            <div class="budget-collapse">
+                <div class="white-bg">
+                    @HtmlHelpers.GenerateBudgetAllocationControl(AllocatedBy)
 
-                         @*Added By : Kalpesh Sharma : PL #605 : 07/29/2014*@
-                        <div class="budget-month">
-                            <span class="month">@Common.UnallocatedBudgetLabelText</span>   @* Modified by Sohel Pathan on 04/08/2014 *@
-                            <span class="unallocated-span"><input id="lblUnallocatedBudget" class="unallocated-text" readonly="true" /></span>
-                        </div>
-
+                    @*Added By : Kalpesh Sharma : PL #605 : 07/29/2014*@
+                    <div class="budget-month">
+                        <span class="month">@Common.UnallocatedBudgetLabelText</span>   @* Modified by Sohel Pathan on 04/08/2014 *@
+                        <span class="unallocated-span">
+                            <input id="lblUnallocatedBudget" class="unallocated-text" readonly="true" /></span>
                     </div>
-                    <div class="budget-result source-sans-prolight">
-                         <p>
-                            Remaining @(AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Monthly" : "Quarter") Cost: 
+
+                </div>
+                <div class="budget-result source-sans-prolight">
+                    <p>
+                        Remaining @(AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Monthly" : "Quarter") Cost: 
                                     	<span id="lblRemainingMonthlyBudget" class="source-sans-proregular"></span>
-                        </p>
-                       <p>
-                            Allocated Line Item Cost (this  @(AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Month" : "Quarter")): 
+                    </p>
+                    <p>
+                        Allocated Line Item Cost (this  @(AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Month" : "Quarter")): 
                             <span id="lblAllocatedProgramsBudget" class="source-sans-proregular"></span>
-                        </p>
-                        <p>
-                            Total Allocated:
+                    </p>
+                    <p>
+                        Total Allocated:
                             <span id="lblTotalAllocated" class="source-sans-proregular"></span>
-                        </p>
-                        <p>
-                            Total Planned Cost:
+                    </p>
+                    <p>
+                        Total Planned Cost:
                           <span id="lblTotalBudget" class="source-sans-proregular">@Model.TacticCost </span>
-                        </p>
-                         @* <p>
+                    </p>
+                    @* <p>
                             Unallocated Cost:
                          <span id="lblUnallocatedBudget" class="source-sans-proregular"></span>
                         </p>*@
-                    </div>
                 </div>
-                <!--End content-->
             </div>
+            <!--End content-->
+        </div>
             }
         <!-- End by Kalpesh Sharma #605: Cost allocation for Tactic-->
         
@@ -217,11 +220,11 @@
                 <div class="width65px margin-right20 pull-left">
                     @*<label title="@Html.LabelForINQ("INQ")">@Html.LabelForINQ("INQ")</label>*@
 
-                     <label id="lblStageTitle" title="@Model.StageTitle">@Model.StageTitle &nbsp;
+                    <label id="lblStageTitle" title="@Model.StageTitle">@Model.StageTitle &nbsp;
                           @if (ViewBag.IsDiffrentStageType == true)
                           {
-                        <span>
-                            <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" /></span>
+                              <span>
+                                  <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" /></span>
                               
                           }</label>
                     @*@Html.TextBoxFor(model => model.INQs, new { placeholder = "0", id = "txtinq", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })*@
@@ -234,14 +237,14 @@
                     <input type="text" value="@Model.MQLs" readonly="true" id = "txtmql" />
                 </div>
 
-               @*  <div class="width65px margin-right20 pull-left">
+                @*  <div class="width65px margin-right20 pull-left">
                     <label title="Cost">Cost</label>
                     @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", id = "txtCost", @class = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                 </div>*@
 
-                   <div class="width65px pull-left">
-                        <label title="Revenue">Revenue</label>
-                        @Html.TextBoxFor(model => model.Revenue, new { placeholder = "$0", id = "txtRevenue", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                <div class="width65px pull-left">
+                    <label title="Revenue">Revenue</label>
+                    @Html.TextBoxFor(model => model.Revenue, new { placeholder = "$0", id = "txtRevenue", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                 </div>
 
             </div>
@@ -253,16 +256,19 @@
                     <div id="c_tactics">
                         <!--selects elements created dynamically-->
                     </div>
-                     <div id="divAddNewTactics">
-                    <span class="c-add-lineitem link-blue " style="margin-top:3px;">Add New Line Items</span>
-                         </div>
+                    <div id="divAddNewTactics">
+                        <span class="c-add-lineitem link-blue " style="margin-top: 3px;">Add New Line Items</span>
+                    </div>
                 </div>	
             }
 
             @if ((bool)ViewBag.RedirectType)
             {
+                if (string.IsNullOrEmpty(CalledFromBudget))
+                {
                 <p class="font-size12 pull-left font-size13">Edit tactic details in </p>
                 <label class="pull-left font-size12 padding-left3">@*@Html.ActionLink("Assortment Mix","Assortment")*@ <a href="#" id="lnkCampaigns">Campaigns</a>.</label>
+                }
             }
         </div>
         <!--end content dark-->
@@ -288,7 +294,7 @@
 
 </div>
 @* Start - Added by Sohel Pathan on 12/08/2014 for PL ticket #605 *@
-<div style="display:none;">
+<div style="display: none;">
     <input type="hidden" id="hdnPrevTacticTypeId" />
     <input type="hidden" id="hdnTotalPlanBudget" value="0" />
 </div>
@@ -596,13 +602,13 @@
             var edate = $('#t_enddate').val();
             if (!isDate(sdate)) {
                 alert('@Common.objCached.ValidateStartDate');
-                    return false;
-                }
-                if (!isDate(edate)) {
-                    alert('@Common.objCached.ValidateEndDate');
-                    return false;
-                }
-                if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
+                return false;
+            }
+            if (!isDate(edate)) {
+                alert('@Common.objCached.ValidateEndDate');
+                return false;
+            }
+            if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
             if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
             //var psdate = $('#hdnPStartDate').val();
             //var pedate = $('#hdnPEndDate').val();
@@ -618,7 +624,7 @@
             //}
             if ($("#hdnIsBudgetAllocated").val() == "True") {
                 //Start by Kalpesh Sharma #605: Cost allocation for Tactic
-@*                var lstAllocInputs = $(".budget-section input.error-text").not('.unallocated-text');
+                @*                var lstAllocInputs = $(".budget-section input.error-text").not('.unallocated-text');
                 if (lstAllocInputs.length > 0) {
                     var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorehanBudgeted for ";
                     var inputLength = lstAllocInputs.length;
@@ -900,8 +906,7 @@
         NumberFormatterTipsyTitle(".displaytitle", 31);// uday PL Ticket #550 3-7-2014
 
         // Start - Added by Sohel Pathan on 12/08/2014 for PL ticket #605
-        if (parseInt($('#hdnPlanTacticId').val()) > 0)
-        {
+        if (parseInt($('#hdnPlanTacticId').val()) > 0) {
             $('#hdnPrevTacticTypeId').val($('#ddlTacticType').val());
         }
         // End - Added by Sohel Pathan on 12/08/2014 for PL ticket #605
@@ -1027,7 +1032,7 @@
                     if (r.length) {
                         for (i in r) {
                             var remainingMonthlyBudget = r[i].remainingMonthlyBudget == '' ? '0' : r[i].remainingMonthlyBudget;
-                            $("#" + r[i].periodTitle).val(FormatCommas(r[i].budgetValue,false));
+                            $("#" + r[i].periodTitle).val(FormatCommas(r[i].budgetValue, false));
                             $("#" + r[i].periodTitle).attr('ov', r[i].budgetValue == '' ? '0' : r[i].budgetValue);
                             $("#" + r[i].periodTitle).attr('rmb', remainingMonthlyBudget);
                             $("#" + r[i].periodTitle).attr('pmb', r[i].programMonthlyBudget);

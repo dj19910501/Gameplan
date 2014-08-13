@@ -4,11 +4,11 @@
 @{
     bool ExtIntService = (bool)ViewBag.ExtIntService;
     string AllocatedBy = Model.AllocatedBy;
-    bool IsBudgetAllocated=false;
+    bool IsBudgetAllocated = false;
     string planRemainingBudget = Convert.ToString(ViewBag.planRemainingBudget);
     if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
     {
-        IsBudgetAllocated=true;
+        IsBudgetAllocated = true;
     }
     string CalledFromBudget = ViewBag.CalledFromBudget;
 }
@@ -59,11 +59,11 @@
             @Html.HiddenFor(model => model.TEndDate, new { id = "hdnTEndDate" })
             @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
             @Html.HiddenFor(model => model.CampaignBudget, new { id = "hdnOldCampaignBudget" })
-            @Html.Hidden("hdnIsBudgetAllocated",IsBudgetAllocated)
+            @Html.Hidden("hdnIsBudgetAllocated", IsBudgetAllocated)
 
 
             <label class="t_title">Campaign Title</label>
-            @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true", maxlength = "255", id="txtTitle" }) @* Modified by :- Sohel Pathan on 24/04/2014 for internal review point to stop form posting on ENTERKEY press event *@
+            @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true", maxlength = "255", id = "txtTitle" }) @* Modified by :- Sohel Pathan on 24/04/2014 for internal review point to stop form posting on ENTERKEY press event *@
 
             <label>Description</label>
             @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional", rows = "3", maxlength = "4000" })
@@ -73,11 +73,11 @@
                 <label>Status</label>
                 if (ViewBag.IsDeployedToIntegration)
                 {
-                     <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
                 }
                 else
                 {    
-                     <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to integration" maxlength="18" readonly />
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to integration" maxlength="18" readonly />
                 }
             }
 
@@ -117,7 +117,7 @@
             <div class="content-row">
                 <label class="padding-left4" title="Cost">Campaign Budget</label>
                 @Html.TextBoxFor(model => model.CampaignBudget, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", id = "txtCampaignBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
-        </div>
+            </div>
             <div class="content-row alternate">
                 <label class="padding-left4" title="Cost">Remaining Budget</label>
                 @*<input id="txtCost" class="currency_dollar margin-top3px"  type="text" value="1,500,000" placeholder="$1,500,000" name="Cost" maxlength="13" data-val-required="The Cost field is required." data-val-number="The field Cost must be a number." data-val="true" readonly myvalue="$1,500,000" title="$1,500,000">                      *@
@@ -126,47 +126,48 @@
         </div>
         <!--End content-->
         <!-- Start added by dharmraj #567: Budget allocation for campaign  -->
-        if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
-        {
-		    <div class="budget-section">
-                <div class="budget-head clearfix">
-                    <p>Budget Allocation</p>
-                    <a href="javascript:void(0)">- Collapse</a>
-                </div>
-                <div class="budget-collapse">
-                    <div class="white-bg">
-                        @HtmlHelpers.GenerateBudgetAllocationControl(AllocatedBy)
-                        <div class="budget-month">
-                            <span class="month">@Common.UnallocatedBudgetLabelText</span>   @* Modified by Sohel Pathan on 04/08/2014 *@
-                            <span class="unallocated-span"><input id="lblUnallocatedBudget" class="unallocated-text" readonly="true" /></span>
-                        </div>
+            if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
+            {
+        <div class="budget-section">
+            <div class="budget-head clearfix">
+                <p>Budget Allocation</p>
+                <a href="javascript:void(0)">- Collapse</a>
+            </div>
+            <div class="budget-collapse">
+                <div class="white-bg">
+                    @HtmlHelpers.GenerateBudgetAllocationControl(AllocatedBy)
+                    <div class="budget-month">
+                        <span class="month">@Common.UnallocatedBudgetLabelText</span>   @* Modified by Sohel Pathan on 04/08/2014 *@
+                        <span class="unallocated-span">
+                            <input id="lblUnallocatedBudget" class="unallocated-text" readonly="true" /></span>
                     </div>
-                    <div class="budget-result source-sans-prolight">
-                        <p>
-                            Remaining @(AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Monthly" : "Quarter") Budget: 
+                </div>
+                <div class="budget-result source-sans-prolight">
+                    <p>
+                        Remaining @(AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Monthly" : "Quarter") Budget: 
                                     	<span id="lblRemainingMonthlyBudget" class="source-sans-proregular"></span>
-                        </p>
-                        <p>
-                            Allocated Programs Budget (this @(AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Month" : "Quarter")): 
+                    </p>
+                    <p>
+                        Allocated Programs Budget (this @(AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Month" : "Quarter")): 
                                     	<span id="lblAllocatedProgramsBudget" class="source-sans-proregular"></span>
-                        </p>
-                        <p>
-                            Total Allocated:
+                    </p>
+                    <p>
+                        Total Allocated:
                                     	<span id="lblTotalAllocated" class="source-sans-proregular"></span>
-                        </p>
-                        <p>
-                            Total Budgeted:
+                    </p>
+                    <p>
+                        Total Budgeted:
                                     	<span id="lblTotalBudget" class="source-sans-proregular">@Model.CampaignBudget</span>
-                        </p>
-                        @*<p>
+                    </p>
+                    @*<p>
                             Unallocated budget:
                                     	<span id="lblUnallocatedBudget" class="source-sans-proregular"></span>
                         </p>*@
-                    </div>
                 </div>
-                <!--End content-->
             </div>
-        }
+            <!--End content-->
+        </div>
+            }
         <!-- End added by dharmraj #567: Budget allocation for campaign -->
         <div class="content dark inline-ellipsis">
             @if (!(bool)ViewBag.IsCreated)
@@ -189,7 +190,7 @@
                     <div class="width65px pull-left">
                         <label title="Revenue">Revenue</label>
                         @Html.TextBoxFor(model => model.Revenue, new { placeholder = "$0", id = "txtRevenue", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
-                </div>
+                    </div>
                 </div>
             }
             @if ((bool)ViewBag.IsCreated)
@@ -200,33 +201,36 @@
 
                         <!--inputs elements created dynamically-->
                     </div>
-                     <div id="divAddNewTactics">
-                    <span class="c-add-program link-blue">Add New Program</span>
-                         </div>
+                    <div id="divAddNewTactics">
+                        <span class="c-add-program link-blue">Add New Program</span>
+                    </div>
                 </div>					
             }
             @if ((bool)ViewBag.RedirectType)
             {
+                if (string.IsNullOrEmpty(CalledFromBudget))
+                {
                 <p class="font-size12 pull-left font-size13">Edit campaign details in </p>
                 <label class="pull-left font-size12 padding-left3">@*@Html.ActionLink("Assortment Mix","Assortment")*@ <a href="#" id="lnkCampaigns">Campaigns</a>.</label>
+                }
             }
         </div>
         <!--end content dark-->
-        if((bool)ViewBag.IsOwner)
-        {
-            <div class="wraper-btns cf">
+            if ((bool)ViewBag.IsOwner)
+            {
+        <div class="wraper-btns cf">
             <div id="divBudgetError" class="alert alert-error hide error-msg">
                 <a class="close">×</a>
                 <p id="BudgetErrorMessage" class="source-sans-probold">You cannot allocate more than budgeted for Jan and May .</p>
             </div>
             <div class="span2 btn-save">
-                    <button id="save_campaign" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
-                </div>
-            <div class="span2">
-                    <button class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
-                </div>
+                <button id="save_campaign" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button">Save</button>
             </div>
-        }
+            <div class="span2">
+                <button class="close-form btn-link source-sans-proregular" type="button">Cancel</button>
+            </div>
+        </div>
+            }
         <!--End buttons-->
 @* TFS Point 253,206 : Model/Plan - sidebars - integrate gear icon with feature to delete/duplicate tactic
     Added by Nirav Shah on 17 feb 2014
@@ -239,7 +243,7 @@
         <!--End content dark-->
             }*@
     }
-  
+
 </div>
 @*</div>*@
 <script type="text/javascript">
@@ -373,7 +377,7 @@
                         CopyClone: 'Campaign',
                         closedTask: arrClosedTaskString,
                         UserId: uId,
-                        CalledFromBudget:'@CalledFromBudget'
+                        CalledFromBudget: '@CalledFromBudget'
                     },
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
@@ -393,7 +397,7 @@
             });
         });
 
-        
+
         $(".c-add-program").click(function () {
             $("#c_programs").append('<div class="content-row" style="width: 45% !important;float:left;"><input class="delete-icon" type="text" require="true" placeholder="Program Title" maxlength="255" /><span class="delete-temp-program"></span></div>');
         });
@@ -605,7 +609,7 @@
             if (typeof arrClosedTask != 'undefined') {
                 arrClosedTaskString = arrClosedTask.toString();
             }
-            
+
             var allocationValue = [];
             var lstAllocInputs = $(".budget-section input").not('.unallocated-text');
             for (var i = 0; i < lstAllocInputs.length; i++) {
@@ -665,7 +669,7 @@
                         ID: campaignId,
                         RedirectType: isAssortment,
                         closedTask: arrClosedTaskString
-                        ,UserId: uId     // Added by Sohel Pathan on 07/08/2014 for PL ticket #672
+                        , UserId: uId     // Added by Sohel Pathan on 07/08/2014 for PL ticket #672
                         , CalledFromBudget: '@CalledFromBudget'
                     },
                     success: function (data) {
@@ -859,7 +863,7 @@
                     if (r.length) {
                         for (i in r) {
                             var remainingMonthlyBudget = r[i].remainingMonthlyBudget == '' ? '0' : r[i].remainingMonthlyBudget;
-                            $("#" + r[i].periodTitle).val(FormatCommas(r[i].budgetValue,false));
+                            $("#" + r[i].periodTitle).val(FormatCommas(r[i].budgetValue, false));
                             $("#" + r[i].periodTitle).attr('ov', r[i].budgetValue == '' ? '0' : r[i].budgetValue);
                             $("#" + r[i].periodTitle).attr('rmb', remainingMonthlyBudget);
                             $("#" + r[i].periodTitle).attr('pmb', r[i].programMonthlyBudget);
@@ -893,7 +897,7 @@
         var CampaignBudgetValue = $("#txtCampaignBudget").val().trim().replace(/,/g, '').replace('$', '');
         var CampaignAllocatedBudgetValue = $("#lblTotalAllocated").html().trim().replace(/,/g, '').replace('$', '');
         var unallocatedBudget = parseInt(CampaignBudgetValue) - parseInt(CampaignAllocatedBudgetValue);
-        $("#lblUnallocatedBudget").val(FormatCommasBudget(unallocatedBudget.toString(), false,true));
+        $("#lblUnallocatedBudget").val(FormatCommasBudget(unallocatedBudget.toString(), false, true));
         if (unallocatedBudget < 0) {
             $("#lblUnallocatedBudget").addClass('error-text');
             $("#lblTotalAllocated").addClass('error-text');
