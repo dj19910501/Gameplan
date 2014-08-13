@@ -55,7 +55,7 @@
                 $(".verticalIdSelectBox select").selectbox();
             });
         </script>
-         <div class="top-title">
+        <div class="top-title">
             <p>Campaign</p>
             <span title="@ViewBag.Campaign" class="displaytitle">@ViewBag.Campaign</span>@*uday*@
         </div>// uday PL Ticket #550 3-7-2014
@@ -68,7 +68,7 @@
             @Html.HiddenFor(model => model.TEndDate, new { id = "hdnTEndDate" })
             @Html.HiddenFor(model => model.IsDeployedToIntegration, new { id = "hdnIsDeployedToIntegration" })
             @Html.HiddenFor(model => model.ProgramBudget, new { id = "hdnOldProgramBudget" })
-            @Html.Hidden("hdnIsBudgetAllocated",IsBudgetAllocated)
+            @Html.Hidden("hdnIsBudgetAllocated", IsBudgetAllocated)
 
             <label class="t_title">Program Title</label>
             @Html.TextBoxFor(model => model.Title, new { placeholder = "Required", require = "true", maxlength = "255", id = "txtTitle" }) @* Modified by :- Sohel Pathan on 24/04/2014 for internal review point to stop form posting on ENTERKEY press event *@
@@ -82,22 +82,25 @@
                 <label>Status</label>
                 if (Model.IsDeployedToIntegration)
                 {
-                     <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue" placeholder="Sync to integration" maxlength="18" readonly />
                 }
                 else
                 {    
-                     <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to integration" maxlength="18" readonly />
+                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray" placeholder="Not Sync to integration" maxlength="18" readonly />
                 }
             }
 
 
             @if ((bool)ViewBag.RedirectType)
             {
+                if (string.IsNullOrEmpty(CalledFromBudget))
+                {
                 <label>Parent Campaign</label>
                 @Html.TextBox("txtCampaign", (string)ViewBag.Campaign, new { @readonly = "true" });
+                }
             }
 
-           @* <label>Vertical</label>
+@* <label>Vertical</label>
             <span class="verticalIdSelectBox">@Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
 
             <label>Audience</label>
@@ -131,61 +134,62 @@
                 </div>
             @*}*@
 
-         <div class="content-row">
+            <div class="content-row">
                 <label class="padding-left4" title="Program Budget">Program Budget</label>
                 @Html.TextBoxFor(model => model.ProgramBudget, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", id = "txtProgramBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
             </div>
             <div class="content-row alternate">
                 <label class="padding-left4" title="Remaining Campaign Budget">Remaining Campaign Budget</label>
                 @*<input id="txtCost" class="currency_dollar margin-top3px"  type="text" value="1,500,000" placeholder="$1,500,000" name="Cost" maxlength="13" data-val-required="The Cost field is required." data-val-number="The field Cost must be a number." data-val="true" readonly myvalue="$1,500,000" title="$1,500,000">                      *@
-                @Html.TextBox("txtRemainingBudget", "$0", new {  @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
+                @Html.TextBox("txtRemainingBudget", "$0", new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
             </div>
 
         </div>
         <!--End content-->
         
-           <!-- Start added by Kalpesh #604: Budget allocation for campaign  -->
+        <!-- Start added by Kalpesh #604: Budget allocation for campaign  -->
             if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
             {
-		    <div class="budget-section">
-                <div class="budget-head clearfix">
-                    <p>Budget Allocation</p>
-                    <a href="javascript:void(0)">- Collapse</a>
-                </div>
-                <div class="budget-collapse">
-                    <div class="white-bg">
-                        @HtmlHelpers.GenerateBudgetAllocationControl(AllocatedBy)
-                        @*Added By : Kalpesh Sharma : PL #605 : 07/29/2014*@
-                        <div class="budget-month">
-                            <span class="month">@Common.UnallocatedBudgetLabelText</span>   @* Modified by Sohel Pathan on 04/08/2014 *@
-                            <span class="unallocated-span"><input id="lblUnallocatedBudget" class="unallocated-text" readonly="true" /></span>
-                        </div>
+        <div class="budget-section">
+            <div class="budget-head clearfix">
+                <p>Budget Allocation</p>
+                <a href="javascript:void(0)">- Collapse</a>
+            </div>
+            <div class="budget-collapse">
+                <div class="white-bg">
+                    @HtmlHelpers.GenerateBudgetAllocationControl(AllocatedBy)
+                    @*Added By : Kalpesh Sharma : PL #605 : 07/29/2014*@
+                    <div class="budget-month">
+                        <span class="month">@Common.UnallocatedBudgetLabelText</span>   @* Modified by Sohel Pathan on 04/08/2014 *@
+                        <span class="unallocated-span">
+                            <input id="lblUnallocatedBudget" class="unallocated-text" readonly="true" /></span>
                     </div>
-                    <div class="budget-result source-sans-prolight">
-                         <p>
-                            Remaining @(AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Monthly" : "Quarter") Budget: 
+                </div>
+                <div class="budget-result source-sans-prolight">
+                    <p>
+                        Remaining @(AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Monthly" : "Quarter") Budget: 
                                     	<span id="lblRemainingMonthlyBudget" class="source-sans-proregular"></span>
-                        </p>
-                       <p>
-                            Allocated Tactic Cost (this  @(AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Month" : "Quarter")): 
+                    </p>
+                    <p>
+                        Allocated Tactic Cost (this  @(AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "Month" : "Quarter")): 
                             <span id="lblAllocatedProgramsBudget" class="source-sans-proregular"></span>
-                        </p>
-                        <p>
-                            Total Allocated:
+                    </p>
+                    <p>
+                        Total Allocated:
                             <span id="lblTotalAllocated" class="source-sans-proregular"></span>
-                        </p>
-                        <p>
-                            Total Budgeted:
+                    </p>
+                    <p>
+                        Total Budgeted:
                           <span id="lblTotalBudget" class="source-sans-proregular">@Model.ProgramBudget</span>
-                        </p>
-                          @*<p>
+                    </p>
+                    @*<p>
                             Unallocated budget:
                          <span id="lblUnallocatedBudget" class="source-sans-proregular"></span>
                         </p>*@
-                    </div>
                 </div>
-                <!--End content-->
             </div>
+            <!--End content-->
+        </div>
             }
         <!-- End added by Kalpesh #604: Budget allocation for campaign -->
         
@@ -211,7 +215,7 @@
                     <div class="width65px pull-left">
                         <label title="Revenue">Revenue</label>
                         @Html.TextBoxFor(model => model.Revenue, new { placeholder = "$0", id = "txtRevenue", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
-                </div>
+                    </div>
 
                 </div>
             }
@@ -225,7 +229,7 @@
                             <!--selects elements created dynamically-->
                         </div>
                         <div id="divAddNewTactics">
-                        <span class="c-add-tactic link-blue " style="margin-top:3px;">Add New tactics</span>
+                            <span class="c-add-tactic link-blue " style="margin-top: 3px;">Add New tactics</span>
                         </div>
                     }
                     else
@@ -236,8 +240,11 @@
             }
             @if ((bool)ViewBag.RedirectType)
             {
+                if (string.IsNullOrEmpty(CalledFromBudget))
+                {
                 <p class="font-size12 pull-left font-size13">Edit program details in </p>
                 <label class="pull-left font-size12 padding-left3">@*@Html.ActionLink("Assortment Mix","Assortment")*@ <a href="#" id="lnkCampaigns">Campaigns</a>.</label>
+                }
             }
         </div>
         <!--end content dark-->
@@ -285,8 +292,8 @@
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
         //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-            $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
-            $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
+        $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
+        $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
         //}
 
         //// Added by :- Sohel Pathan on 24/04/2014 for internal review point to stop form posting on ENTERKEY (Keycode = 13) press event for Title textBox
@@ -334,11 +341,11 @@
             $(this).closest(".alert").slideUp(400);
         });
         //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-            $('.datepicker.dropdown-menu').css("display", "none");
+        $('.datepicker.dropdown-menu').css("display", "none");
         //}
         $('.close-form', this.$panel).click(function (e) {
             //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                $('.datepicker.dropdown-menu').css("display", "none");
+            $('.datepicker.dropdown-menu').css("display", "none");
             //}
             $("#slidepanel").css("display", "none");
             $("#slidepanel-container").empty();
@@ -436,7 +443,7 @@
                     tacticString = tacticString + '<option value="' + tactictype[i].TacticTypeId + '">' + tactictype[i].Title + '</option>';
                 }
             }
-            
+
             $("#c_tactics").append('<div  style="margin-bottom: 5px;width: 50% !important;float:left;"><span class="verticalIdSelectBox"><select id="TacticTypeId" class="ddlStyle" require="true" name="TacticTypeId" data-val-required="The TacticTypeId field is required." data-val-number="The field TacticTypeId must be a number." data-val="true">' +
                '<option value="">Please Select</option>' + tacticString +
                '</select></span>' +
@@ -508,28 +515,28 @@
             }
 
             //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
-                sdate = $('#t_startdate').val();
-                edate = $('#t_enddate').val();
-                //var csdate = $('#hdnCStartDate').val();
-                //var cedate = $('#hdnCEndDate').val();
-                var tsdate = $('#hdnTStartDate').val();
-                var tedate = $('#hdnTEndDate').val();
-                if (!isDate(sdate)) {
-                    alert('@Common.objCached.ValidateStartDate');
-                    return false;
-                }
-                if (!isDate(edate)) {
-                    alert('@Common.objCached.ValidateEndDate');
-                    return false;
-                }
-                if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
-                if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
-                if (!validateDateCompare(sdate, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) return false;
-                //if (!validateDateCompare(csdate, sdate, "Campaign Start Date")) return false;
-                //if (!validateDateCompare(edate, cedate, "Campaign End Date")) return false;
-                if (!validateDateCompare(sdate, tsdate, "@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate")) return false;
-                if (!validateDateCompare(tedate, edate, "@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate")) return false;
-               
+            sdate = $('#t_startdate').val();
+            edate = $('#t_enddate').val();
+            //var csdate = $('#hdnCStartDate').val();
+            //var cedate = $('#hdnCEndDate').val();
+            var tsdate = $('#hdnTStartDate').val();
+            var tedate = $('#hdnTEndDate').val();
+            if (!isDate(sdate)) {
+                alert('@Common.objCached.ValidateStartDate');
+                return false;
+            }
+            if (!isDate(edate)) {
+                alert('@Common.objCached.ValidateEndDate');
+                return false;
+            }
+            if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
+            if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
+            if (!validateDateCompare(sdate, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) return false;
+            //if (!validateDateCompare(csdate, sdate, "Campaign Start Date")) return false;
+            //if (!validateDateCompare(edate, cedate, "Campaign End Date")) return false;
+            if (!validateDateCompare(sdate, tsdate, "@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate")) return false;
+            if (!validateDateCompare(tedate, edate, "@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate")) return false;
+
             //}
 
             if ($("#hdnIsBudgetAllocated").val() == "True") {
@@ -664,7 +671,7 @@
                 }
             });
         });
-                @* TFS Point 253,206 : Model/Plan - sidebars - integrate gear icon with feature to delete/duplicate tactic
+        @* TFS Point 253,206 : Model/Plan - sidebars - integrate gear icon with feature to delete/duplicate tactic
     Added by Nirav Shah on 17 feb 2014
  *@
 
@@ -681,7 +688,7 @@
                 var isAssortment = $("#hdnRedirectType").val();
 
                 var arrClosedTaskString = null;
-                if(typeof arrClosedTask != 'undefined') {
+                if (typeof arrClosedTask != 'undefined') {
                     arrClosedTaskString = arrClosedTask.toString();
                 }
                 var uId = $(window).attr('name');
@@ -783,7 +790,7 @@
         if ($("#hdnIsBudgetAllocated").val() == "True") {
             calculateUnallocatedBudget();
         }
-       
+
     });
 
 
@@ -809,7 +816,7 @@
                     }
 
                     //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
-                    $("#lblRemainingMonthlyBudget").html(FormatCommasBudget(newRemainingBudgetValue.toString(),false,true));
+                    $("#lblRemainingMonthlyBudget").html(FormatCommasBudget(newRemainingBudgetValue.toString(), false, true));
 
                     var ProgramBudgetValue = parseInt($(this).attr("pmb"));
                     if (parseInt(currentValue) < ProgramBudgetValue) {
@@ -865,14 +872,14 @@
             url: '@Url.Content("~/Plan/GetBudgetAllocationProgrmaData/")',
             data: {
                 CampaignId: hdnPlanCampaignId, PlanProgramId: '@Model.PlanProgramId'
-                },
+            },
             success: function (data) {
                 var r = data.budgetData;
                 if (typeof r != 'undefined') {
                     if (r.length) {
                         for (i in r) {
                             var remainingMonthlyBudget = r[i].remainingMonthlyBudget == '' ? '0' : r[i].remainingMonthlyBudget;
-                            $("#" + r[i].periodTitle).val(FormatCommas(r[i].budgetValue,false));
+                            $("#" + r[i].periodTitle).val(FormatCommas(r[i].budgetValue, false));
                             $("#" + r[i].periodTitle).attr('ov', r[i].budgetValue == '' ? '0' : r[i].budgetValue);
                             $("#" + r[i].periodTitle).attr('rmb', remainingMonthlyBudget);
                             $("#" + r[i].periodTitle).attr('pmb', r[i].programMonthlyBudget);
@@ -883,7 +890,7 @@
                     }
                 }
 
-                $("#txtRemainingBudget").val(FormatCommasBudget(data.planRemainingBudget.toString(), false , true));
+                $("#txtRemainingBudget").val(FormatCommasBudget(data.planRemainingBudget.toString(), false, true));
                 $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
                 $("#txtRemainingBudget").attr('myvalue', $("#txtRemainingBudget").val());
 
@@ -902,31 +909,31 @@
                 return false;
             }
         });
+    }
+
+    function calculateUnallocatedBudget() {
+        var CampaignBudgetValue = $("#txtProgramBudget").val().trim().replace(/,/g, '').replace('$', '');
+        var CampaignAllocatedBudgetValue = $("#lblTotalAllocated").html().trim().replace(/,/g, '').replace('$', '');
+        var unallocatedBudget = parseInt(CampaignBudgetValue) - parseInt(CampaignAllocatedBudgetValue);
+
+        //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
+        $("#lblUnallocatedBudget").val(FormatCommasBudget(unallocatedBudget.toString(), false, true));
+
+        if (unallocatedBudget < 0) {
+            $("#lblUnallocatedBudget").addClass('error-text');
+            $("#lblTotalAllocated").addClass('error-text');
+
         }
-
-        function calculateUnallocatedBudget() {
-            var CampaignBudgetValue = $("#txtProgramBudget").val().trim().replace(/,/g, '').replace('$', '');
-            var CampaignAllocatedBudgetValue = $("#lblTotalAllocated").html().trim().replace(/,/g, '').replace('$', '');
-            var unallocatedBudget = parseInt(CampaignBudgetValue) - parseInt(CampaignAllocatedBudgetValue);
-
-            //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
-            $("#lblUnallocatedBudget").val(FormatCommasBudget(unallocatedBudget.toString(), false,true));
-
-            if (unallocatedBudget < 0) {
-                $("#lblUnallocatedBudget").addClass('error-text');
-                $("#lblTotalAllocated").addClass('error-text');
-
-            }
-            else {
-                $("#lblUnallocatedBudget").removeClass('error-text');
-                $("#lblTotalAllocated").removeClass('error-text');
-            }
+        else {
+            $("#lblUnallocatedBudget").removeClass('error-text');
+            $("#lblTotalAllocated").removeClass('error-text');
         }
+    }
 
-        function ShowBudgetError(value) {
-            $("#divBudgetError").slideDown(400);
-            $("#BudgetErrorMessage").empty();
-            $("#BudgetErrorMessage").html(value);
-        }
+    function ShowBudgetError(value) {
+        $("#divBudgetError").slideDown(400);
+        $("#BudgetErrorMessage").empty();
+        $("#BudgetErrorMessage").html(value);
+    }
 
 </script>
