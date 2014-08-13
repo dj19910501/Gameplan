@@ -751,7 +751,7 @@
 	<!--Start - Added by :- Dharmraj on 6/08/2014 for PL #658 Integration - UI - Pulling Revenue - Salesforce.com-->
 	<Field>
 		<Name>CloseDealTargetFieldInvalidMsg</Name>
-		<value>Please ensure that a target field is not mapped to more than one Gameplan data type under same plan entity.</value>
+		<value>Please ensure that a target field is not mapped to more than one application field.</value>
 	</Field>
   <Field>
     <Name>DataTypeMappingPullSaveSuccess</Name>
@@ -759,7 +759,7 @@
   </Field>
   <Field>
     <Name>NoDataTypeMappingFieldsForEloqua</Name>
-    <value>There are no Gameplan Fields - Data Mapping for Eloqua type integration instance.</value>
+    <value>This section is not applicable for current integration type.</value>
   </Field>
 	<!--End - Added by :- Dharmraj on 6/08/2014 for PL #658 Integration - UI - Pulling Revenue - Salesforce.com-->
 </Messages>
