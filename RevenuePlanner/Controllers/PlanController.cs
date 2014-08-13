@@ -3202,7 +3202,7 @@ namespace RevenuePlanner.Controllers
                                     if (!string.IsNullOrEmpty(CalledFromBudget))
                                     {
                                         TempData["SuccessMessage"] = "Program saved successfully";
-                                        return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                                        return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = "program" + form.PlanProgramId.ToString() }) });
                                     }
                                     else
                                     {
@@ -3286,7 +3286,7 @@ namespace RevenuePlanner.Controllers
                                 if (!string.IsNullOrEmpty(CalledFromBudget))
                                 {
                                     TempData["SuccessMessage"] = string.Format(Common.objCached.ProgramDeleteSuccess, Title);
-                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = "campaign" + cid.ToString() }) });
                                 }
                                 else
                                 {
@@ -4042,7 +4042,7 @@ namespace RevenuePlanner.Controllers
                                     if (!string.IsNullOrEmpty(CalledFromBudget))
                                     {
                                         TempData["SuccessMessage"] = "Tactic saved successfully";
-                                        return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                                        return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = "tactic" + form.PlanTacticId.ToString() }) });
                                     }
                                     else
                                     {
@@ -4128,7 +4128,7 @@ namespace RevenuePlanner.Controllers
                                 if (!string.IsNullOrEmpty(CalledFromBudget))
                                 {
                                     TempData["SuccessMessage"] = string.Format(Common.objCached.TacticDeleteSuccess, Title);
-                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = "program" + pid.ToString() }) });
                                 }
                                 else
                                 {
@@ -4865,7 +4865,7 @@ namespace RevenuePlanner.Controllers
                                     if (!string.IsNullOrEmpty(CalledFromBudget))
                                     {
                                         TempData["SuccessMessage"] = "Line item saved successfully";
-                                        return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                                        return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = "lineitem" + form.PlanLineItemId.ToString()  }) });
                                     }
                                     else
                                     {
@@ -5005,7 +5005,7 @@ namespace RevenuePlanner.Controllers
                                 if (!string.IsNullOrEmpty(CalledFromBudget))
                                 {
                                     TempData["SuccessMessage"] = string.Format("Line Item {0} deleted successfully", Title);
-                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = "tactic" + tid.ToString() }) });
                                 }
                                 else
                                 {
@@ -5137,7 +5137,11 @@ namespace RevenuePlanner.Controllers
                             scope.Complete();
                             if (!string.IsNullOrEmpty(CalledFromBudget))
                             {
-                                return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                                string expand = CopyClone.ToLower();
+                                if (expand == "campaign")
+                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                                else
+                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = expand + id.ToString() }) });
                             }
                             else
                             {
@@ -8310,7 +8314,7 @@ namespace RevenuePlanner.Controllers
                     {
                         CloneType = "Line Item";
                     }
-                    TempData["SuccessMessageDeletedPlan"] = string.Format("{0} {1} successfully Duplicated.", CloneType, title);
+                    
                 }
 
                 if (rtResult >= 1)
@@ -8319,10 +8323,17 @@ namespace RevenuePlanner.Controllers
                     {
                         TempData["SuccessMessage"] = string.Format("{0} {1} successfully Duplicated.", CloneType, title);
                         TempData["SuccessMessageDeletedPlan"] = "";
-                        return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                        //return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+
+                        string expand = CloneType.ToLower().Replace(" " ,"");
+                        if (expand == "campaign")
+                            return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                        else
+                            return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = expand + Id.ToString() }) });
                     }
                     else
                     {
+                        TempData["SuccessMessageDeletedPlan"] = string.Format("{0} {1} successfully Duplicated.", CloneType, title);
                         return Json(new { redirect = Url.Action("Assortment"), planId = Sessions.PlanId });
                     }
                 }

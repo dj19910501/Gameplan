@@ -8,6 +8,7 @@
     int CurrentPlanId = ViewBag.PlanId;
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     string type = Convert.ToString(Request.QueryString["type"]);
+    string expand = Convert.ToString(Request.QueryString["expand"]);
     if (string.IsNullOrEmpty(type))
     {
         type = "allocated";
@@ -106,9 +107,66 @@
         }
         $(".selectBox select").selectbox();
         LoadPlanBuBusinessUnit($('#ddlBusinessUnit').val());
-        
     });
+    function ExpandItems() {
+        try {
+            var strExpand = '@expand';
+            var strExpandType = '';
+            var strExpandId = 0;
+        
+            if (strExpand != '') {
+                if (strExpand.indexOf('lineitem') >= 0)
+                    strExpandType = 'lineitem';
+                else if (strExpand.indexOf('tactic') >= 0)
+                    strExpandType = 'tactic';
+                else if (strExpand.indexOf('program') >= 0)
+                    strExpandType = 'program';
+                else if (strExpand.indexOf('campaign') >= 0)
+                    strExpandType = 'campaign';
 
+                strExpandId = strExpand.replace(strExpandType, '');
+                if ($.isNumeric(strExpandId)) {
+                    if (strExpandType == 'lineitem') {
+                        var tacticDP = $('#' + strExpand).parent().attr('data-parent'); //tactic
+                        var programDP = $('#' + strExpand).parent().parent().attr('data-parent'); //program
+                        var campaignDP = $('#' + strExpand).parent().parent().parent().attr('data-parent'); //campaign
+                    
+                        $('#' + campaignDP).css('display', 'block');
+                        $(".sub[data-parent='" + campaignDP + "']").css('display', 'block');
+                        $('#' + campaignDP + ' a:first-child').addClass('collapse');
+                        $('#' + programDP).css('display', 'block');
+                        $(".sub[data-parent='" + programDP + "']").css('display', 'block');
+                        $('#' + programDP + ' a:first-child').addClass('collapse');
+                        $('#' + tacticDP).css('display', 'block');
+                        $(".sub[data-parent='" + tacticDP + "']").css('display', 'block');
+                        $('#' + tacticDP + ' a:first-child').addClass('collapse');
+                    }
+                    else if (strExpandType == 'tactic') {
+                        var programDP = $('#' + strExpand).parent().attr('data-parent'); //program
+                        var campaignDP = $('#' + strExpand).parent().parent().attr('data-parent'); //campaign
+
+                        $('#' + campaignDP).css('display', 'block');
+                        $(".sub[data-parent='" + campaignDP + "']").css('display', 'block');
+                        $('#' + campaignDP + ' a:first-child').addClass('collapse');
+                        $('#' + programDP).css('display', 'block');
+                        $(".sub[data-parent='" + programDP + "']").css('display', 'block');
+                        $('#' + programDP + ' a:first-child').addClass('collapse');
+                    }
+                    else if (strExpandType == 'program') {
+                        var campaignDP = $('#' + strExpand).parent().attr('data-parent'); //campaign
+
+                        $('#' + campaignDP).css('display', 'block');
+                        $(".sub[data-parent='" + campaignDP + "']").css('display', 'block');
+                        $('#' + campaignDP + ' a:first-child').addClass('collapse');
+                        
+                    }
+                }
+            }
+        } catch (e){
+
+        }
+        
+    }
     $('#ddlBusinessUnit').change(function () {
         Bid = $('#ddlBusinessUnit').val();
         LoadPlanBuBusinessUnit(Bid);
@@ -129,7 +187,7 @@
             $('#divTabData').load('@Url.Action("GetAllocatedBugetData", "Plan")' + '?PlanId=' + CurrentPlanId);
         }
         else if (currentTab == 'aPlanned') {
-            $('#divTabData').load('@Url.Action("GetBudgetedData", "Plan")' + '?PlanId=' + CurrentPlanId);
+            $('#divTabData').load('@Url.Action("GetBudgetedData", "Plan")' + '?PlanId=' + CurrentPlanId, function () { ExpandItems(); });
         }
         else if (sender == 'aActuals') {
         }
@@ -143,7 +201,7 @@
 }
 
 function LoadPlanBuBusinessUnit(Bid) {
-    $('#DivloadPlan').load('@Url.Action("BudgetPlanList", "Plan")' + '?Bid=' + Bid, function () { TabLoad(currentTab); ShowChangeLog(CurrentPlanId); hideAllMessages = true; });
+    $('#DivloadPlan').load('@Url.Action("BudgetPlanList", "Plan")' + '?Bid=' + Bid, function () { TabLoad(currentTab); ShowChangeLog(CurrentPlanId); hideAllMessages = true;  });
     }
     function populateNF(items, id) {
         var $dropdown = $("#" + id);
