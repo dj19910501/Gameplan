@@ -544,6 +544,9 @@ namespace RevenuePlanner.Controllers
                 // Dharmraj Start : #658: Integration - UI - Pulling Revenue - Salesforce.com
                 objView.GameplanDataTypePullModelList = GetGameplanDataTypePullList(id);
                 // Dharmraj End : #658: Integration - UI - Pulling Revenue - Salesforce.com
+                // Dharmraj Start : #680: Integration - UI - Pull responses from Salesforce
+                //objView.GameplanDataTypePullRevenueModelList = GetGameplanDataTypePullList(id);
+                // Dharmraj End : #680: Integration - UI - Pull responses from Salesforce
             }
 
             return View(objView);
@@ -1349,11 +1352,6 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public JsonResult SaveDataMappingPull(IList<GameplanDataTypePullModel> form, int IntegrationInstanceId, string UserId = "")
         {
-            if (Sessions.User == null)
-            {
-                return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
-            }
-
             if (!string.IsNullOrEmpty(UserId))
             {
                 if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
