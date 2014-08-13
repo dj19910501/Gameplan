@@ -595,6 +595,14 @@
                     return false;
                 }
             }
+            else {
+                //Added By : Kalpesh Sharma :: #693 Allowing Program Budget more than Remaining Campaign Budget in None case
+                if ($("#txtRemainingBudget").hasClass('error-text'))
+                {
+                 ShowBudgetError("@RevenuePlanner.Helpers.Common.objCached.CannotAllocateMorethanRemainingBudgeted");
+                 return false;
+                }
+            }
             //if (SaveCampaignFlag) {
             //    var lstAllocInputs = $(".budget-section input.low-budgeted");
             //    if (lstAllocInputs.length > 0) {
@@ -762,9 +770,9 @@
 
 
     //Start added by Kalpesh  #608: Budget allocation for Program
-    if ($("#hdnIsBudgetAllocated").val() == "True") {
+    //if ($("#hdnIsBudgetAllocated").val() == "True") {
         fillBudgetAllocationData();
-    }
+    //}
 
     $("#txtProgramBudget").keyup(function () {
         var ProgramBudgetValue = ReplaceCC($("#txtProgramBudget").val());
