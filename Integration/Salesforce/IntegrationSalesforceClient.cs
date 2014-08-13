@@ -210,19 +210,47 @@ namespace Integration.Salesforce
             {
                 try
                 {
-                    string CampaignId = "CampaignId";
-                    string FirstRespondedDate = "FirstRespondedDate";
-                    string Status = "Status";
+                    string CampaignId = string.Empty;// "CampaignId";
+                    string FirstRespondedDate = string.Empty;//"FirstRespondedDate";
+                    string Status = string.Empty;//"Status";
+
+                    var listPullMapping = db.IntegrationInstanceDataTypeMappingPulls.Where(instance => instance.IntegrationInstanceId == _integrationInstanceId && instance.GameplanDataTypePull.Type == Common.StageINQ)
+                       .Select(mapping => new { mapping.GameplanDataTypePull.ActualFieldName, mapping.TargetDataType }).ToList();
+
+                    if (listPullMapping.Count > 0)
+                    {
+                        if (listPullMapping.Where(mapping => mapping.ActualFieldName == Enums.PullResponseActualField.CampaignID.ToString()).Any())
+                        {
+                            CampaignId = listPullMapping.FirstOrDefault(mapping => mapping.ActualFieldName == Enums.PullResponseActualField.CampaignID.ToString()).TargetDataType;
+                        }
+                        if (listPullMapping.Where(mapping => mapping.ActualFieldName == Enums.PullResponseActualField.Timestamp.ToString()).Any())
+                        {
+                            FirstRespondedDate = listPullMapping.FirstOrDefault(mapping => mapping.ActualFieldName == Enums.PullResponseActualField.Timestamp.ToString()).TargetDataType;
+                        }
+                        if (listPullMapping.Where(mapping => mapping.ActualFieldName == Enums.PullResponseActualField.Status.ToString()).Any())
+                        {
+                            Status = listPullMapping.FirstOrDefault(mapping => mapping.ActualFieldName == Enums.PullResponseActualField.Status.ToString()).TargetDataType;
+                        }
+
+                        if (CampaignId != string.Empty && FirstRespondedDate != string.Empty && Status != string.Empty)
+                        {
                     List<CampaignMember> CampaignMemberList = new List<CampaignMember>();
-                    var responsePull = _client.Query<CampaignMember>("SELECT " + CampaignId + "," + FirstRespondedDate + " FROM CampaignMember WHERE " + CampaignId + " IN ('" + integrationTacticIds + "') AND " + Status  + "= '" + Common.Responded + "'");
+                            var responsePull = _client.Query<object>("SELECT " + CampaignId + "," + FirstRespondedDate + " FROM CampaignMember WHERE " + CampaignId + " IN ('" + integrationTacticIds + "') AND " + Status + "= '" + Common.Responded + "'");
 
                     foreach (var resultin in responsePull)
                     {
                         string TacticResult = resultin.ToString();
                         JObject jobj = JObject.Parse(TacticResult);
                         CampaignMember objCampaign = new CampaignMember();
+                                try
+                                {
                         objCampaign.CampaignId = Convert.ToString(jobj[CampaignId]);
                         objCampaign.FirstRespondedDate = Convert.ToDateTime(jobj[FirstRespondedDate]);
+                                }
+                                catch (Exception e)
+                                {
+                                    // Insert error message if occure
+                                }
                         CampaignMemberList.Add(objCampaign);
                     }
                     
@@ -288,6 +316,8 @@ namespace Integration.Salesforce
                         db.SaveChanges();
                     }
                 }
+                    }
+                }
                 catch (SalesforceException e)
                 {
                     string msg = GetErrorMessage(e);
@@ -331,21 +361,35 @@ namespace Integration.Salesforce
             {
                 try
                 {
-                    string CampaignId = "CampaignId";
-                    string CloseDate = "CloseDate";
-                    string Amount = "Amount";
-                    string StageName = "StageName";
-                    var listPullMapping = db.IntegrationInstanceDataTypeMappingPulls.Where(instance => instance.IntegrationInstanceId == _integrationInstanceId)
+                    string CampaignId = string.Empty;// "CampaignId";
+                    string CloseDate = string.Empty;// "CloseDate";
+                    string Amount = string.Empty;// "Amount";
+                    string StageName = string.Empty;// "StageName";
+                    var listPullMapping = db.IntegrationInstanceDataTypeMappingPulls.Where(instance => instance.IntegrationInstanceId == _integrationInstanceId && instance.GameplanDataTypePull.Type == Common.StageCW)
                         .Select(mapping => new { mapping.GameplanDataTypePull.ActualFieldName, mapping.TargetDataType }).ToList();
-                    CampaignId = listPullMapping.SingleOrDefault(mapping => mapping.ActualFieldName == Enums.PullCWActualField.CampaignID.ToString()).TargetDataType;
-                    CloseDate = listPullMapping.SingleOrDefault(mapping => mapping.ActualFieldName == Enums.PullCWActualField.Timestamp.ToString()).TargetDataType;
-                    Amount = listPullMapping.SingleOrDefault(mapping => mapping.ActualFieldName == Enums.PullCWActualField.Amount.ToString()).TargetDataType;
-                    StageName = listPullMapping.SingleOrDefault(mapping => mapping.ActualFieldName == Enums.PullCWActualField.Stage.ToString()).TargetDataType;
+
+                    if (listPullMapping.Count > 0)
+                    {
+                        if (listPullMapping.Where(mapping => mapping.ActualFieldName == Enums.PullCWActualField.CampaignID.ToString()).Any())
+                        {
+                            CampaignId = listPullMapping.FirstOrDefault(mapping => mapping.ActualFieldName == Enums.PullCWActualField.CampaignID.ToString()).TargetDataType;
+                        }
+                        if (listPullMapping.Where(mapping => mapping.ActualFieldName == Enums.PullCWActualField.Timestamp.ToString()).Any())
+                        {
+                            CloseDate = listPullMapping.FirstOrDefault(mapping => mapping.ActualFieldName == Enums.PullCWActualField.Timestamp.ToString()).TargetDataType;
+                        }
+                        if (listPullMapping.Where(mapping => mapping.ActualFieldName == Enums.PullCWActualField.Amount.ToString()).Any())
+                        {
+                            Amount = listPullMapping.FirstOrDefault(mapping => mapping.ActualFieldName == Enums.PullCWActualField.Amount.ToString()).TargetDataType;
+                        }
+                        if (listPullMapping.Where(mapping => mapping.ActualFieldName == Enums.PullCWActualField.Stage.ToString()).Any())
+                        {
+                            StageName = listPullMapping.FirstOrDefault(mapping => mapping.ActualFieldName == Enums.PullCWActualField.Stage.ToString()).TargetDataType;
+                        }
 
                     if (CampaignId != string.Empty && CloseDate != string.Empty && Amount != string.Empty && StageName != string.Empty)
                     {
 
-                        string qu = "SELECT " + CampaignId + "," + CloseDate + "," + Amount + " FROM Opportunity WHERE " + CampaignId + " IN ('" + integrationTacticIds + "') AND " + StageName + "= '" + Common.ClosedWon + "'";
                         List<OpportunityMember> OpportunityMemberList = new List<OpportunityMember>();
                         var cwRecords = _client.Query<object>("SELECT " + CampaignId + "," + CloseDate + "," + Amount + " FROM Opportunity WHERE " + CampaignId + " IN ('" + integrationTacticIds + "') AND " + StageName + "= '" + Common.ClosedWon + "'");
                         foreach (var resultin in cwRecords)
@@ -353,9 +397,16 @@ namespace Integration.Salesforce
                             string TacticResult = resultin.ToString();
                             JObject jobj = JObject.Parse(TacticResult);
                             OpportunityMember objOpp = new OpportunityMember();
+                                try
+                                {
                             objOpp.CampaignId = Convert.ToString(jobj[CampaignId]);
                             objOpp.CloseDate = Convert.ToDateTime(jobj[CloseDate]);
                             objOpp.Amount = Convert.ToDouble(jobj[Amount]);
+                                }
+                                catch(Exception e)
+                                {
+                                    // Insert error message in log table
+                                }
                             OpportunityMemberList.Add(objOpp);
                         }
 
@@ -443,6 +494,7 @@ namespace Integration.Salesforce
                         }
                     }
                 }
+                }
                 catch (SalesforceException e)
                 {
                     string msg = GetErrorMessage(e);
@@ -490,7 +542,27 @@ namespace Integration.Salesforce
                 string integrationTacticIds = String.Join("','", (from tactic in tacticList select tactic.IntegrationInstanceTacticId));
             try
             {
-                    List<ImportCostMember> ImportCostMemberList = new List<ImportCostMember>(_client.Query<ImportCostMember>("SELECT " + actualCost + "," + ColumnId + " FROM " + this.objectName + " WHERE " + ColumnId + " in ('" + integrationTacticIds + "')"));
+                    List<ImportCostMember> ImportCostMemberList = new List<ImportCostMember>();
+                    var ActualCostList = _client.Query<object>("SELECT " + fieldname + "," + ColumnId + " FROM " + this.objectName + " WHERE " + ColumnId + " in ('" + integrationTacticIds + "')");
+
+                    foreach (var resultin in ActualCostList)
+                    {
+                        string TacticResult = resultin.ToString();
+                        JObject jobj = JObject.Parse(TacticResult);
+                        ImportCostMember objImport = new ImportCostMember();
+                        try
+                        {
+                            objImport.CampaignId = Convert.ToString(jobj[ColumnId]);
+                            objImport.actualCost = Convert.ToDouble(jobj[actualCost]);
+                        }
+                        catch(Exception e)
+                        {
+                            // Insert error in log table
+                        }
+                        ImportCostMemberList.Add(objImport);
+                    }
+                    if (ImportCostMemberList.Count > 0)
+                    {
                     List<string> IntegrationTacticIdList = ImportCostMemberList.Select(import => import.CampaignId).Distinct().ToList();
                     List<Plan_Campaign_Program_Tactic> innerTacticList = tacticList.Where(t => IntegrationTacticIdList.Contains(t.IntegrationInstanceTacticId)).ToList();
 
@@ -514,6 +586,7 @@ namespace Integration.Salesforce
                     db.Entry(instanceTactic).State = EntityState.Added;
                 }
                 db.SaveChanges();
+                    }
             }
             catch (SalesforceException e)
             {
