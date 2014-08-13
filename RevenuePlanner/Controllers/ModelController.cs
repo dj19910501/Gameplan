@@ -4404,14 +4404,21 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <returns></returns>
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]
-        public ActionResult SaveIntegration(int id, BaselineModel objBaselineModel)
+        public JsonResult SaveIntegration(int id, BaselineModel objBaselineModel,bool IsIntegrationChanged=false)
         {
             /*set values of db.Model object as per posted values and update db.Model*/
             bool returnValue = false;
             string message = string.Empty;
+            using (TransactionScope scope = new TransactionScope()) 
+            {
             try
             {
                 var objModel = db.Models.Where(m => m.ModelId == id && m.IsDeleted == false).FirstOrDefault();
+                    if (IsIntegrationChanged)
+                    {
+                        int integrationId = Convert.ToInt32(objModel.IntegrationInstanceId);
+                        Common.DeleteIntegrationInstance(integrationId, false, id);
+                    }
                 if (objModel != null)
                 {
                     objModel.IntegrationInstanceId = objBaselineModel.IntegrationInstanceId;
@@ -4439,7 +4446,9 @@ namespace RevenuePlanner.Controllers
                 message = Common.objCached.ErrorOccured;
                 TempData["ErrorMessageIntegration"] = message;
             }
-            return RedirectToAction("IntegrationSelection", new { id = ViewBag.ModelId });
+                scope.Complete();
+            }
+            return Json(new { status = false,Id=id }, JsonRequestBehavior.AllowGet); 
         }
         /// <summary>
         /// Added by Mitesh Vaishnav for PL ticket #659 

@@ -13,6 +13,7 @@
     string ShowModelResultsTab = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ShowModelResultsTab"]);
     int LatestModelID = Convert.ToInt32(ViewBag.LatestModelID);
     string BusinessUnitId = Convert.ToString(ViewBag.BusinessUnitId);
+    string message = TempData["SuccessMessageIntegration"] == null ? "" : TempData["SuccessMessageIntegration"].ToString();
     @Html.Hidden("hdnShowModelResultsTab", ShowModelResultsTab);
                                                                string PublishedMsg = ViewBag.ModelPublishComfirmation;
     @Html.Hidden("PublishedMsg", PublishedMsg);
@@ -122,7 +123,7 @@
                 {
                 <div class="cf inputs-aligned-horizontal">
                     <div>
-                        <input id="btnSubmit" type="submit" value="Save" title="save" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" style="margin-left: 179px; float: left; margin-right: 30px;" />
+                        <input id="btnSubmit" type="button" value="Save" title="save" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" style="margin-left: 179px; float: left; margin-right: 30px;" />
                         <button id="btnCancel" class="close-form btn-link source-sans-proregular" style="padding-top: 8px; color: #999999; text-decoration: underline;" type="button" tabindex="12">Cancel</button>
                     </div>
                 </div>
@@ -143,17 +144,50 @@
 <script type="text/javascript">
     var lastModelId = '@modelId';
     $(document).ready(function () {
+
+        if ('@message' != null && '@message' != '') {
+            var msgspan = '@message';
+            $('#cSuccess').html('<strong>Success!</strong> ' + $('#cSuccess').html())
+            $("#cSuccess").text(msgspan);
+            $("#successMessage").slideDown(600);
+        }
         $("#btnCancel").click(function () {
             $("#successMessage").slideUp(600);
             $("#errorMessage").slideUp(600);
 
         });
-        if ('@TempData["SuccessMessageIntegration"]' != null && '@TempData["SuccessMessageIntegration"]' != '') {
-            var msgspan = '@TempData["SuccessMessageIntegration"]';
-            $('#cSuccess').html('<strong>Success!</strong> ' + $('#cSuccess').html())
-            $("#cSuccess").text(msgspan);
-            $("#successMessage").slideDown(600);
-        }
+
+        $('#btnSubmit').click(function () {
+            /*Modified by Mitesh vaishnav on 13/08/2014 for PL ticket #690 ,Check for Integration instanse of pushing tactic data is changed than confirm process*/
+            if ('@Model.IntegrationInstanceId.ToString()' == $('#IntegrationInstanceId').val() || '@Model.IntegrationInstanceId' == null || '@Model.IntegrationInstanceId' == '') {
+                var formData = $("form").serialize();
+                var modelId = parseInt('@modelId')
+                $.ajax({
+                    url: '@Url.Content("~/Model/SaveIntegration")',
+                     data: formData + "&id=" + modelId,
+                     success: function (data) {
+                         window.location = '@Url.Content("~/Model/IntegrationSelection?id=")' + data.Id;
+                     }
+                 });
+
+                 }
+                 else {
+                     var r = confirm('@Common.objCached.ConfirmationForModifyTargetIntegration');
+                if (r == true) {
+                    var formData = $("form").serialize();
+                    var modelId = parseInt('@modelId')
+                    $.ajax({
+                        url: '@Url.Content("~/Model/SaveIntegration")',
+                        data: formData + "&id=" + modelId + "&IsIntegrationChanged=" + true,
+                        success: function (data) {
+                            window.location = '@Url.Content("~/Model/IntegrationSelection?id=")' + data.Id;
+                        }
+                    });
+
+                    }
+                }
+            return false;
+        });
         var ismsg = $("#hdnMsg").val();
         if ($('#cSuccess').html() != '') {
             $('#cSuccess').html('<strong>Success!</strong> ' + $('#cSuccess').html())
