@@ -4217,7 +4217,11 @@ namespace RevenuePlanner.Controllers
                             newModel = oldModel;
                             newModel.Version = "1.0";
                             newModel.ParentModelId = null;
+                            //Added By : Kalpesh Sharma #694 :Clone Model with Integration Tab
                             newModel.IntegrationInstanceId = null;
+                            newModel.IntegrationInstanceIdCW = null;
+                            newModel.IntegrationInstanceIdINQ = null;
+                            newModel.IntegrationInstanceIdMQL = null;
                             newModel.EffectiveDate = null;
                         }
                     }
