@@ -753,5 +753,13 @@
 		<Name>CloseDealTargetFieldInvalidMsg</Name>
 		<value>Please ensure that a target field is not mapped to more than one Gameplan data type under same plan entity.</value>
 	</Field>
+  <Field>
+    <Name>DataTypeMappingPullSaveSuccess</Name>
+    <value> Settings have been saved successfully.</value>
+  </Field>
+  <Field>
+    <Name>NoDataTypeMappingFieldsForEloqua</Name>
+    <value>There are no Gameplan Fields - Data Mapping for Eloqua type integration instance.</value>
+  </Field>
 	<!--End - Added by :- Dharmraj on 6/08/2014 for PL #658 Integration - UI - Pulling Revenue - Salesforce.com-->
 </Messages>

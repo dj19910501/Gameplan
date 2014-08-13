@@ -3,16 +3,16 @@
 
 <div class="accordion-group">
     <div class="accordion-heading">
-        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseCloseDeal">Pulling Close Deals<span href="javascript:void(0)">+ Expand</span></a>
+        <a class="accordion-toggle" style="border-bottom:none;" data-toggle="collapse" data-parent="#accordion" href="#collapseCloseDeal">Pulling Close Deals<span href="javascript:void(0)">+ Expand</span></a>
     </div>
     <div class="accordion-body collapse out" id="collapseCloseDeal">
-        <h5 class="CloseDealHeader">Gameplan Fields - Data Mapping</h5>
         @using (Html.BeginForm("SaveClosedDealDataMapping", "ExternalService", FormMethod.Post, new { name = "frmClosedDealDataMapping", id = "frmClosedDealDataMapping" }))
         {
             @Html.Hidden("ClosedDealInvalidMsg", TempData["ClosedDealInvalidMsg"])
             <div class="row">
                 @if (Model.Count > 0)
                 {
+                    <h5 class="CloseDealHeader">Gameplan Fields - Data Mapping</h5>
                     <div class="content-colum-mapDataTypes width100 float-left">
                         <table id="tblDataMapping" class="tblFieldMapping">
                             <tbody>
@@ -40,7 +40,7 @@
                     <!--success message-->
                     <div id="ClosedDealSuccessMessage" class="alert hide alert-success messages">
                         <a class="close">×</a>
-                        <strong>Success.</strong> <span id="spanMessageSuccess"></span>
+                        <strong>Success!</strong> <span id="spanMessageSuccess"></span>
                     </div>
                     <!--success message-->
 
@@ -61,6 +61,10 @@
                             </span>
                         </div>
                     
+                }
+                else
+                {
+                    <h5 class="CloseDealHeader">@RevenuePlanner.Helpers.Common.objCached.NoDataTypeMappingFieldsForEloqua</h5>
                 }
             </div>   
         }

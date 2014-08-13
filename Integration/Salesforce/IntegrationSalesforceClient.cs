@@ -127,7 +127,11 @@ namespace Integration.Salesforce
             }
         }
 
-        //Modified By Dharmraj on 6-8-2014, #658
+        /// <summary>
+        /// Modified By Dharmraj on 6-8-2014, Ticket #658
+        /// </summary>
+        /// <param name="objectName">Sales force object name</param>
+        /// <returns>Returns property list of salesforce object</returns>
         public List<string> GetTargetDataType(string objectName)
         {
             List<string> TargetDataTypeList = new List<string>();

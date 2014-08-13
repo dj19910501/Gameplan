@@ -267,6 +267,10 @@ namespace Integration
             return null;
         }
 
+        /// <summary>
+        /// Added By Dharmraj on 8-8-2014, Ticket #658
+        /// </summary>
+        /// <returns>Returns list of properties of salesforce opportunuty object</returns>
         public List<string> GetTargetDataMemberCloseDeal()
         {
             _integrationInstanceId = _id;
