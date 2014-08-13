@@ -1101,8 +1101,6 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns GameplanDataTypePullModel List</returns>
         public IList<GameplanDataTypePullModel> GetGameplanDataTypePullList(int id)
         {
-            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
-
             List<GameplanDataTypePullModel> listGameplanDataTypePullZero = new List<GameplanDataTypePullModel>();
 
             try
@@ -1210,6 +1208,7 @@ namespace RevenuePlanner.Controllers
             try
             {
                 ViewBag.IntegrationInstanceId = id;
+                // Get Integration instance Title
                 string integrationTypeName = (from i in db.IntegrationInstances
                                               join t in db.IntegrationTypes on i.IntegrationTypeId equals t.IntegrationTypeId
                                               where i.IsDeleted == false && t.IsDeleted == false && i.IntegrationInstanceId == id
@@ -1225,6 +1224,7 @@ namespace RevenuePlanner.Controllers
 
                 TempData["ClosedDealInvalidMsg"] = Common.objCached.CloseDealTargetFieldInvalidMsg;
                 List<GameplanDataTypePullModel> listGameplanDataTypePullZero = new List<GameplanDataTypePullModel>();
+                //Get list of GameplanDatatypePull objects when integration instance type is Salesforce
                 if (integrationTypeName == Enums.IntegrationType.Salesforce.ToString())
                 {
                     // Get list of All GameplanDataTypePullModel from DB by IntegrationInstance ID
@@ -1344,13 +1344,13 @@ namespace RevenuePlanner.Controllers
         /// <CreatedDate>08/08/2014</CreatedDate>
         /// <param name="id">ID of integration instance</param>
         /// <param name="form">All values of form controls</param>
-        /// <returns></returns>
+        /// <returns>Returns status = 1 and success message on success and status = 0 and failure message on error</returns>
         [HttpPost]
         public JsonResult SaveDataMappingPull(IList<GameplanDataTypePullModel> form, int IntegrationInstanceId, string UserId = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
-                if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                if (Sessions.User != null && !Sessions.User.UserId.Equals(Guid.Parse(UserId)))
                 {
                     TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
