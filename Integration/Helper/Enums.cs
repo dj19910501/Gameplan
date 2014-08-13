@@ -20,5 +20,13 @@ namespace Integration.Helper
             Salesforce,
             Eloqua
         }
+
+        public enum PullCWActualField
+        {
+            Stage,
+            Timestamp,
+            CampaignID,
+            Amount
+        }
     }
 }

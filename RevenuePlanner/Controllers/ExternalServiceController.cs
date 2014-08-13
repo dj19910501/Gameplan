@@ -1096,10 +1096,9 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Get list of gameplan DataType Pull Mapping list
         /// </summary>
-        /// <CreatedBy>Dharmraj #658</CreatedBy>
-        /// <CreatedDate>07/08/2014</CreatedDate>
+        /// Added by Dharmraj on 8-8-2014, Ticket #658
         /// <param name="id"></param>
-        /// <returns></returns>
+        /// <returns>Returns GameplanDataTypePullModel List</returns>
         public IList<GameplanDataTypePullModel> GetGameplanDataTypePullList(int id)
         {
             ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
@@ -1202,10 +1201,10 @@ namespace RevenuePlanner.Controllers
         #region Function get Gameplan DataTypes Pull list from DB.
         /// <summary>
         /// Get gameplan datatype list Pull from database based on IntegrationInstanceId
-        /// Dharmraj #658
+        /// Added by Dharmraj on 8-8-2014, Ticket #658
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">ID of Integration instance</param>
+        /// <returns>Returns list of GameplanDataTypePullModel objects</returns>
         public List<GameplanDataTypePullModel> GetGameplanDataTypePullListFromDB(int id)
         {
             try
@@ -1228,20 +1227,20 @@ namespace RevenuePlanner.Controllers
                 List<GameplanDataTypePullModel> listGameplanDataTypePullZero = new List<GameplanDataTypePullModel>();
                 if (integrationTypeName == Enums.IntegrationType.Salesforce.ToString())
                 {
-                    
-                    listGameplanDataTypePullZero = (from i in db.IntegrationInstances
-                                                    join d in db.GameplanDataTypePulls on i.IntegrationTypeId equals d.IntegrationTypeId
-                                                    join m1 in db.IntegrationInstanceDataTypeMappingPulls on d.GameplanDataTypePullId equals m1.GameplanDataTypePullId into mapping
+                    // Get list of All GameplanDataTypePullModel from DB by IntegrationInstance ID
+                    listGameplanDataTypePullZero = (from II in db.IntegrationInstances
+                                                    join GDP in db.GameplanDataTypePulls on II.IntegrationTypeId equals GDP.IntegrationTypeId
+                                                    join IIDMP in db.IntegrationInstanceDataTypeMappingPulls on GDP.GameplanDataTypePullId equals IIDMP.GameplanDataTypePullId into mapping
                                                     from m in mapping.Where(map => map.IntegrationInstanceId == id).DefaultIfEmpty()
-                                                    where i.IntegrationInstanceId == id && d.IsDeleted == false
+                                                    where II.IntegrationInstanceId == id && GDP.IsDeleted == false
                                                     select new GameplanDataTypePullModel
                                                     {
-                                                        GameplanDataTypePullId = d.GameplanDataTypePullId,
-                                                        IntegrationTypeId = d.IntegrationTypeId,
-                                                        ActualFieldName = d.ActualFieldName,
-                                                        DisplayFieldName = d.DisplayFieldName,
+                                                        GameplanDataTypePullId = GDP.GameplanDataTypePullId,
+                                                        IntegrationTypeId = GDP.IntegrationTypeId,
+                                                        ActualFieldName = GDP.ActualFieldName,
+                                                        DisplayFieldName = GDP.DisplayFieldName,
                                                         IntegrationInstanceDataTypeMappingPullId = m.IntegrationInstanceDataTypeMappingPullId,
-                                                        IntegrationInstanceId = i.IntegrationInstanceId,
+                                                        IntegrationInstanceId = II.IntegrationInstanceId,
                                                         TargetDataType = m.TargetDataType
                                                     }).ToList();
                 }
@@ -1343,8 +1342,8 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <CreatedBy>Dharmraj</CreatedBy>
         /// <CreatedDate>08/08/2014</CreatedDate>
-        /// <param name="id"></param>
-        /// <param name="form"></param>
+        /// <param name="id">ID of integration instance</param>
+        /// <param name="form">All values of form controls</param>
         /// <returns></returns>
         [HttpPost]
         public JsonResult SaveDataMappingPull(IList<GameplanDataTypePullModel> form, int IntegrationInstanceId, string UserId = "")
@@ -1358,14 +1357,13 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
-
             try
             {
                 using (MRPEntities mrp = new MRPEntities())
                 {
                     using (var scope = new TransactionScope())
                     {
+                        // Delete all old IntegrationInstanceDataTypeMappingPull entries by integrationInstanceId
                         List<int> lstIds = mrp.IntegrationInstanceDataTypeMappingPulls.Where(m => m.IntegrationInstanceId == IntegrationInstanceId).Select(m => m.IntegrationInstanceDataTypeMappingPullId).ToList();
                         if (lstIds != null && lstIds.Count > 0)
                         {
@@ -1375,11 +1373,13 @@ namespace RevenuePlanner.Controllers
                                 if (obj != null)
                                 {
                                     mrp.Entry(obj).State = EntityState.Deleted;
-                                    mrp.SaveChanges();
                                 }
                             }
+                                    mrp.SaveChanges();
 
                         }
+
+                        // Add new IntegrationInstanceDataTypeMappingPull entry for new GameplanDataTypeMappingPull
                         foreach (GameplanDataTypePullModel obj in form)
                         {
                             if (!string.IsNullOrEmpty(obj.TargetDataType))
@@ -1393,13 +1393,13 @@ namespace RevenuePlanner.Controllers
                                 objMappingPull.CreatedDate = DateTime.Now;
                                 objMappingPull.CreatedBy = Sessions.User.UserId;
                                 mrp.Entry(objMappingPull).State = EntityState.Added;
-                                mrp.SaveChanges();
                             }
                         }
+                                mrp.SaveChanges();
                         scope.Complete();
                     }
                 }
-                return Json(new { status = 1, Message = Common.objCached.DataTypeMappingSaveSuccess }, JsonRequestBehavior.AllowGet);
+                return Json(new { status = 1, Message = Common.objCached.DataTypeMappingPullSaveSuccess }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception e)
             {

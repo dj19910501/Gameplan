@@ -333,22 +333,26 @@ namespace RevenuePlanner.Helpers
                 TagBuilder td = new TagBuilder("td");
                 td.AddCssClass("campaign-row");
 
+
                 TagBuilder div = new TagBuilder("div");
                 div.Attributes.Add("id", ActivityType + c.ActivityId.ToString());
                 div.AddCssClass("campaignLevel");
-
-                TagBuilder aAccordian = new TagBuilder("a");
-                //aAccordian.Attributes.Add("href", "#");
-                aAccordian.AddCssClass("accordionClick");
-
                 TagBuilder aLink = new TagBuilder("a");
-                //aLink.Attributes.Add("href", "#");
-                aLink.Attributes.Add("style", "cursor:pointer;");
+                if (model.Where(p => p.ActivityType == "program" && p.ParentActivityId == c.ActivityId).Count() > 0)
+                {
+                    TagBuilder aAccordian = new TagBuilder("a");
+                    aAccordian.AddCssClass("accordionClick");
+                    div.InnerHtml = aAccordian.ToString();
+                    aLink.Attributes.Add("style", "cursor:pointer;");
+                }
+                else
+                {
+                    aLink.Attributes.Add("style", "padding-left:20px;cursor:pointer;");
+                }
                 aLink.Attributes.Add("id", c.ActivityId.ToString());
                 aLink.Attributes.Add("linktype", "campaign");
                 aLink.InnerHtml = c.ActivityName;
 
-                div.InnerHtml = aAccordian.ToString();
                 div.InnerHtml += aLink.ToString();
 
                 td.InnerHtml = div.ToString();
@@ -373,18 +377,21 @@ namespace RevenuePlanner.Helpers
             string mainClass = "sub program-lvl";
             string innerClass = "programLevel";
             string parentClassName = "campaign";
+            string childActivity = "tactic";
             bool needAccrodian = true;
             if (ActivityType == "program")
             {
                 mainClass = "sub program-lvl";
                 innerClass = "programLevel";
                 parentClassName = "campaign";
+                childActivity = "tactic";
             }
             else if (ActivityType == "tactic")
             {
                 mainClass = "sub tactic-lvl";
                 innerClass = "tacticLevel";
                 parentClassName = "program";
+                childActivity = "lineitem";
             }
             else if (ActivityType == "lineitem")
             {
@@ -392,6 +399,7 @@ namespace RevenuePlanner.Helpers
                 innerClass = "lineitemLevel";
                 parentClassName = "tactic";
                 needAccrodian = false;
+                childActivity = "";
             }
             if (Tab == "allocated")
             {
@@ -410,20 +418,31 @@ namespace RevenuePlanner.Helpers
                     divProgram.Attributes.Add("id", ActivityType + p.ActivityId.ToString());
                     divProgram.AddCssClass(innerClass);
 
+                    TagBuilder aLink = new TagBuilder("a");
                     if (needAccrodian)
                     {
-                        TagBuilder aAccordian = new TagBuilder("a");
-                        //aAccordian.Attributes.Add("href", "#");
-                        aAccordian.AddCssClass("accordionClick");
-                        divProgram.InnerHtml = aAccordian.ToString();
-
+                        if (model.Where(p1 => p1.ActivityType == childActivity && p1.ParentActivityId == p.ActivityId).Count() > 0)
+                        {
+                            TagBuilder aAccordian = new TagBuilder("a");
+                            //aAccordian.Attributes.Add("href", "#");
+                            aAccordian.AddCssClass("accordionClick");
+                            divProgram.InnerHtml = aAccordian.ToString();
+                            aLink.Attributes.Add("style", "cursor:pointer;");
+                        }
+                        else
+                        {
+                            aLink.Attributes.Add("style", "padding-left:20px;cursor:pointer;");
+                        }
+                    }
+                    else
+                    {
+                        aLink.Attributes.Add("style", "cursor:pointer;");
                     }
 
-                    TagBuilder aLink = new TagBuilder("a");
                     //aLink.Attributes.Add("href", "#");
                     aLink.InnerHtml = p.ActivityName;
 
-                    aLink.Attributes.Add("style", "cursor:pointer;");
+                    
                     aLink.Attributes.Add("id", p.ActivityId.ToString());
                     aLink.Attributes.Add("linktype", ActivityType);
 
@@ -947,7 +966,7 @@ namespace RevenuePlanner.Helpers
                                 }
                                 divProgram.InnerHtml = p.Month.May.ToString(formatThousand);
                             }
-                            
+
                         }
                         else if (month == 6)
                         {

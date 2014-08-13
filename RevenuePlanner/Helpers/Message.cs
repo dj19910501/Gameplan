@@ -2084,6 +2084,20 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             get { return _CloseDealTargetFieldInvalidMsg; }
             set { _CloseDealTargetFieldInvalidMsg = value; }
         }
+
+        private string _DataTypeMappingPullSaveSuccess;
+        public string DataTypeMappingPullSaveSuccess
+        {
+            get { return _DataTypeMappingPullSaveSuccess; }
+            set { _DataTypeMappingPullSaveSuccess = value; }
+        }
+        private string _NoDataTypeMappingFieldsForEloqua;
+        public string NoDataTypeMappingFieldsForEloqua
+        {
+            get { return _NoDataTypeMappingFieldsForEloqua; }
+            set { _NoDataTypeMappingFieldsForEloqua = value; }
+        }
+        
         
 
         #region Start - Manoj PL#679
@@ -2694,7 +2708,7 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             _NoPlanFoundPlanSelector = strMsgValue;
                                             break;
 
-										//Start Added By Dharmraj #567 : Budget allocation for campaign
+                                        //Start Added By Dharmraj #567 : Budget allocation for campaign
                                         case "CannotAllocateMorethanRemainingBudgeted":
                                             _CannotAllocateMorethanRemainingBudgeted = strMsgValue;
                                             break;
@@ -2725,28 +2739,34 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                         //End Added By Sohel #597 
 
                                         //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
-                                        
-											case "ConfirmationForDeleteLineItem":
+
+                                        case "ConfirmationForDeleteLineItem":
                                             _ConfirmationForDeleteLineItem = strMsgValue;
                                             break;
-                                            //Start Manoj PL#679
-                                            case "DuplicateFileLocation":
+                                        //Start Manoj PL#679
+                                        case "DuplicateFileLocation":
                                             _DuplicateFileLocation = strMsgValue;
                                             break;
-                                            case "ConnectionFail":
+                                        case "ConnectionFail":
                                             _ConnectionFail = strMsgValue;
                                             break;
-                                            case "ServerConfigurationSaved":
+                                        case "ServerConfigurationSaved":
                                             _ServerConfigurationSaved = strMsgValue;
                                             break;
                                         //End Manoj PL#679	
-                                             //Added by Mitesh for PL ticket #559
-                                                 case "IntegrationSelectionSaved":
+                                        //Added by Mitesh for PL ticket #559
+                                        case "IntegrationSelectionSaved":
                                             _IntegrationSelectionSaved = strMsgValue;
                                             break;
-                                            //End :Added by Mitesh for PL ticket #559
-case "CloseDealTargetFieldInvalidMsg":
+                                        //End :Added by Mitesh for PL ticket #559
+                                        case "CloseDealTargetFieldInvalidMsg":
                                             _CloseDealTargetFieldInvalidMsg = strMsgValue;
+                                            break;
+                                        case "DataTypeMappingPullSaveSuccess":
+                                            _DataTypeMappingPullSaveSuccess = strMsgValue;
+                                            break;
+                                        case "NoDataTypeMappingFieldsForEloqua":
+                                            _NoDataTypeMappingFieldsForEloqua = strMsgValue;
                                             break;
                                     }
                                 }
