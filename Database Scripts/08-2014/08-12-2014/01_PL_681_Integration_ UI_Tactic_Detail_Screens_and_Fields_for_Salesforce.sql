@@ -24,6 +24,12 @@ BEGIN
 		FROM GameplanDataType 
 		WHERE IsStage = 1							
 
+		IF EXISTS(SELECT 1 FROM sys.default_constraints WHERE name = 'DF_GameplanDataType_IsStage' AND [type] = 'D' AND parent_object_id IN 
+				(SELECT object_id FROM sys.objects WHERE name = 'GameplanDataType' AND [type] = 'U' AND [schema_id] = '1'))
+		BEGIN
+				ALTER TABLE GameplanDataType DROP CONSTRAINT DF_GameplanDataType_IsStage
+		END
+
 		ALTER TABLE GameplanDataType DROP COLUMN IsStage
 
 	END
