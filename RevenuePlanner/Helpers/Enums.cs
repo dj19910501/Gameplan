@@ -761,6 +761,17 @@ namespace RevenuePlanner.Helpers
             Salesforce,
             Marketo,
         }
+
+        /// <summary>
+        /// Added by: Dharmraj on 13-8-2014
+        /// Enum for GameplanDatatypePull Type
+        /// </summary>
+        public enum GameplanDatatypePullType
+        {
+            INQ,
+            MQL,
+            CW
+        }
     }
 
     #region Authorization
