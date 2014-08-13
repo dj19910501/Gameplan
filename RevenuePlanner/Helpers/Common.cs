@@ -3261,50 +3261,70 @@ namespace RevenuePlanner.Helpers
             lstUserHierarchy = objBDSService.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
             List<Guid> lstSubordinaresId = new List<Guid>();
             List<Guid> lstSubOrdinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId)
-                                                         .ToList()
-                                                         .Select(u => u.UserId).ToList();
+                                                         .Select(u => u.UserId).Distinct().ToList();    // Modified by Sohel Pathan on 13/08/2014 for PL ticket #689
 
             while (lstSubOrdinates.Count > 0)
             {
                 lstSubOrdinates.ForEach(u => lstSubordinaresId.Add(u));
-
-                lstSubOrdinates = lstUserHierarchy.Where(u => lstSubOrdinates.Contains(u.ManagerId.GetValueOrDefault(Guid.Empty))).ToList().Select(u => u.UserId).ToList();
+                lstSubOrdinates = lstUserHierarchy.Where(u => lstSubOrdinates.Contains(u.ManagerId.GetValueOrDefault(Guid.Empty))).Select(u => u.UserId).Distinct().ToList();
             }
 
-
+            // Get current user permission for Tactic ApproveForPeers.
+            bool IsTacticApproveForPeersAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticApproveForPeers);
+            List<Guid> lstUpperMostLevelManagers = new List<Guid>();    // Added by Sohel Pathan on 13/08/2014 for PL ticket #689
             var ManagerId = lstUserHierarchy.FirstOrDefault(u => u.UserId == Sessions.User.UserId).ManagerId;
             if (ManagerId != null)
             {
-                var lstPeersId = lstUserHierarchy.Where(u => u.ManagerId == ManagerId && u.UserId!=Sessions.User.UserId)////Modified by Mitesh Vaishnav For PL ticket #688
-                                                        .ToList()
-                                                        .Select(u => u.UserId)
-                                                        .ToList();
+                var lstPeersId = lstUserHierarchy.Where(u => u.ManagerId == ManagerId).Select(u => u.UserId).Distinct().ToList();
+                
                 if (lstPeersId.Count > 0)
                 {
                     var lstPeersSubOrdinatesId = lstUserHierarchy.Where(u => lstPeersId.Contains(u.ManagerId.GetValueOrDefault(Guid.Empty)))
-                                                            .ToList()
-                                                            .Select(u => u.UserId)
-                                                            .ToList();
-
-                    // Get current user permission for Tactic ApproveForPeers.
-                    bool IsTacticApproveForPeersAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticApproveForPeers);
+                                                            .Select(u => u.UserId).Distinct().ToList(); // Modified by Sohel Pathan on 13/08/2014 for PL ticket #689
 
                     if (IsTacticApproveForPeersAuthorized)
                     {
-                        lstSubordinaresId = lstSubordinaresId.Concat(lstPeersSubOrdinatesId).ToList();
-                        lstSubordinaresId = lstSubordinaresId.Concat(lstPeersId).ToList(); /// Added by Sohel Pathan on 08/08/201 for PL ticket #689.
+                        lstSubordinaresId = lstSubordinaresId.Concat(lstPeersSubOrdinatesId).Distinct().ToList();   // Modified by Sohel Pathan on 13/08/2014 for PL ticket #689
+                        lstSubordinaresId = lstSubordinaresId.Concat(lstPeersId).Distinct().ToList(); /// Added by Sohel Pathan on 08/08/201 for PL ticket #689.
                     }
                 }
             }
+            // Start - Added by Sohel Pathan on 13/08/2014 for PL ticket #689
+            else
+            {
+                if (IsTacticApproveForPeersAuthorized)
+                {
+                    lstUpperMostLevelManagers = lstUserHierarchy.Where(u => u.ManagerId == null).Select(u => u.UserId).Distinct().ToList();
+                    if (lstUpperMostLevelManagers.Count > 0)
+                    {
+                        lstSubordinaresId = lstSubordinaresId.Concat(lstUpperMostLevelManagers).Distinct().ToList();
+
+                        List<Guid> lstSubOrdinatesOfUpperMostLevelManagers = lstUserHierarchy.Where(u => lstUpperMostLevelManagers.Contains(u.ManagerId.GetValueOrDefault(Guid.Empty)))
+                                                                                .Select(u => u.UserId).Distinct().ToList();
+
+                        while (lstSubOrdinatesOfUpperMostLevelManagers.Count > 0)
+                        {
+                            lstSubOrdinatesOfUpperMostLevelManagers.ForEach(u => lstSubordinaresId.Add(u));
+                            lstSubOrdinatesOfUpperMostLevelManagers = lstUserHierarchy.Where(u => lstSubOrdinatesOfUpperMostLevelManagers.Contains(u.ManagerId.GetValueOrDefault(Guid.Empty))).Select(u => u.UserId).Distinct().ToList();
+                        }
+                    }
+                }
+            }
+            // End - Added by Sohel Pathan on 13/08/2014 for PL ticket #689
+
             /*Start :Added by Mitesh Vaishnav for PL ticket #688 and #689*/
             bool IsTacticApproveOwn = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticApproveOwn);
             if (IsTacticApproveOwn)
             {
                 lstSubordinaresId.Add(Sessions.User.UserId);
             }
+            else
+            {
+                lstSubordinaresId.Remove(Sessions.User.UserId);     // Added by Sohel Pathan on 13/08/2014 for PL ticket #689
+            }
             /*End :Added by Mitesh Vaishnav for PL ticket #688 and #689*/
 
-            return lstSubordinaresId;
+            return lstSubordinaresId.Distinct().ToList();   // Modified by Sohel Pathan on 13/08/2014 for PL ticket #689
         }
        
         /// <summary>
