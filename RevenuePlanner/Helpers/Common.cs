@@ -3275,7 +3275,7 @@ namespace RevenuePlanner.Helpers
             var ManagerId = lstUserHierarchy.FirstOrDefault(u => u.UserId == Sessions.User.UserId).ManagerId;
             if (ManagerId != null)
             {
-                var lstPeersId = lstUserHierarchy.Where(u => u.ManagerId == ManagerId)
+                var lstPeersId = lstUserHierarchy.Where(u => u.ManagerId == ManagerId && u.UserId!=Sessions.User.UserId)////Modified by Mitesh Vaishnav For PL ticket #688
                                                         .ToList()
                                                         .Select(u => u.UserId)
                                                         .ToList();

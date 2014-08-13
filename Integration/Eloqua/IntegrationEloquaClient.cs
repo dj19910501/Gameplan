@@ -218,13 +218,11 @@ namespace Integration.Eloqua
         {
             List<IntegrationInstanceDataTypeMapping> dataTypeMapping = db.IntegrationInstanceDataTypeMappings.Where(mapping => mapping.IntegrationInstanceId.Equals(_integrationInstanceId)).ToList();
             _mappingTactic = dataTypeMapping.Where(gameplandata => gameplandata.GameplanDataType.TableName == "Plan_Campaign_Program_Tactic" &&
-                                                                   !gameplandata.GameplanDataType.IsStage &&
                                                                    !gameplandata.GameplanDataType.IsGet)
                                             .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
                                             .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
 
             _mappingImprovementTactic = dataTypeMapping.Where(gameplandata => gameplandata.GameplanDataType.TableName == "Plan_Improvement_Campaign_Program_Tactic" &&
-                                                                   !gameplandata.GameplanDataType.IsStage &&
                                                                    !gameplandata.GameplanDataType.IsGet)
                                             .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
                                             .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
