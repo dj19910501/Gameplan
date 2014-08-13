@@ -168,11 +168,6 @@
                         return true;
                     }
                 }
-            },
-            error: function () {
-                $('#ClosedDealErrorMessage').find('#spanMessageError').html('@TempData["ClosedDealErrorMessage"]');
-                $("#ClosedDealErrorMessage").slideDown(400);
-                return false;
             }
         });
     });
