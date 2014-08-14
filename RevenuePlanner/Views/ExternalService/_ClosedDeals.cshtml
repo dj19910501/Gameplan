@@ -3,7 +3,7 @@
 
 <div class="accordion-group">
     <div class="accordion-heading">
-        <a class="accordion-toggle"  data-toggle="collapse" data-parent="#accordion" href="#collapseCloseDeal">Pulling Close Deals<span href="javascript:void(0)">+ Expand</span></a>
+        <a class="accordion-toggle" style="border-bottom:none;" data-toggle="collapse" data-parent="#accordion" href="#collapseCloseDeal">Pulling Close Deals<span href="javascript:void(0)">+ Expand</span></a>
     </div>
     <div class="accordion-body collapse out" id="collapseCloseDeal">
         @using (Html.BeginForm("SaveClosedDealDataMapping", "ExternalService", FormMethod.Post, new { name = "frmClosedDealDataMapping", id = "frmClosedDealDataMapping" }))
@@ -12,7 +12,11 @@
             <div class="row">
                 @if (Model.Count > 0)
                 {
-                    <h5 class="CloseDealHeader">Gameplan Fields - Data Mapping</h5>
+                    @* Start - Added by Sohel Pathan on 14/08/2014 for PL ticket #656 and #681 *@
+                    <div class="tblFieldMapping padding-bottom10">
+                        <h5 class="CloseDealHeader title-header padding-right5">Gameplan Fields - Data Mapping</h5>
+                    </div>
+                    @* End - Added by Sohel Pathan on 14/08/2014 for PL ticket #656 and #681 *@
                     <div class="content-colum-mapDataTypes width100 float-left">
                         <table id="tblDataMapping" class="tblFieldMapping">
                             <tbody>

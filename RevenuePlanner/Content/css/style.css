@@ -7716,26 +7716,32 @@ div.sub{display:none; transition: height 0.35s ease 0s; padding:0;}
     line-height: 45px;
 }
 .tblFieldMapping td.width40 {
-    width: 40%;
+    width: 25%;
     text-align: right;
+    float:left;
 }
 .tblFieldMapping td.width60 {
-    width: 60%;
+    /*width: 60%;*/
     text-align: left;
-    padding-right:10%;
+    /*padding-right:15%;*/
+
+    float: left;
+    margin-left: 20px;
+    width: 240px;
 }
 .tblFieldMapping td.title1 {
     color:#333333 !important;
     font-size: 14px !important;
     font-family:'source_sans_proregular',Arial,"sans-serif" !important;
+    padding-right: 0px !important;
 }
 .tblFieldMapping .verticalIdSelectBox .sbHolder {
     top: 9px !important;
 }
 .tblFieldMapping .title-header {
-    border-bottom: 1px solid #ddd;
-    padding-right:5%;
-    margin-left:-20px;
+    border-bottom: 1px solid #ddd !important;
+    padding-right:5% !important;
+    margin-left:-20px !important;
 }
 #frmDataMapping .messages {
     width:82%;
@@ -7746,11 +7752,12 @@ div.sub{display:none; transition: height 0.35s ease 0s; padding:0;}
     float:left !important;
 }
 .padding-right5 {
-    padding-right:5%;
+    padding-right:5% !important;
 }
 #tblDataMapping h5 {
     color:#333333 !important;
     font-weight:normal !important;
+    margin-top:0px !important;
 }
 .margin-left40per {
     margin-left: 40%;
@@ -7945,3 +7952,16 @@ footer a {
 {
     border-bottom: 1px solid #cccccc;
 }
+
+/* Start - Added by Sohel Pathan on 14/08/2014 for PL ticket #656 and #681 */
+#collapseGrpServer h5 {
+    color:#333333 !important;
+    font-weight:normal !important;
+    margin-top:0px !important;
+}
+#collapseGrpServer .title-header {
+    border-bottom: 1px solid #ddd !important;
+    padding-right: 5% !important;
+    margin-left: -20px !important;
+}
+/* End - Added by Sohel Pathan on 14/08/2014 for PL ticket #656 and #681 */

@@ -53,6 +53,8 @@ BEGIN
 
 		UPDATE GameplanDataType SET DisplayFieldName = dbo.[InitCap](DisplayFieldName)   
 		
+		UPDATE GameplanDataType Set DisplayFieldName = 'Owner' WHERE DisplayFieldName COLLATE Latin1_General_CS_AS = 'owner'
+
 	END
 
 END

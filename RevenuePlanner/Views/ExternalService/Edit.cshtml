@@ -95,6 +95,11 @@
             $('.accordion-toggle span').text('+ Expand');
             if ($(this).parent().next('.accordion-body').hasClass('in')) {
                 $(this).children('span').text('+ Expand');
+                /* Start - Added by Sohel Pathan on 14/08/2014 for PL ticket #656 and #681 */
+                if ($(this).attr("href") == '#collapseCloseDeal') {
+                    $(this).css('border-bottom', 'none');
+                }
+                /* End - Added by Sohel Pathan on 14/08/2014 for PL ticket #656 and #681 */
             } else {
                 $(this).children('span').text('- Collapse');
                 //Added By : Kalpesh Sharma
@@ -110,6 +115,7 @@
                 }
                 else if ($(this).attr("href") == '#collapseCloseDeal') {
                     $("#frmClosedDealDataMapping").find('#ddlStage').focus();
+                    $(this).css('border-bottom', '1px solid #cccccc');  // Added by Sohel Pathan on 14/08/2014 for PL ticket #656 and #681
                 }
             }
         });
