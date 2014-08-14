@@ -3770,7 +3770,7 @@ namespace RevenuePlanner.Helpers
         /// Added by Mitesh Vaishnav on 14-Aug-2014 for PL ticket #690
         /// </summary>
         /// <param name="objModel">Model Object</param>
-        /// <returns></returns>
+        /// <returns>Returns true for success and false for failure</returns>
         public static bool CheckModelIntegrationExist(Model objModel)
         {
             bool isIntegrationInstanceExist = true;
