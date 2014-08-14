@@ -7924,8 +7924,19 @@ footer a {
     float:left;
     margin: 10px 0px 10px 0px;
 }
-
-.integrationAccordion #accordion form
-{
-     border-bottom: 1px solid #cccccc;
+#extServer input::-moz-placeholder {
+    font-size:10px;
+    font-style:italic;
+}
+#extServer input::-webkit-input-placeholder {
+    font-size:10px;
+    font-style:italic;
+}
+#extServer input:-moz-placeholder { /* Firefox 18- */
+    font-size:10px;
+    font-style:italic;
+}
+#extServer input:-ms-input-placeholder {
+    font-size:10px;
+    font-style:italic;
 }
