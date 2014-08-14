@@ -1196,10 +1196,16 @@
                 Showmsg();
             }
         });
-
+        ////Modified by Mitesh Vaishnav for PL ticket #619
         function LoadClickEvents() {
             if ('@ViewBag.EditOjbect' == "Tactic" && '@ViewBag.TacticId' != 0) {
-                $("[id=divTactic][index=" + @ViewBag.TacticId + "]").click();
+                
+                $('.tactictitle').each(function () {
+                    if ($(this).parent().attr('index') == '@ViewBag.TacticId') {
+                        $(this).click();
+                        return false;
+                    }
+                });
                 return false;
             }
             else if ('@ViewBag.EditOjbect' == "Program" && '@ViewBag.ProgramId' != 0) {
@@ -1213,7 +1219,7 @@
                 }
                 else if ('@ViewBag.EditOjbect' == "Campaign" && '@ViewBag.CampaignId' != 0) {
                     $('.blue-bg-text').each(function () {
-                        if ($(this).parent().parent().attr('id') == '@ViewBag.CampaignId') {
+                        if ($(this).parent().attr('id') == '@ViewBag.CampaignId') {
                             $(this).click();
                             return false;
                         }
