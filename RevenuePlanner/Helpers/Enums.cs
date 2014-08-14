@@ -333,7 +333,7 @@ namespace RevenuePlanner.Helpers
             {"IntegrationInstanceId","Push Tactic Data"},
             {"IntegrationInstanceIdINQ","Pull Responses"},
             {"IntegrationInstanceIdMQL","Pull Qualified Leads"},
-            {"IntegrationInstanceIdCW","Pull Closed/Won Deals"}
+            {"IntegrationInstanceIdCW","Pull Closed Deals"}
         };
         /*End :Added by Mitesh Vaishnav for PL ticket #659*/
         #region Notification
