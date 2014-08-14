@@ -7940,3 +7940,8 @@ footer a {
     font-size:10px;
     font-style:italic;
 }
+
+.integrationAccordion #accordion form
+{
+    border-bottom: 1px solid #cccccc;
+}
