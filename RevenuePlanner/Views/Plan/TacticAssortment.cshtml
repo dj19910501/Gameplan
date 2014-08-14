@@ -915,9 +915,9 @@
 
 
     //Start by Kalpesh Sharma #605: Cost allocation for Tactic
-    if ($("#hdnIsBudgetAllocated").val() == "True") {
+    //if ($("#hdnIsBudgetAllocated").val() == "True") {
         fillBudgetAllocationData();
-    }
+    //}
 
     $("#TacticCost").keyup(function () {    // Modified by Sohel Pathan on 12/08/2014 for PL ticket #605
         // Start - Modified by Sohel Pathan on 12/08/2014 for PL ticket #605
@@ -1070,21 +1070,23 @@
     }
 
     function calculateUnallocatedBudget() {
-        var CampaignBudgetValue = $("#TacticCost").val().trim().replace(/,/g, '').replace('$', '');     // Modified by Sohel Pathan on 12/08/2014 for PL ticket #605
-        var CampaignAllocatedBudgetValue = $("#lblTotalAllocated").html().trim().replace(/,/g, '').replace('$', '');
-        var unallocatedBudget = parseInt(CampaignBudgetValue) - parseInt(CampaignAllocatedBudgetValue);
+        if ($("#hdnIsBudgetAllocated").val() == "True") { // Added by Dharmraj, #699: Wrong Remaining Program Budget
+            var CampaignBudgetValue = $("#TacticCost").val().trim().replace(/,/g, '').replace('$', '');     // Modified by Sohel Pathan on 12/08/2014 for PL ticket #605
+            var CampaignAllocatedBudgetValue = $("#lblTotalAllocated").html().trim().replace(/,/g, '').replace('$', '');
+            var unallocatedBudget = parseInt(CampaignBudgetValue) - parseInt(CampaignAllocatedBudgetValue);
 
-        //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
-        $("#lblUnallocatedBudget").val(FormatCommasBudget(unallocatedBudget.toString(), false, true));
+            //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
+            $("#lblUnallocatedBudget").val(FormatCommasBudget(unallocatedBudget.toString(), false, true));
 
-        if (unallocatedBudget < 0) {
-            $("#lblUnallocatedBudget").addClass('error-text');
-            $("#lblTotalAllocated").addClass('error-text');
+            if (unallocatedBudget < 0) {
+                $("#lblUnallocatedBudget").addClass('error-text');
+                $("#lblTotalAllocated").addClass('error-text');
 
-        }
-        else {
-            $("#lblUnallocatedBudget").removeClass('error-text');
-            $("#lblTotalAllocated").removeClass('error-text');
+            }
+            else {
+                $("#lblUnallocatedBudget").removeClass('error-text');
+                $("#lblTotalAllocated").removeClass('error-text');
+            }
         }
     }
 
