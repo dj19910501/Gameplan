@@ -262,18 +262,26 @@
             }
         });
 
+        //Commented By : Kalpesh Sharma : PL#682 Integration - UI - Integration Type Settings - 08/14/2014
+        //$('#btnCancel').click(function () {
+        //    $("#cSuccessGeneralSettings").html('');
+        //    $("#errorMessageGeneralSettings").slideUp(1);
+        //    $('#cErrorGeneralSettings').html('');
+        //    $("#successMessageGeneralSettings").slideUp(1);
+        //    $('#content #integrationForm :input').each(function () {
+        //        if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
+        //            if (this.id != 'importActuals' && this.id != 'integrationStatus') {
+        //                    $(this).removeClass("error");
+        //            }
+        //        }
+        //    });
+        //});
+
+        //Added By : Kalpesh Sharma : PL#682 Integration - UI - Integration Type Settings - 08/14/2014
         $('#btnCancel').click(function () {
-            $("#cSuccessGeneralSettings").html('');
-            $("#errorMessageGeneralSettings").slideUp(1);
-            $('#cErrorGeneralSettings').html('');
-            $("#successMessageGeneralSettings").slideUp(1);
-            $('#content #integrationForm :input').each(function () {
-                if ($(this).attr('type') == 'text' || $(this).attr('type') == 'select' || $(this).attr('type') == 'password') {
-                    if (this.id != 'importActuals' && this.id != 'integrationStatus') {
-                            $(this).removeClass("error");
-                    }
-                }
-            });
+            var url = '';
+            url = '@Url.Action("Index", "ExternalService")';
+            window.location.href = url;
         });
 
         if (localStorage.Message != undefined) {
@@ -300,6 +308,7 @@
 
 
         $('#btnSave').click(function (e) {
+
             var isValidate = true;
 
 

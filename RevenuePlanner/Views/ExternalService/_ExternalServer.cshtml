@@ -61,21 +61,27 @@
 </div>
 <script type="text/javascript">
     $('#btnExtServerCancel').click(function () {
-        $('#SFTPServerName').removeClass('error');
-        $('#SFTPFileLocation').removeClass('error');
-        $('#SFTPUserName').removeClass('error');
-        $('#SFTPPassword').removeClass('error');
-        $("#errExtSrv").slideUp(1);
-        $("#errExtSrv").slideUp(1);
-        $('#SFTPServerName').focus();
-        $('#SFTPServerName').val($('#hdnSFTPServerName').val());
-        $('#SFTPFileLocation').val($('#hdnSFTPFileLocation').val());
-        $('#SFTPPort').val($('#hdnSFTPPort').val());
-        $('#SFTPUserName').val($('#hdnSFTPUserName').val());
-        $('#SFTPPassword').val($('#hdnSFTPPassword').val());
-        $("#errExtSrv").slideUp(1);
-        $("#sucExtSrv").slideUp(1);
+        //$('#SFTPServerName').removeClass('error');
+        //$('#SFTPFileLocation').removeClass('error');
+        //$('#SFTPUserName').removeClass('error');
+        //$('#SFTPPassword').removeClass('error');
+        //$("#errExtSrv").slideUp(1);
+        //$("#errExtSrv").slideUp(1);
+        //$('#SFTPServerName').focus();
+        //$('#SFTPServerName').val($('#hdnSFTPServerName').val());
+        //$('#SFTPFileLocation').val($('#hdnSFTPFileLocation').val());
+        //$('#SFTPPort').val($('#hdnSFTPPort').val());
+        //$('#SFTPUserName').val($('#hdnSFTPUserName').val());
+        //$('#SFTPPassword').val($('#hdnSFTPPassword').val());
+        //$("#errExtSrv").slideUp(1);
+        //$("#sucExtSrv").slideUp(1);
+
+        //Added By : Kalpesh Sharma : PL#682 Integration - UI - Integration Type Settings - 08/14/2014
+        var url = '';
+        url = '@Url.Action("Index", "ExternalService")';
+        window.location.href = url;
     });
+
     $('#btnExtServerSave').click(function () {
         $('#SFTPServerName').removeClass('error');
         $('#SFTPFileLocation').removeClass('error');
