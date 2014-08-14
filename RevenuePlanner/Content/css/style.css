@@ -7948,7 +7948,15 @@ footer a {
     font-style:italic;
 }
 
-.integrationAccordion #accordion form
+.integrationAccordion #accordion #integrationForm
+{
+    border-bottom: 1px solid #cccccc;
+}
+.integrationAccordion #accordion #frmDataMapping
+{
+    border-bottom: 1px solid #cccccc;
+}
+.integrationAccordion #accordion #frmRevenueDataMapping
 {
     border-bottom: 1px solid #cccccc;
 }
