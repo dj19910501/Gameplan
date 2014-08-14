@@ -382,8 +382,10 @@
 	</Field>
 	<Field>
 		<Name>IntegrationDuplicate</Name>
-		<!--<value>Integration with same Instance already exists in our database.</value>-->
-    <value>Same Instance already exists.</value>
+		<!--
+<value>Integration with same Instance already exists in our database.</value>
+		-->
+		<value>Same Instance already exists.</value>
 	</Field>
 	<Field>
 		<Name>IntegrationDeleteConfirmationMsg</Name>
@@ -637,7 +639,7 @@
 	</Field>
 	<Field>
 		<Name>TacticMustDeployedToModel</Name>
-		<value>For Deploy to Integration, The tactic must be Deployed to Model.</value>
+		<value>The tactic must be deployed to Model before deploying it to an integration.</value>
 	</Field>
 	<Field>
 		<Name>ConfirmationForModifyTargetIntegration</Name>
@@ -753,13 +755,13 @@
 		<Name>CloseDealTargetFieldInvalidMsg</Name>
 		<value>Please ensure that a target field is not mapped to more than one application field.</value>
 	</Field>
-  <Field>
-    <Name>DataTypeMappingPullSaveSuccess</Name>
-    <value> Settings have been saved successfully.</value>
-  </Field>
-  <Field>
-    <Name>NoDataTypeMappingFieldsForEloqua</Name>
-    <value>This section is not applicable for current integration type.</value>
-  </Field>
+	<Field>
+		<Name>DataTypeMappingPullSaveSuccess</Name>
+		<value>Settings have been saved successfully.</value>
+	</Field>
+	<Field>
+		<Name>NoDataTypeMappingFieldsForEloqua</Name>
+		<value>This section is not applicable for current integration type.</value>
+	</Field>
 	<!--End - Added by :- Dharmraj on 6/08/2014 for PL #658 Integration - UI - Pulling Revenue - Salesforce.com-->
 </Messages>
