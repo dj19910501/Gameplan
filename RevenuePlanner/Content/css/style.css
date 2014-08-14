@@ -7918,3 +7918,9 @@ footer a {
     line-height:45px;
      border-bottom: 1px solid #a8a8a8;
 }
+
+#frmRevenueDataMapping .messages {
+    width:82%;
+    float:left;
+    margin: 10px 0px 10px 0px;
+}

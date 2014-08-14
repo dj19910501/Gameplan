@@ -77,6 +77,10 @@ namespace RevenuePlanner.Models
         //Dharmraj Start PL#658 Integration - UI - Pulling Revenue - Salesforce.com
         public IList<GameplanDataTypePullModel> GameplanDataTypePullModelList { get; set; }
         //Dharmraj End PL#658 Integration - UI - Pulling Revenue - Salesforce.com
+
+        //Dharmraj Start PL#680 Integration - UI - Pull responses from Salesforce
+        public IList<GameplanDataTypePullModel> GameplanDataTypePullRevenueModelList { get; set; }
+        //Dharmraj End PL#680 Integration - UI - Pull responses from Salesforce
     } 
 
 //Added by Mitesh Vaishnav for PL ticket #659

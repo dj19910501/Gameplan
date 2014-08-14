@@ -290,5 +290,29 @@ namespace Integration
 
             return null;
         }
+
+        /// <summary>
+        /// Added By Dharmraj on 13-8-2014, Ticket #680
+        /// </summary>
+        /// <returns>Returns list of properties of salesforce CampaignMember object</returns>
+        public List<string> GetTargetDataMemberRevenue()
+        {
+            _integrationInstanceId = _id;
+            if (_integrationInstanceId.HasValue)
+            {
+                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Title;
+            }
+
+            if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
+            {
+                IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0);
+                if (integrationSalesforceClient.IsAuthenticated)
+                {
+                    return integrationSalesforceClient.GetTargetDataType("CampaignMember");
+                }
+            }
+
+            return null;
+        }
     }
 }
