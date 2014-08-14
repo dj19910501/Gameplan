@@ -334,6 +334,9 @@
             $("#txtmql").removeClass("priceValue");
             $("#txtmql").val("N/A");
         }
+        else {
+            $("#txtmql").val(FormatCommas($("#txtmql").val(), false));
+        }
 
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
@@ -1045,6 +1048,12 @@
                 }
 
                 $("#txtRemainingBudget").val(FormatCommasBudget(data.planRemainingBudget.toString(), false, true));
+                if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
+                    $("#txtRemainingBudget").addClass('error-text');
+                }
+                else {
+                    $("#txtRemainingBudget").removeClass('error-text');
+                }
                 // Start - Added by Sohel Pathan on 12/08/2014 for PL ticket #605
                 var TotalPlanBudget = parseInt(data.planRemainingBudget.toString()) + parseInt(ReplaceCC($('#TacticCost').val()));
                 $("#hdnTotalPlanBudget").val(TotalPlanBudget);
