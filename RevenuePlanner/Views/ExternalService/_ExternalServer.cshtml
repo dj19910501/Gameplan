@@ -2,11 +2,11 @@
 @using RevenuePlanner.Helpers
 <div class="accordion-group">
     <div class="accordion-heading">
-        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseGrpServer">Response Pulling<span href="javascript:void(0)">+ Expand</span></a>
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseGrpServer">Pulling Responses<span href="javascript:void(0)">+ Expand</span></a>
     </div>
     <div class="accordion-body collapse out" id="collapseGrpServer">
         <div>
-            <h5 style="border-bottom: 1px solid #ddd; margin: 0px 20px 0px -20px;">External Server Info</h5>
+            <h5 style="border-bottom: 1px solid #ddd; margin: 0px 20px 0px -20px; font-weight:normal;">External Server Info</h5>
         </div>
         @using (Html.BeginForm("SaveExternalForm", "ExternalService", FormMethod.Post, new { id = "extServer" }))
         {
