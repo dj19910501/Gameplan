@@ -7924,3 +7924,8 @@ footer a {
     float:left;
     margin: 10px 0px 10px 0px;
 }
+
+.integrationAccordion #accordion form
+{
+     border-bottom: 1px solid #cccccc;
+}

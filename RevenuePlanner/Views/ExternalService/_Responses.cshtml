@@ -171,10 +171,16 @@
     });
 
     $('#btnCancelRevenueMappins').click(function () {
-        $('#RevenueSuccessMessage').find('#spanMessageSuccess').html('');
-        $("#RevenueSuccessMessage").hide()
-        $('#RevenueErrorMessage').find('#spanMessageError').html('');
-        $("#RevenueErrorMessage").hide();
+        //$('#RevenueSuccessMessage').find('#spanMessageSuccess').html('');
+        //$("#RevenueSuccessMessage").hide()
+        //$('#RevenueErrorMessage').find('#spanMessageError').html('');
+        //$("#RevenueErrorMessage").hide();
+
+        //Added By : Kalpesh Sharma : PL#682 Integration - UI - Integration Type Settings - 08/14/2014
+        var url = '';
+        url = '@Url.Action("Index", "ExternalService")';
+        window.location.href = url;
+
     });
 
     $("#frmDataMapping").find(".alert").find(".close").click(function (e) {
