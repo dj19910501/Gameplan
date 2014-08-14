@@ -148,7 +148,7 @@
                 </div>
                 <div class="content-row alternate">
                     <label class="padding-left4" title="Cost">Other Line Item Cost</label>
-                    @Html.TextBox("txtOtherLineItemCost", otherLineItemCost, new { @class = "currency_dollar margin-top3px", id = "txtOtherLineItemCost", @readonly = "true" })
+                    @Html.TextBox("txtOtherLineItemCost", otherLineItemCost, new { @class = "margin-top3px", id = "txtOtherLineItemCost", @readonly = "true" }) @* Modified by Sohel Pathan on 14/08/2014 for PL ticket #700 *@
                 </div>
             }
         </div>
@@ -497,7 +497,7 @@
 
         NumberFormatterTipsyTitle(".displaytitle", 31);// uday PL Ticket #550 3-7-2014
 
-        if ($("#hdnIsBudgetAllocated").val() == "True" && $("#hdnIsOtherLineItem").val() == "False") {
+        if ($("#hdnIsBudgetAllocated").val() == "True" ) {
             fillCostAllocationData();
         }
 

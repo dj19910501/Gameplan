@@ -1439,6 +1439,12 @@ namespace RevenuePlanner.Controllers
             return Json(new { status = 0, Message = Common.objCached.ErrorOccured }, JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// Save gameplan mapping data type Pull
+        /// Added By Dharmraj on 14-8-2014, #680
+        /// </summary>
+        /// <param name="form">List of GameplanDataTypePullModel objects</param>
+        /// <param name="IntegrationInstanceId">ID of integration instance</param>
         public void SaveDataMappingPull(IList<GameplanDataTypePullModel> form, int IntegrationInstanceId)
         {
             using (MRPEntities mrp = new MRPEntities())
