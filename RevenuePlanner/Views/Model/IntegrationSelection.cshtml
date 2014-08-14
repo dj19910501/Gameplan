@@ -158,36 +158,38 @@
         });
 
         $('#btnSubmit').click(function () {
-            /*Modified by Mitesh vaishnav on 13/08/2014 for PL ticket #690 ,Check for Integration instanse of pushing tactic data is changed than confirm process*/
+            /*Modified by Mitesh vaishnav on 13/08/2014 for PL ticket #690*/
+            /*Check for Integration instanse of pushing tactic data is changed than confirm process*/
             if ('@Model.IntegrationInstanceId.ToString()' == $('#IntegrationInstanceId').val() || '@Model.IntegrationInstanceId' == null || '@Model.IntegrationInstanceId' == '') {
-                var formData = $("form").serialize();
-                var modelId = parseInt('@modelId')
-                $.ajax({
-                    url: '@Url.Content("~/Model/SaveIntegration")',
-                     data: formData + "&id=" + modelId,
-                     success: function (data) {
-                         window.location = '@Url.Content("~/Model/IntegrationSelection?id=")' + data.Id;
-                     }
-                 });
-
+                SaveIntegration(false);
                  }
                  else {
-                     var r = confirm('@Common.objCached.ConfirmationForModifyTargetIntegration');
-                if (r == true) {
-                    var formData = $("form").serialize();
-                    var modelId = parseInt('@modelId')
-                    $.ajax({
-                        url: '@Url.Content("~/Model/SaveIntegration")',
-                        data: formData + "&id=" + modelId + "&IsIntegrationChanged=" + true,
-                        success: function (data) {
-                            window.location = '@Url.Content("~/Model/IntegrationSelection?id=")' + data.Id;
-                        }
-                    });
-
+                    var confirmMessage = confirm('@Common.objCached.ConfirmationForModifyTargetIntegration');
+                if (confirmMessage == true) {
+                        SaveIntegration(true);
                     }
-                }
+            }
+
             return false;
         });
+
+        function SaveIntegration(IsIntegrationChanged) {
+            var modelId = parseInt('@modelId');
+            var ajaxData = $("form").serialize() + "&id=" + modelId;
+
+            if (IsIntegrationChanged) {
+                ajaxData = ajaxData + "&IsIntegrationChanged=" + true;
+            }
+
+            $.ajax({
+                url: '@Url.Content("~/Model/SaveIntegration")',
+                data: ajaxData,
+                success: function (data) {
+                    window.location = '@Url.Content("~/Model/IntegrationSelection?id=")' + data.Id;
+                }
+            });
+        }
+
         var ismsg = $("#hdnMsg").val();
         if ($('#cSuccess').html() != '') {
             $('#cSuccess').html('<strong>Success!</strong> ' + $('#cSuccess').html())

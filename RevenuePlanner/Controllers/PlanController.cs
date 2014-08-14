@@ -2082,15 +2082,7 @@ namespace RevenuePlanner.Controllers
             // added by Dharmraj for ticket #435 MAP/CRM Integration - Tactic Creation
             var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
             ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
-            if (objPlan.Model.IntegrationInstanceId != null || objPlan.Model.IntegrationInstanceIdCW != null || objPlan.Model.IntegrationInstanceIdINQ != null || objPlan.Model.IntegrationInstanceIdMQL != null)
-            {
-                ViewBag.ExtIntService = true;
-            }
-            else
-            {
-                ViewBag.ExtIntService = false;
-            }
-
+            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
             ViewBag.IsDeployedToIntegration = false;
 
 
@@ -2150,15 +2142,7 @@ namespace RevenuePlanner.Controllers
             }
 
             ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
-            if (pc.Plan.Model.IntegrationInstanceId != null || pc.Plan.Model.IntegrationInstanceIdCW != null || pc.Plan.Model.IntegrationInstanceIdINQ != null || pc.Plan.Model.IntegrationInstanceIdMQL != null)
-            {
-                ViewBag.ExtIntService = true;
-            }
-            else
-            {
-                ViewBag.ExtIntService = false;
-            }
-
+            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(pc.Plan.Model);
             Plan_CampaignModel pcm = new Plan_CampaignModel();
             pcm.PlanCampaignId = pc.PlanCampaignId;
             pcm.Title = HttpUtility.HtmlDecode(pc.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
@@ -2700,16 +2684,10 @@ namespace RevenuePlanner.Controllers
             //ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
             ViewBag.IsCreated = true;
 
-            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
+            
             var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-            if (objPlan.Model.IntegrationInstanceId != null || objPlan.Model.IntegrationInstanceIdCW != null || objPlan.Model.IntegrationInstanceIdINQ != null || objPlan.Model.IntegrationInstanceIdMQL != null)
-            {
-                ViewBag.ExtIntService = true;
-            }
-            else
-            {
-                ViewBag.ExtIntService = false;
-            }
+            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
+            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
 
             Plan_Campaign pcp = db.Plan_Campaign.Where(pcpobj => pcpobj.PlanCampaignId.Equals(id) && pcpobj.IsDeleted.Equals(false)).SingleOrDefault();
             if (pcp == null)
@@ -2803,15 +2781,7 @@ namespace RevenuePlanner.Controllers
             }
 
             ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
-            if (pcp.Plan_Campaign.Plan.Model.IntegrationInstanceId != null || pcp.Plan_Campaign.Plan.Model.IntegrationInstanceIdCW != null || pcp.Plan_Campaign.Plan.Model.IntegrationInstanceIdINQ != null || pcp.Plan_Campaign.Plan.Model.IntegrationInstanceIdMQL != null)
-            {
-                ViewBag.ExtIntService = true;
-            }
-            else
-            {
-                ViewBag.ExtIntService = false;
-            }
-
+            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(pcp.Plan_Campaign.Plan.Model);
             Plan_Campaign_ProgramModel pcpm = new Plan_Campaign_ProgramModel();
             pcpm.PlanProgramId = pcp.PlanProgramId;
             pcpm.PlanCampaignId = pcp.PlanCampaignId;
@@ -3356,17 +3326,10 @@ namespace RevenuePlanner.Controllers
             ////End :Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             ViewBag.IsCreated = true;
 
-            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
+           
             var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-            if (objPlan.Model.IntegrationInstanceId != null || objPlan.Model.IntegrationInstanceIdCW != null || objPlan.Model.IntegrationInstanceIdINQ != null || objPlan.Model.IntegrationInstanceIdMQL != null)
-            {
-                ViewBag.ExtIntService = true;
-            }
-            else
-            {
-                ViewBag.ExtIntService = false;
-            }
-
+            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
+            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
             Plan_Campaign_Program pcpt = db.Plan_Campaign_Program.Where(pcpobj => pcpobj.PlanProgramId.Equals(id)).SingleOrDefault();
             if (pcpt == null)
             {
@@ -3487,14 +3450,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.Geography = db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId);
             }
             ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
-            if (pcpt.TacticType.Model.IntegrationInstanceId != null || pcpt.TacticType.Model.IntegrationInstanceIdCW != null || pcpt.TacticType.Model.IntegrationInstanceIdINQ != null || pcpt.TacticType.Model.IntegrationInstanceIdMQL != null)
-            {
-                ViewBag.ExtIntService = true;
-            }
-            else
-            {
-                ViewBag.ExtIntService = false;
-            }
+            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(pcpt.TacticType.Model);
 
             Plan_Campaign_Program_TacticModel pcptm = new Plan_Campaign_Program_TacticModel();
             pcptm.PlanProgramId = pcpt.PlanProgramId;
@@ -5628,17 +5584,9 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsCreated = true;
 
 
-            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
             var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-            if (objPlan.Model.IntegrationInstanceId != null || objPlan.Model.IntegrationInstanceIdCW != null || objPlan.Model.IntegrationInstanceIdINQ != null || objPlan.Model.IntegrationInstanceIdMQL != null)
-            {
-                ViewBag.ExtIntService = true;
-            }
-            else
-            {
-                ViewBag.ExtIntService = false;
-            }
-
+            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
+            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
             PlanImprovementTactic pitm = new PlanImprovementTactic();
             pitm.ImprovementPlanProgramId = id;
             // Set today date as default for effective date.
@@ -5684,17 +5632,10 @@ namespace RevenuePlanner.Controllers
 
             }
 
-            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
+            
             var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
-            if (objPlan.Model.IntegrationInstanceId != null || objPlan.Model.IntegrationInstanceIdCW != null || objPlan.Model.IntegrationInstanceIdINQ != null || objPlan.Model.IntegrationInstanceIdMQL != null)
-            {
-                ViewBag.ExtIntService = true;
-            }
-            else
-            {
-                ViewBag.ExtIntService = false;
-            }
-
+            ////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
+            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
             Plan_Improvement_Campaign_Program_Tactic pcpt = db.Plan_Improvement_Campaign_Program_Tactic.Where(pcptobj => pcptobj.ImprovementPlanTacticId.Equals(id)).SingleOrDefault();
             if (pcpt == null)
             {

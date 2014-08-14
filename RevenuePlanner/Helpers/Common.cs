@@ -3765,6 +3765,22 @@ namespace RevenuePlanner.Helpers
         #endregion
 
         #endregion
+        /// <summary>
+        /// Function to check integration instance of model.If model have atleast one instance, returns true.
+        /// Added by Mitesh Vaishnav on 14-Aug-2014 for PL ticket #690
+        /// </summary>
+        /// <param name="objModel">Model Object</param>
+        /// <returns></returns>
+        public static bool CheckModelIntegrationExist(Model objModel)
+        {
+            bool isIntegrationInstanceExist = true;
+            if (objModel.IntegrationInstanceId == null && objModel.IntegrationInstanceIdCW == null && objModel.IntegrationInstanceIdINQ == null && objModel.IntegrationInstanceIdMQL == null)
+            {
+                isIntegrationInstanceExist = false;
+            }
+                return isIntegrationInstanceExist;
+        }
+        
     }
 
     ////Start Manoj PL #490 Date:27May2014
