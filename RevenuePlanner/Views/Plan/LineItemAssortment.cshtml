@@ -218,7 +218,7 @@
             $("#txtmql").val("N/A");
         }
 
-        $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        //$('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 }); // Commented by Sohel Pathan on 18/08/2014 for Internal Review Points
         if ($("#hdnIsOtherLineItem").val() == "False") {
             $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
             $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
@@ -389,7 +389,7 @@
                         $("#txtProjectedStageValue").val(projectedStageValue);
                         $("#txtCost").val(pcost);
                         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-                        $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+                        //$('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 }); // Commented by Sohel Pathan on 18/08/2014 for Internal Review Points
 
                         if (data.IsDeployedToIntegration) {
                             $("#t_integration_status").addClass("icon-check-blue");
@@ -410,7 +410,7 @@
                 $("#txtmql").val(pmql);
                 $("#txtCost").val(pcost);
                 $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-                $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+                //$('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 }); // Commented by Sohel Pathan on 18/08/2014 for Internal Review Points
                 $("#lblStageTitle").text("Stage");
                 $("#hdnStageId").val("0");
 
@@ -552,6 +552,7 @@
                             TotalallocationValue += parseInt($(lstAllocInputs[i]).val() == '' ? 0 : ReplaceCC($(lstAllocInputs[i]).val()));
                         }
                         $("#lblTotalLineItemCost").html(FormatCommasBudget(TotalallocationValue.toString(), false, true));
+                        $(this).val(FormatCommasBudget(currentValue, false, false));    // Added by Sohel Pathan on 18/08/2014 for Internal Review Points
                     }
                 }
             });
@@ -578,6 +579,7 @@
                             $("#" + r[i].periodTitle).val(FormatCommas(r[i].costValue, false));
                             $("#" + r[i].periodTitle).attr('ov', r[i].costValue == '' ? '0' : r[i].costValue);
                             $("#" + r[i].periodTitle).attr('rmb', remainingMonthlyCost);
+                            $("#" + r[i].periodTitle).attr("myValue", $("#" + r[i].periodTitle).val()); // Added by Sohel Pathan on 18/08/2014 for Internal Review Points
                             if (parseInt(remainingMonthlyCost) < 0) {
                                 $("#" + r[i].periodTitle).addClass('error-text');
                             }

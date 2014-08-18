@@ -489,10 +489,11 @@
         //function to check myValue attribute values and input values that any changes made?
         function isDataChanged() {
             var changed = false;
-            $('#slidepanel').find("input[type=text],textarea,select").each(function () {
+            $('#slidepanel').find("input[type=text],textarea,select, .priceValue").each(function () {   // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
                 var iv = $(this).attr("myValue");
                 if ($(this).val() != iv) {
                     changed = true;
+                    return false;   // Added by Sohel Pathan on 18/08/2014 for Internal Review Points
                 }
             });
             return changed;
