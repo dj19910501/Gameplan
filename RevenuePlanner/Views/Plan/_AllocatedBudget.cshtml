@@ -58,6 +58,11 @@
     </div>
 </div>
 <script type="text/javascript">
+  
+    var heights = $('.column1 tr td div a').map(function () {
+        return $(this).width();
+    }).get();
+   
     $(document).ready(function () {
         SetHeader();
         AddTipsy();
@@ -85,7 +90,12 @@
                 $(".sub[data-parent='" + accordionId + "']").prev('#' + accordionId).toggleClass('open');
             }
         });
-        //
+        //in case of chrome browser it is creating design issue
+        $.browser.chrome = /chrom(e|ium)/.test(navigator.userAgent.toLowerCase());
+        if ($.browser.chrome) {
+            var maxHeight = Math.max.apply(Math, heights);
+            $('.column1 tr td div').css('width', maxHeight);
+        }
     });
     function AddTipsy() {
         //alert($("div[allocated]").length);

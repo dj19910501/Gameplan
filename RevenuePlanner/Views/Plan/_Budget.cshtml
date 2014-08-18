@@ -58,6 +58,9 @@
 </div>
 
 <script type="text/javascript">
+    var heights = $('.column1 tr td div a').map(function () {
+        return $(this).width();
+    }).get();
     $(document).ready(function () {
         $.fn.hasScrollBar = function () {
             return this.get(0).scrollWidth > this.width();
@@ -75,6 +78,12 @@
         $('.column2').width(mainTableWidth - columnWidth1 - columnWidth3 - 24);
         AddTipsy();
         SetHeader();
+        //in case of chrome browser it is creating design issue
+        $.browser.chrome = /chrom(e|ium)/.test(navigator.userAgent.toLowerCase());
+        if ($.browser.chrome) {
+            var maxHeight = Math.max.apply(Math, heights);
+            $('.column1 tr td div').css('width', maxHeight);
+        }
     });
     $('.accordionClick').on('click', function () {
         var accordionId = $(this).parent().attr('id');
