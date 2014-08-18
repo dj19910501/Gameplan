@@ -2944,14 +2944,13 @@ namespace RevenuePlanner.Controllers
                     {
                         using (var scope = new TransactionScope())
                         {
-                            ObjectParameter ReturnValue = new ObjectParameter("ReturnValue", typeof(Int64));
-                            db.Plan_Campaign_Program_Tactic_ActualDelete(actualResult.PlanTacticId, ReturnValue);
-                            Int64 returnValue;
+                            //modified by Mitesh vaishnav for functional review point - removing sp
+                            var tacticActualList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => ta.PlanTacticId == actualResult.PlanTacticId).ToList();
+                            tacticActualList.ForEach(ta => db.Plan_Campaign_Program_Tactic_Actual.Remove(ta));
+
                             Int64 projectedStageValue = 0, mql = 0, cw = 0;
                             double revenue = 0;
-                            Int64.TryParse(ReturnValue.Value.ToString(), out returnValue);
-                            if (returnValue == 0)
-                            {
+
                                 if (actualResult.IsActual)
                                 {
                                     if (isMQL)
@@ -2969,7 +2968,6 @@ namespace RevenuePlanner.Controllers
                                                 objpcpta.CreatedBy = Sessions.User.UserId;
                                                 db.Entry(objpcpta).State = EntityState.Added;
                                                 db.Plan_Campaign_Program_Tactic_Actual.Add(objpcpta);
-                                                db.SaveChanges();
                                             }
                                         }
                                     }
@@ -2989,10 +2987,9 @@ namespace RevenuePlanner.Controllers
                                         objpcpta.CreatedBy = Sessions.User.UserId;
                                         db.Entry(objpcpta).State = EntityState.Added;
                                         db.Plan_Campaign_Program_Tactic_Actual.Add(objpcpta);
-                                        db.SaveChanges();
-                                    }
                                 }
                             }
+                                        db.SaveChanges();
 
                             Plan_Campaign_Program_Tactic objPCPT = db.Plan_Campaign_Program_Tactic.Where(pt => pt.PlanTacticId == actualResult.PlanTacticId).SingleOrDefault();
                             objPCPT.CostActual = actualResult.TotalCostActual;

@@ -593,7 +593,8 @@ namespace RevenuePlanner.Helpers
 
         #region Sections
         /// <summary>
-        /// Added By: Kunal Shrimali
+        /// Modified by: Mitesh vaishnav
+        /// Add New section of LineItem.
         /// Enum for Sections.
         /// </summary>
         public enum Section
@@ -601,7 +602,8 @@ namespace RevenuePlanner.Helpers
             Campaign,
             Program,
             Tactic,
-            ImprovementTactic
+            ImprovementTactic,
+            LineItem
         }
         #endregion
 

@@ -2604,20 +2604,12 @@ namespace RevenuePlanner.Controllers
                 {
                     using (var scope = new TransactionScope())
                     {
-                        ObjectParameter parameterReturnValue = new ObjectParameter("ReturnValue", typeof(int));
-                        db.Plan_Task_Delete(id,
-                                            null,
-                                            null,
-                                            true,
-                                            DateTime.Now,
-                                            Sessions.User.UserId,
-                                            parameterReturnValue,
-                                            null);
-                        int returnValue;
+                        ////Modified by Mitesh Vaishnav for functional review point - removing sp
+                        int returnValue = Common.PlanTaskDelete(true, Enums.Section.Campaign.ToString(),id);
                         int cid = 0;
                         int pid = 0;
                         string Title = "";
-                        Int32.TryParse(parameterReturnValue.Value.ToString(), out returnValue);
+
                         if (returnValue != 0)
                         {
                             Plan_Campaign pc = db.Plan_Campaign.Where(p => p.PlanCampaignId == id).SingleOrDefault();
@@ -3224,20 +3216,12 @@ namespace RevenuePlanner.Controllers
                 {
                     using (var scope = new TransactionScope())
                     {
-                        ObjectParameter parameterReturnValue = new ObjectParameter("ReturnValue", typeof(int));
-                        db.Plan_Task_Delete(null,
-                                            id,
-                                            null,
-                                            true,
-                                            DateTime.Now,
-                                            Sessions.User.UserId,
-                                            parameterReturnValue,
-                                            null);
-                        int returnValue;
+                        ////Modified by Mitesh Vaishnav for functional review point - removing sp
+                        int returnValue = Common.PlanTaskDelete(true, Enums.Section.Program.ToString(),id);
                         int cid = 0;
                         int pid = 0;
                         string Title = "";
-                        Int32.TryParse(parameterReturnValue.Value.ToString(), out returnValue);
+                        
                         if (returnValue != 0)
                         {
                             Plan_Campaign_Program pc = db.Plan_Campaign_Program.Where(p => p.PlanProgramId == id).SingleOrDefault();
@@ -4047,20 +4031,12 @@ namespace RevenuePlanner.Controllers
                 {
                     using (var scope = new TransactionScope())
                     {
-                        ObjectParameter parameterReturnValue = new ObjectParameter("ReturnValue", typeof(int));
-                        db.Plan_Task_Delete(null,
-                                            null,
-                                            id,
-                                            true,
-                                            DateTime.Now,
-                                            Sessions.User.UserId,
-                                            parameterReturnValue,
-                                            null);
-                        int returnValue;
+                        ////Modified by Mitesh Vaishnav for functional review point - removing sp
+                        int returnValue = Common.PlanTaskDelete(true, Enums.Section.Tactic.ToString(),id);
                         int cid = 0;
                         int pid = 0;
                         string Title = "";
-                        Int32.TryParse(parameterReturnValue.Value.ToString(), out returnValue);
+                        
                         if (returnValue != 0)
                         {
                             Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.Where(p => p.PlanTacticId == id).SingleOrDefault();
@@ -4874,18 +4850,10 @@ namespace RevenuePlanner.Controllers
                 {
                     using (var scope = new TransactionScope())
                     {
-                        ObjectParameter parameterReturnValue = new ObjectParameter("ReturnValue", typeof(int));
-                        db.Plan_Task_Delete(null,
-                                            null,
-                                            null,
-                                            true,
-                                            DateTime.Now,
-                                            Sessions.User.UserId,
-                                            parameterReturnValue,
-                                            id);
+                        ////Modified by Mitesh Vaishnav for functional review point - removing sp
+                        int returnValue = Common.PlanTaskDelete(true, Enums.Section.LineItem.ToString(),id);
 
-                        int returnValue;
-                        Int32.TryParse(parameterReturnValue.Value.ToString(), out returnValue);
+
 
                         int cid = 0;
                         int pid = 0;
