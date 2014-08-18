@@ -82,7 +82,15 @@
         $.browser.chrome = /chrom(e|ium)/.test(navigator.userAgent.toLowerCase());
         if ($.browser.chrome) {
             var maxHeight = Math.max.apply(Math, heights);
-            $('.column1 tr td div').css('width', maxHeight);
+            var column1Width = $('.column1 div').css('width');
+            column1Width = column1Width.replace('px', '');
+            try {
+                if (parseInt(column1Width) < maxHeight) {
+                    $('.column1 div').css('width', maxHeight);
+                }
+            } catch (e) {
+
+            }
         }
     });
     $('.accordionClick').on('click', function () {
