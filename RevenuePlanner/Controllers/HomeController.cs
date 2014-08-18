@@ -2049,6 +2049,20 @@ namespace RevenuePlanner.Controllers
                             else
                             {
                                 Plan_Campaign_Program_Tactic tactic = db.Plan_Campaign_Program_Tactic.Where(pt => pt.PlanTacticId == planTacticId).SingleOrDefault();
+                                bool isApproved = false;
+                                DateTime todaydate = DateTime.Now;
+                                if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
+                                {
+                                    isApproved = true;
+                                    if (todaydate > tactic.StartDate && todaydate < tactic.EndDate)
+                                    {
+                                        status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
+                                    }
+                                    else if (todaydate > tactic.EndDate)
+                                    {
+                                        status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
+                                    }
+                                }
                                 tactic.Status = status;
                                 tactic.ModifiedBy = Sessions.User.UserId;
                                 tactic.ModifiedDate = DateTime.Now;
@@ -2067,7 +2081,7 @@ namespace RevenuePlanner.Controllers
                                 result = db.SaveChanges();
                                 if (result == 2)
                                 {
-                                    if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
+                                    if (isApproved)
                                     {
                                         result = Common.InsertChangeLog(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, 0, planTacticId, tactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved);
                                         //// added by uday for #532
@@ -3253,6 +3267,20 @@ namespace RevenuePlanner.Controllers
                                 if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                                 {
                                     Plan_Campaign_Program_Tactic tactic = db.Plan_Campaign_Program_Tactic.Where(pt => pt.PlanTacticId == planTacticId).SingleOrDefault();
+                                    bool isApproved = false;
+                                    DateTime todaydate = DateTime.Now;
+                                    if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
+                                    {
+                                        isApproved = true;
+                                        if (todaydate > tactic.StartDate && todaydate < tactic.EndDate)
+                                        {
+                                            status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
+                                        }
+                                        else if (todaydate > tactic.EndDate)
+                                        {
+                                            status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
+                                        }
+                                    }
                                     tactic.Status = status;
                                     tactic.ModifiedBy = Sessions.User.UserId;
                                     tactic.ModifiedDate = DateTime.Now;
@@ -3260,7 +3288,7 @@ namespace RevenuePlanner.Controllers
                                     result = db.SaveChanges();
                                     if (result == 1)
                                     {
-                                        if (tactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
+                                        if (isApproved)
                                         {
                                             result = Common.InsertChangeLog(Sessions.PlanId, null, planTacticId, tactic.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
                                             //added by uday for #532 
