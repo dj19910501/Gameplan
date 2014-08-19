@@ -384,7 +384,9 @@
             }
 
             $("#c_tactics").append('<div  style="margin-bottom: 5px;width: 50% !important;float:left;"><span class="verticalIdSelectBox"><select id="LineItemTypeId" class="ddlStyle" require="true" name="lineitemTypeId" data-val-required="The LineItemTypeId field is required." data-val-number="The field LineItemTypeId must be a number." data-val="true">' +
-               '<option value="">Please Select</option>' + lineitemString +
+               //'<option value="">Please Select</option>' + lineitemString +
+                //Added By : Kalpesh Sharma PL#697
+                lineitemString +
                '</select></span>' +
           '<span class="delete-tactic"></span></div>');
             $(".verticalIdSelectBox select").selectbox();
