@@ -3703,7 +3703,15 @@ namespace RevenuePlanner.Controllers
                                         int lineItemTypeid = Convert.ToInt32(li);
                                         pcptlobj.LineItemTypeId = lineItemTypeid;
                                         LineItemType lit = lineItemType.Where(m => m.LineItemTypeId == lineItemTypeid).FirstOrDefault();
-                                        pcptlobj.Title = lit.Title;
+
+                                        if (lit.Title == Enums.LineItemTypes.None.ToString())
+                                        {
+                                            pcptlobj.Title = "Line Item";
+                                        }
+                                        else
+                                        {
+                                            pcptlobj.Title = lit.Title;
+                                        }
                                         pcptlobj.Cost = 0;
                                         pcptlobj.StartDate = form.StartDate;
                                         pcptlobj.EndDate = form.EndDate;
