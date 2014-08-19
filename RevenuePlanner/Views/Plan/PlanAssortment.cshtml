@@ -507,6 +507,7 @@
                             $("#" + r[i].periodTitle).val(r[i].budgetValue);
                             $("#" + r[i].periodTitle).attr('ov', r[i].budgetValue == '' ? '0' : r[i].budgetValue);
                             $("#" + r[i].periodTitle).attr('cmb', r[i].campaignMonthlyBudget);
+                            $("#" + r[i].periodTitle).attr("myValue", $("#" + r[i].periodTitle).val()); // Added by Sohel Pathan on 18/08/2014 for Internal Review Points
                             if (parseInt(campaignMonthlyBudget) > budgetValue) {
                                 $(this).addClass('low-budgeted');
                                 $("#lblAllocatedCampaignsBudget").addClass('error-text');

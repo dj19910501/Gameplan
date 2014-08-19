@@ -248,19 +248,19 @@ function displayconfirm(strURL) {
     if (isDataChanged()) {
 
         $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
-        $("#errorMessageDuplicatePlan").slideDown(3000);
+        $("#errorMessageDuplicatePlan").slideDown(400); // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
     }
     else {
         window.location.href = strURL;
     }
 }
 $(document).on("click", "#confirmClose", function (e) {
-    $("#errorMessageDuplicatePlan").slideUp(300);
+    $("#errorMessageDuplicatePlan").slideUp(400);   // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
 });
 function isDataChanged() {
     var changed = false;
 
-    $('#slidepanel-container').find("input[type=text],textarea,select").each(function () {
+    $('#slidepanel-container').find("input[type=text],textarea,select, .priceValue").each(function () {     // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
         if ($(this).is('[readonly]') == false) {
             var iv = $(this).attr("myValue");
             if ($(this).attr('id') == 't_startdate' || $(this).attr('id') == 't_enddate') {
@@ -272,12 +272,14 @@ function isDataChanged() {
                     var oldDateObj = new Date(iv);
                     if (newDateObj.getFullYear() + '-' + newDateObj.getMonth() + '-' + newDateObj.getDate() != oldDateObj.getFullYear() + '-' + oldDateObj.getMonth() + '-' + oldDateObj.getDate()) {
                         changed = true;
+                        return false;   // Added by Sohel Pathan on 19/08/2014 for Internal Review Points
                     }
                 }
             }
             else {
                 if ($(this).val() != iv) {
                     changed = true;
+                    return false;   // Added by Sohel Pathan on 18/08/2014 for Internal Review Points
                 }
             }
         }

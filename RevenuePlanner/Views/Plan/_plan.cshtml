@@ -108,32 +108,65 @@
         //Added : By Kalpesh Sharma Ticket #638 Cloning icon for plans, campaigns, programs and tactics
         $('#BtnGroup').click(function (e) {
             if ($(this).html().toLowerCase() == "duplicate") {
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Content("~/Plan/Clone")',
-                    data: {
-                        CloneType: '@Enums.DuplicationModule.Plan',
-                        Id: '@Planid',
-                        title: ''
-                    },
-                    success: function (data) {
-                        if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                            window.location = '@Url.Content("~/Login/Index")';
-                        }
-                        else {
-                            if (data.redirect) {
-                                window.location.href = data.redirect;
-                                return;
-                            }
-                            if (data.errormsg) {
-                                alert(data.errormsg);
-                                return;
-                            }
-                        }
-                    }
-                });
+                // Start - Added by Sohel Pathan on 18/08/2014 for Internal Review Points
+                if (isDataChanged()) {
+                    $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
+                    $("#errorMessageDuplicatePlan").slideDown(400);
+                    $("#btnConfirmOK").click(function () {
+                        $('#cErrorDuplicatePlan').html("");
+                        $("#errorMessageDuplicatePlan").hide();
+                        clonePlan();
+                    });
+                }
+                else {
+                    clonePlan();
+                }
+                // End - Added by Sohel Pathan on 18/08/2014 for Internal Review Points
             }
         });
+
+        // Start - Added by Sohel Pathan on 18/08/2014 for Internal Review Points
+        function isDataChanged() {
+            alert("isDataChanged 1");
+            var changed = false;
+            $('#slidepanel').find("input[type=text],textarea,select, .priceValue").each(function () {
+                var iv = $(this).attr("myValue");
+                if ($(this).val() != iv) {
+                    changed = true;
+                    return false;
+                }
+            });
+            return changed;
+        }
+
+        function clonePlan() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/Clone")',
+                data: {
+                    CloneType: '@Enums.DuplicationModule.Plan',
+                    Id: '@Planid',
+                    title: ''
+                },
+                success: function (data) {
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
+                    }
+                    else
+                    {
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                            return;
+                        }
+                        if (data.errormsg) {
+                            alert(data.errormsg);
+                            return;
+                        }
+                    }
+                }
+            });
+        }
+        // End - Added by Sohel Pathan on 18/08/2014 for Internal Review Points
 
         @*$(document).on("click", "#LeftNavCampaigns", function (e) {
             displayconfirm('@Url.Action("Assortment", "Plan")');

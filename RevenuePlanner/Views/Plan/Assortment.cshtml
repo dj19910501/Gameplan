@@ -337,7 +337,7 @@
                 //else {
                 //DuplicatePlan();
                 //Dharmraj 11July2014 : 547 (Warning of data loss during make duplicate plan)
-                displayConfirmCommon('DuplicatePlan();');
+                //displayConfirmCommon('DuplicatePlan();');     // Commented by Sohel Pathan on 19/08/2014 for Internal Review Points
 
                 //}
             }
@@ -499,7 +499,7 @@
             return changed;
         }
         $(document).on("click", "#confirmClose, .confirmClose", function (e) {
-            $("#errorMessageDuplicatePlan").slideUp(3000);
+            $("#errorMessageDuplicatePlan").slideUp(400);   // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
         });
         $(document).on("click", "#aApplyToCalender", function (e) {
             displayconfirm('@Url.Action("ApplyToCalendar", "Plan")');
@@ -529,7 +529,7 @@
         function displayconfirm(strURL) {
             if (isDataChanged()) {
                 $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
-                $("#errorMessageDuplicatePlan").slideDown(3000);
+                $("#errorMessageDuplicatePlan").slideDown(400);     // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
             }
             else {
                 window.location.href = strURL;
@@ -540,9 +540,8 @@
         function displayConfirmCommon(functionName) {
             if (isDataChanged()) {
                 $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
-                $("#errorMessageDuplicatePlan").slideDown(3000);
+                $("#errorMessageDuplicatePlan").slideDown(400);     // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
                 $("#btnConfirmOK").click(function () {
-                    //alert(id);
                     $('#cErrorDuplicatePlan').html("");
                     $("#errorMessageDuplicatePlan").hide();
                     eval(functionName);
@@ -1058,7 +1057,7 @@
         function displayconfirmForDeleteEvent(id, type) {
             if (isDataChanged()) {
                 $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
-                $("#errorMessageDuplicatePlan").slideDown(3000);
+                $("#errorMessageDuplicatePlan").slideDown(400);     // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
 
                 $("#btnConfirmOK").click(function () {
                     //alert(id);
@@ -1125,7 +1124,7 @@
         function displayconfirmForSaveContinueEvent() {
             if (isDataChanged()) {
                 $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
-                $("#errorMessageDuplicatePlan").slideDown(3000);
+                $("#errorMessageDuplicatePlan").slideDown(400);     // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
                 $("#btnConfirmOK").click(function () {
                     //alert(id);
                     $('#cErrorDuplicatePlan').html("");
