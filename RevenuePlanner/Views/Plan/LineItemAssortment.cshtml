@@ -219,7 +219,7 @@
             $("#txtmql").val("N/A");
         }
 
-        //$('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 }); // Commented by Sohel Pathan on 18/08/2014 for Internal Review Points
+        $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         if ($("#hdnIsOtherLineItem").val() == "False") {
             $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
             $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
@@ -390,7 +390,7 @@
                         $("#txtProjectedStageValue").val(projectedStageValue);
                         $("#txtCost").val(pcost);
                         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-                        //$('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 }); // Commented by Sohel Pathan on 18/08/2014 for Internal Review Points
+                        $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
                         if (data.IsDeployedToIntegration) {
                             $("#t_integration_status").addClass("icon-check-blue");
@@ -411,7 +411,7 @@
                 $("#txtmql").val(pmql);
                 $("#txtCost").val(pcost);
                 $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-                //$('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 }); // Commented by Sohel Pathan on 18/08/2014 for Internal Review Points
+                $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
                 $("#lblStageTitle").text("Stage");
                 $("#hdnStageId").val("0");
 
@@ -553,7 +553,6 @@
                             TotalallocationValue += parseInt($(lstAllocInputs[i]).val() == '' ? 0 : ReplaceCC($(lstAllocInputs[i]).val()));
                         }
                         $("#lblTotalLineItemCost").html(FormatCommasBudget(TotalallocationValue.toString(), false, true));
-                        $(this).val(FormatCommasBudget(currentValue, false, false));    // Added by Sohel Pathan on 18/08/2014 for Internal Review Points
                     }
                 }
             });

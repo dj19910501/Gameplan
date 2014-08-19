@@ -247,7 +247,7 @@ function displayconfirm(strURL) {
     HideMessages();
     if (isDataChanged()) {
 
-        $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?<br><a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
+        $('#cErrorDuplicatePlan').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
         $("#errorMessageDuplicatePlan").slideDown(400); // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
     }
     else {
@@ -286,5 +286,22 @@ function isDataChanged() {
     });
     return changed;
 }
+    // Start - Added by Sohel Pathan on 19/08/2014 for Internal Review Points
+    $('#BtnGroup').click(function (e) {
+        if ($(this).html().toLowerCase() != "duplicate") {
+            displayconfirm('@Url.Content("~/Plan/Create/0")');
+        }
+    });
 
+    $("#header a").not("#ContactSupport").click(function () {
+        if (isDataChanged()) {
+            displayconfirm($(this).attr('href'));
+            return false;
+        }
+        else {
+            return true;
+        }
+    });
+
+    // End - Added by Sohel Pathan on 19/08/2014 for Internal Review Points
 </script>

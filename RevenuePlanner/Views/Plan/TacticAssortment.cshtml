@@ -338,7 +338,7 @@
             $("#txtmql").val(FormatCommas($("#txtmql").val(), false));
         }
 
-        //$('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 }); // Commented by Sohel Pathan on 18/08/2014 for Internal Review Points
+        $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
         //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
         $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
@@ -768,7 +768,7 @@
                             $("#TacticCost").val(pcost);    // Modified by Sohel Pathan on 12/08/2014 for PL ticket #605
 
                             $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-                            //$('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 }); // Commented by Sohel Pathan on 18/08/2014 for Internal Review Points
+                            $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
                             //Added By : Kalpesh Sharma Reintilaize the Remaining Budget Value 08/04/2014
                             // Start - Modified by Sohel Pathan on 12/08/2014 for PL ticket #605
@@ -805,7 +805,7 @@
                 //Start by Kalpesh Sharma #605: Cost allocation for Tactic 07/30/2014
                 $("#TacticCost").val('0');  // Modified by Sohel Pathan on 12/08/2014 for PL ticket #605
                 $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-                //$('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 }); // Commented by Sohel Pathan on 18/08/2014 for Internal Review Points
+                $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
                 $("#lblStageTitle").text("Stage");
                 $("#hdnStageId").val("0");
                 // Start - Added by Sohel Pathan on 12/08/2014 for PL ticket #605
@@ -992,7 +992,6 @@
                     }
                     $("#lblTotalAllocated").html(FormatCommasBudget(TotalallocationValue.toString(), false, true));
                     calculateUnallocatedBudget();
-                    $(this).val(FormatCommasBudget(currentValue, false, false));    // Added by Sohel Pathan on 18/08/2014 for Internal Review Points
                 }
             }
         });

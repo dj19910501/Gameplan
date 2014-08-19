@@ -260,7 +260,7 @@
         var isredirect = "@ViewBag.RedirectType";
         var hdnYear = @ViewBag.Year
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-        //$('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 }); // Commented by Sohel Pathan on 18/08/2014 for Internal Review Points
+        $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         //start added by dharmraj #567: Budget allocation for campaign
         if ($("#hdnIsBudgetAllocated").val() == "True") {
             $("#lblTotalBudget").html(FormatCommasBudget($("#lblTotalBudget").html(), false, true));
@@ -798,7 +798,6 @@
                         }
                         $("#lblTotalAllocated").html(FormatCommasBudget(TotalallocationValue.toString(), false, true));
                         calculateUnallocatedBudget();
-                        $(this).val(FormatCommasBudget(currentValue, false, false));    // Added by Sohel Pathan on 18/08/2014 for Internal Review Points
                     }
                 }
             });

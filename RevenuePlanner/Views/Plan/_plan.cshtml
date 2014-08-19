@@ -62,6 +62,14 @@
                                     <a id="spanPlanDuplicate">Duplicate</a>
                                 </li>  
                             }
+                            @* Start - Added by Sohel Pathan on 19/08/2014 for Internal Review Points *@
+                            else if (ViewBag.PageTitle == "Budgeting")
+                            {    
+                                <li>
+                                    <a id="spanPlanDuplicate">Duplicate</a>
+                                </li>  
+                            }
+                            @* End - Added by Sohel Pathan on 19/08/2014 for Internal Review Points *@
                         </ul>
                     </div>
                 </div>
@@ -127,7 +135,6 @@
 
         // Start - Added by Sohel Pathan on 18/08/2014 for Internal Review Points
         function isDataChanged() {
-            alert("isDataChanged 1");
             var changed = false;
             $('#slidepanel').find("input[type=text],textarea,select, .priceValue").each(function () {
                 var iv = $(this).attr("myValue");

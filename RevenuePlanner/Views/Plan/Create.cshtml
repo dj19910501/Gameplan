@@ -764,7 +764,7 @@
     function displayconfirm(strURL) {
         if (isDataChanged()) {
             $('#errorMessage').html("<strong>Error! </strong> <span id='spanMessageError'>You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a></span><a id='aclose' class='close confirmClose'>×</a>");
-            $("#errorMessage").slideDown(1000);
+            $("#errorMessage").slideDown(400);  // Modified by Sohel Pathan on 19/08/2014 for Internal Review Points
             $("#divErrLessBudget").css("display", "none");
         }
         else {
