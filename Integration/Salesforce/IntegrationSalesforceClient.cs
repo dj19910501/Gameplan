@@ -266,25 +266,17 @@ namespace Integration.Salesforce
                             }
                             ).ToList();
 
-                        List<int> PlanTacticIds = CampaignMemberListGroup.Select(campaign => campaign.TacticId).Distinct().ToList();
-                        List<Plan_Campaign_Program_Tactic_Actual> actualTacticList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => PlanTacticIds.Contains(ta.PlanTacticId)).ToList();
-                        List<Plan_Campaign_Program_Tactic> innerTacticList = tacticList.Where(t => PlanTacticIds.Contains(t.PlanTacticId)).ToList();
-                        foreach (var tactic in innerTacticList)
+                                List<int> OuterTacticIds = tacticList.Select(t => t.PlanTacticId).ToList();
+                                List<Plan_Campaign_Program_Tactic_Actual> OuteractualTacticList = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => OuterTacticIds.Contains(actual.PlanTacticId) && actual.StageTitle == Common.StageProjectedStageValue).ToList();
+                                OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                db.SaveChanges();
+
+                                foreach (var tactic in tacticList)
                         {
                             var innerCampaignMember = CampaignMemberListGroup.Where(cm => cm.TacticId == tactic.PlanTacticId).ToList();
                             foreach (var objCampaignMember in innerCampaignMember)
                             {
                                 Plan_Campaign_Program_Tactic_Actual objPlanTacticActual = new Plan_Campaign_Program_Tactic_Actual();
-                                objPlanTacticActual = actualTacticList.Where(actualTactic => actualTactic.PlanTacticId == objCampaignMember.TacticId && actualTactic.Period == objCampaignMember.Period && actualTactic.StageTitle == Common.StageProjectedStageValue).FirstOrDefault();
-                                if (objPlanTacticActual != null)
-                                {
-                                    objPlanTacticActual.Actualvalue = objCampaignMember.Count;
-                                    objPlanTacticActual.ModifiedBy = _userId;
-                                    objPlanTacticActual.ModifiedDate = DateTime.Now;
-                                    db.Entry(objPlanTacticActual).State = EntityState.Modified;
-                                }
-                                else
-                                {
                                     objPlanTacticActual = new Plan_Campaign_Program_Tactic_Actual();
                                     objPlanTacticActual.PlanTacticId = objCampaignMember.TacticId;
                                     objPlanTacticActual.Period = objCampaignMember.Period;
@@ -294,7 +286,6 @@ namespace Integration.Salesforce
                                     objPlanTacticActual.CreatedDate = DateTime.Now;
                                     db.Entry(objPlanTacticActual).State = EntityState.Added;
                                 }
-                            }
 
                             tactic.LastSyncDate = DateTime.Now;
                             tactic.ModifiedDate = DateTime.Now;
@@ -423,25 +414,17 @@ namespace Integration.Salesforce
                                 }
                                 ).ToList();
 
-                            List<int> PlanTacticIds = OpportunityMemberListGroup.Select(opportunity => opportunity.TacticId).Distinct().ToList();
-                            List<Plan_Campaign_Program_Tactic_Actual> actualTacticList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => PlanTacticIds.Contains(ta.PlanTacticId)).ToList();
-                            List<Plan_Campaign_Program_Tactic> innerTacticList = tacticList.Where(t => PlanTacticIds.Contains(t.PlanTacticId)).ToList();
-                            foreach (var tactic in innerTacticList)
+                                List<int> OuterTacticIds = tacticList.Select(t => t.PlanTacticId).ToList();
+                                List<Plan_Campaign_Program_Tactic_Actual> OuteractualTacticList = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => OuterTacticIds.Contains(actual.PlanTacticId) && (actual.StageTitle == Common.StageRevenue || actual.StageTitle == Common.StageCW)).ToList();
+                                OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                db.SaveChanges();
+
+                                foreach (var tactic in tacticList)
                             {
                                 var innerOpportunityMember = OpportunityMemberListGroup.Where(cm => cm.TacticId == tactic.PlanTacticId).ToList();
                                 foreach (var objOpportunityMember in innerOpportunityMember)
                                 {
                                     Plan_Campaign_Program_Tactic_Actual objPlanTacticActual = new Plan_Campaign_Program_Tactic_Actual();
-                                    objPlanTacticActual = actualTacticList.Where(actualTactic => actualTactic.PlanTacticId == objOpportunityMember.TacticId && actualTactic.Period == objOpportunityMember.Period && actualTactic.StageTitle == Common.StageCW).FirstOrDefault();
-                                    if (objPlanTacticActual != null)
-                                    {
-                                        objPlanTacticActual.Actualvalue = objOpportunityMember.Count;
-                                        objPlanTacticActual.ModifiedBy = _userId;
-                                        objPlanTacticActual.ModifiedDate = DateTime.Now;
-                                        db.Entry(objPlanTacticActual).State = EntityState.Modified;
-                                    }
-                                    else
-                                    {
                                         objPlanTacticActual = new Plan_Campaign_Program_Tactic_Actual();
                                         objPlanTacticActual.PlanTacticId = objOpportunityMember.TacticId;
                                         objPlanTacticActual.Period = objOpportunityMember.Period;
@@ -450,19 +433,8 @@ namespace Integration.Salesforce
                                         objPlanTacticActual.CreatedBy = _userId;
                                         objPlanTacticActual.CreatedDate = DateTime.Now;
                                         db.Entry(objPlanTacticActual).State = EntityState.Added;
-                                    }
 
                                     Plan_Campaign_Program_Tactic_Actual objPlanTacticActualRevenue = new Plan_Campaign_Program_Tactic_Actual();
-                                    objPlanTacticActualRevenue = actualTacticList.Where(actualTactic => actualTactic.PlanTacticId == objOpportunityMember.TacticId && actualTactic.Period == objOpportunityMember.Period && actualTactic.StageTitle == Common.StageRevenue).FirstOrDefault();
-                                    if (objPlanTacticActualRevenue != null)
-                                    {
-                                        objPlanTacticActualRevenue.Actualvalue = objOpportunityMember.Revenue;
-                                        objPlanTacticActualRevenue.ModifiedBy = _userId;
-                                        objPlanTacticActualRevenue.ModifiedDate = DateTime.Now;
-                                        db.Entry(objPlanTacticActualRevenue).State = EntityState.Modified;
-                                    }
-                                    else
-                                    {
                                         objPlanTacticActualRevenue = new Plan_Campaign_Program_Tactic_Actual();
                                         objPlanTacticActualRevenue.PlanTacticId = objOpportunityMember.TacticId;
                                         objPlanTacticActualRevenue.Period = objOpportunityMember.Period;
@@ -471,7 +443,6 @@ namespace Integration.Salesforce
                                         objPlanTacticActualRevenue.CreatedBy = _userId;
                                         objPlanTacticActualRevenue.CreatedDate = DateTime.Now;
                                         db.Entry(objPlanTacticActualRevenue).State = EntityState.Added;
-                                    }
                                 }
 
                                 tactic.LastSyncDate = DateTime.Now;
