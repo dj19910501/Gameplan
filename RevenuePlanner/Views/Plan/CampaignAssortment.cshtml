@@ -876,6 +876,14 @@
                 }
 
                 $("#txtRemainingBudget").val(FormatCommasBudget(data.planRemainingBudget.toString(), false, true));
+                //Added  By : Kalpesh Sharma #693 Allowing Program Budget more than Remaining Campaign Budget in None case
+                if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
+                    $("#txtRemainingBudget").addClass('error-text');
+                }
+                else {
+                    $("#txtRemainingBudget").removeClass('error-text');
+                }
+
                 $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
                 var TotalallocationValue = 0;
                 var lstAllocInputs = $(".budget-section input").not('.unallocated-text');
