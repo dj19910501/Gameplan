@@ -7773,7 +7773,8 @@ div.sub{display:none; transition: height 0.35s ease 0s; padding:0;}
     margin: 10px 0px 10px 0px;
 }
 .integrationAccordion .collapse.in {
-    overflow: visible;
+    /*Commneted by Manoj PL#681 PL#656 To resolve ghost image issue*/
+    /*overflow: visible;*/ 
 }
 /* End -Added by Sohel Pathan on 05/08/2014 for PL ticket #656 and #681 */ 
 
