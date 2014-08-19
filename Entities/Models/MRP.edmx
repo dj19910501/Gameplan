@@ -2193,38 +2193,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Function Name="Plan_Campaign_Program_Tactic_ActualDelete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="PlanTacticId" Type="int" Mode="In" />
-          <Parameter Name="ReturnValue" Type="int" Mode="InOut" />
-        </Function>
-        <Function Name="Plan_Task_Delete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="PlanCampaignId" Type="int" Mode="In" />
-          <Parameter Name="PlanProgramId" Type="int" Mode="In" />
-          <Parameter Name="PlanTacticId" Type="int" Mode="In" />
-          <Parameter Name="IsDelete" Type="bit" Mode="In" />
-          <Parameter Name="ModifiedDate" Type="datetime" Mode="In" />
-          <Parameter Name="ModifiedBy" Type="uniqueidentifier" Mode="In" />
-          <Parameter Name="ReturnValue" Type="int" Mode="InOut" />
-          <Parameter Name="PlanLineItemId" Type="int" Mode="In" />
-        </Function>
-        <Function Name="PlanDuplicate" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="PlanId" Type="int" Mode="In" />
-          <Parameter Name="PlanStatus" Type="varchar" Mode="In" />
-          <Parameter Name="TacticStatus" Type="varchar" Mode="In" />
-          <Parameter Name="CreatedDate" Type="datetime" Mode="In" />
-          <Parameter Name="CreatedBy" Type="uniqueidentifier" Mode="In" />
-          <Parameter Name="Suffix" Type="varchar" Mode="In" />
-          <Parameter Name="CopyClone" Type="varchar" Mode="In" />
-          <Parameter Name="Id" Type="int" Mode="In" />
-          <Parameter Name="ReturnValue" Type="int" Mode="InOut" />
-        </Function>
-        <Function Name="SaveModelInboundOutboundEvent" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="OldModelId" Type="int" Mode="In" />
-          <Parameter Name="NewModelId" Type="int" Mode="In" />
-          <Parameter Name="CreatedDate" Type="datetime" Mode="In" />
-          <Parameter Name="CreatedBy" Type="uniqueidentifier" Mode="In" />
-          <Parameter Name="ReturnValue" Type="int" Mode="InOut" />
-        </Function>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
@@ -4608,10 +4576,6 @@
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="MRPModelStoreContainer" CdmEntityContainer="MRPEntities">
-          <FunctionImportMapping FunctionImportName="Plan_Campaign_Program_Tactic_ActualDelete" FunctionName="MRPModel.Store.Plan_Campaign_Program_Tactic_ActualDelete" />
-          <FunctionImportMapping FunctionImportName="PlanDuplicate" FunctionName="MRPModel.Store.PlanDuplicate" />
-          <FunctionImportMapping FunctionImportName="SaveModelInboundOutboundEvent" FunctionName="MRPModel.Store.SaveModelInboundOutboundEvent" />
-          <FunctionImportMapping FunctionImportName="Plan_Task_Delete" FunctionName="MRPModel.Store.Plan_Task_Delete" />
           <EntitySetMapping Name="Audiences">
             <EntityTypeMapping TypeName="MRPModel.Audience">
               <MappingFragment StoreEntitySet="Audience">
