@@ -7961,6 +7961,10 @@ footer a {
     border-bottom: 1px solid #cccccc;
 }
 
+.integrationAccordion #accordion #extServer {
+    border-bottom: 1px solid #cccccc;
+}
+
 /* Start - Added by Sohel Pathan on 14/08/2014 for PL ticket #656 and #681 */
 #collapseGrpServer h5 {
     color:#333333 !important;
