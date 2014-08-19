@@ -96,7 +96,8 @@
                 @if (!IsOtherLineItem)
                 {
                     <label>Line Item Type</label>
-                    <span class="verticalIdSelectBox" style="margin-left: -2px;">@Html.DropDownListFor(model => model.LineItemTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.lineItemTypes, "LineItemTypeId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true", Id = "ddlLineItemType" })</span>
+                    /*Added By : Kalpesh Sharma #697 Default Line item type*/
+                    <span class="verticalIdSelectBox" style="margin-left: -2px;">@Html.DropDownListFor(model => model.LineItemTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.lineItemTypes, "LineItemTypeId", "Title"), new { @class = "ddlStyle", require = "true", Id = "ddlLineItemType" })</span>
                 }
                 else
                 {

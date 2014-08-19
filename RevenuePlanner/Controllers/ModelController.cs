@@ -360,6 +360,21 @@ namespace RevenuePlanner.Controllers
                                     }
                                 }
                                 // End - Added by Sohel Pathan on 17/07/2014 for PL ticket #594
+
+                                //Added By : Kalpesh Sharma PL #697 Default Line item type
+                                LineItemType objLineItemType = db.LineItemTypes.Where(s => s.ModelId == intModelid).SingleOrDefault();
+                                if (objLineItemType == null)
+                                {
+                                    objLineItemType = new LineItemType();
+                                    objLineItemType.ModelId = intModelid;
+                                    objLineItemType.Title = Enums.LineItemTypes.None.ToString();
+                                    objLineItemType.Description = Enums.LineItemTypes.None.ToString();
+                                    objLineItemType.IsDeleted = false;
+                                    objLineItemType.CreatedDate = DateTime.Now;
+                                    objLineItemType.CreatedBy = Sessions.User.UserId;
+                                    db.LineItemTypes.Add(objLineItemType);
+                                    db.SaveChanges();
+                                }
                             }
                             else
                             {
@@ -377,7 +392,7 @@ namespace RevenuePlanner.Controllers
                                 }
                             }
                         }
-
+    
                         Model_Funnel objModel_Funnel = new Model_Funnel();
                         objModel_Funnel.ModelId = intModelid;
                         objModel_Funnel.FunnelId = Convert.ToInt32(Request.Form["hdn_FunnelMarketing"]);

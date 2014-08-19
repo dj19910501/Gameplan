@@ -774,6 +774,13 @@ namespace RevenuePlanner.Helpers
             MQL,
             CW
         }
+
+        //Added By : Kalpesh Sharma PL #697 Default Line item type
+        public enum LineItemTypes
+        {
+            None
+        }
+
     }
 
     #region Authorization
