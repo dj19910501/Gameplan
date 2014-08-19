@@ -2198,38 +2198,6 @@
     <edmx:ConceptualModels>
       <Schema Namespace="MRPModel" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="MRPEntities" p1:LazyLoadingEnabled="true">
-          <FunctionImport Name="Plan_Campaign_Program_Tactic_ActualDelete">
-            <Parameter Name="PlanTacticId" Mode="In" Type="Int32" />
-            <Parameter Name="ReturnValue" Mode="InOut" Type="Int32" />
-          </FunctionImport>
-          <FunctionImport Name="PlanDuplicate">
-            <Parameter Name="PlanId" Mode="In" Type="Int32" />
-            <Parameter Name="PlanStatus" Mode="In" Type="String" />
-            <Parameter Name="TacticStatus" Mode="In" Type="String" />
-            <Parameter Name="CreatedDate" Mode="In" Type="DateTime" />
-            <Parameter Name="CreatedBy" Mode="In" Type="Guid" />
-            <Parameter Name="Suffix" Mode="In" Type="String" />
-            <Parameter Name="CopyClone" Mode="In" Type="String" />
-            <Parameter Name="Id" Mode="In" Type="Int32" />
-            <Parameter Name="ReturnValue" Mode="InOut" Type="Int32" />
-          </FunctionImport>
-          <FunctionImport Name="SaveModelInboundOutboundEvent">
-            <Parameter Name="OldModelId" Mode="In" Type="Int32" />
-            <Parameter Name="NewModelId" Mode="In" Type="Int32" />
-            <Parameter Name="CreatedDate" Mode="In" Type="DateTime" />
-            <Parameter Name="CreatedBy" Mode="In" Type="Guid" />
-            <Parameter Name="ReturnValue" Mode="InOut" Type="Int32" />
-          </FunctionImport>
-          <FunctionImport Name="Plan_Task_Delete">
-            <Parameter Name="PlanCampaignId" Mode="In" Type="Int32" />
-            <Parameter Name="PlanProgramId" Mode="In" Type="Int32" />
-            <Parameter Name="PlanTacticId" Mode="In" Type="Int32" />
-            <Parameter Name="IsDelete" Mode="In" Type="Boolean" />
-            <Parameter Name="ModifiedDate" Mode="In" Type="DateTime" />
-            <Parameter Name="ModifiedBy" Mode="In" Type="Guid" />
-            <Parameter Name="ReturnValue" Mode="InOut" Type="Int32" />
-            <Parameter Name="PlanLineItemId" Mode="In" Type="Int32" />
-          </FunctionImport>
           <EntitySet Name="Audiences" EntityType="MRPModel.Audience" />
           <EntitySet Name="BestInClasses" EntityType="MRPModel.BestInClass" />
           <EntitySet Name="BusinessUnits" EntityType="MRPModel.BusinessUnit" />

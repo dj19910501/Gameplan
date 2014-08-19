@@ -12,9 +12,6 @@ namespace RevenuePlanner.Models
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
-    using System.Data.Objects;
-    using System.Data.Objects.DataClasses;
-    using System.Linq;
     
     public partial class MRPEntities : DbContext
     {
@@ -86,105 +83,5 @@ namespace RevenuePlanner.Models
         public DbSet<User_Notification> User_Notification { get; set; }
         public DbSet<Vertical> Verticals { get; set; }
         public DbSet<GameplanDataType> GameplanDataTypes { get; set; }
-    
-        public virtual int Plan_Campaign_Program_Tactic_ActualDelete(Nullable<int> planTacticId, ObjectParameter returnValue)
-        {
-            var planTacticIdParameter = planTacticId.HasValue ?
-                new ObjectParameter("PlanTacticId", planTacticId) :
-                new ObjectParameter("PlanTacticId", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Plan_Campaign_Program_Tactic_ActualDelete", planTacticIdParameter, returnValue);
-        }
-    
-        public virtual int PlanDuplicate(Nullable<int> planId, string planStatus, string tacticStatus, Nullable<System.DateTime> createdDate, Nullable<System.Guid> createdBy, string suffix, string copyClone, Nullable<int> id, ObjectParameter returnValue)
-        {
-            var planIdParameter = planId.HasValue ?
-                new ObjectParameter("PlanId", planId) :
-                new ObjectParameter("PlanId", typeof(int));
-    
-            var planStatusParameter = planStatus != null ?
-                new ObjectParameter("PlanStatus", planStatus) :
-                new ObjectParameter("PlanStatus", typeof(string));
-    
-            var tacticStatusParameter = tacticStatus != null ?
-                new ObjectParameter("TacticStatus", tacticStatus) :
-                new ObjectParameter("TacticStatus", typeof(string));
-    
-            var createdDateParameter = createdDate.HasValue ?
-                new ObjectParameter("CreatedDate", createdDate) :
-                new ObjectParameter("CreatedDate", typeof(System.DateTime));
-    
-            var createdByParameter = createdBy.HasValue ?
-                new ObjectParameter("CreatedBy", createdBy) :
-                new ObjectParameter("CreatedBy", typeof(System.Guid));
-    
-            var suffixParameter = suffix != null ?
-                new ObjectParameter("Suffix", suffix) :
-                new ObjectParameter("Suffix", typeof(string));
-    
-            var copyCloneParameter = copyClone != null ?
-                new ObjectParameter("CopyClone", copyClone) :
-                new ObjectParameter("CopyClone", typeof(string));
-    
-            var idParameter = id.HasValue ?
-                new ObjectParameter("Id", id) :
-                new ObjectParameter("Id", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("PlanDuplicate", planIdParameter, planStatusParameter, tacticStatusParameter, createdDateParameter, createdByParameter, suffixParameter, copyCloneParameter, idParameter, returnValue);
-        }
-    
-        public virtual int SaveModelInboundOutboundEvent(Nullable<int> oldModelId, Nullable<int> newModelId, Nullable<System.DateTime> createdDate, Nullable<System.Guid> createdBy, ObjectParameter returnValue)
-        {
-            var oldModelIdParameter = oldModelId.HasValue ?
-                new ObjectParameter("OldModelId", oldModelId) :
-                new ObjectParameter("OldModelId", typeof(int));
-    
-            var newModelIdParameter = newModelId.HasValue ?
-                new ObjectParameter("NewModelId", newModelId) :
-                new ObjectParameter("NewModelId", typeof(int));
-    
-            var createdDateParameter = createdDate.HasValue ?
-                new ObjectParameter("CreatedDate", createdDate) :
-                new ObjectParameter("CreatedDate", typeof(System.DateTime));
-    
-            var createdByParameter = createdBy.HasValue ?
-                new ObjectParameter("CreatedBy", createdBy) :
-                new ObjectParameter("CreatedBy", typeof(System.Guid));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SaveModelInboundOutboundEvent", oldModelIdParameter, newModelIdParameter, createdDateParameter, createdByParameter, returnValue);
-        }
-    
-        public virtual int Plan_Task_Delete(Nullable<int> planCampaignId, Nullable<int> planProgramId, Nullable<int> planTacticId, Nullable<bool> isDelete, Nullable<System.DateTime> modifiedDate, Nullable<System.Guid> modifiedBy, ObjectParameter returnValue, Nullable<int> planLineItemId)
-        {
-            var planCampaignIdParameter = planCampaignId.HasValue ?
-                new ObjectParameter("PlanCampaignId", planCampaignId) :
-                new ObjectParameter("PlanCampaignId", typeof(int));
-    
-            var planProgramIdParameter = planProgramId.HasValue ?
-                new ObjectParameter("PlanProgramId", planProgramId) :
-                new ObjectParameter("PlanProgramId", typeof(int));
-    
-            var planTacticIdParameter = planTacticId.HasValue ?
-                new ObjectParameter("PlanTacticId", planTacticId) :
-                new ObjectParameter("PlanTacticId", typeof(int));
-    
-            var isDeleteParameter = isDelete.HasValue ?
-                new ObjectParameter("IsDelete", isDelete) :
-                new ObjectParameter("IsDelete", typeof(bool));
-    
-            var modifiedDateParameter = modifiedDate.HasValue ?
-                new ObjectParameter("ModifiedDate", modifiedDate) :
-                new ObjectParameter("ModifiedDate", typeof(System.DateTime));
-    
-            var modifiedByParameter = modifiedBy.HasValue ?
-                new ObjectParameter("ModifiedBy", modifiedBy) :
-                new ObjectParameter("ModifiedBy", typeof(System.Guid));
-    
-            var planLineItemIdParameter = planLineItemId.HasValue ?
-                new ObjectParameter("PlanLineItemId", planLineItemId) :
-                new ObjectParameter("PlanLineItemId", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("Plan_Task_Delete", planCampaignIdParameter, planProgramIdParameter, planTacticIdParameter, isDeleteParameter, modifiedDateParameter, modifiedByParameter, returnValue, planLineItemIdParameter);
-        }
     }
 }

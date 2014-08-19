@@ -5102,33 +5102,6 @@ namespace RevenuePlanner.Controllers
         public int DuplicateClone(int id = 0, string CopyClone = "Plan")
         {
             int returnValue = 0;
-            try
-            {
-                ObjectParameter parameterReturnValue = new ObjectParameter("ReturnValue", typeof(int));
-                db.PlanDuplicate(Sessions.PlanId,
-                                 Enums.PlanStatusValues.Single(status => status.Key.Equals(Enums.PlanStatus.Draft.ToString())).Value,
-                                 Enums.TacticStatusValues.Single(status => status.Key.Equals(Enums.TacticStatus.Created.ToString())).Value,
-                                 DateTime.Now,
-                                 Sessions.User.UserId,
-                                 Common.copySuffix + Common.GetTimeStamp(),
-                                 CopyClone,
-                                 id,
-                                 parameterReturnValue);
-
-                Int32.TryParse(parameterReturnValue.Value.ToString(), out returnValue);
-                if (returnValue != 0)
-                {
-                    TempData["SuccessMessageDuplicatePlan"] = string.Format(Common.objCached.CloneDuplicated, CopyClone);
-                }
-                else
-                {
-                    TempData["ErrorMessageDuplicatePlan"] = string.Format(Common.objCached.CloneAlreadyExits, CopyClone);
-                }
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-            }
             return returnValue;
         }
 
