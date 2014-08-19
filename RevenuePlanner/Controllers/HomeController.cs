@@ -2946,7 +2946,7 @@ namespace RevenuePlanner.Controllers
                         {
                             //modified by Mitesh vaishnav for functional review point - removing sp
                             var tacticActualList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => ta.PlanTacticId == actualResult.PlanTacticId).ToList();
-                            tacticActualList.ForEach(ta => db.Plan_Campaign_Program_Tactic_Actual.Remove(ta));
+                            tacticActualList.ForEach(ta => db.Entry(ta).State = EntityState.Deleted);
 
                             Int64 projectedStageValue = 0, mql = 0, cw = 0;
                             double revenue = 0;

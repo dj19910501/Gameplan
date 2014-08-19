@@ -2605,7 +2605,7 @@ namespace RevenuePlanner.Controllers
                     using (var scope = new TransactionScope())
                     {
                         ////Modified by Mitesh Vaishnav for functional review point - removing sp
-                        int returnValue = Common.PlanTaskDelete(true, Enums.Section.Campaign.ToString(),id);
+                        int returnValue = Common.PlanTaskDelete(Enums.Section.Campaign.ToString(),id);
                         int cid = 0;
                         int pid = 0;
                         string Title = "";
@@ -3217,7 +3217,7 @@ namespace RevenuePlanner.Controllers
                     using (var scope = new TransactionScope())
                     {
                         ////Modified by Mitesh Vaishnav for functional review point - removing sp
-                        int returnValue = Common.PlanTaskDelete(true, Enums.Section.Program.ToString(),id);
+                        int returnValue = Common.PlanTaskDelete(Enums.Section.Program.ToString(),id);
                         int cid = 0;
                         int pid = 0;
                         string Title = "";
@@ -4032,7 +4032,7 @@ namespace RevenuePlanner.Controllers
                     using (var scope = new TransactionScope())
                     {
                         ////Modified by Mitesh Vaishnav for functional review point - removing sp
-                        int returnValue = Common.PlanTaskDelete(true, Enums.Section.Tactic.ToString(),id);
+                        int returnValue = Common.PlanTaskDelete(Enums.Section.Tactic.ToString(),id);
                         int cid = 0;
                         int pid = 0;
                         string Title = "";
@@ -4851,7 +4851,7 @@ namespace RevenuePlanner.Controllers
                     using (var scope = new TransactionScope())
                     {
                         ////Modified by Mitesh Vaishnav for functional review point - removing sp
-                        int returnValue = Common.PlanTaskDelete(true, Enums.Section.LineItem.ToString(),id);
+                        int returnValue = Common.PlanTaskDelete(Enums.Section.LineItem.ToString(),id);
 
 
 

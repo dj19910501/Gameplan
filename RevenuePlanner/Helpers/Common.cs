@@ -3788,7 +3788,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="isDelete">flag for delete</param>
         /// <param name="section">section name</param>
         /// <returns>returns greater than 0 for success and 0 for failure</returns>
-        public static int PlanTaskDelete(bool isDelete, string section, int id = 0)
+        public static int PlanTaskDelete(string section, int id = 0)
         {
             int returnValue = 0;
             try
@@ -3800,41 +3800,41 @@ namespace RevenuePlanner.Helpers
                         if (section==Enums.Section.Campaign.ToString() && id != 0)
                         {
                             var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId == id).ToList();
-                            plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = isDelete; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
 
                             var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign_Program.Plan_Campaign.PlanCampaignId == id).ToList();
-                            Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = isDelete; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
 
                             var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign.PlanCampaignId == id).ToList();
-                            Plan_Campaign_ProgramList.ForEach(a => { a.IsDeleted = isDelete; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            Plan_Campaign_ProgramList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
 
                             var Plan_CampaignList = db.Plan_Campaign.Where(a => a.IsDeleted.Equals(false) && a.PlanCampaignId == id).ToList();
-                            Plan_CampaignList.ForEach(a => { a.IsDeleted = isDelete; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            Plan_CampaignList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
 
                         }
                         else if (section == Enums.Section.Program.ToString() && id != 0)
                         {
                             var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanProgramId == id).ToList();
-                            plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = isDelete; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
 
                             var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign_Program.PlanProgramId == id).ToList();
-                            Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = isDelete; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
 
                             var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == id).ToList();
-                            Plan_Campaign_ProgramList.ForEach(a => { a.IsDeleted = isDelete; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            Plan_Campaign_ProgramList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
                         }
                         else if (section == Enums.Section.Tactic.ToString() && id != 0)
                         {
                             var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted.Equals(false) && a.PlanTacticId == id).ToList();
-                            plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = isDelete; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
 
                             var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) && a.PlanTacticId == id).ToList();
-                            Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = isDelete; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
                         }
                         else if (section == Enums.Section.LineItem.ToString() && id != 0)
                         {
                             var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted.Equals(false) && a.PlanLineItemId == id).ToList();
-                            plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = isDelete; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
                         }
                         returnValue = db.SaveChanges();
                         scope.Complete();
