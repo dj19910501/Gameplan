@@ -129,7 +129,7 @@
                 <th class="border-r width390">Tactic Title</th>
                 <th class="border-r width86">Target Stage</th>
             @*    <th>Projected @Html.LabelForINQ("INQ")</th>*@
-                <th>Projected Responses</th> @* Modified by :- Sohel Pathan on 21/05/2014 for PL ticket #476 to change header *@
+                <th class="border-r">Projected Responses</th> @* Modified by :- Mitesh Vaishnav for PL ticket #683 - add border between projected cost and projected response *@
                 <th class="border-r">Projected Cost</th>
                 <th class="border-r width50px" style="text-align:center;">Deploy to Model</th>
 
@@ -452,8 +452,8 @@
                           '<td  class="border-r sm" id="' + _id + '"><span class="title-baseline-model">' + _title + '</span><span class="search-icon"></span></td>' +
                           '<td   class="sm border-r" id="' + _id + '">' + Stage + '</td>' +
                           //'<td   class="sm" id="' + _id + '">' + FormatCommas(_inquiries.toString(), false) + '</td>' +
-                           //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
-                          '<td   class="sm" id="' + _id + '">' + FormatCommas(_ProjectedStageValue.toString(), false) + '</td>' +
+                           //Modified by Mitesh Vaishnav for PL ticket #683 - add border between projected cost and projected response
+                          '<td   class="sm border-r" id="' + _id + '">' + FormatCommas(_ProjectedStageValue.toString(), false) + '</td>' +
                           '<td  class="border-r sm projectedcost" id="' + _id + '">$' + FormatCommas(_revenue.toString(), false) + '</td>' +
                           '<td class="border-r"><span class="circle-check-icon-gray circle-check-icon-blue"  id = "' + "rej" + _id + '"></span></td>';
 
@@ -468,8 +468,8 @@
                             '<td id="' + _id + '" class="border-r sm"><span class="title-baseline-model">' + _title + '</span><span class="search-icon"></span></td>' +
                             '<td id="' + _id + '"  class="sm border-r">' + Stage + '</td>' +
                             //'<td  id="' + _id + '" class="sm">' + FormatCommas(_inquiries.toString(), false) + '</td>' +
-                             //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
-                            '<td  id="' + _id + '" class="sm">' + FormatCommas(_ProjectedStageValue.toString(), false) + '</td>' +
+                             //Modified by Mitesh Vaishnav for PL ticket #683 - add border between projected cost and projected response
+                            '<td  id="' + _id + '" class="sm border-r">' + FormatCommas(_ProjectedStageValue.toString(), false) + '</td>' +
                             '<td id="' + _id + '" class="border-r sm projectedcost">$' + FormatCommas(_revenue.toString(), false) + '</td>' +
                             '<td class="border-r"><span class="circle-check-icon-gray"  id = "' + "rej" + _id + '"></span></td>';
 
