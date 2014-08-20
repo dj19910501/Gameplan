@@ -289,6 +289,10 @@ namespace Integration.Salesforce
                                 }
                                 CampaignMemberList.Add(objCampaign);
                             }
+
+                            List<int> OuterTacticIds = tacticList.Select(t => t.PlanTacticId).ToList();
+                            List<Plan_Campaign_Program_Tactic_Actual> OuteractualTacticList = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => OuterTacticIds.Contains(actual.PlanTacticId) && actual.StageTitle == Common.StageProjectedStageValue).ToList();
+                            OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
                             db.SaveChanges();
 
                             if (CampaignMemberList.Count > 0)
@@ -303,10 +307,7 @@ namespace Integration.Salesforce
                                     }
                                     ).ToList();
 
-                                List<int> OuterTacticIds = tacticList.Select(t => t.PlanTacticId).ToList();
-                                List<Plan_Campaign_Program_Tactic_Actual> OuteractualTacticList = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => OuterTacticIds.Contains(actual.PlanTacticId) && actual.StageTitle == Common.StageProjectedStageValue).ToList();
-                                OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
-                                db.SaveChanges();
+                                
 
                                 foreach (var tactic in tacticList)
                                 {
@@ -467,6 +468,11 @@ namespace Integration.Salesforce
                                 OpportunityMemberList.Add(objOpp);
                             }
 
+                            List<int> OuterTacticIds = tacticList.Select(t => t.PlanTacticId).ToList();
+                            List<Plan_Campaign_Program_Tactic_Actual> OuteractualTacticList = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => OuterTacticIds.Contains(actual.PlanTacticId) && (actual.StageTitle == Common.StageRevenue || actual.StageTitle == Common.StageCW)).ToList();
+                            OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                            db.SaveChanges();
+
                             if (OpportunityMemberList.Count > 0)
                             {
                                 var OpportunityMemberListGroup = OpportunityMemberList.GroupBy(cl => new { CampaignId = cl.CampaignId, Month = cl.CloseDate.ToString("MM/yyyy") }).Select(cl =>
@@ -480,10 +486,7 @@ namespace Integration.Salesforce
                                     }
                                     ).ToList();
 
-                                List<int> OuterTacticIds = tacticList.Select(t => t.PlanTacticId).ToList();
-                                List<Plan_Campaign_Program_Tactic_Actual> OuteractualTacticList = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => OuterTacticIds.Contains(actual.PlanTacticId) && (actual.StageTitle == Common.StageRevenue || actual.StageTitle == Common.StageCW)).ToList();
-                                OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
-                                db.SaveChanges();
+                               
 
                                 foreach (var tactic in tacticList)
                                 {
