@@ -34,6 +34,11 @@ namespace Integration.Eloqua
     class EloquaCampaign
     {
         public string id { get; set; }
+
+        /// Modified By: Maninder Singh
+        /// Modified Date: 08/20/2014
+        /// Ticket #717 Pulling from Eloqua - Actual Cost 
+        public double actualCost { get; set; }
     }
 
     public class FieldValue

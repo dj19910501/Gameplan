@@ -106,6 +106,7 @@ namespace Integration.Eloqua
             campaignMetadata.Add("endAt");
             campaignMetadata.Add("budgetedCost");
             campaignMetadata.Add("currentStatus");
+            campaignMetadata.Add("actualCost");
         }
 
         /// <summary>
@@ -194,21 +195,178 @@ namespace Integration.Eloqua
         {
             _isResultError = false;
             SetMappingDetails();
-
+            bool IsInstanceSync  = false;
             if (EntityType.Tactic.Equals(_entityType))
             {
                 Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _id).SingleOrDefault();
                 planTactic = SyncTacticData(planTactic);
                 db.SaveChanges();
             }
+            else if (EntityType.ImprovementTactic.Equals(_entityType))
+            {
+                Plan_Improvement_Campaign_Program_Tactic planImprovementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(imptactic => imptactic.ImprovementPlanTacticId == _id).SingleOrDefault();
+                planImprovementTactic = SyncImprovementData(planImprovementTactic);
+                db.SaveChanges();
+            }
             else
             {
+                IsInstanceSync = true;
                 SyncInstanceData();
                 // Pull responses from Eloqua
                 GetDataForTacticandUpdate();
             }
 
+            ////Added By: Maninder Singh Wadhva
+            ////Added Date: 08/20/2014
+            ////Ticket #717 	Pulling from Eloqua - Actual Cost 
+            if (IsInstanceSync)
+            {
+                bool isImport = false;
+                isImport = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId.Equals(_integrationInstanceId)).IsImportActuals;
+
+                //// Check isimport flag.
+                if (isImport)
+                {
+                    //// Pulling actual cost.
+                    PullingActualCost();
+                }
+            }
+
             return _isResultError;
+        }
+
+        /// <summary>
+        /// Function to pull actual cost
+        /// Added By: Maninder Singh
+        /// Added Date: 08/20/2014
+        /// Ticket #717 Pulling from Eloqua - Actual Cost 
+        /// </summary>
+        private void PullingActualCost()
+        {
+            int IntegrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.ImportActual.ToString(), DateTime.Now, _userId);
+
+            string actualCost = "CostActual";
+            var fieldname = db.IntegrationInstanceDataTypeMappings.Where(mapping => mapping.IntegrationInstanceId.Equals(_integrationInstanceId) && mapping.GameplanDataType.TableName == "Plan_Campaign_Program_Tactic" &&
+                                                                            mapping.GameplanDataType.ActualFieldName == actualCost).Select(mapping => mapping.TargetDataType).FirstOrDefault();
+
+            //// Checking whether actual cost field exist in mapping.
+            if (fieldname != null)
+            {
+                //// Getting list of plans whose model have current integration instance configured for pushing tactic.
+                List<int> planIds = db.Plans.Where(p => p.Model.IntegrationInstanceId == _integrationInstanceId && p.Model.Status.Equals("Published")).Select(p => p.PlanId).ToList();
+
+                // Get List of status after Approved Status.
+                List<string> statusList = Common.GetStatusListAfterApproved();
+
+                //// Getting list of apporved/in-progress/completed tactic of above plan.
+                List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(t => planIds.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId) && statusList.Contains(t.Status) && t.IsDeployedToIntegration && t.IntegrationInstanceTacticId != null).ToList();
+                if (tacticList != null && tacticList.Count > 0)
+                {
+                    try
+                    {
+                        bool ErrorFlag = false;
+
+                        //// List to hold eloqua campaign fetched using api.
+                        List<EloquaCampaign> importEloquaCampaignList = new List<EloquaCampaign>();
+
+                        //// Iterating over each tactic and fetching details from api.
+                        foreach (Plan_Campaign_Program_Tactic tactic in tacticList)
+                        {
+                            EloquaCampaign eloquaCampaign = new EloquaCampaign();
+
+                            try
+                            {
+                                //// Getting details from api.
+                                eloquaCampaign = GetEloquaCampaign(tactic.IntegrationInstanceTacticId);
+                            }
+                            catch (Exception e)
+                            {
+                                //// Logging error for tactic entity.
+                                ErrorFlag = true;
+                                IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
+                                instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
+                                instanceTactic.IntegrationInstanceId = _integrationInstanceId;
+                                instanceTactic.EntityId = tactic.PlanTacticId;
+                                instanceTactic.EntityType = EntityType.Tactic.ToString();
+                                instanceTactic.Status = StatusResult.Error.ToString();
+                                instanceTactic.Operation = Operation.Import_Cost.ToString();
+                                instanceTactic.SyncTimeStamp = DateTime.Now;
+                                instanceTactic.CreatedDate = DateTime.Now;
+                                instanceTactic.ErrorDescription = GetErrorMessage(e);
+                                instanceTactic.CreatedBy = _userId;
+                                db.Entry(instanceTactic).State = EntityState.Added;
+                            }
+
+                            //// Adding fetched eloqua campaign object to list.
+                            importEloquaCampaignList.Add(eloquaCampaign);
+                        }
+
+                        db.SaveChanges();
+
+                        //// Checking whether atleast one eloqua campaign object is fetched.
+                        if (importEloquaCampaignList.Count > 0)
+                        {
+                            //// Creating a distinct list of campaign fetched using api.
+                            List<string> integrationTacticIdList = importEloquaCampaignList.Select(import => import.id).Distinct().ToList();
+
+                            //// Getting list of tactic whose actualCost needs to be updated.
+                            List<Plan_Campaign_Program_Tactic> innerTacticList = tacticList.Where(t => integrationTacticIdList.Contains(t.IntegrationInstanceTacticId)).ToList();
+
+                            //// Iterating over each tactic
+                            foreach (var tactic in innerTacticList)
+                            {
+                                //// Setting actual cost
+                                tactic.CostActual = importEloquaCampaignList.SingleOrDefault(import => import.id == tactic.IntegrationInstanceTacticId).actualCost;
+                                tactic.ModifiedBy = _userId;
+                                tactic.ModifiedDate = DateTime.Now;
+                                tactic.LastSyncDate = DateTime.Now;
+
+                                //// Setting log.
+                                IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
+                                instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
+                                instanceTactic.IntegrationInstanceId = _integrationInstanceId;
+                                instanceTactic.EntityId = tactic.PlanTacticId;
+                                instanceTactic.EntityType = EntityType.Tactic.ToString();
+                                instanceTactic.Status = StatusResult.Success.ToString();
+                                instanceTactic.Operation = Operation.Import_Cost.ToString();
+                                instanceTactic.SyncTimeStamp = DateTime.Now;
+                                instanceTactic.CreatedDate = DateTime.Now;
+                                instanceTactic.CreatedBy = _userId;
+                                db.Entry(instanceTactic).State = EntityState.Added;
+                            }
+
+                            db.SaveChanges();
+                        }
+
+                        if (ErrorFlag)
+                        {
+                            // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
+                            Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, string.Empty);
+                        }
+                        else
+                        {
+                            // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
+                            Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        string msg = GetErrorMessage(e);
+                        // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
+                        Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, msg);
+                    }
+                }
+                else
+                {
+                    // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
+                    Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
+                }
+            }
+            else
+            {
+                // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
+                Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, Common.msgMappingFieldsNotFound);
+            }
         }
 
         /// <summary>
@@ -662,6 +820,26 @@ namespace Integration.Eloqua
             }
 
             return tactidId;
+        }
+
+        /// <summary>
+        /// Function to get Eloqua Campaign.
+        /// Added By: Maninder Singh
+        /// Added Date: 08/20/2014
+        /// Ticket #717 Pulling from Eloqua - Actual Cost 
+        /// </summary>
+        /// <param name="eloquaCampaignId">Eloqua campaign Id.</param>
+        /// <returns>Returns eloqua campaign object.</returns>
+        private EloquaCampaign GetEloquaCampaign(string elouqaCampaignId)
+        {
+            RestRequest request = new RestRequest(Method.GET)
+            {
+                Resource = "/assets/campaign/" + elouqaCampaignId,
+                RequestFormat = DataFormat.Json
+            };
+
+            IRestResponse<EloquaCampaign> response = _client.Execute<EloquaCampaign>(request);
+            return response.Data;
         }
 
         /// <summary>
