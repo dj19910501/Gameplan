@@ -262,7 +262,6 @@
                                 $(this).next('.sbHolder').addClass("error");
                                 isError = true;
                                 isFieldMappingError = true;
-                                alert("isError = " + isError);
                             }
                         }
                         if (!isError) {
@@ -278,7 +277,6 @@
                 $(currentDdl).next('.sbHolder').removeClass("error");
             }
         });
-        alert("isFieldMappingError = " + isFieldMappingError);
         return isFieldMappingError;
     }
 
