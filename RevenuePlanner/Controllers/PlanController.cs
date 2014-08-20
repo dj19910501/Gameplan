@@ -3552,29 +3552,35 @@ namespace RevenuePlanner.Controllers
         /// Added By : Kalpesh Sharma : Functional Review Points #697
         /// This method is responsible to add the Line items in Tactic.
         /// </summary>
-        /// <param name="form"></param>
-        /// <param name="result"></param>
-        /// <param name="lineitems"></param>
-        /// <param name="tacticId"></param>
-        public void SaveLineItems(Plan_Campaign_Program_TacticModel form,ref int result, string lineitems, int tacticId)
+        /// <param name="form">Pass the Tactic form model for fetching Start date and end date values</param>
+        /// <param name="lineitems">pass the lineitems</param>
+        /// <param name="tacticId">Tactic Id that used to insert into Lineitem table </param>
+        public int  SaveLineItems(Plan_Campaign_Program_TacticModel form,string lineitems, int tacticId)
         {
-            // Added by Dharmraj for PL #644
-            if (lineitems != string.Empty)
-            {
+                int Result = 0;
+
+                // Added by Dharmraj for PL #644
+            
+                //Fetch the lineitems and store into array of string
                 string[] lineitem = lineitems.Split(',');
 
                 // Modified By : Kalpesh Sharma 
                 // Functional and Code Review Point #697
+                // Fetch the current plan object and based on it's ModelID we have fetch the lineitems.
                 Plan objPlan = db.Plans.Where(p => p.PlanId == Sessions.PlanId).SingleOrDefault();
                 var lineItemType = db.LineItemTypes.Where(l => l.ModelId == objPlan.ModelId).ToList();
                 // End Modified By : Kalpesh Sharma 
 
+                //Iterating the collection of lineitems that we hasd perviously fetch.
                 foreach (string li in lineitem)
                 {
+                    //insert new lineItem into the LineItem Table. 
                     Plan_Campaign_Program_Tactic_LineItem pcptlobj = new Plan_Campaign_Program_Tactic_LineItem();
                     pcptlobj.PlanTacticId = tacticId;
                     int lineItemTypeid = Convert.ToInt32(li);
                     pcptlobj.LineItemTypeId = lineItemTypeid;
+                    
+                    //Fetch the LineItemType by it's ID
                     LineItemType lit = lineItemType.Where(m => m.LineItemTypeId == lineItemTypeid).FirstOrDefault();
 
                     // Added By : Kalpesh Sharma 
@@ -3586,12 +3592,17 @@ namespace RevenuePlanner.Controllers
                     pcptlobj.CreatedBy = Sessions.User.UserId;
                     pcptlobj.CreatedDate = DateTime.Now;
                     db.Entry(pcptlobj).State = EntityState.Added;
-                    result = db.SaveChanges();
+
+                    //Save the database changes and get new inserted PlanLineItemId   
+                    Result = db.SaveChanges();
                     int liid = pcptlobj.PlanLineItemId;
-                    result = Common.InsertChangeLog(Sessions.PlanId, null, liid, pcptlobj.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                    
+                    //insert chnage log into the database 
+                    Result = Common.InsertChangeLog(Sessions.PlanId, null, liid, pcptlobj.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                 }
-            }
-        
+
+                //retturn the reuslt status
+                return Result;
         }
 
         /// <summary>
@@ -3752,8 +3763,12 @@ namespace RevenuePlanner.Controllers
                                 //result = TacticValueCalculate(pcpobj.PlanProgramId); // Commented by Dharmraj for PL #440
                                 result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
 
-                                //Added By : Kalpesh Sharma : Functional Review Points #697
-                                SaveLineItems(form,ref result,lineitems,tacticId);
+                                // Added By : Kalpesh Sharma : Functional Review Points #697
+                                // Check whether the lineitmes is empty or not . if lineitems have any instance at that time call the SaveLineItems function and insert the data into the lineItems table. 
+                                if (lineitems != string.Empty)
+                                {
+                                   result = SaveLineItems(form, lineitems, tacticId);
+                                }
 
                                 if (result >= 1)
                                 {

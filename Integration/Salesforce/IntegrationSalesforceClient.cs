@@ -358,6 +358,7 @@ namespace Integration.Salesforce
                         }
                         else
                         {
+                            _isResultError = true;
                             // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
                             Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, Common.msgMappingNotFoundForSalesforcePullResponse);
                         }
@@ -546,6 +547,7 @@ namespace Integration.Salesforce
                         }
                         else
                         {
+                            _isResultError = true;
                             // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
                             Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, Common.msgMappingNotFoundForSalesforcePullCW);
                         }
