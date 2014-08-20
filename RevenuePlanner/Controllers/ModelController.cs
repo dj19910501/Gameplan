@@ -4294,13 +4294,23 @@ namespace RevenuePlanner.Controllers
 
                                 newTacticTypes = item;
                                 newTacticTypes.ModelId = newModelId;
+                                // Start - Added by Sohel Pathan on 20/08/2014 for PL ticket #713
+                                if (IsVersion)
+                                {
+                                    newTacticTypes.PreviousTacticTypeId = item.TacticTypeId;
+                                }
+                                else
+                                {
+                                    newTacticTypes.PreviousTacticTypeId = null;
+                                }
+                                // End - Added by Sohel Pathan on 20/08/2014 for PL ticket #713
                                 newTacticTypes.CreatedDate = DateTime.Now;
                                 newTacticTypes.CreatedBy = Sessions.User.UserId;
                                 newTacticTypes.ModifiedBy = null;
                                 newTacticTypes.ModifiedDate = null;
                                 mrp.TacticTypes.Add(newTacticTypes);
-                                mrp.SaveChanges();
                             }
+                            mrp.SaveChanges();  // Shifted by Sohel Pathan on 20/08/2014 for PL ticket #713 from foreach loop to outside.
                         }
                     }
                     #endregion
