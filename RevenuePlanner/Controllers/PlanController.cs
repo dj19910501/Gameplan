@@ -24,6 +24,9 @@ namespace RevenuePlanner.Controllers
         private DateTime CalendarStartDate;
         private DateTime CalendarEndDate;
 
+        //Added By : Kalpesh Sharma : Functional Review Points #697
+        private string DefaultLineItemTitle = "Line Item";
+
         #endregion
 
         #region List
@@ -3546,6 +3549,52 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
+        /// Added By : Kalpesh Sharma : Functional Review Points #697
+        /// This method is responsible to add the Line items in Tactic.
+        /// </summary>
+        /// <param name="form"></param>
+        /// <param name="result"></param>
+        /// <param name="lineitems"></param>
+        /// <param name="tacticId"></param>
+        public void SaveLineItems(Plan_Campaign_Program_TacticModel form,ref int result, string lineitems, int tacticId)
+        {
+            // Added by Dharmraj for PL #644
+            if (lineitems != string.Empty)
+            {
+                string[] lineitem = lineitems.Split(',');
+
+                // Modified By : Kalpesh Sharma 
+                // Functional and Code Review Point #697
+                Plan objPlan = db.Plans.Where(p => p.PlanId == Sessions.PlanId).SingleOrDefault();
+                var lineItemType = db.LineItemTypes.Where(l => l.ModelId == objPlan.ModelId).ToList();
+                // End Modified By : Kalpesh Sharma 
+
+                foreach (string li in lineitem)
+                {
+                    Plan_Campaign_Program_Tactic_LineItem pcptlobj = new Plan_Campaign_Program_Tactic_LineItem();
+                    pcptlobj.PlanTacticId = tacticId;
+                    int lineItemTypeid = Convert.ToInt32(li);
+                    pcptlobj.LineItemTypeId = lineItemTypeid;
+                    LineItemType lit = lineItemType.Where(m => m.LineItemTypeId == lineItemTypeid).FirstOrDefault();
+
+                    // Added By : Kalpesh Sharma 
+                    // Functional and Code Review Point #697
+                    pcptlobj.Title = (lit.Title == Enums.LineItemTypes.None.ToString()) ? DefaultLineItemTitle : lit.Title; 
+                    pcptlobj.Cost = 0;
+                    pcptlobj.StartDate = form.StartDate;
+                    pcptlobj.EndDate = form.EndDate;
+                    pcptlobj.CreatedBy = Sessions.User.UserId;
+                    pcptlobj.CreatedDate = DateTime.Now;
+                    db.Entry(pcptlobj).State = EntityState.Added;
+                    result = db.SaveChanges();
+                    int liid = pcptlobj.PlanLineItemId;
+                    result = Common.InsertChangeLog(Sessions.PlanId, null, liid, pcptlobj.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                }
+            }
+        
+        }
+
+        /// <summary>
         /// Added By: Bhavesh Dobariya.
         /// Action to Save Tactic.
         /// </summary>
@@ -3702,38 +3751,9 @@ namespace RevenuePlanner.Controllers
 
                                 //result = TacticValueCalculate(pcpobj.PlanProgramId); // Commented by Dharmraj for PL #440
                                 result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
-                                // Added by Dharmraj for PL #644
-                                if (lineitems != string.Empty)
-                                {
-                                    string[] lineitem = lineitems.Split(',');
-                                    var lineItemType = db.LineItemTypes.ToList();
-                                    foreach (string li in lineitem)
-                                    {
-                                        Plan_Campaign_Program_Tactic_LineItem pcptlobj = new Plan_Campaign_Program_Tactic_LineItem();
-                                        pcptlobj.PlanTacticId = tacticId;
-                                        int lineItemTypeid = Convert.ToInt32(li);
-                                        pcptlobj.LineItemTypeId = lineItemTypeid;
-                                        LineItemType lit = lineItemType.Where(m => m.LineItemTypeId == lineItemTypeid).FirstOrDefault();
 
-                                        if (lit.Title == Enums.LineItemTypes.None.ToString())
-                                        {
-                                            pcptlobj.Title = "Line Item";
-                                        }
-                                        else
-                                        {
-                                            pcptlobj.Title = lit.Title;
-                                        }
-                                        pcptlobj.Cost = 0;
-                                        pcptlobj.StartDate = form.StartDate;
-                                        pcptlobj.EndDate = form.EndDate;
-                                        pcptlobj.CreatedBy = Sessions.User.UserId;
-                                        pcptlobj.CreatedDate = DateTime.Now;
-                                        db.Entry(pcptlobj).State = EntityState.Added;
-                                        result = db.SaveChanges();
-                                        int liid = pcptlobj.PlanLineItemId;
-                                        result = Common.InsertChangeLog(Sessions.PlanId, null, liid, pcptlobj.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
-                                    }
-                                }
+                                //Added By : Kalpesh Sharma : Functional Review Points #697
+                                SaveLineItems(form,ref result,lineitems,tacticId);
 
                                 if (result >= 1)
                                 {
