@@ -2855,6 +2855,12 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.Campaign = HttpUtility.HtmlDecode(pcp.Plan_Campaign.Title);////Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
+
+            var objPlanCampaign = db.Plan_Campaign.SingleOrDefault(c => c.PlanCampaignId == pcp.PlanCampaignId);
+            var lstSelectedProgram = db.Plan_Campaign_Program.Where(p => p.PlanCampaignId == pcp.PlanCampaignId && p.IsDeleted == false).ToList();
+            double allProgramBudget = lstSelectedProgram.Sum(c => c.ProgramBudget);
+            ViewBag.planRemainingBudget = (objPlanCampaign.CampaignBudget - allProgramBudget);
+
             return PartialView("ProgramAssortment", pcpm);
         }
 
@@ -3530,6 +3536,11 @@ namespace RevenuePlanner.Controllers
             List<Plan_Tactic_Values> PlanTacticValuesList = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcpt.PlanProgramId &&
                 t.PlanTacticId == pcpt.PlanTacticId && t.IsDeleted == false).ToList());
             pcptm.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue));
+
+            //Added By : Kalpesh Sharma Functioan and code review #693
+            var CostTacticsBudget = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == pcpt.PlanProgramId).ToList().Sum(c => c.Cost);
+            var objPlanCampaignProgram = db.Plan_Campaign_Program.SingleOrDefault(p => p.PlanProgramId == pcpt.PlanProgramId);
+            ViewBag.planRemainingBudget = (objPlanCampaignProgram.ProgramBudget - (!string.IsNullOrEmpty(Convert.ToString(CostTacticsBudget)) ? CostTacticsBudget : 0));
 
             return PartialView("TacticAssortment", pcptm);
         }

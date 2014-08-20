@@ -11,6 +11,9 @@
         IsBudgetAllocated = true;
     }
     string CalledFromBudget = ViewBag.CalledFromBudget;
+
+    string planRemainingBudget = Convert.ToString(ViewBag.planRemainingBudget);
+    
 }
 
 <style type="text/css">
@@ -141,7 +144,7 @@
             <div class="content-row alternate">
                 <label class="padding-left4" title="Remaining Campaign Budget">Remaining Campaign Budget</label>
                 @*<input id="txtCost" class="currency_dollar margin-top3px"  type="text" value="1,500,000" placeholder="$1,500,000" name="Cost" maxlength="13" data-val-required="The Cost field is required." data-val-number="The field Cost must be a number." data-val="true" readonly myvalue="$1,500,000" title="$1,500,000">                      *@
-                @Html.TextBox("txtRemainingBudget", "$0", new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
+                @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
             </div>
 
         </div>
@@ -271,7 +274,23 @@
 </div>
 <script type="text/javascript">
 
+    //Added By : Kalpesh Sharma : Functional Review Points #693
+    function FormatRemainingBudget()
+    {
+        if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
+            $("#txtRemainingBudget").addClass('error-text');
+        }
+        else {
+            $("#txtRemainingBudget").removeClass('error-text');
+        }
+    }
+
     $(document).ready(function () {
+
+        //Added By : Kalpesh Sharma : Functional Review Points #693
+        $("#txtRemainingBudget").val(FormatCommasBudget($("#txtRemainingBudget").val(), false, true));
+        FormatRemainingBudget();
+
         $('#slidepanel-container').slimScroll({ scrollTo: '0px' });
 
         //added by kalpesh #608: Budget allocation for campaign
@@ -899,15 +918,9 @@
                     }
                 }
 
+                //Added By : Kalpesh Sharma : Functional Review Points #693
                 $("#txtRemainingBudget").val(FormatCommasBudget(data.planRemainingBudget.toString(), false, true));
-
-                //Added  By : Kalpesh Sharma #693 Allowing Program Budget more than Remaining Campaign Budget in None case
-                if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
-                    $("#txtRemainingBudget").addClass('error-text');
-                }
-                else {
-                    $("#txtRemainingBudget").removeClass('error-text');
-                }
+                FormatRemainingBudget();
 
                 $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
                 $("#txtRemainingBudget").attr('myvalue', $("#txtRemainingBudget").val());

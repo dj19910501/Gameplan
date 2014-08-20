@@ -16,6 +16,8 @@
     string CalledFromBudget = ViewBag.CalledFromBudget;
     string strTacticCost = Model.TacticCost.ToString();     //// Added by Sohel Pathan on 12/08/2014 for PL ticket #605
 
+    string planRemainingBudget = Convert.ToString(ViewBag.planRemainingBudget);
+
 }
 <style type="text/css">
     #c_tactics .verticalIdSelectBox .sbHolder {
@@ -157,12 +159,12 @@
 
             <div class="content-row ">
                 <label class="padding-left4" title="Tactic Planned Cost">Tactic Planned Cost</label>
-                @Html.TextBoxFor(model => model.TacticCost, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })   @* Modified by Sohel Pathan on 12/08/2014 for PL ticket #605 *@
+                @Html.TextBoxFor(model => model.TacticCost, new { @class = "currency_dollar margin-top3px", placeholder = "Required", require = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })   @* Modified by Sohel Pathan on 12/08/2014 for PL ticket #605 *@
             </div>
             <div class="content-row alternate">
                 <label class="padding-left4" title="Remaining Program Budget">Remaining Program Budget</label>
                 @*<input id="txtCost" class="currency_dollar margin-top3px"  type="text" value="1,500,000" placeholder="$1,500,000" name="Cost" maxlength="13" data-val-required="The Cost field is required." data-val-number="The field Cost must be a number." data-val="true" readonly myvalue="$1,500,000" title="$1,500,000">                      *@
-                @Html.TextBox("txtRemainingBudget", "$0", new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
+                @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
             </div>
         </div>
         <!--End content-->
@@ -301,7 +303,21 @@
 @* End - Added by Sohel Pathan on 12/08/2014 for PL ticket #605 *@
 <script type="text/javascript">
 
+    //Added By : Kalpesh Sharma : Functional Review Points #693
+    function FormatRemainingBudget() {
+        if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
+            $("#txtRemainingBudget").addClass('error-text');
+        }
+        else {
+            $("#txtRemainingBudget").removeClass('error-text');
+        }
+    }
+
     $(document).ready(function () {
+
+        //Added By : Kalpesh Sharma : Functional Review Points #693
+        $("#txtRemainingBudget").val(FormatCommasBudget($("#txtRemainingBudget").val(), false, true));
+        FormatRemainingBudget();
 
         //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
         $("#lblRemainingMonthlyBudget").html(FormatCommasBudget("0", false, true));
@@ -311,7 +327,6 @@
 
         //$.ajaxSetup({ cache: false });
         $('#slidepanel-container').slimScroll({ scrollTo: '0px' });
-
 
         //Start by Kalpesh Sharma #605: Cost allocation for Tactic
         $(".budget-head a").click(function () {
@@ -1050,13 +1065,10 @@
                     }
                 }
 
+                //Added By : Kalpesh Sharma : Functional Review Points #693
                 $("#txtRemainingBudget").val(FormatCommasBudget(data.planRemainingBudget.toString(), false, true));
-                if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
-                    $("#txtRemainingBudget").addClass('error-text');
-                }
-                else {
-                    $("#txtRemainingBudget").removeClass('error-text');
-                }
+                FormatRemainingBudget();
+
                 // Start - Added by Sohel Pathan on 12/08/2014 for PL ticket #605
                 var TotalPlanBudget = parseInt(data.planRemainingBudget.toString()) + parseInt(ReplaceCC($('#TacticCost').val()));
                 $("#hdnTotalPlanBudget").val(TotalPlanBudget);
