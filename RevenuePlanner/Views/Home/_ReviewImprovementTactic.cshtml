@@ -2,6 +2,12 @@
 @{
     var tacticReview = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
     bool IsDeployToIntegrationVisible = (bool)ViewBag.IsDeployToIntegrationVisible;
+    ////Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
+    string IntegrationStatus = tacticReview.IsIntegrationInstanceExist;
+    if (tacticReview.IsIntegrationInstanceExist == "Yes" && !tacticReview.IsDeployedToIntegration)
+    {
+        IntegrationStatus = "No";
+    }
 }
 <div class="span5 width360" id="inspect-modal-right-div">
     <div class="font-size18">Overview</div>
@@ -11,7 +17,7 @@
         <div class="chart-gray pull-left size65x38 without-padding">
             <div class="padding-top16"><span id="startDay-id" class="font_size30" style="line-height:24px;">@tacticReview.StartDate.ToString("dd")</span></div>     @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
             <span id="startMonth-id" class="font_size16">@tacticReview.StartDate.ToString("MMM")</span>
-            <div class="margin-top16">Effective</div>       @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
+            <div class="margin-top16" style="margin-top:20px !important;">Effective</div>       @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
         </div>
     </div>
     <div class="cf margin-top40 textalign-mozcenter">
@@ -29,7 +35,7 @@
             <div class="integration-review"></div>
             <div>
                 <label id="integration">Integration</label></div>
-            <span id="integration-id" class="blue-text bold" title="@tacticReview.IsIntegrationInstanceExist">@tacticReview.IsIntegrationInstanceExist
+            <span id="integration-id" class="blue-text bold" title="@IntegrationStatus">@IntegrationStatus
             </span>
         </div>
         

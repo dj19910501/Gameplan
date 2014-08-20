@@ -2,6 +2,7 @@
 @{
     var program = (RevenuePlanner.Models.InspectModel)ViewBag.ProgramDetail;
     var deployStatus = Model.IsDeployedToIntegration == true ? "Yes" : "No";
+    deployStatus = program.IsIntegrationInstanceExist == "N/A" ? "Plan not Integrated" : deployStatus;////Modified by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
 }
 
 @using (Html.BeginForm())

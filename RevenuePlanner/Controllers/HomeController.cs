@@ -2389,7 +2389,7 @@ namespace RevenuePlanner.Controllers
             }
 
             ViewBag.TacticDetail = im;
-            ViewBag.IsModelDeploy = im.IsIntegrationInstanceExist == "No" ? false : true;////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
+            ViewBag.IsModelDeploy = im.IsIntegrationInstanceExist == "N/A" ? false : true;////Modified by Mitesh vaishnav on 20/08/2014 for PL ticket #690
 
             var businessunittitle = (from bun in db.BusinessUnits
                                      where bun.BusinessUnitId == im.BusinessUnitId
@@ -2751,7 +2751,7 @@ namespace RevenuePlanner.Controllers
             string returnValue = string.Empty;
 
             if (objModel.IntegrationInstanceId == null && objModel.IntegrationInstanceIdCW == null && objModel.IntegrationInstanceIdINQ == null && objModel.IntegrationInstanceIdMQL == null)////Modiefied by Mitesh Vaishnav on 12/08/2014 for PL ticket #690
-                returnValue = "No";
+                returnValue = "N/A";
             else
             {
                 returnValue= "Yes";
@@ -2852,7 +2852,7 @@ namespace RevenuePlanner.Controllers
             //}
             ViewBag.IsValidUser = isValidUser;
 
-            ViewBag.IsModelDeploy = im.IsIntegrationInstanceExist == "No" ? false : true;////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
+            ViewBag.IsModelDeploy = im.IsIntegrationInstanceExist == "N/A" ? false : true;////Modified by Mitesh vaishnav on 20/08/2014 for PL ticket #690
             if (im.LastSyncDate != null)
             {
                 ViewBag.LastSync = "Last synced with integration " + Common.GetFormatedDate(im.LastSyncDate) + ".";////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
@@ -3566,7 +3566,7 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.IsValidOwner = isValidOwner;
 
-            ViewBag.IsModelDeploy = im.IsIntegrationInstanceExist == "No" ? false : true;////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
+            ViewBag.IsModelDeploy = im.IsIntegrationInstanceExist == "N/A" ? false : true;////Modified by Mitesh vaishnav on 20/08/2014 for PL ticket #690
 
             //To get permission status for Approve campaign , By dharmraj PL #538
             var lstSubOrdinatesPeers = Common.GetSubOrdinatesWithPeersNLevel();
@@ -3739,7 +3739,7 @@ namespace RevenuePlanner.Controllers
             //ViewBag.IsValidDirectorUser = isValidDirectorUser;
             ViewBag.IsValidOwner = isValidOwner;
 
-            ViewBag.IsModelDeploy = im.IsIntegrationInstanceExist == "No" ? false : true;////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
+            ViewBag.IsModelDeploy = im.IsIntegrationInstanceExist == "N/A" ? false : true;////Modified by Mitesh vaishnav on 20/08/2014 for PL ticket #690
 
             //To get permission status for Approve campaign , By dharmraj PL #538
             var lstSubOrdinatesPeers = Common.GetSubOrdinatesWithPeersNLevel();
@@ -4676,7 +4676,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.NoOfTacticBoosts = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && t.StartDate >= im.StartDate && t.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId).ToList().Count();
 
 
-            ViewBag.IsModelDeploy = im.IsIntegrationInstanceExist == "No" ? false : true;////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690
+            ViewBag.IsModelDeploy = im.IsIntegrationInstanceExist == "N/A" ? false : true;////Modified by Mitesh vaishnav on 20/08/2014 for PL ticket #690
             if (im.LastSyncDate != null)
             {
                 TimeZone localZone = TimeZone.CurrentTimeZone;
@@ -4745,7 +4745,7 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.TacticDetail = im;
 
-            ViewBag.IsModelDeploy = im.IsIntegrationInstanceExist == "No" ? false : true;
+            ViewBag.IsModelDeploy = im.IsIntegrationInstanceExist == "N/A" ? false : true;////Modified by Mitesh vaishnav on 20/08/2014 for PL ticket #690
 
             var businessunittitle = (from bun in db.BusinessUnits
                                      where bun.BusinessUnitId == im.BusinessUnitId

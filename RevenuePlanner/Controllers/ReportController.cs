@@ -2755,11 +2755,12 @@ namespace RevenuePlanner.Controllers
                     actualRevenueValue = ActualRevenue.Sum(a => a.Actualvalue);
                 }
                 double projectedRevenueValue = ProjectedRevenueDataTable.AsEnumerable().AsQueryable().Where(mr => tacticIds.Contains(mr.Field<int>(ColumnId)) && includeMonthUpCurrent.Contains(mr.Field<string>(ColumnMonth))).Sum(mr => mr.Field<double>(ColumnValue));
-                if (projectedRevenueValue != 0 && actualRevenueValue >= projectedRevenueValue)
+                ////Start - Modified by Mitesh Vaishnav for PL ticket #611 Source Performance Graphs dont show anything
+                if (projectedRevenueValue != 0)
                 {
-                    percentageValue = Math.Round(((actualRevenueValue - projectedRevenueValue) / projectedRevenueValue) * 100, 2);
+                    percentageValue = Math.Round((actualRevenueValue  / projectedRevenueValue) * 100, 2);
                 }
-
+                ////End - Modified by Mitesh Vaishnav for PL ticket #611 Source Performance Graphs dont show anything
             }
             return percentageValue;
         }
