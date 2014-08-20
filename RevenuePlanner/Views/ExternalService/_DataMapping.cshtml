@@ -153,44 +153,12 @@
 
     $("#frmDataMapping").find('.ddlStyle').change(function () {
         var sbValue = $(this).attr('sb');
-        var selValue = $('#sbSelector_' + $(this).attr('sb')).html();
-        $('select[sb="' + sbValue + '"]').val(selValue);
+        var selValue = $("#frmDataMapping").find('#sbSelector_' + $(this).attr('sb')).html();   /* Modified by Sohel Pathan on 20/08/2014 for Internal Review Point */
+        $("#frmDataMapping").find('select[sb="' + sbValue + '"]').val(selValue);    /* Modified by Sohel Pathan on 20/08/2014 for Internal Review Point */
     });
 
     $("#frmDataMapping").find('.ddlStyle').change(function (e) {
-        $("#frmDataMapping").find('.ddlStyle').each(function () {
-            var isError = false;
-            var currentDdl = this;
-            var currentTargetValue = $(this).val();
-            var currentTableName = $('#hdnTableName_' + currentDdl.id);
-            if (currentTargetValue != null) {
-                if (currentTargetValue.toLowerCase() != 'select' || currentTargetValue.toLowerCase() != '') {
-                    $('.ddlStyle').each(function () {
-
-                        var SourceTableName = $('#hdnTableName_' + this.id);
-                        var SourceTargetValue = $(this).val();
-
-                        if (currentDdl.id != this.id) {
-                            if (currentTargetValue == SourceTargetValue && currentTableName.val() == SourceTableName.val() && SourceTargetValue.toLowerCase() != 'select' && SourceTargetValue != '') {
-
-                                $(currentDdl).next('.sbHolder').addClass("error");
-                                $(this).next('.sbHolder').addClass("error");
-                                isError = true;
-                            }
-                        }
-                        if (!isError) {
-                            $(currentDdl).next('.sbHolder').removeClass("error");
-                        }
-                    });
-                }
-                else {
-                    $(currentDdl).next('.sbHolder').removeClass("error");
-                }
-            }
-            else {
-                $(currentDdl).next('.sbHolder').removeClass("error");
-            }
-        });
+        CheckTargetFieldMapping();  /* Added by Sohel Pathan on 20/08/2014 for Internal Review Point */
     });
 
     $("#btnSaveDataMappings").click(function (e) {
@@ -202,14 +170,20 @@
             }
         });
         if (isError) {
-            $('#DataMappingErrorMessage').find('#spanMessageError').html($('#TargetFieldInvalidMsg').val());
-            $("#DataMappingErrorMessage").slideDown(400);
-            $('#DataMappingSuccessMessage').find('#spanMessageSuccess').html('');
-            $("#DataMappingSuccessMessage").hide()
+            ShowTargetFieldInvalid();   /* Added by Sohel Pathan on 20/08/2014 for Internal Review Point */
             e.preventDefault();
             return false;
         }
         
+        /* Start - Added by Sohel Pathan on 20/08/2014 for Internal Review Point */
+        isError = CheckTargetFieldMapping();
+        if (isError) {
+            ShowTargetFieldInvalid();
+            e.preventDefault();
+            return false;
+        }
+        /* End - Added by Sohel Pathan on 20/08/2014 for Internal Review Point */
+
         var formData = $("#frmDataMapping").serialize();
         var IntegrationInstanceId = '@ViewBag.IntegrationInstanceId';
         var uId = $(window).attr('name');
@@ -264,4 +238,56 @@
         e.preventDefault();
         $(this).closest(".alert").slideUp(400);
     });
+
+    /* Start - Added by Sohel Pathan on 20/08/2014 for Internal Review Point */
+    function CheckTargetFieldMapping()
+    {
+        var isFieldMappingError = false;
+        $("#frmDataMapping").find('.ddlStyle').each(function () {
+            var isError = false;
+            var currentDdl = this;
+            var currentTargetValue = $(this).val();
+            var currentTableName = $("#frmDataMapping").find('#hdnTableName_' + currentDdl.id);
+            if (currentTargetValue != null) {
+                if (currentTargetValue.toLowerCase() != 'select' || currentTargetValue.toLowerCase() != '') {
+                    $("#frmDataMapping").find('.ddlStyle').each(function () {
+
+                        var SourceTableName = $("#frmDataMapping").find('#hdnTableName_' + this.id);
+                        var SourceTargetValue = $(this).val();
+
+                        if (currentDdl.id != this.id) {
+                            if (currentTargetValue == SourceTargetValue && currentTableName.val() == SourceTableName.val() && SourceTargetValue.toLowerCase() != 'select' && SourceTargetValue != '') {
+
+                                $(currentDdl).next('.sbHolder').addClass("error");
+                                $(this).next('.sbHolder').addClass("error");
+                                isError = true;
+                                isFieldMappingError = true;
+                                alert("isError = " + isError);
+                            }
+                        }
+                        if (!isError) {
+                            $(currentDdl).next('.sbHolder').removeClass("error");
+                        }
+                    });
+                }
+                else {
+                    $(currentDdl).next('.sbHolder').removeClass("error");
+                }
+            }
+            else {
+                $(currentDdl).next('.sbHolder').removeClass("error");
+            }
+        });
+        alert("isFieldMappingError = " + isFieldMappingError);
+        return isFieldMappingError;
+    }
+
+    function ShowTargetFieldInvalid()
+    {
+        $('#DataMappingErrorMessage').find('#spanMessageError').html($('#TargetFieldInvalidMsg').val());
+        $("#DataMappingErrorMessage").slideDown(400);
+        $('#DataMappingSuccessMessage').find('#spanMessageSuccess').html('');
+        $("#DataMappingSuccessMessage").hide();
+    }
+    /* End - Added by Sohel Pathan on 20/08/2014 for Internal Review Point */
 </script>
