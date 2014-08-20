@@ -23,7 +23,7 @@ namespace RevenuePlanner.Models
         public string ErrorDescription { get; set; }
         public Nullable<System.DateTime> CreatedDate { get; set; }
         public Nullable<System.Guid> CreatedBy { get; set; }
-        public Nullable<int> IntegrationInstanceSectionId { get; set; }
+        public int IntegrationInstanceSectionId { get; set; }
         public long IntegrationInstancePlanLogEntityId { get; set; }
     
         public virtual IntegrationInstance IntegrationInstance { get; set; }

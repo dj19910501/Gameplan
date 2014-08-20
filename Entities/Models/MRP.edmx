@@ -663,7 +663,7 @@
           <Property Name="ErrorDescription" Type="nvarchar" />
           <Property Name="CreatedDate" Type="datetime" />
           <Property Name="CreatedBy" Type="uniqueidentifier" />
-          <Property Name="IntegrationInstanceSectionId" Type="int" />
+          <Property Name="IntegrationInstanceSectionId" Type="int" Nullable="false" />
           <Property Name="IntegrationInstancePlanLogEntityId" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
         </EntityType>
         <EntityType Name="IntegrationInstanceSection">
@@ -1529,7 +1529,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_IntegrationInstancePlanEntityLog_IntegrationInstanceSection">
-          <End Role="IntegrationInstanceSection" Type="MRPModel.Store.IntegrationInstanceSection" Multiplicity="0..1" />
+          <End Role="IntegrationInstanceSection" Type="MRPModel.Store.IntegrationInstanceSection" Multiplicity="1" />
           <End Role="IntegrationInstancePlanEntityLog" Type="MRPModel.Store.IntegrationInstancePlanEntityLog" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="IntegrationInstanceSection">
@@ -2944,7 +2944,7 @@
           <Property Type="String" Name="ErrorDescription" MaxLength="4000" FixedLength="false" Unicode="true" />
           <Property Type="DateTime" Name="CreatedDate" Precision="3" />
           <Property Type="Guid" Name="CreatedBy" />
-          <Property Type="Int32" Name="IntegrationInstanceSectionId" />
+          <Property Type="Int32" Name="IntegrationInstanceSectionId" Nullable="false" />
           <Property Type="Int64" Name="IntegrationInstancePlanLogEntityId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_IntegrationInstancePlanEntityLog_IntegrationInstance" FromRole="IntegrationInstancePlanEntityLog" ToRole="IntegrationInstance" />
           <NavigationProperty Name="IntegrationInstanceSection" Relationship="MRPModel.FK_IntegrationInstancePlanEntityLog_IntegrationInstanceSection" FromRole="IntegrationInstancePlanEntityLog" ToRole="IntegrationInstanceSection" />
@@ -4104,7 +4104,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_IntegrationInstancePlanEntityLog_IntegrationInstanceSection">
-          <End Type="MRPModel.IntegrationInstanceSection" Role="IntegrationInstanceSection" Multiplicity="0..1" />
+          <End Type="MRPModel.IntegrationInstanceSection" Role="IntegrationInstanceSection" Multiplicity="1" />
           <End Type="MRPModel.IntegrationInstancePlanEntityLog" Role="IntegrationInstancePlanEntityLog" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="IntegrationInstanceSection">

@@ -185,7 +185,7 @@ namespace Integration.Salesforce
             if (_isResultError)
             {
                 // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
-                Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Error, string.Empty);
+                Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Error, _ErrorMessage);
             }
             else
             {
@@ -1753,9 +1753,10 @@ namespace Integration.Salesforce
                     scope.Complete();
                 }
             }
-            catch (Exception e)
+            catch (SalesforceException e)
             {
-                throw;
+                _isResultError = true;
+                _ErrorMessage = GetErrorMessage(e);
             }
         }
 
