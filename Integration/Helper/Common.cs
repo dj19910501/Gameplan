@@ -7,6 +7,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using RevenuePlanner.Models;
 
 namespace Integration.Helper
 {
@@ -24,6 +25,17 @@ namespace Integration.Helper
         public static string TacticSyncedComment = "Tactic synced with ";
         public static string ImprovementTacticSyncedComment = "Improvement Tactic synced with ";
         ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
+
+        // Added by Dharmraj on 20-8-2014,#684, Common Error/Success messages
+        public static string msgExternalServerNotConfigured = "Error: External server not configured";
+        public static string msgDirectoryNotFound = "Error: Directory {0} not found";
+        public static string msgNotConnectToExternalServer = "Error: Could not connect to Integration Instance External Server";
+        public static string msgRequiredColumnNotExistEloquaPullResponse = "Error: Response doesn't contains EloquaCampaignID or ExternalCampaignID or ResponseDateTime columns";
+        public static string msgFileNotFound = "File not found";
+        public static string msgMappingFieldsNotFound = "Mapping fields not found";
+        public static string msgMappingNotFoundForSalesforcePullResponse = "Error: Mapping does not found for CampaignId or FirstRespondedDate or Status";
+        public static string msgMappingNotFoundForSalesforcePullCW = "Error: Mapping does not found for CampaignId or CloseDate or Amount or StageName";
+
         public static bool IsAutoSync = false;
         /// <summary>
         /// Decrypt string
@@ -55,19 +67,6 @@ namespace Integration.Helper
             {
                 return ex.Message;
             }
-        }
-
-        public static string GetErrorMessage(Exception e)
-        {
-            if (e.InnerException != null)
-            {
-                return string.Format("{0}: {1}",e.Message, e.InnerException.Message);
-            }
-            else
-            {
-                return e.Message;
-            }
-            
         }
 
         internal static List<string> GetStatusListAfterApproved()
@@ -161,6 +160,61 @@ namespace Integration.Helper
             }
 
             return dt;
+        }
+
+        /// <summary>
+        /// To insert log in IntegrationInstanceSection
+        /// Added by Dharmraj on 18-8-2014, PL#684
+        /// </summary>
+        /// <param name="IntegartionInstanceLogId"></param>
+        /// <param name="IntegartionInstanceId"></param>
+        /// <param name="SectionName"></param>
+        /// <param name="SyncStart"></param>
+        /// <param name="CreateBy"></param>
+        /// <returns>IntegrationInstanceSectionId</returns>
+        public static int CreateIntegrationInstanceSection(int IntegartionInstanceLogId, int IntegartionInstanceId, string SectionName, DateTime SyncStart, Guid CreateBy)
+        {
+            using (MRPEntities db=new MRPEntities())
+            {
+                IntegrationInstanceSection objIntegrationInstanceSection = new IntegrationInstanceSection();
+                objIntegrationInstanceSection.IntegartionInstanceLogId = IntegartionInstanceLogId;
+                objIntegrationInstanceSection.IntegrationInstanceId = IntegartionInstanceId;
+                objIntegrationInstanceSection.SectionName = SectionName;
+                objIntegrationInstanceSection.SyncStart = SyncStart;
+                objIntegrationInstanceSection.CreatedDate = DateTime.Now;
+                objIntegrationInstanceSection.CreateBy = CreateBy;
+                db.Entry(objIntegrationInstanceSection).State = EntityState.Added;
+                int resulValue = db.SaveChanges();
+                if (resulValue > 0)
+                {
+                    return objIntegrationInstanceSection.IntegrationInstanceSectionId;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// To update log in IntegrationInstanceSection
+        /// Added by Dharmraj on 18-8-2014, PL#684
+        /// </summary>
+        /// <param name="IntegrationInstanceSectionId"></param>
+        /// <param name="Status"></param>
+        /// <param name="SyncEnd"></param>
+        /// <param name="Description"></param>
+        public static void UpdateIntegrationInstanceSection(int IntegrationInstanceSectionId, StatusResult Status, string Description)
+        {
+            using (MRPEntities db = new MRPEntities())
+            {
+                IntegrationInstanceSection objIntegrationInstanceSection = db.IntegrationInstanceSections.FirstOrDefault(i => i.IntegrationInstanceSectionId == IntegrationInstanceSectionId);
+                objIntegrationInstanceSection.Status = Status.ToString();
+                objIntegrationInstanceSection.Description = Description;
+                objIntegrationInstanceSection.SyncEnd = DateTime.Now;
+                db.Entry(objIntegrationInstanceSection).State = EntityState.Modified;
+                db.SaveChanges();
+            }
         }
     }
 }

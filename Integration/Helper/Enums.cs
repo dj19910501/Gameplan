@@ -35,5 +35,14 @@ namespace Integration.Helper
             Timestamp,
             CampaignID
         }
+
+        public enum IntegrationInstanceSectionName
+        {
+            PushTacticData,
+            PullResponses,
+            PullQualifiedLeads,
+            PullClosedDeals,
+            ImportActual
+        }
     }
 }

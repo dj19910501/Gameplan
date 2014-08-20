@@ -191,21 +191,21 @@ namespace Integration
             {
                 int integrationinstanceLogId = instanceLogStart.IntegrationInstanceLogId;
                 IntegrationInstanceLog instanceLogEnd = db.IntegrationInstanceLogs.SingleOrDefault(instance => instance.IntegrationInstanceLogId == integrationinstanceLogId);
-            if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
-            {
-                    IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId);
-                if (integrationSalesforceClient.IsAuthenticated)
+                if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
                 {
+                    IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId);
+                    if (integrationSalesforceClient.IsAuthenticated)
+                    {
                         _isResultError = integrationSalesforceClient.SyncData();
                     }
                     else
                     {
                         instanceLogEnd.ErrorDescription = "Authentication Failed :" + integrationSalesforceClient._ErrorMessage;
                         _isResultError = true;
+                    }
                 }
-            }
-            else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
-            {
+                else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
+                {
                     IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId);
                     if (integrationEloquaClient.IsAuthenticated)
                     {
@@ -216,7 +216,7 @@ namespace Integration
                         instanceLogEnd.ErrorDescription = "Authentication Failed :" + integrationEloquaClient._ErrorMessage;
                         _isResultError = true;
                     }
-            }
+                }
 
                 int integrationinstanceId = Convert.ToInt32(_integrationInstanceId);
                 IntegrationInstance integrationInstance = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == integrationinstanceId);

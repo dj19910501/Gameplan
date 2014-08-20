@@ -58,8 +58,11 @@ namespace Integration.Eloqua
         /// </summary>
         /// <param name="IntegrationInstanceId"></param>
         /// <returns></returns>
-        public void GetTacticResponse(int IntegrationInstanceId, Guid _userId, int _integrationInstanceLogId)
+        public void GetTacticResponse(int IntegrationInstanceId, Guid _userId, int IntegrationInstanceLogId)
         {
+            // Insert log into IntegrationInstanceSection, Dharmraj PL#684
+            int IntegrationInstanceSectionId = Common.CreateIntegrationInstanceSection(IntegrationInstanceLogId, IntegrationInstanceId, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), DateTime.Now, _userId);
+
             // PlanIDs which has configured for "Pull response" from Eloqua instances
             List<int> planIds = db.Plans.Where(p => p.Model.IntegrationInstanceIdINQ == IntegrationInstanceId && p.Model.Status.Equals("Published")).Select(p => p.PlanId).ToList();
             if (planIds.Count > 0)
@@ -67,7 +70,7 @@ namespace Integration.Eloqua
                 var objIntegrationInstanceExternalServer = db.IntegrationInstanceExternalServers.FirstOrDefault(i => i.IntegrationInstanceId == IntegrationInstanceId);
                 if (objIntegrationInstanceExternalServer == null)
                 {
-                    throw new Exception("Error: External Server was not configured");
+                    throw new Exception(Common.msgExternalServerNotConfigured);
                 }
                 string InstanceId = IntegrationInstanceId.ToString();
                 string _ftpURL = objIntegrationInstanceExternalServer.SFTPServerName;
@@ -101,7 +104,7 @@ namespace Integration.Eloqua
                 }
                 else
                 {
-                    throw new Exception("Error: Directory " + localDestpath + " not found");
+                    throw new Exception(string.Format(Common.msgDirectoryNotFound, localDestpath));
                 }
 
                 string localRunnungPath = localDestpath + InstanceId + "/";
@@ -118,7 +121,7 @@ namespace Integration.Eloqua
                     }
                     catch (Exception ex)
                     {
-                        throw new Exception("Error: Could not connect to Integration Instance External Server", ex.InnerException);
+                        throw new Exception(Common.msgNotConnectToExternalServer, ex.InnerException);
                     }
 
                     srclist = client.GetFileList(SFTPSourcePath);
@@ -172,15 +175,13 @@ namespace Integration.Eloqua
                                         {
                                             var lstEloquaTacticId = lstResponse.Select(t => t.eloquaTacticId).ToList();
                                             var lstExternalTacticId = lstResponse.Select(t => t.externalTacticId).ToList();
-                                            string Stage_INQ = "INQ";
-                                            string Stage_ProjectedStageValue = "ProjectedStageValue";
                                             List<string> lstApproveStatus = Common.GetStatusListAfterApproved();
                                             List<Plan_Campaign_Program_Tactic> lstTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
                                                                                                                                            (lstExternalTacticId.Contains(tactic.IntegrationInstanceTacticId) || lstEloquaTacticId.Contains(tactic.IntegrationInstanceTacticId)) &&
                                                                                                                                            tactic.IsDeployedToIntegration == true &&
                                                                                                                                            lstApproveStatus.Contains(tactic.Status) &&
                                                                                                                                            tactic.IsDeleted == false &&
-                                                                                                                                           tactic.Stage.Code == Stage_INQ).ToList();
+                                                                                                                                           tactic.Stage.Code == Common.StageINQ).ToList();
                                             // Insert or Update tactic actuals.
                                             foreach (var objTactic in lstTactic)
                                             {
@@ -191,7 +192,7 @@ namespace Integration.Eloqua
                                                 foreach (var item in lstTacticResponse)
                                                 {
                                                     string tmpPeriod = "Y" + item.peroid.Month.ToString();
-                                                    var objTacticActual = db.Plan_Campaign_Program_Tactic_Actual.FirstOrDefault(a => a.PlanTacticId == objTactic.PlanTacticId && a.Period == tmpPeriod && a.StageTitle == Stage_ProjectedStageValue);
+                                                    var objTacticActual = db.Plan_Campaign_Program_Tactic_Actual.FirstOrDefault(a => a.PlanTacticId == objTactic.PlanTacticId && a.Period == tmpPeriod && a.StageTitle == Common.StageProjectedStageValue);
                                                     if (objTacticActual != null)
                                                     {
                                                         objTacticActual.Actualvalue = objTacticActual.Actualvalue + item.responseCount;
@@ -205,7 +206,7 @@ namespace Integration.Eloqua
                                                         actualTactic.Actualvalue = item.responseCount;
                                                         actualTactic.PlanTacticId = objTactic.PlanTacticId;
                                                         actualTactic.Period = "Y" + item.peroid.Month;
-                                                        actualTactic.StageTitle = Stage_ProjectedStageValue;
+                                                        actualTactic.StageTitle = Common.StageProjectedStageValue;
                                                         actualTactic.CreatedDate = DateTime.Now;
                                                         actualTactic.CreatedBy = _userId;
                                                         db.Entry(actualTactic).State = EntityState.Added;
@@ -218,7 +219,6 @@ namespace Integration.Eloqua
 
                                                 // Insert Log
                                                 IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
-                                                instanceTactic.IntegrationInstanceLogId = _integrationInstanceLogId;
                                                 instanceTactic.IntegrationInstanceId = IntegrationInstanceId;
                                                 instanceTactic.EntityId = objTactic.PlanTacticId;
                                                 instanceTactic.EntityType = EntityType.Tactic.ToString();
@@ -227,6 +227,7 @@ namespace Integration.Eloqua
                                                 instanceTactic.SyncTimeStamp = DateTime.Now;
                                                 instanceTactic.CreatedDate = DateTime.Now;
                                                 instanceTactic.CreatedBy = _userId;
+                                                instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
                                                 db.Entry(instanceTactic).State = EntityState.Added;
                                             }
 
@@ -235,7 +236,7 @@ namespace Integration.Eloqua
                                     }
                                     else
                                     {
-                                        throw new Exception("Error: Response does not contains EloquaCampaignID or ExternalCampaignID or ResponseDateTime columns.");
+                                        throw new Exception(Common.msgRequiredColumnNotExistEloquaPullResponse);
                                     }
                                 }
 
@@ -273,12 +274,27 @@ namespace Integration.Eloqua
                                 }
                             }
                         }
+
+                        // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
+                        Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
+                    }
+                    else //File location (directory) is exist, but empty – Success
+                    {
+                        // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
+                        Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, Common.msgFileNotFound);
                     }
                 }
                 catch (Exception ex)
                 {
+                    // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
+                    Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, ex.Message);
                     throw ex;
                 }
+            }
+            else
+            {
+                // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
+                Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
             }
         }
 

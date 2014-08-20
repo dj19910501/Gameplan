@@ -47,6 +47,7 @@ namespace Integration.Eloqua
         private List<string> campaignMetadata { get; set; }
         private Dictionary<string, string> customFields { get; set; }
         private static string NotFound = "NotFound";
+        private int _integrationInstanceSectionId { get; set; }
         public bool IsAuthenticated
         {
             get
@@ -139,7 +140,7 @@ namespace Integration.Eloqua
             catch (Exception ex)
             {
                 _isResultError = true;
-                _ErrorMessage = Common.GetErrorMessage(ex);
+                _ErrorMessage = GetErrorMessage(ex);
                 _isAuthenticated = false;
             }
         }
@@ -250,6 +251,9 @@ namespace Integration.Eloqua
         private void SyncInstanceData()
         {
             List<int> planIds = db.Plans.Where(p => p.Model.IntegrationInstanceId == _integrationInstanceId && p.Model.Status.Equals("Published")).Select(p => p.PlanId).ToList();
+            // Insert log into IntegrationInstanceSection, Dharmraj PL#684
+            _integrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), DateTime.Now, _userId);
+            
             try
             {
                 using (var scope = new TransactionScope())
@@ -273,9 +277,23 @@ namespace Integration.Eloqua
                     db.SaveChanges();
                     scope.Complete();
                 }
+
+                if (_isResultError)
+                {
+                    // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
+                    Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Error, string.Empty);
+                }
+                else
+                {
+                    // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
+                    Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Success, string.Empty);
+                }
             }
             catch (Exception e)
             {
+                _ErrorMessage = GetErrorMessage(e);
+                // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
+                Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Error, _ErrorMessage);
                 throw;
             }
         }
@@ -290,7 +308,7 @@ namespace Integration.Eloqua
             }
             catch (Exception ex)
             {
-                _ErrorMessage = Common.GetErrorMessage(ex);
+                _ErrorMessage = GetErrorMessage(ex);
                 _isResultError = true;
             }
         }
@@ -307,7 +325,7 @@ namespace Integration.Eloqua
             if (currentMode.Equals(Enums.Mode.Create))
             {
                 IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
-                instanceLogTactic.IntegrationInstanceLogId = _integrationInstanceLogId;
+                instanceLogTactic.IntegrationInstanceSectionId = _integrationInstanceSectionId;
                 instanceLogTactic.IntegrationInstanceId = _integrationInstanceId;
                 instanceLogTactic.EntityId = planTactic.PlanTacticId;
                 instanceLogTactic.EntityType = EntityType.Tactic.ToString();
@@ -343,7 +361,7 @@ namespace Integration.Eloqua
                 catch (Exception e)
                 {
                     instanceLogTactic.Status = StatusResult.Error.ToString();
-                    instanceLogTactic.ErrorDescription = Common.GetErrorMessage(e);
+                    instanceLogTactic.ErrorDescription = GetErrorMessage(e);
                 }
 
                 instanceLogTactic.CreatedBy = this._userId;
@@ -353,7 +371,7 @@ namespace Integration.Eloqua
             else if (currentMode.Equals(Enums.Mode.Update))
             {
                 IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
-                instanceLogTactic.IntegrationInstanceLogId = _integrationInstanceLogId;
+                instanceLogTactic.IntegrationInstanceSectionId = _integrationInstanceSectionId;
                 instanceLogTactic.IntegrationInstanceId = _integrationInstanceId;
                 instanceLogTactic.EntityId = planTactic.PlanTacticId;
                 instanceLogTactic.EntityType = EntityType.Tactic.ToString();
@@ -385,7 +403,7 @@ namespace Integration.Eloqua
                     else
                     {
                         instanceLogTactic.Status = StatusResult.Error.ToString();
-                        instanceLogTactic.ErrorDescription = Common.GetErrorMessage(e);
+                        instanceLogTactic.ErrorDescription = GetErrorMessage(e);
                     }
                 }
 
@@ -396,7 +414,7 @@ namespace Integration.Eloqua
             else if (currentMode.Equals(Enums.Mode.Delete))
             {
                 IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
-                instanceLogTactic.IntegrationInstanceLogId = _integrationInstanceLogId;
+                instanceLogTactic.IntegrationInstanceSectionId = _integrationInstanceSectionId;
                 instanceLogTactic.IntegrationInstanceId = _integrationInstanceId;
                 instanceLogTactic.EntityId = planTactic.PlanTacticId;
                 instanceLogTactic.EntityType = EntityType.Tactic.ToString();
@@ -431,7 +449,7 @@ namespace Integration.Eloqua
                     else
                     {
                         instanceLogTactic.Status = StatusResult.Error.ToString();
-                        instanceLogTactic.ErrorDescription = Common.GetErrorMessage(e);
+                        instanceLogTactic.ErrorDescription = GetErrorMessage(e);
                     }
                 }
 
@@ -455,7 +473,7 @@ namespace Integration.Eloqua
             if (currentMode.Equals(Enums.Mode.Create))
             {
                 IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
-                instanceLogTactic.IntegrationInstanceLogId = _integrationInstanceLogId;
+                instanceLogTactic.IntegrationInstanceSectionId = _integrationInstanceSectionId;
                 instanceLogTactic.IntegrationInstanceId = _integrationInstanceId;
                 instanceLogTactic.EntityId = planIMPTactic.ImprovementPlanTacticId;
                 instanceLogTactic.EntityType = EntityType.ImprovementTactic.ToString();
@@ -491,7 +509,7 @@ namespace Integration.Eloqua
                 catch (Exception e)
                 {
                     instanceLogTactic.Status = StatusResult.Error.ToString();
-                    instanceLogTactic.ErrorDescription = Common.GetErrorMessage(e);
+                    instanceLogTactic.ErrorDescription = GetErrorMessage(e);
                 }
 
                 instanceLogTactic.CreatedBy = this._userId;
@@ -502,7 +520,7 @@ namespace Integration.Eloqua
             else if (currentMode.Equals(Enums.Mode.Update))
             {
                 IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
-                instanceLogTactic.IntegrationInstanceLogId = _integrationInstanceLogId;
+                instanceLogTactic.IntegrationInstanceSectionId = _integrationInstanceSectionId;
                 instanceLogTactic.IntegrationInstanceId = _integrationInstanceId;
                 instanceLogTactic.EntityId = planIMPTactic.ImprovementPlanTacticId;
                 instanceLogTactic.EntityType = EntityType.ImprovementTactic.ToString();
@@ -534,7 +552,7 @@ namespace Integration.Eloqua
                     else
                     {
                         instanceLogTactic.Status = StatusResult.Error.ToString();
-                        instanceLogTactic.ErrorDescription = Common.GetErrorMessage(e);
+                        instanceLogTactic.ErrorDescription = GetErrorMessage(e);
                     }
                 }
 
@@ -545,7 +563,7 @@ namespace Integration.Eloqua
             else if (currentMode.Equals(Enums.Mode.Delete))
             {
                 IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
-                instanceLogTactic.IntegrationInstanceLogId = _integrationInstanceLogId;
+                instanceLogTactic.IntegrationInstanceSectionId = _integrationInstanceSectionId;
                 instanceLogTactic.IntegrationInstanceId = _integrationInstanceId;
                 instanceLogTactic.EntityId = planIMPTactic.ImprovementPlanTacticId;
                 instanceLogTactic.EntityType = EntityType.ImprovementTactic.ToString();
@@ -580,7 +598,7 @@ namespace Integration.Eloqua
                     else
                     {
                         instanceLogTactic.Status = StatusResult.Error.ToString();
-                        instanceLogTactic.ErrorDescription = Common.GetErrorMessage(e);
+                        instanceLogTactic.ErrorDescription = GetErrorMessage(e);
                     }
                 }
 
@@ -904,6 +922,25 @@ namespace Integration.Eloqua
             {
                 Authenticator = new HttpBasicAuthenticator(_instance + "\\" + _username, _password)
             };
+        }
+
+        /// <summary>
+        /// To Get formatted error message
+        /// Added by Dharmraj on 20-8-2014, #684
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns>Error Message</returns>
+        private string GetErrorMessage(Exception e)
+        {
+            _isResultError = true;
+            if (e.InnerException != null)
+            {
+                return string.Format("{0}: {1}", e.Message, e.InnerException.Message);
+            }
+            else
+            {
+                return e.Message;
+            }
         }
     }
 }

@@ -33,6 +33,7 @@ namespace RevenuePlanner.Models
         public DbSet<Field> Fields { get; set; }
         public DbSet<Funnel> Funnels { get; set; }
         public DbSet<Funnel_Field> Funnel_Field { get; set; }
+        public DbSet<GameplanDataType> GameplanDataTypes { get; set; }
         public DbSet<GameplanDataTypePull> GameplanDataTypePulls { get; set; }
         public DbSet<Geography> Geographies { get; set; }
         public DbSet<ImprovementTacticType> ImprovementTacticTypes { get; set; }
@@ -44,6 +45,7 @@ namespace RevenuePlanner.Models
         public DbSet<IntegrationInstanceExternalServer> IntegrationInstanceExternalServers { get; set; }
         public DbSet<IntegrationInstanceLog> IntegrationInstanceLogs { get; set; }
         public DbSet<IntegrationInstancePlanEntityLog> IntegrationInstancePlanEntityLogs { get; set; }
+        public DbSet<IntegrationInstanceSection> IntegrationInstanceSections { get; set; }
         public DbSet<IntegrationType> IntegrationTypes { get; set; }
         public DbSet<IntegrationTypeAttribute> IntegrationTypeAttributes { get; set; }
         public DbSet<LineItemType> LineItemTypes { get; set; }
@@ -82,6 +84,5 @@ namespace RevenuePlanner.Models
         public DbSet<User_Filter> User_Filter { get; set; }
         public DbSet<User_Notification> User_Notification { get; set; }
         public DbSet<Vertical> Verticals { get; set; }
-        public DbSet<GameplanDataType> GameplanDataTypes { get; set; }
     }
 }

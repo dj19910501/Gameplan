@@ -12,23 +12,26 @@ namespace RevenuePlanner.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class IntegrationInstanceLog
+    public partial class IntegrationInstanceSection
     {
-        public IntegrationInstanceLog()
+        public IntegrationInstanceSection()
         {
-            this.IntegrationInstanceSections = new HashSet<IntegrationInstanceSection>();
+            this.IntegrationInstancePlanEntityLogs = new HashSet<IntegrationInstancePlanEntityLog>();
         }
     
-        public int IntegrationInstanceLogId { get; set; }
+        public int IntegrationInstanceSectionId { get; set; }
+        public int IntegartionInstanceLogId { get; set; }
         public int IntegrationInstanceId { get; set; }
+        public string SectionName { get; set; }
         public System.DateTime SyncStart { get; set; }
         public Nullable<System.DateTime> SyncEnd { get; set; }
         public string Status { get; set; }
-        public string ErrorDescription { get; set; }
-        public Nullable<System.DateTime> CreatedDate { get; set; }
-        public Nullable<System.Guid> CreatedBy { get; set; }
+        public string Description { get; set; }
+        public System.DateTime CreatedDate { get; set; }
+        public System.Guid CreateBy { get; set; }
     
         public virtual IntegrationInstance IntegrationInstance { get; set; }
-        public virtual ICollection<IntegrationInstanceSection> IntegrationInstanceSections { get; set; }
+        public virtual IntegrationInstanceLog IntegrationInstanceLog { get; set; }
+        public virtual ICollection<IntegrationInstancePlanEntityLog> IntegrationInstancePlanEntityLogs { get; set; }
     }
 }

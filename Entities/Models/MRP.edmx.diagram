@@ -5,63 +5,65 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="bb8fdfed9bf64c98807c1b637575aba9" Name="Diagram1" ZoomLevel="74">
-        <EntityTypeShape EntityType="MRPModel.Audience" Width="1.5" PointX="5.7409560055197009" PointY="7.4537526105780865" />
-        <EntityTypeShape EntityType="MRPModel.BestInClass" Width="1.5" PointX="7.8519076424892571" PointY="3.490013601020916" />
-        <EntityTypeShape EntityType="MRPModel.BusinessUnit" Width="1.5" PointX="11.933154411582814" PointY="6.6417453468971628" />
-        <EntityTypeShape EntityType="MRPModel.ChangeLog" Width="1.5" PointX="10.792008121866736" PointY="6.6615284712340346" />
-        <EntityTypeShape EntityType="MRPModel.ClientTacticType" Width="1.5" PointX="5.1057014544986661" PointY="2.7721395058427656" />
-        <EntityTypeShape EntityType="MRPModel.Field" Width="1.5" PointX="7.9784248769182833" PointY="4.6140508822230863" />
-        <EntityTypeShape EntityType="MRPModel.Funnel" Width="1.5" PointX="2.8452038685070367" PointY="13.326196974760945" />
-        <EntityTypeShape EntityType="MRPModel.Funnel_Field" Width="1.5" PointX="6.7502781705699295" PointY="15.923785038256918" />
-        <EntityTypeShape EntityType="MRPModel.GameplanDataTypePull" Width="1.5" PointX="6.7355963283849869" PointY="8.4472511599060383" />
-        <EntityTypeShape EntityType="MRPModel.Geography" Width="1.5" PointX="8.6073021742549258" PointY="19.805289888663818" />
-        <EntityTypeShape EntityType="MRPModel.ImprovementTacticType" Width="1.5" PointX="1.4300571649475291" PointY="25.862003874900754" />
-        <EntityTypeShape EntityType="MRPModel.ImprovementTacticType_Metric" Width="1.5" PointX="4.82287762911193" PointY="13.922247982547734" />
-        <EntityTypeShape EntityType="MRPModel.IntegrationInstance" Width="1.5" PointX="8.5012597276369384" PointY="24.887088459398171" />
-        <EntityTypeShape EntityType="MRPModel.IntegrationInstance_Attribute" Width="1.5" PointX="9.2974922104261317" PointY="4.1525012423063172" />
-        <EntityTypeShape EntityType="MRPModel.IntegrationInstanceDataTypeMapping" Width="1.5" PointX="0.30095285377509562" PointY="18.51838242379873" />
-        <EntityTypeShape EntityType="MRPModel.IntegrationInstanceDataTypeMappingPull" Width="1.5" PointX="9.5352099638130561" PointY="0.9943506573300579" />
-        <EntityTypeShape EntityType="MRPModel.IntegrationInstanceExternalServer" Width="1.5" PointX="11.361763950140105" PointY="6.0230336366328565" />
-        <EntityTypeShape EntityType="MRPModel.IntegrationInstanceLog" Width="1.5" PointX="0.88513677049667427" PointY="27.195209366825971" />
-        <EntityTypeShape EntityType="MRPModel.IntegrationInstancePlanEntityLog" Width="1.5" PointX="1.1384890699472692" PointY="28.066156012968232" />
-        <EntityTypeShape EntityType="MRPModel.IntegrationType" Width="1.5" PointX="11.95431119573969" PointY="10.662052606540756" />
-        <EntityTypeShape EntityType="MRPModel.IntegrationTypeAttribute" Width="1.5" PointX="10.643862978855085" PointY="2.4776275616500656" />
-        <EntityTypeShape EntityType="MRPModel.LineItemType" Width="1.5" PointX="8.3018913046931342" PointY="4.168192165050745" />
-        <EntityTypeShape EntityType="MRPModel.MasterTacticType" Width="1.5" PointX="3.5261019670991702" PointY="25.625395220529938" />
-        <EntityTypeShape EntityType="MRPModel.Model" Width="1.5" PointX="6.7294496217414039" PointY="2.0572975734515571" />
-        <EntityTypeShape EntityType="MRPModel.Model_Audience_Event" Width="1.5" PointX="7.8318096156380186" PointY="1.2989390498487927" />
-        <EntityTypeShape EntityType="MRPModel.Model_Audience_Inbound" Width="1.5" PointX="5.5762045632937021" PointY="30.229811920891429" />
-        <EntityTypeShape EntityType="MRPModel.Model_Audience_Outbound" Width="1.5" PointX="1.9077562102618422" PointY="27.503926126055386" />
-        <EntityTypeShape EntityType="MRPModel.Model_Funnel" Width="1.5" PointX="1.3651000640192534" PointY="27.076416505070597" />
-        <EntityTypeShape EntityType="MRPModel.Model_Funnel_Stage" Width="1.5" PointX="8.4858774712709142" PointY="17.899497115006437" />
-        <EntityTypeShape EntityType="MRPModel.ModelReview" Width="1.5" PointX="5.9893947774494976" PointY="3.8915998655797912" />
-        <EntityTypeShape EntityType="MRPModel.Notification" Width="1.5" PointX="5.2005809662866316" PointY="9.4627026363567932" />
-        <EntityTypeShape EntityType="MRPModel.Plan" Width="1.5" PointX="0.73859946091594153" PointY="2.7574172479833559" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Budget" Width="1.5" PointX="4.1950591170206009" PointY="6.5928596586887069" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Campaign" Width="1.5" PointX="5.6355599153952483" PointY="11.977708151553621" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Budget" Width="1.5" PointX="5.08628261884967" PointY="29.738281114836354" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program" Width="1.5" PointX="9.2785202810906426" PointY="21.895434196058396" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Budget" Width="1.5" PointX="3.2134079892250744" PointY="12.290753191472382" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic" Width="1.5" PointX="8.7831207293938469" PointY="1.3358582115433451" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_Actual" Width="1.5" PointX="1.3963601483946482" PointY="8.6928148459144" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_Comment" Width="1.5" PointX="1.6947410263562301" PointY="29.044630719835233" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_Cost" Width="1.5" PointX="2.6032085505329112" PointY="22.736014987684793" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_LineItem" Width="1.5" PointX="9.375" PointY="31.875" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_LineItem_Cost" Width="1.5" PointX="1.3681888456308231" PointY="27.197414649276723" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign" Width="1.5" PointX="10.46512528623693" PointY="2.79411107431823" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign_Program" Width="1.5" PointX="0.89353754971806776" PointY="7.2839482162538678" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign_Program_Tactic" Width="1.5" PointX="1.7123260412888257" PointY="17.136473738186282" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign_Program_Tactic_Comment" Width="1.5" PointX="4.53541372741359" PointY="27.986563323059382" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign_Program_Tactic_Share" Width="1.5" PointX="10.797688761166153" PointY="18.92093197392343" />
-        <EntityTypeShape EntityType="MRPModel.Plan_Team" Width="1.5" PointX="0.19051087470283307" PointY="19.380959564531668" />
-        <EntityTypeShape EntityType="MRPModel.Report_Share" Width="1.5" PointX="9.3680129448734277" PointY="2.8100789202424132" />
-        <EntityTypeShape EntityType="MRPModel.Stage" Width="1.5" PointX="3.9739632923034782" PointY="5.9674908397567883" />
-        <EntityTypeShape EntityType="MRPModel.SyncFrequency" Width="1.5" PointX="7.6852039711946638" PointY="23.146544526865029" />
-        <EntityTypeShape EntityType="MRPModel.Tactic_Share" Width="1.5" PointX="3.2085818626026539" PointY="24.974444639391471" />
-        <EntityTypeShape EntityType="MRPModel.TacticType" Width="1.5" PointX="8.1227714811092113" PointY="24.7965967025592" />
-        <EntityTypeShape EntityType="MRPModel.User_Filter" Width="1.5" PointX="1.5308515678769219" PointY="2.3044086258413312" />
-        <EntityTypeShape EntityType="MRPModel.User_Notification" Width="1.5" PointX="8.7572960410068266" PointY="13.93619174414137" />
-        <EntityTypeShape EntityType="MRPModel.Vertical" Width="1.5" PointX="5.0175703917711836" PointY="18.927088686696759" />
+        <EntityTypeShape EntityType="MRPModel.Audience" Width="1.5" PointX="8.5453736952251642" PointY="20.736302921891355" />
+        <EntityTypeShape EntityType="MRPModel.BestInClass" Width="1.5" PointX="7.5798741819243292" PointY="27.612913740618581" />
+        <EntityTypeShape EntityType="MRPModel.BusinessUnit" Width="1.5" PointX="0.89661477547912627" PointY="17.589231156552785" />
+        <EntityTypeShape EntityType="MRPModel.ChangeLog" Width="1.5" PointX="9.8332952791048669" PointY="31.848485365439434" />
+        <EntityTypeShape EntityType="MRPModel.ClientTacticType" Width="1.5" PointX="9.0713680652302546" PointY="4.5556483140940074" />
+        <EntityTypeShape EntityType="MRPModel.Field" Width="1.5" PointX="0.87377741973557388" PointY="11.181695660195171" />
+        <EntityTypeShape EntityType="MRPModel.Funnel" Width="1.5" PointX="0.12393076909889036" PointY="16.131578780771967" />
+        <EntityTypeShape EntityType="MRPModel.Funnel_Field" Width="1.5" PointX="5.2467492824638029" PointY="10.481736888402018" />
+        <EntityTypeShape EntityType="MRPModel.GameplanDataType" Width="1.5" PointX="2.3309107303297663" PointY="4.0340106506058993" />
+        <EntityTypeShape EntityType="MRPModel.GameplanDataTypePull" Width="1.5" PointX="7.8848650119662587" PointY="10.938493540016232" />
+        <EntityTypeShape EntityType="MRPModel.Geography" Width="1.5" PointX="5.2117891298661894" PointY="18.560184219181622" />
+        <EntityTypeShape EntityType="MRPModel.ImprovementTacticType" Width="1.5" PointX="0.78179158679293081" PointY="25.417991903339509" />
+        <EntityTypeShape EntityType="MRPModel.ImprovementTacticType_Metric" Width="1.5" PointX="3.4699720998620482" PointY="28.479256807118308" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationInstance" Width="1.5" PointX="2.5639168483037116" PointY="3.8723370301874063" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationInstance_Attribute" Width="1.5" PointX="10.933693974713652" PointY="25.328137752287155" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationInstanceDataTypeMapping" Width="1.5" PointX="1.014598187531623" PointY="27.525154692831055" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationInstanceDataTypeMappingPull" Width="1.5" PointX="4.329751070742379" PointY="6.8973579289844995" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationInstanceExternalServer" Width="1.5" PointX="9.8219842807492164" PointY="5.312270152062303" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationInstanceLog" Width="1.5" PointX="4.9129538298179183" PointY="21.345346833274395" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationInstancePlanEntityLog" Width="1.5" PointX="5.4202477603313737" PointY="5.2638823116495654" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationInstanceSection" Width="1.5" PointX="2.7103944396182866" PointY="30.298387839597829" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationType" Width="1.5" PointX="3.2859225325686494" PointY="28.147824360126549" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationTypeAttribute" Width="1.5" PointX="11.230692850067603" PointY="26.058558818911461" />
+        <EntityTypeShape EntityType="MRPModel.LineItemType" Width="1.5" PointX="8.3886899242124944" PointY="13.8085725669789" />
+        <EntityTypeShape EntityType="MRPModel.MasterTacticType" Width="1.5" PointX="2.8739274883987047" PointY="9.2439150853287035" />
+        <EntityTypeShape EntityType="MRPModel.Model" Width="1.5" PointX="6.6815495708405734" PointY="28.028994319973975" />
+        <EntityTypeShape EntityType="MRPModel.Model_Audience_Event" Width="1.5" PointX="3.3844260104859369" PointY="15.761485792585409" />
+        <EntityTypeShape EntityType="MRPModel.Model_Audience_Inbound" Width="1.5" PointX="10.933658122519802" PointY="4.2274789680854781" />
+        <EntityTypeShape EntityType="MRPModel.Model_Audience_Outbound" Width="1.5" PointX="6.9943220089163276" PointY="26.795005915125369" />
+        <EntityTypeShape EntityType="MRPModel.Model_Funnel" Width="1.5" PointX="6.88487055286992" PointY="5.9117159274926951" />
+        <EntityTypeShape EntityType="MRPModel.Model_Funnel_Stage" Width="1.5" PointX="4.0320448354035827" PointY="22.349783714092236" />
+        <EntityTypeShape EntityType="MRPModel.ModelReview" Width="1.5" PointX="1.0094880373261348" PointY="30.862177088326856" />
+        <EntityTypeShape EntityType="MRPModel.Notification" Width="1.5" PointX="0.69376993025362954" PointY="6.8049184264638081" />
+        <EntityTypeShape EntityType="MRPModel.Plan" Width="1.5" PointX="11.863384801830812" PointY="25.433124121945873" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Budget" Width="1.5" PointX="8.22735776204027" PointY="8.67906126784117" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Campaign" Width="1.5" PointX="11.017697503332839" PointY="16.870415114271648" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Budget" Width="1.5" PointX="8.0925062336458389" PointY="15.762424386927124" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program" Width="1.5" PointX="1.3915406378878004" PointY="15.599716506712007" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Budget" Width="1.5" PointX="3.6741465496244592" PointY="5.9369532046546007" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic" Width="1.5" PointX="10.301054113684712" PointY="15.194700114054" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_Actual" Width="1.5" PointX="2.2910313784568714" PointY="25.028539028497665" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_Comment" Width="1.5" PointX="10.578198897921572" PointY="19.912602180574371" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_Cost" Width="1.5" PointX="2.8165020862671089" PointY="6.6766008467770188" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_LineItem" Width="1.5" PointX="6.9375069993257084" PointY="27.784517062727602" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_LineItem_Cost" Width="1.5" PointX="3.652851100849384" PointY="21.964479113912432" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign" Width="1.5" PointX="6.9977792981070372" PointY="18.306204297722413" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign_Program" Width="1.5" PointX="1.1196345096079794" PointY="8.5422781000576347" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign_Program_Tactic" Width="1.5" PointX="9.9419110314650041" PointY="16.87793479155653" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign_Program_Tactic_Comment" Width="1.5" PointX="10.352407402523053" PointY="9.9002829985228757" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Improvement_Campaign_Program_Tactic_Share" Width="1.5" PointX="9.8616642047938257" PointY="23.143595840383131" />
+        <EntityTypeShape EntityType="MRPModel.Plan_Team" Width="1.5" PointX="9.90857475526099" PointY="28.936715675954108" />
+        <EntityTypeShape EntityType="MRPModel.Report_Share" Width="1.5" PointX="8.9508569505768154" PointY="30.98474536788871" />
+        <EntityTypeShape EntityType="MRPModel.Stage" Width="1.5" PointX="4.4487706536654246" PointY="0.94705040796988194" />
+        <EntityTypeShape EntityType="MRPModel.SyncFrequency" Width="1.5" PointX="2.4183666363444027" PointY="25.262711641035374" />
+        <EntityTypeShape EntityType="MRPModel.Tactic_Share" Width="1.5" PointX="4.5190165343317279" PointY="13.556705153340802" />
+        <EntityTypeShape EntityType="MRPModel.TacticType" Width="1.5" PointX="9.911158063407596" PointY="12.714572152455604" />
+        <EntityTypeShape EntityType="MRPModel.User_Filter" Width="1.5" PointX="11.747073104487301" PointY="3.1649546935991175" />
+        <EntityTypeShape EntityType="MRPModel.User_Notification" Width="1.5" PointX="11.925862094352889" PointY="17.723580532578556" />
+        <EntityTypeShape EntityType="MRPModel.Vertical" Width="1.5" PointX="9.802969994863016" PointY="14.77936591896199" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Audience" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Audience" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_Audience" />
@@ -73,6 +75,8 @@
         <AssociationConnector Association="MRPModel.FK_Funnel_Field_Funnel" />
         <AssociationConnector Association="MRPModel.FK_Model_Funnel_Funnel" />
         <AssociationConnector Association="MRPModel.FK_ModelReview_Funnel_Field" />
+        <AssociationConnector Association="MRPModel.FK_GameplanDataType_IntegrationType" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationInstanceDataTypeMapping_GameplanDataType" />
         <AssociationConnector Association="MRPModel.FK_GameplanDataTypePull_IntegrationType" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceDataTypeMappingPull_GameplanDataTypePull" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Geography" />
@@ -88,13 +92,15 @@
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceExternalServer_IntegrationInstance" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceLog_IntegrationInstance" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstancePlanEntityLog_IntegrationInstance" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationInstanceSection_IntegrationInstance" />
         <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstance" />
         <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceCW" />
         <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceINQ" />
         <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceMQL" />
         <AssociationConnector Association="MRPModel.FK_SyncFrequency_IntegrationInstance" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstance_Attribute_IntegrationTypeAttribute" />
-        <AssociationConnector Association="MRPModel.FK_IntegrationInstancePlanEntityLog_IntegrationInstanceLog" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationInstanceSection_IntegrationInstanceLog" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationInstancePlanEntityLog_IntegrationInstanceSection" />
         <AssociationConnector Association="MRPModel.FK_IntegrationTypeAttribute_IntegrationType" />
         <AssociationConnector Association="MRPModel.FK_LineItemType_Model" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_LineItemType" />
@@ -138,9 +144,6 @@
         <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Comment_Plan_Improvement_Campaign_Program_Tactic" />
         <AssociationConnector Association="MRPModel.FK_Plan_Improvement_Campaign_Program_Tactic_Share_Plan_Improvement_Campaign_Program_Tactic" />
         <AssociationConnector Association="MRPModel.fk_TacticType_Stage" />
-        <EntityTypeShape EntityType="MRPModel.GameplanDataType" Width="1.5" PointX="2.006379096771767" PointY="26.265322220635284" />
-        <AssociationConnector Association="MRPModel.FK_GameplanDataType_IntegrationType" />
-        <AssociationConnector Association="MRPModel.FK_IntegrationInstanceDataTypeMapping_GameplanDataType" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
