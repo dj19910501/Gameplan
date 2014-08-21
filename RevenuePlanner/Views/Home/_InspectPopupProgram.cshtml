@@ -13,7 +13,7 @@
 @Html.Hidden("hdnProgramStatus", programMaster.Status, new { id = "hdnProgramStatus" })
 <div>
     <span class="icon-flag bg-purple" style="background-color:#@programMaster.ColorCode !important;"></span>
-    <h2 class="title-simple source-sans-prolight">@Html.Raw(programMaster.ProgramTitle)
+    <h2 class="title-simple source-sans-prolight"><span class="tipsyclassTitle">@Html.Raw(programMaster.ProgramTitle)</span>
     @if (IsPlanEditable)
     {
         @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId , tacticId = 0, EditObject = "Program", ismsg = "" }, new { @class = "edit-icon"})
@@ -66,7 +66,7 @@
 
     $(document).ready(
       function () {
-
+          NumberFormatterTipsyTitle(".tipsyclassTitle", 55);
           var InspectValue = $("#hdnInspectPopup").val();
           var planProgramId = $("#hdnPlanProgramId").val();
           // Call Remove Tabclass

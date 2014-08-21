@@ -11,7 +11,7 @@
 }
 <div class="span5 width360" id="inspect-modal-right-div">
     <div class="font-size18">Overview</div>
-   <div id="campaign-title" class="bold padding-top16 font-size18">@Html.Raw(tacticReview.CampaignTitle)</div>
+   <div id="campaign-title" class="bold padding-top16 font-size18 tipsyclassTitle">@Html.Raw(tacticReview.CampaignTitle)</div>
    @*<div id="program-title" class="font-size18">@tacticReview.ProgramTitle</div>*@
     <div class="cf source-sans-proregular padding-top32">
         <div class="chart-gray pull-left size65x38 without-padding">
@@ -291,6 +291,7 @@
           //PL #508 Set format for label in tool tip
           SetLabelFormaterWithTipsy("#inq-id");
           SetLabelFormaterWithTipsy("#mqls-id");
+          NumberFormatterTipsyTitle(".tipsyclassTitle", 33);
 
           $("#BtnShareTactic").click(function () {
               $("#DivPartialShareTactic").empty();
