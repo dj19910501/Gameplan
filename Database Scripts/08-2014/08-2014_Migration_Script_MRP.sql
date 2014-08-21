@@ -1018,3 +1018,8 @@ IF EXISTS(SELECT 1 FROM sys.objects WHERE type='p' AND name='Plan_Campaign_Progr
 BEGIN
 DROP PROCEDURE dbo.Plan_Campaign_Program_Tactic_ActualDelete
 END
+
+--------------01_PL_717_Pulling from Eloqua - Actual Cost.sql
+Declare @EloquaIntegrationTypeId int
+select TOP 1 @EloquaIntegrationTypeId  = IntegrationTypeId from IntegrationType where Title='Eloqua'
+delete from GameplanDataType where integrationtypeid=@EloquaIntegrationTypeId and isget=1 and ActualFieldName='Revenue'
