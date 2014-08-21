@@ -796,6 +796,8 @@
                             var newRemainingBudget = parseInt($("#hdnTotalPlanBudget").val()) - ProgramBudgetValue; // + differenceVal;
                             // End - Modified by Sohel Pathan on 12/08/2014 for PL ticket #605
                             $("#txtRemainingBudget").val(FormatCommasBudget(newRemainingBudget.toString(), false, true));
+                            //Added By : Kalpesh Sharma 08/21/2014
+                            FormatRemainingBudget();
                             $("#txtRemainingBudget").attr('title', $("#txtRemainingBudget").val());
 
                             if (data.IsDeployedToIntegration) {
