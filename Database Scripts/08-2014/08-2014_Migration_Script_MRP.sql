@@ -1031,7 +1031,7 @@ BEGIN
 
 CREATE TABLE [dbo].[IntegrationInstanceSection](
 	[IntegrationInstanceSectionId] [int] IDENTITY(1,1) NOT NULL,
-	[IntegartionInstanceLogId] [int] NOT NULL,
+	[IntegrationInstanceLogId] [int] NOT NULL,
 	[IntegrationInstanceId] [int] NOT NULL,
 	[SectionName] [nvarchar](255) NOT NULL,
 	[SyncStart] [datetime] NOT NULL,
@@ -1093,5 +1093,8 @@ BEGIN
     ALTER TABLE [IntegrationInstancePlanEntityLog] DROP COLUMN IntegrationInstanceLogId
 END
 GO
+
+
+
 
 
