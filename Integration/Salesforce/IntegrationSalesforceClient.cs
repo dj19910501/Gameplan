@@ -303,9 +303,10 @@ namespace Integration.Salesforce
                                         CampaignId = cl.Key.CampaignId,
                                         TacticId = tacticList.Single(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).PlanTacticId,
                                         Period = "Y" + Convert.ToDateTime(cl.Key.Month).Month,
+                                        IsYear = (tacticList.Single(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).StartDate.Year == Convert.ToDateTime(cl.Key.Month).Year) ? true : false,
                                         Count = cl.Count()
                                     }
-                                    ).ToList();
+                                    ).Where(cm => cm.IsYear).ToList();
 
                                 
 
@@ -482,10 +483,11 @@ namespace Integration.Salesforce
                                         CampaignId = cl.Key.CampaignId,
                                         TacticId = tacticList.Single(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).PlanTacticId,
                                         Period = "Y" + Convert.ToDateTime(cl.Key.Month).Month,
+                                        IsYear = (tacticList.Single(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).StartDate.Year == Convert.ToDateTime(cl.Key.Month).Year) ? true : false,
                                         Count = cl.Count(),
                                         Revenue = cl.Sum(c => c.Amount)
                                     }
-                                    ).ToList();
+                                    ).Where(om => om.IsYear).ToList();
 
                                
 

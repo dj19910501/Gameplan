@@ -2056,14 +2056,17 @@ namespace RevenuePlanner.Controllers
                                     isApproved = true;
                                     if (todaydate > tactic.StartDate && todaydate < tactic.EndDate)
                                     {
-                                        status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
+                                        tactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
                                     }
                                     else if (todaydate > tactic.EndDate)
                                     {
-                                        status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
+                                        tactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
                                     }
                                 }
+                                else
+                                {
                                 tactic.Status = status;
+                                }
                                 tactic.ModifiedBy = Sessions.User.UserId;
                                 tactic.ModifiedDate = DateTime.Now;
 
@@ -3293,14 +3296,17 @@ namespace RevenuePlanner.Controllers
                                         isApproved = true;
                                         if (todaydate > tactic.StartDate && todaydate < tactic.EndDate)
                                         {
-                                            status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
+                                            tactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
                                         }
                                         else if (todaydate > tactic.EndDate)
                                         {
-                                            status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
+                                            tactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
                                         }
                                     }
+                                    else
+                                    {
                                     tactic.Status = status;
+                                    }
                                     tactic.ModifiedBy = Sessions.User.UserId;
                                     tactic.ModifiedDate = DateTime.Now;
                                     db.Entry(tactic).State = EntityState.Modified;
