@@ -1113,7 +1113,7 @@ ALTER TABLE [dbo].[IntegrationInstancePlanEntityLog] CHECK CONSTRAINT [FK_Integr
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'FK - Refers to associated IntegrationInstanceSectionId.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'IntegrationInstancePlanEntityLog', @level2type=N'COLUMN',@level2name=N'IntegrationInstanceSectionId'
 
 END
-GO
+GO 
 
 
 
