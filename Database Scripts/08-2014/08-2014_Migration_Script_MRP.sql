@@ -1022,6 +1022,8 @@ END
 --------------01_PL_717_Pulling from Eloqua - Actual Cost.sql
 Declare @EloquaIntegrationTypeId int
 select TOP 1 @EloquaIntegrationTypeId  = IntegrationTypeId from IntegrationType where Title='Eloqua'
+delete from IntegrationInstanceDataTypeMapping 
+	where gameplandatatypeid in (select gameplandatatypeid from GameplanDataType where integrationtypeid=@EloquaIntegrationTypeId and isget=1 and ActualFieldName='Revenue')
 delete from GameplanDataType where integrationtypeid=@EloquaIntegrationTypeId and isget=1 and ActualFieldName='Revenue'
 
 --------------01_PL_684_Integration_Error_handling_Logging.sql
