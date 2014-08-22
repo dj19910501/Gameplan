@@ -151,7 +151,7 @@ namespace RevenuePlanner.Controllers
                     objPlanModel.Version = objplan.Version;
                     objPlanModel.ModelTitle = objplan.Model.Title + " " + objplan.Model.Version;
                     double TotalAllocatedCampaignBudget = 0;
-                    var PlanCampaignBudgetList = db.Plan_Campaign_Budget.Where(pcb => pcb.Plan_Campaign.PlanId == objplan.PlanId).Select(a => a.Value).ToList();
+                    var PlanCampaignBudgetList = db.Plan_Campaign_Budget.Where(pcb => pcb.Plan_Campaign.PlanId == objplan.PlanId && pcb.Plan_Campaign.IsDeleted == false).Select(a => a.Value).ToList();
                     if (PlanCampaignBudgetList.Count > 0)
                     {
                         TotalAllocatedCampaignBudget = PlanCampaignBudgetList.Sum();
@@ -641,7 +641,7 @@ namespace RevenuePlanner.Controllers
             objPlanModel.Budget = objPlanData.Budget;
             objPlanModel.Description = objPlanData.Description;    /* Added by Sohel Pathan on 04/08/2014 for PL ticket #623 */
             double TotalAllocatedCampaignBudget = 0;
-            var PlanCampaignBudgetList = db.Plan_Campaign_Budget.Where(pcb => pcb.Plan_Campaign.PlanId == objPlanData.PlanId).Select(a => a.Value).ToList();
+            var PlanCampaignBudgetList = db.Plan_Campaign_Budget.Where(pcb => pcb.Plan_Campaign.PlanId == objPlanData.PlanId && pcb.Plan_Campaign.IsDeleted == false).Select(a => a.Value).ToList();
             if (PlanCampaignBudgetList.Count > 0)
             {
                 TotalAllocatedCampaignBudget = PlanCampaignBudgetList.Sum();
@@ -6968,7 +6968,7 @@ namespace RevenuePlanner.Controllers
                         pb.Period,
                         pb.Value
                     }).ToList();
-                    var planCampaignBudgetAllocationListTemp = db.Plan_Campaign_Budget.Where(pcb => pcb.Plan_Campaign.PlanId == planId).OrderBy(pcb => pcb.PlanCampaignBudgetId).Select(pb => new
+                    var planCampaignBudgetAllocationListTemp = db.Plan_Campaign_Budget.Where(pcb => pcb.Plan_Campaign.PlanId == planId && pcb.Plan_Campaign.IsDeleted == false).OrderBy(pcb => pcb.PlanCampaignBudgetId).Select(pb => new
                     {
                         pb.Period,
                         pb.Value
