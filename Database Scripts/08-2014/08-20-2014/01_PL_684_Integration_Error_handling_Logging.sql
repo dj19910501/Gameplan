@@ -1,4 +1,6 @@
 -- db SCRIPT FOR #684 Integration - Error handling & Logging
+
+
 IF NOT EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME='IntegrationInstanceSection')
 BEGIN
 
@@ -43,28 +45,46 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Refers to asso
 END
 GO
 
-IF NOT EXISTS(SELECT * FROM SYS.COLUMNS WHERE Name = N'IntegrationInstancePlanLogEntityId' AND OBJECT_ID = OBJECT_ID(N'IntegrationInstancePlanEntityLog'))
+IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME='IntegrationInstancePlanEntityLog')
 BEGIN
-    ALTER TABLE [IntegrationInstancePlanEntityLog] ADD IntegrationInstancePlanLogEntityId BIGINT IDENTITY(1,1) NOT NULL
-	ALTER TABLE [IntegrationInstancePlanEntityLog] ADD CONSTRAINT PK_IntegrationInstancePlanEntityLog PRIMARY KEY(IntegrationInstancePlanLogEntityId)
+
+DROP TABLE IntegrationInstancePlanEntityLog
+
 END
 GO
 
-IF NOT EXISTS(SELECT * FROM SYS.COLUMNS WHERE Name = N'IntegrationInstanceSectionId' AND OBJECT_ID = OBJECT_ID(N'IntegrationInstancePlanEntityLog'))
+IF NOT EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME='IntegrationInstancePlanEntityLog')
 BEGIN
-	DELETE FROM IntegrationInstanceLog
-	DELETE FROM IntegrationInstancePlanEntityLog
-    ALTER TABLE [IntegrationInstancePlanEntityLog] ADD IntegrationInstanceSectionId INT NOT NULL
-	ALTER TABLE [dbo].[IntegrationInstancePlanEntityLog]  WITH CHECK ADD  CONSTRAINT [FK_IntegrationInstancePlanEntityLog_IntegrationInstanceSectionId] FOREIGN KEY([IntegrationInstanceSectionId])
-	REFERENCES [dbo].[IntegrationInstanceSection] ([IntegrationInstanceSectionId])
-	ALTER TABLE [dbo].[IntegrationInstancePlanEntityLog] CHECK CONSTRAINT [FK_IntegrationInstancePlanEntityLog_IntegrationInstanceSectionId]
+CREATE TABLE [dbo].[IntegrationInstancePlanEntityLog](
+	[IntegrationInstancePlanLogEntityId] [bigint] IDENTITY(1,1) NOT NULL,
+	[IntegrationInstanceSectionId] [int] NOT NULL,
+	[IntegrationInstanceId] [int] NOT NULL,
+	[EntityId] [int] NOT NULL,
+	[EntityType] [varchar](50) NULL,
+	[SyncTimeStamp] [datetime] NOT NULL,
+	[Operation] [varchar](50) NULL,
+	[Status] [nvarchar](255) NULL,
+	[ErrorDescription] [nvarchar](4000) NULL,
+	[CreatedDate] [datetime] NULL,
+	[CreatedBy] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_IntegrationInstancePlanEntityLog] PRIMARY KEY CLUSTERED 
+(
+	[IntegrationInstancePlanLogEntityId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+ALTER TABLE [dbo].[IntegrationInstancePlanEntityLog]  WITH CHECK ADD  CONSTRAINT [FK_IntegrationInstancePlanEntityLog_IntegrationInstance] FOREIGN KEY([IntegrationInstanceId])
+REFERENCES [dbo].[IntegrationInstance] ([IntegrationInstanceId])
+
+ALTER TABLE [dbo].[IntegrationInstancePlanEntityLog] CHECK CONSTRAINT [FK_IntegrationInstancePlanEntityLog_IntegrationInstance]
+
+ALTER TABLE [dbo].[IntegrationInstancePlanEntityLog]  WITH CHECK ADD  CONSTRAINT [FK_IntegrationInstancePlanEntityLog_IntegrationInstanceSection] FOREIGN KEY([IntegrationInstanceSectionId])
+REFERENCES [dbo].[IntegrationInstanceSection] ([IntegrationInstanceSectionId])
+
+ALTER TABLE [dbo].[IntegrationInstancePlanEntityLog] CHECK CONSTRAINT [FK_IntegrationInstancePlanEntityLog_IntegrationInstanceSection]
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'FK - Refers to associated IntegrationInstanceSectionId.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'IntegrationInstancePlanEntityLog', @level2type=N'COLUMN',@level2name=N'IntegrationInstanceSectionId'
+
 END
 GO
-
-IF EXISTS(SELECT * FROM SYS.COLUMNS WHERE Name = N'IntegrationInstanceLogId' AND OBJECT_ID = OBJECT_ID(N'IntegrationInstancePlanEntityLog'))
-BEGIN
-    ALTER TABLE [IntegrationInstancePlanEntityLog] DROP COLUMN IntegrationInstanceLogId
-END
-GO
-
 
