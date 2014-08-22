@@ -24,12 +24,12 @@
                         <tbody class="column1">
                             <tr>
                                 <td>
-                                    <div>&nbsp;</div>
+                                    <div id="div2PlanDetails">&nbsp;</div>
                                 </td>
                             </tr>
                             <tr>
                                 <td class="event-row">
-                                    <div><a id="aPlanDetails">@plan.ActivityName</a></div>
+                                    <div id="divPlanDetails"><a id="aPlanDetails">@plan.ActivityName</a></div>
                                 </td>
                             </tr>
                             @Html.ActivityCampaign("campaign", plan.ActivityId, Model)
@@ -58,7 +58,15 @@
 </div>
 
 <script type="text/javascript">
-    var heights = $('.column1 a').map(function () {
+    var heights = $('.column1').find('div').map(function () {
+        var intWidth = 0;
+        if ($(this).css('display') == 'none') {
+            intWidth = $(this).actual('width');
+        }
+        else {
+            intWidth = $(this).width();
+        }
+        //$(this).attr('title', intWidth);
         return $(this).width();
     }).get();
     $(document).ready(function () {
@@ -85,12 +93,19 @@
             var column1Width = $('.column1 div').css('width');
             column1Width = column1Width.replace('px', '');
             try {
-                if (parseInt(column1Width) < maxHeight) {
-                    $('.column1 div').css('width', maxHeight);
-                }
-            } catch (e) {
+                if (parseInt(column1Width) <= maxHeight) {
+                    $('#divPlanDetails').css('width', parseInt(maxHeight) - 15);
+                    $('#div2PlanDetails').css('width', parseInt(maxHeight) + 15);
+                    $('.column1 .lineitemLevel').find('a:last-child').css('width', parseInt(maxHeight) - parseInt($(".lineitemLevel").css("padding-left").replace("px", "")) - parseInt($(".lineitemLevel").css("padding-right").replace("px", "")));
+                    $('.column1 .tacticLevel').find('a:last-child').css('width', parseInt(maxHeight) - parseInt($(".tacticLevel").css("padding-left").replace("px", "")) - parseInt($(".tacticLevel").css("padding-right").replace("px", "")));
+                    $('.column1 .lineitem-lvl').css('width', parseInt(maxHeight) + 15);
+                    $('.column1 .programLevel').css('width', parseInt(maxHeight) - parseInt($(".programLevel").css("padding-left").replace("px", "")) - parseInt($(".programLevel").css("padding-right").replace("px", "")) + 15);
+                    $('.column1 .tactic-lvl').css('width', parseInt(maxHeight) + 15);
+                    $('.column1 .campaignLevel').css('width', parseInt(maxHeight) - parseInt($(".campaignLevel").css("padding-left").replace("px", "")) - parseInt($(".campaignLevel").css("padding-right").replace("px", "")) + 15);
+                    $('.column1 .program-lvl').css('width', parseInt(maxHeight) + 15);
 
-            }
+                }
+            } catch (e) { }
         }
     });
     $('.accordionClick').on('click', function () {
