@@ -26,7 +26,7 @@ REFERENCES [dbo].[IntegrationInstance] ([IntegrationInstanceId])
 
 ALTER TABLE [dbo].[IntegrationInstanceSection] CHECK CONSTRAINT [FK_IntegrationInstanceSection_IntegrationInstance]
 
-ALTER TABLE [dbo].[IntegrationInstanceSection]  WITH CHECK ADD  CONSTRAINT [FK_IntegrationInstanceSection_IntegrationInstanceLog] FOREIGN KEY([IntegartionInstanceLogId])
+ALTER TABLE [dbo].[IntegrationInstanceSection]  WITH CHECK ADD  CONSTRAINT [FK_IntegrationInstanceSection_IntegrationInstanceLog] FOREIGN KEY([IntegrationInstanceLogId])
 REFERENCES [dbo].[IntegrationInstanceLog] ([IntegrationInstanceLogId])
 
 ALTER TABLE [dbo].[IntegrationInstanceSection] CHECK CONSTRAINT [FK_IntegrationInstanceSection_IntegrationInstanceLog]
