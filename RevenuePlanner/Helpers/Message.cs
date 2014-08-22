@@ -2097,7 +2097,14 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             get { return _NoDataTypeMappingFieldsForEloqua; }
             set { _NoDataTypeMappingFieldsForEloqua = value; }
         }
-        
+        // Start - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
+        private string _DataLoseErrorMessage;
+        public string DataLoseErrorMessage
+        {
+            get { return _DataLoseErrorMessage; }
+            set { _DataLoseErrorMessage = value; }
+        }
+        // End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
         
 
         #region Start - Manoj PL#679
@@ -2768,6 +2775,11 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                         case "NoDataTypeMappingFieldsForEloqua":
                                             _NoDataTypeMappingFieldsForEloqua = strMsgValue;
                                             break;
+                                        // Start - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
+                                        case "DataLoseErrorMessage":
+                                            _DataLoseErrorMessage = strMsgValue;
+                                            break;
+                                        // End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
                                     }
                                 }
                                 i = i + 1;

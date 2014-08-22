@@ -1180,12 +1180,30 @@ namespace RevenuePlanner.Controllers
                         {
                             objModel.IsDeleted = true;
                             db.Entry(objModel).State = EntityState.Modified;
-                            int result = db.SaveChanges();
+                            //int result = db.SaveChanges();
+
+                            // Start - Added by Sohel Pathan on 22/08/2014 for Internal Review Points #90
+                            var lstTacticType = db.TacticTypes.Where(t => t.ModelId == id && t.IsDeleted == false).Select(t => t).ToList();
+                            lstTacticType.ForEach(t => { t.IsDeleted = true; db.Entry(t).State = EntityState.Modified; });
+
+                            var lstLineItemType = db.LineItemTypes.Where(lt => lt.ModelId == id && lt.IsDeleted == false).Select(lt => lt).ToList();
+                            lstLineItemType.ForEach(lt => { lt.IsDeleted = true; db.Entry(lt).State = EntityState.Modified; });
+                            // End - Added by Sohel Pathan on 22/08/2014 for Internal Review Points #90
+                            
                             //Parent of ModelId
                             while (objModel.Model2 != null)
                             {
                                 objModel = objModel.Model2;
                                 objModel.IsDeleted = true;
+
+                                // Start - Added by Sohel Pathan on 22/08/2014 for Internal Review Points #90
+                                lstTacticType = db.TacticTypes.Where(t => t.ModelId == objModel.ModelId && t.IsDeleted == false).Select(t => t).ToList();
+                                lstTacticType.ForEach(t => { t.IsDeleted = true; db.Entry(t).State = EntityState.Modified; });
+
+                                lstLineItemType = db.LineItemTypes.Where(lt => lt.ModelId == objModel.ModelId && lt.IsDeleted == false).Select(lt => lt).ToList();
+                                lstLineItemType.ForEach(lt => { lt.IsDeleted = true; db.Entry(lt).State = EntityState.Modified; });
+                                // End - Added by Sohel Pathan on 22/08/2014 for Internal Review Points #90
+
                                 if (objModel.Status.ToLower() != Enums.ModelStatus.Draft.ToString().ToLower())
                                 {
                                     objPlan = db.Plans.Where(plan => plan.ModelId == objModel.ModelId && plan.IsDeleted == false).ToList();
@@ -1195,8 +1213,9 @@ namespace RevenuePlanner.Controllers
                                     }
                                 }
                                 db.Entry(objModel).State = EntityState.Modified;
-                                result = db.SaveChanges();
+                                //result = db.SaveChanges();    // Commented by Sohel Pathan on 22/08/2014 for Internal Review Points
                             }
+                            db.SaveChanges();   // Added by Sohel Pathan on 22/08/2014 for Internal Review Points
                             scope.Complete();
                             return Json(new { successmsg = string.Format(Common.objCached.ModelDeleteSuccess, objModel.Title) }, JsonRequestBehavior.AllowGet);
                         }

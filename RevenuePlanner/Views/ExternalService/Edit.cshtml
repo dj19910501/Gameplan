@@ -34,7 +34,7 @@
 @* Start - Added by Sohel Pathan on 21/08/2014 for PL ticket #716. *@
 <div id="errorMessageDataLose" class="alert hide alert-error message-position">
     <a class="close">×</a>
-    <div id="cErrorDataLoss"></div>
+    <div id="cErrorDataLose"></div>
 </div>
 @* End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716. *@
 <ul class="nav nav-tabs margin-bottom0">
@@ -212,9 +212,7 @@
     });
 
     // Start - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
-    $(document).on("click", "#confirmClose, .confirmClose", function (e) {
-        $("#errorMessageDataLose").slideUp(400);
-    });
+    closeDataLoseConfirmationMsg();
     // End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
 
     $("#ddlSyncFrequency").change(function () {
@@ -327,51 +325,39 @@
     }
 
     // Start - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
-    function checkForDataLoss(formName)
-    {
+    $('#integrationForm').find('#btnCancel').click(function () {
         var url = '';
         url = '@Url.Action("Index", "ExternalService")';
-        
-        var changed = false;
-        $('#' + formName).find("input[type=text],textarea,select,input[type=password]").each(function () {
-            var iv = $(this).attr("myValue");
-            if ($(this).val() != iv && ($(this).val() != null || iv != '')) {
-                changed = true;
-                $('#cErrorDataLoss').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
-                $("#errorMessageDataLose").slideDown(400);
-                $("html, body").animate({ scrollTop: 0 }, 1000);
-                $("#btnConfirmOK").click(function () {
-                    $('#cErrorDataLoss').html("");
-                    $("#errorMessageDataLose").hide();
-                    window.location.href = url;
-                });
-                return false;
-            }
-        });
-
-        if (!changed) {
-            window.location.href = url;
-        }
-    }
-
-    $('#integrationForm').find('#btnCancel').click(function () {
-        checkForDataLoss('integrationForm');
+        ErrorMessage = '@Common.objCached.DataLoseErrorMessage';
+        checkForDataLose('integrationForm', url, ErrorMessage);
     });
 
     $('#btnCancelDataMappins').click(function () {
-        checkForDataLoss('frmDataMapping');
+        var url = '';
+        url = '@Url.Action("Index", "ExternalService")';
+        ErrorMessage = '@Common.objCached.DataLoseErrorMessage';
+        checkForDataLose('frmDataMapping', url, ErrorMessage);
     });
 
     $('#btnExtServerCancel').click(function () {
-        checkForDataLoss('extServer');
+        var url = '';
+        url = '@Url.Action("Index", "ExternalService")';
+        ErrorMessage = '@Common.objCached.DataLoseErrorMessage';
+        checkForDataLose('extServer', url, ErrorMessage);
     });
 
     $('#btnCancelRevenueMappins').click(function () {
-        checkForDataLoss('frmRevenueDataMapping');
+        var url = '';
+        url = '@Url.Action("Index", "ExternalService")';
+        ErrorMessage = '@Common.objCached.DataLoseErrorMessage';
+        checkForDataLose('frmRevenueDataMapping', url, ErrorMessage);
     });
 
     $('#btnCancelCloseDealMappins').click(function () {
-        checkForDataLoss('frmClosedDealDataMapping');
+        var url = '';
+        url = '@Url.Action("Index", "ExternalService")';
+        ErrorMessage = '@Common.objCached.DataLoseErrorMessage';
+        checkForDataLose('frmClosedDealDataMapping', url, ErrorMessage);
     });
     // End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
 

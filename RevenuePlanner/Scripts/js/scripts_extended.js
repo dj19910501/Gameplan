@@ -772,3 +772,35 @@ function ValidationForCustomTextarea(r) {
     });
 }
 /*End :Added by Mitesh Vaishnav on 30/06/2014 for PL ticket #548 : : Special characters should be allowed in tactic descriptions */
+
+// Start - Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
+function checkForDataLose(formName, url, ErrorMessage) {
+    var changed = false;
+    $('#' + formName).find("input[type=text],textarea,select,input[type=password]").each(function () {
+        var iv = $(this).attr("myValue");
+        if ($(this).val() != iv && ($(this).val() != null || iv != '')) {
+            changed = true;
+            $('#cErrorDataLose').html("<strong>Error! </strong> " + ErrorMessage + "&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
+            $("#errorMessageDataLose").slideDown(400);
+            $("html, body").animate({ scrollTop: 0 }, 1000);
+            $("#btnConfirmOK").click(function () {
+                $('#cErrorDataLose').html("");
+                $("#errorMessageDataLose").hide();
+                window.location.href = url;
+            });
+            return false;
+        }
+    });
+
+    if (!changed) {
+        window.location.href = url;
+    }
+}
+
+function closeDataLoseConfirmationMsg()
+{
+    $(document).on("click", "#confirmClose, .confirmClose", function (e) {
+        $("#errorMessageDataLose").slideUp(400);
+    });
+}
+// End - Added by Sohel Pathan on 22/08/2014 for PL ticket #716.

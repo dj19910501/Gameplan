@@ -764,4 +764,10 @@
 		<value>This section is not applicable for current integration type.</value>
 	</Field>
 	<!--End - Added by :- Dharmraj on 6/08/2014 for PL #658 Integration - UI - Pulling Revenue - Salesforce.com-->
+  <!-- Start - Added by Sohel Pathan on 21/08/2014 for PL ticket #716 -->
+  <Field>
+    <Name>DataLoseErrorMessage</Name>
+    <value>You have unsaved changes. Do you wish to leave this page and lose your work?</value>
+  </Field>
+  <!-- End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716 -->
 </Messages>
