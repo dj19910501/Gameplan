@@ -2480,7 +2480,29 @@ namespace RevenuePlanner.Controllers
                 }
             }
             ViewBag.IsDeployToIntegrationVisible = IsDeployToIntegrationVisible;
-
+            ////Start : Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
+            ViewBag.TacticIntegrationInstance = db.Plan_Campaign_Program_Tactic.Where(ti => ti.PlanTacticId == im.PlanTacticId).FirstOrDefault().IntegrationInstanceTacticId;
+            string pullResponses =Operation.Pull_Responses.ToString();
+            string pullClosedWon = Operation.Pull_ClosedWon.ToString();
+            string pullQualifiedLeads = Operation.Pull_QualifiedLeads.ToString();
+            string planEntityType= Enums.Section.Tactic.ToString();
+            var planEntityLogList = db.IntegrationInstancePlanEntityLogs.Where(ipt => ipt.EntityId == im.PlanTacticId && ipt.EntityType == planEntityType).OrderByDescending(ipt => ipt.IntegrationInstancePlanLogEntityId).ToList();
+            if (planEntityLogList.Where(p => p.Operation == pullResponses).FirstOrDefault() != null)
+            {
+                // viewbag which display last synced datetime of tactic for pull responses
+                ViewBag.INQLastSync = planEntityLogList.Where(p => p.Operation == pullResponses).FirstOrDefault().SyncTimeStamp;
+            }
+            if (planEntityLogList.Where(p => p.Operation == pullClosedWon).FirstOrDefault() != null)
+            {
+                // viewbag which display last synced datetime of tactic for pull closed won
+                ViewBag.CWLastSync = planEntityLogList.Where(p => p.Operation == pullClosedWon).FirstOrDefault().SyncTimeStamp;
+            }
+            if (planEntityLogList.Where(p => p.Operation == pullQualifiedLeads).FirstOrDefault() != null)
+            {
+                // viewbag which display last synced datetime of tactic for pull qualified leads
+                ViewBag.MQLLastSync = planEntityLogList.Where(p => p.Operation == pullQualifiedLeads).FirstOrDefault().SyncTimeStamp;
+            }
+            ////End : Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
             return PartialView("Review");
         }
 

@@ -37,7 +37,8 @@ namespace Integration
         Import_Actuals,
         Pull_Responses,
         Pull_ClosedWon,
-        Import_Cost
+        Import_Cost,
+        Pull_QualifiedLeads
     }
 
 

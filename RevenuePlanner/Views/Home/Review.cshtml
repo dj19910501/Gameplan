@@ -6,16 +6,14 @@
     bool IsDeployToIntegrationVisible = (bool)ViewBag.IsDeployToIntegrationVisible;
     ////Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
     string IntegrationStatus = tacticReview.IsIntegrationInstanceExist;
-    var db = new RevenuePlanner.Models.MRPEntities();
     if (tacticReview.IsIntegrationInstanceExist == "Yes" && !tacticReview.IsDeployedToIntegration)
     {
         IntegrationStatus = "No";
     }
-    var tacticIntegrationInstance = db.Plan_Campaign_Program_Tactic.Where(ti => ti.PlanTacticId == tacticReview.PlanTacticId).FirstOrDefault().IntegrationInstanceTacticId;
-    var objModel = db.Plan_Campaign.Where(a => a.PlanCampaignId == tacticReview.PlanCampaignId).FirstOrDefault().Plan.Model;
-    var INQLastSync = objModel.IntegrationInstanceIdINQ != null ? db.IntegrationInstances.Where(ins => ins.IntegrationInstanceId == objModel.IntegrationInstanceIdINQ).FirstOrDefault().LastSyncDate.ToString() : null;
-    var CWLastSync = objModel.IntegrationInstanceIdCW != null ? db.IntegrationInstances.Where(ins => ins.IntegrationInstanceId == objModel.IntegrationInstanceIdCW).FirstOrDefault().LastSyncDate.ToString() : null;
-    var MQLLastSync = objModel.IntegrationInstanceIdMQL != null ? db.IntegrationInstances.Where(ins => ins.IntegrationInstanceId == objModel.IntegrationInstanceIdMQL).FirstOrDefault().LastSyncDate.ToString() : null;
+    var INQLastSync = ViewBag.INQLastSync;
+    var CWLastSync = ViewBag.CWLastSync;
+    var MQLLastSync = ViewBag.MQLLastSync;
+    var tacticIntegrationInstance = ViewBag.TacticIntegrationInstance;
 }
 <div class="span5 width360" id="inspect-modal-right-div" style="width: 420px !important;">
     <div class="font-size18">Overview</div>
@@ -95,29 +93,30 @@
     </div>
     
     @*Start -Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration*@
-    <div style="border-top: 1px solid #a8a8a8;padding-top:10px; padding-bottom:5px; width:93%">
-        @if (tacticIntegrationInstance!=null)
-        {
-            if (!string.IsNullOrEmpty(INQLastSync))
-            {
-        <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">@Html.LabelForINQ("INQ") synced at @Convert.ToDateTime(INQLastSync).ToString("hh:mm tt,MM/dd/yy").ToLower()</span>
+    <div style="border-top: 1px solid #a8a8a8;margin-top:10px; margin-bottom:5px; width:93%">
+       @if (tacticIntegrationInstance != null)
+       {
+           if (INQLastSync != null)
+           {
+        <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">@Html.LabelForINQ("INQ") synced at @INQLastSync.ToString("hh:mm tt,MM/dd/yy").ToLower()</span>           
             <br />
-            }
-            if (!string.IsNullOrEmpty(MQLLastSync))
-            {
-        <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">@Html.LabelForMQL("MQL") synced at @Convert.ToDateTime(MQLLastSync).ToString("hh:mm tt,MM/dd/yy").ToLower()</span>
+           }
+           if (MQLLastSync != null)
+           {
+        <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">@Html.LabelForMQL("MQL") synced at @MQLLastSync.ToString("hh:mm tt,MM/dd/yy").ToLower()</span>
         <br />
-            }
-            if (!string.IsNullOrEmpty(CWLastSync))
-            {
+           }
+           if (CWLastSync != null)
+           {
             
-        <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">@Html.LabelForCW("CW") synced at @Convert.ToDateTime(CWLastSync).ToString("hh:mm tt,MM/dd/yy").ToLower()</span>
-            }
-        }
-        else
-        {
+        <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">@Html.LabelForCW("CW") synced at @CWLastSync.ToString("hh:mm tt,MM/dd/yy").ToLower()</span>
+           }
+
+       }
+       else
+       {
             <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">Tactic not synced</span>
-        }
+       }
         @*End -Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration*@
     </div>
 </div>
@@ -147,7 +146,7 @@
         </div>
         <div></div>
     </div>
-    <div class="padding-top10 border-bottom-div">
+    <div class="padding-top10 border-bottom-div" style="padding-top:5px !important;">
 
         <img class="avatar-user vertical-aligntop" src="@Url.Action("LoadUserImage", "User", new { id = RevenuePlanner.Helpers.Sessions.User.UserId })" alt="User avatar" />
         @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment" })
@@ -175,75 +174,27 @@
 
             @{    
 
-            string Submit = "Submit for Approval";
-            string Approve = "Approve";
-            string Reject = "Reject";
-            List<string> aryStatus = new List<string>();
-            bool isVisibleStatus = true;
-            if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString()))
-            {
+                string Submit = "Submit for Approval";
+                string Approve = "Approve";
+                string Reject = "Reject";
+                List<string> aryStatus = new List<string>();
+                bool isVisibleStatus = true;
+                if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString()))
+                {
 
-                //if ((bool)ViewBag.IsValidDirectorUser)
-                //{
-                //    if ((bool)ViewBag.IsValidOwner)
-                //    {
-                //        aryStatus.Add(Submit);
-                //    }
-                //    else
-                //    {
-                //        isVisibleStatus = false;
-                //    }
-                //}
-                //else
-                //{
-                if ((bool)ViewBag.IsValidOwner)
-                {
-                    aryStatus.Add(Submit);
-                }
-                else
-                {
-                    isVisibleStatus = false;
-                }
-                //}
-            }
-            else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()))
-            {
-                if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.IsValidDirectorUser)
-                {
-                    aryStatus.Add(Approve);
-                    aryStatus.Add(Reject);
-                }
-                else
-                {
-                    isVisibleStatus = false;
-                }
-            }
-            else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()))
-            {
-                if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.IsValidDirectorUser)
-                {
-                    aryStatus.Add(Reject);
-                }
-                else
-                {
-                    isVisibleStatus = false;
-                }
-            }
-            else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()))
-            {
-                if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.IsValidDirectorUser)
-                {
-                    if ((bool)ViewBag.IsValidOwner)
-                    {
-                        aryStatus.Add(Submit);
-                    }
-                    else
-                    {
-                        aryStatus.Add(Approve);
-                    }
-                }
-                else
-                {
+                    //if ((bool)ViewBag.IsValidDirectorUser)
+                    //{
+                    //    if ((bool)ViewBag.IsValidOwner)
+                    //    {
+                    //        aryStatus.Add(Submit);
+                    //    }
+                    //    else
+                    //    {
+                    //        isVisibleStatus = false;
+                    //    }
+                    //}
+                    //else
+                    //{
                     if ((bool)ViewBag.IsValidOwner)
                     {
                         aryStatus.Add(Submit);
@@ -252,26 +203,74 @@
                     {
                         isVisibleStatus = false;
                     }
+                    //}
                 }
-            }
-            else
-            {
-                if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.IsValidDirectorUser)
+                else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()))
                 {
-                    aryStatus.Add(Reject);
+                    if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.IsValidDirectorUser)
+                    {
+                        aryStatus.Add(Approve);
+                        aryStatus.Add(Reject);
+                    }
+                    else
+                    {
+                        isVisibleStatus = false;
+                    }
+                }
+                else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()))
+                {
+                    if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.IsValidDirectorUser)
+                    {
+                        aryStatus.Add(Reject);
+                    }
+                    else
+                    {
+                        isVisibleStatus = false;
+                    }
+                }
+                else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()))
+                {
+                    if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.IsValidDirectorUser)
+                    {
+                        if ((bool)ViewBag.IsValidOwner)
+                        {
+                            aryStatus.Add(Submit);
+                        }
+                        else
+                        {
+                            aryStatus.Add(Approve);
+                        }
+                    }
+                    else
+                    {
+                        if ((bool)ViewBag.IsValidOwner)
+                        {
+                            aryStatus.Add(Submit);
+                        }
+                        else
+                        {
+                            isVisibleStatus = false;
+                        }
+                    }
                 }
                 else
                 {
-                    isVisibleStatus = false;
+                    if ((bool)ViewBag.IsValidManagerUser)//if ((bool)ViewBag.IsValidDirectorUser)
+                    {
+                        aryStatus.Add(Reject);
+                    }
+                    else
+                    {
+                        isVisibleStatus = false;
+                    }
                 }
-            }
 
-            if (isVisibleStatus)
-            {
-                int len = aryStatus.Count;
-                if (len > 0)
+                if (isVisibleStatus)
                 {
-                    string firstStatus = aryStatus[0];
+                    int len = aryStatus.Count;
+                    if (len > 0)
+                    {
+                        string firstStatus = aryStatus[0];
                 
                     <div class="margin-top10" style="float: right;">
                     <div id="btn_change_status" class="btn-group dropup">
@@ -309,13 +308,13 @@
                 </div>
 
             </div> 
+                    }
                 }
-            }
 
-            if (IsDeployToIntegrationVisible)
-            {
-            if ((bool)ViewBag.IsModelDeploy)
-            {
+                if (IsDeployToIntegrationVisible)
+                {
+                    if ((bool)ViewBag.IsModelDeploy)
+                    {
                 <div class="margin-top10" style="float: right;">
                 <div id="btn_sync_status" class="btn-group dropup">
                     <button id="btnSync" data-toggle="dropdown" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 65px;">
@@ -353,8 +352,8 @@
                     </ul>
                 </div>
             </div> 
-            }     
-            }
+                    }
+                }
             
         } 
                   
@@ -516,7 +515,7 @@
             }
             else if (statusValue == "Reject") {
                 stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()";
-              }
+            }
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Home/ApprovedTactic/")',
@@ -541,11 +540,11 @@
                             $("#modal-container-186470").css("top", topsize + "px");
                             $("#spanMessageError").empty();
                             $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");
-                          }
+                        }
 
                         // Added by Dharmraj to refresh current tab for PL #364,#365,#366
-                          RefreshCurrentTab();
-                      }
+                        RefreshCurrentTab();
+                    }
                 },
                 error: function () {
                     $("#errorMessage").css("display", "block");
