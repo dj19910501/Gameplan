@@ -329,36 +329,37 @@
         var url = '';
         url = '@Url.Action("Index", "ExternalService")';
         ErrorMessage = '@Common.objCached.DataLoseErrorMessage';
-        checkForDataLose('integrationForm', url, ErrorMessage);
+        checkForDataLose('accordion', url, ErrorMessage);
     });
 
     $('#btnCancelDataMappins').click(function () {
         var url = '';
         url = '@Url.Action("Index", "ExternalService")';
         ErrorMessage = '@Common.objCached.DataLoseErrorMessage';
-        checkForDataLose('frmDataMapping', url, ErrorMessage);
+        checkForDataLose('accordion', url, ErrorMessage);
     });
 
     $('#btnExtServerCancel').click(function () {
         var url = '';
         url = '@Url.Action("Index", "ExternalService")';
         ErrorMessage = '@Common.objCached.DataLoseErrorMessage';
-        checkForDataLose('extServer', url, ErrorMessage);
+        checkForDataLose('accordion', url, ErrorMessage);
     });
 
     $('#btnCancelRevenueMappins').click(function () {
         var url = '';
         url = '@Url.Action("Index", "ExternalService")';
         ErrorMessage = '@Common.objCached.DataLoseErrorMessage';
-        checkForDataLose('frmRevenueDataMapping', url, ErrorMessage);
+        checkForDataLose('accordion', url, ErrorMessage);
     });
 
     $('#btnCancelCloseDealMappins').click(function () {
         var url = '';
         url = '@Url.Action("Index", "ExternalService")';
         ErrorMessage = '@Common.objCached.DataLoseErrorMessage';
-        checkForDataLose('frmClosedDealDataMapping', url, ErrorMessage);
+        checkForDataLose('accordion', url, ErrorMessage);
     });
     // End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
+
 
 </script>
