@@ -671,7 +671,7 @@
             <PropertyRef Name="IntegrationInstanceSectionId" />
           </Key>
           <Property Name="IntegrationInstanceSectionId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="IntegartionInstanceLogId" Type="int" Nullable="false" />
+          <Property Name="IntegrationInstanceLogId" Type="int" Nullable="false" />
           <Property Name="IntegrationInstanceId" Type="int" Nullable="false" />
           <Property Name="SectionName" Type="nvarchar" Nullable="false" MaxLength="255" />
           <Property Name="SyncStart" Type="datetime" Nullable="false" />
@@ -1560,7 +1560,7 @@
               <PropertyRef Name="IntegrationInstanceLogId" />
             </Principal>
             <Dependent Role="IntegrationInstanceSection">
-              <PropertyRef Name="IntegartionInstanceLogId" />
+              <PropertyRef Name="IntegrationInstanceLogId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2954,7 +2954,7 @@
             <PropertyRef Name="IntegrationInstanceSectionId" />
           </Key>
           <Property Type="Int32" Name="IntegrationInstanceSectionId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="IntegartionInstanceLogId" Nullable="false" />
+          <Property Type="Int32" Name="IntegrationInstanceLogId" Nullable="false" />
           <Property Type="Int32" Name="IntegrationInstanceId" Nullable="false" />
           <Property Type="String" Name="SectionName" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Type="DateTime" Name="SyncStart" Nullable="false" Precision="3" />
@@ -4099,7 +4099,7 @@
               <PropertyRef Name="IntegrationInstanceLogId" />
             </Principal>
             <Dependent Role="IntegrationInstanceSection">
-              <PropertyRef Name="IntegartionInstanceLogId" />
+              <PropertyRef Name="IntegrationInstanceLogId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4945,7 +4945,7 @@
                 <ScalarProperty Name="SyncStart" ColumnName="SyncStart" />
                 <ScalarProperty Name="SectionName" ColumnName="SectionName" />
                 <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
-                <ScalarProperty Name="IntegartionInstanceLogId" ColumnName="IntegartionInstanceLogId" />
+                <ScalarProperty Name="IntegrationInstanceLogId" ColumnName="IntegrationInstanceLogId" />
                 <ScalarProperty Name="IntegrationInstanceSectionId" ColumnName="IntegrationInstanceSectionId" />
               </MappingFragment>
             </EntityTypeMapping>

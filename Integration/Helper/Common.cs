@@ -177,7 +177,7 @@ namespace Integration.Helper
             using (MRPEntities db=new MRPEntities())
             {
                 IntegrationInstanceSection objIntegrationInstanceSection = new IntegrationInstanceSection();
-                objIntegrationInstanceSection.IntegartionInstanceLogId = IntegartionInstanceLogId;
+                objIntegrationInstanceSection.IntegrationInstanceLogId = IntegartionInstanceLogId;
                 objIntegrationInstanceSection.IntegrationInstanceId = IntegartionInstanceId;
                 objIntegrationInstanceSection.SectionName = SectionName;
                 objIntegrationInstanceSection.SyncStart = SyncStart;

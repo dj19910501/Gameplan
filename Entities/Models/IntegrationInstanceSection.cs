@@ -20,7 +20,7 @@ namespace RevenuePlanner.Models
         }
     
         public int IntegrationInstanceSectionId { get; set; }
-        public int IntegartionInstanceLogId { get; set; }
+        public int IntegrationInstanceLogId { get; set; }
         public int IntegrationInstanceId { get; set; }
         public string SectionName { get; set; }
         public System.DateTime SyncStart { get; set; }
