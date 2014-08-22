@@ -144,11 +144,8 @@
 
     $(document).ready(function () {
         $(".verticalIdSelectBox select").selectbox();
-        //$("#frmDataMapping").find('.ddlStyle').each(function () {
-        //    if ($(this).next('.sbHolder').hasClass("error")) {
-        //        $(this).next('.sbHolder').removeClass("error");
-        //    }
-        //});
+        
+        AssignDefaultValueDataMapping();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
     });
 
     $("#frmDataMapping").find('.ddlStyle').change(function () {
@@ -208,6 +205,7 @@
                         $("#DataMappingErrorMessage").hide();
                         $('#DataMappingSuccessMessage').find('#spanMessageSuccess').html(data.Message);
                         $("#DataMappingSuccessMessage").slideDown(400);
+                        AssignDefaultValueDataMapping();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
                         return true;
                     }
                 }
@@ -218,19 +216,6 @@
             return false;
         }
         });
-    });
-
-    $('#btnCancelDataMappins').click(function () {
-        //$('#DataMappingSuccessMessage').find('#spanMessageSuccess').html('');
-        //$("#DataMappingSuccessMessage").hide()
-        //$('#DataMappingErrorMessage').find('#spanMessageError').html('');
-        //$("#DataMappingErrorMessage").hide();
-
-        //Added By : Kalpesh Sharma : PL#682 Integration - UI - Integration Type Settings - 08/14/2014
-        var url = '';
-        url = '@Url.Action("Index", "ExternalService")';
-        window.location.href = url;
-
     });
 
     $("#frmDataMapping").find(".alert").find(".close").click(function (e) {
@@ -288,4 +273,12 @@
         $("#DataMappingSuccessMessage").hide();
     }
     /* End - Added by Sohel Pathan on 20/08/2014 for Internal Review Point */
+
+    // Start - Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
+    function AssignDefaultValueDataMapping() {
+        $('#frmDataMapping').find("input[type=text],textarea,select,input[type=password]").each(function () {
+            $(this).attr("myValue", $(this).val());
+        });
+    }
+    // End - Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
 </script>

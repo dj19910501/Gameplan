@@ -63,27 +63,12 @@
     </div>
 </div>
 <script type="text/javascript">
-    $('#btnExtServerCancel').click(function () {
-        //$('#SFTPServerName').removeClass('error');
-        //$('#SFTPFileLocation').removeClass('error');
-        //$('#SFTPUserName').removeClass('error');
-        //$('#SFTPPassword').removeClass('error');
-        //$("#errExtSrv").slideUp(1);
-        //$("#errExtSrv").slideUp(1);
-        //$('#SFTPServerName').focus();
-        //$('#SFTPServerName').val($('#hdnSFTPServerName').val());
-        //$('#SFTPFileLocation').val($('#hdnSFTPFileLocation').val());
-        //$('#SFTPPort').val($('#hdnSFTPPort').val());
-        //$('#SFTPUserName').val($('#hdnSFTPUserName').val());
-        //$('#SFTPPassword').val($('#hdnSFTPPassword').val());
-        //$("#errExtSrv").slideUp(1);
-        //$("#sucExtSrv").slideUp(1);
 
-        //Added By : Kalpesh Sharma : PL#682 Integration - UI - Integration Type Settings - 08/14/2014
-        var url = '';
-        url = '@Url.Action("Index", "ExternalService")';
-        window.location.href = url;
+    // Start - Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
+    $(document).ready(function () {
+        AssignDefaultValueExtServer();
     });
+    // End - Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
 
     $('#btnExtServerSave').click(function () {
         $('#SFTPServerName').removeClass('error');
@@ -144,6 +129,7 @@
                     $('#cSucExtSrv').html('<strong>Success! </strong> ' + data.ErrorMessage)
                     $("#sucExtSrv").slideDown(400);
                     $("#errExtSrv").slideUp(1);
+                    AssignDefaultValueExtServer();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
                 }
             },
             error: function () {
@@ -163,4 +149,11 @@
         e.preventDefault();
         $(this).closest(".alert").slideUp(300);
     });
+    // Start - Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
+    function AssignDefaultValueExtServer() {
+        $('#extServer').find("input[type=text],textarea,select,input[type=password]").each(function () {
+            $(this).attr("myValue", $(this).val());
+        });
+    }
+    // End - Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
 </script>

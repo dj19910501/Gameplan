@@ -31,7 +31,12 @@
     <div id="cError"><strong>Error!</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))</div>
 </div>
 <!--success message-->
-
+@* Start - Added by Sohel Pathan on 21/08/2014 for PL ticket #716. *@
+<div id="errorMessageDataLose" class="alert hide alert-error message-position">
+    <a class="close">×</a>
+    <div id="cErrorDataLoss"></div>
+</div>
+@* End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716. *@
 <ul class="nav nav-tabs margin-bottom0">
     <li class="source-sans-proregular">
         <h2 class="title-header"> @( Model.IntegrationInstanceId == 0 ? "Create" : "Edit") External Service Integrations</h2>
@@ -206,6 +211,11 @@
         $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
     });
 
+    // Start - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
+    $(document).on("click", "#confirmClose, .confirmClose", function (e) {
+        $("#errorMessageDataLose").slideUp(400);
+    });
+    // End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
 
     $("#ddlSyncFrequency").change(function () {
         var selectedSpan = $(this).val();
@@ -214,6 +224,8 @@
                 $("#divTimeOptions").hide();
                 $("#divDayOptions").hide();
                 $("#divDateOptions").hide();
+                $("#SyncFrequency_Day").val('');    // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
+                $("#timeOptions").val($("#timeOptions").attr('myvalue'));   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
             }
             else if (selectedSpan == "Daily") {
                 $("#divTimeOptions").show();
@@ -221,6 +233,7 @@
                 $("#divDateOptions").hide();
                 populateTimeOptions();
                 $("#divTimeOptions").focus();
+                $("#SyncFrequency_Day").val('');    // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
             }
             else if (selectedSpan == "Weekly") {
                 $("#divTimeOptions").show();
@@ -229,6 +242,7 @@
                 populateTimeOptions();
                 populateWeekDayOptions();
                 $("#divTimeOptions").focus();
+                $("#SyncFrequency_Day").val('');    // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
             }
             else if (selectedSpan == "Monthly") {
                 $("#divTimeOptions").show();
@@ -310,6 +324,55 @@
             $(".selectBox select").selectbox('detach');
             $(".selectBox select").selectbox("attach");
         });
+    }
+
+    // Start - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
+    function checkForDataLoss(formName)
+    {
+        var url = '';
+        url = '@Url.Action("Index", "ExternalService")';
+        
+        var changed = false;
+        $('#' + formName).find("input[type=text],textarea,select,input[type=password]").each(function () {
+            var iv = $(this).attr("myValue");
+            if ($(this).val() != iv && ($(this).val() != null || iv != '')) {
+                changed = true;
+                $('#cErrorDataLoss').html("<strong>Error! </strong> You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
+                $("#errorMessageDataLose").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+                $("#btnConfirmOK").click(function () {
+                    $('#cErrorDataLoss').html("");
+                    $("#errorMessageDataLose").hide();
+                    window.location.href = url;
+                });
+                return false;
+            }
+        });
+
+        if (!changed) {
+            window.location.href = url;
         }
+    }
+
+    $('#integrationForm').find('#btnCancel').click(function () {
+        checkForDataLoss('integrationForm');
+    });
+
+    $('#btnCancelDataMappins').click(function () {
+        checkForDataLoss('frmDataMapping');
+    });
+
+    $('#btnExtServerCancel').click(function () {
+        checkForDataLoss('extServer');
+    });
+
+    $('#btnCancelRevenueMappins').click(function () {
+        checkForDataLoss('frmRevenueDataMapping');
+    });
+
+    $('#btnCancelCloseDealMappins').click(function () {
+        checkForDataLoss('frmClosedDealDataMapping');
+    });
+    // End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
 
 </script>

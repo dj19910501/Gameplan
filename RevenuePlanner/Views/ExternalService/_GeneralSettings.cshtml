@@ -63,11 +63,11 @@
                 @Html.Label("Integration Status")
                 @if (Model.IsActive == true)
                 { 
-                    <input type="text" readonly="" maxlength="18" placeholder="Active" class="icon-check-blue" name="t_status" id="integrationStatus" tabindex="5">
+                    <input type="text" readonly="" maxlength="18" placeholder="Active" class="icon-check-blue" value="Active" name="t_status" id="integrationStatus" tabindex="5">  // Modified by Sohel Pathan on 22/08/2014 for PL ticket #716.
                 }
                 else
                 { 
-                    <input type="text" readonly="" maxlength="18" placeholder="Inactive" class="icon-check-gray" name="t_status" id="integrationStatus" tabindex="5">
+                    <input type="text" readonly="" maxlength="18" placeholder="Inactive" class="icon-check-gray" value="Inactive" name="t_status" id="integrationStatus" tabindex="5">  // Modified by Sohel Pathan on 22/08/2014 for PL ticket #716.
                 }
                 @Html.HiddenFor(model => model.IsActive)
                 @Html.HiddenFor(model => model.IsActive, new { id = "hdnIsActiveIntact" })
@@ -104,11 +104,11 @@
                 @Html.LabelFor(model => model.IsImportActuals, new { id = "lblImportActuals" })
                 @if (Model.IsImportActuals == true)
                 {
-                    <input id="importActuals" class="icon-check-blue" type="text" readonly="" maxlength="18" placeholder="Active" name="importActuals" tabindex="10"> 
+                    <input id="importActuals" class="icon-check-blue" type="text" readonly="" maxlength="18" placeholder="Active" value="Active" name="importActuals" tabindex="10">    // Modified by Sohel Pathan on 22/08/2014 for PL ticket #716.
                 }
                 else
                 {
-                    <input id="importActuals" class="icon-check-gray" type="text" readonly="" maxlength="18" placeholder="Inactive" name="importActuals" tabindex="10">
+                    <input id="importActuals" class="icon-check-gray" type="text" readonly="" maxlength="18" placeholder="Inactive" value="Inactive" name="importActuals" tabindex="10">    // Modified by Sohel Pathan on 22/08/2014 for PL ticket #716.
                 }
                 @Html.HiddenFor(model => model.IsImportActuals)
             </div>
@@ -277,13 +277,6 @@
         //    });
         //});
 
-        //Added By : Kalpesh Sharma : PL#682 Integration - UI - Integration Type Settings - 08/14/2014
-        $('#btnCancel').click(function () {
-            var url = '';
-            url = '@Url.Action("Index", "ExternalService")';
-            window.location.href = url;
-        });
-
         if (localStorage.Message != undefined) {
             $("#cSuccessGeneralSettings").html('');
             $('#cSuccessGeneralSettings').append("<strong>Success. </strong>" + localStorage.Message);
@@ -437,6 +430,7 @@
                                 var URL = "@Url.Content("~/ExternalService/edit/")";
                                 URL = URL + "?id=" + data.Id + "&TypeId=" + '@Model.IntegrationTypeId';
                                 window.location.href = URL;
+                                AssignDefaultValueIntegrationForm();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
                             }
                             else if (data.status == 3) {
                                 var URL = "@Url.Content("~/ExternalService/Index/")";
@@ -448,6 +442,7 @@
                                 $("#successMessageGeneralSettings").slideDown(1200);
                                 $("#errorMessageGeneralSettings").slideUp(1);
                                 $('#IntegrationInstanceId').val(data.Id);
+                                AssignDefaultValueIntegrationForm();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
                             }
                             return true;
                         }
@@ -490,8 +485,17 @@
                 }
             }
          }
-    }
+        }
 
+        AssignDefaultValueIntegrationForm();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
     });
+
+    // Start - Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
+    function AssignDefaultValueIntegrationForm() {
+        $('#integrationForm').find("input[type=text],textarea,select,input[type=password]").each(function () {
+            $(this).attr("myValue", $(this).val());
+        });
+    }
+    // End - Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
 
 </script>

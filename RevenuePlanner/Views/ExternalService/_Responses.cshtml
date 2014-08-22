@@ -85,6 +85,8 @@
                 $(this).next('.sbHolder').removeClass("error");
             }
         });
+
+        AssignDefaultValueRevenueDataMapping();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
     });
 
     $('#frmRevenueDataMapping .ddlStyle').change(function () {
@@ -167,6 +169,7 @@
                         $("#RevenueErrorMessage").hide();
                         $('#RevenueSuccessMessage').find('#spanMessageSuccess').html(data.Message);
                         $("#RevenueSuccessMessage").slideDown(400);
+                        AssignDefaultValueRevenueDataMapping();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
                         return true;
                     }
                 }
@@ -174,22 +177,18 @@
         });
     });
 
-    $('#btnCancelRevenueMappins').click(function () {
-        //$('#RevenueSuccessMessage').find('#spanMessageSuccess').html('');
-        //$("#RevenueSuccessMessage").hide()
-        //$('#RevenueErrorMessage').find('#spanMessageError').html('');
-        //$("#RevenueErrorMessage").hide();
-
-        //Added By : Kalpesh Sharma : PL#682 Integration - UI - Integration Type Settings - 08/14/2014
-        var url = '';
-        url = '@Url.Action("Index", "ExternalService")';
-        window.location.href = url;
-
-    });
-
     $("#frmDataMapping").find(".alert").find(".close").click(function (e) {
         e.stopPropagation();
         e.preventDefault();
         $(this).closest(".alert").slideUp(400);
     });
+
+    // Start - Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
+    function AssignDefaultValueRevenueDataMapping()
+    {
+        $('#frmRevenueDataMapping').find("input[type=text],textarea,select,input[type=password]").each(function () {
+            $(this).attr("myValue", $(this).val());
+        });
+    }
+    // End - Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
 </script>

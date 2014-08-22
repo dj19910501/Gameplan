@@ -85,6 +85,8 @@
                 $(this).next('.sbHolder').removeClass("error");
             }
         });
+
+        AssignDefaultValueClosedDeal();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
     });
 
     $('#frmClosedDealDataMapping .ddlStyle').change(function () {
@@ -167,6 +169,7 @@
                         $("#ClosedDealErrorMessage").hide();
                         $('#ClosedDealSuccessMessage').find('#spanMessageSuccess').html(data.Message);
                         $("#ClosedDealSuccessMessage").slideDown(400);
+                        AssignDefaultValueClosedDeal();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
                         return true;
                     }
                 }
@@ -174,21 +177,17 @@
         });
     });
 
-    $('#btnCancelCloseDealMappins').click(function () {
-        //$('#ClosedDealSuccessMessage').find('#spanMessageSuccess').html('');
-        //$("#ClosedDealSuccessMessage").hide()
-        //$('#ClosedDealErrorMessage').find('#spanMessageError').html('');
-        //$("#ClosedDealErrorMessage").hide();
-
-        //Added By : Kalpesh Sharma : PL#682 Integration - UI - Integration Type Settings - 08/14/2014
-        var url = '';
-        url = '@Url.Action("Index", "ExternalService")';
-        window.location.href = url;
-    });
-
     $("#frmDataMapping").find(".alert").find(".close").click(function (e) {
         e.stopPropagation();
         e.preventDefault();
         $(this).closest(".alert").slideUp(400);
     });
+
+    // Start - Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
+    function AssignDefaultValueClosedDeal() {
+        $('#frmClosedDealDataMapping').find("input[type=text],textarea,select,input[type=password]").each(function () {
+            $(this).attr("myValue", $(this).val());
+        });
+    }
+    // End - Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
 </script>
