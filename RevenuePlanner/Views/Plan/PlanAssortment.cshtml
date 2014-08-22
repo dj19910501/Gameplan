@@ -209,6 +209,13 @@
             $('form').find("input[type=text], textarea").each(function () {
                 $(this).prop('readonly', true);
             });
+            $('form .budget-month').find("input").each(function () {
+                $(this).parent().removeClass('light-blue-background');
+                $(this).parent().addClass('unallocated-span');
+                $(this).addClass('unallocated-text');
+                $(this).prop('disabled', 'disabled');
+                $(this).prop('readonly', true);
+            });
             $('form').find(".add-on").each(function () {
                 $(this).unbind("click");
             });
