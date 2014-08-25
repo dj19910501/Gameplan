@@ -323,6 +323,17 @@
                   },
                   success: function (data) {
                       if (data.result) {
+                          /*Added by Mitesh Vaishnav for PL ticket #690 
+                        Change of sync to don’t sync or vice versa integration section update to 'Yes' and 'No'  */
+                          if ('@tacticReview.IsIntegrationInstanceExist' == 'Yes') {
+                              if (IsDeployedToIntegration) {
+                                  $('#integration-id').html('Yes')
+                              }
+                              else {
+                                  $('#integration-id').html('No')
+                              }
+                          }
+                          /*End : Added by Mitesh Vaishnav for PL ticket #690 */
                           $("#successMessage").css("display", "block");
                           var topsize = $(document).scrollTop() + 41;
                           $("#modal-container-186470").css("top", topsize + "px");
