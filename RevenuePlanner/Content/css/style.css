@@ -7978,3 +7978,13 @@ footer a {
     margin-left: -20px !important;
 }
 /* End - Added by Sohel Pathan on 14/08/2014 for PL ticket #656 and #681 */
+
+/* Start - Added by Sohel Pathan on 25/08/2014 for PL ticket #728 */
+#divTimeOptions .sbOptions {
+    max-height:250px !important;
+}
+
+#ddlIsDeletedSelectBox .sbOptions {
+    min-width:150px !important;
+}
+/* End - Added by Sohel Pathan on 25/08/2014 for PL ticket #728 */

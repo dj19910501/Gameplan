@@ -95,6 +95,14 @@
 
     $(document).ready(function () {
 
+        /* Start - Added by Sohel Pathan on 25/08/2014 for PL ticket #728 */
+        $('.sbSelector').click(function () {
+            if ($('.integrationAccordion').find('.collapse.in').css('overflow') != 'visible') {
+                $('.integrationAccordion').find('.collapse.in').css('overflow', 'visible');
+            }
+        });
+        /* End - Added by Sohel Pathan on 25/08/2014 for PL ticket #728 */
+
         //Added By : Kalpesh Sharma : PL#682 Integration - UI - Integration Type Settings
         $('.integrationAccordion .accordion-toggle').not('.CreateMode').click(function () {
             $('.accordion-toggle span').text('+ Expand');
@@ -105,6 +113,7 @@
                     $(this).css('border-bottom', 'none');
                 }
                 /* End - Added by Sohel Pathan on 14/08/2014 for PL ticket #656 and #681 */
+                $('.integrationAccordion').find('.collapse.in').css('overflow', '');    // Added by Sohel Pathan on 25/08/2014 for PL ticket #728
             } else {
                 $(this).children('span').text('- Collapse');
                 //Added By : Kalpesh Sharma
@@ -350,5 +359,5 @@
     });
     // End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
 
-
+    
 </script>
