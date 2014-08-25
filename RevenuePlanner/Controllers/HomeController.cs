@@ -2054,6 +2054,7 @@ namespace RevenuePlanner.Controllers
                                 if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
                                 {
                                     isApproved = true;
+                                    tactic.Status = status;
                                     if (todaydate > tactic.StartDate && todaydate < tactic.EndDate)
                                     {
                                         tactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
@@ -3293,6 +3294,7 @@ namespace RevenuePlanner.Controllers
                                     DateTime todaydate = DateTime.Now;
                                     if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
                                     {
+                                        tactic.Status = status;
                                         isApproved = true;
                                         if (todaydate > tactic.StartDate && todaydate < tactic.EndDate)
                                         {
