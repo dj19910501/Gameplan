@@ -3434,7 +3434,7 @@ namespace RevenuePlanner.Controllers
             if (isallowrestriction)
             {
                 ViewBag.Geography = (from g in db.Geographies.Where(geography => geography.IsDeleted == false && geography.ClientId == Sessions.User.ClientId).ToList()
-                                     join lu in lstUserCustomRestriction on g.GeographyId.ToString() equals lu.CustomFieldId
+                                     join lu in lstUserCustomRestriction on g.GeographyId.ToString().ToLower() equals lu.CustomFieldId.ToLower()////Modified by Mitesh Vaishnav For functional review point 89
                                      where lu.CustomField == Enums.CustomRestrictionType.Geography.ToString() && lu.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit
                                      select g).ToList();
             }

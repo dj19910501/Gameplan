@@ -558,8 +558,8 @@ namespace RevenuePlanner.Controllers
             int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
             int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
             var lstAllowedVertical = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
-            var lstAllowedGeography = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
-            tactic = tactic.Where(t => lstAllowedVertical.Contains(t.VerticalId.ToString()) && lstAllowedGeography.Contains(t.GeographyId.ToString())).ToList();
+            var lstAllowedGeography = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId.ToString().ToLower()).ToList();////Modified by Mitesh Vaishnav For functional review point 89
+            tactic = tactic.Where(t => lstAllowedVertical.Contains(t.VerticalId.ToString()) && lstAllowedGeography.Contains(t.GeographyId.ToString().ToLower())).ToList();////Modified by Mitesh Vaishnav For functional review point 89
 
             var lstSubordinatesWithPeers = Common.GetSubOrdinatesWithPeersNLevel();
             var subordinatesTactic = tactic.Where(t => lstSubordinatesWithPeers.Contains(t.CreatedBy)).ToList();
@@ -2243,11 +2243,11 @@ namespace RevenuePlanner.Controllers
                         var lstUserCustomRestriction = Common.GetUserCustomRestriction();
                         int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
                         var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
-                        var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
+                        var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId.ToString().ToLower()).ToList();////Modified by Mitesh Vaishnav For functional review point 89
 
                         if (GeographyId != string.Empty && verticalId != string.Empty)
                         {
-                            if (lstAllowedGeography.Contains(GeographyId) && lstAllowedVertical.Contains(verticalId))
+                            if (lstAllowedGeography.Contains(GeographyId.ToLower()) && lstAllowedVertical.Contains(verticalId))////Modified by Mitesh Vaishnav For functional review point 89
                             {
                                 IsPlanEditable = true;
                             }
@@ -2437,9 +2437,9 @@ namespace RevenuePlanner.Controllers
             var lstUserCustomRestriction = Common.GetUserCustomRestriction();
             int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
             var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
-            var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
+            var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId.ToString().ToLower()).ToList();////Modified by Mitesh Vaishnav For functional review point 89
             bool IsTacticEditable = false;
-            if (lstAllowedGeography.Contains(pcpt.GeographyId.ToString()) && lstAllowedVertical.Contains(pcpt.VerticalId.ToString()))
+            if (lstAllowedGeography.Contains(pcpt.GeographyId.ToString().ToLower()) && lstAllowedVertical.Contains(pcpt.VerticalId.ToString()))////Modified by Mitesh Vaishnav For functional review point 89
             {
                 IsTacticEditable = true;
             }
@@ -2892,10 +2892,10 @@ namespace RevenuePlanner.Controllers
             var lstUserCustomRestriction = Common.GetUserCustomRestriction();
             int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
             var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
-            var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
-            var lstAllowedBusinessUnit = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId).ToList();
+            var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId.ToString().ToLower()).ToList();////Modified by Mitesh Vaishnav For functional review point 89
+            var lstAllowedBusinessUnit = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId.ToLower()).ToList();////Modified by Mitesh Vaishnav For functional review point 89
             //var IsBusinessUnitEditable = Common.IsBusinessUnitEditable(Sessions.BusinessUnitId);    // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            if (lstAllowedGeography.Contains(objPlanTactic.GeographyId.ToString()) && lstAllowedVertical.Contains(objPlanTactic.VerticalId.ToString()) && lstAllowedBusinessUnit.Contains(objPlanTactic.BusinessUnitId.ToString()))//&& IsBusinessUnitEditable)   // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+            if (lstAllowedGeography.Contains(objPlanTactic.GeographyId.ToString().ToLower()) && lstAllowedVertical.Contains(objPlanTactic.VerticalId.ToString()) && lstAllowedBusinessUnit.Contains(objPlanTactic.BusinessUnitId.ToString().ToLower()))//&& IsBusinessUnitEditable)   // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             {
                 ViewBag.IsTacticEditable = true;
             }
@@ -4341,8 +4341,8 @@ namespace RevenuePlanner.Controllers
             int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
             int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
             var lstAllowedVertical = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
-            var lstAllowedGeography = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
-            TacticList = TacticList.Where(t => lstAllowedVertical.Contains(t.VerticalId.ToString()) && lstAllowedGeography.Contains(t.GeographyId.ToString())).ToList();
+            var lstAllowedGeography = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId.ToString().ToLower()).ToList();////Modified by Mitesh Vaishnav For functional review point 89
+            TacticList = TacticList.Where(t => lstAllowedVertical.Contains(t.VerticalId.ToString()) && lstAllowedGeography.Contains(t.GeographyId.ToString().ToLower())).ToList();////Modified by Mitesh Vaishnav For functional review point 89
 
             List<int> TacticIds = TacticList.Select(t => t.PlanTacticId).ToList();
             var dtTactic = (from pt in db.Plan_Campaign_Program_Tactic_Actual
@@ -4371,7 +4371,7 @@ namespace RevenuePlanner.Controllers
             List<Plan_Campaign_Program_Tactic_Actual> lstTacticActual = db.Plan_Campaign_Program_Tactic_Actual.Where(a => TacticIds.Contains(a.PlanTacticId)).ToList();
             // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
             var lstEditableVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
-            var lstEditableGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
+            var lstEditableGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId.ToString().ToLower()).ToList();////Modified by Mitesh Vaishnav For functional review point 89
 
             var tacticObj = TacticList.Select(t => new
             {
@@ -4407,7 +4407,7 @@ namespace RevenuePlanner.Controllers
                 tacticStageTitle = t.Stage.Title,
                 projectedStageValue = t.ProjectedStageValue,
                 projectedStageValueActual = lstTacticActual.Where(a => a.PlanTacticId == t.PlanTacticId && a.StageTitle == TitleProjectedStageValue).Sum(a => a.Actualvalue),
-                IsTacticEditable = (lstEditableGeography.Contains(t.GeographyId.ToString()) && lstEditableVertical.Contains(t.VerticalId.ToString()))
+                IsTacticEditable = (lstEditableGeography.Contains(t.GeographyId.ToString().ToLower()) && lstEditableVertical.Contains(t.VerticalId.ToString()))////Modified by Mitesh Vaishnav For functional review point 89
             }).Select(t => t).Distinct().OrderBy(t => t.id);
 
             var lstTactic = tacticObj.Select(t => new
