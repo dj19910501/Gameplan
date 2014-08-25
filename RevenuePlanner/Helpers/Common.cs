@@ -1018,7 +1018,7 @@ namespace RevenuePlanner.Helpers
         #endregion
 
         #region Plan
-        public static List<Plan> GetPlan()
+        public static List<Plan> GetPlan(bool isFromReport=false)
         {
             MRPEntities db = new MRPEntities();
             List<Guid> businessUnitIds = new List<Guid>();
@@ -1048,6 +1048,18 @@ namespace RevenuePlanner.Helpers
                 // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             }
 
+            ////start - Added by Mitesh Vaishnav for internal review point 91
+            //If functional call from report section than user allowed for all business unit Id
+            if (isFromReport)
+            {
+                businessUnitIds.Clear();
+                var allBusinessUnit = db.BusinessUnits.Where(s => s.ClientId == Sessions.User.ClientId && s.IsDeleted == false).Select(b => b.BusinessUnitId);
+                foreach (var businessUnitId in allBusinessUnit)
+                {
+                    businessUnitIds.Add(businessUnitId);
+                }
+            }
+            ////End - Added by Mitesh Vaishnav for internal review point 91
             //// Getting active model of above business unit. 
             string modelPublishedStatus = Enums.ModelStatusValues.Single(s => s.Key.Equals(Enums.ModelStatus.Published.ToString())).Value;
             var models = db.Models.Where(m => businessUnitIds.Contains(m.BusinessUnitId) && m.IsDeleted == false).Select(m => m);

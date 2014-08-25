@@ -69,7 +69,7 @@ namespace RevenuePlanner.Controllers
             List<SelectListItem> lstBusinessUnits = Common.GetBussinessUnitIds(Sessions.User.ClientId).Select(p => new SelectListItem() { Text = p.Text, Value = p.Value.ToString(), Selected = false }).ToList();
 
             //List of Plans
-            List<SelectListItem> lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
+            List<SelectListItem> lstPlans = Common.GetPlan(true).Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();////Modified by Mitesh Vaishnav for internal review point 91 - Add isFromReport perameter in getPlan() function
 
             if (Sessions.PlanId != 0)
             {
@@ -86,7 +86,7 @@ namespace RevenuePlanner.Controllers
             if (Sessions.ReportPlanId > 0)
             {
                 Sessions.BusinessUnitId = db.Plans.Where(p => p.PlanId == Sessions.ReportPlanId).Select(p => p.Model.BusinessUnitId).SingleOrDefault();
-                lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Model.BusinessUnitId == Sessions.BusinessUnitId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
+                lstPlans = Common.GetPlan(true).Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Model.BusinessUnitId == Sessions.BusinessUnitId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();////Modified by Mitesh Vaishnav for internal review point 91 - Add isFromReport perameter in getPlan() function
                 lstPlans.Where(lp => lp.Value == Convert.ToString(Sessions.ReportPlanId)).ToList().ForEach(lp => lp.Selected = true);
             }
             if (Sessions.BusinessUnitId != Guid.Empty)
@@ -94,7 +94,7 @@ namespace RevenuePlanner.Controllers
                 lstBusinessUnits.Where(lbu => lbu.Value == Convert.ToString(Sessions.BusinessUnitId)).ToList().ForEach(lbu => lbu.Selected = true);
                 if (Sessions.ReportPlanId <= 0)
                 {
-                    lstPlans = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Model.BusinessUnitId == Sessions.BusinessUnitId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
+                    lstPlans = Common.GetPlan(true).Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Model.BusinessUnitId == Sessions.BusinessUnitId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();////Modified by Mitesh Vaishnav for internal review point 91 - Add isFromReport perameter in getPlan() function
                 }
             }
 
@@ -132,7 +132,7 @@ namespace RevenuePlanner.Controllers
             SummaryReportModel objSummaryReportModel = new SummaryReportModel();
             SetReportParameter(BusinessUnitId, PlanId);
             //// Getting current year's all published plan for all business unit of clientid of director.
-            var plans = Common.GetPlan();
+            var plans = Common.GetPlan(true);////Modified by Mitesh Vaishnav for internal review point 91 - Add isFromReport perameter in getPlan() function
             string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
             plans = plans.Where(p => p.Status.Equals(planPublishedStatus)).Select(p => p).ToList();
             //Filter to filter out the plan based on the Selected businessunit and PlanId
@@ -483,13 +483,13 @@ namespace RevenuePlanner.Controllers
             {
                 if (BusinessUnitId == "0") // All Business Units is selected
                 {
-                    lstPlan = Common.GetPlan().Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
+                    lstPlan = Common.GetPlan(true).Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();////Modified by Mitesh Vaishnav for internal review point 91 - Add isFromReport perameter in getPlan() function
                     Sessions.BusinessUnitId = Guid.Empty;
                 }
                 else
                 {
                     Guid BUId = new Guid(BusinessUnitId);
-                    lstPlan = Common.GetPlan().Where(pl => pl.Model.BusinessUnitId == BUId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();
+                    lstPlan = Common.GetPlan(true).Where(pl => pl.Model.BusinessUnitId == BUId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();////Modified by Mitesh Vaishnav for internal review point 91 - Add isFromReport perameter in getPlan() function
                     Sessions.BusinessUnitId = BUId;
                 }
                 if (!isBusinessUnit)
@@ -511,7 +511,7 @@ namespace RevenuePlanner.Controllers
         private List<Plan_Campaign_Program_Tactic> GetTacticForReporting(string selectOption = "", bool isForSummary = false)
         {
             //// Getting current year's all published plan for all business unit of clientid of director.
-            List<Plan> plans = Common.GetPlan().Where(p => p.Status.Equals(PublishedPlan)).ToList();
+            List<Plan> plans = Common.GetPlan(true).Where(p => p.Status.Equals(PublishedPlan)).ToList();////Modified by Mitesh Vaishnav for internal review point 91 - Add isFromReport perameter in getPlan() function
             if (Sessions.ReportPlanId != 0)
             {
                 plans = plans.Where(gp => gp.PlanId == Sessions.ReportPlanId).ToList();
@@ -938,7 +938,7 @@ namespace RevenuePlanner.Controllers
             List<SelectListItem> items = new List<SelectListItem>();
 
             string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
-            var plans = Common.GetPlan();
+            var plans = Common.GetPlan(true);////Modified by Mitesh Vaishnav for internal review point 91 - Add isFromReport perameter in getPlan() function
             if (Sessions.BusinessUnitId != Guid.Empty)
             {
                 plans = plans.Where(p => p.Model.BusinessUnitId == Sessions.BusinessUnitId).ToList();
@@ -1016,7 +1016,7 @@ namespace RevenuePlanner.Controllers
                 filterYear = DateTime.Now.Year.ToString();
             }
             string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
-            var plans = Common.GetPlan().Where(p => p.Year == filterYear && p.Status.Equals(planPublishedStatus)).ToList();
+            var plans = Common.GetPlan(true).Where(p => p.Year == filterYear && p.Status.Equals(planPublishedStatus)).ToList();////Modified by Mitesh Vaishnav for internal review point 91 - Add isFromReport perameter in getPlan() function
             if (Sessions.BusinessUnitId != Guid.Empty)
             {
                 plans = plans.Where(p => p.Model.BusinessUnitId == Sessions.BusinessUnitId).ToList();
