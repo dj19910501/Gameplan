@@ -106,6 +106,7 @@
         //Added By : Kalpesh Sharma : PL#682 Integration - UI - Integration Type Settings
         $('.integrationAccordion .accordion-toggle').not('.CreateMode').click(function () {
             $('.accordion-toggle span').text('+ Expand');
+            $('.integrationAccordion').find('.collapse.in').css('overflow', '');    // Added by Sohel Pathan on 25/08/2014 for PL ticket #728
             if ($(this).parent().next('.accordion-body').hasClass('in')) {
                 $(this).children('span').text('+ Expand');
                 /* Start - Added by Sohel Pathan on 14/08/2014 for PL ticket #656 and #681 */
@@ -113,7 +114,6 @@
                     $(this).css('border-bottom', 'none');
                 }
                 /* End - Added by Sohel Pathan on 14/08/2014 for PL ticket #656 and #681 */
-                $('.integrationAccordion').find('.collapse.in').css('overflow', '');    // Added by Sohel Pathan on 25/08/2014 for PL ticket #728
             } else {
                 $(this).children('span').text('- Collapse');
                 //Added By : Kalpesh Sharma
