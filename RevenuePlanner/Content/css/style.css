@@ -7987,4 +7987,8 @@ footer a {
 #ddlIsDeletedSelectBox .sbOptions {
     min-width:150px !important;
 }
+
+.no-bottom-border {
+    border-bottom:none !important;
+}
 /* End - Added by Sohel Pathan on 25/08/2014 for PL ticket #728 */
