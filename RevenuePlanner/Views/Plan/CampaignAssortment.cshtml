@@ -572,6 +572,9 @@
                     var lstAllocInputs = $(".budget-section input.low-budgeted").not('.unallocated-text');
                     if (lstAllocInputs.length > 0) {
                         var errorMsg = "@RevenuePlanner.Helpers.Common.objCached.CampaignBudgetIsLowerthanTotalAllocatedPrograms ";
+                        // Added by Dharmraj 25-8-2014, for Internal review points
+                        errorMsg = errorMsg.replace("month", "@(AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower() ? "month" : "quarter")");
+
                         var removeLength = 0;
                         var inputLength = lstAllocInputs.length;
                         for (var i = 0; i < lstAllocInputs.length; i++) {

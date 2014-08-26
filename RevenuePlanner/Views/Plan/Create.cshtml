@@ -771,6 +771,23 @@
             window.location.href = strURL;
         }
     }
+
+    // Added by Dharmraj on 25/08/2014 for Internal Review Points
+    function displayConfirmCommon(functionName) {
+        if (isDataChanged()) {
+            $('#errorMessage').html("<strong>Error! </strong> <span id='spanMessageError'>You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a></span><a id='aclose' class='close confirmClose'>×</a>");
+            $("#errorMessage").slideDown(400);
+            $("#btnConfirmOK").click(function () {
+                $('#errorMessage').html("");
+                $("#errorMessage").hide();
+                eval(functionName);
+            });
+        }
+        else {
+            eval(functionName);
+        }
+    }
+
     //Manoj End 28Jan2014 : Bug-12 (User can lose data via navigation in application)
 
     //Dharmraj Start 7July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
@@ -787,14 +804,25 @@
     //Dharmraj End 7July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
 
     $('#button-back').click(function () {
+        displayConfirmCommon('buttonBackClick();');
+    });
+
+    function buttonBackClick() {
         $('#button-save').show();
-        $(this).hide();
+        $('#button-back').hide();
+        $('.budget-month .priceValue').each(function () {
+            $(this).removeClass('border000000');
+        });
+        $('.budget-quarters .priceValue').each(function () {
+            $(this).removeClass('border000000');
+        });
         $('#divPlanBudgetAllocation').hide();
         $('#button-saveContinue').hide();
         $('table').removeClass('element-disable');
         $('#divPlanDefinationEnabled').show();
         $('#divPlanDefinationDisabled').hide();
-    });
+        isErrorShown = true;
+    }
 
     $('.budget-month .priceValue').focus(function () {
 
@@ -843,7 +871,11 @@
         var inputHdn = $(input).next();
         var campaignBudget = inputHdn.val() == '' ? 0 : parseInt(inputHdn.val());
         $('#spnCampaignAllocatedBudget').html(FormatCurrency(campaignBudget.toString(), false));
-        var selectedMonthBudget = parseInt($(input).val().trim().replace(/,/g, '').replace('$', ''));
+        var isInputBlank = false;
+        if ($(input).val() == '') {
+            isInputBlank = true;
+        }
+        var selectedMonthBudget = parseInt($(input).val() == '' ? 0 : ($(input).val().trim().replace(/,/g, '').replace('$', '')));
         if (campaignBudget > selectedMonthBudget) {
             $('#spnCampaignAllocatedBudget').addClass('error-text');
             $(input).addClass('campaignBudgetError');
@@ -852,7 +884,12 @@
             $('#spnCampaignAllocatedBudget').removeClass('error-text');
             $(input).removeClass('campaignBudgetError');
         }
+        if (isInputBlank) {
+            $(input).val('');
+        }
+        else {
         $(input).val(FormatCommas(selectedMonthBudget.toString(), false));
+    }
     }
 
     function calculateAllocatedBudgetMonthly()
@@ -907,6 +944,9 @@
     $('#button-saveContinue').click(function (e) {
         if ($('#spnTotalAllocatedBudget').hasClass('error-text')) {
             $('#divErrMoreAllocation').show();
+            $('#divErrCampaignBudgetAllocation').find('.source-sans-probold').html('');
+            $('#divErrCampaignBudgetAllocation').hide();
+            isErrorShown = true;
             return;
         }
         else {
