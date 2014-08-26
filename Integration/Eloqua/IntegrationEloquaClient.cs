@@ -949,10 +949,11 @@ namespace Integration.Eloqua
                 {
                     return true;
                 }
+
+                return false;
             }
             else
             {
-
                 throw new Exception(string.Format("[{0}] [{1}]", response.StatusCode.ToString(), response.StatusDescription), response.ErrorException);
             }
         }
