@@ -938,12 +938,21 @@ namespace Integration.Eloqua
             };
 
             IRestResponse<object> response = _client.Execute<object>(request);
-            if (response.Data != null)
+            //// Modified by: Maninder
+            //// Modified Date: 08/26/2014
+            //// Ticket: #729 	Approve Tactic Functionality Not Working
+            //// To handle case where tactic are already deleted from Eloqua site.
+            if (response != null)
             {
-                return HttpStatusCode.OK == response.StatusCode && response.ResponseStatus == ResponseStatus.Completed;
+                if ((response.ResponseStatus == ResponseStatus.Error && response.StatusCode == HttpStatusCode.NotFound) ||
+                    (HttpStatusCode.OK == response.StatusCode && response.ResponseStatus == ResponseStatus.Completed))
+                {
+                    return true;
+                }
             }
             else
             {
+
                 throw new Exception(string.Format("[{0}] [{1}]", response.StatusCode.ToString(), response.StatusDescription), response.ErrorException);
             }
         }
