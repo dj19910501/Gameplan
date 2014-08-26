@@ -7981,7 +7981,7 @@ footer a {
 
 /* Start - Added by Sohel Pathan on 25/08/2014 for PL ticket #728 */
 #divTimeOptions .sbOptions {
-    max-height:250px !important;
+    max-height:220px !important;
 }
 
 #ddlIsDeletedSelectBox .sbOptions {
