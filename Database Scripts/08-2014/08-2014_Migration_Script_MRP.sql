@@ -462,68 +462,6 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
---Stored Procedure
-	ALTER PROCEDURE [dbo].[Plan_Task_Delete]
-	(
-		   @PlanCampaignId INT = NULL,
-		   @PlanProgramId INT = NULL,
-		   @PlanTacticId INT = NULL,
-		   @IsDelete BIT,
-		   @ModifiedDate DateTime,    
-		   @ModifiedBy UNIQUEIDENTIFIER, 
-		@ReturnValue INT = 0 OUT,
-		@PlanLineItemId INT =NULL     
-	)
-	AS
-	BEGIN
-
-		   DECLARE @TranName VARCHAR(20);
-		   SELECT @TranName = 'Plan_Task_Delete';
-		   BEGIN TRANSACTION @TranName;
-		   BEGIN TRY
-						 IF(@PlanCampaignId IS NOT NULL)
-						 BEGIN
-						       UPDATE dbo.Plan_Campaign_Program_Tactic_LineItem SET IsDeleted=@IsDelete,ModifiedBy=@ModifiedBy,ModifiedDate=@ModifiedDate WHERE PlanTacticId IN (SELECT PlanTacticId FROM dbo.Plan_Campaign_Program_Tactic WHERE PlanProgramId IN (SELECT PlanProgramId FROM Plan_Campaign_Program WHERE PlanCampaignId = @PlanCampaignId))
-
-							   UPDATE Plan_Campaign_Program_Tactic SET IsDeleted = @IsDelete, ModifiedDate=@ModifiedDate, ModifiedBy=@ModifiedBy WHERE PlanProgramId IN (SELECT PlanProgramId FROM Plan_Campaign_Program WHERE PlanCampaignId = @PlanCampaignId)
-              
-							   UPDATE Plan_Campaign_Program SET IsDeleted = @IsDelete, ModifiedDate=@ModifiedDate, ModifiedBy=@ModifiedBy WHERE PlanCampaignId = @PlanCampaignId
-
-							   UPDATE Plan_Campaign SET IsDeleted = @IsDelete, ModifiedDate=@ModifiedDate, ModifiedBy=@ModifiedBy WHERE PlanCampaignId = @PlanCampaignId
-
-						 END
-						 ELSE IF(@PlanProgramId IS NOT NULL)
-						 BEGIN
-						       UPDATE dbo.Plan_Campaign_Program_Tactic_LineItem SET IsDeleted=@IsDelete,ModifiedBy=@ModifiedBy,ModifiedDate=@ModifiedDate WHERE PlanTacticId IN (SELECT PlanTacticId FROM dbo.Plan_Campaign_Program_Tactic WHERE PlanProgramId= @PlanProgramId)
-
-							   UPDATE Plan_Campaign_Program_Tactic SET IsDeleted = @IsDelete, ModifiedDate=@ModifiedDate, ModifiedBy=@ModifiedBy WHERE PlanProgramId = @PlanProgramId
-              
-							   UPDATE Plan_Campaign_Program SET IsDeleted = @IsDelete, ModifiedDate=@ModifiedDate, ModifiedBy=@ModifiedBy WHERE PlanProgramId = @PlanProgramId
-						 END
-						 ELSE IF(@PlanTacticId IS NOT NULL)
-						 BEGIN
-						       UPDATE dbo.Plan_Campaign_Program_Tactic_LineItem SET IsDeleted=@IsDelete,ModifiedBy=@ModifiedBy,ModifiedDate=@ModifiedDate WHERE PlanTacticId=@PlanTacticId
-							   UPDATE Plan_Campaign_Program_Tactic SET IsDeleted = @IsDelete, ModifiedDate=@ModifiedDate, ModifiedBy=@ModifiedBy WHERE PlanTacticId = @PlanTacticId
-						 END
-						 ELSE IF(@PlanLineItemId IS NOT NULL)
-						 BEGIN
-						 UPDATE dbo.Plan_Campaign_Program_Tactic_LineItem SET IsDeleted=@IsDelete,ModifiedBy=@ModifiedBy,ModifiedDate=@ModifiedDate WHERE PlanLineItemId=@PlanLineItemId
-						 END
-
-				  ---Successfully deleted
-				  COMMIT TRANSACTION @TranName;
-			   SET @ReturnValue = 1;        
-			   RETURN @ReturnValue 
-                
-		   END TRY
-		   BEGIN CATCH
-				  ---Unsuccess
-				  ROLLBACK TRANSACTION @TranName;
-				  RETURN @ReturnValue  
-		   END CATCH 
-	END
-
-
 
 --------------1_PL_#669_Integration - Create data model for integration changes.sql
 /****** Object:  Table [dbo].[IntegrationInstanceExternalServer]    Script Date: 8/6/2014 6:24:29 PM ******/
@@ -582,7 +520,7 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Date on which 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Refers to associated UserId.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'IntegrationInstanceExternalServer', @level2type=N'COLUMN',@level2name=N'ModifiedBy'
 
 END
-
+GO
 IF NOT EXISTS(SELECT * FROM SYS.COLUMNS WHERE Name = N'IntegrationInstanceIdINQ' AND OBJECT_ID = OBJECT_ID(N'Model'))
 BEGIN
     ALTER TABLE [Model] ADD IntegrationInstanceIdINQ INT
@@ -591,7 +529,7 @@ BEGIN
 	REFERENCES [dbo].[IntegrationInstance] ([IntegrationInstanceId])
 	ALTER TABLE [dbo].[Model] CHECK CONSTRAINT [FK_Model_IntegrationInstanceINQ]
 END
-
+GO
 IF NOT EXISTS(SELECT * FROM SYS.COLUMNS WHERE Name = N'IntegrationInstanceIdMQL' AND OBJECT_ID = OBJECT_ID(N'Model'))
 BEGIN
     ALTER TABLE [Model] ADD IntegrationInstanceIdMQL INT
@@ -599,7 +537,7 @@ BEGIN
 	REFERENCES [dbo].[IntegrationInstance] ([IntegrationInstanceId])
 	ALTER TABLE [dbo].[Model] CHECK CONSTRAINT [FK_Model_IntegrationInstanceMQL]
 END
-
+GO
 IF NOT EXISTS(SELECT * FROM SYS.COLUMNS WHERE Name = N'IntegrationInstanceIdCW' AND OBJECT_ID = OBJECT_ID(N'Model'))
 BEGIN
     ALTER TABLE [Model] ADD IntegrationInstanceIdCW INT
@@ -607,17 +545,17 @@ BEGIN
 	REFERENCES [dbo].[IntegrationInstance] ([IntegrationInstanceId])
 	ALTER TABLE [dbo].[Model] CHECK CONSTRAINT [FK_Model_IntegrationInstanceCW]
 END
-
+GO
 IF NOT EXISTS(SELECT * FROM SYS.COLUMNS WHERE Name = N'ModifiedDate' AND OBJECT_ID = OBJECT_ID(N'Plan_Campaign_Program_Tactic_Actual'))
 BEGIN
     ALTER TABLE [Plan_Campaign_Program_Tactic_Actual] ADD ModifiedDate datetime
 END
-
+GO
 IF NOT EXISTS(SELECT * FROM SYS.COLUMNS WHERE Name = N'ModifiedBy' AND OBJECT_ID = OBJECT_ID(N'Plan_Campaign_Program_Tactic_Actual'))
 BEGIN
     ALTER TABLE [Plan_Campaign_Program_Tactic_Actual] ADD ModifiedBy uniqueidentifier
 END
-
+GO
 --------------01_PL_656_Integration_UI_Tactic_Detail_Screens_and_Fields_for_Eloqua.sql
 -- =======================================================================================
 -- Created By :- Sohel Pathan
@@ -647,7 +585,7 @@ BEGIN
 	END
 
 END
-
+GO
 --------------02_PL_656_Integration_UI_Tactic_Detail_Screens_and_Fields_for_Eloqua.sql
 -- =======================================================================================
 -- Created By :- Sohel Pathan
@@ -995,3 +933,48 @@ FROM Model
 WHERE ModelId NOT IN ( SELECT distinct ModelId FROM [dbo].[LineItemType] WHERE Title = 'None')
 Go
 
+IF NOT EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME='CustomLabel')
+BEGIN
+		/****** Object:  Table [dbo].[CustomLabel]    Script Date: 8/26/2014 7:17:26 PM ******/
+		SET ANSI_NULLS ON
+
+		SET QUOTED_IDENTIFIER ON
+
+		CREATE TABLE [dbo].[CustomLabel](
+			[CustomLabelId] [int] IDENTITY(1,1) NOT NULL,
+			[ClientId] [uniqueidentifier] NOT NULL,
+			[Title] [nvarchar](50) NULL,
+			[Code] [nvarchar](50) NOT NULL,
+			[CreatedDate] [datetime] NOT NULL,
+			[CreatedBy] [uniqueidentifier] NOT NULL,
+			[ModifiedDate] [datetime] NULL,
+			[ModifiedBy] [uniqueidentifier] NULL,
+		 CONSTRAINT [PK_CustomLabel] PRIMARY KEY CLUSTERED 
+		(
+			[CustomLabelId] ASC
+		)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
+		 CONSTRAINT [IX_CustomLabel] UNIQUE NONCLUSTERED 
+		(
+			[ClientId] ASC,
+			[Code] ASC
+		)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+		) ON [PRIMARY]
+
+
+		EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'An auto increment primary key to uniquely identify Custom Label for a client.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'CustomLabel', @level2type=N'COLUMN',@level2name=N'CustomLabelId'
+
+		EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Refers to the associated Client.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'CustomLabel', @level2type=N'COLUMN',@level2name=N'ClientId'
+
+		EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Title of custom label.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'CustomLabel', @level2type=N'COLUMN',@level2name=N'Title'
+
+		EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Code of custom label. I.e. Audience,Vertical etc. Here code should be same as table name.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'CustomLabel', @level2type=N'COLUMN',@level2name=N'Code'
+
+		EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Date on which the record was created.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'CustomLabel', @level2type=N'COLUMN',@level2name=N'CreatedDate'
+
+		EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Refers to associated UserId.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'CustomLabel', @level2type=N'COLUMN',@level2name=N'CreatedBy'
+
+		EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Date on which the record was last modified.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'CustomLabel', @level2type=N'COLUMN',@level2name=N'ModifiedDate'
+
+		EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Refers to associated UserId.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'CustomLabel', @level2type=N'COLUMN',@level2name=N'ModifiedBy'
+END
+GO
