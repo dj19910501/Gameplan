@@ -103,18 +103,17 @@
         });
         /* End - Added by Sohel Pathan on 25/08/2014 for PL ticket #728 */
 
-        // Start - Added by Sohel Pathan on 25/08/2014 for Internal Review Points
-        $('.accordion-toggle').each(function () {
-            if ($(this).attr("href") == '#collapseCloseDeal') {
-                $(this).css('border-bottom', 'none');
-            }
-        });
-        // End - Added by Sohel Pathan on 25/08/2014 for Internal Review Points
-
         //Added By : Kalpesh Sharma : PL#682 Integration - UI - Integration Type Settings
         $('.integrationAccordion .accordion-toggle').not('.CreateMode').click(function () {
             $('.accordion-toggle span').text('+ Expand');
             $('.integrationAccordion').find('.collapse.in').css('overflow', '');    // Added by Sohel Pathan on 25/08/2014 for PL ticket #728
+            // Start - Added by Sohel Pathan on 25/08/2014 for Internal Review Points
+            $('.accordion-toggle').each(function () {
+                if ($(this).attr("href") == '#collapseCloseDeal') {
+                    $(this).css('border-bottom', 'none');
+                }
+            });
+            // End - Added by Sohel Pathan on 25/08/2014 for Internal Review Points
             if ($(this).parent().next('.accordion-body').hasClass('in')) {
                 $(this).children('span').text('+ Expand');
             } else {
