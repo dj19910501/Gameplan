@@ -193,6 +193,8 @@ namespace Integration.Eloqua
         /// <returns>Returns a flag to determine whether synchronization was successfull or not.</returns>
         public bool SyncData()
         {
+            // Insert log into IntegrationInstanceSection, Dharmraj PL#684
+            _integrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), DateTime.Now, _userId);
             _isResultError = false;
             SetMappingDetails();
             bool IsInstanceSync  = false;
@@ -212,8 +214,17 @@ namespace Integration.Eloqua
             {
                 IsInstanceSync = true;
                 SyncInstanceData();
-                // Pull responses from Eloqua
-                GetDataForTacticandUpdate();
+            }
+
+            if (_isResultError)
+            {
+                // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
+                Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Error, string.Empty);
+            }
+            else
+            {
+                // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
+                Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Success, string.Empty);
             }
 
             ////Added By: Maninder Singh Wadhva
@@ -227,6 +238,8 @@ namespace Integration.Eloqua
                 //// Check isimport flag.
                 if (isImport)
                 {
+                    // Pull responses from Eloqua
+                    GetDataForTacticandUpdate();
                     //// Pulling actual cost.
                     PullingActualCost();
                 }
@@ -409,8 +422,6 @@ namespace Integration.Eloqua
         private void SyncInstanceData()
         {
             List<int> planIds = db.Plans.Where(p => p.Model.IntegrationInstanceId == _integrationInstanceId && p.Model.Status.Equals("Published")).Select(p => p.PlanId).ToList();
-            // Insert log into IntegrationInstanceSection, Dharmraj PL#684
-            _integrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), DateTime.Now, _userId);
             
             try
             {
@@ -436,23 +447,10 @@ namespace Integration.Eloqua
                     scope.Complete();
                 }
 
-                if (_isResultError)
-                {
-                    // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
-                    Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Error, string.Empty);
-                }
-                else
-                {
-                    // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
-                    Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Success, string.Empty);
-                }
             }
             catch (Exception e)
             {
                 _ErrorMessage = GetErrorMessage(e);
-                // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
-                Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Error, _ErrorMessage);
-                throw;
             }
         }
 
