@@ -82,7 +82,7 @@
                     </div>
                     <div class="accordion-group">
                         <div class="accordion-heading">
-                            <a class="accordion-toggle CreateMode" data-parent="#accordion" >Pull Closed Deals</a>
+                            <a class="accordion-toggle CreateMode no-bottom-border" data-parent="#accordion" >Pull Closed Deals</a>
                         </div>
                     </div>
                 }
@@ -95,31 +95,51 @@
 
     $(document).ready(function () {
 
+        /* Start - Added by Sohel Pathan on 25/08/2014 for PL ticket #728 */
+        $('.sbSelector').click(function () {
+            if ($('.integrationAccordion').find('.collapse.in').css('overflow') != 'visible') {
+                $('.integrationAccordion').find('.collapse.in').css('overflow', 'visible');
+            }
+        });
+        /* End - Added by Sohel Pathan on 25/08/2014 for PL ticket #728 */
+        $('#integrationForm').find('#Instance').focus();
+        /* Start - Added by Sohel Pathan on 26/08/2014 for Internal Review Points */
+        $('.accordion').on('shown', function () {
+            var expandedTab = $('.integrationAccordion').find('.collapse.in');
+            if ($(expandedTab).attr('id') == 'collapseGrp1') {
+                $('#integrationForm').find('#Instance').focus();
+            }
+            else if ($(expandedTab).attr('id') == 'collapseGrpDataMapping') {
+                $("#frmDataMapping #0").next().find('.sbSelector').focus();
+            }
+            else if ($(expandedTab).attr('id') == 'collapseGrpServer') {
+                $('#extServer').find('#SFTPServerName').focus();
+            }
+            else if ($(expandedTab).attr('id') == 'collapseRevenue') {
+                $("#frmRevenueDataMapping #0").next().find('.sbSelector').focus();
+            }
+            else if ($(expandedTab).attr('id') == 'collapseCloseDeal') {
+                $("#frmClosedDealDataMapping #0").next().find('.sbSelector').focus();
+            }
+        });
+        /* End - Added by Sohel Pathan on 26/08/2014 for Internal Review Points */
+
         //Added By : Kalpesh Sharma : PL#682 Integration - UI - Integration Type Settings
         $('.integrationAccordion .accordion-toggle').not('.CreateMode').click(function () {
             $('.accordion-toggle span').text('+ Expand');
-            if ($(this).parent().next('.accordion-body').hasClass('in')) {
-                $(this).children('span').text('+ Expand');
-                /* Start - Added by Sohel Pathan on 14/08/2014 for PL ticket #656 and #681 */
+            $('.integrationAccordion').find('.collapse.in').css('overflow', '');    // Added by Sohel Pathan on 25/08/2014 for PL ticket #728
+            // Start - Added by Sohel Pathan on 25/08/2014 for Internal Review Points
+            $('.accordion-toggle').each(function () {
                 if ($(this).attr("href") == '#collapseCloseDeal') {
                     $(this).css('border-bottom', 'none');
                 }
-                /* End - Added by Sohel Pathan on 14/08/2014 for PL ticket #656 and #681 */
+            });
+            // End - Added by Sohel Pathan on 25/08/2014 for Internal Review Points
+            if ($(this).parent().next('.accordion-body').hasClass('in')) {
+                $(this).children('span').text('+ Expand');
             } else {
                 $(this).children('span').text('- Collapse');
-                //Added By : Kalpesh Sharma
-                if ($(this).attr("href") == '#collapseGrp1') {
-                    $('#Instance').focus();
-                }
-                //Added By : Sohel Pathan
-                else if ($(this).attr("href") == '#collapseGrpDataMapping') {
-                    $("#frmDataMapping").find('#0').focus();
-                }
-                else if ($(this).attr("href") == '#collapseGrpServer') {
-                    $('#SFTPServerName').focus();
-                }
-                else if ($(this).attr("href") == '#collapseCloseDeal') {
-                    $("#frmClosedDealDataMapping").find('#ddlStage').focus();
+                if ($(this).attr("href") == '#collapseCloseDeal') {
                     $(this).css('border-bottom', '1px solid #cccccc');  // Added by Sohel Pathan on 14/08/2014 for PL ticket #656 and #681
                 }
             }
