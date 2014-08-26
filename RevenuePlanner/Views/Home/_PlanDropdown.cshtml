@@ -1,4 +1,5 @@
 ﻿@model RevenuePlanner.Models.HomePlan
+@using RevenuePlanner.Helpers;
 
 <ul class="nav nav-tabs">
     <li class="title-header source-sans-proregular bold font-size25px">
@@ -32,7 +33,8 @@
         <a id="AStage" href="#">Stage</a>
     </li>
     <li class=" pull-right">
-        <a id="AAudience" href="#">Audience</a>
+        @*Modified by Dharmraj for custom label, #738 Custom label for audience tab *@
+        <a id="AAudience" href="#">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</a>
     </li>
     @if (Model.IsManager) //if (Model.IsDirector || Model.IsClientAdmin)
     {

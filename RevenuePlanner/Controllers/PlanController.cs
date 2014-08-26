@@ -2730,7 +2730,7 @@ namespace RevenuePlanner.Controllers
 
             if (canCreateTactic == false)
             {
-                ViewBag.CannotCreateQuickTacticMessage = Common.objCached.CannotCreateQuickTacticMessage;
+                ViewBag.CannotCreateQuickTacticMessage = Common.objCached.CannotCreateQuickTacticMessage.Replace("audience", Common.CustomLabelFor(Enums.CustomLabelCode.Audience));
             }
 
             ViewBag.CanCreateTactic = canCreateTactic;

@@ -1,4 +1,5 @@
 ﻿@model RevenuePlanner.Models.InspectModel
+@using RevenuePlanner.Helpers;
 @{
     var tactic = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
     var deployStatus = Model.IsDeployedToIntegration == true ? "Yes" : "No";
@@ -47,7 +48,8 @@
     <div class="span2" id="inspect-modal-left-column2">
         <p>Owner</p>
         @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.Owner })
-        <p>Audience</p>
+        @*Modified by Dharmraj for custom label, #738 Custom label for audience tab *@
+        <p>@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</p>
             @Html.TextBox("txtAudience", (string)ViewBag.Audience, new { @class = "span12 input-small", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.Audience })
 
         <p>Business Unit</p>

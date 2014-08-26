@@ -4,18 +4,20 @@
         <h2 class="title-header">Conversion Summary</h2>
     </li>
     <li class="pull-right">
-        <a>@RevenuePlanner.Helpers.Common.Vertical</a>@*#585*@
+        <a tabName="@RevenuePlanner.Helpers.Common.Vertical">@RevenuePlanner.Helpers.Common.Vertical</a>@*#585*@
     </li>
     <li class="pull-right">
-        <a>@RevenuePlanner.Helpers.Common.Geography</a>@*#585*@
+        <a tabName="@RevenuePlanner.Helpers.Common.Geography">@RevenuePlanner.Helpers.Common.Geography</a>@*#585*@
     </li>
     <li class="pull-right">
-        <a>@RevenuePlanner.Helpers.Common.Audience</a>@*#585*@
+        @*Modified by Dharmraj for custom label, #738 Custom label for audience tab *@
+        @*<a>@RevenuePlanner.Helpers.Common.Audience</a>#585*@
+        <a  tabName="@RevenuePlanner.Helpers.Common.Audience">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</a>
     </li>
     @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
     {
         <li class="active pull-right">
-            <a>@RevenuePlanner.Helpers.Common.BusinessUnit</a>
+            <a tabName="@RevenuePlanner.Helpers.Common.BusinessUnit">@RevenuePlanner.Helpers.Common.BusinessUnit</a>
         </li>
     }
 </ul>
@@ -33,7 +35,8 @@
                 }
                 else
                 {
-                    <th class="width275" id="ActivityName">Audience</th>
+                    @*Modified by Dharmraj for custom label, #738 Custom label for audience tab *@
+                    <th class="width275" id="ActivityName">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</th>
                 }
                 <th class="width83">New @Html.LabelForINQ("INQ")</th>
                 @* Comment line as per Pl Ticket 356. *@
@@ -54,18 +57,20 @@
             <h4 class="title-header">@Html.LabelForMQL("MQL") Conversion Plan</h4>
         </li>
         <li class="pull-right" id="@RevenuePlanner.Helpers.Common.Vertical">@*#585*@
-            <a>@RevenuePlanner.Helpers.Common.Vertical</a>
+            <a tabName="@RevenuePlanner.Helpers.Common.Vertical">@RevenuePlanner.Helpers.Common.Vertical</a>
         </li>
         <li class="pull-right" id="@RevenuePlanner.Helpers.Common.Geography">@*#585*@
-            <a>@RevenuePlanner.Helpers.Common.Geography</a>
+            <a tabName="@RevenuePlanner.Helpers.Common.Geography">@RevenuePlanner.Helpers.Common.Geography</a>
         </li>
         <li class="pull-right" id="@RevenuePlanner.Helpers.Common.Audience">@*#585*@
-            <a>@RevenuePlanner.Helpers.Common.Audience</a>
+            @*Modified by Dharmraj for custom label, #738 Custom label for audience tab *@
+            @*<a>@RevenuePlanner.Helpers.Common.Audience</a>#585*@
+            <a tabName="@RevenuePlanner.Helpers.Common.Audience">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</a>
         </li>
         @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
         {
             <li class="active pull-right" id="@RevenuePlanner.Helpers.Common.BusinessUnit">
-                <a>@RevenuePlanner.Helpers.Common.BusinessUnit</a>
+                <a  tabName="@RevenuePlanner.Helpers.Common.BusinessUnit">@RevenuePlanner.Helpers.Common.BusinessUnit</a>
             </li>
         }
     </ul>
@@ -184,13 +189,14 @@
         $('#ParentULConversionSummary').find('li:last').addClass('active'); // this will add active class to first tab in MQL conversion plan report@*#585*@
 
         //---------------- Code related to Conversion summary child tab --------------------//
-        var parentSummaryTab = $('#ParentULConversionSummary li.active').children().text();
+        //var parentSummaryTab = $('#ParentULConversionSummary li.active').children().text();
+        var parentSummaryTab = $('#ParentULConversionSummary li.active').children().attr('tabName');
         LoadConversionSummaryData(); // this will load default data for conversion summary
 
         $("#ParentULConversionSummary li").click(function () {
-            var selectParent = $(this).children().text();
+            var selectParent = $(this).children().attr('tabName');
             if (selectParent != "Conversion Summary") {
-                $('#ActivityName').html(selectParent);
+                $('#ActivityName').html($(this).children().text());
                 RemoveTabClassParentULConversionSummary();
                 $(this).addClass("active");@*#585*@
                 parentSummaryTab = selectParent;
@@ -235,11 +241,11 @@
         var ColMQLActual = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         var ColMQLDifference = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         var ColTotalMQL = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        var parentTab = $('#ParentULMQLConversion li.active').children().text();
+        var parentTab = $('#ParentULMQLConversion li.active').children().attr('tabName');
         LoadChildData();
 
         $("#ParentULMQLConversion li").click(function () {
-            var selectParent = $(this).children().text();
+            var selectParent = $(this).children().attr('tabName');
             if (selectParent != "MQL Conversion Plan") {
                 RemoveTabClassParentULMQLConversion();
                 $(this).addClass("active");@*#585*@

@@ -61,6 +61,9 @@
     <Compile Include="Models\ClientTacticType.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\CustomLabel.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Field.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
