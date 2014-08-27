@@ -5121,8 +5121,12 @@ span.red-arrow-down-icon {
     border: 0px;
 }
 
-input::-moz-placeholder {
+/*input::-moz-placeholder {
     color: #4D4D4D;
+}*/
+/*Modified By : Kalpesh Sharma PL #697 08/26/2014*/
+input::-moz-placeholder {
+    color: #4D4D4D !important;
 }
 
 .height22 {
@@ -7992,3 +7996,36 @@ footer a {
     border-bottom:none !important;
 }
 /* End - Added by Sohel Pathan on 25/08/2014 for PL ticket #728 */
+
+/*Added By : Kalpesh Sharma PL #697 08/26/2014*/
+.sidebar-wide .budget-head-Actual {
+    border-bottom: 1px solid #cccccc;
+    padding: 10px 15px 0;
+}
+
+.budget-head-Actual a {
+    float: right;
+    font-size: 12px;
+    text-decoration: underline;
+}
+
+.budget-head-Actual p {
+    float: left;
+    font-size: 14px;
+}
+
+.sidebar-wide .budget-section-Actual {
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    margin: 0 20px 30px;
+    padding: 0;
+    width: 91%;
+}
+
+.budget-section-Actual {
+    clear: both;
+    float: left;
+    padding: 14px 17px 10px 0;
+    width: 100%;
+}
+/* End By : Kalpesh Sharma PL #697 08/26/2014*/
