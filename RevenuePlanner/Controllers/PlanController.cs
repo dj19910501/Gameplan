@@ -4890,8 +4890,6 @@ namespace RevenuePlanner.Controllers
 
                                 if (result >= 1)
                                 {
-                                    if (!form.IsOtherLineItem)
-                                    {
                                         var PrevAllocationList = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(c => c.PlanLineItemId == form.PlanLineItemId).Select(c => c).ToList();
                                         PrevAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
 
@@ -4952,8 +4950,7 @@ namespace RevenuePlanner.Controllers
                                         }
 
                                         db.SaveChanges();
-                                    }
-
+                                    
                                     scope.Complete();
                                     if (!string.IsNullOrEmpty(CalledFromBudget))
                                     {
