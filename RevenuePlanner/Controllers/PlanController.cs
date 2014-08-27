@@ -3943,7 +3943,10 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.ModifiedDate = DateTime.Now;
 
                                 ////start Added by Mitesh Vaishnav for PL ticket #571
-                                ////For edit mode, remove all actual cost for tactic
+                                ////For edit mode, remove all actual cost for tactic if tactic has no line item
+                                var tacticLineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == form.PlanTacticId).Select(l => l.PlanLineItemId).ToList();
+                                if (tacticLineItemList.Count <= 0)
+                                {
                                 var PrevActualAllocationListTactics = db.Plan_Campaign_Program_Tactic_Actual.Where(c => c.PlanTacticId == form.PlanTacticId).Select(c => c).ToList();
                                 PrevActualAllocationListTactics.ForEach(a => db.Entry(a).State = EntityState.Deleted);
 
@@ -3961,6 +3964,7 @@ namespace RevenuePlanner.Controllers
                                         obPlanCampaignProgramTacticActual.CreatedDate = DateTime.Now;
                                         db.Entry(obPlanCampaignProgramTacticActual).State = EntityState.Added;
                                     }
+                                }
                                 }
                                 ////End Added by Mitesh Vaishnav for PL ticket #571
 
