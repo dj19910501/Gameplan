@@ -89,7 +89,8 @@ namespace RevenuePlanner.Helpers
             MQL = 1,
             CW = 2,
             Revenue = 3,
-            ProjectedStageValue = 4
+            ProjectedStageValue = 4,
+            Cost=5
         }
 
         /// <summary>
@@ -103,7 +104,8 @@ namespace RevenuePlanner.Helpers
             {InspectStage.MQL.ToString(), "MQL"},
             {InspectStage.CW.ToString(), "CW"},
             {InspectStage.Revenue.ToString(), "Revenue"},
-            {InspectStage.ProjectedStageValue.ToString(), "ProjectedStageValue"}
+            {InspectStage.ProjectedStageValue.ToString(), "ProjectedStageValue"},
+            {InspectStage.Cost.ToString(), "Cost"}
         };
 
         /// <summary>

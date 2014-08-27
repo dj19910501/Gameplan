@@ -50,6 +50,7 @@
           <EntitySet Name="Plan_Campaign_Program_Tactic_Comment" EntityType="MRPModel.Store.Plan_Campaign_Program_Tactic_Comment" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Plan_Campaign_Program_Tactic_Cost" EntityType="MRPModel.Store.Plan_Campaign_Program_Tactic_Cost" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Plan_Campaign_Program_Tactic_LineItem" EntityType="MRPModel.Store.Plan_Campaign_Program_Tactic_LineItem" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Plan_Campaign_Program_Tactic_LineItem_Actual" EntityType="MRPModel.Store.Plan_Campaign_Program_Tactic_LineItem_Actual" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Plan_Campaign_Program_Tactic_LineItem_Cost" EntityType="MRPModel.Store.Plan_Campaign_Program_Tactic_LineItem_Cost" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Plan_Improvement_Campaign" EntityType="MRPModel.Store.Plan_Improvement_Campaign" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Plan_Improvement_Campaign_Program" EntityType="MRPModel.Store.Plan_Improvement_Campaign_Program" store:Type="Tables" Schema="dbo" />
@@ -288,6 +289,10 @@
           <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_Geography" Association="MRPModel.Store.FK_Plan_Campaign_Program_Tactic_Geography">
             <End Role="Geography" EntitySet="Geography" />
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_LineItem_Actual_Plan_Campaign_Program_Tactic_LineItem" Association="MRPModel.Store.FK_Plan_Campaign_Program_Tactic_LineItem_Actual_Plan_Campaign_Program_Tactic_LineItem">
+            <End Role="Plan_Campaign_Program_Tactic_LineItem" EntitySet="Plan_Campaign_Program_Tactic_LineItem" />
+            <End Role="Plan_Campaign_Program_Tactic_LineItem_Actual" EntitySet="Plan_Campaign_Program_Tactic_LineItem_Actual" />
           </AssociationSet>
           <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem" Association="MRPModel.Store.FK_Plan_Campaign_Program_Tactic_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem">
             <End Role="Plan_Campaign_Program_Tactic_LineItem" EntitySet="Plan_Campaign_Program_Tactic_LineItem" />
@@ -1072,6 +1077,17 @@
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
+        </EntityType>
+        <EntityType Name="Plan_Campaign_Program_Tactic_LineItem_Actual">
+          <Key>
+            <PropertyRef Name="PlanLineItemId" />
+            <PropertyRef Name="Period" />
+          </Key>
+          <Property Name="PlanLineItemId" Type="int" Nullable="false" />
+          <Property Name="Period" Type="nvarchar" Nullable="false" MaxLength="5" />
+          <Property Name="Value" Type="float" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_LineItem_Cost">
           <Key>
@@ -1948,6 +1964,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Plan_Campaign_Program_Tactic_LineItem_Actual_Plan_Campaign_Program_Tactic_LineItem">
+          <End Role="Plan_Campaign_Program_Tactic_LineItem" Type="MRPModel.Store.Plan_Campaign_Program_Tactic_LineItem" Multiplicity="1" />
+          <End Role="Plan_Campaign_Program_Tactic_LineItem_Actual" Type="MRPModel.Store.Plan_Campaign_Program_Tactic_LineItem_Actual" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program_Tactic_LineItem">
+              <PropertyRef Name="PlanLineItemId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Program_Tactic_LineItem_Actual">
+              <PropertyRef Name="PlanLineItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Plan_Campaign_Program_Tactic_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem">
           <End Role="Plan_Campaign_Program_Tactic_LineItem" Type="MRPModel.Store.Plan_Campaign_Program_Tactic_LineItem" Multiplicity="1" />
           <End Role="Plan_Campaign_Program_Tactic_LineItem_Cost" Type="MRPModel.Store.Plan_Campaign_Program_Tactic_LineItem_Cost" Multiplicity="*" />
@@ -2619,6 +2647,11 @@
           <AssociationSet Name="fk_TacticType_Stage" Association="MRPModel.fk_TacticType_Stage">
             <End Role="Stage" EntitySet="Stages" />
             <End Role="TacticType" EntitySet="TacticTypes" />
+          </AssociationSet>
+          <EntitySet Name="Plan_Campaign_Program_Tactic_LineItem_Actual" EntityType="MRPModel.Plan_Campaign_Program_Tactic_LineItem_Actual" />
+          <AssociationSet Name="FK_Plan_Campaign_Program_Tactic_LineItem_Actual_Plan_Campaign_Program_Tactic_LineItem" Association="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Actual_Plan_Campaign_Program_Tactic_LineItem">
+            <End Role="Plan_Campaign_Program_Tactic_LineItem" EntitySet="Plan_Campaign_Program_Tactic_LineItem" />
+            <End Role="Plan_Campaign_Program_Tactic_LineItem_Actual" EntitySet="Plan_Campaign_Program_Tactic_LineItem_Actual" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="Audience">
@@ -3438,6 +3471,7 @@
           <NavigationProperty Name="LineItemType" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_LineItemType" FromRole="Plan_Campaign_Program_Tactic_LineItem" ToRole="LineItemType" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic_LineItem" ToRole="Plan_Campaign_Program_Tactic" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic_LineItem_Cost" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem" FromRole="Plan_Campaign_Program_Tactic_LineItem" ToRole="Plan_Campaign_Program_Tactic_LineItem_Cost" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic_LineItem_Actual" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Actual_Plan_Campaign_Program_Tactic_LineItem" FromRole="Plan_Campaign_Program_Tactic_LineItem" ToRole="Plan_Campaign_Program_Tactic_LineItem_Actual" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_LineItem_Cost">
           <Key>
@@ -4631,6 +4665,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Plan_Campaign_Program_Tactic_LineItem_Actual">
+          <Key>
+            <PropertyRef Name="PlanLineItemId" />
+            <PropertyRef Name="Period" />
+          </Key>
+          <Property Type="Int32" Name="PlanLineItemId" Nullable="false" />
+          <Property Type="String" Name="Period" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
+          <Property Type="Double" Name="Value" Nullable="false" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic_LineItem" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Actual_Plan_Campaign_Program_Tactic_LineItem" FromRole="Plan_Campaign_Program_Tactic_LineItem_Actual" ToRole="Plan_Campaign_Program_Tactic_LineItem" />
+        </EntityType>
+        <Association Name="FK_Plan_Campaign_Program_Tactic_LineItem_Actual_Plan_Campaign_Program_Tactic_LineItem">
+          <End Type="MRPModel.Plan_Campaign_Program_Tactic_LineItem" Role="Plan_Campaign_Program_Tactic_LineItem" Multiplicity="1" />
+          <End Type="MRPModel.Plan_Campaign_Program_Tactic_LineItem_Actual" Role="Plan_Campaign_Program_Tactic_LineItem_Actual" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program_Tactic_LineItem">
+              <PropertyRef Name="PlanLineItemId" />
+            </Principal>
+            <Dependent Role="Plan_Campaign_Program_Tactic_LineItem_Actual">
+              <PropertyRef Name="PlanLineItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -5576,6 +5634,17 @@
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="VerticalId" ColumnName="VerticalId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Plan_Campaign_Program_Tactic_LineItem_Actual">
+            <EntityTypeMapping TypeName="MRPModel.Plan_Campaign_Program_Tactic_LineItem_Actual">
+              <MappingFragment StoreEntitySet="Plan_Campaign_Program_Tactic_LineItem_Actual">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Period" ColumnName="Period" />
+                <ScalarProperty Name="PlanLineItemId" ColumnName="PlanLineItemId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

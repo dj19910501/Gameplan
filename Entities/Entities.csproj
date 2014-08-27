@@ -193,6 +193,9 @@
     <Compile Include="Models\Plan_Campaign_Program_Tactic_LineItem.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Plan_Campaign_Program_Tactic_LineItem_Actual.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Plan_Campaign_Program_Tactic_LineItem_Cost.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>

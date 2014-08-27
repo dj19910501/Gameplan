@@ -3614,7 +3614,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveTactic(Plan_Campaign_Program_TacticModel form, string lineitems, bool RedirectType, string closedTask, string BudgetInputValues, string UserId = "", string CalledFromBudget = "")
+        public ActionResult SaveTactic(Plan_Campaign_Program_TacticModel form, string lineitems, bool RedirectType, string closedTask, string BudgetInputValues, string actualInputValues, string UserId = "", string CalledFromBudget = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -3633,6 +3633,7 @@ namespace RevenuePlanner.Controllers
                 PrevAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
 
                 string[] arrBudgetInputValues = BudgetInputValues.Split(',');
+                string[] arrActualCostInputValues = actualInputValues.Split(',');
 
                 if (form.PlanTacticId == 0)
                 {
@@ -3717,6 +3718,23 @@ namespace RevenuePlanner.Controllers
                                 }
                                 db.Entry(planCampaignProgramDetails).State = EntityState.Modified;
 
+                                ////start Added by Mitesh Vaishnav for PL ticket #571
+                                //Insert actual cost of tactic
+                                for (int i = 0; i < arrActualCostInputValues.Length; i++)
+                                {
+                                    if (arrActualCostInputValues[i] != "")
+                                    {
+                                        Plan_Campaign_Program_Tactic_Actual obPlanCampaignProgramTacticActual = new Plan_Campaign_Program_Tactic_Actual();
+                                        obPlanCampaignProgramTacticActual.PlanTacticId = tacticId;
+                                        obPlanCampaignProgramTacticActual.StageTitle = Enums.InspectStage.Cost.ToString();
+                                        obPlanCampaignProgramTacticActual.Period = "Y" + (i + 1);
+                                        obPlanCampaignProgramTacticActual.Actualvalue = Convert.ToDouble(arrActualCostInputValues[i]);
+                                        obPlanCampaignProgramTacticActual.CreatedBy = Sessions.User.UserId;
+                                        obPlanCampaignProgramTacticActual.CreatedDate = DateTime.Now;
+                                        db.Entry(obPlanCampaignProgramTacticActual).State = EntityState.Added;
+                                    }
+                                }
+                                ////End Added by Mitesh Vaishnav for PL ticket #571
 
                                 //Start by Kalpesh Sharma #605: Cost allocation for Tactic
                                 if (arrBudgetInputValues.Length == 12)
@@ -3923,6 +3941,27 @@ namespace RevenuePlanner.Controllers
                                 pcpobj.ModifiedBy = Sessions.User.UserId;
                                 pcpobj.ModifiedDate = DateTime.Now;
 
+                                ////start Added by Mitesh Vaishnav for PL ticket #571
+                                ////For edit mode, remove all actual cost for tactic
+                                var PrevActualAllocationListTactics = db.Plan_Campaign_Program_Tactic_Actual.Where(c => c.PlanTacticId == form.PlanTacticId).Select(c => c).ToList();
+                                PrevActualAllocationListTactics.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+
+                                //Insert actual cost of tactic
+                                for (int i = 0; i < arrActualCostInputValues.Length; i++)
+                                {
+                                    if (arrActualCostInputValues[i] != "")
+                                    {
+                                        Plan_Campaign_Program_Tactic_Actual obPlanCampaignProgramTacticActual = new Plan_Campaign_Program_Tactic_Actual();
+                                        obPlanCampaignProgramTacticActual.PlanTacticId = form.PlanTacticId;
+                                        obPlanCampaignProgramTacticActual.StageTitle = Enums.InspectStage.Cost.ToString();
+                                        obPlanCampaignProgramTacticActual.Period = "Y" + (i + 1);
+                                        obPlanCampaignProgramTacticActual.Actualvalue = Convert.ToDouble(arrActualCostInputValues[i]);
+                                        obPlanCampaignProgramTacticActual.CreatedBy = Sessions.User.UserId;
+                                        obPlanCampaignProgramTacticActual.CreatedDate = DateTime.Now;
+                                        db.Entry(obPlanCampaignProgramTacticActual).State = EntityState.Added;
+                                    }
+                                }
+                                ////End Added by Mitesh Vaishnav for PL ticket #571
 
                                 //Start by Kalpesh Sharma #605: Cost allocation for Tactic
                                 var PrevAllocationListTactics = db.Plan_Campaign_Program_Tactic_Cost.Where(c => c.PlanTacticId == form.PlanTacticId).Select(c => c).ToList();
@@ -7442,6 +7481,35 @@ namespace RevenuePlanner.Controllers
             {
                 List<string> lstMonthly = new List<string>() { "Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "Y7", "Y8", "Y9", "Y10", "Y11", "Y12" };
 
+                ////// start-Added by Mitesh Vaishnav for PL ticket #571
+                //// Actual cost portion added exact under "lstMonthly" array because Actual cost portion is independent from the monthly/quarterly selection made by the user at the plan level.
+                var tacticLineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == PlanTacticId).Select(l => l.PlanLineItemId).ToList();
+                bool isLineItemForTactic = false;////flag for line items count of tactic.If tactic has any line item than flag set to true else false
+                List<Plan_Campaign_Program_Tactic_LineItem_Actual> actualCostAllocationData = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
+                if (tacticLineItemList.Count <= 0)
+                {
+                    ////object for filling input of Actual Cost Allocation
+                    actualCostAllocationData = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => ta.PlanTacticId == PlanTacticId).ToList().Select(ta => new Plan_Campaign_Program_Tactic_LineItem_Actual
+                      {
+                          PlanLineItemId = 0,
+                          Period = ta.Period,
+                          Value = ta.Actualvalue
+                      }).ToList();
+                }
+                else
+                {
+                    var actualLineItem = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(al => tacticLineItemList.Contains(al.PlanLineItemId)).ToList();
+                    ////object for filling input of Actual Cost Allocation
+                    actualCostAllocationData = lstMonthly.Select(m => new Plan_Campaign_Program_Tactic_LineItem_Actual
+                        {
+                            PlanLineItemId = 0,
+                            Period = m,
+                            Value = actualLineItem.Where(al => al.Period == m).Sum(al => al.Value)
+                        }).ToList();
+                    isLineItemForTactic = true;
+                }
+                //// End-Added by Mitesh Vaishnav for PL ticket #571
+
                 var objPlan = db.Plans.SingleOrDefault(p => p.PlanId == Sessions.PlanId);
 
                 if (objPlan.AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString())
@@ -7498,6 +7566,7 @@ namespace RevenuePlanner.Controllers
                     budgetValue = lstTacticsBudget.SingleOrDefault(c => c.Period == m && c.PlanTacticId == PlanTacticId) == null ? "" : lstTacticsBudget.SingleOrDefault(c => c.Period == m && c.PlanTacticId == PlanTacticId).Value.ToString(),
                     remainingMonthlyBudget = (lstProgramBudget.SingleOrDefault(p => p.Period == m) == null ? 0 : lstProgramBudget.SingleOrDefault(p => p.Period == m).Value) - (lstTacticsBudget.Where(c => c.Period == m).Sum(c => c.Value)),
                     programMonthlyBudget = lstTacticsLineItemCost.Where(c => c.Period == m).Sum(c => c.Value)
+
                 });
 
 
@@ -7508,7 +7577,9 @@ namespace RevenuePlanner.Controllers
 
                 double planRemainingBudget = (objPlanCampaignProgram.ProgramBudget - (!string.IsNullOrEmpty(Convert.ToString(CostTacticsBudget)) ? CostTacticsBudget : 0));
 
-                var objBudgetAllocationData = new { budgetData = budgetData, planRemainingBudget = planRemainingBudget };
+                var objBudgetAllocationData = new { budgetData = budgetData, planRemainingBudget = planRemainingBudget, actualCostData = actualCostAllocationData, IsLineItemForTactic = isLineItemForTactic };
+
+
 
                 return Json(objBudgetAllocationData, JsonRequestBehavior.AllowGet);
             }
