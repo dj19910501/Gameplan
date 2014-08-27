@@ -561,7 +561,7 @@
 
             $('.currency_dollarCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
             $('.accordion').find('input').each(function () {
-
+                
                 $(this).keyup(function () {
                     if ($(this).val().trim() != '') {
                         var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
@@ -586,10 +586,13 @@
                                 if (arr[1] == 'Revenue') {
                                     document.getElementById(ida).innerHTML = totalvalue;
                                     document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, false);
+                                    SetBudget('#' + ida); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
                                 }
                                 else {
+                                    $('#hdn' + ida.toString()).val(totalvalue); // Added by Sohel Pathan on 27/08/2014 for Internal Review Points
                                     document.getElementById(ida).innerHTML = totalvalue;
                                     document.getElementById(ida).innerHTML = FormatCommas(document.getElementById(ida).innerHTML, false);
+                                    SetLabelFormaterWithTipsyNumbers(document.getElementById(ida)); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
                                 }
                             }
                             calculateRIO(costlbl);
@@ -641,9 +644,11 @@
                 var stageId = $(this).attr('stageId');
                 var isError = false;
                 var isData = false;
-                var totalProjectedStageValueActual = ReplaceCC($("#ActuallblPProjectedStageValue" + tacticId).text());
+                //// Modified by Sohel Pathan on 26/08/2014 for Internal Review Points
+                var totalProjectedStageValueActual = $("#hdnActuallblPProjectedStageValue" + tacticId).val();
                 var ProjectedStageValueTitle = $("#hdnProjectedStageValueTitle" + tacticId).val();
-                var totalMQLActual = ReplaceCC($("#ActuallblPMQL" + tacticId).text());
+                //// Modified by Sohel Pathan on 26/08/2014 for Internal Review Points
+                var totalMQLActual = $("#hdnActuallblPMQL" + tacticId).val();
                 var totalCWActual = ReplaceCC($("#ActuallblPCW" + tacticId).text());
                 var totalRevenueActual = ReplaceCC($("#ActuallblCRevenue" + tacticId).text());
                 var totalCostActual = ReplaceCC($("#ActuallblCCost" + tacticId).val());
@@ -905,6 +910,7 @@
                                                 '<div class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber" id="ActuallblPProjectedStageValue' + _id + '">' +
                                                     _projectedStageValueActual +
                                             '</div>' +
+                                            '<input type="hidden" id="hdnActuallblPProjectedStageValue' + _id + '" value=" ' + _projectedStageValueActual + ' " />' +   //// Added by Sohel Pathan on 27/08/2014 for Internal Review Points
                                         '</div>' +
                                     '</div>';
                 }
@@ -916,6 +922,7 @@
                                                     '<div class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber" id="ActuallblPMQL' + _id + '">' +
                                                         _mqlActual +
                                                     '</div>' +
+                                                    '<input type="hidden" id="hdnActuallblPMQL' + _id + '" value=" ' + _mqlActual + ' " />' +       //// Added by Sohel Pathan on 27/08/2014 for Internal Review Points
                                                 '</div>' +
                                             '</div>';
                 }

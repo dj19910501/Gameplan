@@ -123,6 +123,7 @@
                                 <th id="inqP" class="text-align-right  projected font908D88 ActualsFormater">@tacticActual.ProjectedStageValue</th>
                                 <th id="lblTotalProjectedStageValue" class="border-r font3F3F3F text-align-right ActualsFormater">@tacticActual.ProjectedStageValueActual
                                 </th>
+                                <input type="hidden" id="hdnlblTotalProjectedStageValue" value="@tacticActual.ProjectedStageValueActual" />  @* Added by Sohel Pathan on 27/08/2014 for Internal Review Points *@
                             </tr>
                         }
                         else if (s.ToLower() == Common.StageCodeMQL)
@@ -130,6 +131,7 @@
                             <tr class="height42">
                                 <th id="mqlP" class="text-align-right  projected font908D88 ActualsFormater">@tacticActual.MQLs</th>
                                 <th id="lblTotalMQL" class="border-r font3F3F3F text-align-right ActualsFormater ">@tacticActual.MQLsActual</th>
+                                <input type="hidden" id="hdnlblTotalMQL" value="@tacticActual.MQLsActual" />  @* Added by Sohel Pathan on 27/08/2014 for Internal Review Points *@
                             </tr>
                         }
                     }
@@ -328,10 +330,13 @@
                         if (arr[0] == 'Revenue') {
                             document.getElementById(ida).innerHTML = totalvalue;
                             document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, false);
+                            SetBudget('#' + ida);    // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
                         }
                         else {
+                            $('#hdn' + ida.toString()).val(totalvalue); // Added by Sohel Pathan on 27/08/2014 for Internal Review Points
                             document.getElementById(ida).innerHTML = totalvalue;
                             document.getElementById(ida).innerHTML = FormatCommas(document.getElementById(ida).innerHTML, false);
+                            SetLabelFormaterWithTipsyNumbers(document.getElementById(ida)); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
                         }
 
                         calculateRIO();
@@ -375,11 +380,14 @@
             var isError = false;
             var isData = false;
             //var totalINQActual = (document.getElementById('lblTotalINQ').innerHTML).trim().replace(/,/g, '').replace('$', '');
-            var totalProjectedStageValueActual = (document.getElementById('lblTotalProjectedStageValue').innerHTML).trim().replace(/,/g, '').replace('$', '');
+            //// Modified by Sohel Pathan on 26/08/2014 for Internal Review Points
+            var totalProjectedStageValueActual = $("#hdnlblTotalProjectedStageValue").val();
 
             var totalMQLActual;
-            if (document.getElementById('lblTotalMQL') != null)
-                totalMQLActual = (document.getElementById('lblTotalMQL').innerHTML).trim().replace(/,/g, '').replace('$', '');
+            if (document.getElementById('lblTotalMQL') != null) {
+                //// Modified by Sohel Pathan on 26/08/2014 for Internal Review Points
+                totalMQLActual = $("#hdnlblTotalMQL").val();
+            }
 
             var totalCWActual = (document.getElementById('lblTotalCW').innerHTML).trim().replace(/,/g, '').replace('$', '');
             var totalRevenueActual = (document.getElementById('lblTotalRevenue').innerHTML).trim().replace(/,/g, '').replace('$', '');
