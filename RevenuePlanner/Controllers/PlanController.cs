@@ -2730,7 +2730,8 @@ namespace RevenuePlanner.Controllers
 
             if (canCreateTactic == false)
             {
-                ViewBag.CannotCreateQuickTacticMessage = Common.objCached.CannotCreateQuickTacticMessage.Replace("audience", Common.CustomLabelFor(Enums.CustomLabelCode.Audience));
+                // Modified by Dharmraj,27-8-2014,#738, To set custom Audience label in message
+                ViewBag.CannotCreateQuickTacticMessage = string.Format(Common.objCached.CannotCreateQuickTacticMessage, Common.CustomLabelFor(Enums.CustomLabelCode.Audience));
             }
 
             ViewBag.CanCreateTactic = canCreateTactic;
