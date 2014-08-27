@@ -80,7 +80,7 @@
             <div class="audience-review"></div>
             <div>
                 @*Modified by Dharmraj for custom label, #738 Custom label for audience tab *@
-                <label id="audience">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</label>
+                <label id="audience" class="ellipsis" title="@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</label>
             </div>
             <span id="audience-id" class="blue-text bold" title="@tacticReview.AudiencTitle">@tacticReview.AudiencTitle</span>
         </div>

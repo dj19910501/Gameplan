@@ -49,7 +49,7 @@
         <p>Owner</p>
         @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.Owner })
         @*Modified by Dharmraj for custom label, #738 Custom label for audience tab *@
-        <p>@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</p>
+        <p class="ellipsis" title="@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</p>
             @Html.TextBox("txtAudience", (string)ViewBag.Audience, new { @class = "span12 input-small", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.Audience })
 
         <p>Business Unit</p>

@@ -614,7 +614,7 @@ namespace Integration.Salesforce
                             try
                             {
                                 objImport.CampaignId = Convert.ToString(jobj[ColumnId]);
-                                objImport.actualCost = Convert.ToDouble(jobj[actualCost]);
+                                objImport.actualCost = Convert.ToDouble(jobj[fieldname]);
                             }
                             catch (SalesforceException e)
                             {
