@@ -161,7 +161,7 @@
                 {
         <div class="budget-section">
             <div class="budget-head clearfix">
-                <p>Cost Allocation</p>
+                <p>Planned Cost Allocation</p>
                 <a href="javascript:void(0)">- Collapse</a>
             </div>
             <div class="budget-collapse">
@@ -179,6 +179,27 @@
                 }
             }
         <!-- End Cost allocation for line item -->
+        
+         //Added By : Kalpesh Sharma PL #697 08/26/2014
+          <div class="budget-section-Actual">
+            <div class="budget-head-Actual clearfix">
+                <p>Actual Costs</p>
+                <a href="javascript:void(0)">- Collapse</a>
+            </div>
+            <div class="Actual-budget-collapse">
+                <div class="white-bg">
+                    @HtmlHelpers.GenerateBudgetAllocationControl(Enums.PlanAllocatedBy.months.ToString())
+                </div>
+                <div class="budget-result source-sans-prolight">
+                    <p>
+                        Total Actual Cost: 
+                                    <span id="lblTotalActualCost" class="source-sans-proregular"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+            //End By : Kalpesh Sharma PL #697 08/26/2014
+        
         
             if ((bool)ViewBag.IsOwner && (bool)ViewBag.IsAllowCustomRestriction)
             {
@@ -205,6 +226,12 @@
         $(".budget-head a").click(function () {
             $('.budget-collapse').slideToggle();
             $('.budget-head a').html($('.budget-head a').text() == '- Collapse' ? '+ Expand' : '- Collapse');
+        });
+
+        //Added By : Kalpesh Sharma PL #697 08/26/2014
+        $(".budget-head-Actual a").click(function () {
+            $('.Actual-budget-collapse').slideToggle();
+            $('.budget-head-Actual a').html($('.budget-head-Actual a').text() == '- Collapse' ? '+ Expand' : '- Collapse');
         });
 
         ImageTipsy('#diffrentStageIcon');
@@ -318,6 +345,10 @@
             });
         });
 
+        //Moved from bottom to Top By : Kalpesh Sharma PL #697 08/26/2014
+        //if ($("#hdnIsBudgetAllocated").val() == "True" ) {
+        fillCostAllocationData();
+        //}
 
         var isOwner = "@ViewBag.IsOwner";
         var isAllowRestriction = "@ViewBag.IsAllowCustomRestriction";
@@ -505,10 +536,6 @@
 
         NumberFormatterTipsyTitle(".displaytitle", 31);// uday PL Ticket #550 3-7-2014
 
-        if ($("#hdnIsBudgetAllocated").val() == "True" ) {
-            fillCostAllocationData();
-        }
-
         $("#txtLineItemCost").keyup(function () {
 
             $("#txtLineItemCost").attr('title', $("#txtLineItemCost").val());
@@ -565,7 +592,45 @@
             });
         });
 
+        //Added By : Kalpesh Sharma #697 08/26/2014
+        $('.budget-section-Actual').find('input').each(function () {
+            $(this).keyup(function () {
+                if ($(this).val().trim() != '') {
+                    var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
+                    if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+                        var TotalallocationValue = 0;
+                        var lstAllocInputs = $(".budget-section-Actual input").not('.unallocated-text');
+                        for (var i = 0; i < lstAllocInputs.length; i++) {
+                            TotalallocationValue += parseInt($(lstAllocInputs[i]).val() == '' ? 0 : ReplaceCC($(lstAllocInputs[i]).val()));
+                        }
+                        $("#lblTotalActualCost").html(FormatCommasBudget(TotalallocationValue.toString(), false, true));
+                    }
+                }
+            });
+        });
+
     });
+
+    //Added By : Kalpesh Sharma #697 08/26/2014
+    function FillActualCostAllocationData(ActualCostData) {
+        var ActualCost = ActualCostData;
+        if (typeof ActualCost != 'undefined') {
+            if (ActualCost.length) {
+                for (i in ActualCost) {
+                    var remainingMonthlyCost = ActualCost[i].remainingMonthlyCost == '' ? '0' : ActualCost[i].remainingMonthlyCost;
+                    $(".budget-section-Actual").find("#" + ActualCost[i].periodTitle).val(FormatCommas(ActualCost[i].costValue, false));
+                }
+            }
+        }
+
+        var TotalallocationValue = 0;
+        var lstAllocInputs = $(".budget-section-Actual input");
+
+        for (var i = 0; i < lstAllocInputs.length; i++) {
+            TotalallocationValue += parseInt($(lstAllocInputs[i]).val() == '' ? 0 : ReplaceCC($(lstAllocInputs[i]).val()));
+        }
+        $("#lblTotalActualCost").html(FormatCommasBudget(TotalallocationValue.toString(), false, true));
+    }
 
     function fillCostAllocationData() {
         var hdnPlanLineItemId = $("#hdnPlanLineItemId").val();
@@ -583,16 +648,19 @@
                     if (r.length) {
                         for (i in r) {
                             var remainingMonthlyCost = r[i].remainingMonthlyCost == '' ? '0' : r[i].remainingMonthlyCost;
-                            $("#" + r[i].periodTitle).val(FormatCommas(r[i].costValue, false));
-                            $("#" + r[i].periodTitle).attr('ov', r[i].costValue == '' ? '0' : r[i].costValue);
-                            $("#" + r[i].periodTitle).attr('rmb', remainingMonthlyCost);
-                            $("#" + r[i].periodTitle).attr("myValue", $("#" + r[i].periodTitle).val()); // Added by Sohel Pathan on 18/08/2014 for Internal Review Points
+                            $(".budget-section").find("#" + r[i].periodTitle).val(FormatCommas(r[i].costValue, false));
+                            $(".budget-section").find("#" + r[i].periodTitle).attr('ov', r[i].costValue == '' ? '0' : r[i].costValue);
+                            $(".budget-section").find("#" + r[i].periodTitle).attr('rmb', remainingMonthlyCost);
+                            $(".budget-section").find("#" + r[i].periodTitle).attr("myValue", $("#" + r[i].periodTitle).val()); // Added by Sohel Pathan on 18/08/2014 for Internal Review Points
                             if (parseInt(remainingMonthlyCost) < 0) {
                                 $("#" + r[i].periodTitle).addClass('error-text');
                             }
                         }
                     }
                 }
+
+                //Added By : Kalpesh Sharma #697 08/26/2014
+                FillActualCostAllocationData(data.ActualCostData);
 
                 if (typeof data.otherLineItemCost != 'undefined') {
                     $("#txtOtherLineItemCost").val(FormatCommasBudget(data.otherLineItemCost.toString(), false, true));
@@ -601,7 +669,7 @@
                 }
 
                 var TotalallocationValue = 0;
-                var lstAllocInputs = $(".budget-section input").not('.unallocated-text');
+                var lstAllocInputs = $(".budget-section input");
                 for (var i = 0; i < lstAllocInputs.length; i++) {
                     TotalallocationValue += parseInt($(lstAllocInputs[i]).val() == '' ? 0 : ReplaceCC($(lstAllocInputs[i]).val()));
                 }
@@ -675,13 +743,20 @@
             allocationValue.push(ReplaceCC($(lstAllocInputs[i]).val()));
         }
 
+        //Added By : Kalpesh Sharma #697 08/26/2014
+        var ActualallocationValue = [];
+        var lstActualAllocInputs = $(".budget-section-Actual input");
+        for (var i = 0; i < lstActualAllocInputs.length; i++) {
+            ActualallocationValue.push(ReplaceCC($(lstActualAllocInputs[i]).val()));
+        }
+
         document.getElementById("Title").value = htmlEncode($('#Title').val());
         document.getElementById("Description").value = htmlEncode($('#Description').val());
         var uId = $(window).attr('name');
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Plan/SaveLineitem")',
-            data: $("form").serialize() + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&CostInputValues=' + allocationValue.toString() + '&UserId=' + uId + '&CalledFromBudget=' + '@CalledFromBudget',
+            data: $("form").serialize() + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&CostInputValues=' + allocationValue.toString() + '&ActualInputValues=' + ActualallocationValue.toString() + '&UserId=' + uId + '&CalledFromBudget=' + '@CalledFromBudget',
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';

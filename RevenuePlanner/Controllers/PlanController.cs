@@ -4454,6 +4454,11 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.IsOwner = false;
             }
+
+            //Added By : Kalpesh Sharma #697 08/26/2014
+            bool isallowrestriction = Common.GetRightsForTactic(lstUserCustomRestriction, pcptl.Plan_Campaign_Program_Tactic.VerticalId, pcptl.Plan_Campaign_Program_Tactic.GeographyId);
+            ViewBag.IsAllowCustomRestriction = isallowrestriction;
+
             if (pcptl.LineItemTypeId == null)
             {
                 pcptlm.IsOtherLineItem = true;
@@ -4464,9 +4469,11 @@ namespace RevenuePlanner.Controllers
             }
 
             pcptlm.PlanTacticId = id;
-            ViewBag.IsOwner = true;
+
+            //Added By : Kalpesh Sharma #697 08/26/2014
+            //ViewBag.IsOwner = true;
             // Custom Restriction
-            ViewBag.IsAllowCustomRestriction = true;
+            //ViewBag.IsAllowCustomRestriction = true;
             ViewBag.Tactic = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Title);
             ViewBag.Program = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title);
             ViewBag.Campaign = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title);
@@ -4512,6 +4519,9 @@ namespace RevenuePlanner.Controllers
             try
             {
                 List<string> lstMonthly = new List<string>() { "Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "Y7", "Y8", "Y9", "Y10", "Y11", "Y12" };
+                
+                //Reintialize the Monthly list for Actual Allocation object 
+                List<string> lstActualAllocationMonthly = lstMonthly;
                 var objPlanLineItem = db.Plan_Campaign_Program_Tactic_LineItem.SingleOrDefault(c => c.PlanLineItemId == id);
                 var objPlan = db.Plans.SingleOrDefault(p => p.PlanId == Sessions.PlanId);
                 var objPlanTactic = db.Plan_Campaign_Program_Tactic.SingleOrDefault(p => p.PlanTacticId == tid);
@@ -4544,8 +4554,23 @@ namespace RevenuePlanner.Controllers
                 double diffCost = TacticCost - totalLoneitemCost;
                 double otherLineItemCost = diffCost < 0 ? 0 : diffCost;
 
-                var objBudgetAllocationData = new { costData = costData, otherLineItemCost = otherLineItemCost };
+                //Added By : Kalpesh Sharma #697 08/26/2014
+                //Fetch the Line items actual by LineItemId and give it to the object.
+                var lstActualLineItemCost = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(c => planLineItemId.Contains(c.PlanLineItemId)).ToList()
+                                                              .Select(c => new
+                                                              {   c.PlanLineItemId,
+                                                                  c.Period,
+                                                                  c.Value
+                                                              }).ToList();
 
+                //Set the custom array for fecthed Line item Actual data .
+                var ActualCostData = lstActualAllocationMonthly.Select(m => new
+                {
+                    periodTitle = m,
+                    costValue = lstActualLineItemCost.SingleOrDefault(c => c.Period == m && c.PlanLineItemId == id) == null ? "" : lstActualLineItemCost.SingleOrDefault(c => c.Period == m && c.PlanLineItemId == id).Value.ToString()
+                });
+
+                var objBudgetAllocationData = new { costData = costData, ActualCostData = ActualCostData, otherLineItemCost = otherLineItemCost };
                 return Json(objBudgetAllocationData, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
@@ -4565,7 +4590,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveLineitem(Plan_Campaign_Program_Tactic_LineItemModel form, bool RedirectType, string closedTask, string CostInputValues, string UserId = "", string CalledFromBudget = "")
+        public ActionResult SaveLineitem(Plan_Campaign_Program_Tactic_LineItemModel form, bool RedirectType, string closedTask, string CostInputValues, string ActualInputValues, string UserId = "", string CalledFromBudget = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -4578,6 +4603,10 @@ namespace RevenuePlanner.Controllers
             try
             {
                 string[] arrCostInputValues = CostInputValues.Split(',');
+
+                //Added By : Kalpesh Sharma #697 08/26/2014
+                //Spilt the Actuals allocation values into the array (Comma Seprated)
+                string[] arrActualInputValues = ActualInputValues.Split(',');
 
                 var objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == form.PlanTacticId);
                 int cid = objTactic.Plan_Campaign_Program.PlanCampaignId;
@@ -4724,6 +4753,23 @@ namespace RevenuePlanner.Controllers
                                             QuarterCnt = QuarterCnt + 3;
                                         }
                                     }
+                                    
+                                    //Added By : Kalpesh Sharma #697 08/26/2014
+                                    //Save the Actual allocation value into the Tactic_LineItem_Actual Table  
+                                    for (int i = 0; i < arrActualInputValues.Length; i++)
+                                    {
+                                        if (arrActualInputValues[i] != "")
+                                        {
+                                            Plan_Campaign_Program_Tactic_LineItem_Actual objlineItemActual = new Plan_Campaign_Program_Tactic_LineItem_Actual();
+                                            objlineItemActual.PlanLineItemId = lineitemId;
+                                            objlineItemActual.Period = "Y" + (i + 1);
+                                            objlineItemActual.Value = Convert.ToDouble(arrActualInputValues[i]);
+                                            objlineItemActual.CreatedBy = Sessions.User.UserId;
+                                            objlineItemActual.CreatedDate = DateTime.Now;
+                                            db.Entry(objlineItemActual).State = EntityState.Added;
+                                        }
+                                    }
+
                                     db.SaveChanges();
                                 }
                                 scope.Complete();
@@ -4849,6 +4895,11 @@ namespace RevenuePlanner.Controllers
                                         var PrevAllocationList = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(c => c.PlanLineItemId == form.PlanLineItemId).Select(c => c).ToList();
                                         PrevAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
 
+                                        // Added By : Kalpesh Sharma #697 08/26/2014
+                                        // Fetch the Actual Allocation values by it's LineItem Id and delete all the record.
+                                        var PrevActualAllocationList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(c => c.PlanLineItemId == form.PlanLineItemId).Select(c => c).ToList();
+                                        PrevActualAllocationList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+
                                         if (arrCostInputValues.Length == 12)
                                         {
                                             for (int i = 0; i < arrCostInputValues.Length; i++)
@@ -4883,6 +4934,23 @@ namespace RevenuePlanner.Controllers
                                                 QuarterCnt = QuarterCnt + 3;
                                             }
                                         }
+
+                                        //Added By : Kalpesh Sharma #697 08/26/2014
+                                        //Save the Actual allocation value into the Tactic_LineItem_Actual Table  
+                                        for (int i = 0; i < arrActualInputValues.Length; i++)
+                                        {
+                                            if (arrActualInputValues[i] != "")
+                                            {
+                                                Plan_Campaign_Program_Tactic_LineItem_Actual objlineItemActual = new Plan_Campaign_Program_Tactic_LineItem_Actual();
+                                                objlineItemActual.PlanLineItemId = form.PlanLineItemId;
+                                                objlineItemActual.Period = "Y" + (i + 1);
+                                                objlineItemActual.Value = Convert.ToDouble(arrActualInputValues[i]);
+                                                objlineItemActual.CreatedBy = Sessions.User.UserId;
+                                                objlineItemActual.CreatedDate = DateTime.Now;
+                                                db.Entry(objlineItemActual).State = EntityState.Added;
+                                            }
+                                        }
+
                                         db.SaveChanges();
                                     }
 
