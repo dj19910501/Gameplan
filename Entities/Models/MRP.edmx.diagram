@@ -146,6 +146,7 @@
         <AssociationConnector Association="MRPModel.fk_TacticType_Stage" />
         <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_LineItem_Actual" Width="1.5" PointX="11.92156797271295" PointY="18.917599999773131" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Actual_Plan_Campaign_Program_Tactic_LineItem" />
+        <EntityTypeShape EntityType="MRPModel.CustomLabel" Width="1.5" PointX="4.0717216190284686" PointY="26.101550546522041" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -108,7 +108,8 @@
                 <span class="verticalIdSelectBox" style="margin-left: -2px;">@Html.DropDownListFor(model => model.VerticalId, new SelectList((System.Collections.IEnumerable)ViewBag.Verticals, "VerticalId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
             </div>
             <div class="content-row margin-bottom10">
-                <label style="margin-top: 6px;">Audience</label>
+                @*Modified by Dharmraj for custom label, #738 Custom label for audience tab *@
+                <label style="margin-top: 6px;">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</label>
                 <span class="verticalIdSelectBox" style="margin-left: -2px;">@Html.DropDownListFor(model => model.AudienceId, new SelectList((System.Collections.IEnumerable)ViewBag.Audience, "AudienceId", "Title"), "Please Select", new { @class = "ddlStyle", require = "true" })</span>
             </div>
             <div class="content-row alternate margin-bottom10">

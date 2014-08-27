@@ -85,5 +85,6 @@ namespace RevenuePlanner.Models
         public DbSet<User_Notification> User_Notification { get; set; }
         public DbSet<Vertical> Verticals { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_LineItem_Actual> Plan_Campaign_Program_Tactic_LineItem_Actual { get; set; }
+        public DbSet<CustomLabel> CustomLabels { get; set; }
     }
 }

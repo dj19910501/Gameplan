@@ -783,6 +783,16 @@ namespace RevenuePlanner.Helpers
             None
         }
 
+        /// <summary>
+        /// Enum for CustomLabel Code
+        /// Added By Dharmraj, 26-8-2014
+        /// #738 Custom label for audience tab
+        /// </summary>
+        public enum CustomLabelCode
+        {
+            Audience
+        }
+
     }
 
     #region Authorization

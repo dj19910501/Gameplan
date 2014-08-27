@@ -11,6 +11,7 @@
           <EntitySet Name="BusinessUnit" EntityType="MRPModel.Store.BusinessUnit" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="ChangeLog" EntityType="MRPModel.Store.ChangeLog" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="ClientTacticType" EntityType="MRPModel.Store.ClientTacticType" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="CustomLabel" EntityType="MRPModel.Store.CustomLabel" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Field" EntityType="MRPModel.Store.Field" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Funnel" EntityType="MRPModel.Store.Funnel" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Funnel_Field" EntityType="MRPModel.Store.Funnel_Field" store:Type="Tables" Schema="dbo" />
@@ -463,6 +464,19 @@
           <Property Name="ColorCode" Type="nvarchar" Nullable="false" MaxLength="10" />
           <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="ModifiedBy" Type="uniqueidentifier" />
+        </EntityType>
+        <EntityType Name="CustomLabel">
+          <Key>
+            <PropertyRef Name="CustomLabelId" />
+          </Key>
+          <Property Name="CustomLabelId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Title" Type="nvarchar" MaxLength="50" />
+          <Property Name="Code" Type="nvarchar" Nullable="false" MaxLength="50" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
@@ -2653,6 +2667,7 @@
             <End Role="Plan_Campaign_Program_Tactic_LineItem" EntitySet="Plan_Campaign_Program_Tactic_LineItem" />
             <End Role="Plan_Campaign_Program_Tactic_LineItem_Actual" EntitySet="Plan_Campaign_Program_Tactic_LineItem_Actual" />
           </AssociationSet>
+          <EntitySet Name="CustomLabels" EntityType="MRPModel.CustomLabel" />
         </EntityContainer>
         <EntityType Name="Audience">
           <Key>
@@ -4689,6 +4704,19 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="CustomLabel">
+          <Key>
+            <PropertyRef Name="CustomLabelId" />
+          </Key>
+          <Property Type="Int32" Name="CustomLabelId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Guid" Name="ClientId" Nullable="false" />
+          <Property Type="String" Name="Title" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Code" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
+          <Property Type="Guid" Name="ModifiedBy" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -5645,6 +5673,20 @@
                 <ScalarProperty Name="Value" ColumnName="Value" />
                 <ScalarProperty Name="Period" ColumnName="Period" />
                 <ScalarProperty Name="PlanLineItemId" ColumnName="PlanLineItemId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CustomLabels">
+            <EntityTypeMapping TypeName="MRPModel.CustomLabel">
+              <MappingFragment StoreEntitySet="CustomLabel">
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
+                <ScalarProperty Name="CustomLabelId" ColumnName="CustomLabelId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

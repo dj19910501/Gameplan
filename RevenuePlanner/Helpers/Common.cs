@@ -3856,6 +3856,36 @@ namespace RevenuePlanner.Helpers
             }
             return returnValue;
         }
+
+        /// <summary>
+        /// Helper of Custom label client wise
+        /// Added by Dharmraj, 26-8-2014
+        /// #738 Custom label for audience tab
+        /// </summary>
+        /// <param name="helper"></param>
+        /// <param name="customLabelCode">customLabelCode enum</param>
+        /// <returns></returns>
+        public static string CustomLabelFor(Enums.CustomLabelCode customLabelCode)
+        {
+            MRPEntities db = new MRPEntities();
+            string code = customLabelCode.ToString();
+            try
+            {
+                var objCustomLabel = db.CustomLabels.FirstOrDefault(l => l.Code == code && l.ClientId == Sessions.User.ClientId);
+                if (objCustomLabel == null)
+                {
+                    return customLabelCode.ToString();
+                }
+                else
+                {
+                    return objCustomLabel.Title;
+                }
+            }
+            catch (Exception ex)
+            {
+                return customLabelCode.ToString();
+            }
+        }
     }
 
     ////Start Manoj PL #490 Date:27May2014

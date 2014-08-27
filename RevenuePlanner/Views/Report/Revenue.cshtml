@@ -47,21 +47,23 @@
             <h4 class="title-header">Revenue to Plan</h4>
         </li>
         <li class="active pull-right">
-            <a>@RevenuePlanner.Helpers.Common.RevenueOrganization</a>
+            <a tabName="@RevenuePlanner.Helpers.Common.RevenueOrganization">@RevenuePlanner.Helpers.Common.RevenueOrganization</a>
         </li>
         <li class="pull-right">
-            <a>@RevenuePlanner.Helpers.Common.RevenueVertical</a>
+            <a tabName="@RevenuePlanner.Helpers.Common.RevenueVertical">@RevenuePlanner.Helpers.Common.RevenueVertical</a>
         </li>
         <li class="pull-right">
-            <a>@RevenuePlanner.Helpers.Common.RevenueGeography</a>
+            <a tabName="@RevenuePlanner.Helpers.Common.RevenueGeography">@RevenuePlanner.Helpers.Common.RevenueGeography</a>
         </li>
         <li class="pull-right">
-            <a>@RevenuePlanner.Helpers.Common.RevenueAudience</a>
+            @*Modified by Dharmraj for custom label, #738 Custom label for audience tab *@
+            @*<a>@RevenuePlanner.Helpers.Common.RevenueAudience</a>*@
+            <a tabName="@RevenuePlanner.Helpers.Common.Audience">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</a>
         </li>
         @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
         {
             <li class="pull-right">
-                <a>@RevenuePlanner.Helpers.Common.RevenueBusinessUnit</a>
+                <a tabName="@RevenuePlanner.Helpers.Common.RevenueBusinessUnit">@RevenuePlanner.Helpers.Common.RevenueBusinessUnit</a>
             </li>
         }
     </ul>
@@ -181,21 +183,23 @@
             <h4 class="title-header">Revenue Contribution</h4>
         </li>
         <li class="active pull-right">
-            <a>@RevenuePlanner.Helpers.Common.RevenueCampaign</a>
+            <a tabName="@RevenuePlanner.Helpers.Common.RevenueCampaign">@RevenuePlanner.Helpers.Common.RevenueCampaign</a>
         </li>
         <li class="pull-right">
-            <a>@RevenuePlanner.Helpers.Common.RevenueVertical</a>
+            <a tabName="@RevenuePlanner.Helpers.Common.RevenueVertical">@RevenuePlanner.Helpers.Common.RevenueVertical</a>
         </li>
         <li class="pull-right">
-            <a>@RevenuePlanner.Helpers.Common.RevenueGeography</a>
+            <a tabName="@RevenuePlanner.Helpers.Common.RevenueGeography">@RevenuePlanner.Helpers.Common.RevenueGeography</a>
         </li>
         <li class="pull-right">
-            <a>@RevenuePlanner.Helpers.Common.RevenueAudience</a>
+            @*Modified by Dharmraj for custom label, #738 Custom label for audience tab *@
+            @*<a>@RevenuePlanner.Helpers.Common.RevenueAudience</a>*@
+            <a tabName="@RevenuePlanner.Helpers.Common.RevenueAudience">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</a>
         </li>
         @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId == Guid.Empty)
         {
             <li class="pull-right">
-                <a>@RevenuePlanner.Helpers.Common.RevenueBusinessUnit</a>
+                <a tabName="@RevenuePlanner.Helpers.Common.RevenueBusinessUnit">@RevenuePlanner.Helpers.Common.RevenueBusinessUnit</a>
             </li>
         }
     </ul>
@@ -718,7 +722,7 @@
     }
 
         $("#ParentULRevenueToPlan li").click(function () {
-            var selectParent = $(this).children().text();
+            var selectParent = $(this).children().attr('tabName');
             if (selectParent != "Revenue to Plan") {
                 RemoveTabClassParentULRevenueToPlan();
                 $(this).addClass("active");
@@ -1813,7 +1817,7 @@
             LoadRevenueContributionData();
         });
         $("#ParentULRevenueContribution li").click(function () {
-            var selectParent = $(this).children().text();
+            var selectParent = $(this).children().attr('tabName');
             if (selectParent != "Revenue Contribution") {
                 RemoveTabClassParentULRevenueContribution();
                 $(this).addClass("active");

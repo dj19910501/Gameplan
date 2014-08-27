@@ -79,7 +79,8 @@
         <div class="pull-left size65x38 margin-left20">
             <div class="audience-review"></div>
             <div>
-                <label id="audience">Audience</label>
+                @*Modified by Dharmraj for custom label, #738 Custom label for audience tab *@
+                <label id="audience">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</label>
             </div>
             <span id="audience-id" class="blue-text bold" title="@tacticReview.AudiencTitle">@tacticReview.AudiencTitle</span>
         </div>
