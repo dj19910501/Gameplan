@@ -1212,6 +1212,8 @@ namespace RevenuePlanner.Controllers
                                                      TargetDataType = m.TargetDataType
                                                  }).ToList();
 
+                listGameplanDataTypeStageZero.ForEach(d => d.DisplayFieldName = d.DisplayFieldName.Replace("Audience", Common.CustomLabelFor(Enums.CustomLabelCode.Audience)));
+
                 if (listGameplanDataTypeStageZero != null && listGameplanDataTypeStageZero.Count > 0)
                 {
                     return listGameplanDataTypeStageZero.OrderBy(map => map.TableName).ToList();

@@ -614,9 +614,9 @@ namespace Integration.Salesforce
                             try
                             {
                                 objImport.CampaignId = Convert.ToString(jobj[ColumnId]);
-                                objImport.actualCost = Convert.ToDouble(jobj[actualCost]);
+                                objImport.actualCost = Convert.ToDouble(jobj[fieldname]);
                             }
-                            catch (SalesforceException e)
+                            catch (Exception ex)
                             {
                                 ErrorFlag = true;
                                 string TacticId =Convert.ToString(jobj[ColumnId]);
@@ -630,7 +630,7 @@ namespace Integration.Salesforce
                                 instanceTactic.Operation = Operation.Import_Cost.ToString();
                                 instanceTactic.SyncTimeStamp = DateTime.Now;
                                 instanceTactic.CreatedDate = DateTime.Now;
-                                instanceTactic.ErrorDescription = GetErrorMessage(e);
+                                instanceTactic.ErrorDescription = ex.Message;
                                 instanceTactic.CreatedBy = _userId;
                                 db.Entry(instanceTactic).State = EntityState.Added;
                             }
@@ -643,9 +643,49 @@ namespace Integration.Salesforce
                             List<string> IntegrationTacticIdList = ImportCostMemberList.Select(import => import.CampaignId).Distinct().ToList();
                             List<Plan_Campaign_Program_Tactic> innerTacticList = tacticList.Where(t => IntegrationTacticIdList.Contains(t.IntegrationInstanceTacticId)).ToList();
 
+                            //Added by dharmraj for ticket #733 : Actual cost - Changes related to integraton with Eloqua/SF.
+                            List<Plan_Campaign_Program_Tactic_Actual> actualTacicList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => IntegrationTacticIdList.Contains(ta.Plan_Campaign_Program_Tactic.IntegrationInstanceTacticId)).ToList();
+                            actualTacicList.ForEach(t => db.Entry(t).State = EntityState.Deleted);
+                            db.SaveChanges();
+
                             foreach (var tactic in innerTacticList)
                             {
-                                tactic.CostActual = ImportCostMemberList.SingleOrDefault(import => import.CampaignId == tactic.IntegrationInstanceTacticId).actualCost;
+                                // Start Added by dharmraj for ticket #733 : Actual cost - Changes related to integraton with Eloqua/SF.
+                                //tactic.CostActual = ImportCostMemberList.SingleOrDefault(import => import.CampaignId == tactic.IntegrationInstanceTacticId).actualCost;
+                                double actualValue = ImportCostMemberList.SingleOrDefault(import => import.CampaignId == tactic.IntegrationInstanceTacticId).actualCost;
+                                int totalMonth = 0;
+                                if (tactic.StartDate.Month == tactic.EndDate.Month)
+                                {
+                                    totalMonth = 1;
+                                }
+                                else
+                                {
+                                    totalMonth = tactic.EndDate.Month - tactic.StartDate.Month + 1;
+                                }
+
+                                double actualValueTotalTemp = 0;
+                                for (int iMonth = tactic.StartDate.Month; iMonth <= tactic.EndDate.Month; iMonth++)
+                                {
+                                    double actualValueMonthWise = Math.Round(actualValue / totalMonth);
+                                    actualValueTotalTemp += actualValueMonthWise;
+                                    if (iMonth == tactic.EndDate.Month && actualValueTotalTemp != actualValue)
+                                    {
+                                        actualValueMonthWise = actualValueMonthWise - (actualValueTotalTemp - actualValue);
+                                    }
+
+                                    Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
+                                    actualTactic.Actualvalue = actualValueMonthWise;
+                                    actualTactic.PlanTacticId = tactic.PlanTacticId;
+                                    actualTactic.Period = "Y" + iMonth;
+                                    actualTactic.StageTitle = Common.StageCost;
+                                    //change date & created by
+                                    actualTactic.CreatedDate = DateTime.Now;
+                                    actualTactic.CreatedBy = _userId;
+                                    db.Entry(actualTactic).State = EntityState.Added;
+                                }
+
+                                // End Added by dharmraj for ticket #733 : Actual cost - Changes related to integraton with Eloqua/SF.
+                                
                                 tactic.ModifiedBy = _userId;
                                 tactic.ModifiedDate = DateTime.Now;
                                 tactic.LastSyncDate = DateTime.Now;

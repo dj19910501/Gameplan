@@ -325,11 +325,51 @@ namespace Integration.Eloqua
                             //// Getting list of tactic whose actualCost needs to be updated.
                             List<Plan_Campaign_Program_Tactic> innerTacticList = tacticList.Where(t => integrationTacticIdList.Contains(t.IntegrationInstanceTacticId)).ToList();
 
+                            //Added by dharmraj for ticket #733 : Actual cost - Changes related to integraton with Eloqua/SF.
+                            List<Plan_Campaign_Program_Tactic_Actual> actualTacicList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => integrationTacticIdList.Contains(ta.Plan_Campaign_Program_Tactic.IntegrationInstanceTacticId)).ToList();
+                            actualTacicList.ForEach(t => db.Entry(t).State = EntityState.Deleted);
+                            db.SaveChanges();
+
                             //// Iterating over each tactic
                             foreach (var tactic in innerTacticList)
                             {
+                                // Start Added by dharmraj for ticket #733 : Actual cost - Changes related to integraton with Eloqua/SF.
                                 //// Setting actual cost
-                                tactic.CostActual = importEloquaCampaignList.SingleOrDefault(import => import.id == tactic.IntegrationInstanceTacticId).actualCost;
+                                //tactic.CostActual = importEloquaCampaignList.SingleOrDefault(import => import.id == tactic.IntegrationInstanceTacticId).actualCost;
+                                double actualValue = importEloquaCampaignList.SingleOrDefault(import => import.id == tactic.IntegrationInstanceTacticId).actualCost;
+                                int totalMonth = 0;
+                                if (tactic.StartDate.Month == tactic.EndDate.Month)
+                                {
+                                    totalMonth = 1;
+                                }
+                                else
+                                {
+                                    totalMonth = tactic.EndDate.Month - tactic.StartDate.Month + 1;
+                                }
+
+                                double actualValueTotalTemp = 0;
+                                for (int iMonth = tactic.StartDate.Month; iMonth <= tactic.EndDate.Month; iMonth++)
+                                {
+                                    double actualValueMonthWise = Math.Round(actualValue / totalMonth);
+                                    actualValueTotalTemp += actualValueMonthWise;
+                                    if (iMonth == tactic.EndDate.Month && actualValueTotalTemp != actualValue)
+                                    {
+                                        actualValueMonthWise = actualValueMonthWise - (actualValueTotalTemp - actualValue);
+                                    }
+
+                                    Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
+                                    actualTactic.Actualvalue = actualValueMonthWise;
+                                    actualTactic.PlanTacticId = tactic.PlanTacticId;
+                                    actualTactic.Period = "Y" + iMonth;
+                                    actualTactic.StageTitle = Common.StageCost;
+                                    //change date & created by
+                                    actualTactic.CreatedDate = DateTime.Now;
+                                    actualTactic.CreatedBy = _userId;
+                                    db.Entry(actualTactic).State = EntityState.Added;
+                                }
+
+                                // End Added by dharmraj for ticket #733 : Actual cost - Changes related to integraton with Eloqua/SF.
+
                                 tactic.ModifiedBy = _userId;
                                 tactic.ModifiedDate = DateTime.Now;
                                 tactic.LastSyncDate = DateTime.Now;
@@ -353,7 +393,7 @@ namespace Integration.Eloqua
 
                         if (ErrorFlag)
                         {
-                            // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
+                            // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
                             Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, string.Empty);
                         }
                         else

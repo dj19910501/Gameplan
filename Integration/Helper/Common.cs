@@ -19,6 +19,7 @@ namespace Integration.Helper
         public static string ClosedWon = "Closed Won";
         public static string StageCW = "CW";
         public static string StageRevenue = "Revenue";
+        public static string StageCost = "Cost";
         
         public static string UnableToUpdate = "Unable to update";
         public static string UnableToDelete = "Unable to delete";
