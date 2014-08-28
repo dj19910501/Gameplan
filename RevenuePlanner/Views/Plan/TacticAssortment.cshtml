@@ -221,7 +221,7 @@
         <!-- Start by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics  -->
         <div class="budget-section" id="actual-Cost-Allocation">
             <div class="budget-head clearfix" id="actual-cost-budget-head">
-                <p>Actual Cost Allocation</p>
+                <p>Actual Costs</p>
                 <a href="javascript:void(0)">- Collapse</a>
             </div>
             <div class="budget-collapse" id="actual-cost-budget-collapse">
@@ -233,7 +233,7 @@
                 <div class="budget-result source-sans-prolight">
                     <p>
                         Total Actual Cost:
-                          <span id="lblTotalActualCost" class="source-sans-proregular">0</span>
+                          <span id="lblTotalActualCost" class="source-sans-proregular">$0</span>
                     </p>
                 </div>
             </div>
@@ -1029,7 +1029,7 @@
                     }
 
                     var newActualCost = oldTotalActualCost + (currentValue - OldactualValue);
-                    $("#lblTotalActualCost").html(FormatCommasBudget(newActualCost.toString(), false, true));
+                    $("#lblTotalActualCost").text(FormatCommasBudget(newActualCost.toString(), false, true));
                     $(this).attr("ov", currentValue);
                 }
             }
@@ -1112,12 +1112,17 @@
         if (typeof data.actualCostData != 'undefined') {
             var actualCostData = data.actualCostData;
             if (actualCostData.length) {
-
+                var TotalActualCost = 0;
                 for (var cnt = 0; cnt < actualCostData.length; cnt++) {
-
+                    TotalActualCost +=parseFloat(actualCostData[cnt].Value);
                     $('#actual-Cost-Allocation').find("#" + actualCostData[cnt].Period).val(FormatCommas(actualCostData[cnt].Value.toString(), false));
                     $('#actual-Cost-Allocation').find("#" + actualCostData[cnt].Period).attr('ov', actualCostData[cnt].Value == '' ? '0' : actualCostData[cnt].Value);
                 }
+                $("#lblTotalActualCost").text(TotalActualCost.toString());
+                $('#actual-Cost-Allocation').find("input").each(function () {
+                    $(this).attr('myvalue', $(this).val());
+                });
+
             }
         }
         if (data.IsLineItemForTactic) {
