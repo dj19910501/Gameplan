@@ -616,7 +616,7 @@ namespace Integration.Salesforce
                                 objImport.CampaignId = Convert.ToString(jobj[ColumnId]);
                                 objImport.actualCost = Convert.ToDouble(jobj[fieldname]);
                             }
-                            catch (SalesforceException e)
+                            catch (Exception e) // Modified by Dharmraj, to handle runtime error.
                             {
                                 ErrorFlag = true;
                                 string TacticId =Convert.ToString(jobj[ColumnId]);
@@ -630,7 +630,7 @@ namespace Integration.Salesforce
                                 instanceTactic.Operation = Operation.Import_Cost.ToString();
                                 instanceTactic.SyncTimeStamp = DateTime.Now;
                                 instanceTactic.CreatedDate = DateTime.Now;
-                                instanceTactic.ErrorDescription = GetErrorMessage(e);
+                                instanceTactic.ErrorDescription = e.Message;
                                 instanceTactic.CreatedBy = _userId;
                                 db.Entry(instanceTactic).State = EntityState.Added;
                             }
