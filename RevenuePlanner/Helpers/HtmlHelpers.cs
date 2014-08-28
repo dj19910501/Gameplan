@@ -1260,6 +1260,7 @@ namespace RevenuePlanner.Helpers
                 }
                 else
                 {
+                    div.AddCssClass("firstLevel");
                     div.InnerHtml = "---";
                 }
                 td.InnerHtml = div.ToString();
@@ -1281,6 +1282,7 @@ namespace RevenuePlanner.Helpers
                     }
                     else
                     {
+                        div.AddCssClass("firstLevel");
                         div.InnerHtml = "---";
                     }
                 }
@@ -1324,6 +1326,7 @@ namespace RevenuePlanner.Helpers
                 }
                 else
                 {
+                    div.AddCssClass("firstLevel");
                     div.InnerHtml += "---";
                 }
 
@@ -1352,6 +1355,7 @@ namespace RevenuePlanner.Helpers
                     }
                     else
                     {
+                        divLast.AddCssClass("firstLevel");
                         divLast.InnerHtml = "---";
                     }
                 }
@@ -2841,6 +2845,7 @@ namespace RevenuePlanner.Helpers
                 }
                 else
                 {
+                    div.AddCssClass("firstLevel");
                     div.InnerHtml = "---";
                 }
                 td.InnerHtml = div.ToString();
@@ -2850,6 +2855,7 @@ namespace RevenuePlanner.Helpers
                 td = new TagBuilder("td");
                 td.AddCssClass("event-row");
                 div = new TagBuilder("div");
+                div.AddCssClass("firstLevel");
                 if (Tab == "0")
                 {
                     div.InnerHtml = plan.Allocated.ToString(formatThousand);
@@ -2883,7 +2889,7 @@ namespace RevenuePlanner.Helpers
 
                     TagBuilder div = new TagBuilder("div");
                     div.Attributes.Add("id", ActivityType + c.ActivityId.ToString());
-
+                    div.AddCssClass("firstLevel");
                     if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
                     {
                         //div.InnerHtml = c.Budgeted.ToString();
@@ -2903,7 +2909,7 @@ namespace RevenuePlanner.Helpers
                         //    div.AddCssClass("mainLevel");
                         //    span.AddCssClass("progressBar");
                         //}
-                        div.AddCssClass("firstLevel");
+                        
                         div.InnerHtml = sumMonth.ToString(formatThousand);
                         //div.InnerHtml += sumMonth.ToString(formatThousand);
                         //div.InnerHtml += span.ToString();
@@ -3049,7 +3055,7 @@ namespace RevenuePlanner.Helpers
                         else
                         {
                             divProgram.InnerHtml += "---";
-                            divProgram.AddCssClass(innerClass);
+                            divProgram.AddCssClass(innerClass + " firstLevel");
                         }
                     }
                     else
