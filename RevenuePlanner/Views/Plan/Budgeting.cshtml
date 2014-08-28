@@ -17,6 +17,15 @@
     string sucMsg = Convert.ToString(TempData["SuccessMessage"]);
     //TempData["ErrorMessage"] = "";
     TempData["SuccessMessage"] = null;
+    string myView = "0";
+    if(TempData["ViewBy"] != null)
+    {
+        myView = Convert.ToString(TempData["ViewBy"]);
+        if(string.IsNullOrEmpty(myView))
+        {
+            myView = "0";
+        }
+    }
 }
 @section Sidebar
 {
@@ -58,27 +67,39 @@
         <div style="clear: both;"></div>
     </div>
 </div>
+<div class="filter-base source-sans-prosemibold">
 @{
     if (showBid == true)
     {
-    <span class="selectBox dropdown-businessUnit" id="dropdown-business-unit">
+        <div class="businessUnit">
+            @Html.Label("Business Unit:", new { id = "lblBusinessUnit" })
+            <span class="selectBox" id="ddlBusinessUnitSelectBox" style="width: 158px;">
         @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId != Guid.Empty)
         {
-            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text", Sessions.BusinessUnitId))
+                    @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text", Sessions.BusinessUnitId), new { @class = "ddlStyleReport" })
         }
         else
         {
-            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text"))
+                    @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text"), new { @class = "ddlStyleReport" })
         }
     </span>
+        </div>
+        }
+        <div id="divViewBy" style="display: none;">
+            @Html.Label("View By:", new { id = "lblViewBy" })
+            <span class="selectBox" id="ddlCampaignSelectBox" style="width: 158px;">
+                @Html.DropDownList("ddlViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewBy, "Value", "Text" ,myView), new { @class = "ddlStyleReport" })
+            </span>
+        </div>
     }
-}
-
+</div>
 <div id="DivloadPlan"></div>
 <div id="divTabData" style="margin-top: 20px;"></div>
+
 <script>
     var CurrentPlanId = '@CurrentPlanId';
     var Bid;
+    var CurrentView = '@myView';
     var currentTab = 'aAllocated';
     if ('@type' == 'plan') {
         currentTab = 'aPlanned';
@@ -111,26 +132,44 @@
     });
     function ExpandItems() {
         try {
+            if (CurrentView != "0") {
+
+                $(".column1").find(".firstLevel").each(function () {
+
+                    var currObj = $(this).attr('id');
+
+                    $('#' + currObj).css('display', 'block');
+                    $(".sub[data-parent='" + currObj + "']").css('display', 'block');
+                    $('#' + currObj + ' a:first-child').addClass('collapse');
+                });
+
+              
+            }
+
             var strExpand = '@expand';
             var strExpandType = '';
             var strExpandId = 0;
-        
             if (strExpand != '') {
-                if (strExpand.indexOf('lineitem') >= 0)
+                    if (strExpand.indexOf('lineitem') >= 0) {
                     strExpandType = 'lineitem';
-                else if (strExpand.indexOf('tactic') >= 0)
+                    }
+                    else if (strExpand.indexOf('tactic') >= 0) {
                     strExpandType = 'tactic';
-                else if (strExpand.indexOf('program') >= 0)
+                    }
+                    else if (strExpand.indexOf('program') >= 0) {
                     strExpandType = 'program';
-                else if (strExpand.indexOf('campaign') >= 0)
+                    }
+                    else if (strExpand.indexOf('campaign') >= 0) {
                     strExpandType = 'campaign';
+                    }
 
                 strExpandId = strExpand.replace(strExpandType, '');
                 if ($.isNumeric(strExpandId)) {
                     if (strExpandType == 'lineitem') {
-                        var tacticDP = $('#' + strExpand).parent().attr('data-parent'); //tactic
-                        var programDP = $('#' + strExpand).parent().parent().attr('data-parent'); //program
-                        var campaignDP = $('#' + strExpand).parent().parent().parent().attr('data-parent'); //campaign
+                            var currObj = $('#' + strExpandId).parent();
+                            var tacticDP = $(currObj).parent().attr('data-parent'); //tactic
+                            var programDP = $(currObj).parent().parent().attr('data-parent'); //program
+                            var campaignDP = $(currObj).parent().parent().parent().attr('data-parent'); //campaign
                     
                         $('#' + campaignDP).css('display', 'block');
                         $(".sub[data-parent='" + campaignDP + "']").css('display', 'block');
@@ -141,10 +180,19 @@
                         $('#' + tacticDP).css('display', 'block');
                         $(".sub[data-parent='" + tacticDP + "']").css('display', 'block');
                         $('#' + tacticDP + ' a:first-child').addClass('collapse');
+
+                            if ('@myView' != "0") {
+                                var mainDP = $(currObj).parent().parent().parent().parent().attr('data-parent'); //audiance
+                                $('#' + mainDP).css('display', 'block');
+                                $(".sub[data-parent='" + mainDP + "']").css('display', 'block');
+                                $('#' + mainDP + ' a:first-child').addClass('collapse');
+                            }
+
                     }
                     else if (strExpandType == 'tactic') {
-                        var programDP = $('#' + strExpand).parent().attr('data-parent'); //program
-                        var campaignDP = $('#' + strExpand).parent().parent().attr('data-parent'); //campaign
+                            var currObj = $('#' + strExpandId).parent();
+                            var programDP = $(currObj).parent().attr('data-parent'); //program
+                            var campaignDP = $(currObj).parent().parent().attr('data-parent'); //campaign
 
                         $('#' + campaignDP).css('display', 'block');
                         $(".sub[data-parent='" + campaignDP + "']").css('display', 'block');
@@ -152,14 +200,28 @@
                         $('#' + programDP).css('display', 'block');
                         $(".sub[data-parent='" + programDP + "']").css('display', 'block');
                         $('#' + programDP + ' a:first-child').addClass('collapse');
+
+                            if ('@myView' != "0") {
+                                var mainDP = $(currObj).parent().parent().parent().attr('data-parent'); //audiance
+                                $('#' + mainDP).css('display', 'block');
+                                $(".sub[data-parent='" + mainDP + "']").css('display', 'block');
+                                $('#' + mainDP + ' a:first-child').addClass('collapse');
+                            }
                     }
                     else if (strExpandType == 'program') {
-                        var campaignDP = $('#' + strExpand).parent().attr('data-parent'); //campaign
+                            var currObj = $('#' + strExpandId).parent();
+                            var campaignDP = $(currObj).parent().attr('data-parent'); //campaign
 
                         $('#' + campaignDP).css('display', 'block');
                         $(".sub[data-parent='" + campaignDP + "']").css('display', 'block');
                         $('#' + campaignDP + ' a:first-child').addClass('collapse');
                         
+                            if ('@myView' != "0") {
+                                var mainDP = $(currObj).parent().parent().attr('data-parent'); //audiance
+                                $('#' + mainDP).css('display', 'block');
+                                $(".sub[data-parent='" + mainDP + "']").css('display', 'block');
+                                $('#' + mainDP + ' a:first-child').addClass('collapse');
+                            }
                     }
                 }
             }
@@ -168,6 +230,10 @@
         }
         
     }
+        $("#ddlViewBy").change(function () {
+            CurrentView = $('#ddlViewBy').val();
+            TabLoad(currentTab);
+        });
     $('#ddlBusinessUnit').change(function () {
         Bid = $('#ddlBusinessUnit').val();
         LoadPlanBuBusinessUnit(Bid);
@@ -188,9 +254,11 @@
             $('#divTabData').load('@Url.Action("GetAllocatedBugetData", "Plan")' + '?PlanId=' + CurrentPlanId, function () { ExpandItems(); });
         }
         else if (currentTab == 'aPlanned') {
-            $('#divTabData').load('@Url.Action("GetBudgetedData", "Plan")' + '?PlanId=' + CurrentPlanId, function () { ExpandItems(); });
+
+                $('#divTabData').load('@Url.Action("GetBudgetedData", "Plan")' + '?PlanId=' + CurrentPlanId + '&viewBy=' + CurrentView, function () { ExpandItems(); });
         }
         else if (sender == 'aActuals') {
+
         }
         if (hideAllMessages) {
             $('.datepicker.dropdown-menu').css("display", "none");
@@ -200,6 +268,7 @@
             HideMessages();
         }
 }
+
 
 function LoadPlanBuBusinessUnit(Bid) {
     $('#DivloadPlan').load('@Url.Action("BudgetPlanList", "Plan")' + '?Bid=' + Bid, function () { TabLoad(currentTab); ShowChangeLog(CurrentPlanId); hideAllMessages = true;  });

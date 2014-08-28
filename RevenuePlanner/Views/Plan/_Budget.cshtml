@@ -7,8 +7,7 @@
     string strDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
     string strMonths = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower();
     string strQuarters = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower();
-}
-@{
+    string strViewBy = Convert.ToString(ViewBag.ViewBy).ToLower();
     BudgetMonth PercAllocated = ViewBag.PercAllocated;
     double planAllocation = 0;
     double sumMonth = plan.Month.Jan + plan.Month.Feb + plan.Month.Mar + plan.Month.Apr + plan.Month.May + plan.Month.Jun + plan.Month.Jul + plan.Month.Aug + plan.Month.Sep + plan.Month.Oct + plan.Month.Nov + plan.Month.Dec;
@@ -32,11 +31,34 @@
                                     <div id="divPlanDetails"><a id="aPlanDetails">@plan.ActivityName</a></div>
                                 </td>
                             </tr>
-                            @Html.ActivityCampaign("campaign", plan.ActivityId, Model)
+                            @if (strViewBy == "2")
+                            {
+                                @Html.ActivityMainParent("geography", plan.ActivityId, Model, "planned", "2")
+                            }
+                            else if (strViewBy == "1")
+                            {
+                                @Html.ActivityMainParent("audience", plan.ActivityId, Model, "planned", "1")
+                            }
+                            else
+                            {
+                                @Html.ActivityCampaign("campaign", plan.ActivityId, Model, "planned")
+                            }
                         </tbody>
                         <tbody class="column2">
                             @Html.PlanMonth("plan", plan.ActivityId, plan.Month, plan.ParentMonth, AllocatedBy)
-                            @Html.CampaignMonth("campaign", plan.ActivityId, Model, AllocatedBy)
+                            @if (strViewBy == "2")
+                            {
+                                @Html.ParentMonth("geography", plan.ActivityId, Model, AllocatedBy, "2")
+                            }
+                            else if (strViewBy == "1")
+                            {
+                                @Html.ParentMonth("audiance", plan.ActivityId, Model, AllocatedBy, "1")
+                            }
+                            else
+                            {
+                                @Html.CampaignMonth("campaign", plan.ActivityId, Model, AllocatedBy)
+                                
+                            }
                         </tbody>
                         <tbody class="column3">
                             <tr>
@@ -47,7 +69,18 @@
                                     <div>Allocated</div>
                                 </td>
                             </tr>
-                            @Html.CampaignSummary("campaign", plan.ActivityId, Model, AllocatedBy, "1")
+                            @if (strViewBy == "2")
+                            {
+                                @Html.ParentSummary("geography", plan.ActivityId, Model, AllocatedBy, "1", "2")
+                            }
+                            else if (strViewBy == "1")
+                            {
+                                @Html.ParentSummary("audiance", plan.ActivityId, Model, AllocatedBy, "1", "1")
+                            }
+                            else
+                            {
+                                @Html.CampaignSummary("campaign", plan.ActivityId, Model, AllocatedBy, "1")
+                            }
                         </tbody>
                     </table>
                     <div style="clear: both;"></div>
@@ -94,7 +127,37 @@
             column1Width = column1Width.replace('px', '');
             try {
                 if (parseInt(column1Width) <= maxHeight) {
-                    
+                    if ($('.column1').find('.firstLevel').length > 0) {
+                       
+                    }
+                    else {
+                        $('#divPlanDetails').css('width', parseInt(maxHeight) - 15);
+                        $('#div2PlanDetails').css('width', parseInt(maxHeight) + 15);
+                        if ($('.column1 .lineitemLevel').length > 0)
+                            $('.column1 .lineitemLevel').find('a:last-child').css('width', parseInt(maxHeight) - parseInt($(".lineitemLevel").css("padding-left").replace("px", "")) - parseInt($(".lineitemLevel").css("padding-right").replace("px", "")));
+                        if ($('.column1 .tacticLevel').length > 0)
+                            $('.column1 .tacticLevel').find('a:last-child').css('width', parseInt(maxHeight) - parseInt($(".tacticLevel").css("padding-left").replace("px", "")) - parseInt($(".tacticLevel").css("padding-right").replace("px", "")));
+                        if ($('.column1 .lineitem-lvl').length > 0)
+                            $('.column1 .lineitem-lvl').css('width', parseInt(maxHeight) + 15);
+                        if ($('.column1 .programLevel').length > 0)
+                            $('.column1 .programLevel').css('width', parseInt(maxHeight) - parseInt($(".programLevel").css("padding-left").replace("px", "")) - parseInt($(".programLevel").css("padding-right").replace("px", "")) + 15);
+                        if ($('.column1 .tactic-lvl').length > 0)
+                            $('.column1 .tactic-lvl').css('width', parseInt(maxHeight) + 15);
+                        if ($('.column1 .campaignLevel').length > 0)
+                            $('.column1 .campaignLevel').css('width', parseInt(maxHeight) - parseInt($(".campaignLevel").css("padding-left").replace("px", "")) - parseInt($(".campaignLevel").css("padding-right").replace("px", "")) + 15);
+                        if ($('.column1 .program-lvl').length > 0)
+                            $('.column1 .program-lvl').css('width', parseInt(maxHeight) + 15);
+                    }
+                }
+            } catch (e) { }
+        }
+        else {
+            var maxHeight = Math.max.apply(Math, heights);
+            var column1Width = $('.column1 div').css('width');
+            column1Width = column1Width.replace('px', '');
+            if (parseInt(column1Width) <= maxHeight) {
+                if ($('.column1').find('.firstLevel').length > 0) {
+                    $('.column1').find('.audience').css('width', parseInt(maxHeight) - parseInt($('.column1').find('.firstLevel').css("padding-left").replace("px", "")) - parseInt($('.column1').find('.firstLevel').css("padding-right").replace("px", "")));
                     $('#divPlanDetails').css('width', parseInt(maxHeight) - 15);
                     $('#div2PlanDetails').css('width', parseInt(maxHeight) + 15);
                     if ($('.column1 .lineitemLevel').length > 0)
@@ -111,9 +174,8 @@
                         $('.column1 .campaignLevel').css('width', parseInt(maxHeight) - parseInt($(".campaignLevel").css("padding-left").replace("px", "")) - parseInt($(".campaignLevel").css("padding-right").replace("px", "")) + 15);
                     if ($('.column1 .program-lvl').length > 0)
                         $('.column1 .program-lvl').css('width', parseInt(maxHeight) + 15);
-
                 }
-            } catch (e) { }
+            }
         }
     });
     $('.accordionClick').on('click', function () {
@@ -137,7 +199,7 @@
     }
 
     function SetHeader() {
-        
+        $('#divViewBy').show();
         if ('@AllocatedBy' != '@strDefault') {
             $('#planCostTitle').html('Total Planned Cost');
 
@@ -166,12 +228,12 @@
             $('#monthCompareTitle').html('Planned vs Allocated');
             $('.progressPlanned').show();
         }
-    //else {
-    //    $('#planCostTitle').html('');
-    //    $('#planCostValue').html('');
-    //    $('#monthCompareTitle').html('');
-    //    $('.progressPlanned').hide();
-    //}
+        //else {
+        //    $('#planCostTitle').html('');
+        //    $('#planCostValue').html('');
+        //    $('#monthCompareTitle').html('');
+        //    $('.progressPlanned').hide();
+        //}
         var strMonthHTML = '';
         if ('@AllocatedBy' == '@strMonths') {
             for (var i = 1; i <= 12; i++) {
@@ -200,13 +262,13 @@
                 else if (i == 4) {
                     strMonthHTML += '<span class="title source-sans-proregular">APR</span>';
                     if ('@PercAllocated.Apr' <= 100)
-                    strMonthHTML += '<div title="@PercAllocated.Apr%"><span style="width:@PercAllocated.Apr%;"></span></div>';
-                else
-                    strMonthHTML += '<div title="@PercAllocated.Apr%"><span style="width:@PercAllocated.Apr%;" class="error"></span></div>';
-            }
-            else if (i == 5) {
-                strMonthHTML += '<span class="title source-sans-proregular">MAY</span>';
-                if ('@PercAllocated.May' <= 100)
+                        strMonthHTML += '<div title="@PercAllocated.Apr%"><span style="width:@PercAllocated.Apr%;"></span></div>';
+                    else
+                        strMonthHTML += '<div title="@PercAllocated.Apr%"><span style="width:@PercAllocated.Apr%;" class="error"></span></div>';
+                }
+                else if (i == 5) {
+                    strMonthHTML += '<span class="title source-sans-proregular">MAY</span>';
+                    if ('@PercAllocated.May' <= 100)
                     strMonthHTML += '<div title="@PercAllocated.May%"><span style="width:@PercAllocated.May%;"></span></div>';
                 else
                     strMonthHTML += '<div title="@PercAllocated.May%"><span style="width:@PercAllocated.May%;" class="error"></span></div>';
@@ -302,65 +364,65 @@ else {
         strMonthHTML += '<div class="budgetMonth">';
         if (i == 1) {
             strMonthHTML += '<span class="title source-sans-proregular">JAN</span>';
-                        strMonthHTML += '<div><span style="width:0%;"></span></div>';
-                }
-                else if (i == 2) {
-                    strMonthHTML += '<span class="title source-sans-proregular">FEB</span>';
-                        strMonthHTML += '<div><span style="width:0%;"></span></div>';
-                }
-                else if (i == 3) {
-                    strMonthHTML += '<span class="title source-sans-proregular">MAR</span>';
-                        strMonthHTML += '<div><span style="width:0%;"></span></div>';
-                }
-                else if (i == 4) {
-                    strMonthHTML += '<span class="title source-sans-proregular">APR</span>';
-                        strMonthHTML += '<div><span style="width:0%;"></span></div>';
-                }
-                else if (i == 5) {
-                    strMonthHTML += '<span class="title source-sans-proregular">MAY</span>';
-                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
-            }
-            else if (i == 6) {
-                strMonthHTML += '<span class="title source-sans-proregular">JUN</span>';
-                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
-            }
-            else if (i == 7) {
-                strMonthHTML += '<span class="title source-sans-proregular">JUL</span>';
-                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
-            }
-            else if (i == 8) {
-                strMonthHTML += '<span class="title source-sans-proregular">AUG</span>';
-                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
-            }
-            else if (i == 9) {
-                strMonthHTML += '<span class="title source-sans-proregular">SEP</span>';
-                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
-            }
-            else if (i == 10) {
-                strMonthHTML += '<span class="title source-sans-proregular">OCT</span>';
-                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
-            }
-            else if (i == 11) {
-                strMonthHTML += '<span class="title source-sans-proregular">NOV</span>';
-                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
-            }
-            else if (i == 12) {
-                strMonthHTML += '<span class="title source-sans-proregular">DEC</span>';
-                    strMonthHTML += '<div><span style="width:0%;"></span></div>';
-            }
-    strMonthHTML += '</div>';
-}
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+        }
+        else if (i == 2) {
+            strMonthHTML += '<span class="title source-sans-proregular">FEB</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+        }
+        else if (i == 3) {
+            strMonthHTML += '<span class="title source-sans-proregular">MAR</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+        }
+        else if (i == 4) {
+            strMonthHTML += '<span class="title source-sans-proregular">APR</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+        }
+        else if (i == 5) {
+            strMonthHTML += '<span class="title source-sans-proregular">MAY</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+        }
+        else if (i == 6) {
+            strMonthHTML += '<span class="title source-sans-proregular">JUN</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+        }
+        else if (i == 7) {
+            strMonthHTML += '<span class="title source-sans-proregular">JUL</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+        }
+        else if (i == 8) {
+            strMonthHTML += '<span class="title source-sans-proregular">AUG</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+        }
+        else if (i == 9) {
+            strMonthHTML += '<span class="title source-sans-proregular">SEP</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+        }
+        else if (i == 10) {
+            strMonthHTML += '<span class="title source-sans-proregular">OCT</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+        }
+        else if (i == 11) {
+            strMonthHTML += '<span class="title source-sans-proregular">NOV</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+        }
+        else if (i == 12) {
+            strMonthHTML += '<span class="title source-sans-proregular">DEC</span>';
+            strMonthHTML += '<div><span style="width:0%;"></span></div>';
+        }
+        strMonthHTML += '</div>';
+    }
 }
 
     $('#monthContainer').html(strMonthHTML);
 
-    }
-    var Assortment = 'Budgeting';
-    $('#aPlanDetails').click(function (e) {
-        e.stopPropagation();
-        $.ajaxSetup({ cache: false });
-        $("#slidepanel").css("display", "block");
-        var url = '@Url.Content("~/Plan/PlanDetails")';
+}
+var Assortment = 'Budgeting';
+$('#aPlanDetails').click(function (e) {
+    e.stopPropagation();
+    $.ajaxSetup({ cache: false });
+    $("#slidepanel").css("display", "block");
+    var url = '@Url.Content("~/Plan/PlanDetails")';
 
         //var id = @Sessions.PlanId
         var id = CurrentPlanId;
@@ -405,7 +467,7 @@ else {
         $("#slidepanel").addClass('sidebar-wide');
         myApp.hidePleaseWait();
         e.preventDefault();
-     });
+    });
     $("[linktype=lineitem]").click(function (e) {
         var id = $(this).attr('id');
         var url = '@Url.Content("~/Plan/EditLineItem")';
