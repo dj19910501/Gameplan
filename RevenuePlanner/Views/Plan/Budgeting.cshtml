@@ -250,15 +250,28 @@
         currentTab = sender;
         $('.pull-right').removeClass('active');
         $('#' + sender).addClass('active');
-        if (currentTab == 'aAllocated') {
-            $('#divTabData').load('@Url.Action("GetAllocatedBugetData", "Plan")' + '?PlanId=' + CurrentPlanId, function () { ExpandItems(); });
-        }
-        else if (currentTab == 'aPlanned') {
-
+        if (CurrentPlanId != 0) {
+            $('.plannedCost').children().show();
+            $('.budgetCompare').children().show();
+            $('#nl-form2').show();
+            if (currentTab == 'aAllocated') {
+                $('#divTabData').load('@Url.Action("GetAllocatedBugetData", "Plan")' + '?PlanId=' + CurrentPlanId, function () { ExpandItems(); });
+            }
+            else if (currentTab == 'aPlanned') {
+                $('#divViewBy').show();
                 $('#divTabData').load('@Url.Action("GetBudgetedData", "Plan")' + '?PlanId=' + CurrentPlanId + '&viewBy=' + CurrentView, function () { ExpandItems(); });
-        }
-        else if (sender == 'aActuals') {
+            }
+            else if (sender == 'aActuals') {
 
+            }
+        }
+        else {
+            $('#nl-form2').hide();
+            $('#divTabData').html('');
+            $('#DivloadPlan').html('<h5 style="padding-left:22px;">No plan exist</h5>');
+            $('.plannedCost').children().hide();
+            $('.budgetCompare').children().hide();
+            $('#divViewBy').hide();
         }
         if (hideAllMessages) {
             $('.datepicker.dropdown-menu').css("display", "none");
