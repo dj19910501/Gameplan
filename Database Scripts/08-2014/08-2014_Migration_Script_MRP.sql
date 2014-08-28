@@ -978,3 +978,17 @@ BEGIN
 		EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Refers to associated UserId.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'CustomLabel', @level2type=N'COLUMN',@level2name=N'ModifiedBy'
 END
 GO
+
+--------------01_PL_710_Model Numbers Saving Zeros.sql
+IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME='Funnel')
+BEGIN
+
+	IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME='Funnel' AND COLUMN_NAME = 'Description')
+	BEGIN
+
+		UPDATE dbo.Funnel SET Description='I use marketing to generate leads annually from my website, blogs and social media efforts with an average deal size of #MarketingDealSize.' WHERE Title='Marketing'
+
+	END
+
+END
+GO
