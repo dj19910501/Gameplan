@@ -7553,7 +7553,7 @@ namespace RevenuePlanner.Controllers
 
                 ////// start-Added by Mitesh Vaishnav for PL ticket #571
                 //// Actual cost portion added exact under "lstMonthly" array because Actual cost portion is independent from the monthly/quarterly selection made by the user at the plan level.
-                var tacticLineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == PlanTacticId).Select(l => l.PlanLineItemId).ToList();
+                var tacticLineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == PlanTacticId && l.IsDeleted==false).Select(l => l.PlanLineItemId).ToList();
                 bool isLineItemForTactic = false;////flag for line items count of tactic.If tactic has any line item than flag set to true else false
                 List<Plan_Campaign_Program_Tactic_LineItem_Actual> actualCostAllocationData = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
                 if (tacticLineItemList.Count <= 0)

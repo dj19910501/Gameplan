@@ -2903,7 +2903,7 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.IsTacticEditable = false;
             }
-
+            ViewBag.LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == id && l.IsDeleted == false).ToList();
             return PartialView("Actual");
         }
 
@@ -2918,19 +2918,55 @@ namespace RevenuePlanner.Controllers
             var dtTactic = (from pt in db.Plan_Campaign_Program_Tactic_Actual
                             where pt.PlanTacticId == id
                             select new { pt.CreatedBy, pt.CreatedDate }).FirstOrDefault();
-            if (dtTactic != null)
+            var lineItemIds = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == id).Select(l => l.PlanLineItemId).ToList();
+            var dtlineItemActuals = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(al => lineItemIds.Contains(al.PlanLineItemId)).ToList();
+            if (dtTactic != null || dtlineItemActuals!=null)
             {
                 //User userName = objBDSUserRepository.GetTeamMemberDetails(dtTactic.CreatedBy, Sessions.ApplicationId);
                 //string lstUpdate = string.Format("{0} {1} by {2} {3}", "Last updated", dtTactic.CreatedDate.ToString("MMM dd"), userName.FirstName, userName.LastName);
-                var actualData = db.Plan_Campaign_Program_Tactic_Actual.Where(pcpta => pcpta.PlanTacticId == id).Select(pt => new
+                var ActualData = db.Plan_Campaign_Program_Tactic_Actual.Where(pcpta => pcpta.PlanTacticId == id).Select(pt => new
                 {
                     id = pt.PlanTacticId,
                     stageTitle = pt.StageTitle,
                     period = pt.Period,
                     actualValue = pt.Actualvalue
                 });
-                return Json(actualData, JsonRequestBehavior.AllowGet);
+
+                ////// start-Added by Mitesh Vaishnav for PL ticket #571
+                //// Actual cost portion added exact under "lstMonthly" array because Actual cost portion is independent from the monthly/quarterly selection made by the user at the plan level.
+                var tacticLineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == id && l.IsDeleted==false).Select(l => l.PlanLineItemId).ToList();
+                bool isLineItemForTactic = false;////flag for line items count of tactic.If tactic has any line item than flag set to true else false
+                if (tacticLineItemList.Count <= 0)
+                {
+                    ////object for filling input of Actual Cost Allocation
+                   var actualCostAllocationData = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => ta.PlanTacticId == id).ToList().Select(ta => new
+                      {
+                          planTacticId = ta.PlanTacticId,
+                          Period = ta.Period,
+                          Value = ta.Actualvalue
+                      }).ToList();
+                   var objBudgetAllocationData = new { actualData = ActualData, ActualCostAllocationData = actualCostAllocationData, IsLineItemForTactic = isLineItemForTactic };
+                return Json(objBudgetAllocationData, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    var actualLineItem = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(al => tacticLineItemList.Contains(al.PlanLineItemId)).ToList();
+                    ////object for filling input of Actual Cost Allocation
+                   var LineItemactualCost = actualLineItem.Select(al => new
+                        {
+                            PlanLineItemId = al.PlanLineItemId,
+                            Period = al.Period,
+                            Value = al.Value,
+                            Title=al.Plan_Campaign_Program_Tactic_LineItem.Title
+                        }).ToList();
+                    isLineItemForTactic = true;
+                    var objBudgetAllocationData = new { actualData = ActualData, ActualCostAllocationData = LineItemactualCost, IsLineItemForTactic = isLineItemForTactic };
+                return Json(objBudgetAllocationData, JsonRequestBehavior.AllowGet);
+                }
+                //// End-Added by Mitesh Vaishnav for PL ticket #571
+                
             }
+           
             return Json(new { }, JsonRequestBehavior.AllowGet);
         }
 
@@ -2941,8 +2977,9 @@ namespace RevenuePlanner.Controllers
         /// <param name="tacticactual">List of InspectActual.</param>
         /// <returns>Returns JsonResult.</returns>
         [HttpPost]
-        public JsonResult UploadResult(List<InspectActual> tacticactual, string UserId = "")
+        public JsonResult UploadResult(List<InspectActual> tacticactual,List<Plan_Campaign_Program_Tactic_LineItem_Actual> lineItemActual, string UserId = "")
         {
+            bool isLineItemForTactic = false;
             if (!string.IsNullOrEmpty(UserId))
             {
                 if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
@@ -2953,6 +2990,21 @@ namespace RevenuePlanner.Controllers
             }
             try
             {
+                if (lineItemActual != null && lineItemActual.Count>0)
+                {
+                    lineItemActual.ForEach(al => { al.CreatedBy = Sessions.User.UserId; al.CreatedDate = DateTime.Now; });
+                    var lstLineItemIds= lineItemActual.Select(al => al.PlanLineItemId).Distinct().ToList();
+                    var prevlineItemActual = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(al => lstLineItemIds.Contains(al.PlanLineItemId)).ToList();
+                    prevlineItemActual.ForEach(al => db.Entry(al).State = EntityState.Deleted);
+                    lineItemActual.ForEach(al => db.Entry(al).State = EntityState.Added);
+                    lineItemActual.ForEach(al => db.Plan_Campaign_Program_Tactic_LineItem_Actual.Add(al));
+                    isLineItemForTactic = true;
+
+                }
+                if (isLineItemForTactic)
+                {
+                    tacticactual = tacticactual.Where(ta => ta.StageTitle != Enums.InspectStage.Cost.ToString()).ToList();
+                }
                 if (tacticactual != null)
                 {
                     bool isMQL = false; // Tactic stage is MQL or not
@@ -2975,7 +3027,6 @@ namespace RevenuePlanner.Controllers
 
                             Int64 projectedStageValue = 0, mql = 0, cw = 0;
                             double revenue = 0;
-
                                 if (actualResult.IsActual)
                                 {
                                     if (isMQL)
