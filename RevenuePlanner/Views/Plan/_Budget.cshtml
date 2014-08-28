@@ -128,7 +128,23 @@
             try {
                 if (parseInt(column1Width) <= maxHeight) {
                     if ($('.column1').find('.firstLevel').length > 0) {
-                       
+                        $('.column1').find('.audience').css('width', parseInt(maxHeight) - parseInt($('.column1').find('.firstLevel').css("padding-left").replace("px", "")) - parseInt($('.column1').find('.firstLevel').css("padding-right").replace("px", "")));
+                        $('#divPlanDetails').css('width', parseInt(maxHeight) + 103);
+                        $('#div2PlanDetails').css('width', parseInt(maxHeight) + 133);
+                        if ($('.column1 .lineitemLevel').length > 0)
+                            $('.column1 .lineitemLevel').find('a:last-child').css('width', parseInt(maxHeight) - parseInt($(".lineitemLevel").css("padding-left").replace("px", "")) - parseInt($(".lineitemLevel").css("padding-right").replace("px", "")));
+                        if ($('.column1 .tacticLevel').length > 0)
+                            $('.column1 .tacticLevel').find('a:last-child').css('width', parseInt(maxHeight) - parseInt($(".tacticLevel").css("padding-left").replace("px", "")) - parseInt($(".tacticLevel").css("padding-right").replace("px", "")));
+                        if ($('.column1 .lineitem-lvl').length > 0)
+                            $('.column1 .lineitem-lvl').css('width', parseInt(maxHeight) + 133);
+                        if ($('.column1 .programLevel').length > 0)
+                            $('.column1 .programLevel').css('width', parseInt(maxHeight) - parseInt($(".programLevel").css("padding-left").replace("px", "")) - parseInt($(".programLevel").css("padding-right").replace("px", "")) + 133);
+                        if ($('.column1 .tactic-lvl').length > 0)
+                            $('.column1 .tactic-lvl').css('width', parseInt(maxHeight) + 133);
+                        if ($('.column1 .campaignLevel').length > 0)
+                            $('.column1 .campaignLevel').css('width', parseInt(maxHeight) - parseInt($(".campaignLevel").css("padding-left").replace("px", "")) - parseInt($(".campaignLevel").css("padding-right").replace("px", "")) + 133);
+                        if ($('.column1 .program-lvl').length > 0)
+                            $('.column1 .program-lvl').css('width', parseInt(maxHeight) + 133);
                     }
                     else {
                         $('#divPlanDetails').css('width', parseInt(maxHeight) - 15);
