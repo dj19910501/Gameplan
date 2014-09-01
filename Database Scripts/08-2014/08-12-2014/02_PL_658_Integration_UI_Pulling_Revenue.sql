@@ -82,8 +82,11 @@ BEGIN
 	BEGIN
 	INSERT [dbo].[GameplanDataTypePull] ([IntegrationTypeId], [ActualFieldName], [DisplayFieldName], [Type], [IsDeleted]) VALUES (@IntegrationTypeId, N'Stage', N'Stage', N'CW', 0)
 	INSERT [dbo].[GameplanDataTypePull] ([IntegrationTypeId], [ActualFieldName], [DisplayFieldName], [Type], [IsDeleted]) VALUES (@IntegrationTypeId, N'Timestamp', N'Timestamp', N'CW', 0)
-	INSERT [dbo].[GameplanDataTypePull] ([IntegrationTypeId], [ActualFieldName], [DisplayFieldName], [Type], [IsDeleted]) VALUES (@IntegrationTypeId, N'Campaign ID', N'Campaign ID', N'CW', 0)
-	INSERT [dbo].[GameplanDataTypePull] ([IntegrationTypeId], [ActualFieldName], [DisplayFieldName], [Type], [IsDeleted]) VALUES (@IntegrationTypeId, N'Revenue Amount', N'Revenue Amount', N'CW', 0)
+	INSERT [dbo].[GameplanDataTypePull] ([IntegrationTypeId], [ActualFieldName], [DisplayFieldName], [Type], [IsDeleted]) VALUES (@IntegrationTypeId, N'CampaignID', N'Campaign ID', N'CW', 0)
+	INSERT [dbo].[GameplanDataTypePull] ([IntegrationTypeId], [ActualFieldName], [DisplayFieldName], [Type], [IsDeleted]) VALUES (@IntegrationTypeId, N'Amount', N'Revenue Amount', N'CW', 0)
+	INSERT [dbo].[GameplanDataTypePull] ([IntegrationTypeId], [ActualFieldName], [DisplayFieldName], [Type], [IsDeleted]) VALUES (@IntegrationTypeId, N'Status', N'Status', N'INQ', 0)
+	INSERT [dbo].[GameplanDataTypePull] ([IntegrationTypeId], [ActualFieldName], [DisplayFieldName], [Type], [IsDeleted]) VALUES (@IntegrationTypeId, N'Timestamp', N'Timestamp', N'INQ', 0)
+	INSERT [dbo].[GameplanDataTypePull] ([IntegrationTypeId], [ActualFieldName], [DisplayFieldName], [Type], [IsDeleted]) VALUES (@IntegrationTypeId, N'CampaignID', N'CampaignID', N'INQ', 0)
 	END
 END
 

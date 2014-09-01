@@ -784,11 +784,11 @@ BEGIN
 	BEGIN
 		INSERT [dbo].[GameplanDataTypePull] ([IntegrationTypeId], [ActualFieldName], [DisplayFieldName], [Type], [IsDeleted]) VALUES (@IntegrationTypeId, N'Stage', N'Stage', N'CW', 0)
 		INSERT [dbo].[GameplanDataTypePull] ([IntegrationTypeId], [ActualFieldName], [DisplayFieldName], [Type], [IsDeleted]) VALUES (@IntegrationTypeId, N'Timestamp', N'Timestamp', N'CW', 0)
-		INSERT [dbo].[GameplanDataTypePull] ([IntegrationTypeId], [ActualFieldName], [DisplayFieldName], [Type], [IsDeleted]) VALUES (@IntegrationTypeId, N'Campaign ID', N'Campaign ID', N'CW', 0)
-		INSERT [dbo].[GameplanDataTypePull] ([IntegrationTypeId], [ActualFieldName], [DisplayFieldName], [Type], [IsDeleted]) VALUES (@IntegrationTypeId, N'Revenue Amount', N'Revenue Amount', N'CW', 0)
-		INSERT [dbo].[GameplanDataTypePull] ([IntegrationTypeId], [ActualFieldName], [DisplayFieldName], [Type], [IsDeleted]) VALUES (2, N'Status', N'Status', N'INQ', 0)
-		INSERT [dbo].[GameplanDataTypePull] ([IntegrationTypeId], [ActualFieldName], [DisplayFieldName], [Type], [IsDeleted]) VALUES (2, N'Timestamp', N'Timestamp', N'INQ', 0)
-		INSERT [dbo].[GameplanDataTypePull] ([IntegrationTypeId], [ActualFieldName], [DisplayFieldName], [Type], [IsDeleted]) VALUES (2, N'CampaignID', N'CampaignID', N'INQ', 0)
+		INSERT [dbo].[GameplanDataTypePull] ([IntegrationTypeId], [ActualFieldName], [DisplayFieldName], [Type], [IsDeleted]) VALUES (@IntegrationTypeId, N'CampaignID', N'Campaign ID', N'CW', 0)
+		INSERT [dbo].[GameplanDataTypePull] ([IntegrationTypeId], [ActualFieldName], [DisplayFieldName], [Type], [IsDeleted]) VALUES (@IntegrationTypeId, N'Amount', N'Revenue Amount', N'CW', 0)
+		INSERT [dbo].[GameplanDataTypePull] ([IntegrationTypeId], [ActualFieldName], [DisplayFieldName], [Type], [IsDeleted]) VALUES (@IntegrationTypeId, N'Status', N'Status', N'INQ', 0)
+		INSERT [dbo].[GameplanDataTypePull] ([IntegrationTypeId], [ActualFieldName], [DisplayFieldName], [Type], [IsDeleted]) VALUES (@IntegrationTypeId, N'Timestamp', N'Timestamp', N'INQ', 0)
+		INSERT [dbo].[GameplanDataTypePull] ([IntegrationTypeId], [ActualFieldName], [DisplayFieldName], [Type], [IsDeleted]) VALUES (@IntegrationTypeId, N'CampaignID', N'CampaignID', N'INQ', 0)
 	END
 END
 
@@ -990,5 +990,26 @@ BEGIN
 
 	END
 
+END
+GO
+
+-----------------01_PL_755_Bulldog_Operations_Error_Is_Displayed.sql
+IF EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME='GameplanDataTypePull')
+BEGIN
+	IF NOT((SELECT COUNT(*) FROM GameplanDataTypePull where [Type]='CW' AND [ActualFieldName] = 'Campaign ID') > 0)
+	BEGIN
+
+		UPDATE GameplanDataTypePull SET [ActualFieldName] = 'CampaignID' 
+		where [Type]='CW' AND [ActualFieldName] = 'Campaign ID'
+
+	END
+
+	IF NOT((SELECT COUNT(*) FROM GameplanDataTypePull where [Type]='CW' AND [ActualFieldName] = 'Revenue Amount') > 0)
+	BEGIN
+
+		UPDATE GameplanDataTypePull SET [ActualFieldName] = 'Amount' 
+		where [Type]='CW' AND [ActualFieldName] = 'Revenue Amount'
+
+	END
 END
 GO
