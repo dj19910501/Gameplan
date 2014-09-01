@@ -1074,18 +1074,21 @@
         if (inputsType != '') {
             $(inputsType).each(function () {
                 if (this.id.toString() != 'unallocatedBudget') {
-                if ($(this).val().trim() != '') {
-                    var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
-                    if (currentValue.match('^(0|[1-9][0-9]*)$')) {
-                        _inputs.push(parseInt(currentValue));
-                    }
-                    else {
-                        _inputs.push(0);
-                    }
-                }
-                else {
-                    _inputs.push(0);
-                }
+                    // Modified by Dharmraj to handle case were user update empty or zero allocation value.
+                    //if ($(this).val().trim() != '') {
+                    //    var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
+                    //    if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+                    //        _inputs.push(parseInt(currentValue));
+                    //    }
+                    //    else {
+                    //        _inputs.push(0);
+                    //    }
+                    //}
+                    //else {
+                    //    _inputs.push("");
+                    //}
+
+                    _inputs.push(ReplaceCC($(this).val()));
                 }
             });
             if (_planId != "" || _planId != "0") {
@@ -1093,7 +1096,7 @@
                     type: 'GET',
                     url: '@Url.Content("~/Plan/SaveBudgetAllocation/")',
                     dataType: "json",
-                    data: { planId: _planId, inputs: JSON.stringify(_inputs) },
+                    data: { planId: _planId, inputs: _inputs.toString() },
                     success: function (data) {
                         if (data != 'undefined') {
                             if (data.id == -1) {
@@ -1149,13 +1152,14 @@
                                     for (i = 1; i <= 12; i++)
                                     {
                                         var allocatedAmount = data.planBudgetAllocationList[i - 1].Value.toString();
-                                        if (parseInt(allocatedAmount) > 0) {
+                                        // Modified by Dharmraj to handle case were user update empty or zero allocation value.
+                                        //if (parseInt(allocatedAmount) > 0) {
                                             $('#M' + data.planBudgetAllocationList[i - 1].Period.toString()).val(FormatCommas(allocatedAmount, false));
                                             $('#M' + data.planBudgetAllocationList[i - 1].Period.toString()).attr('oldValue', FormatCommas(allocatedAmount, false));
-                                        }
-                                        else {
-                                            $('#M' + data.planBudgetAllocationList[i - 1].Period.toString()).attr('oldValue', '');
-                                        }
+                                        //}
+                                        //else {
+                                            //$('#M' + data.planBudgetAllocationList[i - 1].Period.toString()).attr('oldValue', '');
+                                        //}
                                         if (data.planCampaignBudgetAllocationList != 'undefined') {
                                             if (data.planCampaignBudgetAllocationList.length > 0) {
                                                 var campaignAllocatedAmount = data.planCampaignBudgetAllocationList[i - 1].Value.toString();
@@ -1193,13 +1197,14 @@
                                     var i;
                                     for (i = 1; i <= 12; i++) {
                                         var allocatedAmount = data.planBudgetAllocationList[i - 1].Value.toString();
-                                        if (parseInt(allocatedAmount) > 0) {
+                                        // Modified by Dharmraj to handle case were user update empty or zero allocation value.
+                                        //if (parseInt(allocatedAmount) > 0) {
                                             $('#Q' + data.planBudgetAllocationList[i - 1].Period.toString()).val(FormatCommas(allocatedAmount, false));
                                             $('#Q' + data.planBudgetAllocationList[i - 1].Period.toString()).attr('oldValue', FormatCommas(allocatedAmount, false));
-                                        }
-                                        else {
-                                            $('#Q' + data.planBudgetAllocationList[i - 1].Period.toString()).attr('oldValue', '');
-                                        }
+                                        //}
+                                        //else {
+                                            //$('#Q' + data.planBudgetAllocationList[i - 1].Period.toString()).attr('oldValue', '');
+                                        //}
                                         if (data.planCampaignBudgetAllocationList != 'undefined') {
                                             if (data.planCampaignBudgetAllocationList.length > 0) {
                                                 var campaignAllocatedAmoount = data.planCampaignBudgetAllocationList[i - 1].Value.toString();
