@@ -6841,10 +6841,8 @@ namespace RevenuePlanner.Controllers
 
                         if (inputs != "")
                         {
-                            var isValueProvided = inputValues.Where(a => Convert.ToInt64(a) > 0).Any();
-
                             //-- Insert new budget allocation for plan
-                            if (inputValues.Length == 12 && isValueProvided)
+                            if (inputValues.Length == 12)
                             {
                                 var PrevPlanBudgetAllocationList = db.Plan_Budget.Where(pb => pb.PlanId == planId).Select(pb => pb).ToList();
 
@@ -6859,12 +6857,21 @@ namespace RevenuePlanner.Controllers
                                             var updatePlanBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == ("Y" + (i + 1))).FirstOrDefault();
                                             if (updatePlanBudget != null)
                                             {
+                                                // Added by Dharmraj to handle case were user update empty or zero allocation value.
+                                                if (inputValues[i] == "")
+                                                {
+                                                    db.Entry(updatePlanBudget).State = EntityState.Deleted;
+                                                    isDBSaveChanges = true;
+                                                }
+                                                else
+                                                {
                                                 var newValue = Convert.ToInt64(inputValues[i]);
                                                 if (updatePlanBudget.Value != newValue)
                                                 {
                                                     updatePlanBudget.Value = newValue;
                                                     db.Entry(updatePlanBudget).State = EntityState.Modified;
                                                     isDBSaveChanges = true;
+                                                }
                                                 }
                                                 isExists = true;
                                             }
@@ -6884,7 +6891,7 @@ namespace RevenuePlanner.Controllers
                                     }
                                 }
                             }
-                            else if (inputValues.Length == 4 && isValueProvided)
+                            else if (inputValues.Length == 4)
                             {
                                 var PrevPlanBudgetAllocationList = db.Plan_Budget.Where(pb => pb.PlanId == planId).Select(pb => pb).ToList();
 
@@ -6900,6 +6907,14 @@ namespace RevenuePlanner.Controllers
                                             var updatePlanBudget = PrevPlanBudgetAllocationList.Where(pb => pb.Period == ("Y" + (i + 1))).FirstOrDefault();
                                             if (updatePlanBudget != null)
                                             {
+                                                // Added by Dharmraj to handle case were user update empty or zero allocation value.
+                                                if (inputValues[j] == "")
+                                                {
+                                                    db.Entry(updatePlanBudget).State = EntityState.Deleted;
+                                                    isDBSaveChanges = true;
+                                                }
+                                                else
+                                                {
                                                 var newValue = Convert.ToInt64(inputValues[j]);
                                                 if (updatePlanBudget.Value != newValue)
                                                 {
@@ -6907,6 +6922,8 @@ namespace RevenuePlanner.Controllers
                                                     db.Entry(updatePlanBudget).State = EntityState.Modified;
                                                     isDBSaveChanges = true;
                                                 }
+                                                }
+
                                                 j = j + 1;
                                                 isExists = true;
                                             }
