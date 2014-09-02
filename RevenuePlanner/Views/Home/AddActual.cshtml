@@ -861,7 +861,7 @@
                 $html += '<tr id=' + idtr + '>';
                 for (var j = 1; j <= 12; j = j + 1) {
                     var tdId = _id + "-" + arrStage[p] + "-Y" + j;
-                    $html += '<td><input id="' + tdId + '" placeholder="0" ';
+                    $html += '<td><input id="' + tdId + '" placeholder="---" ';     // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
                     //  value=' + _actualData[i].jan + '></input></td>';
                     if (arrStage[p] == 'Revenue') {
                         $html += ' class="currency_dollar"  maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar"';
@@ -954,7 +954,7 @@
                                         _costProjected +
                                     '</div>' +
                                     '<div class="table-info-actual-left" style="float: right;">' +
-                                        '<input placeholder="0" class="currency_dollarCost truncate" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" id="ActuallblCCost' + _id + '" value="' + _costActual + '">' + '</input>' +
+                                        '<input placeholder="---" class="currency_dollarCost truncate" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" id="ActuallblCCost' + _id + '" value="' + _costActual + '">' + '</input>' +   // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
                                     '</div>' +
                                 '</div>' +
                             '</div>';
