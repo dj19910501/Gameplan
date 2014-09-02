@@ -3,7 +3,7 @@
 @model List<BudgetModel>
 @{
     string AllocatedBy = ViewBag.AllocatedBy;
-    BudgetModel plan = Model.Where(p => p.ActivityType == "plan").SingleOrDefault();
+    BudgetModel plan = Model.Where(p => p.ActivityType == ActivityType.ActivityPlan).SingleOrDefault();
     string strDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
     string strMonths = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower();
     string strQuarters = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower();
@@ -33,11 +33,11 @@
                                     <div id="divPlanDetails"><a id="aPlanDetails">@plan.ActivityName</a></div>
                                 </td>
                             </tr>
-                            @Html.ActivityCampaign("campaign", plan.ActivityId, Model, "allocated")
+                            @Html.ActivityCampaign(ActivityType.ActivityCampaign, plan.ActivityId, Model, "allocated")
                         </tbody>
                         <tbody class="column2">
-                            @Html.AllocatedPlanMonth("plan", plan.ActivityId, plan.Month, plan.ParentMonth, AllocatedBy)
-                            @Html.AllocatedCampaignMonth("campaign", plan.ActivityId, Model, AllocatedBy)
+                            @Html.AllocatedPlanMonth(ActivityType.ActivityPlan, plan.ActivityId, plan.Month, plan.ParentMonth, AllocatedBy)
+                            @Html.AllocatedCampaignMonth(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy)
                         </tbody>
                         <tbody class="column3">
                             <tr>
@@ -48,7 +48,7 @@
                                     <div>Budgeted</div>
                                 </td>
                             </tr>
-                            @Html.CampaignSummary("campaign", plan.ActivityId, Model, AllocatedBy, "0")
+                            @Html.CampaignSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, "0")
                         </tbody>
                     </table>
                     <div style="clear: both;"></div>

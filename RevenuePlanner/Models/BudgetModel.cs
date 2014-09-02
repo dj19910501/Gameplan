@@ -46,6 +46,8 @@ namespace RevenuePlanner.Models
         public string AudienceTitle { get; set; }
         public Guid GeographyId { get; set; }
         public string GeographyTitle { get; set; }
+        public int VerticalId { get; set; }
+        public string VerticalTitle { get; set; }
     }
     public class BudgetedValue
     {

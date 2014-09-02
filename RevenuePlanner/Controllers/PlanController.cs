@@ -7711,13 +7711,6 @@ namespace RevenuePlanner.Controllers
         public const string Oct = "Y10";
         public const string Nov = "Y11";
         public const string Dec = "Y12";
-        public const string ActivityPlan = "plan";
-        public const string ActivityCampaign = "campaign";
-        public const string ActivityProgram = "program";
-        public const string ActivityTactic = "tactic";
-        public const string ActivityLineItem = "lineitem";
-        public const string ActivityAudience = "audience";
-        public const string ActivityGeography = "geography";
 
         public enum BudgetTab
         {
@@ -7729,7 +7722,8 @@ namespace RevenuePlanner.Controllers
         {
             Campaign = 0,
             Audiance = 1,
-            Geography = 2
+            Geography = 2,
+            Vertical = 3
         }
         #endregion
 
@@ -7792,6 +7786,7 @@ namespace RevenuePlanner.Controllers
                 lstViewBy.Add(new ViewByModel { Text = "Campaigns", Value = "0" });
                 lstViewBy.Add(new ViewByModel { Text = audLabel, Value = "1" });
                 lstViewBy.Add(new ViewByModel { Text = "Geography", Value = "2" });
+                lstViewBy.Add(new ViewByModel { Text = "Vertical", Value = "3" });
                 ViewBag.ViewBy = lstViewBy;
             }
             catch (Exception e)
@@ -7880,7 +7875,7 @@ namespace RevenuePlanner.Controllers
                 obj = new BudgetModel();
                 obj.ActivityId = objPlan.PlanId.ToString();
                 obj.ActivityName = objPlan.Title;
-                obj.ActivityType = ActivityPlan;
+                obj.ActivityType = ActivityType.ActivityPlan;
                 obj.ParentActivityId = "0";
                 obj.Budgeted = objPlan.Budget;
                 obj.IsOwner = true;
@@ -7892,7 +7887,7 @@ namespace RevenuePlanner.Controllers
                     obj = new BudgetModel();
                     obj.ActivityId = c.id.ToString();
                     obj.ActivityName = c.title;
-                    obj.ActivityType = ActivityCampaign;
+                    obj.ActivityType = ActivityType.ActivityCampaign;
                     obj.ParentActivityId = parentPlanId.ToString();
                     obj.IsOwner = Convert.ToBoolean(c.isOwner);
                     obj = GetMonthWiseData(obj, c.Budget);
@@ -7904,7 +7899,7 @@ namespace RevenuePlanner.Controllers
                         obj = new BudgetModel();
                         obj.ActivityId = p.id.ToString();
                         obj.ActivityName = p.title;
-                        obj.ActivityType = ActivityProgram;
+                        obj.ActivityType = ActivityType.ActivityProgram;
                         obj.ParentActivityId = parentCampaignId;
                         obj.IsOwner = Convert.ToBoolean(p.isOwner);
                         obj = GetMonthWiseData(obj, p.Budget);
@@ -7920,20 +7915,20 @@ namespace RevenuePlanner.Controllers
             BudgetMonth a = new BudgetMonth();
             BudgetMonth b = new BudgetMonth();
             BudgetMonth PercAllocated = new BudgetMonth();
-            a = model.Where(m => m.ActivityType == ActivityPlan).Select(m => m.Month).SingleOrDefault();
+            a = model.Where(m => m.ActivityType == ActivityType.ActivityPlan).Select(m => m.Month).SingleOrDefault();
             //b = model.Where(m => m.ActivityType == ActivityPlan).Select(m => m.ParentMonth).SingleOrDefault();
-            b.Jan = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Jan);
-            b.Feb = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Feb);
-            b.Mar = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Mar);
-            b.Apr = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Apr);
-            b.May = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.May);
-            b.Jun = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Jun);
-            b.Jul = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Jul);
-            b.Aug = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Aug);
-            b.Sep = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Sep);
-            b.Oct = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Oct);
-            b.Nov = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Nov);
-            b.Dec = model.Where(m => m.ActivityType == ActivityCampaign).Sum(m => m.Month.Dec);
+            b.Jan = model.Where(m => m.ActivityType == ActivityType.ActivityCampaign).Sum(m => m.Month.Jan);
+            b.Feb = model.Where(m => m.ActivityType == ActivityType.ActivityCampaign).Sum(m => m.Month.Feb);
+            b.Mar = model.Where(m => m.ActivityType == ActivityType.ActivityCampaign).Sum(m => m.Month.Mar);
+            b.Apr = model.Where(m => m.ActivityType == ActivityType.ActivityCampaign).Sum(m => m.Month.Apr);
+            b.May = model.Where(m => m.ActivityType == ActivityType.ActivityCampaign).Sum(m => m.Month.May);
+            b.Jun = model.Where(m => m.ActivityType == ActivityType.ActivityCampaign).Sum(m => m.Month.Jun);
+            b.Jul = model.Where(m => m.ActivityType == ActivityType.ActivityCampaign).Sum(m => m.Month.Jul);
+            b.Aug = model.Where(m => m.ActivityType == ActivityType.ActivityCampaign).Sum(m => m.Month.Aug);
+            b.Sep = model.Where(m => m.ActivityType == ActivityType.ActivityCampaign).Sum(m => m.Month.Sep);
+            b.Oct = model.Where(m => m.ActivityType == ActivityType.ActivityCampaign).Sum(m => m.Month.Oct);
+            b.Nov = model.Where(m => m.ActivityType == ActivityType.ActivityCampaign).Sum(m => m.Month.Nov);
+            b.Dec = model.Where(m => m.ActivityType == ActivityType.ActivityCampaign).Sum(m => m.Month.Dec);
 
             PercAllocated.Jan = (a.Jan == 0 && b.Jan == 0) ? 0 : (a.Jan == 0 && b.Jan > 0) ? 101 : b.Jan / a.Jan * 100;
             PercAllocated.Feb = (a.Feb == 0 && b.Feb == 0) ? 0 : (a.Feb == 0 && b.Feb > 0) ? 101 : b.Feb / a.Feb * 100;
@@ -7988,13 +7983,13 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         private List<BudgetModel> SetupValues(List<BudgetModel> model)
         {
-            BudgetModel plan = model.Where(p => p.ActivityType == ActivityPlan).SingleOrDefault();
+            BudgetModel plan = model.Where(p => p.ActivityType == ActivityType.ActivityPlan).SingleOrDefault();
             if (plan != null)
             {
                 plan.ParentMonth = new BudgetMonth();
                 plan.Allocated = plan.Budgeted;
                 plan.SumMonth = plan.Month;
-                List<BudgetModel> campaigns = model.Where(p => p.ActivityType == ActivityCampaign && p.ParentActivityId == plan.ActivityId).ToList();
+                List<BudgetModel> campaigns = model.Where(p => p.ActivityType == ActivityType.ActivityCampaign && p.ParentActivityId == plan.ActivityId).ToList();
                 BudgetMonth SumCampaign = new BudgetMonth();
                 foreach (BudgetModel c in campaigns)
                 {
@@ -8013,7 +8008,7 @@ namespace RevenuePlanner.Controllers
                     SumCampaign.Dec += c.Month.Dec;
                     c.SumMonth = SumCampaign;
                     c.ParentMonth = new BudgetMonth();
-                    List<BudgetModel> programs = model.Where(p => p.ActivityType == ActivityProgram && p.ParentActivityId == c.ActivityId).ToList();
+                    List<BudgetModel> programs = model.Where(p => p.ActivityType == ActivityType.ActivityProgram && p.ParentActivityId == c.ActivityId).ToList();
                     BudgetMonth SumProgram = new BudgetMonth();
                     foreach (BudgetModel p in programs)
                     {
@@ -8035,7 +8030,7 @@ namespace RevenuePlanner.Controllers
                     }
                 }
                 //finding remaining
-                campaigns = model.Where(p => p.ActivityType == ActivityCampaign && p.ParentActivityId == plan.ActivityId).ToList();
+                campaigns = model.Where(p => p.ActivityType == ActivityType.ActivityCampaign && p.ParentActivityId == plan.ActivityId).ToList();
                 SumCampaign = new BudgetMonth();
                 foreach (BudgetModel c in campaigns)
                 {
@@ -8053,7 +8048,7 @@ namespace RevenuePlanner.Controllers
                     c.ParentMonth.Nov = plan.Month.Nov - c.SumMonth.Nov;
                     c.ParentMonth.Dec = plan.Month.Dec - c.SumMonth.Dec;
 
-                    List<BudgetModel> programs = model.Where(p => p.ActivityType == ActivityProgram && p.ParentActivityId == c.ActivityId).ToList();
+                    List<BudgetModel> programs = model.Where(p => p.ActivityType == ActivityType.ActivityProgram && p.ParentActivityId == c.ActivityId).ToList();
                     BudgetMonth SumProgram = new BudgetMonth();
                     foreach (BudgetModel p in programs)
                     {
@@ -8195,6 +8190,8 @@ namespace RevenuePlanner.Controllers
                         GeographyId = pctj.GeographyId,
                         AudianceName = pctj.Audience.Title,
                         GeographyName = pctj.Geography.Title,
+                        VerticalId = pctj.VerticalId,
+                        VerticalName = pctj.Vertical.Title,
                         lineitems = (db.Plan_Campaign_Program_Tactic_LineItem.Where(pcp => pcp.PlanTacticId.Equals(pctj.PlanTacticId) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp).ToList()).Select(pclj => new
                         {
                             id = "cptl_" + pclj.PlanLineItemId.ToString(),
@@ -8226,7 +8223,7 @@ namespace RevenuePlanner.Controllers
                 obj.Id = objPlan.PlanId.ToString();
                 obj.ActivityId = "plan_" + objPlan.PlanId.ToString();
                 obj.ActivityName = objPlan.Title;
-                obj.ActivityType = ActivityPlan;
+                obj.ActivityType = ActivityType.ActivityPlan;
                 obj.ParentActivityId = "0";
                 obj.Budgeted = objPlan.Budget;
                 obj.IsOwner = true;
@@ -8239,7 +8236,7 @@ namespace RevenuePlanner.Controllers
                     obj.Id = c.id.Replace("c_","");
                     obj.ActivityId = c.id;
                     obj.ActivityName = c.title;
-                    obj.ActivityType = ActivityCampaign;
+                    obj.ActivityType = ActivityType.ActivityCampaign;
                     obj.ParentActivityId = parentPlanId;
                     obj.IsOwner = Convert.ToBoolean(c.isOwner);
                     obj = GetMonthWiseData(obj, c.Budget);
@@ -8251,7 +8248,7 @@ namespace RevenuePlanner.Controllers
                         obj.Id = p.id.Replace("cp_", "");
                         obj.ActivityId = p.id;
                         obj.ActivityName = p.title;
-                        obj.ActivityType = ActivityProgram;
+                        obj.ActivityType = ActivityType.ActivityProgram;
                         obj.ParentActivityId = parentCampaignId;
                         obj.IsOwner = Convert.ToBoolean(p.isOwner);
                         obj = GetMonthWiseData(obj, p.Budget);
@@ -8263,7 +8260,7 @@ namespace RevenuePlanner.Controllers
                             obj.Id = t.id.Replace("cpt_", "");
                             obj.ActivityId = t.id;
                             obj.ActivityName = t.title;
-                            obj.ActivityType = ActivityTactic;
+                            obj.ActivityType = ActivityType.ActivityTactic;
                             obj.ParentActivityId = parentProgramId;
                             obj.IsOwner = Convert.ToBoolean(t.isOwner);
                             obj.Budgeted = t.Cost;
@@ -8272,6 +8269,8 @@ namespace RevenuePlanner.Controllers
                             obj.GeographyId = t.GeographyId;
                             obj.AudienceTitle = t.AudianceName;
                             obj.GeographyTitle = t.GeographyName;
+                            obj.VerticalId = t.VerticalId;
+                            obj.VerticalTitle = t.VerticalName;
                             model.Add(obj);
                             parentTacticId = t.id;
                             foreach (var l in t.lineitems)
@@ -8280,7 +8279,7 @@ namespace RevenuePlanner.Controllers
                                 obj.Id = l.id.Replace("cptl_", "");
                                 obj.ActivityId = l.id;
                                 obj.ActivityName = l.title;
-                                obj.ActivityType = ActivityLineItem;
+                                obj.ActivityType = ActivityType.ActivityLineItem;
                                 obj.ParentActivityId = parentTacticId;
                                 obj.Budgeted = l.Cost;
                                 obj.IsOwner = Convert.ToBoolean(l.isOwner);
@@ -8293,41 +8292,103 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-            if (viewBy == ViewBy.Audiance)
+            if (viewBy == ViewBy.Audiance || viewBy == ViewBy.Geography || viewBy == ViewBy.Vertical)
             {
+                string prefix = "";
                 List<BudgetModel> modelAud = new List<BudgetModel>();
-                BudgetModel objPlanAud = model.Where(m => m.ActivityType == ActivityPlan).FirstOrDefault();
+                BudgetModel objPlanAud = model.Where(m => m.ActivityType == ActivityType.ActivityPlan).FirstOrDefault();
                 modelAud.Add(objPlanAud); //Added plan to the Audience model
 
                 List<string> CampaingIds;
 
                 //Retrive the distinct audiances
-                List<int> audDistIds = model.Where(m => m.AudienceId != 0).Select(m => m.AudienceId).Distinct().ToList();
+                //List<int> audDistIds = model.Where(m => m.AudienceId != 0).Select(m => m.AudienceId).Distinct().ToList();
+                List<string> DistIds = new List<string>();
+                if (viewBy == ViewBy.Audiance)
+                {
+                    prefix = "a_";
+                    DistIds = model.Where(m => m.AudienceId != 0).Select(m => m.AudienceId.ToString()).Distinct().ToList();
+                }
+                else if (viewBy == ViewBy.Geography)
+                {
+                    prefix = "g_";
+                    DistIds = model.Where(m => m.GeographyId != Guid.Empty).Select(m => m.GeographyId.ToString()).Distinct().ToList();
+                }
+                else if (viewBy == ViewBy.Vertical)
+                {
+                    prefix = "v_";
+                    DistIds = model.Where(m => m.VerticalId != 0).Select(m => m.VerticalId.ToString()).Distinct().ToList();
+                }
                 string prefixId = "";
-                foreach (int audId in audDistIds)
+                foreach (string audId in DistIds)
                 {
                     CampaingIds = new List<string>();
                     //Add audiance to the model
-                    BudgetModel tmpTactic = model.Where(m => m.AudienceId == audId && m.ActivityType == ActivityTactic).FirstOrDefault();
+                    //BudgetModel tmpTactic = model.Where(m => m.AudienceId == audId && m.ActivityType == ActivityTactic).FirstOrDefault();
+                    BudgetModel tmpTactic;
                     obj = new BudgetModel();
-                    obj.ActivityId = "a_" + audId;
+                    if (viewBy == ViewBy.Audiance)
+                    {
+                        int objId = Convert.ToInt32(audId);
+                        tmpTactic = model.Where(m => m.AudienceId == objId && m.ActivityType == ActivityType.ActivityTactic).FirstOrDefault();
+                        obj.ActivityId = prefix + audId;
                     obj.ActivityName = tmpTactic.AudienceTitle;
-                    obj.ActivityType = ActivityAudience;
+                        obj.ActivityType = ActivityType.ActivityAudience;
                     obj.ParentActivityId = objPlanAud.ActivityId;
+                        parentAudId = prefix + audId;
+                    prefixId = "a" + audId + "_";
+                    }
+                    else if (viewBy == ViewBy.Geography)
+                    {
+                        Guid objId = new Guid(audId);
+                        tmpTactic = model.Where(m => m.GeographyId == objId && m.ActivityType == ActivityType.ActivityTactic).FirstOrDefault();
+                        obj.ActivityId = prefix + audId;
+                        obj.ActivityName = tmpTactic.GeographyTitle;
+                        obj.ActivityType = ActivityType.ActivityGeography;
+                        obj.ParentActivityId = objPlanAud.ActivityId;
+                        parentAudId = prefix + audId;
+                        prefixId = "g" + audId + "_";
+                    }
+                    else if (viewBy == ViewBy.Vertical)
+                    {
+                        int objId = Convert.ToInt32(audId);
+                        tmpTactic = model.Where(m => m.VerticalId == objId && m.ActivityType == ActivityType.ActivityTactic).FirstOrDefault();
+                        obj.ActivityId = prefix + audId;
+                        obj.ActivityName = tmpTactic.VerticalTitle;
+                        obj.ActivityType = ActivityType.ActivityVertical;
+                        obj.ParentActivityId = objPlanAud.ActivityId;
+                        parentAudId = prefix + audId;
+                        prefixId = "v" + audId + "_";
+                    }
                     obj.Budgeted = 0;
                     obj.IsOwner = true;
                     obj.Month = new BudgetMonth();
                     modelAud.Add(obj);
-                    parentAudId = "a_" + audId;
-                    prefixId = "a" + audId + "_";
+                    
                     //Add all tactics and its line items
-                    List<BudgetModel> lstTactic = model.Where(m => m.AudienceId == audId && m.ActivityType == ActivityTactic).ToList();
+                    //List<BudgetModel> lstTactic = model.Where(m => m.AudienceId == audId && m.ActivityType == ActivityTactic).ToList();
+                    List<BudgetModel> lstTactic = new List<BudgetModel>();
+                    if (viewBy == ViewBy.Audiance)
+                    {
+                        int objId = Convert.ToInt32(audId);
+                        lstTactic = model.Where(m => m.AudienceId == objId && m.ActivityType == ActivityType.ActivityTactic).ToList();
+                    }
+                    else if (viewBy == ViewBy.Geography)
+                    {
+                        Guid objId = new Guid(audId);
+                        lstTactic = model.Where(m => m.GeographyId == objId && m.ActivityType == ActivityType.ActivityTactic).ToList();
+                    }
+                    else if (viewBy == ViewBy.Vertical)
+                    {
+                        int objId = Convert.ToInt32(audId);
+                        lstTactic = model.Where(m => m.VerticalId == objId && m.ActivityType == ActivityType.ActivityTactic).ToList();
+                    }
                     foreach (BudgetModel objTactic in lstTactic)
                     {
-                        BudgetModel objProgram = model.Where(m => m.ActivityId == objTactic.ParentActivityId && m.ActivityType == ActivityProgram).FirstOrDefault();
+                        BudgetModel objProgram = model.Where(m => m.ActivityId == objTactic.ParentActivityId && m.ActivityType == ActivityType.ActivityProgram).FirstOrDefault();
                         if (objProgram != null)
                         {
-                            BudgetModel objCampaign = model.Where(m => m.ActivityId == objProgram.ParentActivityId && m.ActivityType == ActivityCampaign).FirstOrDefault();
+                            BudgetModel objCampaign = model.Where(m => m.ActivityId == objProgram.ParentActivityId && m.ActivityType == ActivityType.ActivityCampaign).FirstOrDefault();
                             if (objCampaign != null)
                             {
                                 if (!CampaingIds.Contains(objCampaign.ActivityId))
@@ -8339,23 +8400,42 @@ namespace RevenuePlanner.Controllers
                     }
                     foreach (string campaingid in CampaingIds)
                     {
-                        BudgetModel objCampaign = model.Where(m => m.ActivityId == campaingid && m.ActivityType == ActivityCampaign).FirstOrDefault();
+                        BudgetModel objCampaign = model.Where(m => m.ActivityId == campaingid && m.ActivityType == ActivityType.ActivityCampaign).FirstOrDefault();
                         modelAud.Add(GetClone(objCampaign, prefixId + objCampaign.ActivityId, parentAudId));
-                        List<BudgetModel> lstProgram = model.Where(m => m.ParentActivityId == campaingid && m.ActivityType == ActivityProgram).ToList();
+                        List<BudgetModel> lstProgram = model.Where(m => m.ParentActivityId == campaingid && m.ActivityType == ActivityType.ActivityProgram).ToList();
                         foreach (BudgetModel objProgram in lstProgram)
                         {
-                            List<BudgetModel> lstTactics = model.Where(m => m.ParentActivityId == objProgram.ActivityId && m.ActivityType == ActivityTactic).ToList();
+                            //List<BudgetModel> lstTactics = model.Where(m => m.ParentActivityId == objProgram.ActivityId && m.ActivityType == ActivityTactic).ToList();
+                            List<BudgetModel> lstTactics = new List<BudgetModel>();
+                            if (viewBy == ViewBy.Audiance)
+                            {
+                                int objId = Convert.ToInt32(audId);
+                                lstTactics = model.Where(m => m.ParentActivityId == objProgram.ActivityId && m.ActivityType == ActivityType.ActivityTactic && m.AudienceId == objId).ToList();
+                            }
+                            else if (viewBy == ViewBy.Geography)
+                            {
+                                Guid objId = new Guid(audId);
+                                lstTactics = model.Where(m => m.ParentActivityId == objProgram.ActivityId && m.ActivityType == ActivityType.ActivityTactic && m.GeographyId == objId).ToList();
+                            }
+                            else if (viewBy == ViewBy.Vertical)
+                            {
+                                int objId = Convert.ToInt32(audId);
+                                lstTactics = model.Where(m => m.ParentActivityId == objProgram.ActivityId && m.ActivityType == ActivityType.ActivityTactic && m.VerticalId == objId).ToList();
+                            }
+                            if (lstTactics.Count() > 0)
+                            {
                             modelAud.Add(GetClone(objProgram, prefixId + objProgram.ActivityId, prefixId + objProgram.ParentActivityId));
                             foreach (BudgetModel objT in lstTactics)
                             {
-                                if (objT.AudienceId == audId)
-                                {
-                                    List<BudgetModel> lstLines = model.Where(m => m.ParentActivityId == objT.ActivityId && m.ActivityType == ActivityLineItem).ToList();
+                                    //if (objT.AudienceId == audId)
+                                    //{
+                                    List<BudgetModel> lstLines = model.Where(m => m.ParentActivityId == objT.ActivityId && m.ActivityType == ActivityType.ActivityLineItem).ToList();
                                     modelAud.Add(GetClone(objT,prefixId + objT.ActivityId,prefixId + objT.ParentActivityId));
                                     foreach (BudgetModel objL in lstLines)
                                     {
                                         modelAud.Add(GetClone(objL, prefixId + objL.ActivityId, prefixId + objL.ParentActivityId));
                                     }
+                                    //}
                                 }
                             }
                         }
@@ -8364,105 +8444,40 @@ namespace RevenuePlanner.Controllers
                 }
                 model = modelAud;
             }
-            else if (viewBy == ViewBy.Geography)
-            {
-                List<BudgetModel> modelGeo = new List<BudgetModel>();
-                BudgetModel objPlanGeo = model.Where(m => m.ActivityType == ActivityPlan).FirstOrDefault();
-                modelGeo.Add(objPlanGeo); //Added plan to the Audience model
-
-                List<string> CampaingIds;
-
-                //Retrive the distinct geography
-                List<Guid> geoDistIds = model.Where(m => m.GeographyId != Guid.Empty).Select(m => m.GeographyId).Distinct().ToList();
-                string prefixId = "";
-                foreach (Guid geoId in geoDistIds)
-                {
-                    CampaingIds = new List<string>();
-                    //Add audiance to the model
-                    BudgetModel tmpTactic = model.Where(m => m.GeographyId == geoId && m.ActivityType == ActivityTactic).FirstOrDefault();
-                    obj = new BudgetModel();
-                    obj.ActivityId = "g_" + geoId;
-                    obj.ActivityName = tmpTactic.GeographyTitle;
-                    obj.ActivityType = ActivityGeography;
-                    obj.ParentActivityId = objPlanGeo.ActivityId;
-                    obj.Budgeted = 0;
-                    obj.IsOwner = true;
-                    obj.Month = new BudgetMonth();
-                    modelGeo.Add(obj);
-                    parentAudId = "g_" + geoId;
-                    prefixId = "g" + geoId + "_";
-                    //Add all tactics and its line items
-                    List<BudgetModel> lstTactic = model.Where(m => m.GeographyId == geoId && m.ActivityType == ActivityTactic).ToList();
-                    foreach (BudgetModel objTactic in lstTactic)
-                    {
-                        BudgetModel objProgram = model.Where(m => m.ActivityId == objTactic.ParentActivityId && m.ActivityType == ActivityProgram).FirstOrDefault();
-                        if (objProgram != null)
-                        {
-                            BudgetModel objCampaign = model.Where(m => m.ActivityId == objProgram.ParentActivityId && m.ActivityType == ActivityCampaign).FirstOrDefault();
-                            if (objCampaign != null)
-                            {
-                                if (!CampaingIds.Contains(objCampaign.ActivityId))
-                                {
-                                    CampaingIds.Add(objCampaign.ActivityId);
-                                }
-                            }
-                        }
-                    }
-                    foreach (string campaingid in CampaingIds)
-                    {
-                        BudgetModel objCampaign = model.Where(m => m.ActivityId == campaingid && m.ActivityType == ActivityCampaign).FirstOrDefault();
-                        modelGeo.Add(GetClone(objCampaign, prefixId + objCampaign.ActivityId, parentAudId));
-                        List<BudgetModel> lstProgram = model.Where(m => m.ParentActivityId == campaingid && m.ActivityType == ActivityProgram).ToList();
-                        foreach (BudgetModel objProgram in lstProgram)
-                        {
-                            List<BudgetModel> lstTactics = model.Where(m => m.ParentActivityId == objProgram.ActivityId && m.ActivityType == ActivityTactic).ToList();
-                            modelGeo.Add(GetClone(objProgram, prefixId + objProgram.ActivityId, prefixId + objProgram.ParentActivityId));
-                            foreach (BudgetModel objT in lstTactics)
-                            {
-                                if (objT.GeographyId == geoId)
-                                {
-                                    List<BudgetModel> lstLines = model.Where(m => m.ParentActivityId == objT.ActivityId && m.ActivityType == ActivityLineItem).ToList();
-                                    modelGeo.Add(GetClone(objT, prefixId + objT.ActivityId, prefixId + objT.ParentActivityId));
-                                    foreach (BudgetModel objL in lstLines)
-                                    {
-                                        modelGeo.Add(GetClone(objL, prefixId + objL.ActivityId, prefixId + objL.ParentActivityId));
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                }
-                model = modelGeo;
-            }
+            
 
             model = ManageLineItems(model);
 
             ViewBag.AllocatedBy = AllocatedBy;
             ViewBag.ViewBy = (int)viewBy;
 
-            model = CalculateBottomUp(model, ActivityTactic, ActivityLineItem);
-            model = CalculateBottomUp(model, ActivityProgram, ActivityTactic);
-            model = CalculateBottomUp(model, ActivityCampaign, ActivityProgram);
+            model = CalculateBottomUp(model, ActivityType.ActivityTactic, ActivityType.ActivityLineItem);
+            model = CalculateBottomUp(model, ActivityType.ActivityProgram, ActivityType.ActivityTactic);
+            model = CalculateBottomUp(model, ActivityType.ActivityCampaign, ActivityType.ActivityProgram);
             if (viewBy == ViewBy.Campaign)
             {
-            model = CalculateBottomUp(model, ActivityPlan, ActivityCampaign);
+                model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityCampaign);
             }
             else if (viewBy == ViewBy.Audiance)
             {
-                model = CalculateBottomUp(model, ActivityAudience, ActivityCampaign);
-                model = CalculateBottomUp(model, ActivityPlan, ActivityAudience);
+                model = CalculateBottomUp(model, ActivityType.ActivityAudience, ActivityType.ActivityCampaign);
+                model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityAudience);
             }
             else if (viewBy == ViewBy.Geography)
             {
-                model = CalculateBottomUp(model, ActivityGeography, ActivityCampaign);
-                model = CalculateBottomUp(model, ActivityPlan, ActivityGeography);
+                model = CalculateBottomUp(model, ActivityType.ActivityGeography, ActivityType.ActivityCampaign);
+                model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityGeography);
+            }
+            else if (viewBy == ViewBy.Vertical)
+            {
+                model = CalculateBottomUp(model, ActivityType.ActivityVertical, ActivityType.ActivityCampaign);
+                model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityVertical);
             }
             BudgetMonth a = new BudgetMonth();
             BudgetMonth child = new BudgetMonth();
             BudgetMonth PercAllocated = new BudgetMonth();
-            child = model.Where(m => m.ActivityType == ActivityPlan).Select(m => m.Month).SingleOrDefault();
-            a = model.Where(m => m.ActivityType == ActivityPlan).Select(m => m.ParentMonth).SingleOrDefault();
+            child = model.Where(m => m.ActivityType == ActivityType.ActivityPlan).Select(m => m.Month).SingleOrDefault();
+            a = model.Where(m => m.ActivityType == ActivityType.ActivityPlan).Select(m => m.ParentMonth).SingleOrDefault();
 
 
             PercAllocated.Jan = (a.Jan == 0 && child.Jan == 0) ? 0 : (a.Jan == 0 && child.Jan > 0) ? 101 : child.Jan / a.Jan * 100;
@@ -8542,10 +8557,10 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         private List<BudgetModel> ManageLineItems(List<BudgetModel> model)
         {
-            foreach (BudgetModel l in model.Where(l => l.ActivityType == ActivityTactic))
+            foreach (BudgetModel l in model.Where(l => l.ActivityType == ActivityType.ActivityTactic))
             {
                 BudgetMonth lineDiff = new BudgetMonth();
-                List<BudgetModel> lines = model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId).ToList();
+                List<BudgetModel> lines = model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId).ToList();
                 BudgetModel otherLine = lines.Where(ol => ol.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault();
                 lines = lines.Where(ol => ol.ActivityName != Common.DefaultLineItemTitle).ToList();
                 if (otherLine != null)
@@ -8578,18 +8593,18 @@ namespace RevenuePlanner.Controllers
                         lineDiff.Nov = lineDiff.Nov < 0 ? 0 : lineDiff.Nov;
                         lineDiff.Dec = lineDiff.Dec < 0 ? 0 : lineDiff.Dec;
 
-                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Month = lineDiff;
-                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().ParentMonth = lineDiff;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Month = lineDiff;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().ParentMonth = lineDiff;
 
                         double allocated = l.Allocated - lines.Sum(l1 => l1.Allocated);
                         allocated = allocated < 0 ? 0 : allocated;
-                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Allocated = allocated;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Allocated = allocated;
                     }
                     else
                     {
-                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Month = l.Month;
-                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().ParentMonth = l.Month;
-                        model.Where(line => line.ActivityType == ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Allocated = l.Allocated < 0 ? 0 : l.Allocated;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Month = l.Month;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().ParentMonth = l.Month;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Allocated = l.Allocated < 0 ? 0 : l.Allocated;
                     }
                 }
             }

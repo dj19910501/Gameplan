@@ -830,4 +830,16 @@ namespace RevenuePlanner.Helpers
         public static string Monthly = "Monthly";
         public static string PM = "PM";
     }
+
+    public static class ActivityType
+    {
+        public const string ActivityPlan = "plan";
+        public const string ActivityCampaign = "campaign";
+        public const string ActivityProgram = "program";
+        public const string ActivityTactic = "tactic";
+        public const string ActivityLineItem = "lineitem";
+        public const string ActivityAudience = "audience";
+        public const string ActivityGeography = "geography";
+        public const string ActivityVertical = "vertical";
+    }
 }

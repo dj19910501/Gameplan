@@ -3,7 +3,7 @@
 @model List<BudgetModel>
 @{
     string AllocatedBy = ViewBag.AllocatedBy;
-    BudgetModel plan = Model.Where(p => p.ActivityType == "plan").SingleOrDefault();
+    BudgetModel plan = Model.Where(p => p.ActivityType == ActivityType.ActivityPlan).SingleOrDefault();
     string strDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
     string strMonths = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower();
     string strQuarters = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower();
@@ -33,30 +33,38 @@
                             </tr>
                             @if (strViewBy == "2")
                             {
-                                @Html.ActivityMainParent("geography", plan.ActivityId, Model, "planned", "2")
+                                @Html.ActivityMainParent(ActivityType.ActivityGeography, plan.ActivityId, Model, "planned", strViewBy)
                             }
                             else if (strViewBy == "1")
                             {
-                                @Html.ActivityMainParent("audience", plan.ActivityId, Model, "planned", "1")
+                                @Html.ActivityMainParent(ActivityType.ActivityAudience, plan.ActivityId, Model, "planned", strViewBy)
+                            }
+                            else if (strViewBy == "3")
+                            {
+                                @Html.ActivityMainParent(ActivityType.ActivityVertical, plan.ActivityId, Model, "planned", strViewBy)
                             }
                             else
                             {
-                                @Html.ActivityCampaign("campaign", plan.ActivityId, Model, "planned")
+                                @Html.ActivityCampaign(ActivityType.ActivityCampaign, plan.ActivityId, Model, "planned")
                             }
                         </tbody>
                         <tbody class="column2">
-                            @Html.PlanMonth("plan", plan.ActivityId, plan.Month, plan.ParentMonth, AllocatedBy)
+                            @Html.PlanMonth(ActivityType.ActivityPlan, plan.ActivityId, plan.Month, plan.ParentMonth, AllocatedBy)
                             @if (strViewBy == "2")
                             {
-                                @Html.ParentMonth("geography", plan.ActivityId, Model, AllocatedBy, "2")
+                                @Html.ParentMonth(ActivityType.ActivityGeography, plan.ActivityId, Model, AllocatedBy, strViewBy)
                             }
                             else if (strViewBy == "1")
                             {
-                                @Html.ParentMonth("audiance", plan.ActivityId, Model, AllocatedBy, "1")
+                                @Html.ParentMonth(ActivityType.ActivityAudience, plan.ActivityId, Model, AllocatedBy, strViewBy)
+                            }
+                            else if (strViewBy == "3")
+                            {
+                                @Html.ParentMonth(ActivityType.ActivityVertical, plan.ActivityId, Model, AllocatedBy, strViewBy)
                             }
                             else
                             {
-                            @Html.CampaignMonth("campaign", plan.ActivityId, Model, AllocatedBy)
+                            @Html.CampaignMonth(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy)
                                 
                             }
                         </tbody>
@@ -71,15 +79,19 @@
                             </tr>
                             @if (strViewBy == "2")
                             {
-                                @Html.ParentSummary("geography", plan.ActivityId, Model, AllocatedBy, "1", "2")
+                                @Html.ParentSummary(ActivityType.ActivityGeography, plan.ActivityId, Model, AllocatedBy, "1", strViewBy)
                             }
                             else if (strViewBy == "1")
                             {
-                                @Html.ParentSummary("audiance", plan.ActivityId, Model, AllocatedBy, "1", "1")
+                                @Html.ParentSummary(ActivityType.ActivityAudience, plan.ActivityId, Model, AllocatedBy, "1", strViewBy)
+                            }
+                            else if (strViewBy == "3")
+                            {
+                                @Html.ParentSummary(ActivityType.ActivityVertical, plan.ActivityId, Model, AllocatedBy, "1", strViewBy)
                             }
                             else
                             {
-                            @Html.CampaignSummary("campaign", plan.ActivityId, Model, AllocatedBy, "1")
+                            @Html.CampaignSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, "1")
                             }
                         </tbody>
                     </table>
