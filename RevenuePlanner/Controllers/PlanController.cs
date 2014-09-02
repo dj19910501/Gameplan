@@ -3959,7 +3959,7 @@ namespace RevenuePlanner.Controllers
                                 ////start Added by Mitesh Vaishnav for PL ticket #571
                                 ////For edit mode, remove all actual cost for tactic if tactic has no line item
                                 var tacticLineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == form.PlanTacticId && l.IsDeleted == false).Select(l => l.PlanLineItemId).ToList();
-                                if (tacticLineItemList.Count <= 0)
+                                if (tacticLineItemList.Count == 0)
                                 {
                                 var PrevActualAllocationListTactics = db.Plan_Campaign_Program_Tactic_Actual.Where(c => c.PlanTacticId == form.PlanTacticId).Select(c => c).ToList();
                                 PrevActualAllocationListTactics.ForEach(a => db.Entry(a).State = EntityState.Deleted);
@@ -7591,7 +7591,7 @@ namespace RevenuePlanner.Controllers
                 var tacticLineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == PlanTacticId && l.IsDeleted==false).Select(l => l.PlanLineItemId).ToList();
                 bool isLineItemForTactic = false;////flag for line items count of tactic.If tactic has any line item than flag set to true else false
                 List<Plan_Campaign_Program_Tactic_LineItem_Actual> actualCostAllocationData = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
-                if (tacticLineItemList.Count <= 0)
+                if (tacticLineItemList.Count == 0)
                 {
                     ////object for filling input of Actual Cost Allocation
                     actualCostAllocationData = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => ta.PlanTacticId == PlanTacticId).ToList().Select(ta => new Plan_Campaign_Program_Tactic_LineItem_Actual

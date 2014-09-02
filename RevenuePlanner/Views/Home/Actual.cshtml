@@ -216,7 +216,7 @@
                 }
             </div>
             <div class="pull-left">
-                <label id="last-updated" class="pull-left last-updated">@ViewBag.UpdatedBy</label>
+                <label id="last-updated" class="pull-left last-updated" style="width:40%">@ViewBag.UpdatedBy</label>
                 <label id="last-synced" class="pull-left">@ViewBag.LastSync</label>
             </div>
         </div>
@@ -259,7 +259,7 @@
                     fillTacticActualTable();
                     getLoadActual();
                     AssignDefaultValue(); // added by dharmraj, #547
-
+                    fillTotalActualCost();
                     //Fetch all the row values from the tables
                     $('.ActualsFormater').each(function () {
                         //Added By : Kalpesh Sharma
@@ -339,6 +339,7 @@
                         var arr = $(this).attr('id').split('-')
                         var totalcost = 0;
                         var oldMonthTotalCost = 0;
+                        var parentTotalCost = 0;
                         if ($("#Cost-" + arr[1]).text().trim() != '') {
                             oldMonthTotalCost = parseFloat($("#Cost-" + arr[1]).text());
                         }
@@ -348,6 +349,11 @@
                         }
                         totalcost = (oldMonthTotalCost + parseFloat(currentValue)) - oldValue;
                         $("#Cost-" + arr[1]).text(totalcost.toString());
+                        if ($("#lblTotalCost").text().trim() != '') {
+                            parentTotalCost = parseFloat($("#lblTotalCost").text().trim().replace(/,/g, '').replace('$', ''));
+                        }
+                        parentTotalCost = (parentTotalCost + parseFloat(currentValue)) - oldValue;
+                        $("#lblTotalCost").text(FormatCurrency(parentTotalCost.toString(), false));
                         /*End - Actual cost total month wise*/
                         /*start Actual cost Total lineItem wise*/
                         var oldLineItemTotal = 0;
@@ -366,6 +372,32 @@
 
             });
         });
+        function fillTotalActualCost() {
+            var cost = 0;
+            if ('@planLineItemIds' != '') {
+                $("#trCost").find('th').each(function () {
+                    if ($(this).html().trim() != '') {
+                        var currentValue = $(this).html().trim().replace(/,/g, '').replace('$', '');
+                        if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+                            cost += parseFloat(currentValue);
+                        }
+                    }
+
+                });
+            }
+            else {
+                $("#trCost").find('input').each(function () {
+                    if ($(this).val().trim() != '') {
+                        var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
+                        if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+                            cost += parseFloat(currentValue);
+                        }
+                    }
+
+                });
+            }
+            $("#lblTotalCost").html(FormatCurrency(cost.toString(), false));
+        }
         /*End Added by Mitesh Vaishnav for PL ticket #695*/
         function fillTacticActualTable() {
             if (typeof TacticActual != 'undefined') {
