@@ -3025,7 +3025,13 @@ namespace RevenuePlanner.Controllers
                             var tacticActualList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => ta.PlanTacticId == actualResult.PlanTacticId).ToList();
                             tacticActualList.ForEach(ta => db.Entry(ta).State = EntityState.Deleted);
 
-                            Int64 projectedStageValue = 0, mql = 0, cw = 0;
+                            //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+                            List<int> tacticLineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem.Where(ta => ta.PlanTacticId == actualResult.PlanTacticId).ToList().Select(a => a.PlanLineItemId).ToList();
+                            var deleteMarkedLineItem = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(c=> tacticLineItemActualList.Contains(c.PlanLineItemId)).ToList();
+                            deleteMarkedLineItem.ForEach(ta => db.Entry(ta).State = EntityState.Deleted);
+
+                            //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+                            Int64 projectedStageValue = 0, mql = 0, cw = 0 , cost = 0;
                             double revenue = 0;
                                 if (actualResult.IsActual)
                                 {
@@ -3050,6 +3056,22 @@ namespace RevenuePlanner.Controllers
 
                                     foreach (var t in tacticactual)
                                     {
+                                        //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+                                        int Id = 0;
+                                        bool isNumeric = int.TryParse(Convert.ToString(t.StageTitle), out Id);
+
+                                        if (t.StageTitle != Enums.InspectStage.ProjectedStageValue.ToString() &&
+                                            t.StageTitle != Enums.InspectStage.MQL.ToString() &&
+                                            t.StageTitle != Enums.InspectStage.CW.ToString() &&
+                                            t.StageTitle != Enums.InspectStage.Revenue.ToString() &&
+                                            t.StageTitle != Enums.InspectStage.Cost.ToString() &&
+                                            t.StageTitle != Enums.InspectStage.INQ.ToString() && isNumeric)
+                                        {
+                                            //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+                                            SaveActualLineItem(t, Id);
+                                        }
+                                        else
+                                        {
                                         Plan_Campaign_Program_Tactic_Actual objpcpta = new Plan_Campaign_Program_Tactic_Actual();
                                         objpcpta.PlanTacticId = t.PlanTacticId;
                                         objpcpta.StageTitle = t.StageTitle;
@@ -3057,12 +3079,15 @@ namespace RevenuePlanner.Controllers
                                         if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString()) mql += t.ActualValue;
                                         if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString()) cw += t.ActualValue;
                                         if (t.StageTitle == Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString()) revenue += t.ActualValue;
+                                            if (t.StageTitle == Enums.InspectStage.Revenue.ToString()) cost += t.ActualValue;
+
                                         objpcpta.Period = t.Period;
                                         objpcpta.Actualvalue = t.ActualValue;
                                         objpcpta.CreatedDate = DateTime.Now;
                                         objpcpta.CreatedBy = Sessions.User.UserId;
                                         db.Entry(objpcpta).State = EntityState.Added;
                                         db.Plan_Campaign_Program_Tactic_Actual.Add(objpcpta);
+                                        }
                                 }
                             }
                                         db.SaveChanges();
@@ -3086,6 +3111,24 @@ namespace RevenuePlanner.Controllers
             }
 
             return Json(new { id = 0 });
+        }
+
+        /// <summary>
+        /// Save Line item Actual 
+        /// Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+        /// </summary>
+        /// <param name="objInspectActual"></param>
+        /// <param name="Id"></param>
+        public void SaveActualLineItem(InspectActual objInspectActual,int Id)
+        {
+                Plan_Campaign_Program_Tactic_LineItem_Actual objPlan_LineItem_Actual = new Plan_Campaign_Program_Tactic_LineItem_Actual();
+                objPlan_LineItem_Actual.PlanLineItemId = Convert.ToInt32(objInspectActual.StageTitle);
+                objPlan_LineItem_Actual.Period = objInspectActual.Period;
+                objPlan_LineItem_Actual.CreatedDate = DateTime.Now;
+                objPlan_LineItem_Actual.CreatedBy = Sessions.User.UserId;
+                objPlan_LineItem_Actual.Value = objInspectActual.ActualValue;
+                db.Entry(objPlan_LineItem_Actual).State = EntityState.Added;
+                db.Plan_Campaign_Program_Tactic_LineItem_Actual.Add(objPlan_LineItem_Actual);
         }
 
         /// <summary>
@@ -4425,6 +4468,8 @@ namespace RevenuePlanner.Controllers
             var lstEditableVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
             var lstEditableGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId.ToString().ToLower()).ToList();////Modified by Mitesh Vaishnav For functional review point 89
 
+            List<string> lstMonthly = new List<string>() { "Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "Y7", "Y8", "Y9", "Y10", "Y11", "Y12" };
+
             var tacticObj = TacticList.Select(t => new
             {
                 id = t.PlanTacticId,
@@ -4437,8 +4482,27 @@ namespace RevenuePlanner.Controllers
                 cwActual = lstTacticActual.Where(a => a.PlanTacticId == t.PlanTacticId && a.StageTitle == TitleCW).Sum(a => a.Actualvalue),//t.CWsActual == null ? 0 : t.CWsActual,
                 revenueProjected = Math.Round(tacticList.Where(tl => tl.PlanTacticId == t.PlanTacticId).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 1),
                 revenueActual = lstTacticActual.Where(a => a.PlanTacticId == t.PlanTacticId && a.StageTitle == TitleRevenue).Sum(a => a.Actualvalue),//t.RevenuesActual == null ? 0 : t.RevenuesActual,
-                costProjected = t.Cost,
-                costActual = t.CostActual == null ? 0 : t.CostActual,
+                //costProjected = t.Cost,
+                costProjected = (db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).Count() > 0 ?  
+                (db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).ToList().Sum(a => a.Cost) : t.Cost,
+                //costActual = t.CostActual == null ? 0 : t.CostActual,
+                costActual = (db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).Count() > 0 ?  
+                (db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).ToList().Select(pp => new
+                {
+                    LineItemActualCost = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(ww=> ww.PlanLineItemId == pp.PlanLineItemId).ToList().Sum(q=>q.Value)
+                }).Sum(a => a.LineItemActualCost) : (t.CostActual == null ? 0 : t.CostActual),
+
+                costActualData = lstMonthly.Select(m => new
+                {
+                    period = m,
+                    Cost = (db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).Count() > 0 ? 
+                    db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == t.PlanTacticId).ToList().Select(ss => new
+                    {
+                    costValue =  db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(y => y.PlanLineItemId == ss.PlanLineItemId && y.Period == m).ToList().Sum(a => a.Value)
+                    }).Sum(s=>s.costValue) :
+                    db.Plan_Campaign_Program_Tactic_Actual.Where(s => s.PlanTacticId == t.PlanTacticId && s.Period == m).ToList().Sum(s => s.Actualvalue),
+                }),
+
                 roiProjected = 0,//t.ROI == null ? 0 : t.ROI,
                 roiActual = 0,//t.ROIActual == null ? 0 : t.ROIActual,
                 geographyId = t.GeographyId,
@@ -4459,8 +4523,23 @@ namespace RevenuePlanner.Controllers
                 tacticStageTitle = t.Stage.Title,
                 projectedStageValue = t.ProjectedStageValue,
                 projectedStageValueActual = lstTacticActual.Where(a => a.PlanTacticId == t.PlanTacticId && a.StageTitle == TitleProjectedStageValue).Sum(a => a.Actualvalue),
-                IsTacticEditable = (lstEditableGeography.Contains(t.GeographyId.ToString().ToLower()) && lstEditableVertical.Contains(t.VerticalId.ToString()))////Modified by Mitesh Vaishnav For functional review point 89
-            }).Select(t => t).Distinct().OrderBy(t => t.id);
+                IsTacticEditable = (lstEditableGeography.Contains(t.GeographyId.ToString().ToLower()) && lstEditableVertical.Contains(t.VerticalId.ToString())),////Modified by Mitesh Vaishnav For functional review point 89
+                LineItemsData = (db.Plan_Campaign_Program_Tactic_LineItem.ToList().Where(pctq => pctq.PlanTacticId.Equals(t.PlanTacticId)).ToList()).Select(pcpt => new
+                {
+                    id= pcpt.PlanLineItemId,
+                    Title = pcpt.Title,
+                    LineItemCost = pcpt.Cost,
+                    LineItemActualCost = (db.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList().Where(lta => lta.PlanLineItemId == pcpt.PlanLineItemId)).ToList().Sum(q=>q.Value),
+                    LineItemActual = lstMonthly.Select(m => new
+                    {
+                        period = m,
+                        Cost = (db.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList().Where(lta => lta.PlanLineItemId == pcpt.PlanLineItemId && lta.Period == m).Select(ltai => new
+                        {
+                             actualValue = ltai.Value,
+                        })).Sum(s=>s.actualValue)
+                    }),
+                })
+            });
 
             var lstTactic = tacticObj.Select(t => new
             {
@@ -4470,6 +4549,7 @@ namespace RevenuePlanner.Controllers
                 mqlActual = t.mqlActual,
                 cwProjected = t.cwProjected,
                 cwActual = t.cwActual,
+                costActualData = t.costActualData,
                 revenueProjected = t.revenueProjected,
                 revenueActual = t.revenueActual,
                 costProjected = t.costProjected,
@@ -4487,7 +4567,8 @@ namespace RevenuePlanner.Controllers
                 tacticStageTitle = t.tacticStageTitle,
                 projectedStageValue = t.projectedStageValue,
                 projectedStageValueActual = t.projectedStageValueActual,
-                IsTacticEditable = t.IsTacticEditable
+                IsTacticEditable = t.IsTacticEditable,
+                LineItemsData = t.LineItemsData
             });
 
             var opens = lstTactic.Where(x => x.actualData.ToList().Count == 0).OrderBy(t => t.title);

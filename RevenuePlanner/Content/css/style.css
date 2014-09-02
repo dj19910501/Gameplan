@@ -8058,3 +8058,10 @@ footer a {
     width: 100%;
 }
 /* End By : Kalpesh Sharma PL #697 08/26/2014*/
+
+
+.inner-lineItem
+{
+    font-size: 20px !important;
+    color: gray;
+}

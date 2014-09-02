@@ -151,6 +151,8 @@
 </div>
 <script type="text/javascript">
     var actuals;
+    //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+    var IsLineItemActual = false;
     var showMyTacticId = 0;
     var geoArr = [];
     var indArr = [];
@@ -415,7 +417,10 @@
                     titles.css({ "color": "#908D88" });
                     mask.css({ "height": "0px" });
                     mask.css({ "overflow-x": "scroll" });
-                    animateMask($(mask), 254);
+                    //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+                    var CurrentID = $(this).attr('href');
+                    var heights = ($(CurrentID).find(".accordion-inner").height()) + 10;
+                    animateMask($(mask), heights);
                 }
 
 
@@ -430,8 +435,10 @@
 
             /*shadow on table*/
             $(".accordion-actuals .accordion-heading").find('.table-actual-mask').scroll(function () {
-                var styles = { visibility: "visible", widht: "15px", height: "238px" };
-                var styles1 = { visibility: "hidden", widht: "15px", height: "238px" };
+                //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+                var TacticSideBorderHeight = ($($(this).parent().prev().attr("href")).find(".accordion-inner").height()) + 10 + "px";
+                var styles = { visibility: "visible", widht: "15px", height: TacticSideBorderHeight };
+                var styles1 = { visibility: "hidden", widht: "15px", height: TacticSideBorderHeight };
                 if ($(this).scrollLeft() > 0) {
                     /*set shadows*/
                     $(this).prev().css(styles);
@@ -614,7 +621,15 @@
                     var roip = (prevenue - pcost) / pcost;
                     $("#ProjectedROI" + id).text(roip.toFixed(2));
                 }
+
+                //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+                if (IsLineItemActual) {
                 pcost = parseFloat(ReplaceCC($("#ActuallblCCost" + id).val()));
+                }
+                else {
+                    pcost = parseFloat(ReplaceCC($("#ActuallblCCost" + id).text()));
+                }
+
                 if (pcost != 0 && !isNaN(pcost)) {
                     var prevenue = parseFloat(ReplaceCC($("#ActuallblCRevenue" + id).text()));
                     var roiT = (prevenue - pcost) / pcost;
@@ -646,7 +661,15 @@
                 var totalMQLActual = ReplaceCC($("#ActuallblPMQL" + tacticId).text());
                 var totalCWActual = ReplaceCC($("#ActuallblPCW" + tacticId).text());
                 var totalRevenueActual = ReplaceCC($("#ActuallblCRevenue" + tacticId).text());
-                var totalCostActual = ReplaceCC($("#ActuallblCCost" + tacticId).val());
+                //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+                var totalCostActual = 0;
+                if (IsLineItemActual) {
+                    totalCostActual = ReplaceCC($("#ActuallblCCost" + tacticId).val());
+                }
+                else {
+                    totalCostActual = ReplaceCC($("#ActuallblCCost" + tacticId).text());
+                }
+                
                 var totalROI = ReplaceCC($("#ProjectedROI" + tacticId).text());
                 var totalROIActual = ReplaceCC($("#ActualROI" + tacticId).text());
                 var tableId = "#divTable" + tacticId;
@@ -776,7 +799,8 @@
                         if (isShow) {
                             indexValue = indexValue + 1;
                             isFilterFound = true;
-                            addRowActual(indexValue, actuals[i].id, actuals[i].title, actuals[i].projectedStageValue, actuals[i].projectedStageValueActual, actuals[i].mqlProjected, actuals[i].mqlActual, actuals[i].cwProjected, actuals[i].cwActual, actuals[i].revenueProjected, actuals[i].revenueActual, actuals[i].costProjected, actuals[i].costActual, actuals[i].roiProjected, actuals[i].roiActual, actuals[i].actualData, actuals[i].modifiedBy, actuals[i].LastSync, actuals[i].stageTitle, actuals[i].tacticStageId, actuals[i].tacticStageTitle, actuals[i].IsTacticEditable);
+                            addRowActual(indexValue, actuals[i].id, actuals[i].title, actuals[i].projectedStageValue, actuals[i].projectedStageValueActual, actuals[i].mqlProjected, actuals[i].mqlActual, actuals[i].cwProjected, actuals[i].cwActual, actuals[i].revenueProjected, actuals[i].revenueActual, actuals[i].costProjected, actuals[i].costActual, actuals[i].roiProjected, actuals[i].roiActual, actuals[i].actualData, actuals[i].modifiedBy, actuals[i].LastSync, actuals[i].stageTitle, actuals[i].tacticStageId, actuals[i].tacticStageTitle, actuals[i].IsTacticEditable, actuals[i].LineItemsData, actuals[i].costActualData);
+
                         }
                     }
                     if (!isFilterFound) {
@@ -809,7 +833,8 @@
         }
 
         //add row in actuals table
-        function addRowActual(_index, _id, _title, _projectedStageValue, _projectedStageValueActual, _mqlProjected, _mqlActual, _cwProjected, _cwActual, _revenueProjected, _revenueActual, _costProjected, _costActual, _roiProjected, _roiActual, _actualData, _modifiedBy, _LastSync, stageTitle, tacticStageId, tacticStageTitle, IsTacticEditable) {
+        //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+        function addRowActual(_index, _id, _title, _projectedStageValue, _projectedStageValueActual, _mqlProjected, _mqlActual, _cwProjected, _cwActual, _revenueProjected, _revenueActual, _costProjected, _costActual, _roiProjected, _roiActual, _actualData, _modifiedBy, _LastSync, stageTitle, tacticStageId, tacticStageTitle, IsTacticEditable, _LineItemsData, _costActualData) {
             var $tableActuals = $('.accordion-actuals');
             var num = parseInt(_index);
             var updateBy = '', stat;
@@ -879,6 +904,50 @@
                 }
                 $html += '</tr>';
             }
+
+            //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+            $html += '<tr id=' + _id + "Cost" + '>';
+            for (var j = 1; j <= 12; j = j + 1) {
+                var newCounterTactic = j - 1;
+                var tdId = _id + "-" + "Cost" + "-Y" + j;
+                $html += '<td>';
+                if (_LineItemsData.length <= 0) {
+                    $html += '<input id="' + tdId + '" placeholder="0" ';
+                    $html += ' class="currency_dollar"  maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar"';
+                    $html += 'value="' + _costActualData[newCounterTactic].Cost + '"';
+                    $html += ' ></input>';
+                }
+                else {
+                    $html += '<div class="table-info-actual-left addFormatterActualCurrency" style="float: right;">' + _costActualData[newCounterTactic].Cost + '</div>';
+                }
+                $html += '</td>'; }
+                $html += '</tr>';
+
+            //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+            for (var p = 0; p < _LineItemsData.length; p = p + 1) {
+                var idtr = "tr" + _id + _LineItemsData[p].Title;
+                $html += '<tr id=' + idtr + '>';
+                for (var j = 1; j <= 12; j = j + 1) {
+                    var tdId = _id + "-" + _LineItemsData[p].id + "-Y" + j;
+                    $html += '<td><input id="' + tdId + '" placeholder="0" ';
+                    $html += ' class="currency_dollar"  maxlength="@RevenuePlanner.Helpers.Common.maxLengthPriceValue"';
+                    
+                    var newCounter = j - 1;
+                    var Data = _LineItemsData[p].LineItemActual[newCounter];
+
+                    if (typeof Data != 'undefined') {
+                        $html += 'value="' + _LineItemsData[p].LineItemActual[newCounter].Cost + '"';
+                    }
+                    else {
+                        $html += 'value="' + 0 + '"';
+                    }
+
+                    $html += ' ></input></td>';
+                }
+                $html += '</tr>';
+            }
+
+
             if (updateBy == "") {
                 if (_costActual != 0) {
                     updateBy = _modifiedBy;
@@ -946,11 +1015,36 @@
                                     '<div class="table-info-actual-left truncate addFormatterActualCurrency" id="ProjectedlblCCost' + _id + '">' +
                                         _costProjected +
                                     '</div>' +
-                                    '<div class="table-info-actual-left" style="float: right;">' +
-                                        '<input placeholder="0" class="currency_dollarCost truncate" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" id="ActuallblCCost' + _id + '" value="' + _costActual + '">' + '</input>' +
+                                    '<div class="table-info-actual-left " style="float: right;" id="DivActuallblCCost' + _id + '">';
+
+            //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+            if (_LineItemsData.length == 0 ) {
+                $html += '<input placeholder="0" class="currency_dollar truncate addFormatterActualCurrency" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" id="ActuallblCCost' + _id + '" value="' + _costActual + '">' + '</input>';
+            }
+            else
+            {
+                $html += '<span id="ActuallblCCost' + _id + '" class="addFormatterActualCurrency">' + _costActual + '</span>';
+                IsLineItemActual = true;
+            }
+                           
+            $html+=     '</div>' +
+                                '</div>' +
+                            '</div>';
+
+            //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+            for (line in _LineItemsData) {
+                $html += '<div class="body-toogle-actual"><span class="inner-lineItem">' + _LineItemsData[line].Title +
+                                             '</span><div id="border-right" class="table-info-actual-left-wraper">' +
+                                                 '<div class="table-info-actual-left truncate addFormatterActualCurrency" id="lineItemProjectedCost' + _LineItemsData[line].id + '">' +
+                                                     _LineItemsData[line].LineItemCost +
+                                                 '</div>' +
+                                                 '<div class="table-info-actual-left addFormatterActualCurrency" style="float: right;" id="lineItemActualCost' + _LineItemsData[line].id + '">' +
+                                                  _LineItemsData[line].LineItemActualCost +
+                                                     @*'<input placeholder="0" class="currency_dollarCost truncate" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" id="lineItemlblCCost' + _LineItemsData[line].id + '" value="' + _LineItemsData[line].LineItemCost + '">' + '</input>' +*@
                                     '</div>' +
                                 '</div>' +
                             '</div>';
+            }
 
             //var roiProjectedValue = 0;
             //if (_costProjected != 0 && !isNaN(_costProjected)) {
