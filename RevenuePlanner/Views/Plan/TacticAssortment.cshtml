@@ -1029,7 +1029,7 @@
                     }
 
                     var newActualCost = oldTotalActualCost + (currentValue - OldactualValue);
-                    $("#lblTotalActualCost").text(FormatCommasBudget(newActualCost.toString(), false, true));
+                    $("#lblTotalActualCost").html( FormatCommasBudget(newActualCost.toString(), false, true));
                     $(this).attr("ov", currentValue);
                 }
             }
@@ -1108,7 +1108,9 @@
     /*start Added by Mitesh Vaishnav for PL ticket #571
     function for filling input's value of Actual cost portion and check flag (If tactic has lineitem than Actual cost portion will be disabled)  */
     function fillActualAllocationData(data) {
-
+        $('#actual-Cost-Allocation').find("input").each(function () {
+            $(this).attr('myvalue', $(this).val());
+        });
         if (typeof data.actualCostData != 'undefined') {
             var actualCostData = data.actualCostData;
             if (actualCostData.length) {
@@ -1118,11 +1120,7 @@
                     $('#actual-Cost-Allocation').find("#" + actualCostData[cnt].Period).val(FormatCommas(actualCostData[cnt].Value.toString(), false));
                     $('#actual-Cost-Allocation').find("#" + actualCostData[cnt].Period).attr('ov', actualCostData[cnt].Value == '' ? '0' : actualCostData[cnt].Value);
                 }
-                $("#lblTotalActualCost").text(TotalActualCost.toString());
-                $('#actual-Cost-Allocation').find("input").each(function () {
-                    $(this).attr('myvalue', $(this).val());
-                });
-
+                $("#lblTotalActualCost").html(FormatCommasBudget( TotalActualCost.toString(),false,true));
             }
         }
         if (data.IsLineItemForTactic) {
@@ -1182,8 +1180,8 @@
                 }
                 $("#lblTotalAllocated").html('$' + TotalallocationValue);
                 calculateUnallocatedBudget();
-                $("#Y1").focus();
-                $("#Title").focus();
+                $('#planned-Cost-Allocation').find("#Y1").focus();
+                $('#planned-Cost-Allocation').find("#Title").focus();
 
             },
             error: function () {
