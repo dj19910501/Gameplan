@@ -3820,6 +3820,11 @@ namespace RevenuePlanner.Helpers
                             var Plan_CampaignList = db.Plan_Campaign.Where(a => a.IsDeleted.Equals(false) && a.PlanCampaignId == id).ToList();
                             Plan_CampaignList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
 
+                            ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
+                            var lineItemIds = plan_campaign_Program_Tactic_LineItemList.Select(a => a.PlanLineItemId).ToList();
+                            var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => lineItemIds.Contains(a.PlanLineItemId)).ToList();
+                            plan_campaign_Program_Tactic_LineItem_ActualList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+
                         }
                         else if (section == Enums.Section.Program.ToString() && id != 0)
                         {
@@ -3831,6 +3836,11 @@ namespace RevenuePlanner.Helpers
 
                             var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == id).ToList();
                             Plan_Campaign_ProgramList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                            ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
+                            var lineItemIds = plan_campaign_Program_Tactic_LineItemList.Select(a => a.PlanLineItemId).ToList();
+                            var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => lineItemIds.Contains(a.PlanLineItemId)).ToList();
+                            plan_campaign_Program_Tactic_LineItem_ActualList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                         }
                         else if (section == Enums.Section.Tactic.ToString() && id != 0)
                         {
@@ -3839,11 +3849,20 @@ namespace RevenuePlanner.Helpers
 
                             var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) && a.PlanTacticId == id).ToList();
                             Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                            ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
+                            var lineItemIds = plan_campaign_Program_Tactic_LineItemList.Select(a => a.PlanLineItemId).ToList();
+                            var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => lineItemIds.Contains(a.PlanLineItemId)).ToList();
+                            plan_campaign_Program_Tactic_LineItem_ActualList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                         }
                         else if (section == Enums.Section.LineItem.ToString() && id != 0)
                         {
                             var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted.Equals(false) && a.PlanLineItemId == id).ToList();
                             plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                            ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
+                            var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => a.PlanLineItemId==id).ToList();
+                            plan_campaign_Program_Tactic_LineItem_ActualList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                         }
                         returnValue = db.SaveChanges();
                         scope.Complete();
