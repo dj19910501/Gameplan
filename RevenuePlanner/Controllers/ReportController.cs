@@ -73,13 +73,20 @@ namespace RevenuePlanner.Controllers
 
             if (Sessions.PlanId != 0)
             {
-                if (Common.IsPlanPublished(Sessions.PlanId))
+                if (lstPlans.Where(p => p.Value == Sessions.PlanId.ToString()).Count() > 0)
                 {
-                    Sessions.ReportPlanId = Sessions.PlanId;
+                    if (Common.IsPlanPublished(Sessions.PlanId))
+                    {
+                        Sessions.ReportPlanId = Sessions.PlanId;
+                    }
+                    else
+                    {
+                        Sessions.ReportPlanId = Sessions.PublishedPlanId;
+                    }
                 }
                 else
                 {
-                    Sessions.ReportPlanId = Sessions.PublishedPlanId;
+                    Sessions.ReportPlanId = 0;
                 }
             }
 
