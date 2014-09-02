@@ -4533,7 +4533,7 @@ namespace RevenuePlanner.Controllers
                 List<string> lstActualAllocationMonthly = lstMonthly;
                 var objPlanLineItem = db.Plan_Campaign_Program_Tactic_LineItem.SingleOrDefault(c => c.PlanLineItemId == id);
                 var objPlan = db.Plans.SingleOrDefault(p => p.PlanId == Sessions.PlanId);
-                var objPlanTactic = db.Plan_Campaign_Program_Tactic.SingleOrDefault(p => p.PlanTacticId == tid);
+                var objPlanTactic = db.Plan_Campaign_Program_Tactic.SingleOrDefault(p => p.PlanTacticId == tid && p.IsDeleted == false);    // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
                 if (objPlan.AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString())
                 {
                     lstMonthly = new List<string>() { "Y1", "Y4", "Y7", "Y10" };
@@ -7524,7 +7524,7 @@ namespace RevenuePlanner.Controllers
                                                                    c.Value
                                                                }).ToList();
 
-                var lstPlanProgramTactics = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == PlanProgramId).Select(c => c.PlanTacticId).ToList();
+                var lstPlanProgramTactics = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == PlanProgramId && c.IsDeleted == false).Select(c => c.PlanTacticId).ToList();  // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
 
                 var lstTacticsBudget = db.Plan_Campaign_Program_Tactic_Cost.Where(c => lstPlanProgramTactics.Contains(c.PlanTacticId)).ToList()
                                                                .Select(c => new
@@ -7622,10 +7622,10 @@ namespace RevenuePlanner.Controllers
                                                                    c.Value
                                                                }).ToList();
 
-                var lstPlanProgramTactics = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == PlanProgramId).Select(c => c.PlanTacticId).ToList();
+                var lstPlanProgramTactics = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == PlanProgramId && c.IsDeleted == false).Select(c => c.PlanTacticId).ToList();  // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
 
 
-                var CostTacticsBudget = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == PlanProgramId).ToList().Sum(c => c.Cost);
+                var CostTacticsBudget = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == PlanProgramId && c.IsDeleted == false).ToList().Sum(c => c.Cost); // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
 
 
                 var lstTacticsBudget = db.Plan_Campaign_Program_Tactic_Cost.Where(c => lstPlanProgramTactics.Contains(c.PlanTacticId)).ToList()
@@ -7639,7 +7639,7 @@ namespace RevenuePlanner.Controllers
 
 
 
-                var lstPlanProgramTacticsLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(c => c.PlanTacticId == PlanTacticId).Select(c => c.PlanLineItemId).ToList();
+                var lstPlanProgramTacticsLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(c => c.PlanTacticId == PlanTacticId && c.IsDeleted == false).Select(c => c.PlanLineItemId).ToList(); // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
                 var lstTacticsLineItemCost = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(c => lstPlanProgramTacticsLineItem.Contains(c.PlanLineItemId)).ToList()
                                                                .Select(c => new
                                                                {
@@ -7661,8 +7661,8 @@ namespace RevenuePlanner.Controllers
                 });
 
 
-                var objPlanCampaignProgram = db.Plan_Campaign_Program.SingleOrDefault(p => p.PlanProgramId == PlanProgramId);
-                var objPlanCampaignProgramTactic = db.Plan_Campaign_Program_Tactic.SingleOrDefault(p => p.PlanProgramId == PlanProgramId && p.PlanTacticId == PlanTacticId);
+                var objPlanCampaignProgram = db.Plan_Campaign_Program.SingleOrDefault(p => p.PlanProgramId == PlanProgramId && p.IsDeleted == false);   // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
+                //var objPlanCampaignProgramTactic = db.Plan_Campaign_Program_Tactic.SingleOrDefault(p => p.PlanProgramId == PlanProgramId && p.PlanTacticId == PlanTacticId);  // Commented by :- Sohel Pathan on 01/09/2014 for PL ticket #745 Due to unused db call
 
                 double allProgramBudget = lstSelectedProgram.Sum(c => c.ProgramBudget);
 
