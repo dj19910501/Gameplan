@@ -351,7 +351,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ParentActivityId"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static MvcHtmlString ActivityCampaign(this HtmlHelper helper, string ActivityType, int ParentActivityId, List<BudgetModel> model, string Tab = "planned")
+        public static MvcHtmlString ActivityCampaign(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string Tab = "planned")
         {
             StringBuilder sb = new StringBuilder();
             foreach (BudgetModel c in model.Where(p => p.ActivityType == "campaign" && p.ParentActivityId == ParentActivityId).ToList())
@@ -377,7 +377,11 @@ namespace RevenuePlanner.Helpers
                 {
                     aLink.Attributes.Add("style", "padding-left:20px;cursor:pointer;");
                 }
-                aLink.Attributes.Add("id", c.ActivityId.ToString());
+                if (Tab == "planned")
+                    aLink.Attributes.Add("id", c.Id);
+                else
+                    aLink.Attributes.Add("id", c.ActivityId);
+
                 aLink.Attributes.Add("linktype", "campaign");
                 aLink.InnerHtml = c.ActivityName;
 
@@ -400,7 +404,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ParentActivityId"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static MvcHtmlString ActivityProgram(this HtmlHelper helper, string ActivityType, int ParentActivityId, List<BudgetModel> model, string Tab = "planned")
+        public static MvcHtmlString ActivityProgram(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string Tab = "planned")
         {
             string mainClass = "sub program-lvl";
             string innerClass = "programLevel";
@@ -470,8 +474,11 @@ namespace RevenuePlanner.Helpers
                     //aLink.Attributes.Add("href", "#");
                     aLink.InnerHtml = p.ActivityName;
 
+                    if(Tab == "planned")
+                        aLink.Attributes.Add("id", p.Id);
+                    else
+                        aLink.Attributes.Add("id", p.ActivityId);
                     
-                    aLink.Attributes.Add("id", p.ActivityId.ToString());
                     aLink.Attributes.Add("linktype", ActivityType);
 
                     divProgram.InnerHtml += aLink.ToString();
@@ -504,7 +511,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ActivityId"></param>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static MvcHtmlString PlanMonth(this HtmlHelper helper, string ActivityType, int ActivityId, BudgetMonth obj, BudgetMonth parent, string AllocatedBy)
+        public static MvcHtmlString PlanMonth(this HtmlHelper helper, string ActivityType, string ActivityId, BudgetMonth obj, BudgetMonth parent, string AllocatedBy)
         {
             StringBuilder sb = new StringBuilder();
             TagBuilder trHeader = new TagBuilder("tr");
@@ -527,78 +534,78 @@ namespace RevenuePlanner.Helpers
                     {
                         divValue.Attributes.Add("allocated", parent.Jan.ToString(formatThousand));
                         divValue.InnerHtml = obj.Jan.ToString(formatThousand);
-                        className = obj.Jan <= parent.Jan ? className : className + " error";
+                        className = obj.Jan <= parent.Jan ? className : className + " budgetError";
                     }
                     else if (i == 2)
                     {
                         divValue.Attributes.Add("allocated", parent.Feb.ToString(formatThousand));
                         divValue.InnerHtml = obj.Feb.ToString(formatThousand);
-                        className = obj.Feb <= parent.Feb ? className : className + " error";
+                        className = obj.Feb <= parent.Feb ? className : className + " budgetError";
                     }
                     else if (i == 3)
                     {
                         divValue.Attributes.Add("allocated", parent.Mar.ToString(formatThousand));
                         divValue.InnerHtml = obj.Mar.ToString(formatThousand);
-                        className = obj.Mar <= parent.Mar ? className : className + " error";
+                        className = obj.Mar <= parent.Mar ? className : className + " budgetError";
                     }
                     else if (i == 4)
                     {
                         divValue.Attributes.Add("allocated", parent.Apr.ToString(formatThousand));
                         divValue.InnerHtml = obj.Apr.ToString(formatThousand);
-                        className = obj.Apr <= parent.Apr ? className : className + " error";
+                        className = obj.Apr <= parent.Apr ? className : className + " budgetError";
                     }
                     else if (i == 5)
                     {
                         divValue.Attributes.Add("allocated", parent.May.ToString(formatThousand));
                         divValue.InnerHtml = obj.May.ToString(formatThousand);
-                        className = obj.May <= parent.May ? className : className + " error";
+                        className = obj.May <= parent.May ? className : className + " budgetError";
                     }
                     else if (i == 6)
                     {
                         divValue.Attributes.Add("allocated", parent.Jun.ToString(formatThousand));
                         divValue.InnerHtml = obj.Jun.ToString(formatThousand);
-                        className = obj.Jun <= parent.Jun ? className : className + " error";
+                        className = obj.Jun <= parent.Jun ? className : className + " budgetError";
                     }
                     else if (i == 7)
                     {
                         divValue.Attributes.Add("allocated", parent.Jul.ToString(formatThousand));
                         divValue.InnerHtml = obj.Jul.ToString(formatThousand);
-                        className = obj.Jul <= parent.Jul ? className : className + " error";
+                        className = obj.Jul <= parent.Jul ? className : className + " budgetError";
                     }
                     else if (i == 8)
                     {
                         divValue.Attributes.Add("allocated", parent.Aug.ToString(formatThousand));
                         divValue.InnerHtml = obj.Aug.ToString(formatThousand);
-                        className = obj.Aug <= parent.Aug ? className : className + " error";
+                        className = obj.Aug <= parent.Aug ? className : className + " budgetError";
                     }
                     else if (i == 9)
                     {
                         divValue.Attributes.Add("allocated", parent.Sep.ToString(formatThousand));
                         divValue.InnerHtml = obj.Sep.ToString(formatThousand);
-                        className = obj.Sep <= parent.Sep ? className : className + " error";
+                        className = obj.Sep <= parent.Sep ? className : className + " budgetError";
                     }
                     else if (i == 10)
                     {
                         divValue.Attributes.Add("allocated", parent.Oct.ToString(formatThousand));
                         divValue.InnerHtml = obj.Oct.ToString(formatThousand);
-                        className = obj.Oct <= parent.Oct ? className : className + " error";
+                        className = obj.Oct <= parent.Oct ? className : className + " budgetError";
                     }
                     else if (i == 11)
                     {
                         divValue.Attributes.Add("allocated", parent.Nov.ToString(formatThousand));
                         divValue.InnerHtml = obj.Nov.ToString(formatThousand);
-                        className = obj.Nov <= parent.Nov ? className : className + " error";
+                        className = obj.Nov <= parent.Nov ? className : className + " budgetError";
                     }
                     else if (i == 12)
                     {
                         divValue.Attributes.Add("allocated", parent.Dec.ToString(formatThousand));
                         divValue.InnerHtml = obj.Dec.ToString(formatThousand);
-                        className = obj.Dec <= parent.Dec ? className : className + " error";
+                        className = obj.Dec <= parent.Dec ? className : className + " budgetError";
                     }
-                    if (className.Contains("error"))
+                    if (className.Contains("budgetError"))
                     {
-                        className = className.Replace(" error", "");
-                        divValue.AddCssClass("error");
+                        className = className.Replace(" budgetError", "");
+                        divValue.AddCssClass("budgetError");
                     }
                     tdValue.AddCssClass(className);
                     tdHeader.InnerHtml += divHeader.ToString();
@@ -625,30 +632,30 @@ namespace RevenuePlanner.Helpers
                     {
                         divValue.Attributes.Add("allocated", parent.Jan.ToString(formatThousand));
                         divValue.InnerHtml = obj.Jan.ToString(formatThousand);
-                        className = obj.Jan <= parent.Jan ? className : className + " error";
+                        className = obj.Jan <= parent.Jan ? className : className + " budgetError";
                     }
                     else if (i == 2)
                     {
                         divValue.Attributes.Add("allocated", parent.Apr.ToString(formatThousand));
                         divValue.InnerHtml = obj.Apr.ToString(formatThousand);
-                        className = obj.Apr <= parent.Apr ? className : className + " error";
+                        className = obj.Apr <= parent.Apr ? className : className + " budgetError";
                     }
                     else if (i == 3)
                     {
                         divValue.Attributes.Add("allocated", parent.Jul.ToString(formatThousand));
                         divValue.InnerHtml = obj.Jul.ToString(formatThousand);
-                        className = obj.Jul <= parent.Jul ? className : className + " error";
+                        className = obj.Jul <= parent.Jul ? className : className + " budgetError";
                     }
                     else if (i == 4)
                     {
                         divValue.Attributes.Add("allocated", parent.Oct.ToString(formatThousand));
                         divValue.InnerHtml = obj.Oct.ToString(formatThousand);
-                        className = obj.Oct <= parent.Oct ? className : className + " error";
+                        className = obj.Oct <= parent.Oct ? className : className + " budgetError";
                     }
-                    if (className.Contains("error"))
+                    if (className.Contains("budgetError"))
                     {
-                        className = className.Replace(" error", "");
-                        divValue.AddCssClass("error");
+                        className = className.Replace(" budgetError", "");
+                        divValue.AddCssClass("budgetError");
                     }
                     tdValue.AddCssClass(className);
                     tdHeader.InnerHtml += divHeader.ToString();
@@ -698,7 +705,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="model"></param>
         /// <param name="AllocatedBy"></param>
         /// <returns></returns>
-        public static MvcHtmlString CampaignMonth(this HtmlHelper helper, string ActivityType, int ParentActivityId, List<BudgetModel> model, string AllocatedBy)
+        public static MvcHtmlString CampaignMonth(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string AllocatedBy)
         {
             StringBuilder sb = new StringBuilder();
             foreach (BudgetModel c in model.Where(p => p.ActivityType == "campaign" && p.ParentActivityId == ParentActivityId).ToList())
@@ -719,73 +726,73 @@ namespace RevenuePlanner.Helpers
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Jan.ToString(formatThousand));
                             div.InnerHtml = c.Month.Jan.ToString(formatThousand);
-                            className = c.Month.Jan <= c.ParentMonth.Jan ? className : className + " error";
+                            className = c.Month.Jan <= c.ParentMonth.Jan ? className : className + " budgetError";
                         }
                         else if (i == 2)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Feb.ToString(formatThousand));
                             div.InnerHtml = c.Month.Feb.ToString(formatThousand);
-                            className = c.Month.Feb <= c.ParentMonth.Feb ? className : className + " error";
+                            className = c.Month.Feb <= c.ParentMonth.Feb ? className : className + " budgetError";
                         }
                         else if (i == 3)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Mar.ToString(formatThousand));
                             div.InnerHtml = c.Month.Mar.ToString(formatThousand);
-                            className = c.Month.Mar <= c.ParentMonth.Mar ? className : className + " error";
+                            className = c.Month.Mar <= c.ParentMonth.Mar ? className : className + " budgetError";
                         }
                         else if (i == 4)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Apr.ToString(formatThousand));
                             div.InnerHtml = c.Month.Apr.ToString(formatThousand);
-                            className = c.Month.Apr <= c.ParentMonth.Apr ? className : className + " error";
+                            className = c.Month.Apr <= c.ParentMonth.Apr ? className : className + " budgetError";
                         }
                         else if (i == 5)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.May.ToString(formatThousand));
                             div.InnerHtml = c.Month.May.ToString(formatThousand);
-                            className = c.Month.May <= c.ParentMonth.May ? className : className + " error";
+                            className = c.Month.May <= c.ParentMonth.May ? className : className + " budgetError";
                         }
                         else if (i == 6)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Jun.ToString(formatThousand));
                             div.InnerHtml = c.Month.Jun.ToString(formatThousand);
-                            className = c.Month.Jun <= c.ParentMonth.Jun ? className : className + " error";
+                            className = c.Month.Jun <= c.ParentMonth.Jun ? className : className + " budgetError";
                         }
                         else if (i == 7)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Jul.ToString(formatThousand));
                             div.InnerHtml = c.Month.Jul.ToString(formatThousand);
-                            className = c.Month.Jul <= c.ParentMonth.Jul ? className : className + " error";
+                            className = c.Month.Jul <= c.ParentMonth.Jul ? className : className + " budgetError";
                         }
                         else if (i == 8)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Aug.ToString(formatThousand));
                             div.InnerHtml = c.Month.Aug.ToString(formatThousand);
-                            className = c.Month.Aug <= c.ParentMonth.Aug ? className : className + " error";
+                            className = c.Month.Aug <= c.ParentMonth.Aug ? className : className + " budgetError";
                         }
                         else if (i == 9)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Sep.ToString(formatThousand));
                             div.InnerHtml = c.Month.Sep.ToString(formatThousand);
-                            className = c.Month.Sep <= c.ParentMonth.Sep ? className : className + " error";
+                            className = c.Month.Sep <= c.ParentMonth.Sep ? className : className + " budgetError";
                         }
                         else if (i == 10)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Oct.ToString(formatThousand));
                             div.InnerHtml = c.Month.Oct.ToString(formatThousand);
-                            className = c.Month.Oct <= c.ParentMonth.Oct ? className : className + " error";
+                            className = c.Month.Oct <= c.ParentMonth.Oct ? className : className + " budgetError";
                         }
                         else if (i == 11)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Nov.ToString(formatThousand));
                             div.InnerHtml = c.Month.Nov.ToString(formatThousand);
-                            className = c.Month.Nov <= c.ParentMonth.Nov ? className : className + " error";
+                            className = c.Month.Nov <= c.ParentMonth.Nov ? className : className + " budgetError";
                         }
                         else if (i == 12)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Dec.ToString(formatThousand));
                             div.InnerHtml = c.Month.Dec.ToString(formatThousand);
-                            className = c.Month.Dec <= c.ParentMonth.Dec ? className : className + " error";
+                            className = c.Month.Dec <= c.ParentMonth.Dec ? className : className + " budgetError";
                         }
                         div.AddCssClass(className);
                         td.InnerHtml = div.ToString();
@@ -809,25 +816,25 @@ namespace RevenuePlanner.Helpers
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Jan.ToString(formatThousand));
                             div.InnerHtml = c.Month.Jan.ToString(formatThousand);
-                            className = c.Month.Jan <= c.ParentMonth.Jan ? className : className + " error";
+                            className = c.Month.Jan <= c.ParentMonth.Jan ? className : className + " budgetError";
                         }
                         else if (i == 2)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Apr.ToString(formatThousand));
                             div.InnerHtml = c.Month.Apr.ToString(formatThousand);
-                            className = c.Month.Apr <= c.ParentMonth.Apr ? className : className + " error";
+                            className = c.Month.Apr <= c.ParentMonth.Apr ? className : className + " budgetError";
                         }
                         else if (i == 3)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Jul.ToString(formatThousand));
                             div.InnerHtml = c.Month.Jul.ToString(formatThousand);
-                            className = c.Month.Jul <= c.ParentMonth.Jul ? className : className + " error";
+                            className = c.Month.Jul <= c.ParentMonth.Jul ? className : className + " budgetError";
                         }
                         else if (i == 4)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Oct.ToString(formatThousand));
                             div.InnerHtml = c.Month.Oct.ToString(formatThousand);
-                            className = c.Month.Oct <= c.ParentMonth.Oct ? className : className + " error";
+                            className = c.Month.Oct <= c.ParentMonth.Oct ? className : className + " budgetError";
                         }
                         div.AddCssClass(className);
                         td.InnerHtml = div.ToString();
@@ -873,7 +880,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="AllocatedBy"></param>
         /// <param name="month"></param>
         /// <returns></returns>
-        public static MvcHtmlString ProgramMonth(this HtmlHelper helper, string ActivityType, int ParentActivityId, List<BudgetModel> model, string AllocatedBy, int month)
+        public static MvcHtmlString ProgramMonth(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string AllocatedBy, int month)
         {
             string mainClass = "sub program-lvl";
             string innerClass = "programLevel";
@@ -921,7 +928,7 @@ namespace RevenuePlanner.Helpers
                                 if (ActivityType != "lineitem" && ActivityType != "tactic")
                                 {
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Jan.ToString(formatThousand));
-                                    className = p.Month.Jan <= p.ParentMonth.Jan ? className : className + " error";
+                                    className = p.Month.Jan <= p.ParentMonth.Jan ? className : className + " budgetError";
                                 }
                                 divProgram.InnerHtml = p.Month.Jan.ToString(formatThousand);
                             }
@@ -938,7 +945,7 @@ namespace RevenuePlanner.Helpers
                                 if (ActivityType != "lineitem" && ActivityType != "tactic")
                                 {
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Feb.ToString(formatThousand));
-                                    className = p.Month.Feb <= p.ParentMonth.Feb ? className : className + " error";
+                                    className = p.Month.Feb <= p.ParentMonth.Feb ? className : className + " budgetError";
                                 }
                                 divProgram.InnerHtml = p.Month.Feb.ToString(formatThousand);
                             }
@@ -956,7 +963,7 @@ namespace RevenuePlanner.Helpers
                                 if (ActivityType != "lineitem" && ActivityType != "tactic")
                                 {
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Mar.ToString(formatThousand));
-                                    className = p.Month.Mar <= p.ParentMonth.Mar ? className : className + " error";
+                                    className = p.Month.Mar <= p.ParentMonth.Mar ? className : className + " budgetError";
                                 }
                                 divProgram.InnerHtml = p.Month.Mar.ToString(formatThousand);
                             }
@@ -973,7 +980,7 @@ namespace RevenuePlanner.Helpers
                                 if (ActivityType != "lineitem" && ActivityType != "tactic")
                                 {
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Apr.ToString(formatThousand));
-                                    className = p.Month.Apr <= p.ParentMonth.Apr ? className : className + " error";
+                                    className = p.Month.Apr <= p.ParentMonth.Apr ? className : className + " budgetError";
                                 }
                                 divProgram.InnerHtml = p.Month.Apr.ToString(formatThousand);
                             }
@@ -990,7 +997,7 @@ namespace RevenuePlanner.Helpers
                                 if (ActivityType != "lineitem" && ActivityType != "tactic")
                                 {
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.May.ToString(formatThousand));
-                                    className = p.Month.May <= p.ParentMonth.May ? className : className + " error";
+                                    className = p.Month.May <= p.ParentMonth.May ? className : className + " budgetError";
                                 }
                                 divProgram.InnerHtml = p.Month.May.ToString(formatThousand);
                             }
@@ -1007,7 +1014,7 @@ namespace RevenuePlanner.Helpers
                                 if (ActivityType != "lineitem" && ActivityType != "tactic")
                                 {
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Jun.ToString(formatThousand));
-                                    className = p.Month.Jun <= p.ParentMonth.Jun ? className : className + " error";
+                                    className = p.Month.Jun <= p.ParentMonth.Jun ? className : className + " budgetError";
                                 }
                                 divProgram.InnerHtml = p.Month.Jun.ToString(formatThousand);
                             }
@@ -1024,7 +1031,7 @@ namespace RevenuePlanner.Helpers
                                 if (ActivityType != "lineitem" && ActivityType != "tactic")
                                 {
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Jul.ToString(formatThousand));
-                                    className = p.Month.Jul <= p.ParentMonth.Jul ? className : className + " error";
+                                    className = p.Month.Jul <= p.ParentMonth.Jul ? className : className + " budgetError";
                                 }
                                 divProgram.InnerHtml = p.Month.Jul.ToString(formatThousand);
                             }
@@ -1041,7 +1048,7 @@ namespace RevenuePlanner.Helpers
                                 if (ActivityType != "lineitem" && ActivityType != "tactic")
                                 {
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Aug.ToString(formatThousand));
-                                    className = p.Month.Aug <= p.ParentMonth.Aug ? className : className + " error";
+                                    className = p.Month.Aug <= p.ParentMonth.Aug ? className : className + " budgetError";
                                 }
                                 divProgram.InnerHtml = p.Month.Aug.ToString(formatThousand);
                             }
@@ -1058,7 +1065,7 @@ namespace RevenuePlanner.Helpers
                                 if (ActivityType != "lineitem" && ActivityType != "tactic")
                                 {
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Sep.ToString(formatThousand));
-                                    className = p.Month.Sep <= p.ParentMonth.Sep ? className : className + " error";
+                                    className = p.Month.Sep <= p.ParentMonth.Sep ? className : className + " budgetError";
                                 }
                                 divProgram.InnerHtml = p.Month.Sep.ToString(formatThousand);
                             }
@@ -1076,7 +1083,7 @@ namespace RevenuePlanner.Helpers
                                 if (ActivityType != "lineitem" && ActivityType != "tactic")
                                 {
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Oct.ToString(formatThousand));
-                                    className = p.Month.Oct <= p.ParentMonth.Oct ? className : className + " error";
+                                    className = p.Month.Oct <= p.ParentMonth.Oct ? className : className + " budgetError";
                                 }
                                 divProgram.InnerHtml = p.Month.Oct.ToString();
                             }
@@ -1093,7 +1100,7 @@ namespace RevenuePlanner.Helpers
                                 if (ActivityType != "lineitem" && ActivityType != "tactic")
                                 {
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Nov.ToString(formatThousand));
-                                    className = p.Month.Nov <= p.ParentMonth.Nov ? className : className + " error";
+                                    className = p.Month.Nov <= p.ParentMonth.Nov ? className : className + " budgetError";
                                 }
                                 divProgram.InnerHtml = p.Month.Nov.ToString(formatThousand);
                             }
@@ -1109,7 +1116,7 @@ namespace RevenuePlanner.Helpers
                                 if (ActivityType != "lineitem" && ActivityType != "tactic")
                                 {
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Dec.ToString(formatThousand));
-                                    className = p.Month.Dec <= p.ParentMonth.Dec ? className : className + " error";
+                                    className = p.Month.Dec <= p.ParentMonth.Dec ? className : className + " budgetError";
                                 }
                                 divProgram.InnerHtml = p.Month.Dec.ToString(formatThousand);
                             }
@@ -1128,7 +1135,7 @@ namespace RevenuePlanner.Helpers
                                 if (ActivityType != "lineitem" && ActivityType != "tactic")
                                 {
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Jan.ToString(formatThousand));
-                                    className = p.Month.Jan <= p.ParentMonth.Jan ? className : className + " error";
+                                    className = p.Month.Jan <= p.ParentMonth.Jan ? className : className + " budgetError";
                                 }
                                 divProgram.InnerHtml = p.Month.Jan.ToString(formatThousand);
                             }
@@ -1145,7 +1152,7 @@ namespace RevenuePlanner.Helpers
                                 if (ActivityType != "lineitem" && ActivityType != "tactic")
                                 {
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Apr.ToString(formatThousand));
-                                    className = p.Month.Apr <= p.ParentMonth.Apr ? className : className + " error";
+                                    className = p.Month.Apr <= p.ParentMonth.Apr ? className : className + " budgetError";
                                 }
                                 divProgram.InnerHtml = p.Month.Apr.ToString(formatThousand);
                             }
@@ -1162,7 +1169,7 @@ namespace RevenuePlanner.Helpers
                                 if (ActivityType != "lineitem" && ActivityType != "tactic")
                                 {
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Jul.ToString(formatThousand));
-                                    className = p.Month.Jul <= p.ParentMonth.Jul ? className : className + " error";
+                                    className = p.Month.Jul <= p.ParentMonth.Jul ? className : className + " budgetError";
                                 }
                                 divProgram.InnerHtml = p.Month.Jul.ToString(formatThousand);
                             }
@@ -1180,7 +1187,7 @@ namespace RevenuePlanner.Helpers
                                 if (ActivityType != "lineitem" && ActivityType != "tactic")
                                 {
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Oct.ToString(formatThousand));
-                                    className = p.Month.Oct <= p.ParentMonth.Oct ? className : className + " error";
+                                    className = p.Month.Oct <= p.ParentMonth.Oct ? className : className + " budgetError";
                                 }
                                 divProgram.InnerHtml = p.Month.Oct.ToString(formatThousand);
                             }
@@ -1221,7 +1228,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="model"></param>
         /// <param name="AllocatedBy"></param>
         /// <returns></returns>
-        public static MvcHtmlString CampaignSummary(this HtmlHelper helper, string ActivityType, int ParentActivityId, List<BudgetModel> model, string AllocatedBy, string Tab)
+        public static MvcHtmlString CampaignSummary(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string AllocatedBy, string Tab)
         {
             StringBuilder sb = new StringBuilder();
             BudgetModel plan = model.Where(pl => pl.ActivityType == "plan").SingleOrDefault();
@@ -1242,8 +1249,8 @@ namespace RevenuePlanner.Helpers
                     span.Attributes.Add("style", "width:" + dblProgress.ToString() + "%;");
                     if (dblProgress > 100)
                     {
-                        div.AddCssClass("error");
-                        span.AddCssClass("progressBar error");
+                        div.AddCssClass("budgetError");
+                        span.AddCssClass("progressBar budgetError");
                     }
                     else
                     {
@@ -1253,6 +1260,7 @@ namespace RevenuePlanner.Helpers
                 }
                 else
                 {
+                    div.AddCssClass("firstLevel");
                     div.InnerHtml = "---";
                 }
                 td.InnerHtml = div.ToString();
@@ -1274,6 +1282,7 @@ namespace RevenuePlanner.Helpers
                     }
                     else
                     {
+                        div.AddCssClass("firstLevel");
                         div.InnerHtml = "---";
                     }
                 }
@@ -1304,8 +1313,8 @@ namespace RevenuePlanner.Helpers
                     span.Attributes.Add("style", "width:" + dblProgress.ToString() + "%;");
                     if (dblProgress > 100)
                     {
-                        div.AddCssClass("campaignLevel error");
-                        span.AddCssClass("progressBar error");
+                        div.AddCssClass("campaignLevel budgetError");
+                        span.AddCssClass("progressBar budgetError");
                     }
                     else
                     {
@@ -1317,6 +1326,7 @@ namespace RevenuePlanner.Helpers
                 }
                 else
                 {
+                    div.AddCssClass("firstLevel");
                     div.InnerHtml += "---";
                 }
 
@@ -1345,6 +1355,7 @@ namespace RevenuePlanner.Helpers
                     }
                     else
                     {
+                        divLast.AddCssClass("firstLevel");
                         divLast.InnerHtml = "---";
                     }
                 }
@@ -1368,7 +1379,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="AllocatedBy"></param>
         /// <param name="month"></param>
         /// <returns></returns>
-        public static MvcHtmlString ProgramSummary(this HtmlHelper helper, string ActivityType, int ParentActivityId, List<BudgetModel> model, string mode, string AllocatedBy, string Tab)
+        public static MvcHtmlString ProgramSummary(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string mode, string AllocatedBy, string Tab)
         {
             string mainClass = "sub program-lvl";
             string innerClass = "programLevel";
@@ -1422,8 +1433,8 @@ namespace RevenuePlanner.Helpers
                             {
                                 if (ActivityType != "lineitem" && ActivityType != "tactic")
                                 {
-                                    divProgram.AddCssClass(innerClass + " error");
-                                    span.AddCssClass("progressBar error");
+                                    divProgram.AddCssClass(innerClass + " budgetError");
+                                    span.AddCssClass("progressBar budgetError");
                                 }
                                 else
                                 {
@@ -1511,7 +1522,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ActivityId"></param>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static MvcHtmlString AllocatedPlanMonth(this HtmlHelper helper, string ActivityType, int ActivityId, BudgetMonth obj, BudgetMonth parent, string AllocatedBy)
+        public static MvcHtmlString AllocatedPlanMonth(this HtmlHelper helper, string ActivityType, string ActivityId, BudgetMonth obj, BudgetMonth parent, string AllocatedBy)
         {
             StringBuilder sb = new StringBuilder();
             TagBuilder trHeader = new TagBuilder("tr");
@@ -1534,78 +1545,78 @@ namespace RevenuePlanner.Helpers
                     {
                         //divValue.Attributes.Add("allocated", parent.Jan.ToString(formatThousand));
                         divValue.InnerHtml = obj.Jan.ToString(formatThousand);
-                        //className = obj.Jan <= parent.Jan ? className : className + " error";
+                        //className = obj.Jan <= parent.Jan ? className : className + " budgetError";
                     }
                     else if (i == 2)
                     {
                         //divValue.Attributes.Add("allocated", parent.Feb.ToString(formatThousand));
                         divValue.InnerHtml = obj.Feb.ToString(formatThousand);
-                        //className = obj.Feb <= parent.Feb ? className : className + " error";
+                        //className = obj.Feb <= parent.Feb ? className : className + " budgetError";
                     }
                     else if (i == 3)
                     {
                         //divValue.Attributes.Add("allocated", parent.Mar.ToString(formatThousand));
                         divValue.InnerHtml = obj.Mar.ToString(formatThousand);
-                        //className = obj.Mar <= parent.Mar ? className : className + " error";
+                        //className = obj.Mar <= parent.Mar ? className : className + " budgetError";
                     }
                     else if (i == 4)
                     {
                         //divValue.Attributes.Add("allocated", parent.Apr.ToString(formatThousand));
                         divValue.InnerHtml = obj.Apr.ToString(formatThousand);
-                        //className = obj.Apr <= parent.Apr ? className : className + " error";
+                        //className = obj.Apr <= parent.Apr ? className : className + " budgetError";
                     }
                     else if (i == 5)
                     {
                         //divValue.Attributes.Add("allocated", parent.May.ToString(formatThousand));
                         divValue.InnerHtml = obj.May.ToString(formatThousand);
-                        //className = obj.May <= parent.May ? className : className + " error";
+                        //className = obj.May <= parent.May ? className : className + " budgetError";
                     }
                     else if (i == 6)
                     {
                         //divValue.Attributes.Add("allocated", parent.Jun.ToString(formatThousand));
                         divValue.InnerHtml = obj.Jun.ToString(formatThousand);
-                        //className = obj.Jun <= parent.Jun ? className : className + " error";
+                        //className = obj.Jun <= parent.Jun ? className : className + " budgetError";
                     }
                     else if (i == 7)
                     {
                         //divValue.Attributes.Add("allocated", parent.Jul.ToString(formatThousand));
                         divValue.InnerHtml = obj.Jul.ToString(formatThousand);
-                        //className = obj.Jul <= parent.Jul ? className : className + " error";
+                        //className = obj.Jul <= parent.Jul ? className : className + " budgetError";
                     }
                     else if (i == 8)
                     {
                         //divValue.Attributes.Add("allocated", parent.Aug.ToString(formatThousand));
                         divValue.InnerHtml = obj.Aug.ToString(formatThousand);
-                        //className = obj.Aug <= parent.Aug ? className : className + " error";
+                        //className = obj.Aug <= parent.Aug ? className : className + " budgetError";
                     }
                     else if (i == 9)
                     {
                         //divValue.Attributes.Add("allocated", parent.Sep.ToString(formatThousand));
                         divValue.InnerHtml = obj.Sep.ToString(formatThousand);
-                        //className = obj.Sep <= parent.Sep ? className : className + " error";
+                        //className = obj.Sep <= parent.Sep ? className : className + " budgetError";
                     }
                     else if (i == 10)
                     {
                         //divValue.Attributes.Add("allocated", parent.Oct.ToString(formatThousand));
                         divValue.InnerHtml = obj.Oct.ToString(formatThousand);
-                        //className = obj.Oct <= parent.Oct ? className : className + " error";
+                        //className = obj.Oct <= parent.Oct ? className : className + " budgetError";
                     }
                     else if (i == 11)
                     {
                         //divValue.Attributes.Add("allocated", parent.Nov.ToString(formatThousand));
                         divValue.InnerHtml = obj.Nov.ToString(formatThousand);
-                        //className = obj.Nov <= parent.Nov ? className : className + " error";
+                        //className = obj.Nov <= parent.Nov ? className : className + " budgetError";
                     }
                     else if (i == 12)
                     {
                         //divValue.Attributes.Add("allocated", parent.Dec.ToString(formatThousand));
                         divValue.InnerHtml = obj.Dec.ToString(formatThousand);
-                        //className = obj.Dec <= parent.Dec ? className : className + " error";
+                        //className = obj.Dec <= parent.Dec ? className : className + " budgetError";
                     }
-                    if (className.Contains("error"))
+                    if (className.Contains("budgetError"))
                     {
-                        className = className.Replace(" error", "");
-                        divValue.AddCssClass("error");
+                        className = className.Replace("budgetError", "");
+                        divValue.AddCssClass("budgetError");
                     }
                     tdValue.AddCssClass(className);
                     tdHeader.InnerHtml += divHeader.ToString();
@@ -1632,30 +1643,30 @@ namespace RevenuePlanner.Helpers
                     {
                         //divValue.Attributes.Add("allocated", parent.Jan.ToString(formatThousand));
                         divValue.InnerHtml = obj.Jan.ToString(formatThousand);
-                        //className = obj.Jan <= parent.Jan ? className : className + " error";
+                        //className = obj.Jan <= parent.Jan ? className : className + " budgetError";
                     }
                     else if (i == 2)
                     {
                         //divValue.Attributes.Add("allocated", parent.Apr.ToString(formatThousand));
                         divValue.InnerHtml = obj.Apr.ToString(formatThousand);
-                        //className = obj.Apr <= parent.Apr ? className : className + " error";
+                        //className = obj.Apr <= parent.Apr ? className : className + " budgetError";
                     }
                     else if (i == 3)
                     {
                         //divValue.Attributes.Add("allocated", parent.Jul.ToString(formatThousand));
                         divValue.InnerHtml = obj.Jul.ToString(formatThousand);
-                        //className = obj.Jul <= parent.Jul ? className : className + " error";
+                        //className = obj.Jul <= parent.Jul ? className : className + " budgetError";
                     }
                     else if (i == 4)
                     {
                         //divValue.Attributes.Add("allocated", parent.Oct.ToString(formatThousand));
                         divValue.InnerHtml = obj.Oct.ToString(formatThousand);
-                        //className = obj.Oct <= parent.Oct ? className : className + " error";
+                        //className = obj.Oct <= parent.Oct ? className : className + " budgetError";
                     }
-                    if (className.Contains("error"))
+                    if (className.Contains("budgetError"))
                     {
-                        className = className.Replace(" error", "");
-                        divValue.AddCssClass("error");
+                        className = className.Replace(" budgetError", "");
+                        divValue.AddCssClass("budgetError");
                     }
                     tdValue.AddCssClass(className);
                     tdHeader.InnerHtml += divHeader.ToString();
@@ -1682,10 +1693,10 @@ namespace RevenuePlanner.Helpers
 
                     divValue.InnerHtml = "---";
 
-                    if (className.Contains("error"))
+                    if (className.Contains("budgetError"))
                     {
-                        className = className.Replace(" error", "");
-                        divValue.AddCssClass("error");
+                        className = className.Replace(" budgetError", "");
+                        divValue.AddCssClass("budgetError");
                     }
                     tdValue.AddCssClass(className);
                     tdHeader.InnerHtml += divHeader.ToString();
@@ -1708,7 +1719,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="model"></param>
         /// <param name="AllocatedBy"></param>
         /// <returns></returns>
-        public static MvcHtmlString AllocatedCampaignMonth(this HtmlHelper helper, string ActivityType, int ParentActivityId, List<BudgetModel> model, string AllocatedBy)
+        public static MvcHtmlString AllocatedCampaignMonth(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string AllocatedBy)
         {
             StringBuilder sb = new StringBuilder();
             foreach (BudgetModel c in model.Where(p => p.ActivityType == "campaign" && p.ParentActivityId == ParentActivityId).ToList())
@@ -1729,73 +1740,73 @@ namespace RevenuePlanner.Helpers
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Jan.ToString(formatThousand));
                             div.InnerHtml = c.Month.Jan.ToString(formatThousand);
-                            className = c.ParentMonth.Jan >= 0 ? className : className + " error";
+                            className = c.ParentMonth.Jan >= 0 ? className : className + " budgetError";
                         }
                         else if (i == 2)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Feb.ToString(formatThousand));
                             div.InnerHtml = c.Month.Feb.ToString(formatThousand);
-                            className = c.ParentMonth.Feb >= 0 ? className : className + " error";
+                            className = c.ParentMonth.Feb >= 0 ? className : className + " budgetError";
                         }
                         else if (i == 3)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Mar.ToString(formatThousand));
                             div.InnerHtml = c.Month.Mar.ToString(formatThousand);
-                            className = c.ParentMonth.Mar >= 0 ? className : className + " error";
+                            className = c.ParentMonth.Mar >= 0 ? className : className + " budgetError";
                         }
                         else if (i == 4)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Apr.ToString(formatThousand));
                             div.InnerHtml = c.Month.Apr.ToString(formatThousand);
-                            className = c.ParentMonth.Apr >= 0 ? className : className + " error";
+                            className = c.ParentMonth.Apr >= 0 ? className : className + " budgetError";
                         }
                         else if (i == 5)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.May.ToString(formatThousand));
                             div.InnerHtml = c.Month.May.ToString(formatThousand);
-                            className = c.ParentMonth.May >= 0 ? className : className + " error";
+                            className = c.ParentMonth.May >= 0 ? className : className + " budgetError";
                         }
                         else if (i == 6)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Jun.ToString(formatThousand));
                             div.InnerHtml = c.Month.Jun.ToString(formatThousand);
-                            className = c.ParentMonth.Jun >= 0 ? className : className + " error";
+                            className = c.ParentMonth.Jun >= 0 ? className : className + " budgetError";
                         }
                         else if (i == 7)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Jul.ToString(formatThousand));
                             div.InnerHtml = c.Month.Jul.ToString(formatThousand);
-                            className = c.ParentMonth.Jul >= 0 ? className : className + " error";
+                            className = c.ParentMonth.Jul >= 0 ? className : className + " budgetError";
                         }
                         else if (i == 8)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Aug.ToString(formatThousand));
                             div.InnerHtml = c.Month.Aug.ToString(formatThousand);
-                            className = c.ParentMonth.Aug >= 0 ? className : className + " error";
+                            className = c.ParentMonth.Aug >= 0 ? className : className + " budgetError";
                         }
                         else if (i == 9)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Sep.ToString(formatThousand));
                             div.InnerHtml = c.Month.Sep.ToString(formatThousand);
-                            className = c.ParentMonth.Sep >= 0 ? className : className + " error";
+                            className = c.ParentMonth.Sep >= 0 ? className : className + " budgetError";
                         }
                         else if (i == 10)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Oct.ToString(formatThousand));
                             div.InnerHtml = c.Month.Oct.ToString(formatThousand);
-                            className = c.ParentMonth.Oct >= 0 ? className : className + " error";
+                            className = c.ParentMonth.Oct >= 0 ? className : className + " budgetError";
                         }
                         else if (i == 11)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Nov.ToString(formatThousand));
                             div.InnerHtml = c.Month.Nov.ToString(formatThousand);
-                            className = c.ParentMonth.Nov >= 0 ? className : className + " error";
+                            className = c.ParentMonth.Nov >= 0 ? className : className + " budgetError";
                         }
                         else if (i == 12)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Dec.ToString(formatThousand));
                             div.InnerHtml = c.Month.Dec.ToString(formatThousand);
-                            className = c.ParentMonth.Dec >= 0 ? className : className + " error";
+                            className = c.ParentMonth.Dec >= 0 ? className : className + " budgetError";
                         }
                         div.AddCssClass(className);
                         td.InnerHtml = div.ToString();
@@ -1819,25 +1830,25 @@ namespace RevenuePlanner.Helpers
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Jan.ToString(formatThousand));
                             div.InnerHtml = c.Month.Jan.ToString(formatThousand);
-                            className = c.ParentMonth.Jan >= 0 ? className : className + " error";
+                            className = c.ParentMonth.Jan >= 0 ? className : className + " budgetError";
                         }
                         else if (i == 2)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Apr.ToString(formatThousand));
                             div.InnerHtml = c.Month.Apr.ToString(formatThousand);
-                            className = c.ParentMonth.Apr >= 0 ? className : className + " error";
+                            className = c.ParentMonth.Apr >= 0 ? className : className + " budgetError";
                         }
                         else if (i == 3)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Jul.ToString(formatThousand));
                             div.InnerHtml = c.Month.Jul.ToString(formatThousand);
-                            className = c.ParentMonth.Jul >= 0 ? className : className + " error";
+                            className = c.ParentMonth.Jul >= 0 ? className : className + " budgetError";
                         }
                         else if (i == 4)
                         {
                             div.Attributes.Add("allocated", c.ParentMonth.Oct.ToString(formatThousand));
                             div.InnerHtml = c.Month.Oct.ToString(formatThousand);
-                            className = c.ParentMonth.Oct >= 0 ? className : className + " error";
+                            className = c.ParentMonth.Oct >= 0 ? className : className + " budgetError";
                         }
                         div.AddCssClass(className);
                         td.InnerHtml = div.ToString();
@@ -1882,7 +1893,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="AllocatedBy"></param>
         /// <param name="month"></param>
         /// <returns></returns>
-        public static MvcHtmlString AllocatedProgramMonth(this HtmlHelper helper, string ActivityType, int ParentActivityId, List<BudgetModel> model, string AllocatedBy, int month)
+        public static MvcHtmlString AllocatedProgramMonth(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string AllocatedBy, int month)
         {
             string mainClass = "sub program-lvl";
             string innerClass = "programLevel";
@@ -1923,73 +1934,73 @@ namespace RevenuePlanner.Helpers
                         {
                             divProgram.Attributes.Add("allocated", p.ParentMonth.Jan.ToString(formatThousand));
                             divProgram.InnerHtml = p.Month.Jan.ToString(formatThousand);
-                            className = p.ParentMonth.Jan >= 0 ? className : className + " error";
+                            className = p.ParentMonth.Jan >= 0 ? className : className + " budgetError";
                         }
                         else if (month == 2)
                         {
                             divProgram.Attributes.Add("allocated", p.ParentMonth.Feb.ToString(formatThousand));
                             divProgram.InnerHtml = p.Month.Feb.ToString(formatThousand);
-                            className = p.ParentMonth.Feb >= 0 ? className : className + " error";
+                            className = p.ParentMonth.Feb >= 0 ? className : className + " budgetError";
                         }
                         else if (month == 3)
                         {
                             divProgram.Attributes.Add("allocated", p.ParentMonth.Mar.ToString(formatThousand));
                             divProgram.InnerHtml = p.Month.Mar.ToString(formatThousand);
-                            className = p.ParentMonth.Mar >= 0 ? className : className + " error";
+                            className = p.ParentMonth.Mar >= 0 ? className : className + " budgetError";
                         }
                         else if (month == 4)
                         {
                             divProgram.Attributes.Add("allocated", p.ParentMonth.Apr.ToString(formatThousand));
                             divProgram.InnerHtml = p.Month.Apr.ToString(formatThousand);
-                            className = p.ParentMonth.Apr >= 0 ? className : className + " error";
+                            className = p.ParentMonth.Apr >= 0 ? className : className + " budgetError";
                         }
                         else if (month == 5)
                         {
                             divProgram.Attributes.Add("allocated", p.ParentMonth.May.ToString(formatThousand));
                             divProgram.InnerHtml = p.Month.May.ToString();
-                            className = p.ParentMonth.May >= 0 ? className : className + " error";
+                            className = p.ParentMonth.May >= 0 ? className : className + " budgetError";
                         }
                         else if (month == 6)
                         {
                             divProgram.Attributes.Add("allocated", p.ParentMonth.Jun.ToString(formatThousand));
                             divProgram.InnerHtml = p.Month.Jun.ToString(formatThousand);
-                            className = p.ParentMonth.Jun >= 0 ? className : className + " error";
+                            className = p.ParentMonth.Jun >= 0 ? className : className + " budgetError";
                         }
                         else if (month == 7)
                         {
                             divProgram.Attributes.Add("allocated", p.ParentMonth.Jul.ToString(formatThousand));
                             divProgram.InnerHtml = p.Month.Jul.ToString(formatThousand);
-                            className = p.ParentMonth.Jul >= 0 ? className : className + " error";
+                            className = p.ParentMonth.Jul >= 0 ? className : className + " budgetError";
                         }
                         else if (month == 8)
                         {
                             divProgram.Attributes.Add("allocated", p.ParentMonth.Aug.ToString(formatThousand));
                             divProgram.InnerHtml = p.Month.Aug.ToString(formatThousand);
-                            className = p.ParentMonth.Aug >= 0 ? className : className + " error";
+                            className = p.ParentMonth.Aug >= 0 ? className : className + " budgetError";
                         }
                         else if (month == 9)
                         {
                             divProgram.Attributes.Add("allocated", p.ParentMonth.Sep.ToString(formatThousand));
                             divProgram.InnerHtml = p.Month.Sep.ToString(formatThousand);
-                            className = p.ParentMonth.Sep >= 0 ? className : className + " error";
+                            className = p.ParentMonth.Sep >= 0 ? className : className + " budgetError";
                         }
                         else if (month == 10)
                         {
                             divProgram.Attributes.Add("allocated", p.ParentMonth.Oct.ToString(formatThousand));
                             divProgram.InnerHtml = p.Month.Oct.ToString();
-                            className = p.ParentMonth.Oct >= 0 ? className : className + " error";
+                            className = p.ParentMonth.Oct >= 0 ? className : className + " budgetError";
                         }
                         else if (month == 11)
                         {
                             divProgram.Attributes.Add("allocated", p.ParentMonth.Nov.ToString(formatThousand));
                             divProgram.InnerHtml = p.Month.Nov.ToString(formatThousand);
-                            className = p.ParentMonth.Nov >= 0 ? className : className + " error";
+                            className = p.ParentMonth.Nov >= 0 ? className : className + " budgetError";
                         }
                         else if (month == 12)
                         {
                             divProgram.Attributes.Add("allocated", p.ParentMonth.Dec.ToString(formatThousand));
                             divProgram.InnerHtml = p.Month.Dec.ToString(formatThousand);
-                            className = p.ParentMonth.Dec >= 0 ? className : className + " error";
+                            className = p.ParentMonth.Dec >= 0 ? className : className + " budgetError";
                         }
                     }
                     else if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
@@ -1998,25 +2009,25 @@ namespace RevenuePlanner.Helpers
                         {
                             divProgram.Attributes.Add("allocated", p.ParentMonth.Jan.ToString(formatThousand));
                             divProgram.InnerHtml = p.Month.Jan.ToString(formatThousand);
-                            className = p.ParentMonth.Jan >= 0 ? className : className + " error";
+                            className = p.ParentMonth.Jan >= 0 ? className : className + " budgetError";
                         }
                         else if (month == 2)
                         {
                             divProgram.Attributes.Add("allocated", p.ParentMonth.Apr.ToString(formatThousand));
                             divProgram.InnerHtml = p.Month.Apr.ToString(formatThousand);
-                            className = p.ParentMonth.Apr >= 0 ? className : className + " error";
+                            className = p.ParentMonth.Apr >= 0 ? className : className + " budgetError";
                         }
                         else if (month == 3)
                         {
                             divProgram.Attributes.Add("allocated", p.ParentMonth.Jul.ToString(formatThousand));
                             divProgram.InnerHtml = p.Month.Jul.ToString(formatThousand);
-                            className = p.ParentMonth.Jul >= 0 ? className : className + " error";
+                            className = p.ParentMonth.Jul >= 0 ? className : className + " budgetError";
                         }
                         else if (month == 4)
                         {
                             divProgram.Attributes.Add("allocated", p.ParentMonth.Oct.ToString(formatThousand));
                             divProgram.InnerHtml = p.Month.Oct.ToString(formatThousand);
-                            className = p.ParentMonth.Oct >= 0 ? className : className + " error";
+                            className = p.ParentMonth.Oct >= 0 ? className : className + " budgetError";
                         }
                     }
                     else
@@ -2042,6 +2053,1069 @@ namespace RevenuePlanner.Helpers
 
         #endregion
 
+        #region Audience & Geography
+
+        #region Column1 Audience & Geography
+
+        /// <summary>
+        /// Render activity names for all campaigns
+        /// </summary>
+        /// <param name="helper"></param>
+        /// <param name="ActivityType"></param>
+        /// <param name="ParentActivityId"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static MvcHtmlString ActivityMainParent(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string Tab = "planned", string View = "0")
+        {
+            string strViewBy = "";
+            if (View == "1")
+            {
+                strViewBy = "audience";
+            }
+            else if (View == "2")
+            {
+                strViewBy = "geography";
+            }
+
+            StringBuilder sb = new StringBuilder();
+            foreach (BudgetModel c in model.Where(p => p.ActivityType == strViewBy && p.ParentActivityId == ParentActivityId).ToList())
+            {
+                if (model.Where(p => p.ActivityType == "campaign" && p.ParentActivityId == c.ActivityId).Count() > 0)
+                {
+                    TagBuilder tr = new TagBuilder("tr");
+                    //tr.AddCssClass("displayRow");
+                    TagBuilder td = new TagBuilder("td");
+                    td.AddCssClass("campaign-row audience");
+
+
+                    TagBuilder div = new TagBuilder("div");
+                    div.Attributes.Add("id", ActivityType + c.ActivityId.ToString());
+                    div.AddCssClass("firstLevel");
+                    TagBuilder aLink = new TagBuilder("span");
+                    if (model.Where(p => p.ActivityType == "campaign" && p.ParentActivityId == c.ActivityId).Count() > 0)
+                    {
+                        TagBuilder aAccordian = new TagBuilder("a");
+                        aAccordian.AddCssClass("accordionClick");
+                        div.InnerHtml = aAccordian.ToString();
+                        aLink.Attributes.Add("style", "cursor:pointer;");
+                    }
+                    else
+                    {
+                        aLink.Attributes.Add("style", "padding-left:20px;cursor:pointer;");
+                    }
+                    //aLink.Attributes.Add("id", c.ActivityId.ToString());
+                    //aLink.Attributes.Add("linktype", "main");
+                    aLink.InnerHtml = c.ActivityName;
+
+                    div.InnerHtml += aLink.ToString();
+
+                    td.InnerHtml = div.ToString();
+
+                    td.InnerHtml += ActivityChild(helper, "campaign", c.ActivityId, model, Tab, View).ToString();
+                    tr.InnerHtml = td.ToString();
+                    sb.AppendLine(tr.ToString());
+                }
+            }
+            return new MvcHtmlString(sb.ToString());
+        }
+
+        /// <summary>
+        /// Render activity names for all children
+        /// </summary>
+        /// <param name="helper"></param>
+        /// <param name="ActivityType"></param>
+        /// <param name="ParentActivityId"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static MvcHtmlString ActivityChild(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string Tab = "planned", string View = "0")
+        {
+            
+            string mainClass = "sub program-lvl";
+            string innerClass = "programLevel";
+            string parentClassName = "campaign";
+            string childActivity = "tactic";
+            bool needAccrodian = true;
+            if (ActivityType == "campaign")
+            {
+                mainClass = "sub campaign-lvl";
+                innerClass = "campaignLevel";
+                if (View == "1")
+                {
+                    parentClassName = "audience";
+                }
+                else if (View == "2")
+                {
+                    parentClassName = "geography";
+                }
+                
+                childActivity = "program";
+            }
+            else if (ActivityType == "program")
+            {
+                mainClass = "sub program-lvl";
+                innerClass = "programLevel";
+                parentClassName = "campaign";
+                childActivity = "tactic";
+            }
+            else if (ActivityType == "tactic")
+            {
+                mainClass = "sub tactic-lvl";
+                innerClass = "tacticLevel";
+                parentClassName = "program";
+                childActivity = "lineitem";
+            }
+            else if (ActivityType == "lineitem")
+            {
+                mainClass = "sub lineItem-lvl";
+                innerClass = "lineitemLevel";
+                parentClassName = "tactic";
+                needAccrodian = false;
+                childActivity = "";
+            }
+            if (Tab == "allocated")
+            {
+                needAccrodian = false;
+            }
+            List<BudgetModel> lst = model.Where(p => p.ActivityType == ActivityType && p.ParentActivityId == ParentActivityId).ToList();
+            if (lst.Count > 0)
+            {
+                StringBuilder sb = new StringBuilder();
+                TagBuilder div = new TagBuilder("div");
+                div.AddCssClass(mainClass);
+                div.Attributes.Add("data-parent", parentClassName + ParentActivityId.ToString());
+                foreach (BudgetModel p in lst)
+                {
+                    TagBuilder divProgram = new TagBuilder("div");
+                    divProgram.Attributes.Add("id", ActivityType + p.ActivityId.ToString());
+                    divProgram.AddCssClass(innerClass);
+
+                    TagBuilder aLink = new TagBuilder("a");
+                    if (needAccrodian)
+                    {
+                        if (model.Where(p1 => p1.ActivityType == childActivity && p1.ParentActivityId == p.ActivityId).Count() > 0)
+                        {
+                            TagBuilder aAccordian = new TagBuilder("a");
+                            //aAccordian.Attributes.Add("href", "#");
+                            aAccordian.AddCssClass("accordionClick");
+                            divProgram.InnerHtml = aAccordian.ToString();
+                            aLink.Attributes.Add("style", "cursor:pointer;");
+                        }
+                        else
+                        {
+                            aLink.Attributes.Add("style", "padding-left:20px;cursor:pointer;");
+                        }
+                    }
+                    else
+                    {
+                        aLink.Attributes.Add("style", "cursor:pointer;");
+                    }
+
+                    //aLink.Attributes.Add("href", "#");
+                    aLink.InnerHtml = p.ActivityName;
+
+
+                    aLink.Attributes.Add("id", p.Id);
+                    aLink.Attributes.Add("linktype", ActivityType);
+
+                    divProgram.InnerHtml += aLink.ToString();
+
+                    div.InnerHtml += divProgram.ToString();
+
+                    if (ActivityType == "campaign")
+                        div.InnerHtml += ActivityChild(helper, "program", p.ActivityId, model,View).ToString();
+                    else if (ActivityType == "program")
+                        div.InnerHtml += ActivityChild(helper, "tactic", p.ActivityId, model, View).ToString();
+                    else if (ActivityType == "tactic")
+                        div.InnerHtml += ActivityChild(helper, "lineitem", p.ActivityId, model, View).ToString();
+                }
+                sb.AppendLine(div.ToString());
+                return new MvcHtmlString(sb.ToString());
+            }
+            else
+            {
+                return new MvcHtmlString(string.Empty);
+            }
+        }
+
         #endregion
+
+        #region Column2 Audience & Geography
+
+        /// <summary>
+        /// Get Campaign Month and call Program
+        /// </summary>
+        /// <param name="helper"></param>
+        /// <param name="ActivityType"></param>
+        /// <param name="ParentActivityId"></param>
+        /// <param name="model"></param>
+        /// <param name="AllocatedBy"></param>
+        /// <returns></returns>
+        public static MvcHtmlString ParentMonth(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string AllocatedBy, string View = "0")
+        {
+            string strViewBy = "";
+            if (View == "1")
+            {
+                strViewBy = "audience";
+            }
+            else if (View == "2")
+            {
+                strViewBy = "geography";
+            }
+            StringBuilder sb = new StringBuilder();
+            foreach (BudgetModel c in model.Where(p => p.ActivityType == strViewBy && p.ParentActivityId == ParentActivityId).ToList())
+            {
+                if (model.Where(p => p.ActivityType == "campaign" && p.ParentActivityId == c.ActivityId).Count() > 0)
+                {
+
+                    TagBuilder tr = new TagBuilder("tr");
+                    if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower())
+                    {
+                        for (int i = 1; i <= 12; i++)
+                        {
+                            string className = "firstLevel";
+                            TagBuilder td = new TagBuilder("td");
+                            td.AddCssClass("campaign-row audience");
+
+                            TagBuilder div = new TagBuilder("div");
+                            div.Attributes.Add("id", ActivityType + c.ActivityId.ToString());
+
+                            if (i == 1)
+                            {
+                                //div.Attributes.Add("allocated", c.ParentMonth.Jan.ToString(formatThousand));
+                                div.InnerHtml = c.Month.Jan.ToString(formatThousand);
+                                //className = c.Month.Jan <= c.ParentMonth.Jan ? className : className + " budgetError";
+                            }
+                            else if (i == 2)
+                            {
+                                //div.Attributes.Add("allocated", c.ParentMonth.Feb.ToString(formatThousand));
+                                div.InnerHtml = c.Month.Feb.ToString(formatThousand);
+                                //className = c.Month.Feb <= c.ParentMonth.Feb ? className : className + " budgetError";
+                            }
+                            else if (i == 3)
+                            {
+                                //div.Attributes.Add("allocated", c.ParentMonth.Mar.ToString(formatThousand));
+                                div.InnerHtml = c.Month.Mar.ToString(formatThousand);
+                                //className = c.Month.Mar <= c.ParentMonth.Mar ? className : className + " budgetError";
+                            }
+                            else if (i == 4)
+                            {
+                                //div.Attributes.Add("allocated", c.ParentMonth.Apr.ToString(formatThousand));
+                                div.InnerHtml = c.Month.Apr.ToString(formatThousand);
+                                //className = c.Month.Apr <= c.ParentMonth.Apr ? className : className + " budgetError";
+                            }
+                            else if (i == 5)
+                            {
+                                // div.Attributes.Add("allocated", c.ParentMonth.May.ToString(formatThousand));
+                                div.InnerHtml = c.Month.May.ToString(formatThousand);
+                                // className = c.Month.May <= c.ParentMonth.May ? className : className + " budgetError";
+                            }
+                            else if (i == 6)
+                            {
+                                //div.Attributes.Add("allocated", c.ParentMonth.Jun.ToString(formatThousand));
+                                div.InnerHtml = c.Month.Jun.ToString(formatThousand);
+                                // className = c.Month.Jun <= c.ParentMonth.Jun ? className : className + " budgetError";
+                            }
+                            else if (i == 7)
+                            {
+                                // div.Attributes.Add("allocated", c.ParentMonth.Jul.ToString(formatThousand));
+                                div.InnerHtml = c.Month.Jul.ToString(formatThousand);
+                                // className = c.Month.Jul <= c.ParentMonth.Jul ? className : className + " budgetError";
+                            }
+                            else if (i == 8)
+                            {
+                                // div.Attributes.Add("allocated", c.ParentMonth.Aug.ToString(formatThousand));
+                                div.InnerHtml = c.Month.Aug.ToString(formatThousand);
+                                // className = c.Month.Aug <= c.ParentMonth.Aug ? className : className + " budgetError";
+                            }
+                            else if (i == 9)
+                            {
+                                // div.Attributes.Add("allocated", c.ParentMonth.Sep.ToString(formatThousand));
+                                div.InnerHtml = c.Month.Sep.ToString(formatThousand);
+                                // className = c.Month.Sep <= c.ParentMonth.Sep ? className : className + " budgetError";
+                            }
+                            else if (i == 10)
+                            {
+                                // div.Attributes.Add("allocated", c.ParentMonth.Oct.ToString(formatThousand));
+                                div.InnerHtml = c.Month.Oct.ToString(formatThousand);
+                                // className = c.Month.Oct <= c.ParentMonth.Oct ? className : className + " budgetError";
+                            }
+                            else if (i == 11)
+                            {
+                                //div.Attributes.Add("allocated", c.ParentMonth.Nov.ToString(formatThousand));
+                                div.InnerHtml = c.Month.Nov.ToString(formatThousand);
+                                // className = c.Month.Nov <= c.ParentMonth.Nov ? className : className + " budgetError";
+                            }
+                            else if (i == 12)
+                            {
+                                //div.Attributes.Add("allocated", c.ParentMonth.Dec.ToString(formatThousand));
+                                div.InnerHtml = c.Month.Dec.ToString(formatThousand);
+                                //className = c.Month.Dec <= c.ParentMonth.Dec ? className : className + " budgetError";
+                            }
+                            div.AddCssClass(className);
+                            td.InnerHtml = div.ToString();
+
+                            td.InnerHtml += ChildMonth(helper, "campaign", c.ActivityId, model, AllocatedBy, i,View).ToString();
+                            tr.InnerHtml += td.ToString();
+                        }
+                    }
+                    else if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
+                    {
+                        for (int i = 1; i <= 4; i++)
+                        {
+                            string className = "firstLevel";
+                            TagBuilder td = new TagBuilder("td");
+                            td.AddCssClass("campaign-row audience");
+
+                            TagBuilder div = new TagBuilder("div");
+                            div.Attributes.Add("id", ActivityType + c.ActivityId.ToString());
+
+                            if (i == 1)
+                            {
+                                //div.Attributes.Add("allocated", c.ParentMonth.Jan.ToString(formatThousand));
+                                div.InnerHtml = c.Month.Jan.ToString(formatThousand);
+                                //className = c.Month.Jan <= c.ParentMonth.Jan ? className : className + " budgetError";
+                            }
+                            else if (i == 2)
+                            {
+                                // div.Attributes.Add("allocated", c.ParentMonth.Apr.ToString(formatThousand));
+                                div.InnerHtml = c.Month.Apr.ToString(formatThousand);
+                                // className = c.Month.Apr <= c.ParentMonth.Apr ? className : className + " budgetError";
+                            }
+                            else if (i == 3)
+                            {
+                                //div.Attributes.Add("allocated", c.ParentMonth.Jul.ToString(formatThousand));
+                                div.InnerHtml = c.Month.Jul.ToString(formatThousand);
+                                //className = c.Month.Jul <= c.ParentMonth.Jul ? className : className + " budgetError";
+                            }
+                            else if (i == 4)
+                            {
+                                //div.Attributes.Add("allocated", c.ParentMonth.Oct.ToString(formatThousand));
+                                div.InnerHtml = c.Month.Oct.ToString(formatThousand);
+                                //className = c.Month.Oct <= c.ParentMonth.Oct ? className : className + " budgetError";
+                            }
+                            div.AddCssClass(className);
+                            td.InnerHtml = div.ToString();
+
+                            td.InnerHtml += ChildMonth(helper, "campaign", c.ActivityId, model, AllocatedBy, i, View).ToString();
+                            tr.InnerHtml += td.ToString();
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 1; i <= 12; i++)
+                        {
+                            string className = "firstLevel";
+                            TagBuilder td = new TagBuilder("td");
+                            td.AddCssClass("campaign-row audience");
+
+                            TagBuilder div = new TagBuilder("div");
+                            div.Attributes.Add("id", ActivityType + c.ActivityId.ToString());
+
+
+                            div.InnerHtml = "---";
+
+                            div.AddCssClass(className);
+                            td.InnerHtml = div.ToString();
+
+                            td.InnerHtml += ChildMonth(helper, "campaign", c.ActivityId, model, AllocatedBy, i, View).ToString();
+                            tr.InnerHtml += td.ToString();
+                        }
+                    }
+                    sb.AppendLine(tr.ToString());
+                }
+            }
+            return new MvcHtmlString(sb.ToString());
+        }
+
+        /// <summary>
+        /// Recursive call to children for month
+        /// </summary>
+        /// <param name="helper"></param>
+        /// <param name="ActivityType"></param>
+        /// <param name="ParentActivityId"></param>
+        /// <param name="model"></param>
+        /// <param name="AllocatedBy"></param>
+        /// <param name="month"></param>
+        /// <returns></returns>
+        public static MvcHtmlString ChildMonth(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string AllocatedBy, int month, string View = "0")
+        {
+            string mainClass = "sub program-lvl";
+            string innerClass = "programLevel";
+            string parentClassName = "campaign";
+            if (ActivityType == "campaign")
+            {
+                mainClass = "sub campaign-lvl";
+                innerClass = "campaignLevel";
+                //parentClassName = "audience";
+                if (View == "1")
+                {
+                    parentClassName = "audience";
+                }
+                else if (View == "2")
+                {
+                    parentClassName = "geography";
+                }
+                
+            }
+            else if (ActivityType == "program")
+            {
+                mainClass = "sub program-lvl";
+                innerClass = "programLevel";
+                parentClassName = "campaign";
+            }
+            else if (ActivityType == "tactic")
+            {
+                mainClass = "sub tactic-lvl";
+                innerClass = "tacticLevel";
+                parentClassName = "program";
+            }
+            else if (ActivityType == "lineitem")
+            {
+                mainClass = "sub lineItem-lvl";
+                innerClass = "lineitemLevel";
+                parentClassName = "tactic";
+            }
+            List<BudgetModel> lst = model.Where(p => p.ActivityType == ActivityType && p.ParentActivityId == ParentActivityId).ToList();
+            if (lst.Count > 0)
+            {
+                StringBuilder sb = new StringBuilder();
+                TagBuilder div = new TagBuilder("div");
+                div.AddCssClass(mainClass);
+                div.Attributes.Add("data-parent", parentClassName + ParentActivityId.ToString());
+                foreach (BudgetModel p in lst)
+                {
+                    TagBuilder divProgram = new TagBuilder("div");
+                    divProgram.Attributes.Add("id", ActivityType + p.ActivityId.ToString());
+                    string className = innerClass;
+                    if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.months.ToString()].ToString().ToLower())
+                    {
+                        if (month == 1)
+                        {
+                            if (ActivityType == "lineitem" && p.Month.Jan <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                if (ActivityType != "lineitem" && ActivityType != "tactic")
+                                {
+                                    divProgram.Attributes.Add("allocated", p.ParentMonth.Jan.ToString(formatThousand));
+                                    //className = p.Month.Jan <= p.ParentMonth.Jan ? className : className + " budgetError";
+                                }
+                                divProgram.InnerHtml = p.Month.Jan.ToString(formatThousand);
+                            }
+
+                        }
+                        else if (month == 2)
+                        {
+                            if (ActivityType == "lineitem" && p.Month.Feb <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                if (ActivityType != "lineitem" && ActivityType != "tactic")
+                                {
+                                    divProgram.Attributes.Add("allocated", p.ParentMonth.Feb.ToString(formatThousand));
+                                    //className = p.Month.Feb <= p.ParentMonth.Feb ? className : className + " budgetError";
+                                }
+                                divProgram.InnerHtml = p.Month.Feb.ToString(formatThousand);
+                            }
+
+                        }
+                        else if (month == 3)
+                        {
+
+                            if (ActivityType == "lineitem" && p.Month.Mar <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                if (ActivityType != "lineitem" && ActivityType != "tactic")
+                                {
+                                    divProgram.Attributes.Add("allocated", p.ParentMonth.Mar.ToString(formatThousand));
+                                    //className = p.Month.Mar <= p.ParentMonth.Mar ? className : className + " budgetError";
+                                }
+                                divProgram.InnerHtml = p.Month.Mar.ToString(formatThousand);
+                            }
+
+                        }
+                        else if (month == 4)
+                        {
+                            if (ActivityType == "lineitem" && p.Month.Apr <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                if (ActivityType != "lineitem" && ActivityType != "tactic")
+                                {
+                                    divProgram.Attributes.Add("allocated", p.ParentMonth.Apr.ToString(formatThousand));
+                                    //className = p.Month.Apr <= p.ParentMonth.Apr ? className : className + " budgetError";
+                                }
+                                divProgram.InnerHtml = p.Month.Apr.ToString(formatThousand);
+                            }
+
+                        }
+                        else if (month == 5)
+                        {
+                            if (ActivityType == "lineitem" && p.Month.May <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                if (ActivityType != "lineitem" && ActivityType != "tactic")
+                                {
+                                    divProgram.Attributes.Add("allocated", p.ParentMonth.May.ToString(formatThousand));
+                                    //className = p.Month.May <= p.ParentMonth.May ? className : className + " budgetError";
+                                }
+                                divProgram.InnerHtml = p.Month.May.ToString(formatThousand);
+                            }
+
+                        }
+                        else if (month == 6)
+                        {
+                            if (ActivityType == "lineitem" && p.Month.Jun <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                if (ActivityType != "lineitem" && ActivityType != "tactic")
+                                {
+                                    divProgram.Attributes.Add("allocated", p.ParentMonth.Jun.ToString(formatThousand));
+                                    //className = p.Month.Jun <= p.ParentMonth.Jun ? className : className + " budgetError";
+                                }
+                                divProgram.InnerHtml = p.Month.Jun.ToString(formatThousand);
+                            }
+
+                        }
+                        else if (month == 7)
+                        {
+                            if (ActivityType == "lineitem" && p.Month.Jul <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                if (ActivityType != "lineitem" && ActivityType != "tactic")
+                                {
+                                    divProgram.Attributes.Add("allocated", p.ParentMonth.Jul.ToString(formatThousand));
+                                    //className = p.Month.Jul <= p.ParentMonth.Jul ? className : className + " budgetError";
+                                }
+                                divProgram.InnerHtml = p.Month.Jul.ToString(formatThousand);
+                            }
+
+                        }
+                        else if (month == 8)
+                        {
+                            if (ActivityType == "lineitem" && p.Month.Aug <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                if (ActivityType != "lineitem" && ActivityType != "tactic")
+                                {
+                                    divProgram.Attributes.Add("allocated", p.ParentMonth.Aug.ToString(formatThousand));
+                                    //className = p.Month.Aug <= p.ParentMonth.Aug ? className : className + " budgetError";
+                                }
+                                divProgram.InnerHtml = p.Month.Aug.ToString(formatThousand);
+                            }
+
+                        }
+                        else if (month == 9)
+                        {
+                            if (ActivityType == "lineitem" && p.Month.Sep <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                if (ActivityType != "lineitem" && ActivityType != "tactic")
+                                {
+                                    divProgram.Attributes.Add("allocated", p.ParentMonth.Sep.ToString(formatThousand));
+                                    //className = p.Month.Sep <= p.ParentMonth.Sep ? className : className + " budgetError";
+                                }
+                                divProgram.InnerHtml = p.Month.Sep.ToString(formatThousand);
+                            }
+
+
+                        }
+                        else if (month == 10)
+                        {
+                            if (ActivityType == "lineitem" && p.Month.Oct <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                if (ActivityType != "lineitem" && ActivityType != "tactic")
+                                {
+                                    divProgram.Attributes.Add("allocated", p.ParentMonth.Oct.ToString(formatThousand));
+                                    //className = p.Month.Oct <= p.ParentMonth.Oct ? className : className + " budgetError";
+                                }
+                                divProgram.InnerHtml = p.Month.Oct.ToString();
+                            }
+
+                        }
+                        else if (month == 11)
+                        {
+                            if (ActivityType == "lineitem" && p.Month.Nov <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                if (ActivityType != "lineitem" && ActivityType != "tactic")
+                                {
+                                    divProgram.Attributes.Add("allocated", p.ParentMonth.Nov.ToString(formatThousand));
+                                    //className = p.Month.Nov <= p.ParentMonth.Nov ? className : className + " budgetError";
+                                }
+                                divProgram.InnerHtml = p.Month.Nov.ToString(formatThousand);
+                            }
+                        }
+                        else if (month == 12)
+                        {
+                            if (ActivityType == "lineitem" && p.Month.Dec <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                if (ActivityType != "lineitem" && ActivityType != "tactic")
+                                {
+                                    divProgram.Attributes.Add("allocated", p.ParentMonth.Dec.ToString(formatThousand));
+                                    //className = p.Month.Dec <= p.ParentMonth.Dec ? className : className + " budgetError";
+                                }
+                                divProgram.InnerHtml = p.Month.Dec.ToString(formatThousand);
+                            }
+                        }
+                    }
+                    else if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
+                    {
+                        if (month == 1)
+                        {
+                            if (ActivityType == "lineitem" && p.Month.Jan <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                if (ActivityType != "lineitem" && ActivityType != "tactic")
+                                {
+                                    divProgram.Attributes.Add("allocated", p.ParentMonth.Jan.ToString(formatThousand));
+                                    //className = p.Month.Jan <= p.ParentMonth.Jan ? className : className + " budgetError";
+                                }
+                                divProgram.InnerHtml = p.Month.Jan.ToString(formatThousand);
+                            }
+
+                        }
+                        else if (month == 2)
+                        {
+                            if (ActivityType == "lineitem" && p.Month.Apr <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                if (ActivityType != "lineitem" && ActivityType != "tactic")
+                                {
+                                    divProgram.Attributes.Add("allocated", p.ParentMonth.Apr.ToString(formatThousand));
+                                    //className = p.Month.Apr <= p.ParentMonth.Apr ? className : className + " budgetError";
+                                }
+                                divProgram.InnerHtml = p.Month.Apr.ToString(formatThousand);
+                            }
+
+                        }
+                        else if (month == 3)
+                        {
+                            if (ActivityType == "lineitem" && p.Month.Jul <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                if (ActivityType != "lineitem" && ActivityType != "tactic")
+                                {
+                                    divProgram.Attributes.Add("allocated", p.ParentMonth.Jul.ToString(formatThousand));
+                                    //className = p.Month.Jul <= p.ParentMonth.Jul ? className : className + " budgetError";
+                                }
+                                divProgram.InnerHtml = p.Month.Jul.ToString(formatThousand);
+                            }
+
+                        }
+                        else if (month == 4)
+                        {
+
+                            if (ActivityType == "lineitem" && p.Month.Oct <= 0)
+                            {
+                                divProgram.InnerHtml = "---";
+                            }
+                            else
+                            {
+                                if (ActivityType != "lineitem" && ActivityType != "tactic")
+                                {
+                                    divProgram.Attributes.Add("allocated", p.ParentMonth.Oct.ToString(formatThousand));
+                                    //className = p.Month.Oct <= p.ParentMonth.Oct ? className : className + " budgetError";
+                                }
+                                divProgram.InnerHtml = p.Month.Oct.ToString(formatThousand);
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        divProgram.InnerHtml = "---";
+                    }
+                    divProgram.AddCssClass(className);
+                    div.InnerHtml += divProgram.ToString();
+
+                    if (ActivityType == "campaign")
+                        div.InnerHtml += ChildMonth(helper, "program", p.ActivityId, model, AllocatedBy, month, View).ToString();
+
+                    else if (ActivityType == "program")
+                        div.InnerHtml += ChildMonth(helper, "tactic", p.ActivityId, model, AllocatedBy, month, View).ToString();
+
+                    else if (ActivityType == "tactic")
+                        div.InnerHtml += ChildMonth(helper, "lineitem", p.ActivityId, model, AllocatedBy, month, View).ToString();
+                }
+                sb.AppendLine(div.ToString());
+                return new MvcHtmlString(sb.ToString());
+            }
+            else
+            {
+                return new MvcHtmlString(string.Empty);
+            }
+        }
+
+        #endregion
+
+        #region Column3 Audience & Geography
+
+        /// <summary>
+        /// Get Campaign Month and call Program
+        /// </summary>
+        /// <param name="helper"></param>
+        /// <param name="ActivityType"></param>
+        /// <param name="ParentActivityId"></param>
+        /// <param name="model"></param>
+        /// <param name="AllocatedBy"></param>
+        /// <returns></returns>
+        public static MvcHtmlString ParentSummary(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string AllocatedBy, string Tab, string View = "0")
+        {
+            string strViewBy = "";
+            if (View == "1")
+            {
+                strViewBy = "audience";
+            }
+            else if (View == "2")
+            {
+                strViewBy = "geography";
+            }
+            StringBuilder sb = new StringBuilder();
+            BudgetModel plan = model.Where(pl => pl.ActivityType == "plan").SingleOrDefault();
+            if (plan != null)
+            {
+                TagBuilder tr = new TagBuilder("tr");
+                TagBuilder td = new TagBuilder("td");
+                td.AddCssClass("event-row");
+                TagBuilder div = new TagBuilder("div");
+                if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
+                {
+                    double sumMonth = plan.Month.Jan + plan.Month.Feb + plan.Month.Mar + plan.Month.Apr + plan.Month.May + plan.Month.Jun + plan.Month.Jul + plan.Month.Aug + plan.Month.Sep + plan.Month.Oct + plan.Month.Nov + plan.Month.Dec;
+                    div.InnerHtml = sumMonth.ToString(formatThousand);
+                    TagBuilder span = new TagBuilder("span");
+
+                    double dblProgress = 0;
+                    dblProgress = (sumMonth == 0 && plan.Allocated == 0) ? 0 : (sumMonth > 0 && plan.Allocated == 0) ? 101 : sumMonth / plan.Allocated * 100;
+                    span.Attributes.Add("style", "width:" + dblProgress.ToString() + "%;");
+                    if (dblProgress > 100)
+                    {
+                        div.AddCssClass("budgetError");
+                        span.AddCssClass("progressBar budgetError");
+                    }
+                    else
+                    {
+                        span.AddCssClass("progressBar");
+                    }
+                    div.InnerHtml += span.ToString();
+                }
+                else
+                {
+                    div.AddCssClass("firstLevel");
+                    div.InnerHtml = "---";
+                }
+                td.InnerHtml = div.ToString();
+                tr.InnerHtml += td.ToString();
+
+
+                td = new TagBuilder("td");
+                td.AddCssClass("event-row");
+                div = new TagBuilder("div");
+                div.AddCssClass("firstLevel");
+                if (Tab == "0")
+                {
+                    div.InnerHtml = plan.Allocated.ToString(formatThousand);
+                }
+                else
+                {
+                    if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
+                    {
+                        div.InnerHtml = plan.Allocated.ToString(formatThousand);
+                    }
+                    else
+                    {
+                        div.InnerHtml = "---";
+                    }
+                }
+                td.InnerHtml = div.ToString();
+                tr.InnerHtml += td.ToString();
+
+                sb.AppendLine(tr.ToString());
+            }
+            foreach (BudgetModel c in model.Where(p => p.ActivityType == strViewBy && p.ParentActivityId == ParentActivityId).ToList())
+            {
+                if (model.Where(p => p.ActivityType == "campaign" && p.ParentActivityId == c.ActivityId).Count() > 0)
+                {
+
+                    TagBuilder tr = new TagBuilder("tr");
+
+                    //First
+                    TagBuilder td = new TagBuilder("td");
+                    td.AddCssClass("campaign-row audience");
+
+                    TagBuilder div = new TagBuilder("div");
+                    div.Attributes.Add("id", ActivityType + c.ActivityId.ToString());
+                    div.AddCssClass("firstLevel");
+                    if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
+                    {
+                        //div.InnerHtml = c.Budgeted.ToString();
+                        double sumMonth = c.Month.Jan + c.Month.Feb + c.Month.Mar + c.Month.Apr + c.Month.May + c.Month.Jun + c.Month.Jul + c.Month.Aug + c.Month.Sep + c.Month.Oct + c.Month.Nov + c.Month.Dec;
+                        //TagBuilder span = new TagBuilder("span");
+
+                        //double dblProgress = 0;
+                        //dblProgress = (sumMonth == 0 && c.Allocated == 0) ? 0 : (sumMonth > 0 && c.Allocated == 0) ? 101 : sumMonth / c.Allocated * 100;
+                        //span.Attributes.Add("style", "width:" + dblProgress.ToString() + "%;");
+                        //if (dblProgress > 100)
+                        //{
+                        //    div.AddCssClass("main budgetError");
+                        //    span.AddCssClass("progressBar budgetError");
+                        //}
+                        //else
+                        //{
+                        //    div.AddCssClass("mainLevel");
+                        //    span.AddCssClass("progressBar");
+                        //}
+                        
+                        div.InnerHtml = sumMonth.ToString(formatThousand);
+                        //div.InnerHtml += sumMonth.ToString(formatThousand);
+                        //div.InnerHtml += span.ToString();
+                    }
+                    else
+                    {
+                        div.InnerHtml += "---";
+                    }
+
+                    td.InnerHtml = div.ToString();
+
+                    td.InnerHtml += ChildSummary(helper, "campaign", c.ActivityId, model, "first", AllocatedBy, Tab, View).ToString();
+
+                    tr.InnerHtml += td.ToString();
+
+                    //Last
+                    TagBuilder tdLast = new TagBuilder("td");
+                    tdLast.AddCssClass("campaign-row audience");
+
+                    TagBuilder divLast = new TagBuilder("div");
+                    divLast.Attributes.Add("id", ActivityType + c.ActivityId.ToString());
+                    divLast.AddCssClass("firstLevel");
+                    if (Tab == "0")
+                    {
+                        divLast.InnerHtml = c.Allocated.ToString(formatThousand);
+                    }
+                    else
+                    {
+                        if (AllocatedBy != "default")
+                        {
+                            divLast.InnerHtml = "---"; c.Allocated.ToString(formatThousand);
+                        }
+                        else
+                        {
+                            divLast.InnerHtml = "---";
+                        }
+                    }
+                    tdLast.InnerHtml = divLast.ToString();
+                    tdLast.InnerHtml += ChildSummary(helper, "campaign", c.ActivityId, model, "last", AllocatedBy, Tab, View).ToString();
+
+                    tr.InnerHtml += tdLast.ToString();
+
+                    sb.AppendLine(tr.ToString());
+                }
+            }
+            return new MvcHtmlString(sb.ToString());
+        }
+
+        /// <summary>
+        /// Recursive call to children for month
+        /// </summary>
+        /// <param name="helper"></param>
+        /// <param name="ActivityType"></param>
+        /// <param name="ParentActivityId"></param>
+        /// <param name="model"></param>
+        /// <param name="AllocatedBy"></param>
+        /// <param name="month"></param>
+        /// <returns></returns>
+        public static MvcHtmlString ChildSummary(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string mode, string AllocatedBy, string Tab, string View = "0")
+        {
+            string mainClass = "sub program-lvl";
+            string innerClass = "programLevel";
+            string parentClassName = "campaign";
+            if (ActivityType == "campaign")
+            {
+                mainClass = "sub campaign-lvl";
+                innerClass = "campaignLevel";
+                if (View == "1")
+                {
+                    parentClassName = "audience";
+                }
+                else if (View == "2")
+                {
+                    parentClassName = "geography";
+                }
+            }
+            else if (ActivityType == "program")
+            {
+                mainClass = "sub program-lvl";
+                innerClass = "programLevel";
+                parentClassName = "campaign";
+            }
+            else if (ActivityType == "tactic")
+            {
+                mainClass = "sub tactic-lvl";
+                innerClass = "tacticLevel";
+                parentClassName = "program";
+            }
+            else if (ActivityType == "lineitem")
+            {
+                mainClass = "sub lineItem-lvl";
+                innerClass = "lineitemLevel";
+                parentClassName = "tactic";
+            }
+            List<BudgetModel> lst = model.Where(p => p.ActivityType == ActivityType && p.ParentActivityId == ParentActivityId).ToList();
+            if (lst.Count > 0)
+            {
+                StringBuilder sb = new StringBuilder();
+                TagBuilder div = new TagBuilder("div");
+                div.AddCssClass(mainClass);
+                div.Attributes.Add("data-parent", parentClassName + ParentActivityId.ToString());
+                foreach (BudgetModel p in lst)
+                {
+                    TagBuilder divProgram = new TagBuilder("div");
+                    divProgram.Attributes.Add("id", ActivityType + p.ActivityId.ToString());
+                    //divProgram.AddCssClass(innerClass);
+
+                    if (mode == "first")
+                    {
+                        if (AllocatedBy.ToLower() != Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
+                        {
+                            //div.InnerHtml += p.Budgeted.ToString();
+                            double sumMonth = p.Month.Jan + p.Month.Feb + p.Month.Mar + p.Month.Apr + p.Month.May + p.Month.Jun + p.Month.Jul + p.Month.Aug + p.Month.Sep + p.Month.Oct + p.Month.Nov + p.Month.Dec;
+                            //TagBuilder span = new TagBuilder("span");
+                            //double dblProgress = 0;
+                            //dblProgress = (sumMonth == 0 && p.Allocated == 0) ? 0 : (sumMonth > 0 && p.Allocated == 0) ? 101 : sumMonth / p.Allocated * 100;
+                            //span.Attributes.Add("style", "width:" + dblProgress.ToString() + "%;");
+                            //if (dblProgress > 100)
+                            //{
+                            //    if (ActivityType != "lineitem" && ActivityType != "tactic")
+                            //    {
+                            //        divProgram.AddCssClass(innerClass + " budgetError");
+                            //        span.AddCssClass("progressBar budgetError");
+                            //    }
+                            //    else
+                            //    {
+                            //        divProgram.AddCssClass(innerClass);
+                            //        span.AddCssClass("progressBar");
+                            //    }
+                            //}
+                            //else
+                            //{
+                            //    divProgram.AddCssClass(innerClass);
+                            //    span.AddCssClass("progressBar");
+                            //}
+                            divProgram.AddCssClass(innerClass);
+                            divProgram.InnerHtml = sumMonth.ToString(formatThousand);
+                            //if (ActivityType != "lineitem" && ActivityType != "tactic")
+                            //{
+                            //    divProgram.InnerHtml += span.ToString();
+                            //}
+                        }
+                        else
+                        {
+                            divProgram.InnerHtml += "---";
+                            divProgram.AddCssClass(innerClass + " firstLevel");
+                        }
+                    }
+                    else
+                    {
+                        if (Tab == "0")
+                        {
+                            if (ActivityType == "lineitem" || ActivityType == "tactic")
+                            {
+                                divProgram.InnerHtml += "---";
+                            }
+                            else
+                            {
+                                divProgram.InnerHtml += p.Allocated.ToString(formatThousand);
+                            }
+                        }
+                        else
+                        {
+                            if (AllocatedBy != "default")
+                            {
+                                if (ActivityType == "lineitem" || ActivityType == "tactic")
+                                {
+                                    divProgram.InnerHtml += "---";
+                                }
+                                else
+                                {
+                                    divProgram.InnerHtml += p.Allocated.ToString(formatThousand);
+                                }
+                            }
+                            else
+                            {
+                                divProgram.InnerHtml += "---";
+                            }
+                        }
+                        //divProgram.InnerHtml += p.Allocated.ToString(formatThousand);
+                        divProgram.AddCssClass(innerClass);
+                    }
+                    div.InnerHtml += divProgram.ToString();
+                    if (ActivityType == "campaign")
+                        div.InnerHtml += ChildSummary(helper, "program", p.ActivityId, model, mode, AllocatedBy, Tab, View ).ToString();
+                    else if (ActivityType == "program")
+                        div.InnerHtml += ChildSummary(helper, "tactic", p.ActivityId, model, mode, AllocatedBy, Tab, View).ToString();
+                    else if (ActivityType == "tactic")
+                        div.InnerHtml += ChildSummary(helper, "lineitem", p.ActivityId, model, mode, AllocatedBy, Tab, View).ToString();
+
+
+                }
+                sb.AppendLine(div.ToString());
+                return new MvcHtmlString(sb.ToString());
+            }
+            else
+            {
+                return new MvcHtmlString(string.Empty);
+            }
+        }
+
+        #endregion
+
+        #endregion //Audience & Geography
+
+
+        #endregion //Advance Budgeting
     }
 }

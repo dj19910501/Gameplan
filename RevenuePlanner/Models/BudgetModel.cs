@@ -20,9 +20,15 @@ namespace RevenuePlanner.Models
         public double Nov { get; set; }
         public double Dec { get; set; }
     }
+    public class ViewByModel
+    {
+        public string Text { get; set; }
+        public string Value { get; set; }
+    }
     public class BudgetModel
     {
-        public int ActivityId { get; set; }
+        public string Id { get; set; }
+        public string ActivityId { get; set; }
         public string ActivityName { get; set; }
         public string ActivityType { get; set; }
         public bool IsOwner { get; set; }
@@ -34,7 +40,12 @@ namespace RevenuePlanner.Models
         public double Allocated { get; set; }
         public double Budgeted { get; set; }
 
-        public int ParentActivityId { get; set; }
+        public string ParentActivityId { get; set; }
+
+        public int AudienceId {get;set;}
+        public string AudienceTitle { get; set; }
+        public Guid GeographyId { get; set; }
+        public string GeographyTitle { get; set; }
     }
     public class BudgetedValue
     {
