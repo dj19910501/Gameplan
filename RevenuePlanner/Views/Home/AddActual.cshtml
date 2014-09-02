@@ -1059,8 +1059,9 @@
             var changed = false;
             $('.accordion-actuals').find("input,input[type=text],textarea,select").each(function () {
                 var iv = $(this).attr("myValue");
-                if ($(this).val() != iv) {
+                if ($(this).val().toString().trim() != iv.toString().trim()) {      // Modified by Sohel Pathan on 02/09/2014 for PL ticket #742
                     changed = true;
+                    return false; // Added by Sohel Pathan on 02/09/2014 for PL ticket #742
                 }
             });
             return changed;

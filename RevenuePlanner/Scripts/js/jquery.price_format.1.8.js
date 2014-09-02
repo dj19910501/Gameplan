@@ -102,6 +102,12 @@
 			// format as price
 			function price_format (str)
 			{
+                // Start - Added by Sohel Pathan on 02/09/2014 for PL ticket #742
+                var iszero = false;
+                if (str == '0' || (prefix != '' && str == prefix + '0') || (suffix && str == '0' + suffix)) {
+                    iszero = true;
+                }
+			    // End - Added by Sohel Pathan on 02/09/2014 for PL ticket #742
 				// formatting settings
 				var formatted = fill_with_zeroes(to_numbers(str));
 				var thousandsFormatted = '';
@@ -166,7 +172,12 @@
 							formatted = '+' + formatted;
 					}
 				}
-
+			    // Start - Added by Sohel Pathan on 02/09/2014 for PL ticket #742
+                if (formatted == '0') {
+                    if (!iszero) formatted = '';
+                }
+                if (formatted != '') {
+                // End - Added by Sohel Pathan on 02/09/2014 for PL ticket #742
 				// apply the prefix
 				if (prefix) formatted = prefix+formatted;
                 
@@ -174,6 +185,7 @@
 				if (isDoubleExits) formatted = formatted + "." + doubleLast;
 				if (suffix) formatted = formatted + suffix;
 			
+                }
 				return formatted;
 			}
 

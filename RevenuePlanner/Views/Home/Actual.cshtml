@@ -120,25 +120,24 @@
                         if (s == Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString())
                         {
                             <tr class="height42">
-                                <th id="inqP" class="text-align-right  projected font908D88 ActualsFormater">@tacticActual.ProjectedStageValue</th>
-                                <th id="lblTotalProjectedStageValue" class="border-r font3F3F3F text-align-right ActualsFormater">@tacticActual.ProjectedStageValueActual
-                                </th>
+                                <th id="inqP" class="text-align-right  projected font908D88 addFormatterActualNumber">@tacticActual.ProjectedStageValue</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
+                                <th id="lblTotalProjectedStageValue" class="border-r font3F3F3F text-align-right addFormatterActualNumber">@tacticActual.ProjectedStageValueActual</th> @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
                                 <input type="hidden" id="hdnlblTotalProjectedStageValue" value="@tacticActual.ProjectedStageValueActual" />  @* Added by Sohel Pathan on 27/08/2014 for Internal Review Points *@
                             </tr>
                         }
                         else if (s.ToLower() == Common.StageCodeMQL)
                         {
                             <tr class="height42">
-                                <th id="mqlP" class="text-align-right  projected font908D88 ActualsFormater">@tacticActual.MQLs</th>
-                                <th id="lblTotalMQL" class="border-r font3F3F3F text-align-right ActualsFormater ">@tacticActual.MQLsActual</th>
+                                <th id="mqlP" class="text-align-right  projected font908D88 addFormatterActualNumber">@tacticActual.MQLs</th>   @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
+                                <th id="lblTotalMQL" class="border-r font3F3F3F text-align-right addFormatterActualNumber ">@tacticActual.MQLsActual</th>   @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
                                 <input type="hidden" id="hdnlblTotalMQL" value="@tacticActual.MQLsActual" />  @* Added by Sohel Pathan on 27/08/2014 for Internal Review Points *@
                             </tr>
                         }
                     }
 
                     <tr class="height42">
-                        <th id="cwP" class="text-align-right  projected font908D88 ActualsFormater">@tacticActual.CWs</th>
-                        <th id="lblTotalCW" class="border-r font3F3F3F text-align-right ActualsFormater">@tacticActual.CWsActual</th>
+                        <th id="cwP" class="text-align-right  projected font908D88 addFormatterActualNumber">@tacticActual.CWs</th> @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
+                        <th id="lblTotalCW" class="border-r font3F3F3F text-align-right addFormatterActualNumber">@tacticActual.CWsActual</th>  @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
                     </tr>
                     <tr class="height42">
                         <th id="rP" class="text-align-right projected font908D88 ActualsFormater">@tacticActual.Revenues</th>
@@ -150,8 +149,8 @@
                             <input id="cT" class="backgroundC6EBF3 font3F3F3F text-align-right width75px currency_dollar" placeholder="- - -" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" value="@tacticActual.CostActual"></th>
                     </tr>
                     <tr class="height42">
-                        <th id="roiP" class="text-align-right height22 projected padding-bottom9 font908D88 ActualsFormater">@tacticActual.ROI</th>
-                        <th id="roiT" class="border-r font3F3F3F text-align-right ActualsFormater">@tacticActual.ROIActual</th>
+                        <th id="roiP" class="text-align-right height22 projected padding-bottom9 font908D88 addFormatterActualNumber">@tacticActual.ROI</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
+                        <th id="roiT" class="border-r font3F3F3F text-align-right addFormatterActualNumber">@tacticActual.ROIActual</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
                     </tr>
                 </tbody>
             </table>
@@ -213,6 +212,11 @@
                         SetLabelFormaterWithTipsy($(this));
                     });
 
+                    // Start - Added by Sohel Pathan on 02/09/2014 for PL ticket #742.
+                    $('.addFormatterActualNumber').each(function () {
+                        SetLabelFormaterWithTipsyNumbers($(this));
+                    });
+                    // End - Added by Sohel Pathan on 02/09/2014 for PL ticket #742.
                 },
                 error: function () {
                     $("#errorMessage").css("display", "block");
