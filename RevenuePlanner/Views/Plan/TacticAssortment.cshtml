@@ -544,7 +544,8 @@
                 $(this).parent().removeClass('light-blue-background');
                 $(this).parent().addClass('unallocated-span');
                 $(this).addClass('unallocated-text');
-                $(this).prop('disabled', 'disabled');
+                // Modofied by Dharmraj on 1-Sep-2014, #753 Campaign budget numbers are all wrong on buldog production
+                //$(this).prop('disabled', 'disabled');
                 $(this).prop('readonly', true);
             });
             $('form').find(".add-on").each(function () {
@@ -1083,9 +1084,10 @@
     });
 
     //Added By : Kalpesh Sharma : PL #605 : 07/29/2014
-    $('#planned-Cost-Allocation').find('input').not('.unallocated-text').each(function () {
+    // Modofied by Dharmraj on 1-Sep-2014, #753 Campaign budget numbers are all wrong on buldog production
+    $('#planned-Cost-Allocation').find('input').not('#lblUnallocatedBudget').each(function () {
         $(this).focus(function () {
-            $('#planned-Cost-Allocation').find('input').not('.unallocated-text').parent().removeClass('border000000');
+            $('#planned-Cost-Allocation').find('input').not('#lblUnallocatedBudget').parent().removeClass('border000000');
             $(this).parent().addClass('border000000');
             var remainingValue = parseInt($(this).attr("rmb"));
             var AllocatedProgramsBudget = parseInt($(this).attr("pmb"));
