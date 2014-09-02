@@ -71,15 +71,23 @@ namespace RevenuePlanner.Controllers
             //List of Plans
             List<SelectListItem> lstPlans = Common.GetPlan(true).Where(pl => pl.Model.BusinessUnit.ClientId == Sessions.User.ClientId && pl.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = Convert.ToString(p.PlanId), Selected = false }).ToList();////Modified by Mitesh Vaishnav for internal review point 91 - Add isFromReport perameter in getPlan() function
 
+
             if (Sessions.PlanId != 0)
             {
-                if (Common.IsPlanPublished(Sessions.PlanId))
+                if (lstPlans.Where(p => p.Value == Sessions.PlanId.ToString()).Count() > 0)
                 {
-                    Sessions.ReportPlanId = Sessions.PlanId;
+                    if (Common.IsPlanPublished(Sessions.PlanId))
+                    {
+                        Sessions.ReportPlanId = Sessions.PlanId;
+                    }
+                    else
+                    {
+                        Sessions.ReportPlanId = Sessions.PublishedPlanId;
+                    }
                 }
                 else
                 {
-                    Sessions.ReportPlanId = Sessions.PublishedPlanId;
+                    Sessions.ReportPlanId = 0;
                 }
             }
 
@@ -494,9 +502,9 @@ namespace RevenuePlanner.Controllers
                 }
                 if (!isBusinessUnit)
                 {
-                if (Sessions.ReportPlanId != 0)
-                {
-                    lstPlan.Where(lp => Convert.ToString(lp.Value) == Convert.ToString(Sessions.ReportPlanId)).ToList().ForEach(lp => lp.Selected = true);
+                    if (Sessions.ReportPlanId != 0)
+                    {
+                        lstPlan.Where(lp => Convert.ToString(lp.Value) == Convert.ToString(Sessions.ReportPlanId)).ToList().ForEach(lp => lp.Selected = true);
                     }
                 }
             }
@@ -981,7 +989,7 @@ namespace RevenuePlanner.Controllers
                 Guid BusinessUnitGuid = new Guid(BusinessUnitId);
                 if (Sessions.BusinessUnitId != BusinessUnitGuid)
                 {
-                Sessions.BusinessUnitId = BusinessUnitGuid;
+                    Sessions.BusinessUnitId = BusinessUnitGuid;
                     Sessions.ReportPlanId = 0;
                 }
             }
@@ -1028,7 +1036,7 @@ namespace RevenuePlanner.Controllers
             if (Sessions.ReportPlanId != 0)
             {
                 lstPlan.Where(lp => Convert.ToString(lp.Value) == Convert.ToString(Sessions.ReportPlanId)).ToList().ForEach(lp => lp.Selected = true);
-            }   
+            }
 
             return Json(new { lstPlan }, JsonRequestBehavior.AllowGet);
         }
@@ -1486,7 +1494,7 @@ namespace RevenuePlanner.Controllers
                                 Trend = ((ta.Sum(actual => actual.Actualvalue) / currentMonth) * lastMonth)
                             });
             //Start : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
-            var businessUnits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted==false).ToList()
+            var businessUnits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false).ToList()
                                            .Select(b => new
                                            {
                                                Title = b.Title,
@@ -1494,7 +1502,7 @@ namespace RevenuePlanner.Controllers
                                                Value = tacticTrenBusinessUnit.Any(bu => bu.BusinessUnitId.Equals(b.BusinessUnitId)) ? tacticTrenBusinessUnit.Where(bu => bu.BusinessUnitId.Equals(b.BusinessUnitId)).First().Trend : 0
 
                                            });
-            var vertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted==false).ToList()
+            var vertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted == false).ToList()
                                                 .Select(v => new
                                                 {
                                                     Title = v.Title,
@@ -1502,7 +1510,7 @@ namespace RevenuePlanner.Controllers
                                                     Value = tacticTrendVertical.Any(ve => ve.VerticalId.Equals(v.VerticalId)) ? tacticTrendVertical.Where(ve => ve.VerticalId.Equals(v.VerticalId)).First().Trend : 0
                                                 });
 
-            var geography = db.Geographies.Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted==false).ToList()
+            var geography = db.Geographies.Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted == false).ToList()
                                                 .Select(g => new
                                                 {
                                                     Title = g.Title,
@@ -1538,7 +1546,7 @@ namespace RevenuePlanner.Controllers
 
             //List<Plan_Campaign_Program_Tactic_Actual> planTacticActuals = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => tacticIds.Contains(ta.PlanTacticId)).ToList();
             //Start : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
-            var businessUnits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted==false).ToList()
+            var businessUnits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false).ToList()
                                                 .Select(b => new
                                                 {
                                                     Title = b.Title,
@@ -1551,7 +1559,7 @@ namespace RevenuePlanner.Controllers
                                                                              .Sum(ta => ta.Actualvalue) :
                                                                              0
                                                 });
-            var vertical = db.Verticals.ToList().Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted==false).ToList()
+            var vertical = db.Verticals.ToList().Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted == false).ToList()
                                                 .Select(v => new
                                                 {
                                                     Title = v.Title,
@@ -1565,7 +1573,7 @@ namespace RevenuePlanner.Controllers
                                                                              0
                                                 });
 
-            var geography = db.Geographies.ToList().Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted==false).ToList()
+            var geography = db.Geographies.ToList().Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted == false).ToList()
                                                 .Select(g => new
                                                 {
                                                     Title = g.Title,
@@ -1601,7 +1609,7 @@ namespace RevenuePlanner.Controllers
             TempData["ReportData"] = TempData["ReportData"];
             //// Applying filters i.e. bussiness unit, audience, vertical or geography.
             //Start : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
-            var businessUnits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted==false).ToList()
+            var businessUnits = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false).ToList()
                                                 .Select(b => new
                                                 {
                                                     Title = b.Title,
@@ -1618,7 +1626,7 @@ namespace RevenuePlanner.Controllers
 
 
 
-            var vertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted==false).ToList()
+            var vertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted == false).ToList()
                                                 .Select(v => new
                                                 {
                                                     Title = v.Title,
@@ -1633,7 +1641,7 @@ namespace RevenuePlanner.Controllers
                                                                                        0
                                                 });
 
-            var geography = db.Geographies.Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted==false).ToList()
+            var geography = db.Geographies.Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted == false).ToList()
                                                 .Select(g => new
                                                 {
                                                     Title = g.Title,
@@ -2712,7 +2720,7 @@ namespace RevenuePlanner.Controllers
                                                     ColorCode = string.Format("#{0}", b.ColorCode),
                                                     Value = GetActualVSPlannedRevenue(ActualTacticList, ProjectedRevenueDataTable, Tacticdata.Where(t => t.TacticObj.BusinessUnitId.Equals(b.BusinessUnitId)).Select(t => t.TacticObj.PlanTacticId).ToList(), includeMonthUpCurrent)
                                                 }).OrderBy(b => b.Title);
-            var vertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted==false).ToList()
+            var vertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted == false).ToList()
                                                 .Select(v => new
                                                 {
                                                     Title = v.Title,
@@ -2720,7 +2728,7 @@ namespace RevenuePlanner.Controllers
                                                     Value = GetActualVSPlannedRevenue(ActualTacticList, ProjectedRevenueDataTable, Tacticdata.Where(t => t.TacticObj.VerticalId.Equals(v.VerticalId)).Select(t => t.TacticObj.PlanTacticId).ToList(), includeMonthUpCurrent)
                                                 }).OrderBy(v => v.Title);
 
-            var geography = db.Geographies.Where(g => g.ClientId.Equals(Sessions.User.ClientId) && g.IsDeleted==false).ToList()
+            var geography = db.Geographies.Where(g => g.ClientId.Equals(Sessions.User.ClientId) && g.IsDeleted == false).ToList()
                                                 .Select(g => new
                                                 {
                                                     Title = g.Title,
@@ -2758,7 +2766,7 @@ namespace RevenuePlanner.Controllers
                 ////Start - Modified by Mitesh Vaishnav for PL ticket #611 Source Performance Graphs dont show anything
                 if (projectedRevenueValue != 0)
                 {
-                    percentageValue = Math.Round((actualRevenueValue  / projectedRevenueValue) * 100, 2);
+                    percentageValue = Math.Round((actualRevenueValue / projectedRevenueValue) * 100, 2);
                 }
                 ////End - Modified by Mitesh Vaishnav for PL ticket #611 Source Performance Graphs dont show anything
             }
@@ -2901,17 +2909,17 @@ namespace RevenuePlanner.Controllers
         /// <returns>Return html string with CSS and Javascript.</returns>
         private string AddCSSAndJS(string htmlOfCurrentView, string reportType)
         {
-       
+
             string html = "<html>";
-            html +=  "<head>";
-            html +=  string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/bootstrap.css"));
-            html +=  string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/bootstrap-responsive.css"));
-            html +=  string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/style.css"));
+            html += "<head>";
+            html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/bootstrap.css"));
+            html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/bootstrap-responsive.css"));
+            html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/style.css"));
             html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/datepicker.css"));
             html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/style_extended.css"));
             html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/tipsy.css"));
             html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/DHTMLX/dhtmlxgantt.css"));
-            
+
             html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/DHTMLX/dhtmlxgantt.js"));
             html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery.min.js"));
             html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery-migrate-1.2.1.min.js"));
@@ -2933,7 +2941,7 @@ namespace RevenuePlanner.Controllers
 
             html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/dhtmlxchart.js"));
             html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/dhtmlxchart.css"));
-            
+
             html += "</head>";
             html += "<body style='background: none repeat scroll 0 0 #FFFFFF; font-size: 14px;'>";
             //style='background: none repeat scroll 0 0 #FFFFFF; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 14px;'
@@ -2954,7 +2962,7 @@ namespace RevenuePlanner.Controllers
                 html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/ReportConversion.js"));
             }
 
-            
+
 
             return html;
         }
