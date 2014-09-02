@@ -1784,22 +1784,28 @@ namespace RevenuePlanner.Controllers
                     DateTime startDateform = DateTime.Parse(startDate);
                     DateTime endDateform = DateTime.Parse(startDate);
                     endDateform = endDateform.AddDays(duration);
+                    /// Modified by:   Dharmraj
+                    /// Modified date: 2-Sep-2014
+                    /// Purpose:       #625 Changing the dates on an approved tactic needs to go through the approval process
+                    // To check whether status is Approved or not
                     if (Common.CheckAfterApprovedStatus(planTactic.Status))
                     {
-                        if (todaydate > startDateform && todaydate < endDateform)
+                        if (planTactic.EndDate != endDateform || planTactic.StartDate != startDateform)
                         {
-                            planTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
-                            if (planTactic.EndDate != endDateform)
+                            planTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
+                            Common.mailSendForTactic(planTactic.PlanTacticId, planTactic.Status, planTactic.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
+                        }
+                        else
+                        {
+                            if (todaydate > startDateform && todaydate < endDateform)
                             {
-                                planTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
-                                Common.mailSendForTactic(planTactic.PlanTacticId, planTactic.Status, planTactic.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
+                                planTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
+                            }
+                            else if (todaydate > planTactic.EndDate)
+                            {
+                                planTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
                             }
                         }
-                        else if (todaydate > planTactic.EndDate)
-                        {
-                            planTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
-                        }
-
                     }
                 }
                 //End Manoj Limbachiya  Ticket #363 Tactic Creation - Do not automatically submit a tactic
@@ -3876,22 +3882,30 @@ namespace RevenuePlanner.Controllers
 
                                 DateTime todaydate = DateTime.Now;
 
+                                /// Modified by:   Dharmraj
+                                /// Modified date: 2-Sep-2014
+                                /// Purpose:       #625 Changing the dates on an approved tactic needs to go through the approval process
+                                // To check whether status is Approved or not
                                 if (Common.CheckAfterApprovedStatus(pcpobj.Status))
                                 {
-                                    if (todaydate > form.StartDate && todaydate < form.EndDate)
+                                    // If any changes in start/end dates then tactic will go through the approval process
+                                    if (pcpobj.EndDate != form.EndDate || pcpobj.StartDate != form.StartDate)
                                     {
-                                        pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
-                                        if (pcpobj.EndDate != form.EndDate)
-                                        {
-                                            if (!isDirectorLevelUser) isReSubmission = true;
-                                            //Comment because it already called beloe in isresubmission.PL Ticket 359.
-                                            // pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
-                                            // Common.mailSendForTactic(pcpobj.PlanTacticId, pcpobj.Status, pcpobj.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
-                                        }
+                                        if (!isDirectorLevelUser) isReSubmission = true;
+                                        //Comment because it already called beloe in isresubmission.PL Ticket 359.
+                                        // pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
+                                        // Common.mailSendForTactic(pcpobj.PlanTacticId, pcpobj.Status, pcpobj.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
                                     }
-                                    else if (todaydate > form.EndDate)
+                                    else
                                     {
-                                        pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
+                                        if (todaydate > form.StartDate && todaydate < form.EndDate)
+                                        {
+                                            pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
+                                        }
+                                        else if (todaydate > form.EndDate)
+                                        {
+                                            pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
+                                        }
                                     }
                                 }
 
