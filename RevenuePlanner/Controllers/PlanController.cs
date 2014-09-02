@@ -6877,7 +6877,7 @@ namespace RevenuePlanner.Controllers
                                             }
                                         }
                                     }
-                                    if (!isExists)
+                                    if (!isExists && inputValues[i] != "")  // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
                                     {
                                         Plan_Budget objPlan_Budget = new Plan_Budget();
 
@@ -6931,15 +6931,18 @@ namespace RevenuePlanner.Controllers
                                     }
                                     if (!isExists)
                                     {
-                                        Plan_Budget objPlan_Budget = new Plan_Budget();
+                                        if (inputValues[j] != "")   // Added by Sohel Pathan on 02/09/2014 for Internal Review Point
+                                        {
+                                            Plan_Budget objPlan_Budget = new Plan_Budget();
 
-                                        objPlan_Budget.PlanId = planId;
-                                        objPlan_Budget.Period = "Y" + (i + 1).ToString();
-                                        objPlan_Budget.Value = Convert.ToInt64(inputValues[j]);
-                                        objPlan_Budget.CreatedDate = DateTime.Now;
-                                        objPlan_Budget.CreatedBy = Sessions.User.UserId;
-                                        db.Plan_Budget.Add(objPlan_Budget);
-                                        isDBSaveChanges = true;
+                                            objPlan_Budget.PlanId = planId;
+                                            objPlan_Budget.Period = "Y" + (i + 1).ToString();
+                                            objPlan_Budget.Value = Convert.ToInt64(inputValues[j]);
+                                            objPlan_Budget.CreatedDate = DateTime.Now;
+                                            objPlan_Budget.CreatedBy = Sessions.User.UserId;
+                                            db.Plan_Budget.Add(objPlan_Budget);
+                                            isDBSaveChanges = true;
+                                        }
                                         j = j + 1;
                                     }
                                 }
