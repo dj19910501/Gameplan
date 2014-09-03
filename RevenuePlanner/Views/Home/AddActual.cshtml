@@ -570,8 +570,8 @@
             $('.accordion').find('input').each(function () {
 
                 $(this).keyup(function () {
-                    if ($(this).val().trim() != '') {
                         var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
+                        currentValue = currentValue == '' ? "0" : currentValue; // Added by Sohel Pathan on 03/09/2014 for Internal Review Points
                         if (currentValue.match('^(0|[1-9][0-9]*)$')) {
                             //  $(this).removeClass("error");
                             var costlbl = (this).id.replace('ActuallblCCost', '');
@@ -593,23 +593,17 @@
                                 if (arr[1] == 'Revenue') {
                                     document.getElementById(ida).innerHTML = totalvalue;
                                     document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, false);
+                                    SetBudget('#' + ida); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
                                 }
                                 else {
+                                    $('#hdn' + ida.toString()).val(totalvalue); // Added by Sohel Pathan on 27/08/2014 for Internal Review Points
                                     document.getElementById(ida).innerHTML = totalvalue;
                                     document.getElementById(ida).innerHTML = FormatCommas(document.getElementById(ida).innerHTML, false);
+                                    SetLabelFormaterWithTipsyNumbers(document.getElementById(ida)); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
                                 }
                             }
                             calculateRIO(costlbl);
                         }
-                        else {
-                            //$(this).addClass("error");
-                        }
-
-                    }
-                    else {
-                        //$(this).removeClass("error");
-                    }
-
                 });
             });
 
@@ -656,9 +650,11 @@
                 var stageId = $(this).attr('stageId');
                 var isError = false;
                 var isData = false;
-                var totalProjectedStageValueActual = ReplaceCC($("#ActuallblPProjectedStageValue" + tacticId).text());
+                //// Modified by Sohel Pathan on 26/08/2014 for Internal Review Points
+                var totalProjectedStageValueActual = $("#hdnActuallblPProjectedStageValue" + tacticId).val();
                 var ProjectedStageValueTitle = $("#hdnProjectedStageValueTitle" + tacticId).val();
-                var totalMQLActual = ReplaceCC($("#ActuallblPMQL" + tacticId).text());
+                //// Modified by Sohel Pathan on 26/08/2014 for Internal Review Points
+                var totalMQLActual = $("#hdnActuallblPMQL" + tacticId).val();
                 var totalCWActual = ReplaceCC($("#ActuallblPCW" + tacticId).text());
                 var totalRevenueActual = ReplaceCC($("#ActuallblCRevenue" + tacticId).text());
                 //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
@@ -881,7 +877,7 @@
                 $html += '<tr id=' + idtr + '>';
                 for (var j = 1; j <= 12; j = j + 1) {
                     var tdId = _id + "-" + arrStage[p] + "-Y" + j;
-                    $html += '<td><input id="' + tdId + '" placeholder="0" ';
+                    $html += '<td><input id="' + tdId + '" placeholder="---" ';     // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
                     //  value=' + _actualData[i].jan + '></input></td>';
                     if (arrStage[p] == 'Revenue') {
                         $html += ' class="currency_dollar"  maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar"';
@@ -912,7 +908,7 @@
                 var tdId = _id + "-" + "Cost" + "-Y" + j;
                 $html += '<td>';
                 if (_LineItemsData.length <= 0) {
-                    $html += '<input id="' + tdId + '" placeholder="0" ';
+                    $html += '<input id="' + tdId + '" placeholder="---" '; // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
                     $html += ' class="currency_dollar"  maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar"';
                     $html += 'value="' + _costActualData[newCounterTactic].Cost + '"';
                     $html += ' ></input>';
@@ -929,7 +925,7 @@
                 $html += '<tr id=' + idtr + '>';
                 for (var j = 1; j <= 12; j = j + 1) {
                     var tdId = _id + "-" + _LineItemsData[p].id + "-Y" + j;
-                    $html += '<td><input id="' + tdId + '" placeholder="0" ';
+                    $html += '<td><input id="' + tdId + '" placeholder="---" '; // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
                     $html += ' class="currency_dollar"  maxlength="@RevenuePlanner.Helpers.Common.maxLengthPriceValue"';
                     
                     var newCounter = j - 1;
@@ -974,6 +970,7 @@
                                                 '<div class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber" id="ActuallblPProjectedStageValue' + _id + '">' +
                                                     _projectedStageValueActual +
                                             '</div>' +
+                                            '<input type="hidden" id="hdnActuallblPProjectedStageValue' + _id + '" value=" ' + _projectedStageValueActual + ' " />' +   //// Added by Sohel Pathan on 27/08/2014 for Internal Review Points
                                         '</div>' +
                                     '</div>';
                 }
@@ -985,6 +982,7 @@
                                                     '<div class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber" id="ActuallblPMQL' + _id + '">' +
                                                         _mqlActual +
                                                     '</div>' +
+                                                    '<input type="hidden" id="hdnActuallblPMQL' + _id + '" value=" ' + _mqlActual + ' " />' +       //// Added by Sohel Pathan on 27/08/2014 for Internal Review Points
                                                 '</div>' +
                                             '</div>';
                 }
@@ -1019,7 +1017,7 @@
 
             //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
             if (_LineItemsData.length == 0 ) {
-                $html += '<input placeholder="0" class="currency_dollar truncate addFormatterActualCurrency" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" id="ActuallblCCost' + _id + '" value="' + _costActual + '">' + '</input>';
+                $html += '<input placeholder="---" class="currency_dollar truncate addFormatterActualCurrency" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" id="ActuallblCCost' + _id + '" value="' + _costActual + '">' + '</input>';    // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
             }
             else
             {
@@ -1146,8 +1144,9 @@
             var changed = false;
             $('.accordion-actuals').find("input,input[type=text],textarea,select").each(function () {
                 var iv = $(this).attr("myValue");
-                if ($(this).val() != iv) {
+                if ($(this).val().toString().trim() != iv.toString().trim()) {      // Modified by Sohel Pathan on 02/09/2014 for PL ticket #742
                     changed = true;
+                    return false; // Added by Sohel Pathan on 02/09/2014 for PL ticket #742
                 }
             });
             return changed;
