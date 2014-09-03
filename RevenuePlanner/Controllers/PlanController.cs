@@ -7028,7 +7028,7 @@ namespace RevenuePlanner.Controllers
                                             }
                                         }
                                     }
-                                    if (!isExists)
+                                    if (!isExists && inputValues[i] != "")  // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
                                     {
                                         Plan_Budget objPlan_Budget = new Plan_Budget();
 
@@ -7082,15 +7082,18 @@ namespace RevenuePlanner.Controllers
                                     }
                                     if (!isExists)
                                     {
-                                        Plan_Budget objPlan_Budget = new Plan_Budget();
+                                        if (inputValues[j] != "")   // Added by Sohel Pathan on 02/09/2014 for Internal Review Point
+                                        {
+                                            Plan_Budget objPlan_Budget = new Plan_Budget();
 
-                                        objPlan_Budget.PlanId = planId;
-                                        objPlan_Budget.Period = "Y" + (i + 1).ToString();
-                                        objPlan_Budget.Value = Convert.ToInt64(inputValues[j]);
-                                        objPlan_Budget.CreatedDate = DateTime.Now;
-                                        objPlan_Budget.CreatedBy = Sessions.User.UserId;
-                                        db.Plan_Budget.Add(objPlan_Budget);
-                                        isDBSaveChanges = true;
+                                            objPlan_Budget.PlanId = planId;
+                                            objPlan_Budget.Period = "Y" + (i + 1).ToString();
+                                            objPlan_Budget.Value = Convert.ToInt64(inputValues[j]);
+                                            objPlan_Budget.CreatedDate = DateTime.Now;
+                                            objPlan_Budget.CreatedBy = Sessions.User.UserId;
+                                            db.Plan_Budget.Add(objPlan_Budget);
+                                            isDBSaveChanges = true;
+                                        }
                                         j = j + 1;
                                     }
                                 }
@@ -7145,7 +7148,7 @@ namespace RevenuePlanner.Controllers
                     var returnPlanBudgetList = monthPeriods.Select(m => new
                     {
                         Period = m,
-                        Value = planBudgetAllocationList.Where(pb => pb.Period == m).Select(pb => pb.Value).FirstOrDefault()
+                        Value = planBudgetAllocationList.Where(pb => pb.Period == m).FirstOrDefault() == null ? "" : planBudgetAllocationList.Where(pb => pb.Period == m).Select(pb => pb.Value).FirstOrDefault().ToString()    // Added by Sohel Pathan on 03/09/2014 for PL ticket #742
                     }).ToList();
 
                     if (allocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
@@ -7154,7 +7157,7 @@ namespace RevenuePlanner.Controllers
                         var returnCampaignBudgetList = monthPeriods.Select(a => new
                         {
                             Period = a,
-                            Value = planCampaignBudgetAllocationListTemp.Where(pcb => pcb.Period == a).Sum(pcb => pcb.Value) //.GroupBy(pcb => pcb.Period).Select(pcb => pcb.Sum(b => b.Value)),
+                            Value = planCampaignBudgetAllocationListTemp.Where(pcb => pcb.Period == a).Sum(pcb => pcb.Value)
                         });
                         return Json(new { status = 1, planBudgetAllocationList = returnPlanBudgetList, planCampaignBudgetAllocationList = returnCampaignBudgetList }, JsonRequestBehavior.AllowGet);
                     }
