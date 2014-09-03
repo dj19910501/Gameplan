@@ -723,18 +723,22 @@
     //function to check myValue attribute values and input values that any changes made?
     function isDataChanged() {
         var changed = false;
-        $('.myValue').each(function () {
-            var iv = $(this).attr("placeholder");
-            if ($(this).val() != iv) {
-                changed = true;
-            }
-        });
-        $('.myValueFormat').each(function () {
-            var iv = $(this).attr("placeholder");
-            if (ReplaceCC($(this).val()) != ReplaceCC(iv)) {
-                changed = true;
-            }
-        });
+        if ($('#divPlanBudgetAllocation').css('display') == "none") {   // Added by Sohel Pathan on 03/09/2014 for PL ticket #742
+            $('.myValue').each(function () {
+                var iv = $(this).attr("placeholder");
+                if ($(this).val() != iv) {
+                    changed = true;
+                    return false; // Added by Sohel Pathan on 03/09/2014 for PL ticket #742
+                }
+            });
+            $('.myValueFormat').each(function () {
+                var iv = $(this).attr("placeholder");
+                if (ReplaceCC($(this).val()) != ReplaceCC(iv)) {
+                    changed = true;
+                    return false; // Added by Sohel Pathan on 03/09/2014 for PL ticket #742
+                }
+            });
+        }
         // Start - Added by Sohel Pathan on 31/07/2014 for Internal Review Point
         if ($('#divPlanBudgetAllocation').css('display') != "none") {
             $('.myValue-budget').each(function () {
