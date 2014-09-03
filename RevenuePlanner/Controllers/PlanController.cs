@@ -8201,7 +8201,8 @@ namespace RevenuePlanner.Controllers
                         description = pctj.Description,
                         isOwner = Sessions.User.UserId == pctj.CreatedBy ? 0 : 1,
                         Cost = pctj.Cost,
-                        Budget = pctj.Plan_Campaign_Program_Tactic_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(),
+                        Budget = budgetTab ==  BudgetTab.Planned ? pctj.Plan_Campaign_Program_Tactic_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList()
+                                                                  : pctj.Plan_Campaign_Program_Tactic_Actual.Where(b=>b.StageTitle == "Cost").Select(b => new BudgetedValue { Period = b.Period, Value = b.Actualvalue }).ToList(),
                         AudianceId = pctj.AudienceId,
                         GeographyId = pctj.GeographyId,
                         AudianceName = pctj.Audience.Title,
@@ -8215,7 +8216,8 @@ namespace RevenuePlanner.Controllers
                             description = pclj.Description,
                             isOwner = Sessions.User.UserId == pclj.CreatedBy ? 0 : 1,
                             Cost = pclj.Cost,
-                            Budget = pclj.Plan_Campaign_Program_Tactic_LineItem_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(),
+                            Budget = budgetTab ==  BudgetTab.Planned ? pclj.Plan_Campaign_Program_Tactic_LineItem_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList()
+                                                                     : pclj.Plan_Campaign_Program_Tactic_LineItem_Actual.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(),
                         }).Select(pclj => pclj).Distinct().OrderBy(pclj => pclj.id)
                     }).Select(pctj => pctj).Distinct().OrderBy(pctj => pctj.id)
                 }).Select(pcpj => pcpj).Distinct().OrderBy(pcpj => pcpj.id)
@@ -8460,35 +8462,61 @@ namespace RevenuePlanner.Controllers
                 }
                 model = modelAud;
             }
-            
-
+            //Threre is no need to manage lines for actuals
+            if (budgetTab == BudgetTab.Planned)
+            {
             model = ManageLineItems(model);
+            }
+            //Set actual for quarters
+            if (budgetTab == BudgetTab.Actual && AllocatedBy == "quarters")
+            {
+                foreach (BudgetModel bm in model)
+                {
+                    if (bm.ActivityType == ActivityType.ActivityLineItem || bm.ActivityType == ActivityType.ActivityTactic)
+                    {
+                        bm.Month.Jan = bm.Month.Jan + bm.Month.Feb + bm.Month.Mar;
+                        bm.Month.Apr = bm.Month.Apr + bm.Month.May + bm.Month.Jun;
+                        bm.Month.Jul = bm.Month.Jul + bm.Month.Aug + bm.Month.Sep;
+                        bm.Month.Oct = bm.Month.Oct + bm.Month.Nov + bm.Month.Dec;
+                        bm.Month.Feb = 0;
+                        bm.Month.Mar = 0;
+                        bm.Month.May = 0;
+                        bm.Month.Jun = 0;
+                        bm.Month.Aug = 0;
+                        bm.Month.Sep = 0;
+                        bm.Month.Nov = 0;
+                        bm.Month.Dec = 0;
+                    }
+                }
+            }
 
             ViewBag.AllocatedBy = AllocatedBy;
             ViewBag.ViewBy = (int)viewBy;
+            ViewBag.Tab = (int)budgetTab; 
 
-            model = CalculateBottomUp(model, ActivityType.ActivityTactic, ActivityType.ActivityLineItem);
-            model = CalculateBottomUp(model, ActivityType.ActivityProgram, ActivityType.ActivityTactic);
-            model = CalculateBottomUp(model, ActivityType.ActivityCampaign, ActivityType.ActivityProgram);
+            model = CalculateBottomUp(model, ActivityType.ActivityTactic, ActivityType.ActivityLineItem, budgetTab);
+            model = CalculateBottomUp(model, ActivityType.ActivityProgram, ActivityType.ActivityTactic, budgetTab);
+            model = CalculateBottomUp(model, ActivityType.ActivityCampaign, ActivityType.ActivityProgram, budgetTab);
             if (viewBy == ViewBy.Campaign)
             {
-                model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityCampaign);
+                model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityCampaign, budgetTab);
             }
             else if (viewBy == ViewBy.Audiance)
             {
-                model = CalculateBottomUp(model, ActivityType.ActivityAudience, ActivityType.ActivityCampaign);
-                model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityAudience);
+                model = CalculateBottomUp(model, ActivityType.ActivityAudience, ActivityType.ActivityCampaign, budgetTab);
+                model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityAudience, budgetTab);
             }
             else if (viewBy == ViewBy.Geography)
             {
-                model = CalculateBottomUp(model, ActivityType.ActivityGeography, ActivityType.ActivityCampaign);
-                model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityGeography);
+                model = CalculateBottomUp(model, ActivityType.ActivityGeography, ActivityType.ActivityCampaign, budgetTab);
+                model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityGeography, budgetTab);
             }
             else if (viewBy == ViewBy.Vertical)
             {
-                model = CalculateBottomUp(model, ActivityType.ActivityVertical, ActivityType.ActivityCampaign);
-                model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityVertical);
+                model = CalculateBottomUp(model, ActivityType.ActivityVertical, ActivityType.ActivityCampaign, budgetTab);
+                model = CalculateBottomUp(model, ActivityType.ActivityPlan, ActivityType.ActivityVertical, budgetTab);
             }
+
             BudgetMonth a = new BudgetMonth();
             BudgetMonth child = new BudgetMonth();
             BudgetMonth PercAllocated = new BudgetMonth();
@@ -8542,7 +8570,38 @@ namespace RevenuePlanner.Controllers
         /// <param name="ParentActivityType"></param>
         /// <param name="ChildActivityType"></param>
         /// <returns></returns>
-        public List<BudgetModel> CalculateBottomUp(List<BudgetModel> model, string ParentActivityType, string ChildActivityType)
+        public List<BudgetModel> CalculateBottomUp(List<BudgetModel> model, string ParentActivityType, string ChildActivityType, BudgetTab budgetTab)
+        {
+            if (budgetTab == BudgetTab.Actual && ParentActivityType == ActivityType.ActivityTactic)
+            {
+                foreach (BudgetModel l in model.Where(l => l.ActivityType == ParentActivityType))
+                {
+                    List<BudgetModel> LineCheck = model.Where(lines => lines.ParentActivityId == l.ActivityId && lines.ActivityType == ActivityType.ActivityLineItem).ToList();
+                    if (LineCheck.Count() > 0)
+                    {
+                        BudgetMonth parent = new BudgetMonth();
+                        parent.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Jan) ?? 0;
+                        parent.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Feb) ?? 0;
+                        parent.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Mar) ?? 0;
+                        parent.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Apr) ?? 0;
+                        parent.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.May) ?? 0;
+                        parent.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Jun) ?? 0;
+                        parent.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Jul) ?? 0;
+                        parent.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Aug) ?? 0;
+                        parent.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Sep) ?? 0;
+                        parent.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Oct) ?? 0;
+                        parent.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Nov) ?? 0;
+                        parent.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.Month.Dec) ?? 0;
+                        model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonth = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().Month;
+                        model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().Month = parent;
+                    }
+                    else
+                    {
+                        model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonth = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().Month;
+                    }
+                }
+            }
+            else
         {
             foreach (BudgetModel l in model.Where(l => l.ActivityType == ParentActivityType))
             {
@@ -8562,6 +8621,7 @@ namespace RevenuePlanner.Controllers
                 model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonth = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().Month;
                 model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().Month = parent;
                 //l.ParentMonth = parent;
+                }
             }
             return model;
         }

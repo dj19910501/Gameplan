@@ -352,7 +352,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ParentActivityId"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static MvcHtmlString ActivityCampaign(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string Tab = "planned")
+        public static MvcHtmlString ActivityCampaign(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string Tab = "1")
         {
             StringBuilder sb = new StringBuilder();
             foreach (BudgetModel c in model.Where(p => p.ActivityType == Helpers.ActivityType.ActivityCampaign && p.ParentActivityId == ParentActivityId).ToList())
@@ -378,7 +378,7 @@ namespace RevenuePlanner.Helpers
                 {
                     aLink.Attributes.Add("style", "padding-left:20px;cursor:pointer;");
                 }
-                if (Tab == "planned")
+                if (Tab == "2")
                     aLink.Attributes.Add("id", c.Id);
                 else
                     aLink.Attributes.Add("id", c.ActivityId);
@@ -405,7 +405,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ParentActivityId"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static MvcHtmlString ActivityProgram(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string Tab = "planned")
+        public static MvcHtmlString ActivityProgram(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string Tab = "2")
         {
             string mainClass = "sub program-lvl";
             string innerClass = "programLevel";
@@ -434,7 +434,7 @@ namespace RevenuePlanner.Helpers
                 needAccrodian = false;
                 childActivity = "";
             }
-            if (Tab == "allocated")
+            if (Tab == "0")
             {
                 needAccrodian = false;
             }
@@ -475,7 +475,7 @@ namespace RevenuePlanner.Helpers
                     //aLink.Attributes.Add("href", "#");
                     aLink.InnerHtml = p.ActivityName;
 
-                    if(Tab == "planned")
+                    if(Tab == "2")
                         aLink.Attributes.Add("id", p.Id);
                     else
                         aLink.Attributes.Add("id", p.ActivityId);
@@ -2061,7 +2061,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ParentActivityId"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static MvcHtmlString ActivityMainParent(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string Tab = "planned", string View = "0")
+        public static MvcHtmlString ActivityMainParent(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string Tab = "2", string View = "0")
         {
             string strViewBy = "";
             if (View == "1")
@@ -2126,7 +2126,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ParentActivityId"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static MvcHtmlString ActivityChild(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string Tab = "planned", string View = "0")
+        public static MvcHtmlString ActivityChild(this HtmlHelper helper, string ActivityType, string ParentActivityId, List<BudgetModel> model, string Tab = "2", string View = "0")
         {
             
             string mainClass = "sub program-lvl";
@@ -2174,7 +2174,7 @@ namespace RevenuePlanner.Helpers
                 needAccrodian = false;
                 childActivity = "";
             }
-            if (Tab == "allocated")
+            if (Tab == "0")
             {
                 needAccrodian = false;
             }
@@ -2224,11 +2224,11 @@ namespace RevenuePlanner.Helpers
                     div.InnerHtml += divProgram.ToString();
 
                     if (ActivityType == Helpers.ActivityType.ActivityCampaign)
-                        div.InnerHtml += ActivityChild(helper, Helpers.ActivityType.ActivityProgram, p.ActivityId, model,View).ToString();
+                        div.InnerHtml += ActivityChild(helper, Helpers.ActivityType.ActivityProgram, p.ActivityId, model,Tab,View).ToString();
                     else if (ActivityType == Helpers.ActivityType.ActivityProgram)
-                        div.InnerHtml += ActivityChild(helper, Helpers.ActivityType.ActivityTactic, p.ActivityId, model, View).ToString();
+                        div.InnerHtml += ActivityChild(helper, Helpers.ActivityType.ActivityTactic, p.ActivityId, model, Tab, View).ToString();
                     else if (ActivityType == Helpers.ActivityType.ActivityTactic)
-                        div.InnerHtml += ActivityChild(helper, Helpers.ActivityType.ActivityLineItem, p.ActivityId, model, View).ToString();
+                        div.InnerHtml += ActivityChild(helper, Helpers.ActivityType.ActivityLineItem, p.ActivityId, model, Tab, View).ToString();
                 }
                 sb.AppendLine(div.ToString());
                 return new MvcHtmlString(sb.ToString());

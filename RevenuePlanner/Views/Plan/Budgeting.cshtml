@@ -104,6 +104,9 @@
     if ('@type' == 'plan') {
         currentTab = 'aPlanned';
     }
+    else if ('@type' == 'actuals') {
+        currentTab = 'aActuals';
+    }
     function ShowChangeLog(CurrentPlanId) {
         $('.changes').html('');
         var url = '@Url.Content("~/Home/LoadChangeLog/")';
@@ -259,10 +262,11 @@
         }
         else if (currentTab == 'aPlanned') {
                 $('#divViewBy').show();
-                $('#divTabData').load('@Url.Action("GetBudgetedData", "Plan")' + '?PlanId=' + CurrentPlanId + '&viewBy=' + CurrentView, function () { ExpandItems(); });
+                $('#divTabData').load('@Url.Action("GetBudgetedData", "Plan")' + '?PlanId=' + CurrentPlanId + '&budgetTab=1&viewBy=' + CurrentView, function () { ExpandItems(); });
         }
         else if (sender == 'aActuals') {
-
+            $('#divViewBy').show();
+            $('#divTabData').load('@Url.Action("GetBudgetedData", "Plan")' + '?PlanId=' + CurrentPlanId + '&budgetTab=2&viewBy=' + CurrentView, function () { ExpandItems(); });
             }
         }
         else {

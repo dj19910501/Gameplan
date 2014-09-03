@@ -12,7 +12,7 @@
     double planAllocation = 0;
     double sumMonth = plan.Month.Jan + plan.Month.Feb + plan.Month.Mar + plan.Month.Apr + plan.Month.May + plan.Month.Jun + plan.Month.Jul + plan.Month.Aug + plan.Month.Sep + plan.Month.Oct + plan.Month.Nov + plan.Month.Dec;
     planAllocation = (sumMonth == 0 && plan.Allocated == 0) ? 0 : (sumMonth > 0 && plan.Allocated == 0) ? 101 : sumMonth / plan.Allocated * 100;
-                                        //planAllocation = (plan.Budgeted == 0 && plan.Allocated == 0) ? 0 : (plan.Budgeted == 0 && plan.Allocated > 0) ? 101 : plan.Allocated / plan.Budgeted * 100;
+    string strTab = Convert.ToString(ViewBag.Tab);
 }
 <div class="tab-content all-height cf">
     <div class="tab-pane active all-height" id="panel-656352">
@@ -33,19 +33,19 @@
                             </tr>
                             @if (strViewBy == "2")
                             {
-                                @Html.ActivityMainParent(ActivityType.ActivityGeography, plan.ActivityId, Model, "planned", strViewBy)
+                                @Html.ActivityMainParent(ActivityType.ActivityGeography, plan.ActivityId, Model, strTab, strViewBy)
                             }
                             else if (strViewBy == "1")
                             {
-                                @Html.ActivityMainParent(ActivityType.ActivityAudience, plan.ActivityId, Model, "planned", strViewBy)
+                                @Html.ActivityMainParent(ActivityType.ActivityAudience, plan.ActivityId, Model, strTab, strViewBy)
                             }
                             else if (strViewBy == "3")
                             {
-                                @Html.ActivityMainParent(ActivityType.ActivityVertical, plan.ActivityId, Model, "planned", strViewBy)
+                                @Html.ActivityMainParent(ActivityType.ActivityVertical, plan.ActivityId, Model, strTab, strViewBy)
                             }
                             else
                             {
-                                @Html.ActivityCampaign(ActivityType.ActivityCampaign, plan.ActivityId, Model, "planned")
+                                @Html.ActivityCampaign(ActivityType.ActivityCampaign, plan.ActivityId, Model, strTab)
                             }
                         </tbody>
                         <tbody class="column2">
@@ -71,7 +71,14 @@
                         <tbody class="column3">
                             <tr>
                                 <td>
+                                    @if(strTab == "2")
+                                    {
+                                        <div>Actuals</div>
+                                    }
+                                    else 
+                                    {
                                     <div>Planned</div>
+                                    }
                                 </td>
                                 <td>
                                     <div>Allocated</div>
@@ -79,19 +86,19 @@
                             </tr>
                             @if (strViewBy == "2")
                             {
-                                @Html.ParentSummary(ActivityType.ActivityGeography, plan.ActivityId, Model, AllocatedBy, "1", strViewBy)
+                                @Html.ParentSummary(ActivityType.ActivityGeography, plan.ActivityId, Model, AllocatedBy, strTab, strViewBy)
                             }
                             else if (strViewBy == "1")
                             {
-                                @Html.ParentSummary(ActivityType.ActivityAudience, plan.ActivityId, Model, AllocatedBy, "1", strViewBy)
+                                @Html.ParentSummary(ActivityType.ActivityAudience, plan.ActivityId, Model, AllocatedBy, strTab, strViewBy)
                             }
                             else if (strViewBy == "3")
                             {
-                                @Html.ParentSummary(ActivityType.ActivityVertical, plan.ActivityId, Model, AllocatedBy, "1", strViewBy)
+                                @Html.ParentSummary(ActivityType.ActivityVertical, plan.ActivityId, Model, AllocatedBy, strTab, strViewBy)
                             }
                             else
                             {
-                            @Html.CampaignSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, "1")
+                            @Html.CampaignSummary(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy, strTab)
                             }
                         </tbody>
                     </table>
@@ -229,6 +236,9 @@
     function SetHeader() {
         $('#divViewBy').show();
         if ('@AllocatedBy' != '@strDefault') {
+            if (currentTab == 'aActuals')
+                $('#planCostTitle').html('Total Actual Cost');
+            else
             $('#planCostTitle').html('Total Planned Cost');
 
             var sumMonth = number_format('@sumMonth', 0, '.', ',');
@@ -245,14 +255,23 @@
                 $('#divPlanProgress').css("width", "100%");
                 $('#divPlanProgress').css("background", "#ff1e26");
             }
+            if (currentTab == 'aActuals')
+                $('#monthCompareTitle').html('Actuals vs Allocated');
+            else
             $('#monthCompareTitle').html('Planned vs Allocated');
             $('.progressPlanned').show();
         }
         else {
+            if (currentTab == 'aActuals')
+                $('#planCostTitle').html('Total Actual Cost');
+            else
             $('#planCostTitle').html('Total Planned Cost');
 
             $('#planCostValue').html('');
             $('#divPlanProgress').css("width", "0%");
+            if (currentTab == 'aActuals')
+                $('#monthCompareTitle').html('Actuals vs Allocated');
+            else
             $('#monthCompareTitle').html('Planned vs Allocated');
             $('.progressPlanned').show();
         }
@@ -454,6 +473,9 @@ else {
 
         //var id = @Sessions.PlanId
         var id = CurrentPlanId;
+        if (currentTab == 'aActuals')
+            $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=actuals', AssignDefaultValue);
+        else
         $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=plan', AssignDefaultValue);
         $("#slidepanel").css("right", "0px");
         $("#slidepanel").addClass('sidebar-wide');
@@ -469,6 +491,9 @@ else {
         var id = $(this).attr('id');
         var url = '@Url.Content("~/Plan/EditCampaign")';
         $("#slidepanel").css("display", "block");
+        if (currentTab == 'aActuals')
+            $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=actuals', AssignDefaultValue);
+        else
         $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=plan', AssignDefaultValue);
         $("#slidepanel").css("right", "0px");
         $("#slidepanel").addClass('sidebar-wide');
@@ -480,6 +505,9 @@ else {
         var id = $(this).attr('id');
         var url = '@Url.Content("~/Plan/EditProgram")';
         $("#slidepanel").css("display", "block");
+        if (currentTab == 'aActuals')
+            $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=actuals', AssignDefaultValue);
+        else
         $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=plan', AssignDefaultValue);
         $("#slidepanel").css("right", "0px");
         $("#slidepanel").addClass('sidebar-wide');
@@ -490,7 +518,11 @@ else {
         var id = $(this).attr('id');
         var url = '@Url.Content("~/Plan/EditTactic")';
         $("#slidepanel").css("display", "block");
+        if (currentTab == 'aActuals')
+            $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=actuals', AssignDefaultValue);
+        else
         $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=plan', AssignDefaultValue);
+
         $("#slidepanel").css("right", "0px");
         $("#slidepanel").addClass('sidebar-wide');
         myApp.hidePleaseWait();
@@ -500,6 +532,9 @@ else {
         var id = $(this).attr('id');
         var url = '@Url.Content("~/Plan/EditLineItem")';
         $("#slidepanel").css("display", "block");
+        if (currentTab == 'aActuals')
+            $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=actuals', AssignDefaultValue);
+        else
         $('#slidepanel-container').load(url + '?id=' + id + '&CalledFromBudget=plan', AssignDefaultValue);
         $("#slidepanel").css("right", "0px");
         $("#slidepanel").addClass('sidebar-wide');

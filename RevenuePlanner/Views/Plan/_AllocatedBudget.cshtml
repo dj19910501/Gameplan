@@ -33,7 +33,7 @@
                                     <div id="divPlanDetails"><a id="aPlanDetails">@plan.ActivityName</a></div>
                                 </td>
                             </tr>
-                            @Html.ActivityCampaign(ActivityType.ActivityCampaign, plan.ActivityId, Model, "allocated")
+                            @Html.ActivityCampaign(ActivityType.ActivityCampaign, plan.ActivityId, Model, "0")
                         </tbody>
                         <tbody class="column2">
                             @Html.AllocatedPlanMonth(ActivityType.ActivityPlan, plan.ActivityId, plan.Month, plan.ParentMonth, AllocatedBy)
