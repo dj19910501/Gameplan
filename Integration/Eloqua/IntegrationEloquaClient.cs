@@ -238,10 +238,11 @@ namespace Integration.Eloqua
                 //// Check isimport flag.
                 if (isImport)
                 {
-                    // Pull responses from Eloqua
-                    GetDataForTacticandUpdate();
                     //// Pulling actual cost.
                     PullingActualCost();
+                    //// Pull responses from Eloqua
+                    GetDataForTacticandUpdate();
+                    
                 }
             }
 
@@ -326,7 +327,7 @@ namespace Integration.Eloqua
                             List<Plan_Campaign_Program_Tactic> innerTacticList = tacticList.Where(t => integrationTacticIdList.Contains(t.IntegrationInstanceTacticId)).ToList();
 
                             //Added by dharmraj for ticket #733 : Actual cost - Changes related to integraton with Eloqua/SF.
-                            List<Plan_Campaign_Program_Tactic_Actual> actualTacicList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => integrationTacticIdList.Contains(ta.Plan_Campaign_Program_Tactic.IntegrationInstanceTacticId)).ToList();
+                            List<Plan_Campaign_Program_Tactic_Actual> actualTacicList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => integrationTacticIdList.Contains(ta.Plan_Campaign_Program_Tactic.IntegrationInstanceTacticId) && ta.StageTitle == Common.StageCost).ToList();
                             actualTacicList.ForEach(t => db.Entry(t).State = EntityState.Deleted);
                             db.SaveChanges();
 
