@@ -1180,7 +1180,7 @@
                 for (var i = 0; i < lstAllocInputs.length; i++) {
                     TotalallocationValue += parseInt($(lstAllocInputs[i]).val() == '' ? 0 : ReplaceCC($(lstAllocInputs[i]).val()));
                 }
-                $("#lblTotalAllocated").html('$' + TotalallocationValue);
+                $("#lblTotalAllocated").html(FormatCommasBudget(TotalallocationValue.toString(), false, true));
                 calculateUnallocatedBudget();
                 $('#planned-Cost-Allocation').find("#Y1").focus();
                 $('#planned-Cost-Allocation').find("#Title").focus();
