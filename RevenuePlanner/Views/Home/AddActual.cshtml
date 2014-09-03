@@ -563,8 +563,8 @@
             $('.accordion').find('input').each(function () {
                 
                 $(this).keyup(function () {
-                    if ($(this).val().trim() != '') {
                         var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
+                        currentValue = currentValue == '' ? "0" : currentValue; // Added by Sohel Pathan on 03/09/2014 for Internal Review Points
                         if (currentValue.match('^(0|[1-9][0-9]*)$')) {
                             //  $(this).removeClass("error");
                             var costlbl = (this).id.replace('ActuallblCCost', '');
@@ -597,15 +597,6 @@
                             }
                             calculateRIO(costlbl);
                         }
-                        else {
-                            //$(this).addClass("error");
-                        }
-
-                    }
-                    else {
-                        //$(this).removeClass("error");
-                    }
-
                 });
             });
 

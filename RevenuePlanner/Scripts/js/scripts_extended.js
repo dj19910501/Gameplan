@@ -252,6 +252,13 @@ function SetLabelFormaterWithTipsyNumbers(idName) {
             $(idName).addClass('north');
             $('.north').tipsy({ gravity: 'n' });
         }
+        // Start - Added by Sohel Pathan on 03/09/2014 for Internal Review Points
+        else {
+            $(idName).removeAttr('original-title');
+            $(idName).removeAttr('title');
+            $(idName).removeClass('north');
+        }
+        // End - Added by Sohel Pathan on 03/09/2014 for Internal Review Points
     }
 }
 
