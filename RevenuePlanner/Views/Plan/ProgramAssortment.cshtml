@@ -939,7 +939,7 @@
                 for (var i = 0; i < lstAllocInputs.length; i++) {
                     TotalallocationValue += parseInt($(lstAllocInputs[i]).val() == '' ? 0 : ReplaceCC($(lstAllocInputs[i]).val()));
                 }
-                $("#lblTotalAllocated").html('$' + TotalallocationValue);
+                $("#lblTotalAllocated").html(FormatCommasBudget(TotalallocationValue.toString(), false, true));
                 calculateUnallocatedBudget();
                 $("#Y1").focus();
                 $("#txtTitle").focus();
