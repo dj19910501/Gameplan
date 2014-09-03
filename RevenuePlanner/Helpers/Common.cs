@@ -1492,7 +1492,10 @@ namespace RevenuePlanner.Helpers
                     }
                     if (planTacticIds.Count() > 0)
                     {
-                        objHomePlanModelHeader.Budget = planTacticIds.Sum(t => t.Cost);
+                        ////Start Modified by Mitesh Vaishnav for PL ticket #736 Budgeting - Changes to plan header to accomodate budgeting changes
+                        var tacticIds=planTacticIds.Select(t=>t.PlanTacticId).ToList();
+                        objHomePlanModelHeader.Budget = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => tacticIds.Contains(l.PlanTacticId) && l.IsDeleted == false).ToList().Sum(l => l.Cost);//planTacticIds.Sum(t => t.Cost);
+                        ////End Modified by Mitesh Vaishnav for PL ticket #736 Budgeting - Changes to plan header to accomodate budgeting changes
                     }
                     objHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Cost.ToString()].ToString();
                 }

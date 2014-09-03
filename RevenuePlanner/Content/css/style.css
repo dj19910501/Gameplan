@@ -6636,6 +6636,9 @@ h2.title-header {
 .white-chart .small-value{display: block; font-size: 16px;}
 .bullhorn-bg{background-image:url(../images/bullhorn-bg.png); background-position:right bottom; background-repeat:no-repeat;}
 .bullhorn-bg-disabled{background-image:url(../images/bullhorn-bg-disabled.png); background-position:right bottom; background-repeat:no-repeat;}
+/*start Added By Mitesh Vaishnav for PL ticket #736 Budgeting - Changes to plan header to accomodate budgeting changes*/
+.bulldoller-bg{background-image:url(../images/bullhorn-bg.png); background-position:right bottom; background-repeat:no-repeat; cursor:pointer;}
+/*End Added By Mitesh Vaishnav for PL ticket #736 Budgeting - Changes to plan header to accomodate budgeting changes*/
 /* ======================================= */
 /*Added By Maninder for DHTMLX gantt improvement task PL Ticket#47, 337*/
 .improvement .gantt_task_drag
