@@ -3080,7 +3080,9 @@ namespace RevenuePlanner.Controllers
                                     foreach (var t in tacticactual)
                                     {
                                         //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+                                        //Check that StageTtitle is not match with below pre define stages   
                                         int Id = 0;
+                                        //We need to check that stage title is numberic or string    
                                         bool isNumeric = int.TryParse(Convert.ToString(t.StageTitle), out Id);
 
                                         if (t.StageTitle != Enums.InspectStage.ProjectedStageValue.ToString() &&
@@ -3091,6 +3093,7 @@ namespace RevenuePlanner.Controllers
                                             t.StageTitle != Enums.InspectStage.INQ.ToString() && isNumeric)
                                         {
                                             //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+                                            // If stage title is number and not matched up with the pre define stages then save data in Plan_Campaign_Program_Tactic_LineItem_Actual
                                             SaveActualLineItem(t, Id);
                                         }
                                         else
@@ -3139,6 +3142,7 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Save Line item Actual 
         /// Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+        /// Save the data into the Plan_Campaign_Program_Tactic_LineItem_Actual
         /// </summary>
         /// <param name="objInspectActual"></param>
         /// <param name="Id"></param>
@@ -4518,12 +4522,18 @@ namespace RevenuePlanner.Controllers
                 costProjected = (db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).Count() > 0 ?  
                 (db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).ToList().Sum(a => a.Cost) : t.Cost,
                 //costActual = t.CostActual == null ? 0 : t.CostActual,
+                
+                //Get the sum of Tactic line item actuals
                 costActual = (db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).Count() > 0 ?  
                 (db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).ToList().Select(pp => new
                 {
                     LineItemActualCost = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(ww=> ww.PlanLineItemId == pp.PlanLineItemId).ToList().Sum(q=>q.Value)
-                }).Sum(a => a.LineItemActualCost) : (t.CostActual == null ? 0 : t.CostActual),
-
+                
+                //Commented By : Kalpesh Sharma : Due to Cost Actual field is not longer available in the database.  
+                //}).Sum(a => a.LineItemActualCost) : (t.CostActual == null ? 0 : t.CostActual),
+                }).Sum(a => a.LineItemActualCost) : (db.Plan_Campaign_Program_Tactic_Actual.Where(s => s.PlanTacticId == t.PlanTacticId)).Sum(a => a.Actualvalue),
+                
+                //First check that if tactic has a single line item at that time we need to get the cost actual data from the respective table. 
                 costActualData = lstMonthly.Select(m => new
                 {
                     period = m,
