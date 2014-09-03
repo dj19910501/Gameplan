@@ -4744,6 +4744,9 @@ namespace RevenuePlanner.Controllers
                                         objOtherLineItem.Cost = 0;
                                         objOtherLineItem.Description = string.Empty;
                                         db.Entry(objOtherLineItem).State = EntityState.Modified;
+                                        List<Plan_Campaign_Program_Tactic_LineItem_Actual> objOtherActualCost = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
+                                        objOtherActualCost = objOtherLineItem.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList();
+                                        objOtherActualCost.ForEach(oal => db.Entry(oal).State = EntityState.Deleted);
                                         db.SaveChanges();
                                     }
                                 }
@@ -4918,6 +4921,9 @@ namespace RevenuePlanner.Controllers
                                             objOtherLineItem.Cost = 0;
                                             objOtherLineItem.Description = string.Empty;
                                             db.Entry(objOtherLineItem).State = EntityState.Modified;
+                                            List<Plan_Campaign_Program_Tactic_LineItem_Actual> objOtherActualCost = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
+                                            objOtherActualCost = objOtherLineItem.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList();
+                                            objOtherActualCost.ForEach(oal => db.Entry(oal).State = EntityState.Deleted);
                                             db.SaveChanges();
                                         }
                                     }
@@ -5094,6 +5100,9 @@ namespace RevenuePlanner.Controllers
                                     objOtherLineItem.Cost = 0;
                                     objOtherLineItem.Description = string.Empty;
                                     db.Entry(objOtherLineItem).State = EntityState.Modified;
+                                    List<Plan_Campaign_Program_Tactic_LineItem_Actual> objOtherActualCost = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
+                                    objOtherActualCost = objOtherLineItem.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList();
+                                    objOtherActualCost.ForEach(oal => db.Entry(oal).State = EntityState.Deleted);
                                     db.SaveChanges();
                                 }
                             }
