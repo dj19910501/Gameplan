@@ -259,7 +259,7 @@ namespace RevenuePlanner.Helpers
             ModelCreateEdit = 1 << 5,
             Plan = 1 << 6,
             PlanCreate = 1 << 7,
-            PlanEditOwnAndSubordinates = 1 << 8,
+            PlanEditSubordinates = 1 << 8,
             PlanEditAll = 1 << 9,
             TacticApproveForPeers = 1 << 10,
             TacticActualsAddEdit = 1 << 11,

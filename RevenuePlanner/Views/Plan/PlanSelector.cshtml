@@ -7,13 +7,13 @@
     //string isViewOnly = ViewBag.IsViewOnly;
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     string strConfirmationmessage = Common.objCached.PlanDeleteConfirmMessage;
-    bool IsPlanEditAllAuthorized = (bool)ViewBag.IsPlanEditAllAuthorized;
-    bool IsPlanEditOwnAndSubordinatesAuthorized = (bool)ViewBag.IsPlanEditOwnAndSubordinatesAuthorized;
+    //bool IsPlanEditAllAuthorized = (bool)ViewBag.IsPlanEditAllAuthorized;
+    //bool IsPlanEditOwnAndSubordinatesAuthorized = (bool)ViewBag.IsPlanEditOwnAndSubordinatesAuthorized;
      
 }
 
-@Html.Hidden("IsPlanEditOwnAndSubordinatesAuthorized", IsPlanEditOwnAndSubordinatesAuthorized)
-@Html.Hidden("IsPlanEditAllAuthorized", IsPlanEditAllAuthorized)
+@*@Html.Hidden("IsPlanEditOwnAndSubordinatesAuthorized", IsPlanEditOwnAndSubordinatesAuthorized)
+@Html.Hidden("IsPlanEditAllAuthorized", IsPlanEditAllAuthorized)*@
 
 @section Sidebar
 {
@@ -73,10 +73,11 @@
                 <th class="width150px">Budget</th>
                 <th>Status</th>
                 <th class="width75">Last Updated</th>
-                @if (IsPlanEditAllAuthorized || IsPlanEditOwnAndSubordinatesAuthorized)
+                <th class="width50px">Action</th>
+                @*@if (IsPlanEditAllAuthorized || IsPlanEditOwnAndSubordinatesAuthorized)
                 {
-                    <th class="width50px">Action</th>       
-                }
+                    <th class="width50px">Action</th>
+                }*@
             </tr>
         </thead>
         <tbody>
@@ -320,14 +321,15 @@
                 '<td>' + _Status + '</td>' +
                 '<td>' + _LastUpdated + '</td>';
 
-        if ($('#IsPlanEditAllAuthorized').val() == 'True' || $("#IsPlanEditOwnAndSubordinatesAuthorized").val() == 'True') {
+        // Modified by Dharmraj for #712 Edit Own and Subordinate Plan
+        //if ($('#IsPlanEditAllAuthorized').val() == 'True' || $("#IsPlanEditOwnAndSubordinatesAuthorized").val() == 'True') {
             if (_IsPlanEditable) {
                 $html += '<td><span class="delete-temp-program width5"></span><span class="edit-temp-program width5"></span></td>';
             }
             else {
                 $html += '<td></td>';
             }
-        }
+        //}
 
         $html += '</tr>';
         $baselineTable.append($html);

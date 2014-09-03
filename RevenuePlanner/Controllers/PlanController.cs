@@ -68,16 +68,19 @@ namespace RevenuePlanner.Controllers
                     // Added by Dharmraj Mangukiya for edit authentication of plan, PL ticket #519
                     var objplan = db.Plans.FirstOrDefault(m => m.PlanId == id && m.IsDeleted == false);
                     bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
-                    bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+                    bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
                     //Get all subordinates of current user upto n level
                     var lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
-                    lstSubOrdinates.Add(Sessions.User.UserId);
                     bool IsPlanEditable = false;
-                    if (IsPlanEditAllAuthorized)
+                    if (objplan.CreatedBy.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
                     {
                         IsPlanEditable = true;
                     }
-                    else if (IsPlanEditOwnAndSubordinatesAuthorized)
+                    else if (IsPlanEditAllAuthorized)
+                    {
+                        IsPlanEditable = true;
+                    }
+                    else if (IsPlanEditSubordinatesAuthorized)
                     {
                         if (lstSubOrdinates.Contains(objplan.CreatedBy))
                         {
@@ -590,16 +593,19 @@ namespace RevenuePlanner.Controllers
 
                 var objplan = db.Plans.FirstOrDefault(m => m.PlanId == id && m.IsDeleted == false);
                 bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
-                bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+                bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
                 //Get all subordinates of current user upto n level
                 var lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
-                lstSubOrdinates.Add(Sessions.User.UserId);
                 bool IsPlanEditable = false;
-                if (IsPlanEditAllAuthorized)
+                if (objplan.CreatedBy.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
                 {
                     IsPlanEditable = true;
                 }
-                else if (IsPlanEditOwnAndSubordinatesAuthorized)
+                else if (IsPlanEditAllAuthorized)
+                {
+                    IsPlanEditable = true;
+                }
+                else if (IsPlanEditSubordinatesAuthorized)
                 {
                     if (lstSubOrdinates.Contains(objplan.CreatedBy))
                     {
@@ -982,16 +988,19 @@ namespace RevenuePlanner.Controllers
                 // To get permission status for Plan Edit , By dharmraj PL #519
                 //Get all subordinates of current user upto n level
                 var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
-                lstOwnAndSubOrdinates.Add(Sessions.User.UserId);
                 // Get current user permission for edit own and subordinates plans.
-                bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+                bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
                 bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
                 var objPlan = db.Plans.FirstOrDefault(p => p.PlanId == Sessions.PlanId);
-                if (IsPlanEditAllAuthorized)
+                if (objPlan.CreatedBy.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
                 {
                     ViewBag.IsPlanEditable = true;
                 }
-                else if (IsPlanEditOwnAndSubordinatesAuthorized)
+                else if (IsPlanEditAllAuthorized)
+                {
+                    ViewBag.IsPlanEditable = true;
+                }
+                else if (IsPlanEditSubordinatesAuthorized)
                 {
                     if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy))
                     {
@@ -1872,16 +1881,19 @@ namespace RevenuePlanner.Controllers
             {
                 // Added by Dharmraj Mangukiya for edit authentication of plan, PL ticket #519
                 bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
-                bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+                bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
                 //Get all subordinates of current user upto n level
                 var lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
-                lstSubOrdinates.Add(Sessions.User.UserId);
                 bool IsPlanEditable = false;
-                if (IsPlanEditAllAuthorized)
+                if (plan.CreatedBy.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
                 {
                     IsPlanEditable = true;
                 }
-                else if (IsPlanEditOwnAndSubordinatesAuthorized)
+                else if (IsPlanEditAllAuthorized)
+                {
+                    IsPlanEditable = true;
+                }
+                else if (IsPlanEditSubordinatesAuthorized)
                 {
                     if (lstSubOrdinates.Contains(plan.CreatedBy))
                     {
@@ -5321,9 +5333,10 @@ namespace RevenuePlanner.Controllers
                 // To get permission status for Plan create, By dharmraj PL #519
                 ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
                 // To get permission status for Plan Edit, By dharmraj PL #519
-                ViewBag.IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+                // Modified by Dharmraj for #712 Edit Own and Subordinate Plan
+                //ViewBag.IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
                 // To get permission status for edit own and subordinate's plans, By dharmraj PL #519
-                ViewBag.IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+                //ViewBag.IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
 
             }
             catch (Exception e)
@@ -5343,9 +5356,8 @@ namespace RevenuePlanner.Controllers
         {
             //Get all subordinates of current user upto n level
             var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
-            lstOwnAndSubOrdinates.Add(Sessions.User.UserId);
             // Get current user permission for edit own and subordinates plans.
-            bool IsPlanEditOwnAndSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditOwnAndSubordinates);
+            bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
             // To get permission status for Plan Edit, By dharmraj PL #519
             bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
 
@@ -5404,11 +5416,15 @@ namespace RevenuePlanner.Controllers
                         bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BUId);
 
                         // Added to check edit status for current user by dharmraj for #538
-                        if (IsPlanEditAllAuthorized && IsBusinessUnitEditable)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                        if (item.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
                         {
                             objPlanSelector.IsPlanEditable = true;
                         }
-                        else if (IsPlanEditOwnAndSubordinatesAuthorized && IsBusinessUnitEditable)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                        else if (IsPlanEditAllAuthorized && IsBusinessUnitEditable)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                        {
+                            objPlanSelector.IsPlanEditable = true;
+                        }
+                        else if (IsPlanEditSubordinatesAuthorized && IsBusinessUnitEditable)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                         {
                             if (lstOwnAndSubOrdinates.Contains(item.CreatedBy))
                             {
