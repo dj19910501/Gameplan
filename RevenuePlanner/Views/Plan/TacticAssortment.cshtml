@@ -1126,9 +1126,6 @@
     /*start Added by Mitesh Vaishnav for PL ticket #571
     function for filling input's value of Actual cost portion and check flag (If tactic has lineitem than Actual cost portion will be disabled)  */
     function fillActualAllocationData(data) {
-        $('#actual-Cost-Allocation').find("input").each(function () {
-            $(this).attr('myvalue', $(this).val());
-        });
         if (typeof data.actualCostData != 'undefined') {
             var actualCostData = data.actualCostData;
             if (actualCostData.length) {
@@ -1137,6 +1134,7 @@
                     TotalActualCost +=parseFloat(actualCostData[cnt].Value);
                     $('#actual-Cost-Allocation').find("#" + actualCostData[cnt].Period).val(FormatCommas(actualCostData[cnt].Value.toString(), false));
                     $('#actual-Cost-Allocation').find("#" + actualCostData[cnt].Period).attr('ov', actualCostData[cnt].Value == '' ? '0' : actualCostData[cnt].Value);
+                    $('#actual-Cost-Allocation').find("#" + actualCostData[cnt].Period).attr('myvalue', $('#actual-Cost-Allocation').find("#" + actualCostData[cnt].Period).val());     // Added by Sohel Pathan on 03/09/2014 for Internal Review Points
                 }
                 $("#lblTotalActualCost").html(FormatCommasBudget( TotalActualCost.toString(),false,true));
             }
@@ -1150,7 +1148,15 @@
                 $(this).prop('readonly', true);
             });
         }
-
+        // Start - Added by Sohel Pathan on 03/09/2014 for Internal Review Points
+        else {
+            $('#actual-Cost-Allocation').find("input").each(function () {
+                if (typeof $(this).attr('myvalue') == 'undefined' || $(this).attr('myvalue') == '') {
+                    $(this).attr('myvalue', '');
+                }
+            });
+        }
+        // End - Added by Sohel Pathan on 03/09/2014 for Internal Review Points
     }
     /*End Added by Mitesh Vaishnav for PL ticket #571*/
 
