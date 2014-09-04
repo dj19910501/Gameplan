@@ -827,6 +827,22 @@
                     $("#lblRemainingMonthlyBudget").removeClass('error-text');
                 }
                 $("#lblRemainingMonthlyBudget").html(FormatCommasBudget(remainingValue.toString(), false, true));
+
+                if ($(this).val().trim() != '') {
+                    var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
+                    if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+                        if (parseInt(currentValue) < AllocatedProgramsBudget) {
+                            $("#lblAllocatedProgramsBudget").addClass('error-text');
+                        }
+                        else {
+                            $("#lblAllocatedProgramsBudget").removeClass('error-text');
+                        }
+                    }
+                }
+                else {
+                    $("#lblAllocatedProgramsBudget").removeClass('error-text');
+                }
+
                 $("#lblAllocatedProgramsBudget").html(FormatCommasBudget(AllocatedProgramsBudget.toString(), false, true));
 
             });
