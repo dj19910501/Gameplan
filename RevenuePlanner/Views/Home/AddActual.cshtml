@@ -467,8 +467,8 @@
             }
 
             // For Format Price & Total Input
-            $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-            $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+            $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
+            $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
 
             function SetTipsyNumeric(obj) {
                 if (obj != null || obj != 'undefined') {
@@ -658,7 +658,7 @@
                             isError = true;
                         }
                         var arr = (this).id.split('-');
-                        if (thisValue != 0) {
+                        if (thisValue != '') {
                             _tactic.push({
                                 PlanTacticId: tacticId,
                                 StageTitle: arr[1],

@@ -246,8 +246,8 @@
             }
         }
         function getLoadActual() {
-            $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-            $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+            $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
+            $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
 
             document.getElementById('inqP').innerHTML = FormatCommas(document.getElementById('inqP').innerHTML, false);
             document.getElementById('lblTotalProjectedStageValue').innerHTML = FormatCommas(document.getElementById('lblTotalProjectedStageValue').innerHTML, false);
@@ -406,7 +406,7 @@
                     var arr = (this).id.split('-');
                     var thisValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
 
-                    if (thisValue != 0) {
+                    if (thisValue != '') {
                         _tactic.push({
                             PlanTacticId: planTacticId,
                             StageTitle: arr[0],

@@ -220,6 +220,8 @@
         }
 
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        $('.priceValueAllowNull').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
+
         if ($("#hdnIsOtherLineItem").val() == "False") {
             $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
             $("#t_enddate").val($("#t_enddate").val().split(' ')[0]);
@@ -536,8 +538,13 @@
 
         $('.budget-section').find('input').each(function () {
             $(this).keyup(function () {
-                if ($(this).val().trim() != '') {
-                    var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
+
+                    //Modified By Kalpesh Sharma #761 CAMPAIGNS View: Campaign/Plan Budget field is clearing Remaining Budget/Remaining
+                    var GetCurrentvalue = $(this).val().trim();
+                    if (GetCurrentvalue == '') {
+                        GetCurrentvalue = '0';
+                    }
+                    var currentValue = GetCurrentvalue.replace(/,/g, '').replace('$', '');
                     if (currentValue.match('^(0|[1-9][0-9]*)$')) {
 
                         var OldBudgetValue = parseInt($(this).attr("ov"));
@@ -561,7 +568,6 @@
                         }
                         $("#lblTotalLineItemCost").html(FormatCommasBudget(TotalallocationValue.toString(), false, true));
                     }
-                }
             });
         });
 
