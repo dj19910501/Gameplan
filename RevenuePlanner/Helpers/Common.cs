@@ -3939,7 +3939,7 @@ namespace RevenuePlanner.Helpers
             else
             {
                 ////Checking whether Tactic Actual exist.
-                var tacticActualList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => ta.PlanTacticId == tacticId)
+                var tacticActualList = db.Plan_Campaign_Program_Tactic_Actual.Where(tacticActual => tacticActual.PlanTacticId == tacticId)
                                                                              .OrderByDescending(ta => ta.ModifiedDate)
                                                                              .ThenBy(ta => ta.CreatedDate)
                                                                              .ToList();
