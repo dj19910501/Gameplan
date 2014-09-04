@@ -576,6 +576,10 @@
                             mqlConversion = data.mql;
                             $("#txtmql").val(FormatCommas(mqlConversion.toString(), false));
                         }
+                        // Added by dharmraj on 4-sep-2014, #760 Advanced budgeting – show correct revenue in Tactic fly out
+                        $("#txtRevenue").val(data.revenue);
+                        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+                        $("#txtRevenue").attr("title", $("#txtRevenue").val());
                     }
                 });
             }
@@ -864,6 +868,8 @@
             else {
                 $("#txtProjectedStageValue").val(projectedStageValue);
                 $("#txtmql").val(pmql);
+                $("#txtRevenue").val('0');
+
                 //$("#txtCost").val(pcost);
                 //Start by Kalpesh Sharma #605: Cost allocation for Tactic 07/30/2014
                 $("#TacticCost").val('0');  // Modified by Sohel Pathan on 12/08/2014 for PL ticket #605

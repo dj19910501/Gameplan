@@ -3484,13 +3484,26 @@ namespace RevenuePlanner.Controllers
             //}
 
             //pcptm.INQs = pcpt.INQs;
-
+            /// Added by Dharmraj on 4-Sep-2014
+            /// #760 Advanced budgeting – show correct revenue in Tactic fly out
+            List<Plan_Campaign_Program_Tactic> lstTmpTac = new List<Plan_Campaign_Program_Tactic>();
+            lstTmpTac.Add(pcpt);
+            List<TacticStageValue> varTacticStageValue = Common.GetTacticStageRelation(lstTmpTac, false);
+            // Set MQL
             string stageMQL = Enums.Stage.MQL.ToString();
             int levelMQL = db.Stages.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageMQL)).Level.Value;
             int tacticStageLevel = Convert.ToInt32(db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == pcpt.PlanTacticId).Stage.Level);
             if (tacticStageLevel < levelMQL)
             {
-                pcptm.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(pcpt.ProjectedStageValue), pcpt.StartDate, pcpt.PlanTacticId, pcpt.StageId, pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId);
+                //pcptm.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(pcpt.ProjectedStageValue), pcpt.StartDate, pcpt.PlanTacticId, pcpt.StageId, pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId);
+                if (varTacticStageValue.Count > 0)
+                {
+                    pcptm.MQLs = varTacticStageValue[0].MQLValue;
+                }
+                else
+                {
+                    pcptm.MQLs = 0;
+                }
             }
             else if (tacticStageLevel == levelMQL)
             {
@@ -3502,6 +3515,15 @@ namespace RevenuePlanner.Controllers
                 TempData["TacticMQL"] = "N/A";
             }
 
+            // Set Revenue
+            if (varTacticStageValue.Count > 0)
+            {
+                pcptm.Revenue = varTacticStageValue[0].RevenueValue;
+            }
+            else
+            {
+                pcptm.Revenue = 0;
+            }
 
             pcptm.Cost = pcpt.Cost;
 
@@ -3555,9 +3577,9 @@ namespace RevenuePlanner.Controllers
             pcptm.AllocatedBy = objPlan.AllocatedBy;
 
             //Added By : Kalpesh Sharma : PL #605 : 07/29/2014
-            List<Plan_Tactic_Values> PlanTacticValuesList = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcpt.PlanProgramId &&
-                t.PlanTacticId == pcpt.PlanTacticId && t.IsDeleted == false).ToList());
-            pcptm.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue));
+            //List<Plan_Tactic_Values> PlanTacticValuesList = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcpt.PlanProgramId &&
+            //    t.PlanTacticId == pcpt.PlanTacticId && t.IsDeleted == false).ToList());
+            //pcptm.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue));
 
             //Added By : Kalpesh Sharma Functioan and code review #693
             var CostTacticsBudget = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == pcpt.PlanProgramId).ToList().Sum(c => c.Cost);
@@ -4304,7 +4326,7 @@ namespace RevenuePlanner.Controllers
         /// Modified By: Maninder Singh Wadhva 1-March-2014 to address TFS Bug#322 : Changes made to INQ, MQL and Projected Revenue Calculation.
         /// </summary>
         /// <returns>JsonResult MQl Rate.</returns>
-        public JsonResult CalculateMQL(Plan_Campaign_Program_TacticModel form, int projectedStageValue, bool RedirectType, bool isTacticTypeChange)
+        public JsonResult CalculateMQL(Plan_Campaign_Program_TacticModel form, double projectedStageValue, bool RedirectType, bool isTacticTypeChange)
         {
             DateTime StartDate = new DateTime();
             string stageMQL = Enums.Stage.MQL.ToString();
@@ -4314,87 +4336,153 @@ namespace RevenuePlanner.Controllers
             {
                 if (isTacticTypeChange)
                 {
-                    if (form.TacticTypeId != 0)
-                    {
-                        tacticStageLevel = Convert.ToInt32(db.TacticTypes.FirstOrDefault(t => t.TacticTypeId == form.TacticTypeId).Stage.Level);
-                    }
-                    else
-                    {
-                        if (RedirectType)
-                        {
-                            StartDate = form.StartDate;
-                        }
-                        else
-                        {
-                            StartDate = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == form.PlanTacticId).Select(t => t.StartDate).SingleOrDefault();
-                        }
+                    //if (form.TacticTypeId != 0)
+                    //{
+                    tacticStageLevel = Convert.ToInt32(db.TacticTypes.FirstOrDefault(t => t.TacticTypeId == form.TacticTypeId).Stage.Level);
+                    //}
+                    //else
+                    //{
+                    //    if (RedirectType)
+                    //    {
+                    //        StartDate = form.StartDate;
+                    //    }
+                    //    else
+                    //    {
+                    //        StartDate = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == form.PlanTacticId).Select(t => t.StartDate).SingleOrDefault();
+                    //    }
 
-                        int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-                        return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId, form.StageId, modelId) });
-                    }
+                    //    int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
+                    //    return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId, form.StageId, modelId) });
+                    //}
                 }
                 else
                 {
                     tacticStageLevel = Convert.ToInt32(db.Stages.FirstOrDefault(t => t.StageId == form.StageId).Level);
                 }
 
-                if (tacticStageLevel < levelMQL)
+                if (RedirectType)
                 {
-                    if (RedirectType)
-                    {
-                        StartDate = form.StartDate;
-                    }
-                    else
-                    {
-                        StartDate = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == form.PlanTacticId).Select(t => t.StartDate).SingleOrDefault();
-                    }
-
-                    int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-                    return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId, form.StageId, modelId) });
-                }
-                else if (tacticStageLevel == levelMQL)
-                {
-                    return Json(new { mql = projectedStageValue });
-                }
-                else if (tacticStageLevel > levelMQL)
-                {
-                    return Json(new { mql = "N/A" });
+                    StartDate = form.StartDate;
                 }
                 else
                 {
-                    return Json(new { mql = 0 });
+                    StartDate = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == form.PlanTacticId).Select(t => t.StartDate).SingleOrDefault();
+                }
+
+                int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
+                /// Added by Dharmraj on 4-Sep-2014
+                /// #760 Advanced budgeting – show correct revenue in Tactic fly out
+                List<Plan_Campaign_Program_Tactic> lstTactic = new List<Plan_Campaign_Program_Tactic>();
+                Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
+                objTactic.StartDate = StartDate;
+                objTactic.EndDate = form.EndDate;
+                objTactic.StageId = form.StageId;
+                objTactic.Plan_Campaign_Program = new Plan_Campaign_Program() { Plan_Campaign = new Plan_Campaign() { PlanId = Sessions.PlanId, Plan = new Plan() { } } };
+                objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId = modelId;
+                objTactic.ProjectedStageValue = projectedStageValue;
+                lstTactic.Add(objTactic);
+                var lstTacticStageRelation = Common.GetTacticStageRelation(lstTactic, false);
+                double calculatedMQL = 0;
+                double CalculatedRevenue = 0;
+                if (lstTacticStageRelation.Count > 0)
+                {
+                    calculatedMQL = lstTacticStageRelation[0].MQLValue;
+                    CalculatedRevenue = lstTacticStageRelation[0].RevenueValue;
+                }
+                else
+                {
+                    calculatedMQL = CalculatedRevenue = 0;
+                }
+                if (tacticStageLevel < levelMQL)
+                {
+                    //if (RedirectType)
+                    //{
+                    //    StartDate = form.StartDate;
+                    //}
+                    //else
+                    //{
+                    //    StartDate = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == form.PlanTacticId).Select(t => t.StartDate).SingleOrDefault();
+                    //}
+
+                    //return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId, form.StageId, modelId) });
+
+                    return Json(new { mql = calculatedMQL, revenue = CalculatedRevenue });
+                }
+                else if (tacticStageLevel == levelMQL)
+                {
+                    return Json(new { mql = projectedStageValue, revenue = CalculatedRevenue });
+                }
+                else if (tacticStageLevel > levelMQL)
+                {
+                    return Json(new { mql = "N/A", revenue = CalculatedRevenue });
+                }
+                else
+                {
+                    return Json(new { mql = 0, revenue = CalculatedRevenue });
                 }
             }
             else
             {
-                if (form.TacticTypeId != 0)
+                //if (form.TacticTypeId != 0)
+                //{
+                tacticStageLevel = Convert.ToInt32(db.TacticTypes.FirstOrDefault(t => t.TacticTypeId == form.TacticTypeId).Stage.Level);
+                //}
+                //else
+                //{
+                //    StartDate = DateTime.Now;
+                //    int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
+                //    return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId, form.StageId, modelId) });
+                //}
+
+                /// Added by Dharmraj on 4-Sep-2014
+                /// #760 Advanced budgeting – show correct revenue in Tactic fly out
+                int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
+                List<Plan_Campaign_Program_Tactic> lstTactic = new List<Plan_Campaign_Program_Tactic>();
+                Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
+                if (tacticStageLevel < levelMQL)
                 {
-                    tacticStageLevel = Convert.ToInt32(db.TacticTypes.FirstOrDefault(t => t.TacticTypeId == form.TacticTypeId).Stage.Level);
+                    objTactic.StartDate = DateTime.Now;
                 }
                 else
                 {
-                    StartDate = DateTime.Now;
-                    int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-                    return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId, form.StageId, modelId) });
+                    objTactic.StartDate = StartDate;
+                }
+                objTactic.EndDate = form.EndDate;
+                objTactic.StageId = form.StageId;
+                objTactic.Plan_Campaign_Program = new Plan_Campaign_Program() { Plan_Campaign = new Plan_Campaign() { PlanId = Sessions.PlanId, Plan = new Plan() { } } };
+                objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId = modelId;
+                objTactic.ProjectedStageValue = projectedStageValue;
+                lstTactic.Add(objTactic);
+                var lstTacticStageRelation = Common.GetTacticStageRelation(lstTactic, false);
+                double calculatedMQL = 0;
+                double CalculatedRevenue = 0;
+                if (lstTacticStageRelation.Count > 0)
+                {
+                    calculatedMQL = lstTacticStageRelation[0].MQLValue;
+                    CalculatedRevenue = lstTacticStageRelation[0].RevenueValue;
+                }
+                else
+                {
+                    calculatedMQL = CalculatedRevenue = 0;
                 }
 
                 if (tacticStageLevel < levelMQL)
                 {
-                    StartDate = DateTime.Now;
-                    int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).SingleOrDefault();
-                    return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId, form.StageId, modelId) });
+                    //StartDate = DateTime.Now;
+                    //return Json(new { mql = Common.CalculateMQLTactic(projectedStageValue, StartDate, form.PlanTacticId, form.StageId, modelId) });
+                    return Json(new { mql = calculatedMQL, revenue = CalculatedRevenue });
                 }
                 else if (tacticStageLevel == levelMQL)
                 {
-                    return Json(new { mql = projectedStageValue });
+                    return Json(new { mql = projectedStageValue, revenue = CalculatedRevenue });
                 }
                 else if (tacticStageLevel > levelMQL)
                 {
-                    return Json(new { mql = "N/A" });
+                    return Json(new { mql = "N/A", revenue = CalculatedRevenue });
                 }
                 else
                 {
-                    return Json(new { mql = 0 });
+                    return Json(new { mql = 0, revenue = CalculatedRevenue });
                 }
             }
         }
