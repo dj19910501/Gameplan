@@ -1032,29 +1032,29 @@ namespace RevenuePlanner.Helpers
             } ////End - Added by Mitesh Vaishnav for internal review point 91
             else
             {
-            var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
-            if (lstAllowedBusinessUnits.Count > 0)
-                lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
-            
-            // Modified by Dharmraj, For #537
-            if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnits.Count == 0)//if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
-            {
-                //// Getting all business unit for client of director.
-                var clientBusinessUnit = db.BusinessUnits.Where(b => b.ClientId.Equals(Sessions.User.ClientId) && b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
-                businessUnitIds = clientBusinessUnit.ToList();
-            }
-            else
-            {
-                // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                var lstAllowedBusinessUnits = Common.GetViewEditBusinessUnitList();
                 if (lstAllowedBusinessUnits.Count > 0)
-                {
                     lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
+
+                // Modified by Dharmraj, For #537
+                if (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.UserAdmin) && lstAllowedBusinessUnits.Count == 0)//if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
+                {
+                    //// Getting all business unit for client of director.
+                    var clientBusinessUnit = db.BusinessUnits.Where(b => b.ClientId.Equals(Sessions.User.ClientId) && b.IsDeleted == false).Select(b => b.BusinessUnitId).ToList<Guid>();//Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
+                    businessUnitIds = clientBusinessUnit.ToList();
                 }
                 else
                 {
-                businessUnitIds.Add(Sessions.User.BusinessUnitId);
-                }
-                // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    // Start - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    if (lstAllowedBusinessUnits.Count > 0)
+                    {
+                        lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
+                    }
+                    else
+                    {
+                        businessUnitIds.Add(Sessions.User.BusinessUnitId);
+                    }
+                    // End - Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 }
             }
 
@@ -1494,7 +1494,7 @@ namespace RevenuePlanner.Helpers
                     if (planTacticIds.Count() > 0)
                     {
                         ////Start Modified by Mitesh Vaishnav for PL ticket #736 Budgeting - Changes to plan header to accomodate budgeting changes
-                        var tacticIds=planTacticIds.Select(t=>t.PlanTacticId).ToList();
+                        var tacticIds = planTacticIds.Select(t => t.PlanTacticId).ToList();
                         objHomePlanModelHeader.Budget = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => tacticIds.Contains(l.PlanTacticId) && l.IsDeleted == false).ToList().Sum(l => l.Cost);//planTacticIds.Sum(t => t.Cost);
                         ////End Modified by Mitesh Vaishnav for PL ticket #736 Budgeting - Changes to plan header to accomodate budgeting changes
                     }
@@ -1558,7 +1558,7 @@ namespace RevenuePlanner.Helpers
                     }
                     else
                     {
-                    businessUnitIds.Add(Sessions.User.BusinessUnitId);
+                        businessUnitIds.Add(Sessions.User.BusinessUnitId);
                     }
                     // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 }
@@ -1943,7 +1943,7 @@ namespace RevenuePlanner.Helpers
             {
                 ModelId = dbm.Plan_Campaign_Program_Tactic.Where(p => p.PlanTacticId == PlanTacticId).Select(p => p.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).SingleOrDefault();
             }
-            
+
             return Math.Round(projecteStageValue * GetMQLConversionRate(StartDate, ModelId, stageId), 0, MidpointRounding.AwayFromZero);
         }
 
@@ -1975,12 +1975,12 @@ namespace RevenuePlanner.Helpers
                 Value = m.Value / 100
             }
                     ).ToList();
-                
+
             int projectedStageLevel = stageList.Single(s => s.StageId == stageId).Level.Value;
             mqlStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelMQL).Select(s => s.StageId).ToList();
 
             return projectedStageLevel <= levelMQL ? 1 * (stageRelationList.Where(sr => mqlStagelist.Contains(sr.StageId)).Aggregate(1.0, (x, y) => x * y.Value)) : 0;
-            
+
         }
 
         /// <summary>
@@ -2166,7 +2166,7 @@ namespace RevenuePlanner.Helpers
         public static List<ProjectedRevenueClass> ProjectedRevenueCalculateList(List<Plan_Campaign_Program_Tactic> tlist, bool isCW = false)
         {
 
-            List<TacticStageValue> tacticlValueList =  GetTacticStageRelation(tlist, false);
+            List<TacticStageValue> tacticlValueList = GetTacticStageRelation(tlist, false);
             List<ProjectedRevenueClass> tacticList = tacticlValueList.Select(t => new ProjectedRevenueClass
                 {
                     PlanTacticId = t.TacticObj.PlanTacticId,
@@ -2224,7 +2224,7 @@ namespace RevenuePlanner.Helpers
         {
             if (obj == null)
                 return string.Empty;
-            else if(obj.Contains("->"))
+            else if (obj.Contains("->"))
             {
                 return obj.Replace("->", " → ");
             }
@@ -2610,10 +2610,10 @@ namespace RevenuePlanner.Helpers
                                                  .Plan_Campaign_Program
                                                  .Where(varP => varP.IsDeleted == false)
                                                  .ToList();
-              
+
                 double cost = 0;
                 /*Modified by Mitesh Vaishnav on 29/07/2014 for PL ticket #619*/
-                lstProgram.ForEach(varP => varP.Plan_Campaign_Program_Tactic.Where(varT => varT.IsDeleted == false).ToList().ForEach(varT=>cost=cost+ varT.Plan_Campaign_Program_Tactic_LineItem.Where(varL=>varL.IsDeleted==false).Sum(varL=>varL.Cost)));
+                lstProgram.ForEach(varP => varP.Plan_Campaign_Program_Tactic.Where(varT => varT.IsDeleted == false).ToList().ForEach(varT => cost = cost + varT.Plan_Campaign_Program_Tactic_LineItem.Where(varL => varL.IsDeleted == false).Sum(varL => varL.Cost)));
 
                 return cost;
 
@@ -2637,7 +2637,7 @@ namespace RevenuePlanner.Helpers
 
                 double cost = 0;
                 /*Modified by Mitesh Vaishnav on 29/07/2014 for PL ticket #619*/
-                 lstTactic.ForEach(varT => cost = cost + varT.Plan_Campaign_Program_Tactic_LineItem.Where(varL=>varL.IsDeleted==false).Sum(varL=>varL.Cost));
+                lstTactic.ForEach(varT => cost = cost + varT.Plan_Campaign_Program_Tactic_LineItem.Where(varL => varL.IsDeleted == false).Sum(varL => varL.Cost));
 
                 return cost;
 
@@ -2764,7 +2764,7 @@ namespace RevenuePlanner.Helpers
             {
                 bestInClassAdsValue = objbestInClassAdsValue.Value;
             }
-            
+
             List<PlanADSRelation> planADSList = GetPlanADSList(planIMPTacticList, improvementTypeWeightList, ADSStageId, Size, bestInClassAdsValue);
 
             foreach (Plan_Campaign_Program_Tactic tactic in tlist)
@@ -2792,11 +2792,11 @@ namespace RevenuePlanner.Helpers
                         }
                         else
                         {
-                        var stageimplist = improvementIdsWeighList.Where(impweight => impweight.StageId == stage.StageId && impweight.StageType == stage.StageType && impweight.Value > 0).ToList();
-                        double impcount = stageimplist.Count();
-                        double impWeight = impcount <= 0 ? 0 : stageimplist.Sum(s => s.Value);
-                        double improvementValue = GetImprovement(stage.StageType, bestInClassStageRelation.Single(b => b.StageId == stage.StageId && b.StageType == stage.StageType).Value, stageModelRelation.Single(s => s.StageId == stage.StageId && s.StageType == stage.StageType).Value, impcount, impWeight);
-                        stageRelationObj.Value = improvementValue;
+                            var stageimplist = improvementIdsWeighList.Where(impweight => impweight.StageId == stage.StageId && impweight.StageType == stage.StageType && impweight.Value > 0).ToList();
+                            double impcount = stageimplist.Count();
+                            double impWeight = impcount <= 0 ? 0 : stageimplist.Sum(s => s.Value);
+                            double improvementValue = GetImprovement(stage.StageType, bestInClassStageRelation.Single(b => b.StageId == stage.StageId && b.StageType == stage.StageType).Value, stageModelRelation.Single(s => s.StageId == stage.StageId && s.StageType == stage.StageType).Value, impcount, impWeight);
+                            stageRelationObj.Value = improvementValue;
                         }
                         stageRelationList.Add(stageRelationObj);
                     }
@@ -3049,7 +3049,7 @@ namespace RevenuePlanner.Helpers
             return improvementValue;
         }
 
-        public static List<PlanADSRelation> GetPlanADSList(List<PlanIMPTacticListRelation> planIMPList,List<ImprovementTypeWeightList> improvementTypeWeightList,int ADSStageId,string Size, double bestInClassSizeValue)
+        public static List<PlanADSRelation> GetPlanADSList(List<PlanIMPTacticListRelation> planIMPList, List<ImprovementTypeWeightList> improvementTypeWeightList, int ADSStageId, string Size, double bestInClassSizeValue)
         {
             MRPEntities dbStage = new MRPEntities();
             string marketing = Enums.Funnel.Marketing.ToString();
@@ -3062,7 +3062,7 @@ namespace RevenuePlanner.Helpers
                 int modelId = planModelRelation.Single(p => p.PlanId == planIMP.PlanId).ModelId;
                 if (planIMP.ImprovementTacticList.Count > 0)
                 {
-                     //// Get Model id based on effective date From.
+                    //// Get Model id based on effective date From.
                     modelId = GetModelId(planIMP.ImprovementTacticList.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), modelId);
                 }
                 double ADSValue = dbStage.Model_Funnel.Single(mf => mf.ModelId == modelId && mf.Funnel.Title == marketing).AverageDealSize;
@@ -3112,8 +3112,8 @@ namespace RevenuePlanner.Helpers
             int ModelId = db.Plans.Where(p => p.PlanId == planId).Select(p => p.ModelId).SingleOrDefault();
             if (improvementActivities.Count > 0)
             {
-            //// Get Model id based on effective date From.
-            ModelId = GetModelId(improvementActivities.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), ModelId);
+                //// Get Model id based on effective date From.
+                ModelId = GetModelId(improvementActivities.Select(improvementActivity => improvementActivity.EffectiveDate).Max(), ModelId);
             }
             List<int> modelids = new List<int>();
             modelids.Add(ModelId);
@@ -3289,7 +3289,7 @@ namespace RevenuePlanner.Helpers
             if (ManagerId != null)
             {
                 var lstPeersId = lstUserHierarchy.Where(u => u.ManagerId == ManagerId).Select(u => u.UserId).Distinct().ToList();
-                
+
                 if (lstPeersId.Count > 0)
                 {
                     var lstPeersSubOrdinatesId = lstUserHierarchy.Where(u => lstPeersId.Contains(u.ManagerId.GetValueOrDefault(Guid.Empty)))
@@ -3339,7 +3339,7 @@ namespace RevenuePlanner.Helpers
 
             return lstSubordinaresId.Distinct().ToList();   // Modified by Sohel Pathan on 13/08/2014 for PL ticket #689
         }
-       
+
         /// <summary>
         /// Function to check for campaign/Program is approvable with given subordinates
         /// </summary>
@@ -3348,13 +3348,13 @@ namespace RevenuePlanner.Helpers
         /// <param name="id"></param>
         /// <param name="section"></param>
         /// <returns></returns>
-        public static bool IsSectionApprovable(List<Guid> lstSubordinates,int id,string section)
+        public static bool IsSectionApprovable(List<Guid> lstSubordinates, int id, string section)
         {
             bool IsApprovable = false;
             MRPEntities db = new MRPEntities();
             if (section == Enums.Section.Campaign.ToString())
             {
-                 var AllTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == id && t.IsDeleted == false).ToList();
+                var AllTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == id && t.IsDeleted == false).ToList();
                 if (AllTactic.Count > 0)
                 {
                     var OthersTactic = AllTactic.Where(t => !lstSubordinates.Contains(t.CreatedBy)).ToList();
@@ -3362,7 +3362,7 @@ namespace RevenuePlanner.Helpers
                     {
                         IsApprovable = true;
                     }
-                    
+
                 }
             }
             else if (section == Enums.Section.Program.ToString())
@@ -3377,11 +3377,11 @@ namespace RevenuePlanner.Helpers
                     }
 
                 }
-            } 
+            }
             return IsApprovable;
 
         }
-        
+
 
         /// <summary>
         /// Function to get all subirdinates upto n level
@@ -3458,16 +3458,16 @@ namespace RevenuePlanner.Helpers
             if (lstUserCustomRestriction.Where(r => r.CustomField.ToLower() == Enums.CustomRestrictionType.Geography.ToString().ToLower() && r.CustomFieldId.ToLower() == geographyId.ToString().ToLower()).Count() > 0)
             {
                 if (lstUserCustomRestriction.Single(r => r.CustomField.ToLower() == Enums.CustomRestrictionType.Geography.ToString().ToLower() && r.CustomFieldId.ToLower() == geographyId.ToString().ToLower()).Permission != (int)Enums.CustomRestrictionPermission.ViewEdit)
-            {
-                returnValue = false;
+                {
+                    returnValue = false;
                 }
             }
 
             if (lstUserCustomRestriction.Where(r => r.CustomField.ToLower() == Enums.CustomRestrictionType.Verticals.ToString().ToLower() && r.CustomFieldId.ToLower() == verticalId.ToString().ToLower()).Count() > 0)
             {
                 if (lstUserCustomRestriction.Single(r => r.CustomField.ToLower() == Enums.CustomRestrictionType.Verticals.ToString().ToLower() && r.CustomFieldId == verticalId.ToString().ToLower()).Permission != (int)Enums.CustomRestrictionPermission.ViewEdit)
-            {
-                returnValue = false;
+                {
+                    returnValue = false;
                 }
             }
 
@@ -3480,15 +3480,15 @@ namespace RevenuePlanner.Helpers
             if (lstUserCustomRestriction.Where(r => r.CustomField.ToLower() == Enums.CustomRestrictionType.Geography.ToString().ToLower() && r.CustomFieldId.ToLower() == geographyId.ToString().ToLower()).Count() > 0)
             {
                 if (lstUserCustomRestriction.Single(r => r.CustomField.ToLower() == Enums.CustomRestrictionType.Geography.ToString().ToLower() && r.CustomFieldId.ToLower() == geographyId.ToString()).Permission == (int)Enums.CustomRestrictionPermission.None)
-            {
-                returnValue = false;
-            }
+                {
+                    returnValue = false;
+                }
             }
             if (lstUserCustomRestriction.Where(r => r.CustomField.ToLower() == Enums.CustomRestrictionType.Verticals.ToString().ToLower() && r.CustomFieldId.ToLower() == verticalId.ToString().ToLower()).Count() > 0)
             {
                 if (lstUserCustomRestriction.Single(r => r.CustomField.ToLower() == Enums.CustomRestrictionType.Verticals.ToString().ToLower() && r.CustomFieldId.ToLower() == verticalId.ToString().ToLower()).Permission == (int)Enums.CustomRestrictionPermission.None)
-            {
-                returnValue = false;
+                {
+                    returnValue = false;
                 }
             }
 
@@ -3537,7 +3537,7 @@ namespace RevenuePlanner.Helpers
         #endregion
 
         #region Genrate Random Numbers
-        
+
         /// <summary>
         /// Added By : Kalpesh Sharma 
         /// Generate a Random numbers 
@@ -3591,14 +3591,14 @@ namespace RevenuePlanner.Helpers
             MRPEntities db = new MRPEntities();
             var lstGoalTypes = Enum.GetValues(typeof(Enums.PlanGoalType)).Cast<Enums.PlanGoalType>().Select(a => a.ToString()).ToList();
             var lstGoalTypeListFromDB = db.Stages.Where(a => a.IsDeleted == false && a.ClientId == clientId && lstGoalTypes.Contains(a.Code)).Select(a => a).ToList();
-               // new SelectListItem { Text = a.Title, Value = a.Code }).ToList();
+            // new SelectListItem { Text = a.Title, Value = a.Code }).ToList();
             lstGoalTypeListFromDB.ForEach(a => a.Title = a.Title.ToLower());
             Stage objStage = new Stage();
             objStage.Title = Enums.PlanGoalTypeList[Enums.PlanGoalType.Revenue.ToString()].ToString().ToLower();
             objStage.Code = Enums.PlanGoalTypeList[Enums.PlanGoalType.Revenue.ToString()].ToString().ToUpper();
             lstGoalTypeListFromDB.Add(objStage);
             return new SelectList(lstGoalTypeListFromDB, "Code", "Title");
-            
+
         }
         #endregion
 
@@ -3628,7 +3628,7 @@ namespace RevenuePlanner.Helpers
 
                 List<int> mqlStagelist = new List<int>();
                 List<int> cwStagelist = new List<int>();
-                
+
                 string CR = Enums.StageType.CR.ToString();
                 string marketing = Enums.Funnel.Marketing.ToString();
                 var ModelFunnelStageList = dbStage.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && mfs.StageType == CR && mfs.Model_Funnel.Funnel.Title == marketing).ToList();
@@ -3720,7 +3720,7 @@ namespace RevenuePlanner.Helpers
 
                 List<int> mqlStagelist = new List<int>();
                 List<int> cwStagelist = new List<int>();
-                
+
                 if (goalType != "" && goalValue != "" && goalValue != "0")
                 {
                     string CR = Enums.StageType.CR.ToString();
@@ -3743,7 +3743,7 @@ namespace RevenuePlanner.Helpers
                         cwStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level <= levelCW).Select(s => s.StageId).ToList();
                         var modelFunnelStageListCW = dbStage.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && mqlStagelist.Contains(mfs.StageId) && cwStagelist.Contains(mfs.StageId) && mfs.StageType == CR).ToList();
                         double INQValue = (inputValue) / ((modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100))) * averageDealSize);
-                        
+
                         // Calculate MQL
                         var modelFunnelStageListMQL = dbStage.Model_Funnel_Stage.Where(mfs => mfs.Model_Funnel.ModelId == modelId && mqlStagelist.Contains(mfs.StageId) && mfs.StageType == CR).ToList();
                         double MQLValue = (INQValue) * (modelFunnelStageListMQL.Aggregate(1.0, (x, y) => x * (y.Value / 100)));
@@ -3791,9 +3791,9 @@ namespace RevenuePlanner.Helpers
             {
                 isIntegrationInstanceExist = false;
             }
-                return isIntegrationInstanceExist;
+            return isIntegrationInstanceExist;
         }
-        
+
         /// <summary>
         /// Function for Delete Campaign or Program or Tactic or LineItem as per their relational hierarchy.
         /// Added by Mitesh Vaishnav for 18-Aug-2014 for functional review point - removing sp
@@ -3810,7 +3810,7 @@ namespace RevenuePlanner.Helpers
                 {
                     using (var scope = new TransactionScope())
                     {
-                        if (section==Enums.Section.Campaign.ToString() && id != 0)
+                        if (section == Enums.Section.Campaign.ToString() && id != 0)
                         {
                             var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId == id).ToList();
                             plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
@@ -3865,7 +3865,7 @@ namespace RevenuePlanner.Helpers
                             plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
 
                             ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
-                            var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => a.PlanLineItemId==id).ToList();
+                            var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => a.PlanLineItemId == id).ToList();
                             plan_campaign_Program_Tactic_LineItem_ActualList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                         }
                         returnValue = db.SaveChanges();
@@ -3873,7 +3873,7 @@ namespace RevenuePlanner.Helpers
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return returnValue;
             }
@@ -3916,80 +3916,89 @@ namespace RevenuePlanner.Helpers
         /// Added by Mitesh on 03/09/2014
         /// #743 Actuals Inspect: User Name for Scheduler Integration
         /// </summary>
-       /// <param name="tacticId"></param>
-       /// <param name="userList"></param>
-       /// <returns>If any tactic actual or LineItem exist then it return string message else empty string </returns>
+        /// <param name="tacticId">Plan Tactic Id.</param>
+        /// <param name="userList">List of user object.</param>
+        /// <returns>If any tactic actual or LineItem exist then it return string message else empty string </returns>
         public static string TacticModificationMessage(int tacticId, List<User> userList = null)
         {
             MRPEntities db = new MRPEntities();
             string lastModifiedMessage = string.Empty;
             string createdBy = null;
             DateTime? modifiedDate = null;
-           
-                var lineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == tacticId && l.IsDeleted == false).ToList();
-                if (lineItemList.Count != 0)
+
+            //// Checking whether line item actuals exists.
+            var lineItemListActuals = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lineitemActual => lineitemActual.Plan_Campaign_Program_Tactic_LineItem.PlanTacticId == tacticId &&
+                                                                                            lineitemActual.Plan_Campaign_Program_Tactic_LineItem.IsDeleted == false)
+                                                                                     .OrderByDescending(la => la.CreatedDate)
+                                                                                     .ToList();
+            if (lineItemListActuals.Count != 0)
+            {
+                modifiedDate = lineItemListActuals.FirstOrDefault().CreatedDate;
+                createdBy = lineItemListActuals.FirstOrDefault().CreatedBy.ToString();
+            }
+            else
+            {
+                ////Checking whether Tactic Actual exist.
+                var tacticActualList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => ta.PlanTacticId == tacticId)
+                                                                             .OrderByDescending(ta => ta.ModifiedDate)
+                                                                             .ThenBy(ta => ta.CreatedDate)
+                                                                             .ToList();
+                if (tacticActualList.Count != 0)
                 {
-                    var lineItemIds = lineItemList.Select(l => l.PlanLineItemId).ToList();
-                    var lineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(la => lineItemIds.Contains(la.PlanLineItemId)).OrderByDescending(la => la.CreatedDate).ToList();
-                    if (lineItemActualList.Count != 0)
+                    if (tacticActualList.FirstOrDefault().ModifiedDate != null)
                     {
-                         modifiedDate = lineItemActualList.FirstOrDefault().CreatedDate;
-                            createdBy = lineItemActualList.FirstOrDefault().CreatedBy.ToString();
+                        modifiedDate = tacticActualList.FirstOrDefault().ModifiedDate;
+                        createdBy = tacticActualList.FirstOrDefault().ModifiedBy.ToString();
                     }
+                    else
+                    {
+                        modifiedDate = tacticActualList.FirstOrDefault().CreatedDate;
+                        createdBy = tacticActualList.FirstOrDefault().CreatedBy.ToString();
+                    }
+                }
+
+            }
+
+            if (createdBy != null && modifiedDate != null)
+            {
+                ////Checking if created by is empty then system generated modification
+                if (Guid.Parse(createdBy) == Guid.Empty)
+                {
+                    lastModifiedMessage = string.Format("{0} {1} by {2}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd"), GameplanIntegrationService);
+                    return lastModifiedMessage;
                 }
                 else
                 {
-                    var tacticActualList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => ta.PlanTacticId == tacticId).OrderByDescending(ta => ta.ModifiedDate).ThenBy(ta => ta.CreatedDate).ToList();
-                    if (tacticActualList.Count != 0)
-                    {
-                        if (tacticActualList.FirstOrDefault().ModifiedDate != null)
-                        {
-                            modifiedDate = tacticActualList.FirstOrDefault().ModifiedDate;
-                            createdBy = tacticActualList.FirstOrDefault().ModifiedBy.ToString();
-                        }
-                        else
-                        {
-                            modifiedDate = tacticActualList.FirstOrDefault().CreatedDate;
-                            createdBy = tacticActualList.FirstOrDefault().CreatedBy.ToString();
-                        }
-                    }
-
-                }
-                if (createdBy != null && modifiedDate != null)
-                {
+                    bool isGetFromBDSService = false;////functiona perameter userList have "createdby" user
                     if (userList != null && userList.Count != 0)
                     {
-                        if (Guid.Parse(createdBy) != Guid.Empty)
+                        User user = userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault();
+                        if (user != null)
                         {
                             lastModifiedMessage = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd"), userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault().FirstName, userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault().LastName);
                             return lastModifiedMessage;
                         }
                         else
                         {
-                            lastModifiedMessage = string.Format("{0} {1} by {2}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd"), GameplanIntegrationService);
-                            return lastModifiedMessage;
+                            isGetFromBDSService = true;
                         }
                     }
                     else
                     {
-                        if (Guid.Parse(createdBy) != Guid.Empty)
-                        {
-                            BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
-                            User objUser = objBDSUserRepository.GetTeamMemberDetails(new Guid(createdBy), Sessions.ApplicationId);
-                            lastModifiedMessage = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd"), objUser.FirstName, objUser.LastName);
-                            return lastModifiedMessage;
-                        }
-                        else
-                        {
-                            lastModifiedMessage = string.Format("{0} {1} by {2}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd"), GameplanIntegrationService);
-                            return lastModifiedMessage;
-                        }
+                        isGetFromBDSService = true;
+                    }
 
+                    if (isGetFromBDSService)
+                    {
+                        BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
+                        User objUser = objBDSUserRepository.GetTeamMemberDetails(new Guid(createdBy), Sessions.ApplicationId);
+                        lastModifiedMessage = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd"), objUser.FirstName, objUser.LastName);
+                        return lastModifiedMessage;
                     }
                 }
-                return lastModifiedMessage;
-                
-           
+            }
+
+            return lastModifiedMessage;
         }
     }
 
