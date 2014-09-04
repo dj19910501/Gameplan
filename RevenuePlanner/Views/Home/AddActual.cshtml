@@ -833,7 +833,7 @@
         function addRowActual(_index, _id, _title, _projectedStageValue, _projectedStageValueActual, _mqlProjected, _mqlActual, _cwProjected, _cwActual, _revenueProjected, _revenueActual, _costProjected, _costActual, _roiProjected, _roiActual, _actualData, _modifiedBy, _LastSync, stageTitle, tacticStageId, tacticStageTitle, IsTacticEditable, _LineItemsData, _costActualData) {
             var $tableActuals = $('.accordion-actuals');
             var num = parseInt(_index);
-            var updateBy = '', stat;
+            //var updateBy = '', stat;
             var $html = '<div class="accordion-group">' +
                             '<div class="accordion-heading">' +
                             '<div class="accordion-toggle">' +
@@ -892,7 +892,7 @@
                         if (comStr1 == comStr2) {
                             $html += 'value="' + _actualData[k].actualValue + '"';
                         }
-                        updateBy = _actualData[k].UpdateBy;
+                        //updateBy = _actualData[k].UpdateBy;
                         stat = _actualData[k].IsUpdate;
                     }
                     $html += ' ></input></td>';
@@ -944,11 +944,11 @@
             }
 
 
-            if (updateBy == "") {
-                if (_costActual != 0) {
-                    updateBy = _modifiedBy;
-                }
-            }
+            //if (updateBy == "") {
+            //    if (_costActual != 0) {
+            //        updateBy = _modifiedBy;
+            //    }
+            //}
             $html += '</tbody>' +
                 '</table>' +
                 '</div>' +
@@ -1065,7 +1065,7 @@
                             '<div class="wrapper-toogle-actual-buttons">' +
                             '<div class="pull-left" style="width:300px;">' +
                             '<label id="last-synced" class="pull-left margin-top6 margin-bottom0" style="line-height:10px;">' + _LastSync + '</label>' +
-                            '<label id="last-updated" class="pull-left margin-bottom0">' + updateBy + '</label></div>';
+                            '<label id="last-updated" class="pull-left margin-bottom0">' + _modifiedBy + '</label></div>';
 
             if (IsTacticEditable) {
                 $html += '<button id="BtnShareTactic' + _id + '" tacticId="' + _id + '" class="btn btn-blue text-shadow-blue source-sans-proregular share-tactic-icon button-inspect-result-modal pull-right" type="button"><span class="flag-icon"></span>Share Tactic</button>' +

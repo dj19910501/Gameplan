@@ -2837,42 +2837,44 @@ namespace RevenuePlanner.Controllers
 
             im.CWs = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 1);
             string modifiedBy = string.Empty;
-            string createdBy = string.Empty;
-            DateTime? modifiedDate = null;
-            if (db.Plan_Campaign_Program_Tactic_Actual.Where(t => t.PlanTacticId == im.PlanTacticId).Count() > 0)
-            {
-                modifiedDate = db.Plan_Campaign_Program_Tactic_Actual.Where(t => t.PlanTacticId == im.PlanTacticId).Select(t => t.CreatedDate).FirstOrDefault();
-                createdBy = db.Plan_Campaign_Program_Tactic_Actual.Where(t => t.PlanTacticId == im.PlanTacticId).Select(t => t.CreatedBy).FirstOrDefault().ToString();
-            }
-            else
-            {
-                if (im.CostActual != 0)
-                {
-                    modifiedDate = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == im.PlanTacticId).Select(t => t.ModifiedDate).FirstOrDefault();
-                    createdBy = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == im.PlanTacticId).Select(t => t.ModifiedBy).FirstOrDefault().ToString();
-                }
-            }
+            //string createdBy = string.Empty;
+            //DateTime? modifiedDate = null;
+            //if (db.Plan_Campaign_Program_Tactic_Actual.Where(t => t.PlanTacticId == im.PlanTacticId).Count() > 0)
+            //{
+            //    modifiedDate = db.Plan_Campaign_Program_Tactic_Actual.Where(t => t.PlanTacticId == im.PlanTacticId).Select(t => t.CreatedDate).FirstOrDefault();
+            //    createdBy = db.Plan_Campaign_Program_Tactic_Actual.Where(t => t.PlanTacticId == im.PlanTacticId).Select(t => t.CreatedBy).FirstOrDefault().ToString();
+            //}
+            //else
+            //{
+            //    if (im.CostActual != 0)
+            //    {
+            //        modifiedDate = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == im.PlanTacticId).Select(t => t.ModifiedDate).FirstOrDefault();
+            //        createdBy = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == im.PlanTacticId).Select(t => t.ModifiedBy).FirstOrDefault().ToString();
+            //    }
+            //}
 
-            if (modifiedDate != null)
-            {
-                ////Start : Modified by Mitesh Vaishnav for PL ticket #743
-                ////When userId will be empty guid ,First name and last name combination will be display as Gameplan Integration Service
-                if (Guid.Parse(createdBy)!=Guid.Empty)
-                {
-                User objUser = objBDSUserRepository.GetTeamMemberDetails(new Guid(createdBy), Sessions.ApplicationId);
-                modifiedBy = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd"), objUser.FirstName, objUser.LastName);
-                }
-                else
-                {
-                    modifiedBy = string.Format("{0} {1} by {2}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd"), GameplanIntegrationService);
-                }
-                ////End : Modified by Mitesh Vaishnav for PL ticket #743
-                ViewBag.UpdatedBy = modifiedBy;
-            }
-            else
-            {
-                ViewBag.UpdatedBy = null;
-            }
+            //if (modifiedDate != null)
+            //{
+            //    ////Start : Modified by Mitesh Vaishnav for PL ticket #743
+            //    ////When userId will be empty guid ,First name and last name combination will be display as Gameplan Integration Service
+            //    if (Guid.Parse(createdBy) != Guid.Empty)
+            //    {
+            //        User objUser = objBDSUserRepository.GetTeamMemberDetails(new Guid(createdBy), Sessions.ApplicationId);
+            //        modifiedBy = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd"), objUser.FirstName, objUser.LastName);
+            //    }
+            //    else
+            //    {
+            //        modifiedBy = string.Format("{0} {1} by {2}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd"), GameplanIntegrationService);
+            //    }
+            //    ////End : Modified by Mitesh Vaishnav for PL ticket #743
+            //    ViewBag.UpdatedBy = modifiedBy;
+            //}
+            //else
+            //{
+            //    ViewBag.UpdatedBy = null;
+            //}
+            modifiedBy = Common.TacticModificationMessage(im.PlanTacticId);////Modified by Mitesh Vaishnav for PL ticket #743 Actuals Inspect: User Name for Scheduler Integration
+            ViewBag.UpdatedBy = modifiedBy != string.Empty ? modifiedBy : null;////Modified by Mitesh Vaishnav for PL ticket #743 Actuals Inspect: User Name for Scheduler Integration
             im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.ProjectedStageValue), im.StartDate, im.PlanTacticId, Convert.ToInt32(im.StageId));
 
             // Modified by dharmraj for implement new formula to calculate ROI, #533
@@ -4550,13 +4552,12 @@ namespace RevenuePlanner.Controllers
                 geographyId = t.GeographyId,
                 individualId = t.CreatedBy,
                 tacticTypeId = t.TacticTypeId,
-                modifiedBy = userName.Where(u => u.UserId == t.CreatedBy).Count() != 0 ? string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(t.ModifiedDate).ToString("MMM dd"), userName.Where(u => u.UserId == t.CreatedBy).Select(u => u.FirstName).FirstOrDefault(), userName.Where(u => u.UserId == t.CreatedBy).Select(u => u.LastName).FirstOrDefault()) : string.Format("{0} {1} by {2}", "Last updated", Convert.ToDateTime(t.ModifiedDate).ToString("MMM dd"), GameplanIntegrationService),////Modified by Mitesh Vaishnav for PL ticket #743,When userId will be empty guid ,First name and last name combination will be display as Gameplan Integration Service
+                modifiedBy = Common.TacticModificationMessage(t.PlanTacticId,userName),////Modified by Mitesh Vaishnav for PL ticket #743,When userId will be empty guid ,First name and last name combination will be display as Gameplan Integration Service
                 actualData = (db.Plan_Campaign_Program_Tactic_Actual.ToList().Where(pct => pct.PlanTacticId.Equals(t.PlanTacticId)).Select(pcp => pcp).ToList()).Select(pcpt => new
                 {
                     title = pcpt.StageTitle,
                     period = pcpt.Period,
                     actualValue = pcpt.Actualvalue,
-                    UpdateBy = userName.Where(u => u.UserId == pcpt.CreatedBy).Count() != 0 ? string.Format("{0} {1} by {2} {3}", "Last updated", pcpt.CreatedDate.ToString("MMM dd"), userName.Where(u => u.UserId == pcpt.CreatedBy).Select(u => u.FirstName).FirstOrDefault(), userName.Where(u => u.UserId == pcpt.CreatedBy).Select(u => u.LastName).FirstOrDefault()) : string.Format("{0} {1} by {2}", "Last updated", pcpt.CreatedDate.ToString("MMM dd"), GameplanIntegrationService),////Modified by Mitesh Vaishnav for PL ticket #743,When userId will be empty guid ,First name and last name combination will be display as Gameplan Integration Service
                     IsUpdate = status
                 }).Select(pcp => pcp).Distinct(),
                 LastSync = t.LastSyncDate == null ? string.Empty : ("Last synced with integration " + Common.GetFormatedDate(t.LastSyncDate) + "."),////Modified by Mitesh vaishnav on 12/08/2014 for PL ticket #690

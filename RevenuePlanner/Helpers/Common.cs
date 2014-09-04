@@ -136,6 +136,7 @@ namespace RevenuePlanner.Helpers
         public static string TextForModelIntegrationInstanceNull = "None";
         public static string TextForModelIntegrationInstanceTypeOrLastSyncNull = "---";
         public static string DateFormatForModelIntegrationLastSync = "MM/dd/yyyy hh:mm tt";
+        private const string GameplanIntegrationService = "Gameplan Integration Service";
         #endregion
 
         //#region Enums
@@ -3907,6 +3908,88 @@ namespace RevenuePlanner.Helpers
             {
                 return customLabelCode.ToString();
             }
+        }
+
+
+        /// <summary>
+        /// Function to generate message for modification of tactic.
+        /// Added by Mitesh on 03/09/2014
+        /// #743 Actuals Inspect: User Name for Scheduler Integration
+        /// </summary>
+       /// <param name="tacticId"></param>
+       /// <param name="userList"></param>
+       /// <returns>If any tactic actual or LineItem exist then it return string message else empty string </returns>
+        public static string TacticModificationMessage(int tacticId, List<User> userList = null)
+        {
+            MRPEntities db = new MRPEntities();
+            string lastModifiedMessage = string.Empty;
+            string createdBy = null;
+            DateTime? modifiedDate = null;
+           
+                var lineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == tacticId && l.IsDeleted == false).ToList();
+                if (lineItemList.Count != 0)
+                {
+                    var lineItemIds = lineItemList.Select(l => l.PlanLineItemId).ToList();
+                    var lineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(la => lineItemIds.Contains(la.PlanLineItemId)).OrderByDescending(la => la.CreatedDate).ToList();
+                    if (lineItemActualList.Count != 0)
+                    {
+                         modifiedDate = lineItemActualList.FirstOrDefault().CreatedDate;
+                            createdBy = lineItemActualList.FirstOrDefault().CreatedBy.ToString();
+                    }
+                }
+                else
+                {
+                    var tacticActualList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => ta.PlanTacticId == tacticId).OrderByDescending(ta => ta.ModifiedDate).ThenBy(ta => ta.CreatedDate).ToList();
+                    if (tacticActualList.Count != 0)
+                    {
+                        if (tacticActualList.FirstOrDefault().ModifiedDate != null)
+                        {
+                            modifiedDate = tacticActualList.FirstOrDefault().ModifiedDate;
+                            createdBy = tacticActualList.FirstOrDefault().ModifiedBy.ToString();
+                        }
+                        else
+                        {
+                            modifiedDate = tacticActualList.FirstOrDefault().CreatedDate;
+                            createdBy = tacticActualList.FirstOrDefault().CreatedBy.ToString();
+                        }
+                    }
+
+                }
+                if (createdBy != null && modifiedDate != null)
+                {
+                    if (userList != null && userList.Count != 0)
+                    {
+                        if (Guid.Parse(createdBy) != Guid.Empty)
+                        {
+                            lastModifiedMessage = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd"), userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault().FirstName, userList.Where(u => u.UserId == Guid.Parse(createdBy)).FirstOrDefault().LastName);
+                            return lastModifiedMessage;
+                        }
+                        else
+                        {
+                            lastModifiedMessage = string.Format("{0} {1} by {2}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd"), GameplanIntegrationService);
+                            return lastModifiedMessage;
+                        }
+                    }
+                    else
+                    {
+                        if (Guid.Parse(createdBy) != Guid.Empty)
+                        {
+                            BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
+                            User objUser = objBDSUserRepository.GetTeamMemberDetails(new Guid(createdBy), Sessions.ApplicationId);
+                            lastModifiedMessage = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd"), objUser.FirstName, objUser.LastName);
+                            return lastModifiedMessage;
+                        }
+                        else
+                        {
+                            lastModifiedMessage = string.Format("{0} {1} by {2}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd"), GameplanIntegrationService);
+                            return lastModifiedMessage;
+                        }
+
+                    }
+                }
+                return lastModifiedMessage;
+                
+           
         }
     }
 
