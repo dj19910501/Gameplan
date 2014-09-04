@@ -3795,6 +3795,16 @@ namespace RevenuePlanner.Controllers
 
                                 db.SaveChanges();
 
+                                //Added By Kalpesh Sharma : #752 Update line item cost with the total cost from the monthly/quarterly allocation
+                                Plan_Campaign_Program_Tactic ObjpcpCost = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId == tacticId).SingleOrDefault();
+                                var totalTacticCostValues = db.Plan_Campaign_Program_Tactic_Cost.Where(pcost => pcost.PlanTacticId == tacticId).ToList();
+                                if (totalTacticCostValues.Count > 0)
+                                {
+                                    ObjpcpCost.Cost = totalTacticCostValues.Sum(a => a.Value);
+                                    db.Entry(ObjpcpCost).State = EntityState.Modified;
+                                    db.SaveChanges();
+                                }
+
                                 ////End - Added by : Mitesh Vaishnav on 25-06-2014    for PL ticket 554 Home & Plan Pages: Program and Campaign Blocks are not covering newly added Tactic.
 
                                 //result = TacticValueCalculate(pcpobj.PlanProgramId); // Commented by Dharmraj for PL #440
@@ -4070,14 +4080,12 @@ namespace RevenuePlanner.Controllers
                                         objNewLineitem.CreatedBy = Sessions.User.UserId;
                                         objNewLineitem.CreatedDate = DateTime.Now;
                                         db.Entry(objNewLineitem).State = EntityState.Added;
-                                        db.SaveChanges();
                                     }
                                     else
                                     {
                                         objOtherLineItem.IsDeleted = false;
                                         objOtherLineItem.Cost = diffCost;
                                         db.Entry(objOtherLineItem).State = EntityState.Modified;
-                                        db.SaveChanges();
                                     }
                                 }
                                 else
@@ -4092,11 +4100,20 @@ namespace RevenuePlanner.Controllers
                                         List<Plan_Campaign_Program_Tactic_LineItem_Actual> objOtherActualCost = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
                                         objOtherActualCost = objOtherLineItem.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList();
                                         objOtherActualCost.ForEach(oal => db.Entry(oal).State = EntityState.Deleted);
-                                        db.SaveChanges();
                                     }
                                 }
                                 // End Added by dharmraj for ticket #644
 
+                                //Added By Kalpesh Sharma : #752 Update line item cost with the total cost from the monthly/quarterly allocation
+                                Plan_Campaign_Program_Tactic ObjpcpCost = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(form.PlanTacticId)).SingleOrDefault();
+                                var totalTacticCostValues = db.Plan_Campaign_Program_Tactic_Cost.Where(pcost => pcost.PlanTacticId.Equals(form.PlanTacticId)).ToList();
+                                if (totalTacticCostValues.Count > 0)
+                                {
+                                    ObjpcpCost.Cost = totalTacticCostValues.Sum(a => a.Value);
+                                    db.Entry(ObjpcpCost).State = EntityState.Modified;
+                                }
+                                db.SaveChanges();
+                                
                                 //result = TacticValueCalculate(pcpobj.PlanProgramId); // Modified by Dharmraj for PL #440
                                 if (result >= 1)
                                 {
@@ -4809,6 +4826,16 @@ namespace RevenuePlanner.Controllers
                                     }
 
                                     db.SaveChanges();
+
+                                    //Added By Kalpesh Sharma : #752 Update line item cost with the total cost from the monthly/quarterly allocation
+                                    Plan_Campaign_Program_Tactic_LineItem ObjLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(pcp => pcp.PlanLineItemId == lineitemId).SingleOrDefault();
+                                    var totalLineitemCostValues = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcost => pcost.PlanLineItemId == lineitemId).ToList();
+                                    if (totalLineitemCostValues.Count > 0)
+                                    {
+                                        ObjLineItem.Cost = totalLineitemCostValues.Sum(a => a.Value);
+                                        db.Entry(ObjLineItem).State = EntityState.Modified;
+                                        db.SaveChanges();   
+                                    }
                                 }
                                 scope.Complete();
                                 return Json(new { redirect = Url.Action("Assortment", new { campaignId = cid, programId = pid, tacticId = tid }) });
@@ -4991,6 +5018,16 @@ namespace RevenuePlanner.Controllers
                                         }
 
                                         db.SaveChanges();
+                                    
+                                        //Added By Kalpesh Sharma : #752 Update line item cost with the total cost from the monthly/quarterly allocation
+                                        Plan_Campaign_Program_Tactic_LineItem ObjLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(pcp => pcp.PlanLineItemId == form.PlanLineItemId).SingleOrDefault();
+                                        var totalLineitemCostValues = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcost => pcost.PlanLineItemId == form.PlanLineItemId).ToList();
+                                        if (totalLineitemCostValues.Count > 0)
+                                        {
+                                            ObjLineItem.Cost = totalLineitemCostValues.Sum(a => a.Value);
+                                            db.Entry(ObjLineItem).State = EntityState.Modified;
+                                            db.SaveChanges();
+                                        }    
                                     
                                     scope.Complete();
                                     if (!string.IsNullOrEmpty(CalledFromBudget))
