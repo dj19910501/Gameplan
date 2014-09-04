@@ -309,6 +309,7 @@
         var hdnYear = @ViewBag.Year
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        $('.priceValueAllowNull').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
 
         //if (isredirect == 'True') {   // Commented by Sohel Pathan on 08/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
         $("#t_startdate").val($("#t_startdate").val().split(' ')[0]);
@@ -831,8 +832,12 @@
 
     $('.budget-section').find('input').not('.unallocated-text').each(function () {
         $(this).keyup(function () {
-            if ($(this).val().trim() != '') {
-                var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
+                //Modified By Kalpesh Sharma #761 CAMPAIGNS View: Campaign/Plan Budget field is clearing Remaining Budget/Remaining
+                var GetCurrentvalue = $(this).val().trim();
+                if (GetCurrentvalue == '') {
+                    GetCurrentvalue = '0';
+                }
+                var currentValue = GetCurrentvalue.replace(/,/g, '').replace('$', '');
                 if (currentValue.match('^(0|[1-9][0-9]*)$')) {
 
                     var OldBudgetValue = parseInt($(this).attr("ov"));
@@ -870,7 +875,6 @@
                     }
                     $("#lblTotalAllocated").html(FormatCommasBudget(TotalallocationValue.toString(), false, true));
                     calculateUnallocatedBudget();
-                }
             }
         });
     });

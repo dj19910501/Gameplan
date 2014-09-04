@@ -38,7 +38,8 @@
             clearSufix: false,
 			allowNegative: false,
 			insertPlusSign: false,
-			isDouble: false
+			isDouble: false,
+            isAllowNull: false
 		};
 
 		var options = $.extend(defaults, options);
@@ -62,6 +63,8 @@
 			var allowNegative = options.allowNegative;
 			var insertPlusSign = options.insertPlusSign;
 			var isDouble = options.isDouble;
+			var isAllowNull = options.isAllowNull;
+
 			
 			// If insertPlusSign is on, it automatic turns on allowNegative, to work with Signs
 			if (insertPlusSign) allowNegative = true;
@@ -102,11 +105,11 @@
 			// format as price
 			function price_format (str)
 			{
-                // Start - Added by Sohel Pathan on 02/09/2014 for PL ticket #742
-                var iszero = false;
-                if (str == '0' || (prefix != '' && str == prefix + '0') || (suffix && str == '0' + suffix)) {
-                    iszero = true;
-                }
+			    // Start - Added by Sohel Pathan on 02/09/2014 for PL ticket #742
+			    var iszero = false;
+			        if (str == '0' || (prefix != '' && str == prefix + '0') || (suffix && str == '0' + suffix)) {
+			            iszero = true;
+			    }
 			    // End - Added by Sohel Pathan on 02/09/2014 for PL ticket #742
 				// formatting settings
 				var formatted = fill_with_zeroes(to_numbers(str));
@@ -173,8 +176,10 @@
 					}
 				}
 			    // Start - Added by Sohel Pathan on 02/09/2014 for PL ticket #742
-                if (formatted == '0') {
-                    if (!iszero) formatted = '';
+				if (formatted == '0') {
+				    if (isAllowNull) {
+				        if (!iszero) formatted = '';
+				    }
                 }
                 if (formatted != '') {
                 // End - Added by Sohel Pathan on 02/09/2014 for PL ticket #742

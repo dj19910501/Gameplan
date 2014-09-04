@@ -4576,10 +4576,11 @@ namespace RevenuePlanner.Controllers
                     LineItemActual = lstMonthly.Select(m => new
                     {
                         period = m,
-                        Cost = (db.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList().Where(lta => lta.PlanLineItemId == pcpt.PlanLineItemId && lta.Period == m).Select(ltai => new
-                        {
-                             actualValue = ltai.Value,
-                        })).Sum(s=>s.actualValue)
+                        //Cost = (db.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList().Where(lta => lta.PlanLineItemId == pcpt.PlanLineItemId && lta.Period == m).Select(ltai => new
+                        //{
+                        //     actualValue = ltai.Value,
+                        //})).Sum(s=>s.actualValue)
+                        Cost = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lta => lta.PlanLineItemId == pcpt.PlanLineItemId && lta.Period == m).Select(ltai =>ltai.Value)
                     }),
                 })
             });
