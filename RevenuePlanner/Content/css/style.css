@@ -5122,7 +5122,7 @@ span.red-arrow-down-icon {
 }
 
 input::-moz-placeholder {
-    color: #4D4D4D;
+    color: #4D4D4D !important;
 }
 
 .height22 {
