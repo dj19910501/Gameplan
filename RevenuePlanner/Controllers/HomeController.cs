@@ -2928,7 +2928,7 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.IsTacticEditable = false;
             }
-            ViewBag.LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == id && l.IsDeleted == false).ToList();
+            ViewBag.LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == id && l.IsDeleted == false).OrderByDescending(l=>l.PlanLineItemId).ToList();
             return PartialView("Actual");
         }
 

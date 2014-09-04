@@ -4,6 +4,7 @@
     bool IsTacticEditable = (bool)ViewBag.IsTacticEditable;
     var lineItemList = ViewBag.LineItemList as List<RevenuePlanner.Models.Plan_Campaign_Program_Tactic_LineItem>;
     string planLineItemIds = string.Empty;
+    string MQlTitle = string.Empty;
 }
 <style type="text/css">
     .disabled-row >th {
@@ -51,6 +52,7 @@
                             else if (s.ToLower() == Common.StageCodeMQL)
                             {
                                 stageLable = Html.LabelForMQL(s);
+                                MQlTitle = stageLable;
                             }
                             else if (s.ToLower() == Common.StageCodeCW)
                             {
@@ -95,7 +97,7 @@
                              }
                              else
                              {
-                                 <th class="border-r font3F3F3F " id="@costIds">
+                                 <th class="border-r font3F3F3F currency_dollar text-align-right" id="@costIds">
                                      
                                      
                             </th>
@@ -109,7 +111,7 @@
                             planLineItemIds += item.PlanLineItemId + ",";
                             string rawId="trLine"+item.PlanLineItemId;
                              <tr class="height42 lines" id="@rawId">
-                        <th class="font3F3F3F actual-popup-tile">@item.Title</th>
+                        <th class="font3F3F3F actual-popup-tile" title="@item.Title">@item.Title</th>
                                  @for (int j = 1; j <= 12; j++)
                         {
                             string lineItemIds = @item.PlanLineItemId+"-Y" + j;
@@ -182,7 +184,7 @@
                     </tr>
                     <tr class="height42">
                         <th id="cP" class="text-align-right projected font908D88 ActualsFormater">@tacticActual.Cost</th>
-                        <th class="border-r font3F3F3F text-align-right" id="lblTotalCost">0
+                        <th class="border-r font3F3F3F text-align-right ActualsFormater" id="lblTotalCost">0</th>
                             @*<input id="lblTotalCost" class="backgroundC6EBF3 font3F3F3F text-align-right width75px currency_dollar" placeholder="- - -" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" value="@tacticActual.CostActual"></th>*@
                     </tr>
                      @if (lineItemList.Count > 0)
@@ -193,7 +195,7 @@
                             string projectedId="lblProjected-"+item.PlanLineItemId;
                             string totalId = "lblTotal-" + item.PlanLineItemId;
                              <tr class="height42">
-                        <th id="@projectedId" class="text-align-right height22 projected padding-bottom9 font908D88 ActualsFormater">@item.Cost</th>
+                        <th id="@projectedId" class="text-align-right height22 projected padding-bottom9 font908D88 ActualsFormater">$@item.Cost</th>
                         <th id="@totalId" class="border-r font3F3F3F text-align-right ActualsFormater"></th>
                     </tr>
                         }
@@ -299,12 +301,14 @@
                     $("#" + LineItemActual[i].PlanLineItemId + "-" + LineItemActual[i].Period).attr('ov', LineItemActual[i].Value);
                    
                    //Calculation for sum of month wise total cost
-                    if ($("#Cost-" + LineItemActual[i].Period).text().trim()!='') {
-                        var costForMonth =parseFloat($("#Cost-" + LineItemActual[i].Period).text());
-                        $("#Cost-" + LineItemActual[i].Period).text(costForMonth + parseFloat(LineItemActual[i].Value));
+                    if (ReplaceCC($("#Cost-" + LineItemActual[i].Period).text()) != '') {
+                        var costForMonth = parseFloat(ReplaceCC($("#Cost-" + LineItemActual[i].Period).text()));
+                        var finalCost = costForMonth + parseFloat(LineItemActual[i].Value);
+                        $("#Cost-" + LineItemActual[i].Period).text(FormatCurrency(finalCost.toString(),false));
                     }
                     else {
-                        $("#Cost-" + LineItemActual[i].Period).text(parseFloat(LineItemActual[i].Value));
+                        var finalCost = parseFloat(LineItemActual[i].Value);
+                        $("#Cost-" + LineItemActual[i].Period).text(FormatCurrency(finalCost.toString(),false));
                     }
                     
                 }
@@ -328,6 +332,7 @@
                             document.getElementById("lblTotal-" + ids[i].toString()).innerHTML = totalLineCost;
 
                             document.getElementById("lblTotal-" + ids[i].toString()).innerHTML = FormatCurrency(document.getElementById("lblTotal-" + ids[i].toString()).innerHTML, false);
+                            $("#lblTotal-" + ids[i].toString()).attr('ov', totalLineCost.toString());
                         }
                     }
                 }
@@ -337,8 +342,9 @@
         $('.lines').find('input').each(function () {
             $(this).keyup(function () {
                 
-                if ($(this).val().trim() != '') {
+                
                     var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
+                currentValue = currentValue == '' ? "0" : currentValue;
                     if (currentValue.match('^(0|[1-9][0-9]*)$')) {
                         
                         /*Start - Actual cost total month wise*/
@@ -346,34 +352,41 @@
                         var totalcost = 0;
                         var oldMonthTotalCost = 0;
                         var parentTotalCost = 0;
-                        if ($("#Cost-" + arr[1]).text().trim() != '') {
-                            oldMonthTotalCost = parseFloat($("#Cost-" + arr[1]).text());
+                        if (ReplaceCC($("#Cost-" + arr[1]).text()) != '') {
+                            
+                            oldMonthTotalCost = parseFloat(ReplaceCC($("#Cost-" + arr[1]).text()));
                         }
                         var oldValue = 0;
                         if ($(this).attr('ov') != '' && typeof $(this).attr('ov') != 'undefined') {
                             oldValue =parseFloat($(this).attr('ov'));
                         }
+                        
                         totalcost = (oldMonthTotalCost + parseFloat(currentValue)) - oldValue;
-                        $("#Cost-" + arr[1]).text(totalcost.toString());
-                        if ($("#lblTotalCost").text().trim() != '') {
-                            parentTotalCost = parseFloat($("#lblTotalCost").text().trim().replace(/,/g, '').replace('$', ''));
+                        
+                        $("#Cost-" + arr[1]).text(FormatCurrency(totalcost.toString(),false));
+                        if ($("#lblTotalCost").attr('ov') != '') {
+                            parentTotalCost = parseFloat($("#lblTotalCost").attr('ov'));
                         }
                         parentTotalCost = (parentTotalCost + parseFloat(currentValue)) - oldValue;
-                        $("#lblTotalCost").text(FormatCurrency(parentTotalCost.toString(), false));
+                        
+                        $("#lblTotalCost").html(FormatCurrency(parentTotalCost.toString(), false));
+                        $("#lblTotalCost").attr('ov', parentTotalCost.toString());
+                        SetBudget('#lblTotalCost');
                         /*End - Actual cost total month wise*/
                         /*start Actual cost Total lineItem wise*/
                         var oldLineItemTotal = 0;
                         var TotalLineItemValue = 0;
                        
-                        if ($("#lblTotal-" + arr[0]).text().trim() != '') {
-                            oldLineItemTotal = parseFloat($("#lblTotal-" + arr[0]).text().trim().replace(/,/g, '').replace('$', ''));
+                        if ($("#lblTotal-" + arr[0]).attr('ov') != '') {
+                            oldLineItemTotal = parseFloat($("#lblTotal-" + arr[0]).attr('ov'));
                         }
                         TotalLineItemValue = (oldLineItemTotal + parseFloat(currentValue)) - oldValue;
                         $("#lblTotal-" + arr[0]).text(FormatCurrency(TotalLineItemValue.toString(),false));
+                        $("#lblTotal-" + arr[0]).attr('ov', TotalLineItemValue.toString());
+                        SetBudget("#lblTotal-" + arr[0]);
                         /*End Actual cost Total lineItem wise*/
                         $(this).attr('ov', currentValue);
-
-                    }
+                        calculateRIO();
                 }
 
             });
@@ -403,6 +416,8 @@
                 });
             }
             $("#lblTotalCost").html(FormatCurrency(cost.toString(), false));
+            $("#lblTotalCost").attr('ov', cost.toString());
+            calculateRIO();
         }
         /*End Added by Mitesh Vaishnav for PL ticket #695*/
         function fillTacticActualTable() {
@@ -415,8 +430,8 @@
             }
         }
         function getLoadActual() {
-            $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
-            $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
+            $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+            $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
 
             document.getElementById('inqP').innerHTML = FormatCommas(document.getElementById('inqP').innerHTML, false);
             document.getElementById('lblTotalProjectedStageValue').innerHTML = FormatCommas(document.getElementById('lblTotalProjectedStageValue').innerHTML, false);
@@ -435,6 +450,7 @@
 
             document.getElementById('cP').innerHTML = FormatCurrency(document.getElementById('cP').innerHTML, false);
             document.getElementById('lblTotalCost').innerHTML = FormatCurrency(document.getElementById('lblTotalCost').innerHTML, false);
+
 
             var pcost = parseFloat(ReplaceCC(document.getElementById('cP').innerHTML));
             if (pcost != 0 && !isNaN(pcost)) {
@@ -501,10 +517,13 @@
                                 totalvalue = cvalue + parseFloat(totalvalue);
                             }
                         });
-                        if (arr[0] == 'Revenue') {
+                        if (arr[0] == 'Revenue' || arr[0]=='Cost') {
                             document.getElementById(ida).innerHTML = totalvalue;
                             document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, false);
                             SetBudget('#' + ida);    // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
+                            if (arr[0] == 'Cost') {
+                                $("#" + ida).attr('ov',totalvalue.toString());
+                            }
                         }
                         else {
                             $('#hdn' + ida.toString()).val(totalvalue); // Added by Sohel Pathan on 27/08/2014 for Internal Review Points
@@ -533,12 +552,12 @@
                 $("#roiP").text(roip.toFixed(2));
             }
 
-            //pcost = parseFloat(ReplaceCC($("#lblTotalCost").val()));
-            //if (pcost != 0 && !isNaN(pcost)) {
-            //    var prevenue = parseFloat(ReplaceCC($("#lblTotalRevenue").text()));
-            //    var roiT = (prevenue - pcost) / pcost;
-            //    $("#roiT").text(roiT.toFixed(2));
-            //}
+            pcost = parseFloat(ReplaceCC($("#lblTotalCost").attr('ov')));
+            if (pcost != 0 && !isNaN(pcost)) {
+                var prevenue = parseFloat(ReplaceCC($("#lblTotalRevenue").text()));
+                var roiT = (prevenue - pcost) / pcost;
+                $("#roiT").text(roiT.toFixed(2));
+            }
         }
 
         $("#btnUploadResult").click(function () {
@@ -577,7 +596,7 @@
 
                     var arr = (this).id.split('-');
                     var thisValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
-                    if (thisValue != '') {
+                    if (thisValue != 0) {
                             if (!$(this).parent().parent().hasClass('lines')) {
 
                         _tactic.push({
@@ -624,7 +643,7 @@
             }
             if (parseFloat(totalMQLActual) > parseFloat(totalProjectedStageValueActual)) {
                 var msg = "@RevenuePlanner.Helpers.Common.objCached.ValidationForMqlGreaterThanINQ"
-                var msgdisplay = msg.replace('{0}', totalMQLActual).replace('{1}', '@ViewBag.TacticStageTitle').replace('{3}', '@ViewBag.TacticStageTitle').replace('{2}', totalProjectedStageValueActual);
+                var msgdisplay = msg.replace('{0}', totalMQLActual).replace('{1}', '@ViewBag.TacticStageTitle').replace('{3}', '@ViewBag.TacticStageTitle').replace('{2}', totalProjectedStageValueActual).replace(/{4\}/g, '@MQlTitle');
                 $("#spanMessageError").text(msgdisplay);
                 $("#errorMessage").css("display", "block");
                 var topsize = $(document).scrollTop() + 41;
