@@ -322,11 +322,10 @@
                 if ('@planLineItemIds' != '') {
                     var ids = '@planLineItemIds'.split(',');
                     if (ids.length > 0) {
-                        var totalLineCost = 0;
-                        for (i in ids) {
-                            for (var j = 1; j <= 12; j++) {
 
-                            }
+                        for (var i = 0; i < ids.length; i++) {
+                        var totalLineCost = 0;
+
                             $("#trLine" + ids[i].toString()).find('input').each(function () {
                                 if ($(this).val().trim() != '') {
                                     var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
@@ -335,13 +334,17 @@
                                     }
                                 }
                             });
+
                             document.getElementById("lblTotal-" + ids[i].toString()).innerHTML = totalLineCost;
 
                             document.getElementById("lblTotal-" + ids[i].toString()).innerHTML = FormatCurrency(document.getElementById("lblTotal-" + ids[i].toString()).innerHTML, false);
                             $("#lblTotal-" + ids[i].toString()).attr('ov', totalLineCost.toString());
+
+
                         }
                     }
                 }
+                //End Calculation for sum of total line item's cost
             }
         }
         //when line item's input value will be changed,It will affect to total cost and month wise cost
