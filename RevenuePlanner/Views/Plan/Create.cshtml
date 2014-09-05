@@ -1144,7 +1144,7 @@
                 data: { planId: planId, allocatedBy: $('#AllocatedBy').val() },
                 success: function (data) {
                     if (data.status == 1) {
-                        if (data.planBudgetAllocationList != 'undefined')
+                        if (typeof data.planBudgetAllocationList != 'undefined')    // Modified by Sohel Pathan on 05/09/2014 for PL ticket #642
                         {
                             if (data.planBudgetAllocationList.length > 0)
                             {
@@ -1155,20 +1155,21 @@
                                     var i;
                                     for (i = 1; i <= 12; i++)
                                     {
-                                        var allocatedAmount = data.planBudgetAllocationList[i - 1].Value.toString();
+                                        // Start - Modified by Sohel Pathan on 05/09/2014 for PL ticket #642
+                                        var allocatedAmount = data.planBudgetAllocationList[i - 1].budgetValue.toString();
                                         // Modified by Dharmraj to handle case were user update empty or zero allocation value.
                                         //if (parseInt(allocatedAmount) > 0) {
-                                            $('#M' + data.planBudgetAllocationList[i - 1].Period.toString()).val(FormatCommas(allocatedAmount, false));
-                                            $('#M' + data.planBudgetAllocationList[i - 1].Period.toString()).attr('oldValue', FormatCommas(allocatedAmount, false));
+                                        $('#M' + data.planBudgetAllocationList[i - 1].periodTitle.toString()).val(FormatCommas(allocatedAmount, false));
+                                        $('#M' + data.planBudgetAllocationList[i - 1].periodTitle.toString()).attr('oldValue', FormatCommas(allocatedAmount, false));
                                         //}
                                         //else {
-                                            //$('#M' + data.planBudgetAllocationList[i - 1].Period.toString()).attr('oldValue', '');
+                                        //$('#M' + data.planBudgetAllocationList[i - 1].periodTitle.toString()).attr('oldValue', '');
                                         //}
-                                        if (data.planCampaignBudgetAllocationList != 'undefined') {
-                                            if (data.planCampaignBudgetAllocationList.length > 0) {
-                                                var campaignAllocatedAmount = data.planCampaignBudgetAllocationList[i - 1].Value.toString();
+                                        //if (data.planCampaignBudgetAllocationList != 'undefined') {
+                                            //if (data.planCampaignBudgetAllocationList.length > 0) {
+                                                var campaignAllocatedAmount = data.planBudgetAllocationList[i - 1].campaignMonthlyBudget.toString();
                                                 if (parseInt(campaignAllocatedAmount) > 0) {
-                                                    $('#hdnM' + data.planCampaignBudgetAllocationList[i - 1].Period.toString()).val(campaignAllocatedAmount);
+                                                    $('#hdnM' + data.planBudgetAllocationList[i - 1].periodTitle.toString()).val(campaignAllocatedAmount);
                                                 }
                                                 if (i == 1) {
                                                     $('#spnCampaignAllocatedBudget').html(FormatCurrency($('#hdnMY' + i).val(), false));
@@ -1188,8 +1189,9 @@
                                                 else {
                                                     $('#MY' + i).removeClass('campaignBudgetError');
                                                 }
-                                            }
-                                        }
+                                            //}
+                                        //}
+                                        // End - Modified by Sohel Pathan on 05/09/2014 for PL ticket #642
                                         $('#MY' + i).addClass('myValue-budget');
                                     }
 
@@ -1198,43 +1200,47 @@
                                     checkBudgetDifference(allocatedBudget, $('#divMonthlyBudget'));
                                 }
                                 else if ($('#AllocatedBy').val().toLowerCase() == '@Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower()') {
-                                    var i;
-                                    for (i = 1; i <= 12; i++) {
-                                        var allocatedAmount = data.planBudgetAllocationList[i - 1].Value.toString();
+                                    // Start - Modified by Sohel Pathan on 05/09/2014 for PL ticket #642
+                                    //var i;
+                                    var r = data.planBudgetAllocationList;
+                                    //for (i = 1; i <= 12; i = i++) {
+                                    for (i in r) {
+                                        var allocatedAmount = r[i].budgetValue.toString();
                                         // Modified by Dharmraj to handle case were user update empty or zero allocation value.
                                         //if (parseInt(allocatedAmount) > 0) {
-                                            $('#Q' + data.planBudgetAllocationList[i - 1].Period.toString()).val(FormatCommas(allocatedAmount, false));
-                                            $('#Q' + data.planBudgetAllocationList[i - 1].Period.toString()).attr('oldValue', FormatCommas(allocatedAmount, false));
+                                        $('#Q' + r[i].periodTitle.toString()).val(FormatCommas(allocatedAmount, false));
+                                        $('#Q' + r[i].periodTitle.toString()).attr('oldValue', FormatCommas(allocatedAmount, false));
                                         //}
                                         //else {
-                                            //$('#Q' + data.planBudgetAllocationList[i - 1].Period.toString()).attr('oldValue', '');
+                                        //$('#Q' + data.planBudgetAllocationList[i - 1].periodTitle.toString()).attr('oldValue', '');
                                         //}
-                                        if (data.planCampaignBudgetAllocationList != 'undefined') {
-                                            if (data.planCampaignBudgetAllocationList.length > 0) {
-                                                var campaignAllocatedAmoount = data.planCampaignBudgetAllocationList[i - 1].Value.toString();
-                                                if (parseInt(campaignAllocatedAmoount) > 0) {
-                                                    $('#hdnQ' + data.planCampaignBudgetAllocationList[i - 1].Period.toString()).val(campaignAllocatedAmoount);
+                                        //if (data.planCampaignBudgetAllocationList != 'undefined') {
+                                            //if (data.planCampaignBudgetAllocationList.length > 0) {
+                                                var campaignAllocatedAmount = r[i].campaignMonthlyBudget.toString();
+                                                if (parseInt(campaignAllocatedAmount) > 0) {
+                                                    $('#hdnQ' + r[i].periodTitle.toString()).val(campaignAllocatedAmount);
                                                 }
-                                                if (i == 1) {
-                                                    $('#spnCampaignAllocatedBudget').html(FormatCurrency($('#hdnQY' + i).val(), false));
+                                                if (r[i].periodTitle.toString() == "Y1") {
+                                                    $('#spnCampaignAllocatedBudget').html(FormatCurrency($('#hdnQY1').val(), false));
 
-                                                    if (parseInt(campaignAllocatedAmoount) > parseInt(allocatedAmount)) {
+                                                    if (parseInt(campaignAllocatedAmount) > parseInt(allocatedAmount)) {
                                                         $("#spnCampaignAllocatedBudget").addClass('error-text');
                                                     }
                                                     else {
                                                         $("#spnCampaignAllocatedBudget").removeClass('error-text');
                                                     }
-                                                    $('#QY' + i).addClass('border000000');
+                                                    $('#QY1').addClass('border000000');
                                                 }
-                                                if (parseInt(campaignAllocatedAmoount) > parseInt(allocatedAmount)) {
-                                                    $('#QY' + i).addClass('campaignBudgetError');
+                                                if (parseInt(campaignAllocatedAmount) > parseInt(allocatedAmount)) {
+                                                    $('#Q' + r[i].periodTitle.toString()).addClass('campaignBudgetError');
                                                 }
                                                 else {
-                                                    $('#QY' + i).removeClass('campaignBudgetError');
+                                                    $('#Q' + r[i].periodTitle.toString()).removeClass('campaignBudgetError');
                                                 }
-                                            }
-                                        }
-                                        $('#QY' + i).addClass('myValue-budget');
+                                            //}
+                                        //}
+                                        $('#Q' + r[i].periodTitle.toString()).addClass('myValue-budget');
+                                        // End - Modified by Sohel Pathan on 05/09/2014 for PL ticket #642
                                     }
                                     
                                     var allocatedBudget = calculateAllocatedBudgetQuarterly();

@@ -350,4 +350,20 @@ namespace RevenuePlanner.Models
         public double ADSValue { get; set; }
     }
 
+    /// <summary>
+    /// Added By : Sohel Pathan
+    /// Added Date : 26/08/2014
+    /// Purpose : To prepare return list for the Plan, Campaign, Program, Tactic and LineItem Budget/Cost list
+    /// to address PL ticket #642, #758 and #759
+    /// </summary>
+    public class PlanBudgetAllocationValue
+    {
+        public string periodTitle { get; set; }
+        public string budgetValue { get; set; }
+        public double campaignMonthlyBudget { get; set; }
+        public double programMonthlyBudget { get; set; }
+        public double remainingMonthlyBudget { get; set; }
+        public string costValue { get; set; }
+        public double remainingMonthlyCost { get; set; }
+    }
 }
