@@ -243,7 +243,7 @@
         
         <div class="content dark inline-ellipsis cf">
             <div class="cf width100">
-                <div class="width65px margin-right20 pull-left">
+                <div class="width65px margin-right20 pull-left" style="width:22%">
                     @*<label title="@Html.LabelForINQ("INQ")">@Html.LabelForINQ("INQ")</label>*@
 
                     <label id="lblStageTitle" title="@Model.StageTitle">@Model.StageTitle &nbsp;
@@ -257,7 +257,7 @@
                     @Html.TextBoxFor(model => model.ProjectedStageValue, new { placeholder = "0", id = "txtProjectedStageValue", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
                 </div>
 
-                <div class="width65px margin-right20 pull-left">
+                <div class="width65px margin-right20 pull-left"  style="width:22%">
                     <label title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</label>
                     @*@Html.TextBoxFor(model => model.MQLs, new { placeholder = "0", id = "txtmql", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @readonly = "true" })*@
                     <input type="text" value="@Model.MQLs" readonly="true" id = "txtmql" />
@@ -268,7 +268,7 @@
                     @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", id = "txtCost", @class = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                 </div>*@
 
-                <div class="width65px pull-left">
+                <div class="width65px pull-left"  style="width:42%">
                     <label title="Revenue">Revenue</label>
                     @Html.TextBoxFor(model => model.Revenue, new { placeholder = "$0", id = "txtRevenue", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                 </div>
@@ -378,9 +378,11 @@
         if ('@TempData["TacticMQL"]' == "N/A") {
             $("#txtmql").removeClass("priceValue");
             $("#txtmql").val("N/A");
+            $("#txtmql").attr('title','N/A');
         }
         else {
             $("#txtmql").val(FormatCommas($("#txtmql").val(), false));
+            $("#txtmql").attr('title', FormatCommas($("#txtmql").val(), false));
         }
 
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
@@ -571,11 +573,13 @@
                     success: function (data) {
                         if (data.mql == 'N/A') {
                             $("#txtmql").val(data.mql);
+                            $("#txtmql").attr("title", data.mql);
                             $("#txtmql").removeClass('priceValue');
                         }
                         else {
                             mqlConversion = data.mql;
                             $("#txtmql").val(FormatCommas(mqlConversion.toString(), false));
+                            $("#txtmql").attr("title", FormatCommas(mqlConversion.toString(), false));
                         }
                         // Added by dharmraj on 4-sep-2014, #760 Advanced budgeting – show correct revenue in Tactic fly out
                         $("#txtRevenue").val(data.revenue);
@@ -744,9 +748,11 @@
             $("#txtProjectedStageValue").val(ReplaceCC($("#txtProjectedStageValue").val()));
             if ($("#txtmql").val() == 'N/A') {
                 $("#txtmql").val(0);
+                $("#txtmql").attr("title","0");
             }
             else {
                 $("#txtmql").val(ReplaceCC($("#txtmql").val()));
+                $("#txtmql").attr("title", ReplaceCC($("#txtmql").val()));
             }
 
             $("#TacticCost").val(ReplaceCC($("#TacticCost").val()));    // Modified by Sohel Pathan on 12/08/2014 for PL ticket #605
