@@ -97,7 +97,7 @@
                              }
                              else
                              {
-                                 <th class="border-r font3F3F3F currency_dollar text-align-right" id="@costIds">
+                                 <th class="border-r font3F3F3F text-align-right" ov="0" id="@costIds">- - - 
                                      
                                      
                             </th>
@@ -301,14 +301,20 @@
                     $("#" + LineItemActual[i].PlanLineItemId + "-" + LineItemActual[i].Period).attr('ov', LineItemActual[i].Value);
                    
                    //Calculation for sum of month wise total cost
-                    if (ReplaceCC($("#Cost-" + LineItemActual[i].Period).text()) != '') {
-                        var costForMonth = parseFloat(ReplaceCC($("#Cost-" + LineItemActual[i].Period).text()));
+                    if ($("#Cost-" + LineItemActual[i].Period).attr('ov') != '') {
+                        var costForMonth = parseFloat($("#Cost-" + LineItemActual[i].Period).attr('ov'));
                         var finalCost = costForMonth + parseFloat(LineItemActual[i].Value);
                         $("#Cost-" + LineItemActual[i].Period).text(FormatCurrency(finalCost.toString(),false));
+                        $("#Cost-" + LineItemActual[i].Period).attr('ov', finalCost.toString());
+                        SetBudget("#Cost-" + LineItemActual[i].Period);
+                       
                     }
                     else {
                         var finalCost = parseFloat(LineItemActual[i].Value);
                         $("#Cost-" + LineItemActual[i].Period).text(FormatCurrency(finalCost.toString(),false));
+                        $("#Cost-" + LineItemActual[i].Period).attr('ov', finalCost.toString());
+                        SetBudget("#Cost-" + LineItemActual[i].Period);
+                        
                     }
                     
                 }
@@ -347,14 +353,14 @@
                 currentValue = currentValue == '' ? "0" : currentValue;
                     if (currentValue.match('^(0|[1-9][0-9]*)$')) {
                         
-                        /*Start - Actual cost total month wise*/
+                        /*Start - Total of line item actuals for month*/
                         var arr = $(this).attr('id').split('-')
                         var totalcost = 0;
                         var oldMonthTotalCost = 0;
                         var parentTotalCost = 0;
-                        if (ReplaceCC($("#Cost-" + arr[1]).text()) != '') {
+                        if (ReplaceCC($("#Cost-" + arr[1]).attr('ov')) != '') {
                             
-                            oldMonthTotalCost = parseFloat(ReplaceCC($("#Cost-" + arr[1]).text()));
+                            oldMonthTotalCost = parseFloat($("#Cost-" + arr[1]).attr('ov'));
                         }
                         var oldValue = 0;
                         if ($(this).attr('ov') != '' && typeof $(this).attr('ov') != 'undefined') {
@@ -364,6 +370,11 @@
                         totalcost = (oldMonthTotalCost + parseFloat(currentValue)) - oldValue;
                         
                         $("#Cost-" + arr[1]).text(FormatCurrency(totalcost.toString(),false));
+                        SetBudget("#Cost-" + arr[1]);
+                        $("#Cost-" + arr[1]).attr('ov', totalcost.toString());
+                        /*End - Total of line item actuals for month*/
+
+                        /*Start Total actual cost*/
                         if ($("#lblTotalCost").attr('ov') != '') {
                             parentTotalCost = parseFloat($("#lblTotalCost").attr('ov'));
                         }
@@ -372,8 +383,8 @@
                         $("#lblTotalCost").html(FormatCurrency(parentTotalCost.toString(), false));
                         $("#lblTotalCost").attr('ov', parentTotalCost.toString());
                         SetBudget('#lblTotalCost');
-                        /*End - Actual cost total month wise*/
-                        /*start Actual cost Total lineItem wise*/
+                        /*End - Total actual cost*/
+                        /*start Particular line item actual cost*/
                         var oldLineItemTotal = 0;
                         var TotalLineItemValue = 0;
                        
@@ -384,7 +395,7 @@
                         $("#lblTotal-" + arr[0]).text(FormatCurrency(TotalLineItemValue.toString(),false));
                         $("#lblTotal-" + arr[0]).attr('ov', TotalLineItemValue.toString());
                         SetBudget("#lblTotal-" + arr[0]);
-                        /*End Actual cost Total lineItem wise*/
+                        /*End Particular line item actual cost*/
                         $(this).attr('ov', currentValue);
                         calculateRIO();
                 }
@@ -395,8 +406,8 @@
             var cost = 0;
             if ('@planLineItemIds' != '') {
                 $("#trCost").find('th').each(function () {
-                    if ($(this).html().trim() != '') {
-                        var currentValue = $(this).html().trim().replace(/,/g, '').replace('$', '');
+                    if ($(this).attr('ov') != '' && typeof $(this).attr('ov') != 'undefined') {
+                        var currentValue = $(this).attr('ov');
                         if (currentValue.match('^(0|[1-9][0-9]*)$')) {
                             cost += parseFloat(currentValue);
                         }
