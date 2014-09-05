@@ -180,7 +180,7 @@
                     </tr>
                     <tr class="height42">
                         <th id="rP" class="text-align-right projected font908D88 ActualsFormater">@tacticActual.Revenues</th>
-                        <th id="lblTotalRevenue" class="border-r font3F3F3F text-align-right ActualsFormater">@tacticActual.RevenuesActual</th>
+                        <th id="lblTotalRevenue" class="border-r font3F3F3F text-align-right ActualsFormater" ov="@tacticActual.RevenuesActual">@tacticActual.RevenuesActual</th>
                     </tr>
                     <tr class="height42">
                         <th id="cP" class="text-align-right projected font908D88 ActualsFormater">@tacticActual.Cost</th>
@@ -521,10 +521,8 @@
                             document.getElementById(ida).innerHTML = totalvalue;
                             document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, false);
                             SetBudget('#' + ida);    // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
-                            if (arr[0] == 'Cost') {
                                 $("#" + ida).attr('ov',totalvalue.toString());
                             }
-                        }
                         else {
                             $('#hdn' + ida.toString()).val(totalvalue); // Added by Sohel Pathan on 27/08/2014 for Internal Review Points
                             document.getElementById(ida).innerHTML = totalvalue;
@@ -554,7 +552,7 @@
 
             pcost = parseFloat(ReplaceCC($("#lblTotalCost").attr('ov')));
             if (pcost != 0 && !isNaN(pcost)) {
-                var prevenue = parseFloat(ReplaceCC($("#lblTotalRevenue").text()));
+                var prevenue = parseFloat(ReplaceCC($("#lblTotalRevenue").attr('ov')));
                 var roiT = (prevenue - pcost) / pcost;
                 $("#roiT").text(roiT.toFixed(2));
             }

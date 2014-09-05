@@ -2884,16 +2884,36 @@ namespace RevenuePlanner.Controllers
             }
             else
                 im.ROI = 0;
-
-            if (im.CostActual > 0)
+            ////Start Modified by Mitesh Vaishnav For PL ticket #695
+            double tacticCostActual = 0;
+            //// Checking whether line item actuals exists.
+            var lineItemListActuals = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lineitemActual => lineitemActual.Plan_Campaign_Program_Tactic_LineItem.PlanTacticId == id &&
+                                                                                            lineitemActual.Plan_Campaign_Program_Tactic_LineItem.IsDeleted == false)
+                                                                                            .ToList();
+            if (lineItemListActuals.Count != 0)
             {
-                im.ROIActual = (im.RevenuesActual - im.CostActual) / im.CostActual;
+                tacticCostActual = lineItemListActuals.ToList().Sum(lineitemActual => lineitemActual.Value);
+            }
+            else
+            {
+                ////If line item actual is not exist for tactic than cost actual will be total of tactic cost actual
+                string costStageTitle=Enums.InspectStage.Cost.ToString();
+                var tacticActualList = db.Plan_Campaign_Program_Tactic_Actual.Where(tacticActual => tacticActual.PlanTacticId == id && tacticActual.StageTitle==costStageTitle)
+                                                                            .ToList();
+                if (tacticActualList.Count != 0)
+                {
+                    tacticCostActual = tacticActualList.Sum(tacticActual => tacticActual.Actualvalue);
+                }
+            }
+            if (tacticCostActual > 0)
+            {
+                im.ROIActual = (im.RevenuesActual - tacticCostActual) / tacticCostActual;
             }
             else
             {
                 im.ROIActual = 0;
             }
-
+            ////End Modified by Mitesh Vaishnav For PL ticket #695
             ViewBag.TacticDetail = im;
             bool isValidUser = true;
             //if (Sessions.IsDirector || Sessions.IsClientAdmin || Sessions.IsSystemAdmin)
@@ -3121,7 +3141,7 @@ namespace RevenuePlanner.Controllers
                                         db.SaveChanges();
 
                             Plan_Campaign_Program_Tactic objPCPT = db.Plan_Campaign_Program_Tactic.Where(pt => pt.PlanTacticId == actualResult.PlanTacticId).SingleOrDefault();
-                            objPCPT.CostActual = actualResult.TotalCostActual;
+                            //objPCPT.CostActual = actualResult.TotalCostActual;
                             objPCPT.ModifiedBy = Sessions.User.UserId;
                             objPCPT.ModifiedDate = DateTime.Now;
                             db.Entry(objPCPT).State = EntityState.Modified;
