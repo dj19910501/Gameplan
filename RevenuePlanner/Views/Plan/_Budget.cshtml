@@ -49,22 +49,22 @@
                             }
                         </tbody>
                         <tbody class="column2">
-                            @Html.PlanMonth(ActivityType.ActivityPlan, plan.ActivityId, plan.Month, plan.ParentMonth, AllocatedBy)
+                            @Html.PlanMonth(ActivityType.ActivityPlan, plan.ActivityId, plan.Month, plan.ParentMonth, AllocatedBy,strTab)
                             @if (strViewBy == "2")
                             {
-                                @Html.ParentMonth(ActivityType.ActivityGeography, plan.ActivityId, Model, AllocatedBy, strViewBy)
+                                @Html.ParentMonth(ActivityType.ActivityGeography, plan.ActivityId, Model, AllocatedBy,strTab, strViewBy)
                             }
                             else if (strViewBy == "1")
                             {
-                                @Html.ParentMonth(ActivityType.ActivityAudience, plan.ActivityId, Model, AllocatedBy, strViewBy)
+                                @Html.ParentMonth(ActivityType.ActivityAudience, plan.ActivityId, Model, AllocatedBy, strTab,strViewBy)
                             }
                             else if (strViewBy == "3")
                             {
-                                @Html.ParentMonth(ActivityType.ActivityVertical, plan.ActivityId, Model, AllocatedBy, strViewBy)
+                                @Html.ParentMonth(ActivityType.ActivityVertical, plan.ActivityId, Model, AllocatedBy, strTab,strViewBy)
                             }
                             else
                             {
-                            @Html.CampaignMonth(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy)
+                            @Html.CampaignMonth(ActivityType.ActivityCampaign, plan.ActivityId, Model, AllocatedBy,strTab)
                                 
                             }
                         </tbody>
