@@ -191,6 +191,8 @@ namespace RevenuePlanner.Models
 		public bool IsActual { get; set; }
 
         public int StageId { get; set; }
+
+        public int PlanLineItemId { get; set; }
 		
     }
 

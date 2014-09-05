@@ -929,7 +929,7 @@
             data: {
                 CampaignId: hdnPlanCampaignId, PlanProgramId: '@Model.PlanProgramId'
             },
-            success: function (data) {
+            success: function (data) {                
                 var r = data.budgetData;
                 if (typeof r != 'undefined') {
                     if (r.length) {
@@ -973,7 +973,10 @@
 
     function calculateUnallocatedBudget() {
         var CampaignBudgetValue = $("#txtProgramBudget").val().trim().replace(/,/g, '').replace('$', '');
-        var CampaignAllocatedBudgetValue = $("#lblTotalAllocated").html().trim().replace(/,/g, '').replace('$', '');
+        var CampaignAllocatedBudgetValue = "0";
+        if (typeof $("#lblTotalAllocated").html() != 'undefined') {
+            CampaignAllocatedBudgetValue = $("#lblTotalAllocated").html().trim().replace(/,/g, '').replace('$', '');
+        }
         var unallocatedBudget = parseInt(CampaignBudgetValue) - parseInt(CampaignAllocatedBudgetValue);
 
         //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
