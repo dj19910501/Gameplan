@@ -544,12 +544,12 @@
             //});
 
             //Format Currency For Actual Cost Input
-            $("input[id^='ActuallblC']").each(function () {
-                $(this).val(FormatCurrency($(this).val(), false));
-                var txtvalue = $(this).val();
-                $(this).attr('title', txtvalue);
-                SetTipsyPrice($(this), txtvalue);
-            });
+            //$("input[id^='ActuallblC']").each(function () {
+            //    $(this).val(FormatCurrency($(this).val(), false));
+            //    var txtvalue = $(this).val();
+            //    $(this).attr('title', txtvalue);
+            //    SetTipsyPrice($(this), txtvalue);
+            //});
 
             $('.currency_dollarCost').each(function () {
                 var txtvalue = $(this).val();
@@ -590,10 +590,64 @@
                                         totalvalue = cvalue + parseFloat(totalvalue);
                                     }
                                 });
+
                                 if (arr[1] == 'Revenue') {
                                     document.getElementById(ida).innerHTML = totalvalue;
                                     document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, false);
                                     SetBudget('#' + ida); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
+                                    $('#' + ida).attr('orignal-value', totalvalue);
+                                }
+
+                                //If Tactic has not any line item at that time application will update the Actual cost and Projected Cost.
+                                else if (arr[1] == 'Cost')
+                                {
+                                    costlbl = $('#tr' + arr[0] + arr[1]).attr('tacticid');
+                                    var updateActalCost = "ActuallblCCost" + costlbl;
+                                    document.getElementById(updateActalCost).innerHTML = totalvalue;
+                                    document.getElementById(updateActalCost).innerHTML = FormatCurrency(document.getElementById(updateActalCost).innerHTML, false);
+                                    SetBudget('#' + updateActalCost);
+                                    $('#' + updateActalCost).attr('orignal-value', totalvalue);
+                                }
+                                else if (arr[1] != 'Revenue' && arr[1] != 'Cost' && arr[1] != 'ProjectedStageValue' && arr[1] != 'MQL' &&
+                                    arr[1] != 'CW' && arr[1] != 'INQ') {
+                                    //Update the Actual Cost and apply currency format.
+                                    document.getElementById(ida).innerHTML = totalvalue;
+                                    document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, false);
+                                    SetBudget('#' + ida); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
+
+                                    //Update the line item for the appropriate Period (Y1,Y2....Y12)
+                                    var ActualsName = 'ActuallblP' + arr[1] + arr[0];
+                                    $('#' + ActualsName).attr('linevalue', totalvalue);
+                                    var lineItemTotal = 0;
+                                    var LineClassName = 'Line-' + arr[2];
+                                    $('.' + LineClassName).each(function () {
+                                        var lineItemvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', ''));
+                                        if (!isNaN(lineItemvalue)) {
+                                            lineItemTotal = lineItemvalue + parseFloat(lineItemTotal);
+                                        }
+                                    });
+
+                                    var lineId = "Cost-" + arr[2];
+                                    document.getElementById(lineId).innerHTML = lineItemTotal;
+                                    document.getElementById(lineId).innerHTML = FormatCurrency(document.getElementById(lineId).innerHTML, false);
+                                    SetBudget('#' + lineId);
+
+                                    //Update the Actual cost value based upon Line item actual sum.
+                                    costlbl = $('#tr' + arr[0] + arr[1]).attr('tacticid');
+                                    var updateActalCost = "ActuallblCCost" + costlbl;
+                                    var updateActalCostValueTotal = 0;
+                                    $('.lineItemActualsValues').each(function () {
+                                        var updateActalCostValue = parseFloat($(this).attr('linevalue').trim().replace(/,/g, '').replace('$', ''));
+                                        if (!isNaN(updateActalCostValue)) {
+                                            updateActalCostValueTotal = updateActalCostValue + parseFloat(updateActalCostValueTotal);
+                                        }
+                                    });
+
+                                    //Update the value and apply currency formatter on it .
+                                    document.getElementById(updateActalCost).innerHTML = updateActalCostValueTotal;
+                                    document.getElementById(updateActalCost).innerHTML = FormatCurrency(document.getElementById(updateActalCost).innerHTML, false);
+                                    SetBudget('#' + updateActalCost);
+                                    $('#' + updateActalCost).attr('orignal-value', updateActalCostValueTotal);
                                 }
                                 else {
                                     $('#hdn' + ida.toString()).val(totalvalue); // Added by Sohel Pathan on 27/08/2014 for Internal Review Points
@@ -617,15 +671,9 @@
                 }
 
                 //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
-                if (IsLineItemActual) {
-                pcost = parseFloat(ReplaceCC($("#ActuallblCCost" + id).val()));
-                }
-                else {
-                    pcost = parseFloat(ReplaceCC($("#ActuallblCCost" + id).text()));
-                }
-
+                pcost = parseFloat(ReplaceCC($("#ActuallblCCost" + id).attr("orignal-value")));
                 if (pcost != 0 && !isNaN(pcost)) {
-                    var prevenue = parseFloat(ReplaceCC($("#ActuallblCRevenue" + id).text()));
+                    var prevenue = parseFloat(ReplaceCC($("#ActuallblCRevenue" + id).attr("orignal-value")));
                     var roiT = (prevenue - pcost) / pcost;
                     $("#ActualROI" + id).text(roiT.toFixed(2));
                 }
@@ -695,7 +743,8 @@
                                 ROI: totalROI,
                                 ROIActual: totalROIActual,
                                 IsActual: true,
-                                StageId: stageId
+                                StageId: stageId,
+                                PlanLineItemId: arr[0]
                             });
                             isData = true;
                         }
@@ -730,7 +779,8 @@
                         ROI: totalROI,
                         ROIActual: totalROIActual,
                         IsActual: false,
-                        StageId: stageId
+                        StageId: stageId,
+                        PlanLineItemId:0 
                     });
                 }
                 $("#errorMessage").css("display", "none");
@@ -902,10 +952,11 @@
             }
 
             //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
-            $html += '<tr id=' + _id + "Cost" + '>';
+            $html += '<tr id=' + "tr" + _id + "Cost" + ' TacticId=' + _id + '>';
             for (var j = 1; j <= 12; j = j + 1) {
                 var newCounterTactic = j - 1;
                 var tdId = _id + "-" + "Cost" + "-Y" + j;
+                var divId = "Cost-Y" + j;
                 $html += '<td>';
                 if (_LineItemsData.length <= 0) {
                     $html += '<input id="' + tdId + '" placeholder="---" '; // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
@@ -914,19 +965,21 @@
                     $html += ' ></input>';
                 }
                 else {
-                    $html += '<div class="table-info-actual-left addFormatterActualCurrency" style="float: right;">' + _costActualData[newCounterTactic].Cost + '</div>';
+                    $html += '<div id="' + divId + '" class="table-info-actual-left addFormatterActualCurrency" style="float: right;">' + _costActualData[newCounterTactic].Cost + '</div>';
                 }
                 $html += '</td>'; }
                 $html += '</tr>';
 
             //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
-            for (var p = 0; p < _LineItemsData.length; p = p + 1) {
-                var idtr = "tr" + _id + _LineItemsData[p].Title;
-                $html += '<tr id=' + idtr + '>';
+                for (var p = 0; p < _LineItemsData.length; p = p + 1) {
+                    var Title = _LineItemsData[p].Title.replace(/ /g, "_");
+                    var idtr = "tr" + _LineItemsData[p].id + Title;
+                $html += '<tr id=' + idtr + ' TacticId='+_id +'>';
                 for (var j = 1; j <= 12; j = j + 1) {
-                    var tdId = _id + "-" + _LineItemsData[p].id + "-Y" + j;
+                    var tdId = _LineItemsData[p].id + "-" + Title + "-Y" + j;
+                    var ClassName = "currency_dollar" + " Line-Y" + j;
                     $html += '<td><input id="' + tdId + '" placeholder="---" '; // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
-                    $html += ' class="currency_dollar"  maxlength="@RevenuePlanner.Helpers.Common.maxLengthPriceValue"';
+                    $html += ' class="' + ClassName + '"  maxlength="@RevenuePlanner.Helpers.Common.maxLengthPriceValue"';
                     
                     var newCounter = j - 1;
                     var Data = _LineItemsData[p].LineItemActual[newCounter];
@@ -1002,7 +1055,7 @@
                                             '<div class="table-info-actual-left truncate addFormatterActualCurrency" id="ProjectedlblValueRevenue' + _id + '">' +
                                                 _revenueProjected +
                                             '</div>' +
-                                            '<div class="table-info-actual-left table-info-actual-width truncate addFormatterActualCurrency" id="ActuallblCRevenue' + _id + '">' +
+                                            '<div orignal-value="' + _revenueActual + '" class="table-info-actual-left table-info-actual-width truncate addFormatterActualCurrency" id="ActuallblCRevenue' + _id + '">' +
                                                 _revenueActual +
                                             '</div>' +
                                         '</div>' +
@@ -1012,31 +1065,24 @@
                                 '<div id="border-right" class="table-info-actual-left-wraper">' +
                                     '<div class="table-info-actual-left truncate addFormatterActualCurrency" id="ProjectedlblCCost' + _id + '">' +
                                         _costProjected +
-                                    '</div>' +
-                                    '<div class="table-info-actual-left " style="float: right;" id="DivActuallblCCost' + _id + '">';
+                                    '</div>' ;
 
             //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
-            if (_LineItemsData.length == 0 ) {
-                $html += '<input placeholder="---" class="currency_dollar truncate addFormatterActualCurrency" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" id="ActuallblCCost' + _id + '" value="' + _costActual + '">' + '</input>';    // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
-            }
-            else
-            {
-                $html += '<span id="ActuallblCCost' + _id + '" class="addFormatterActualCurrency">' + _costActual + '</span>';
-                IsLineItemActual = true;
-            }
+                @*$html += '<input placeholder="---" class="currency_dollar truncate addFormatterActualCurrency" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" id="ActuallblCCost' + _id + '" value="' + _costActual + '">' + '</input>';    // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point*@
+            $html += '<div orignal-value="' + _costActual + '" id="ActuallblCCost' + _id + '" class="table-info-actual-left table-info-actual-width truncate addFormatterActualCurrency">' + _costActual + '</div>';
                            
             $html+=     '</div>' +
-                                '</div>' +
                             '</div>';
 
             //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
             for (line in _LineItemsData) {
+                var Title = _LineItemsData[line].Title.replace(/ /g, "_");
                 $html += '<div class="body-toogle-actual"><span class="inner-lineItem">' + _LineItemsData[line].Title +
                                              '</span><div id="border-right" class="table-info-actual-left-wraper">' +
                                                  '<div class="table-info-actual-left truncate addFormatterActualCurrency" id="lineItemProjectedCost' + _LineItemsData[line].id + '">' +
                                                      _LineItemsData[line].LineItemCost +
                                                  '</div>' +
-                                                 '<div class="table-info-actual-left addFormatterActualCurrency" style="float: right;" id="lineItemActualCost' + _LineItemsData[line].id + '">' +
+                                                 '<div lineValue="' + _LineItemsData[line].LineItemActualCost + '" class="table-info-actual-left addFormatterActualCurrency lineItemActualsValues" style="float: right;" id="ActuallblP' + Title + _LineItemsData[line].id + '">' +
                                                   _LineItemsData[line].LineItemActualCost +
                                                      @*'<input placeholder="0" class="currency_dollarCost truncate" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" id="lineItemlblCCost' + _LineItemsData[line].id + '" value="' + _LineItemsData[line].LineItemCost + '">' + '</input>' +*@
                                     '</div>' +

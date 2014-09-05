@@ -3102,21 +3102,16 @@ namespace RevenuePlanner.Controllers
                                     foreach (var t in tacticactual)
                                     {
                                         //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
-                                        //Check that StageTtitle is not match with below pre define stages   
-                                        int Id = 0;
-                                        //We need to check that stage title is numberic or string    
-                                        bool isNumeric = int.TryParse(Convert.ToString(t.StageTitle), out Id);
-
                                         if (t.StageTitle != Enums.InspectStage.ProjectedStageValue.ToString() &&
                                             t.StageTitle != Enums.InspectStage.MQL.ToString() &&
                                             t.StageTitle != Enums.InspectStage.CW.ToString() &&
                                             t.StageTitle != Enums.InspectStage.Revenue.ToString() &&
                                             t.StageTitle != Enums.InspectStage.Cost.ToString() &&
-                                            t.StageTitle != Enums.InspectStage.INQ.ToString() && isNumeric)
+                                            t.StageTitle != Enums.InspectStage.INQ.ToString())
                                         {
                                             //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
                                             // If stage title is number and not matched up with the pre define stages then save data in Plan_Campaign_Program_Tactic_LineItem_Actual
-                                            SaveActualLineItem(t, Id);
+                                            SaveActualLineItem(t);
                                         }
                                         else
                                         {
@@ -3168,10 +3163,10 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="objInspectActual"></param>
         /// <param name="Id"></param>
-        public void SaveActualLineItem(InspectActual objInspectActual,int Id)
+        public void SaveActualLineItem(InspectActual objInspectActual)
         {
                 Plan_Campaign_Program_Tactic_LineItem_Actual objPlan_LineItem_Actual = new Plan_Campaign_Program_Tactic_LineItem_Actual();
-                objPlan_LineItem_Actual.PlanLineItemId = Convert.ToInt32(objInspectActual.StageTitle);
+                objPlan_LineItem_Actual.PlanLineItemId = Convert.ToInt32(objInspectActual.PlanLineItemId);
                 objPlan_LineItem_Actual.Period = objInspectActual.Period;
                 objPlan_LineItem_Actual.CreatedDate = DateTime.Now;
                 objPlan_LineItem_Actual.CreatedBy = Sessions.User.UserId;
@@ -4587,12 +4582,14 @@ namespace RevenuePlanner.Controllers
                 projectedStageValue = t.ProjectedStageValue,
                 projectedStageValueActual = lstTacticActual.Where(a => a.PlanTacticId == t.PlanTacticId && a.StageTitle == TitleProjectedStageValue).Sum(a => a.Actualvalue),
                 IsTacticEditable = (lstEditableGeography.Contains(t.GeographyId.ToString().ToLower()) && lstEditableVertical.Contains(t.VerticalId.ToString())),////Modified by Mitesh Vaishnav For functional review point 89
-                LineItemsData = (db.Plan_Campaign_Program_Tactic_LineItem.ToList().Where(pctq => pctq.PlanTacticId.Equals(t.PlanTacticId)).ToList()).Select(pcpt => new
+                //Set Line Item data with it's actual values and Sum
+                LineItemsData = (db.Plan_Campaign_Program_Tactic_LineItem.Where(pctq => pctq.PlanTacticId.Equals(t.PlanTacticId)).ToList()).Select(pcpt => new
                 {
                     id= pcpt.PlanLineItemId,
                     Title = pcpt.Title,
                     LineItemCost = pcpt.Cost,
-                    LineItemActualCost = (db.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList().Where(lta => lta.PlanLineItemId == pcpt.PlanLineItemId)).ToList().Sum(q=>q.Value),
+                    //Get the sum of actual
+                    LineItemActualCost = (db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lta => lta.PlanLineItemId == pcpt.PlanLineItemId)).ToList().Sum(q=>q.Value),
                     LineItemActual = lstMonthly.Select(m => new
                     {
                         period = m,
