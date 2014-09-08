@@ -234,7 +234,11 @@
         } catch (e){
 
         }
-        
+        //Added By : Kalpesh Sharma : #739 Adding additional views to Budget Planning screen
+        var data = $(".column1").get(0);
+        $(".budget-table .column1 > tr").each(function () {
+            $(this).width(data.scrollWidth);
+        });
     }
         $("#ddlViewBy").change(function () {
             CurrentView = $('#ddlViewBy').val();
