@@ -832,35 +832,31 @@ namespace RevenuePlanner.Controllers
         {
             // To get permission status for Plan Edit , By dharmraj PL #519
             //Get all subordinates of current user upto n level
-            bool IsPlanEditable = true;
+            bool IsPlanEditable = false;
             var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
             // Get current user permission for edit own and subordinates plans.
             bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
             bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
             var objPlan = db.Plans.FirstOrDefault(p => p.PlanId == Sessions.PlanId);
             bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(Sessions.BusinessUnitId);   // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            if (objPlan.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
+
+            if (IsBusinessUnitEditable)
             {
-                IsPlanEditable = true;
-            }
-            else if (IsPlanEditAllAuthorized && IsBusinessUnitEditable)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            {
-                IsPlanEditable = true;
-            }
-            else if (IsPlanEditSubordinatesAuthorized)
-            {
-                if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy) && IsBusinessUnitEditable)    // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                if (objPlan.CreatedBy.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
                 {
                     IsPlanEditable = true;
                 }
-                else
+                else if (IsPlanEditAllAuthorized)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 {
-                    IsPlanEditable = false;
+                    IsPlanEditable = true;
                 }
-            }
-            else
-            {
-                IsPlanEditable = false;
+                else if (IsPlanEditSubordinatesAuthorized)
+                {
+                    if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy))    // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    {
+                        IsPlanEditable = true;
+                    }
+                }
             }
 
             return Json(new { IsPlanEditable = IsPlanEditable }, JsonRequestBehavior.AllowGet);
@@ -2151,28 +2147,23 @@ namespace RevenuePlanner.Controllers
                 var objPlan = db.Plans.FirstOrDefault(p => p.PlanId == Sessions.PlanId);
                 bool IsPlanEditable = false;
                 bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(Sessions.BusinessUnitId);   // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                if (objPlan.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
+                if (IsBusinessUnitEditable)
                 {
-                    IsPlanEditable = true;
-                }
-                else if (IsPlanEditAllAuthorized && IsBusinessUnitEditable)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                {
-                    IsPlanEditable = true;//ViewBag.IsPlanEditable = true;
-                }
-                else if (IsPlanEditSubordinatesAuthorized)
-                {
-                    if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy) && IsBusinessUnitEditable)    // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    if (objPlan.CreatedBy.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
                     {
                         IsPlanEditable = true;
                     }
-                    else
+                    else if (IsPlanEditAllAuthorized) // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                     {
-                        IsPlanEditable = false;
+                        IsPlanEditable = true;
                     }
-                }
-                else
-                {
-                    IsPlanEditable = false;
+                    else if (IsPlanEditSubordinatesAuthorized)
+                    {
+                        if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy)) // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                        {
+                            IsPlanEditable = true;
+                        }
+                    }
                 }
 
                 if (Convert.ToString(section) != "")
@@ -2471,30 +2462,28 @@ namespace RevenuePlanner.Controllers
             //Get all subordinates of current user upto n level
             var lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
             bool IsDeployToIntegrationVisible = false;
-            if (im.OwnerId.Equals(Sessions.User.UserId) && IsBusinessUnitEditable) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
+            if (IsBusinessUnitEditable)
             {
-                if (IsTacticEditable)
+                if (im.OwnerId.Equals(Sessions.User.UserId) && IsTacticEditable) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
                 {
                     IsDeployToIntegrationVisible = true;
                 }
-            }
-            else if (IsPlanEditAllAuthorized && IsBusinessUnitEditable)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            {
-                if (IsTacticEditable)
+                else if (IsPlanEditAllAuthorized && IsTacticEditable)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                 {
                     IsDeployToIntegrationVisible = true;
                 }
-            }
-            else if (IsPlanEditSubordinatesAuthorized)
-            {
-                if (lstSubOrdinates.Contains(im.OwnerId))
+                else if (IsPlanEditSubordinatesAuthorized)
                 {
-                    if (IsTacticEditable && IsBusinessUnitEditable)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    if (lstSubOrdinates.Contains(im.OwnerId))
                     {
-                        IsDeployToIntegrationVisible = true;
+                        if (IsTacticEditable)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                        {
+                            IsDeployToIntegrationVisible = true;
+                        }
                     }
                 }
             }
+
             ViewBag.IsDeployToIntegrationVisible = IsDeployToIntegrationVisible;
             ////Start : Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
             ViewBag.TacticIntegrationInstance = db.Plan_Campaign_Program_Tactic.Where(ti => ti.PlanTacticId == im.PlanTacticId).FirstOrDefault().IntegrationInstanceTacticId;
@@ -3765,21 +3754,25 @@ namespace RevenuePlanner.Controllers
             //Get all subordinates of current user upto n level
             var lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
             bool IsProgramEditable = false;
-            if (im.OwnerId.Equals(Sessions.User.UserId) && IsBusinessUnitEditable) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
+            if (IsBusinessUnitEditable)
             {
-                IsProgramEditable = true;
-            }
-            else if (IsPlanEditAllAuthorized && IsBusinessUnitEditable)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            {
-                IsProgramEditable = true;
-            }
-            else if (IsPlanEditSubordinatesAuthorized)
-            {
-                if (lstSubOrdinates.Contains(im.OwnerId) && IsBusinessUnitEditable) // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                if (im.OwnerId.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
                 {
                     IsProgramEditable = true;
                 }
+                else if (IsPlanEditAllAuthorized)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                {
+                    IsProgramEditable = true;
+                }
+                else if (IsPlanEditSubordinatesAuthorized)
+                {
+                    if (lstSubOrdinates.Contains(im.OwnerId)) // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    {
+                        IsProgramEditable = true;
+                    }
+                }
             }
+
             ViewBag.IsProgramEditable = IsProgramEditable;
 
             return PartialView("_ReviewProgram");
@@ -3940,19 +3933,22 @@ namespace RevenuePlanner.Controllers
             //Get all subordinates of current user upto n level
             var lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
             bool IsCampaignEditable = false;
-            if (im.OwnerId.Equals(Sessions.User.UserId) && IsBusinessUnitEditable) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
+            if (IsBusinessUnitEditable)
             {
-                IsCampaignEditable = true;
-            }
-            else if (IsPlanEditAllAuthorized && IsBusinessUnitEditable)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            {
-                IsCampaignEditable = true;
-            }
-            else if (IsPlanEditSubordinatesAuthorized)
-            {
-                if (lstSubOrdinates.Contains(im.OwnerId) && IsBusinessUnitEditable) // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                if (im.OwnerId.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
                 {
                     IsCampaignEditable = true;
+                }
+                else if (IsPlanEditAllAuthorized)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                {
+                    IsCampaignEditable = true;
+                }
+                else if (IsPlanEditSubordinatesAuthorized)
+                {
+                    if (lstSubOrdinates.Contains(im.OwnerId)) // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    {
+                        IsCampaignEditable = true;
+                    }
                 }
             }
 
@@ -4413,7 +4409,7 @@ namespace RevenuePlanner.Controllers
                 // Added by Dharmraj Mangukiya to implement custom restrictions PL ticket #537
                 // Get current user permission for edit own and subordinates plans.
                 var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
-                bool IsPlanEditable = true;
+                bool IsPlanEditable = false;
                 bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
                 bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
                 var objPlan = db.Plans.FirstOrDefault(p => p.PlanId == Sessions.PlanId);
@@ -4431,19 +4427,10 @@ namespace RevenuePlanner.Controllers
                     {
                         IsPlanEditable = true;
                     }
-                    else
-                    {
-                        IsPlanEditable = false;
-                    }
-                }
-                else
-                {
-                    IsPlanEditable = false;
                 }
 
                 ViewBag.IsPlanEditable = IsPlanEditable;
                 ViewBag.IsNewPlanEnable = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
-
             }
             catch (Exception ex)
             {
@@ -5015,19 +5002,22 @@ namespace RevenuePlanner.Controllers
             //Get all subordinates of current user upto n level
             var lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
             bool IsDeployToIntegrationVisible = false;
-            if (im.OwnerId.Equals(Sessions.User.UserId) && IsBusinessUnitEditable) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
+            if (IsBusinessUnitEditable)
             {
-                IsDeployToIntegrationVisible = true;
-            }
-            else if (IsPlanEditAllAuthorized && IsBusinessUnitEditable)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            {
-                IsDeployToIntegrationVisible = true;
-            }
-            else if (IsPlanEditSubordinatesAuthorized)
-            {
-                if (lstSubOrdinates.Contains(im.OwnerId) && IsBusinessUnitEditable) // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                if (im.OwnerId.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
                 {
                     IsDeployToIntegrationVisible = true;
+                }
+                else if (IsPlanEditAllAuthorized)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                {
+                    IsDeployToIntegrationVisible = true;
+                }
+                else if (IsPlanEditSubordinatesAuthorized)
+                {
+                    if (lstSubOrdinates.Contains(im.OwnerId)) // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                    {
+                        IsDeployToIntegrationVisible = true;
+                    }
                 }
             }
 

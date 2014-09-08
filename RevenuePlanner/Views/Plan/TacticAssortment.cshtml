@@ -270,7 +270,7 @@
 
                 <div class="width65px pull-left"  style="width:42%">
                     <label title="Revenue">Revenue</label>
-                    @Html.TextBoxFor(model => model.Revenue, new { placeholder = "$0", id = "txtRevenue", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
+                    @Html.TextBoxFor(model => model.Revenue, new { placeholder = "$0", id = "txtRevenue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                 </div>
 
             </div>
@@ -374,6 +374,7 @@
         var isAssortment = $("#hdnRedirectType").val();
         var hdnYear = @ViewBag.Year
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+        $("#txtRevenue").val(FormatCommasBudget($("#txtRevenue").val(), false, true));
 
         if ('@TempData["TacticMQL"]' == "N/A") {
             $("#txtmql").removeClass("priceValue");
@@ -582,8 +583,7 @@
                             $("#txtmql").attr("title", FormatCommas(mqlConversion.toString(), false));
                         }
                         // Added by dharmraj on 4-sep-2014, #760 Advanced budgeting – show correct revenue in Tactic fly out
-                        $("#txtRevenue").val(data.revenue);
-                        $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+                        $("#txtRevenue").val(FormatCommasBudget(data.revenue.toString(), false, true));
                         $("#txtRevenue").attr("title", $("#txtRevenue").val());
                     }
                 });
