@@ -664,6 +664,59 @@ namespace RevenuePlanner.Controllers
             }
         }
 
+        /// <summary>
+        /// Created By : Sohel Pathan
+        /// Created Date : 08/09/2014
+        /// Description : To check when Stage is selected from BenchMark then for logged in client stages are exists?
+        /// if exists then check is there any target stage?
+        /// </summary>
+        /// <returns>Error Message for Target Stage Benchmark in Json Format</returns>
+        public JsonResult CheckTargetStageBenchMark()
+        {
+            if (System.IO.File.Exists(Common.xmlBenchmarkFilePath))
+            {
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.Load(Common.xmlBenchmarkFilePath);
+                BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
+                List<Client> objlcient = objBDSUserRepository.GetClientList();
+                string clientcode = objlcient.Where(c => c.ClientId == Sessions.User.ClientId).Select(c => c.Code).FirstOrDefault();
+                bool stageExistsForClient = false;
+                bool anyTargetStageExists = false;
+                foreach (XmlNode _class in xmlDoc.SelectNodes(@"/Model/ModelInput"))
+                {
+                    foreach (XmlElement element1 in _class.SelectNodes(@"ClientCode"))
+                    {
+                        if (element1.HasAttribute("value"))
+                        {
+                            if (element1.Attributes["value"].Value.Equals(clientcode) == true)
+                            {
+                                foreach (XmlElement element in element1.SelectNodes(@"stage"))
+                                {
+                                    if (element.HasAttribute("targetstage"))
+                                    {
+                                        if (element.Attributes["targetstage"].Value.Equals("true"))
+                                        {
+                                            anyTargetStageExists = true;
+                                        }
+                                    }
+                                }
+                                stageExistsForClient = true;
+                            }
+                        }
+                    }
+                }
+                if (!stageExistsForClient)
+                {
+                    return Json(new { errorMessage = Common.objCached.StageNotDefined }, JsonRequestBehavior.AllowGet);
+                }
+                else if (!anyTargetStageExists)
+                {
+                    return Json(new { errorMessage = Common.objCached.StageNotExist }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            return Json(new { errorMessage = string.Empty }, JsonRequestBehavior.AllowGet);
+        }
+
         #region Benchmark Inputs Functions
 
         /// <summary>
@@ -695,7 +748,7 @@ namespace RevenuePlanner.Controllers
                                 {
                                     readdata(element, intFunnelMarketing);
                                 }
-
+                                
                                 clientflag = true;
                             }
                         }

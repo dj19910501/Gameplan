@@ -745,62 +745,62 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
         //    return false;
         //}
         if ($('#IsBenchmarked').val().toLowerCase() == 'false') {
-             var val = 0;
-             var cntFill = 0;
-             var cntNotFill = 0;
-             var targetStagecnt = 0
-             $('#inputs-group input[type=text]').each(function () {
-                 var val = $(this).val();
-                 if (val > 0) {
-                     cntFill = cntFill + 1;
-                 }
-                 else {
-                     cntNotFill = cntNotFill + 1;
-                 }
-             });
-             $('#inputs-group a').each(function () {
-                 if ($(this).hasClass('targetStageclick')) {
-                     var val = $(this).text();
-                     if (val.toLowerCase() == 'true') {
-                         targetStagecnt = targetStagecnt + 1;
-                     }
-                 }
-             });
-             if (cntFill < 1 && targetStagecnt < 1) {
-                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateConversionRateAndTargetStage')
-                 $("#errorMessage").slideDown(400);
-                 $("html, body").animate({ scrollTop: 0 }, 1000);
-                 $('#inputs-group input[type=text]').each(function () {
-                     $(this).addClass("input-error-red");
-                 });
-                 $('#inputs-group a').each(function () {
-                     $(this).addClass("error-red");
-                 });
-                 return false;
-             }
-             else if (cntFill < 1 && targetStagecnt > 0) {
-                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateConversionRate')
-                 $("#errorMessage").slideDown(400);
-                 $("html, body").animate({ scrollTop: 0 }, 1000);
-                 $('#inputs-group input[type=text]').each(function () {
-                     var targetstage = $(this).attr('name');
-                     if (targetstage != 'txtTargetStage') {
-                         $(this).addClass("input-error-red");
-                     }
+            var val = 0;
+            var cntFill = 0;
+            var cntNotFill = 0;
+            var targetStagecnt = 0
+            $('#inputs-group input[type=text]').each(function () {
+                var val = $(this).val();
+                if (val > 0) {
+                    cntFill = cntFill + 1;
+                }
+                else {
+                    cntNotFill = cntNotFill + 1;
+                }
+            });
+            $('#inputs-group a').each(function () {
+                if ($(this).hasClass('targetStageclick')) {
+                    var val = $(this).text();
+                    if (val.toLowerCase() == 'true') {
+                        targetStagecnt = targetStagecnt + 1;
+                    }
+                }
+            });
+            if (cntFill < 1 && targetStagecnt < 1) {
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateConversionRateAndTargetStage')
+                $("#errorMessage").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+                $('#inputs-group input[type=text]').each(function () {
+                    $(this).addClass("input-error-red");
+                });
+                $('#inputs-group a').each(function () {
+                    $(this).addClass("error-red");
+                });
+                return false;
+            }
+            else if (cntFill < 1 && targetStagecnt > 0) {
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateConversionRate')
+                $("#errorMessage").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+                $('#inputs-group input[type=text]').each(function () {
+                    var targetstage = $(this).attr('name');
+                    if (targetstage != 'txtTargetStage') {
+                        $(this).addClass("input-error-red");
+                    }
 
-                 });
-                 return false;
-             }
-             else if (cntFill > 0 && targetStagecnt < 1) {
-                 $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateTargetStage')
-                 $("#errorMessage").slideDown(400);
-                 $("html, body").animate({ scrollTop: 0 }, 1000);
-                 $('#inputs-group a').each(function () {
-                     $(this).addClass("error-red");
-                 });
-                 return false;
-             }
-         }
+                });
+                return false;
+            }
+            else if (cntFill > 0 && targetStagecnt < 1) {
+                $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> @Common.objCached.ValidateTargetStage')
+                $("#errorMessage").slideDown(400);
+                $("html, body").animate({ scrollTop: 0 }, 1000);
+                $('#inputs-group a').each(function () {
+                    $(this).addClass("error-red");
+                });
+                return false;
+            }
+        }
          $("#CurrentModelId").val($("#latestModelId").val());
 
          if ($('#isPublishButton').val() == 'publish') {
@@ -1147,5 +1147,37 @@ function LoadModelData(modelId, BusinessUnitId, bool) {
         });
     }
     //// End - Added by :- Sohel Pathan on 06/06/2014 for PL ticket #219 to clone a model.
+
+    // Start - Added by Sohel Pathan on 08/09/2014 for PL ticket #754
+    $("#form1").submit(function (e) {
+        var isError = false;
+        if ($('#IsBenchmarked').val().toLowerCase() == 'true') {
+             $.ajax({
+                type: "GET",
+                cache: false,
+                async: false,
+                url: '@Url.Content("~/Model/CheckTargetStageBenchMark")',
+                //data: { ModelId: 0, StageId: 0, isBanchMarked: $('#IsBenchmarked').val() },
+                dataType: "json",
+                success: function (data) {
+                    if (data.errorMessage != '') {
+                        $("#errorMessage").html('<a class="close">×</a><strong>Error!</strong> ' + data.errorMessage)
+                        $("#errorMessage").slideDown(400);
+                        $("html, body").animate({ scrollTop: 0 }, 1000);
+                        isError = true;
+                         
+                    }
+                }
+            });
+        }
+        if (isError) {
+            e.preventDefault();
+            return false;
+        }
+        else {
+            return true;
+        }
+    });
+    // End - Added by Sohel Pathan on 08/09/2014 for PL ticket #754
 </script>
 
