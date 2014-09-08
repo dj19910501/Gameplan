@@ -7655,7 +7655,7 @@ div.sub{display:none; transition: height 0.35s ease 0s; padding:0;}
 
 .program-lvl .programLevel, .tactic-lvl .tacticLevel, .lineItem-lvl .lineitemLevel{border-bottom:1px solid #ccc;}
 /*.program-lvl .programLevel:last-of-type, .tactic-lvl .tacticLevel:last-child, .lineItem-lvl .lineitemLevel:last-child{border-bottom:none;}*/
-
+.budgetError{color:#ff1e26; /*border-bottom:1px solid #ccc !important;*/}
 .budget-table .budgetError{color:#ff1e26; /*border-bottom:1px solid #ccc !important;*/}
 .budget-table .progressBar{height:2px !important; position:absolute; left:0; bottom:0; background:#3fa9f5; max-width:100%; margin:0; padding:0;}
 .progressBar.error{background:#ff1e26;}
@@ -7693,6 +7693,7 @@ div.sub{display:none; transition: height 0.35s ease 0s; padding:0;}
     font-family: 'source_sans_prolight', Arial, "sans-serif";
     font-size:14px;
 }
+.budget-table .progressBar.budgetError {background:#ff1e26;}
 /* */
 
 /* Start - Added by Sohel Pathan on 31/07/2014 for PL ticket #623 */

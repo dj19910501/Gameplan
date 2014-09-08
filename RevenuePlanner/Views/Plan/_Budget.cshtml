@@ -239,7 +239,7 @@
             if (currentTab == 'aActuals')
                 $('#planCostTitle').html('Total Actual Cost');
             else
-            $('#planCostTitle').html('Total Planned Cost');
+                $('#planCostTitle').html('Total Planned Cost');
 
             var sumMonth = number_format('@sumMonth', 0, '.', ',');
             var allocated = number_format('@plan.Allocated', 0, '.', ',');
@@ -254,6 +254,9 @@
             if ('@planAllocation' > 100) {
                 $('#divPlanProgress').css("width", "100%");
                 $('#divPlanProgress').css("background", "#ff1e26");
+            }
+            else {
+                $('#divPlanProgress').css("background", "#3fa9f5");
             }
             if (currentTab == 'aActuals')
                 $('#monthCompareTitle').html('Actuals vs Allocated');
@@ -489,6 +492,7 @@ else {
     }
     $("[linktype=campaign]").click(function (e) {
         var id = $(this).attr('id');
+        id = id.replace('c_', '');
         var url = '@Url.Content("~/Plan/EditCampaign")';
         $("#slidepanel").css("display", "block");
         if (currentTab == 'aActuals')
@@ -503,6 +507,7 @@ else {
 
     $("[linktype=program]").click(function (e) {
         var id = $(this).attr('id');
+        id = id.replace('cp_', '');
         var url = '@Url.Content("~/Plan/EditProgram")';
         $("#slidepanel").css("display", "block");
         if (currentTab == 'aActuals')
@@ -516,6 +521,7 @@ else {
     });
     $("[linktype=tactic]").click(function (e) {
         var id = $(this).attr('id');
+        id = id.replace('cpt_', '');
         var url = '@Url.Content("~/Plan/EditTactic")';
         $("#slidepanel").css("display", "block");
         if (currentTab == 'aActuals')
@@ -530,6 +536,7 @@ else {
      });
     $("[linktype=lineitem]").click(function (e) {
         var id = $(this).attr('id');
+        id = id.replace('cptl_', '');
         var url = '@Url.Content("~/Plan/EditLineItem")';
         $("#slidepanel").css("display", "block");
         if (currentTab == 'aActuals')
