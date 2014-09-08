@@ -8549,6 +8549,29 @@ namespace RevenuePlanner.Controllers
                     }
                 }
             }
+            
+            // Start - Added by Sohel Pathan on 08/09/2014 for PL ticket #642
+            // Set budget for quarters
+            if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
+            {
+                foreach (BudgetModel bm in model)
+                {
+                    bm.Month.Jan = bm.Month.Jan + bm.Month.Feb + bm.Month.Mar;
+                    bm.Month.Apr = bm.Month.Apr + bm.Month.May + bm.Month.Jun;
+                    bm.Month.Jul = bm.Month.Jul + bm.Month.Aug + bm.Month.Sep;
+                    bm.Month.Oct = bm.Month.Oct + bm.Month.Nov + bm.Month.Dec;
+                    bm.Month.Feb = 0;
+                    bm.Month.Mar = 0;
+                    bm.Month.May = 0;
+                    bm.Month.Jun = 0;
+                    bm.Month.Aug = 0;
+                    bm.Month.Sep = 0;
+                    bm.Month.Nov = 0;
+                    bm.Month.Dec = 0;
+                }
+            }
+            // End - Added by Sohel Pathan on 08/09/2014 for PL ticket #642
+
             ViewBag.AllocatedBy = AllocatedBy;
             model = SetupValues(model);
 
@@ -9093,7 +9116,7 @@ namespace RevenuePlanner.Controllers
                 model = ManageLineItems(model);
             }
             //Set actual for quarters
-            if (budgetTab == BudgetTab.Actual && AllocatedBy == "quarters")
+            if (AllocatedBy == "quarters")  // Modified by Sohel Pathan on 08/09/2014 for PL ticket #642.
             {
                 foreach (BudgetModel bm in model)
                 {
