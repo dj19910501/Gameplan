@@ -375,7 +375,10 @@
         displayconfirm('@Url.Action("Assortment", "Plan")');
     });
     $(document).on("click", "#LeftNavInput", function (e) {
-        displayconfirm('@Url.Action("Create", "Plan", new { id = Planid })');
+        @*displayconfirm('@Url.Action("Create", "Plan", new { id = Planid })');*@
+        //Added By : Kalpesh Sharma : #741: Maintain context while switching with in plan's tabs
+        var PlanUri = '@Url.Content("~/Plan/Create")' + "/" + CurrentPlanId + "";
+        window.location.href = PlanUri;
     });
 
     $(document).on("click", "#LeftNavAddActivity", function (e) {

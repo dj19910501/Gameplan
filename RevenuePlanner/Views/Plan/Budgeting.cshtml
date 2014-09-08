@@ -43,6 +43,9 @@
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/slimScrollHorizontal.js")"></script>
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.mCustomScrollbar.concat.min.js")"></script>
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.actual.js")"></script>
+
+@Html.Hidden("CurrentPlanId", CurrentPlanId)
+
 <div id="successMessage" class="alert alert-success message-position" style="display: none;">
     <a class="close">×</a>
     <strong>Success.</strong> <span id="spanMessageSuccess"></span>
@@ -237,9 +240,9 @@
             CurrentView = $('#ddlViewBy').val();
             TabLoad(currentTab);
         });
-    $('#ddlBusinessUnit').change(function () {
-        Bid = $('#ddlBusinessUnit').val();
-        LoadPlanBuBusinessUnit(Bid);
+        $('#ddlBusinessUnit').change(function () {
+            Bid = $('#ddlBusinessUnit').val();
+            LoadPlanBuBusinessUnit(Bid);
 
         $('.datepicker.dropdown-menu').css("display", "none");
         $("#slidepanel").css("display", "none");
@@ -321,9 +324,14 @@ function LoadPlanBuBusinessUnit(Bid) {
             HideMessages();
         });
     }
+
     $(document).on("click", "#LeftNavInput", function (e) {
-        displayconfirm('@Url.Action("Create", "Plan", new { id = CurrentPlanId })');
-});
+        //Added By : Kalpesh Sharma : #741: Maintain context while switching with in plan's tabs
+        var PlanUri = '@Url.Content("~/Plan/Create")' + "/" + CurrentPlanId + "";
+        @*displayconfirm('@Url.Action("Create", "Plan", new { id = CurrentPlanId })');*@
+        window.location.href = PlanUri;
+    });
+
 $(document).on("click", "#LeftNavCampaigns", function (e) {
     displayconfirm('@Url.Action("Assortment", "Plan")');
 });

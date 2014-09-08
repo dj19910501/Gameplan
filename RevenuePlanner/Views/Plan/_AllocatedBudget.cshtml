@@ -77,11 +77,11 @@
         $.fn.hasScrollBar = function () {
             return this.get(0).scrollWidth > this.width();
         }
-        var test = $('.column1').hasScrollBar();
+        //var test = $('.column1').hasScrollBar();
 
-        if (test == true) {
-            $('.column1 tr').addClass('displayRow');
-        }
+        //if (test == true) {
+        //    $('.column1 tr').addClass('displayRow');
+        //}
 
         // Budget Table
         var mainTableWidth = $('.budget-table').width();
@@ -97,7 +97,25 @@
             if ($(".sub[data-parent='" + accordionId + "']").show()) {
                 $(".sub[data-parent='" + accordionId + "']").prev('#' + accordionId).toggleClass('open');
             }
+
+            //Added By : Kalpesh Sharma : #739 Adding additional views to Budget Planning screen
+            var data = $(".column1").get(0);
+            //var trCounter = 0;
+            //var OpenPanelCounter = 0;
+            $(".budget-table .column1 > tr").each(function () {
+                $(this).width(data.scrollWidth);
+                //trCounter = trCounter + 1;
         });
+
+            //OpenPanelCounter = $('.budget-table .column1 > tr .firstLevel.open').length;
+            //if (OpenPanelCounter == (trCounter - 2)) {
+            //    $('.budget-table .column1').css('overflow-x', 'hidden');
+            //}
+            //else {
+            //    $('.budget-table .column1').css('overflow-x', 'auto');
+            //}
+        });
+
         //in case of chrome browser it is creating design issue
         $.browser.chrome = /chrom(e|ium)/.test(navigator.userAgent.toLowerCase());
         if ($.browser.chrome) {
