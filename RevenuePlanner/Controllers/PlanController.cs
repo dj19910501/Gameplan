@@ -1035,29 +1035,24 @@ namespace RevenuePlanner.Controllers
                 bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
                 bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
                 var objPlan = db.Plans.FirstOrDefault(p => p.PlanId == Sessions.PlanId);
+                bool IsPlanEditable = false;
                 if (objPlan.CreatedBy.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
                 {
-                    ViewBag.IsPlanEditable = true;
+                    IsPlanEditable = true;
                 }
                 else if (IsPlanEditAllAuthorized)
                 {
-                    ViewBag.IsPlanEditable = true;
+                    IsPlanEditable = true;
                 }
                 else if (IsPlanEditSubordinatesAuthorized)
                 {
                     if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy))
                     {
-                        ViewBag.IsPlanEditable = true;
-                    }
-                    else
-                    {
-                        ViewBag.IsPlanEditable = false;
+                        IsPlanEditable = true;
                     }
                 }
-                else
-                {
-                    ViewBag.IsPlanEditable = false;
-                }
+
+                ViewBag.IsPlanEditable = IsPlanEditable;
             }
             catch (Exception e)
             {
@@ -5959,31 +5954,29 @@ namespace RevenuePlanner.Controllers
 
                         // Start - Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                         bool IsBusinessUnitEditable = Common.IsBusinessUnitEditable(BUId);
+                        bool IsPlanEditable = false;
 
                         // Added to check edit status for current user by dharmraj for #538
-                        if (item.CreatedBy.Equals(Sessions.User.UserId) && IsBusinessUnitEditable) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
+                        if (IsBusinessUnitEditable)
                         {
-                            objPlanSelector.IsPlanEditable = true;
-                        }
-                        else if (IsPlanEditAllAuthorized && IsBusinessUnitEditable)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                        {
-                            objPlanSelector.IsPlanEditable = true;
-                        }
-                        else if (IsPlanEditSubordinatesAuthorized && IsBusinessUnitEditable)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-                        {
-                            if (lstOwnAndSubOrdinates.Contains(item.CreatedBy))
+                            if (item.CreatedBy.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
                             {
-                                objPlanSelector.IsPlanEditable = true;
+                                IsPlanEditable = true;
                             }
-                            else
+                            else if (IsPlanEditAllAuthorized)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
                             {
-                                objPlanSelector.IsPlanEditable = false;
+                                IsPlanEditable = true;
+                            }
+                            else if (IsPlanEditSubordinatesAuthorized)  // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+                            {
+                                if (lstOwnAndSubOrdinates.Contains(item.CreatedBy))
+                                {
+                                    IsPlanEditable = true;
+                                }
                             }
                         }
-                        else
-                        {
-                            objPlanSelector.IsPlanEditable = false;
-                        }
+
+                        objPlanSelector.IsPlanEditable = IsPlanEditable;
 
                         // End - Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
 
@@ -8549,7 +8542,7 @@ namespace RevenuePlanner.Controllers
                     }
                 }
             }
-            
+
             // Start - Added by Sohel Pathan on 08/09/2014 for PL ticket #642
             // Set budget for quarters
             if (AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.quarters.ToString()].ToString().ToLower())
