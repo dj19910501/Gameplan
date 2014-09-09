@@ -111,7 +111,7 @@
                             planLineItemIds += item.PlanLineItemId + ",";
                             string rawId="trLine"+item.PlanLineItemId;
                              <tr class="height42 lines" id="@rawId">
-                        <th class="font3F3F3F actual-popup-tile" title="@item.Title">@item.Title</th>
+                        <th class="font3F3F3F actual-popup-tile" style="font-weight:normal;" title="@item.Title">@item.Title</th>
                                  @for (int j = 1; j <= 12; j++)
                         {
                             string lineItemIds = @item.PlanLineItemId+"-Y" + j;
@@ -149,7 +149,7 @@
             <table class="table table-striped mystats table-style shadow-table">
                 <thead>
                     <tr class="height42">
-                        <th class="font908D88 padding-left55">Projected</th>
+                        <th class="font908D88 padding-left55 text-align-right">Projected</th>
                         <th class="border-r font908D88 text-align-right">Total</th>
                     </tr>
                 </thead>
@@ -179,7 +179,7 @@
                         <th id="lblTotalCW" class="border-r font3F3F3F text-align-right addFormatterActualNumber">@tacticActual.CWsActual</th>  @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
                     </tr>
                     <tr class="height42">
-                        <th id="rP" class="text-align-right projected font908D88 ActualsFormater">@tacticActual.Revenues</th>
+                        <th id="rP" class="text-align-right projected font908D88">@tacticActual.Revenues</th>
                         <th id="lblTotalRevenue" class="border-r font3F3F3F text-align-right ActualsFormater" ov="@tacticActual.RevenuesActual">@tacticActual.RevenuesActual</th>
                     </tr>
                     <tr class="height42">
@@ -201,8 +201,8 @@
                         }
                     }
                     <tr class="height42">
-                        <th id="roiP" class="text-align-right height22 projected padding-bottom9 font908D88 addFormatterActualNumber">@tacticActual.ROI</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
-                        <th id="roiT" class="border-r font3F3F3F text-align-right addFormatterActualNumber">@tacticActual.ROIActual</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
+                        <th id="roiP" class="text-align-right height22 projected padding-bottom9 font908D88">@tacticActual.ROI</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
+                        <th id="roiT" class="border-r font3F3F3F text-align-right">@tacticActual.ROIActual</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
                     </tr>
                    
                 </tbody>
@@ -241,7 +241,7 @@
         var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
         var Declinestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()";
         var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
-        if (hdnTacticStatus != Approvedstatus && hdnTacticStatus != Declinestatus && hdnTacticStatus != InProgressstatus && hdnTacticStatus != Completestatus) {
+        if (hdnTacticStatus != Approvedstatus && hdnTacticStatus != InProgressstatus && hdnTacticStatus != Completestatus) {
             $("#divActualInner").empty();
             $("#divActualInner").append(ActualTab());
         }
@@ -510,10 +510,10 @@
                 $(this).attr('title', txtvalue);//uday 2-7-2014 //added by uday for internal point 2-7-2014
             });
 
-            $('.currency_dollar').each(function () {
-                var txtvalue = $(this).val();
-                $(this).attr('title', txtvalue);//uday 3-7-2014 //added by uday for internal point 2-7-2014
-            });
+            //$('.currency_dollar').each(function () {
+            //    var txtvalue = $(this).val();
+            //    $(this).attr('title', txtvalue);//uday 3-7-2014 //added by uday for internal point 2-7-2014
+            //});
         }
 
         $('#tblActual').find('input').each(function () {
@@ -562,14 +562,15 @@
             if (pcost != 0 && !isNaN(pcost)) {
                 var prevenue = parseFloat(ReplaceCC($("#rP").text()));
                 var roip = (prevenue - pcost) / pcost;
-                $("#roiP").text(roip.toFixed(2));
+                $("#roiP").text(FormatCommas(roip.toFixed(2).toString()));
             }
 
             pcost = parseFloat(ReplaceCC($("#lblTotalCost").attr('ov')));
             if (pcost != 0 && !isNaN(pcost)) {
                 var prevenue = parseFloat(ReplaceCC($("#lblTotalRevenue").attr('ov')));
                 var roiT = (prevenue - pcost) / pcost;
-                $("#roiT").text(roiT.toFixed(2));
+                $("#roiT").text(FormatCommas(roiT.toFixed(2).toString()));
+                
             }
         }
 
@@ -657,7 +658,7 @@
             }
             if (parseFloat(totalMQLActual) > parseFloat(totalProjectedStageValueActual)) {
                 var msg = "@RevenuePlanner.Helpers.Common.objCached.ValidationForMqlGreaterThanINQ"
-                var msgdisplay = msg.replace('{0}', totalMQLActual).replace('{1}', '@ViewBag.TacticStageTitle').replace('{3}', '@ViewBag.TacticStageTitle').replace('{2}', totalProjectedStageValueActual).replace(/{4\}/g, '@MQlTitle');
+                var msgdisplay = msg.replace('{0}', FormatCommas(totalMQLActual.toString())).replace('{1}', '@ViewBag.TacticStageTitle').replace('{3}', '@ViewBag.TacticStageTitle').replace('{2}', FormatCommas(totalProjectedStageValueActual.toString())).replace(/{4\}/g, '@MQlTitle');
                 $("#spanMessageError").text(msgdisplay);
                 $("#errorMessage").css("display", "block");
                 var topsize = $(document).scrollTop() + 41;

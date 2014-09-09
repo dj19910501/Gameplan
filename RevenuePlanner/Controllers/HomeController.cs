@@ -2818,50 +2818,16 @@ namespace RevenuePlanner.Controllers
             string TitleMQL = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
             string TitleRevenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
 
-            im.ProjectedStageValueActual = db.Plan_Campaign_Program_Tactic_Actual.Where(varA => varA.PlanTacticId == id && varA.StageTitle == TitleProjectedStageValue).ToList().Sum(a => a.Actualvalue);
-            im.CWsActual = db.Plan_Campaign_Program_Tactic_Actual.Where(varA => varA.PlanTacticId == id && varA.StageTitle == TitleCW).ToList().Sum(a => a.Actualvalue);
-            im.RevenuesActual = db.Plan_Campaign_Program_Tactic_Actual.Where(varA => varA.PlanTacticId == id && varA.StageTitle == TitleRevenue).ToList().Sum(a => a.Actualvalue);
-            im.MQLsActual = db.Plan_Campaign_Program_Tactic_Actual.Where(varA => varA.PlanTacticId == id && varA.StageTitle == TitleMQL).ToList().Sum(a => a.Actualvalue);
+            ////Modified by Mitesh Vaishnav for PL ticket #695
+            var tacticActualList = db.Plan_Campaign_Program_Tactic_Actual.Where(planTacticActuals => planTacticActuals.PlanTacticId == id).ToList();
+            im.ProjectedStageValueActual = tacticActualList.Where(planTacticActuals => planTacticActuals.StageTitle == TitleProjectedStageValue).Sum(planTacticActuals => planTacticActuals.Actualvalue);
+            im.CWsActual = tacticActualList.Where(planTacticActuals => planTacticActuals.StageTitle == TitleCW).Sum(planTacticActuals => planTacticActuals.Actualvalue);
+            im.RevenuesActual = tacticActualList.Where(planTacticActuals => planTacticActuals.StageTitle == TitleRevenue).Sum(planTacticActuals => planTacticActuals.Actualvalue);
+            im.MQLsActual = tacticActualList.Where(planTacticActuals => planTacticActuals.StageTitle == TitleMQL).Sum(planTacticActuals => planTacticActuals.Actualvalue);
 
 
             im.CWs = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 1);
             string modifiedBy = string.Empty;
-            //string createdBy = string.Empty;
-            //DateTime? modifiedDate = null;
-            //if (db.Plan_Campaign_Program_Tactic_Actual.Where(t => t.PlanTacticId == im.PlanTacticId).Count() > 0)
-            //{
-            //    modifiedDate = db.Plan_Campaign_Program_Tactic_Actual.Where(t => t.PlanTacticId == im.PlanTacticId).Select(t => t.CreatedDate).FirstOrDefault();
-            //    createdBy = db.Plan_Campaign_Program_Tactic_Actual.Where(t => t.PlanTacticId == im.PlanTacticId).Select(t => t.CreatedBy).FirstOrDefault().ToString();
-            //}
-            //else
-            //{
-            //    if (im.CostActual != 0)
-            //    {
-            //        modifiedDate = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == im.PlanTacticId).Select(t => t.ModifiedDate).FirstOrDefault();
-            //        createdBy = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == im.PlanTacticId).Select(t => t.ModifiedBy).FirstOrDefault().ToString();
-            //    }
-            //}
-
-            //if (modifiedDate != null)
-            //{
-            //    ////Start : Modified by Mitesh Vaishnav for PL ticket #743
-            //    ////When userId will be empty guid ,First name and last name combination will be display as Gameplan Integration Service
-            //    if (Guid.Parse(createdBy) != Guid.Empty)
-            //    {
-            //        User objUser = objBDSUserRepository.GetTeamMemberDetails(new Guid(createdBy), Sessions.ApplicationId);
-            //        modifiedBy = string.Format("{0} {1} by {2} {3}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd"), objUser.FirstName, objUser.LastName);
-            //    }
-            //    else
-            //    {
-            //        modifiedBy = string.Format("{0} {1} by {2}", "Last updated", Convert.ToDateTime(modifiedDate).ToString("MMM dd"), GameplanIntegrationService);
-            //    }
-            //    ////End : Modified by Mitesh Vaishnav for PL ticket #743
-            //    ViewBag.UpdatedBy = modifiedBy;
-            //}
-            //else
-            //{
-            //    ViewBag.UpdatedBy = null;
-            //}
             modifiedBy = Common.TacticModificationMessage(im.PlanTacticId);////Modified by Mitesh Vaishnav for PL ticket #743 Actuals Inspect: User Name for Scheduler Integration
             ViewBag.UpdatedBy = modifiedBy != string.Empty ? modifiedBy : null;////Modified by Mitesh Vaishnav for PL ticket #743 Actuals Inspect: User Name for Scheduler Integration
             im.MQLs = Common.CalculateMQLTactic(Convert.ToDouble(im.ProjectedStageValue), im.StartDate, im.PlanTacticId, Convert.ToInt32(im.StageId));
@@ -2881,17 +2847,17 @@ namespace RevenuePlanner.Controllers
                                                                                             .ToList();
             if (lineItemListActuals.Count != 0)
             {
-                tacticCostActual = lineItemListActuals.ToList().Sum(lineitemActual => lineitemActual.Value);
+                tacticCostActual = lineItemListActuals.Sum(lineitemActual => lineitemActual.Value);
             }
             else
             {
                 ////If line item actual is not exist for tactic than cost actual will be total of tactic cost actual
                 string costStageTitle=Enums.InspectStage.Cost.ToString();
-                var tacticActualList = db.Plan_Campaign_Program_Tactic_Actual.Where(tacticActual => tacticActual.PlanTacticId == id && tacticActual.StageTitle==costStageTitle)
+                var tacticActualCostList = tacticActualList.Where(tacticActual => tacticActual.StageTitle == costStageTitle)
                                                                             .ToList();
-                if (tacticActualList.Count != 0)
+                if (tacticActualCostList.Count != 0)
                 {
-                    tacticCostActual = tacticActualList.Sum(tacticActual => tacticActual.Actualvalue);
+                    tacticCostActual = tacticActualCostList.Sum(tacticActual => tacticActual.Actualvalue);
                 }
             }
             if (tacticCostActual > 0)
@@ -2922,14 +2888,13 @@ namespace RevenuePlanner.Controllers
             }
 
             // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
-            var objPlanTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(p => p.PlanTacticId == id);
             var lstUserCustomRestriction = Common.GetUserCustomRestriction();
             int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
             var lstAllowedVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
             var lstAllowedGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId.ToString().ToLower()).ToList();////Modified by Mitesh Vaishnav For functional review point 89
             var lstAllowedBusinessUnit = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId.ToLower()).ToList();////Modified by Mitesh Vaishnav For functional review point 89
             //var IsBusinessUnitEditable = Common.IsBusinessUnitEditable(Sessions.BusinessUnitId);    // Added by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
-            if (lstAllowedGeography.Contains(objPlanTactic.GeographyId.ToString().ToLower()) && lstAllowedVertical.Contains(objPlanTactic.VerticalId.ToString()) && lstAllowedBusinessUnit.Contains(objPlanTactic.BusinessUnitId.ToString().ToLower()))//&& IsBusinessUnitEditable)   // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
+            if (lstAllowedGeography.Contains(tid.FirstOrDefault().GeographyId.ToString().ToLower()) && lstAllowedVertical.Contains(tid.FirstOrDefault().VerticalId.ToString()) && lstAllowedBusinessUnit.Contains(tid.FirstOrDefault().BusinessUnitId.ToString().ToLower()))//&& IsBusinessUnitEditable)   // Modified by Sohel Pathan on 02/07/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             {
                 ViewBag.IsTacticEditable = true;
             }
@@ -2937,7 +2902,7 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.IsTacticEditable = false;
             }
-            ViewBag.LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == id && l.IsDeleted == false).OrderByDescending(l=>l.PlanLineItemId).ToList();
+            ViewBag.LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == id && l.IsDeleted == false).OrderByDescending(l=>l.LineItemTypeId).ToList();
             return PartialView("Actual");
         }
 
@@ -2952,7 +2917,7 @@ namespace RevenuePlanner.Controllers
             var dtTactic = (from pt in db.Plan_Campaign_Program_Tactic_Actual
                             where pt.PlanTacticId == id
                             select new { pt.CreatedBy, pt.CreatedDate }).FirstOrDefault();
-            var lineItemIds = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == id).Select(l => l.PlanLineItemId).ToList();
+            var lineItemIds = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == id && l.IsDeleted==false).Select(l => l.PlanLineItemId).ToList();
             var dtlineItemActuals = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(al => lineItemIds.Contains(al.PlanLineItemId)).ToList();
             if (dtTactic != null || dtlineItemActuals!=null)
             {
@@ -2968,25 +2933,16 @@ namespace RevenuePlanner.Controllers
 
                 ////// start-Added by Mitesh Vaishnav for PL ticket #571
                 //// Actual cost portion added exact under "lstMonthly" array because Actual cost portion is independent from the monthly/quarterly selection made by the user at the plan level.
-                var tacticLineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == id && l.IsDeleted==false).Select(l => l.PlanLineItemId).ToList();
                 bool isLineItemForTactic = false;////flag for line items count of tactic.If tactic has any line item than flag set to true else false
-                if (tacticLineItemList.Count <= 0)
+                if (lineItemIds.Count == 0)
                 {
-                    ////object for filling input of Actual Cost Allocation
-                   var actualCostAllocationData = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => ta.PlanTacticId == id).ToList().Select(ta => new
-                      {
-                          planTacticId = ta.PlanTacticId,
-                          Period = ta.Period,
-                          Value = ta.Actualvalue
-                      }).ToList();
-                   var objBudgetAllocationData = new { actualData = ActualData, ActualCostAllocationData = actualCostAllocationData, IsLineItemForTactic = isLineItemForTactic };
+                   var objBudgetAllocationData = new { actualData = ActualData, IsLineItemForTactic = isLineItemForTactic };
                 return Json(objBudgetAllocationData, JsonRequestBehavior.AllowGet);
                 }
                 else
                 {
-                    var actualLineItem = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(al => tacticLineItemList.Contains(al.PlanLineItemId)).ToList();
                     ////object for filling input of Actual Cost Allocation
-                   var LineItemactualCost = actualLineItem.Select(al => new
+                    var LineItemactualCost = dtlineItemActuals.Select(al => new
                         {
                             PlanLineItemId = al.PlanLineItemId,
                             Period = al.Period,
