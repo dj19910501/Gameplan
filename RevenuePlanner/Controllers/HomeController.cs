@@ -4466,6 +4466,11 @@ namespace RevenuePlanner.Controllers
 
             List<string> lstMonthly = new List<string>() { "Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "Y7", "Y8", "Y9", "Y10", "Y11", "Y12" };
 
+
+            var tacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.ToList();
+            var tacticLineItemActual = db.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList();
+            var tacticActuals = db.Plan_Campaign_Program_Tactic_Actual.ToList();
+
             var tacticObj = TacticList.Select(t => new
             {
                 id = t.PlanTacticId,
@@ -4484,25 +4489,22 @@ namespace RevenuePlanner.Controllers
                 //costActual = t.CostActual == null ? 0 : t.CostActual,
                 
                 //Get the sum of Tactic line item actuals
-                costActual = (db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).Count() > 0 ?  
-                (db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).ToList().Select(pp => new
+                costActual = (tacticLineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).Count() > 0 ?
+                (tacticLineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).ToList().Select(pp => new
                 {
-                    LineItemActualCost = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(ww=> ww.PlanLineItemId == pp.PlanLineItemId).ToList().Sum(q=>q.Value)
-                
-                //Commented By : Kalpesh Sharma : Due to Cost Actual field is not longer available in the database.  
-                //}).Sum(a => a.LineItemActualCost) : (t.CostActual == null ? 0 : t.CostActual),
-                }).Sum(a => a.LineItemActualCost) : (db.Plan_Campaign_Program_Tactic_Actual.Where(s => s.PlanTacticId == t.PlanTacticId)).Sum(a => a.Actualvalue),
+                    LineItemActualCost = tacticLineItemActual.Where(ww => ww.PlanLineItemId == pp.PlanLineItemId).ToList().Sum(q => q.Value)
+                }).Sum(a => a.LineItemActualCost) : (tacticActuals.Where(s => s.PlanTacticId == t.PlanTacticId && s.StageTitle == Enums.InspectStageValues[Enums.InspectStage.Cost.ToString()].ToString()).ToList()).Sum(a => a.Actualvalue),
                 
                 //First check that if tactic has a single line item at that time we need to get the cost actual data from the respective table. 
                 costActualData = lstMonthly.Select(m => new
                 {
                     period = m,
-                    Cost = (db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).Count() > 0 ? 
-                    db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == t.PlanTacticId).ToList().Select(ss => new
+                    Cost = (tacticLineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).Count() > 0 ?
+                    tacticLineItem.Where(s => s.PlanTacticId == t.PlanTacticId).ToList().Select(ss => new
                     {
-                    costValue =  db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(y => y.PlanLineItemId == ss.PlanLineItemId && y.Period == m).ToList().Sum(a => a.Value)
+                        costValue = tacticLineItemActual.Where(y => y.PlanLineItemId == ss.PlanLineItemId && y.Period == m).ToList().Sum(s=>s.Value)
                     }).Sum(s=>s.costValue) :
-                    db.Plan_Campaign_Program_Tactic_Actual.Where(s => s.PlanTacticId == t.PlanTacticId && s.Period == m).ToList().Sum(s => s.Actualvalue),
+                    tacticActuals.Where(s => s.PlanTacticId == t.PlanTacticId && s.Period == m && s.StageTitle == Enums.InspectStageValues[Enums.InspectStage.Cost.ToString()].ToString()).Sum(s => s.Actualvalue),
                 }),
 
                 roiProjected = 0,//t.ROI == null ? 0 : t.ROI,
@@ -4511,7 +4513,7 @@ namespace RevenuePlanner.Controllers
                 individualId = t.CreatedBy,
                 tacticTypeId = t.TacticTypeId,
                 modifiedBy = Common.TacticModificationMessage(t.PlanTacticId,userName),////Modified by Mitesh Vaishnav for PL ticket #743,When userId will be empty guid ,First name and last name combination will be display as Gameplan Integration Service
-                actualData = (db.Plan_Campaign_Program_Tactic_Actual.ToList().Where(pct => pct.PlanTacticId.Equals(t.PlanTacticId)).Select(pcp => pcp).ToList()).Select(pcpt => new
+                actualData = (tacticActuals.Where(pct => pct.PlanTacticId.Equals(t.PlanTacticId)).Select(pcp => pcp).ToList()).Select(pcpt => new
                 {
                     title = pcpt.StageTitle,
                     period = pcpt.Period,
@@ -4526,21 +4528,17 @@ namespace RevenuePlanner.Controllers
                 projectedStageValueActual = lstTacticActual.Where(a => a.PlanTacticId == t.PlanTacticId && a.StageTitle == TitleProjectedStageValue).Sum(a => a.Actualvalue),
                 IsTacticEditable = (lstEditableGeography.Contains(t.GeographyId.ToString().ToLower()) && lstEditableVertical.Contains(t.VerticalId.ToString())),////Modified by Mitesh Vaishnav For functional review point 89
                 //Set Line Item data with it's actual values and Sum
-                LineItemsData = (db.Plan_Campaign_Program_Tactic_LineItem.Where(pctq => pctq.PlanTacticId.Equals(t.PlanTacticId)).ToList()).Select(pcpt => new
+                LineItemsData = (tacticLineItem.Where(pctq => pctq.PlanTacticId.Equals(t.PlanTacticId)).ToList()).Select(pcpt => new
                 {
                     id= pcpt.PlanLineItemId,
                     Title = pcpt.Title,
                     LineItemCost = pcpt.Cost,
                     //Get the sum of actual
-                    LineItemActualCost = (db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lta => lta.PlanLineItemId == pcpt.PlanLineItemId)).ToList().Sum(q=>q.Value),
+                    LineItemActualCost = (tacticLineItemActual.Where(lta => lta.PlanLineItemId == pcpt.PlanLineItemId)).ToList().Sum(q => q.Value),
                     LineItemActual = lstMonthly.Select(m => new
                     {
                         period = m,
-                        //Cost = (db.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList().Where(lta => lta.PlanLineItemId == pcpt.PlanLineItemId && lta.Period == m).Select(ltai => new
-                        //{
-                        //     actualValue = ltai.Value,
-                        //})).Sum(s=>s.actualValue)
-                        Cost = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lta => lta.PlanLineItemId == pcpt.PlanLineItemId && lta.Period == m).Select(ltai =>ltai.Value)
+                        Cost = tacticLineItemActual.Where(lta => lta.PlanLineItemId == pcpt.PlanLineItemId && lta.Period == m).Select(ltai => ltai.Value)
                     }),
                 })
             });
