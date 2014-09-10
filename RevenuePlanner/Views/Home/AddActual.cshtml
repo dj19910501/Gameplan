@@ -151,6 +151,7 @@
 </div>
 <script type="text/javascript">
     var actuals;
+    var MQlTitle = '';
     //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
     var IsLineItemActual = false;
     var showMyTacticId = 0;
@@ -761,8 +762,8 @@
                     return false;
                 }
                 if (parseFloat(totalMQLActual) > parseFloat(totalProjectedStageValueActual)) {
-                    var msg = "@RevenuePlanner.Helpers.Common.objCached.ValidationForMqlGreaterThanINQ"
-                    var msgdisplay = msg.replace('{0}', totalMQLActual).replace('{1}', ProjectedStageValueTitle).replace('{3}', ProjectedStageValueTitle).replace('{2}', totalProjectedStageValueActual);
+                    var msg = "@RevenuePlanner.Helpers.Common.objCached.ValidationForMqlGreaterThanINQ" 
+                    var msgdisplay = msg.replace('{0}', FormatCommas(totalMQLActual.toString())).replace('{1}', ProjectedStageValueTitle).replace('{3}', ProjectedStageValueTitle).replace('{2}', FormatCommas(totalProjectedStageValueActual.toString())).replace(/{4\}/g, MQlTitle);
                     $("#spanMessageError").text(msgdisplay);
                     $("#errorMessage").css("display", "block");
                     return false;
@@ -1030,7 +1031,8 @@
                                     '</div>';
                 }
                 else if (arrStage[i].toLowerCase() == '@Common.StageCodeMQL') {
-                    $html += '<div class="body-toogle-actual">@Html.LabelForMQL("MQL")<div class="table-info-actual-left-wraper">' +
+                    MQlTitle = '@Html.LabelForMQL("MQL")';
+                    $html += '<div class="body-toogle-actual">'+MQlTitle+'<div class="table-info-actual-left-wraper">' +
                                                     '<div class="table-info-actual-left truncate addFormatterActualNumber" id="ProjectedlblPMQL' + _id + '">' +
                                                         _mqlProjected +
                                                     '</div>' +
