@@ -1045,15 +1045,12 @@
                 currentValue = currentValue == '' ? "0" : currentValue;
                 if (currentValue.match('^(0|[1-9][0-9]*)$')) {
 
-                    var oldTotalActualCost = parseInt($('#lblTotalActualCost').text().replace(/,/g, '').replace('$', ''));
-                    var OldactualValue = 0;
-                    //alert(typeof ($(this).attr("ov")));
-                    if ($(this).attr("ov") != '' && typeof ($(this).attr("ov")) != 'undefined') {
-                        OldactualValue = parseInt($(this).attr("ov"));
+                    var TotalCostallocationValue = 0;
+                    var lstAllocInputs = $("#actual-Cost-Allocation input").not('.unallocated-text');
+                    for (var i = 0; i < lstAllocInputs.length; i++) {
+                        TotalCostallocationValue += parseInt($(lstAllocInputs[i]).val() == '' ? 0 : ReplaceCC($(lstAllocInputs[i]).val()));
                     }
-
-                    var newActualCost = oldTotalActualCost + (currentValue - OldactualValue);
-                    $("#lblTotalActualCost").html( FormatCommasBudget(newActualCost.toString(), false, true));
+                    $("#lblTotalActualCost").html(FormatCommasBudget(TotalCostallocationValue.toString(), false, true));
                     $(this).attr("ov", currentValue);
                 }
             
