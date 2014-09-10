@@ -381,6 +381,7 @@
     <Content Include="Content\images\icon-check-accordion.png" />
     <Content Include="Content\images\icon-check-fill.png" />
     <Content Include="Content\images\icon-collapse.png" />
+    <Content Include="Content\images\icon-dollar.png" />
     <Content Include="Content\images\icon-expand.png" />
     <Content Include="Content\images\icon-return-to-sign-in-blue.png" />
     <Content Include="Content\images\icons-accept-reject.png" />

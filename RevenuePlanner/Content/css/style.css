@@ -6637,7 +6637,15 @@ h2.title-header {
 .bullhorn-bg{background-image:url(../images/bullhorn-bg.png); background-position:right bottom; background-repeat:no-repeat;}
 .bullhorn-bg-disabled{background-image:url(../images/bullhorn-bg-disabled.png); background-position:right bottom; background-repeat:no-repeat;}
 /*start Added By Mitesh Vaishnav for PL ticket #736 Budgeting - Changes to plan header to accomodate budgeting changes*/
-.bulldoller-bg{background-image:url(../images/bullhorn-bg.png); background-position:right bottom; background-repeat:no-repeat; cursor:pointer;}
+.bulldoller-bg{background-image:url(../images/icon-dollar.png); background-position:right bottom; background-repeat:no-repeat;position:relative;}
+.bulldoller-bg a.value {
+    bottom: 0;
+    height: 30px;
+    min-width: 30px;
+    position: absolute;
+    right: 0;
+    cursor:pointer;
+}
 /*End Added By Mitesh Vaishnav for PL ticket #736 Budgeting - Changes to plan header to accomodate budgeting changes*/
 /* ======================================= */
 /*Added By Maninder for DHTMLX gantt improvement task PL Ticket#47, 337*/
