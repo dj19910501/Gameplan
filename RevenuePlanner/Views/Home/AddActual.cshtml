@@ -615,11 +615,13 @@
                                     document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, false);
                                     SetBudget('#' + ida); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
 
+                                    costlbl = $('#tr' + arr[0] + arr[1]).attr('tacticid');
+
                                     //Update the line item for the appropriate Period (Y1,Y2....Y12)
                                     var ActualsName = 'ActuallblP' + arr[1] + arr[0];
                                     $('#' + ActualsName).attr('linevalue', totalvalue);
                                     var lineItemTotal = 0;
-                                    var LineClassName = 'Line-' + arr[2];
+                                    var LineClassName = costlbl+'Line-' + arr[2];
                                     $('.' + LineClassName).each(function () {
                                         var lineItemvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', ''));
                                         if (!isNaN(lineItemvalue)) {
@@ -627,13 +629,13 @@
                                         }
                                     });
 
-                                    var lineId = "Cost-" + arr[2];
+                                    var lineId = costlbl+"Cost-" + arr[2];
                                     document.getElementById(lineId).innerHTML = lineItemTotal;
                                     document.getElementById(lineId).innerHTML = FormatCurrency(document.getElementById(lineId).innerHTML, false);
                                     SetBudget('#' + lineId);
 
                                     //Update the Actual cost value based upon Line item actual sum.
-                                    costlbl = $('#tr' + arr[0] + arr[1]).attr('tacticid');
+                                    
                                     var updateActalCost = "ActuallblCCost" + costlbl;
                                     var updateActalCostValueTotal = 0;
                                     $('.lineItemActualsValues').each(function () {
@@ -956,7 +958,7 @@
             for (var j = 1; j <= 12; j = j + 1) {
                 var newCounterTactic = j - 1;
                 var tdId = _id + "-" + "Cost" + "-Y" + j;
-                var divId = "Cost-Y" + j;
+                var divId = _id+"Cost-Y" + j;
                 $html += '<td>';
                 if (_LineItemsData.length <= 0) {
                     $html += '<input id="' + tdId + '" placeholder="---" '; // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
@@ -977,7 +979,7 @@
                 $html += '<tr id=' + idtr + ' TacticId='+_id +'>';
                 for (var j = 1; j <= 12; j = j + 1) {
                     var tdId = _LineItemsData[p].id + "-" + Title + "-Y" + j;
-                    var ClassName = "currency_dollar" + " Line-Y" + j;
+                    var ClassName = "currency_dollar" + " "+_id+"Line-Y" + j;
                     $html += '<td><input id="' + tdId + '" placeholder="---" '; // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
                     $html += ' class="' + ClassName + '"  maxlength="@RevenuePlanner.Helpers.Common.maxLengthPriceValue"';
                     

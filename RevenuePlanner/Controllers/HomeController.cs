@@ -4466,10 +4466,10 @@ namespace RevenuePlanner.Controllers
 
             List<string> lstMonthly = new List<string>() { "Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "Y7", "Y8", "Y9", "Y10", "Y11", "Y12" };
 
-
-            var tacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.ToList();
-            var tacticLineItemActual = db.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList();
-            var tacticActuals = db.Plan_Campaign_Program_Tactic_Actual.ToList();
+            var tacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(a=> TacticIds.Contains(a.PlanTacticId)).ToList();
+            List<int> LineItemsIds = tacticLineItem.Select(t => t.PlanLineItemId).ToList();
+            var tacticLineItemActual = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(s => LineItemsIds.Contains(s.PlanLineItemId)).ToList();
+            var tacticActuals = db.Plan_Campaign_Program_Tactic_Actual.Where(a => TacticIds.Contains(a.PlanTacticId)).ToList();
 
             var tacticObj = TacticList.Select(t => new
             {
@@ -4484,25 +4484,25 @@ namespace RevenuePlanner.Controllers
                 revenueProjected = Math.Round(tacticList.Where(tl => tl.PlanTacticId == t.PlanTacticId).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 1),
                 revenueActual = lstTacticActual.Where(a => a.PlanTacticId == t.PlanTacticId && a.StageTitle == TitleRevenue).Sum(a => a.Actualvalue),//t.RevenuesActual == null ? 0 : t.RevenuesActual,
                 //costProjected = t.Cost,
-                costProjected = (db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).Count() > 0 ?  
-                (db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).ToList().Sum(a => a.Cost) : t.Cost,
+                costProjected = (tacticLineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).Count() > 0 ?
+                (tacticLineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).Sum(a => a.Cost) : t.Cost,
                 //costActual = t.CostActual == null ? 0 : t.CostActual,
                 
                 //Get the sum of Tactic line item actuals
                 costActual = (tacticLineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).Count() > 0 ?
-                (tacticLineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).ToList().Select(pp => new
+                (tacticLineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).Select(pp => new
                 {
-                    LineItemActualCost = tacticLineItemActual.Where(ww => ww.PlanLineItemId == pp.PlanLineItemId).ToList().Sum(q => q.Value)
-                }).Sum(a => a.LineItemActualCost) : (tacticActuals.Where(s => s.PlanTacticId == t.PlanTacticId && s.StageTitle == Enums.InspectStageValues[Enums.InspectStage.Cost.ToString()].ToString()).ToList()).Sum(a => a.Actualvalue),
+                    LineItemActualCost = tacticLineItemActual.Where(ww => ww.PlanLineItemId == pp.PlanLineItemId).Sum(q => q.Value)
+                }).Sum(a => a.LineItemActualCost) : (tacticActuals.Where(s => s.PlanTacticId == t.PlanTacticId && s.StageTitle == Enums.InspectStageValues[Enums.InspectStage.Cost.ToString()].ToString())).Sum(a => a.Actualvalue),
                 
                 //First check that if tactic has a single line item at that time we need to get the cost actual data from the respective table. 
                 costActualData = lstMonthly.Select(m => new
                 {
                     period = m,
                     Cost = (tacticLineItem.Where(s => s.PlanTacticId == t.PlanTacticId)).Count() > 0 ?
-                    tacticLineItem.Where(s => s.PlanTacticId == t.PlanTacticId).ToList().Select(ss => new
+                    tacticLineItem.Where(s => s.PlanTacticId == t.PlanTacticId).Select(ss => new
                     {
-                        costValue = tacticLineItemActual.Where(y => y.PlanLineItemId == ss.PlanLineItemId && y.Period == m).ToList().Sum(s=>s.Value)
+                        costValue = tacticLineItemActual.Where(y => y.PlanLineItemId == ss.PlanLineItemId && y.Period == m).Sum(s=>s.Value)
                     }).Sum(s=>s.costValue) :
                     tacticActuals.Where(s => s.PlanTacticId == t.PlanTacticId && s.Period == m && s.StageTitle == Enums.InspectStageValues[Enums.InspectStage.Cost.ToString()].ToString()).Sum(s => s.Actualvalue),
                 }),
