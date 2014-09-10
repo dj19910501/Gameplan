@@ -4466,7 +4466,7 @@ namespace RevenuePlanner.Controllers
 
             List<string> lstMonthly = new List<string>() { "Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "Y7", "Y8", "Y9", "Y10", "Y11", "Y12" };
 
-            var tacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(a=> TacticIds.Contains(a.PlanTacticId)).ToList();
+            var tacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(a=> TacticIds.Contains(a.PlanTacticId) && a.IsDeleted == false ).ToList();
             List<int> LineItemsIds = tacticLineItem.Select(t => t.PlanLineItemId).ToList();
             var tacticLineItemActual = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(s => LineItemsIds.Contains(s.PlanLineItemId)).ToList();
             var tacticActuals = db.Plan_Campaign_Program_Tactic_Actual.Where(a => TacticIds.Contains(a.PlanTacticId)).ToList();
