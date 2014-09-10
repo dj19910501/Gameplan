@@ -549,12 +549,6 @@
             });
         });
 
-        function ReplaceCC(text) {
-            return text.trim().replace(/,/g, '').replace('$', '');
-        }
-        //$('#lblTotalCost').bind('change', calculateRIO);
-        //$('#lblTotalCost').bind('keyup', calculateRIO);
-
         // Modified by dharmraj for implement new formula to calculate ROI, #533
         function calculateRIO() {
             var pcost = parseFloat(ReplaceCC($("#cp").text()));

@@ -587,8 +587,9 @@
                         }
                         else {
                             mqlConversion = data.mql;
-                            $("#txtmql").val(FormatCommas(mqlConversion.toString(), false));
-                            $("#txtmql").attr("title", FormatCommas(mqlConversion.toString(), false));
+                            var mqlValue = FormatCommas(mqlConversion.toString(), false);
+                            $("#txtmql").val(mqlValue);
+                            $("#txtmql").attr("title", mqlValue);
                         }
                         // Added by dharmraj on 4-sep-2014, #760 Advanced budgeting – show correct revenue in Tactic fly out
                         $("#txtRevenue").val(FormatCommasBudget(data.revenue.toString(), false, true));
@@ -759,8 +760,9 @@
                 $("#txtmql").attr("title","0");
             }
             else {
-                $("#txtmql").val(ReplaceCC($("#txtmql").val()));
-                $("#txtmql").attr("title", ReplaceCC($("#txtmql").val()));
+                var mqlValue = ReplaceCC($("#txtmql").val());
+                $("#txtmql").val(mqlValue);
+                $("#txtmql").attr("title", mqlValue);
             }
 
             $("#TacticCost").val(ReplaceCC($("#TacticCost").val()));    // Modified by Sohel Pathan on 12/08/2014 for PL ticket #605
