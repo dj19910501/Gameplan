@@ -17,7 +17,11 @@
     string strTacticCost = Model.TacticCost.ToString();     //// Added by Sohel Pathan on 12/08/2014 for PL ticket #605
 
     string planRemainingBudget = Convert.ToString(ViewBag.planRemainingBudget);
-    string tacticStatus = (string)ViewBag.TacticStatus;
+    bool isTacticAfterApproved = false;
+    if (ViewBag.IsTacticAfterApproved!=null)
+    {
+        isTacticAfterApproved = (bool)ViewBag.IsTacticAfterApproved;
+    }
 
 }
 <style type="text/css">
@@ -220,7 +224,7 @@
         <!-- End by Kalpesh Sharma #605: Cost allocation for Tactic-->
         
         <!-- Start by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics  -->
-        if (tacticStatus == Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString() || tacticStatus == Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString() || tacticStatus == Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString())
+        if (isTacticAfterApproved)
             {
         <div class="budget-section" id="actual-Cost-Allocation">
             <div class="budget-head clearfix" id="actual-cost-budget-head">

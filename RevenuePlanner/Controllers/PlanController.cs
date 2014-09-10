@@ -3647,7 +3647,7 @@ namespace RevenuePlanner.Controllers
                 return null;
             }
 
-            ViewBag.TacticStatus = pcpt.Status;
+            ViewBag.IsTacticAfterApproved =Common.CheckAfterApprovedStatus(pcpt.Status);////Added by Mitesh Vaishnav for PL ticket #571 for checking tactic has after approved status
             // Start - Added by Sohel Pathan on 17/07/2014 for PL ticket #594 
             if (!tList.Any(t => t.TacticTypeId == pcpt.TacticTypeId))
             {
@@ -4827,7 +4827,7 @@ namespace RevenuePlanner.Controllers
             {
                 return null;
             }
-
+            ViewBag.IsTacticAfterApproved = Common.CheckAfterApprovedStatus(pcpt.Status);////Added by Mitesh Vaishnav for PL ticket #571 for checking tactic has after approved status
             double totalLineItemCost = pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
             double TacticCost = pcpt.Cost;
             double diffCost = TacticCost - totalLineItemCost;
@@ -4925,6 +4925,7 @@ namespace RevenuePlanner.Controllers
             //ViewBag.IsOwner = true;
             // Custom Restriction
             //ViewBag.IsAllowCustomRestriction = true;
+            ViewBag.IsTacticAfterApproved = Common.CheckAfterApprovedStatus(pcptl.Plan_Campaign_Program_Tactic.Status);////Added by Mitesh Vaishnav for PL ticket #571 for checking tactic has after approved status
             ViewBag.Tactic = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Title);
             ViewBag.Program = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Title);
             ViewBag.Campaign = HttpUtility.HtmlDecode(pcptl.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Title);
