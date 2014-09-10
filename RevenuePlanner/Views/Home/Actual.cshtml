@@ -179,11 +179,13 @@
                         <th id="lblTotalCW" class="border-r font3F3F3F text-align-right addFormatterActualNumber">@tacticActual.CWsActual</th>  @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
                     </tr>
                     <tr class="height42">
-                        <th id="rP" class="text-align-right projected font908D88">@tacticActual.Revenues</th>
+                        <th id="rP" class="text-align-right projected font908D88 ActualsFormater">@tacticActual.Revenues</th> @* Modified by Sohel Pathan on 10/09/2014 for Internal Review Points *@
+                        <input type="hidden" id="hdnRp" value="@tacticActual.Revenues" />  @* Added by Sohel Pathan on 10/09/2014 for Internal Review Points *@
                         <th id="lblTotalRevenue" class="border-r font3F3F3F text-align-right ActualsFormater" ov="@tacticActual.RevenuesActual">@tacticActual.RevenuesActual</th>
                     </tr>
                     <tr class="height42">
                         <th id="cP" class="text-align-right projected font908D88 ActualsFormater">@tacticActual.Cost</th>
+                        <input type="hidden" id="hdnCp" value="@tacticActual.Cost" />  @* Added by Sohel Pathan on 10/09/2014 for Internal Review Points *@
                         <th class="border-r font3F3F3F text-align-right ActualsFormater" id="lblTotalCost">0</th>
                             @*<input id="lblTotalCost" class="backgroundC6EBF3 font3F3F3F text-align-right width75px currency_dollar" placeholder="- - -" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" value="@tacticActual.CostActual"></th>*@
                     </tr>
@@ -459,16 +461,16 @@
             document.getElementById('cwP').innerHTML = FormatCommas(document.getElementById('cwP').innerHTML, true);
             document.getElementById('lblTotalCW').innerHTML = FormatCommas(document.getElementById('lblTotalCW').innerHTML, false);
 
-            document.getElementById('rP').innerHTML = FormatCurrency(document.getElementById('rP').innerHTML, true);
+            document.getElementById('rP').innerHTML = FormatCurrency(document.getElementById('rP').innerHTML, false);   // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
             document.getElementById('lblTotalRevenue').innerHTML = FormatCurrency(document.getElementById('lblTotalRevenue').innerHTML, false);
 
             document.getElementById('cP').innerHTML = FormatCurrency(document.getElementById('cP').innerHTML, false);
             document.getElementById('lblTotalCost').innerHTML = FormatCurrency(document.getElementById('lblTotalCost').innerHTML, false);
 
 
-            var pcost = parseFloat(ReplaceCC(document.getElementById('cP').innerHTML));
+            var pcost = $("#hdnCp").val();  // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
             if (pcost != 0 && !isNaN(pcost)) {
-                var prevenue = parseFloat(ReplaceCC($("#rP").text()));
+                var prevenue = $("#hdnRp").val();   // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
                 var roip = (prevenue - pcost) / pcost;
                 $("#roiP").text(roip.toFixed(2));
             }
@@ -551,9 +553,9 @@
 
         // Modified by dharmraj for implement new formula to calculate ROI, #533
         function calculateRIO() {
-            var pcost = parseFloat(ReplaceCC($("#cp").text()));
+            var pcost = $("#hdnCp").val(); // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
             if (pcost != 0 && !isNaN(pcost)) {
-                var prevenue = parseFloat(ReplaceCC($("#rP").text()));
+                var prevenue = $("#hdnRp").val();// Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
                 var roip = (prevenue - pcost) / pcost;
                 $("#roiP").text(FormatCommas(roip.toFixed(2).toString()));
             }

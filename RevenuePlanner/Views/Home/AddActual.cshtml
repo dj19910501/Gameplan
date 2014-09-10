@@ -666,9 +666,9 @@
 
             // Modified by dharmraj for implement new formula to calculate ROI, #533
             function calculateRIO(id) {
-                var pcost = parseFloat(ReplaceCC($("#ProjectedlblCCost" + id).text()));
+                var pcost = $("#hdnProjectedlblCCost" + id).val();  // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
                 if (pcost != 0 && !isNaN(pcost)) {
-                    var prevenue = parseFloat(ReplaceCC($("#ProjectedlblValueRevenue" + id).text()));
+                    var prevenue = $("#hdnProjectedlblValueRevenue" + id).val();    // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
                     var roip = (prevenue - pcost) / pcost;
                     $("#ProjectedROI" + id).text(roip.toFixed(2));
                 }
@@ -871,7 +871,7 @@
 
                 $('.addFormatterActualCurrency').each(function () {
                     //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
-                    SetBudget($(this));
+                    SetLabelFormaterWithTipsy($(this)); // Modfified by Sohel Pathan on 10/09/2014 for Internal Review Points
                 });
 
                 $('.addFormatterActualNumber').each(function () {
@@ -1062,6 +1062,7 @@
                                             '<div orignal-value="' + _revenueActual + '" class="table-info-actual-left table-info-actual-width truncate addFormatterActualCurrency" id="ActuallblCRevenue' + _id + '">' +
                                                 _revenueActual +
                                             '</div>' +
+                                            '<input type="hidden" id="hdnProjectedlblValueRevenue' + _id + '" value=" ' + _revenueProjected + ' " />' +       //// Added by Sohel Pathan on 10/09/2014 for Internal Review Points
                                         '</div>' +
                                     '</div>';
 
@@ -1074,7 +1075,7 @@
             //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
                 @*$html += '<input placeholder="---" class="currency_dollar truncate addFormatterActualCurrency" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" id="ActuallblCCost' + _id + '" value="' + _costActual + '">' + '</input>';    // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point*@
             $html += '<div orignal-value="' + _costActual + '" id="ActuallblCCost' + _id + '" class="table-info-actual-left table-info-actual-width truncate addFormatterActualCurrency">' + _costActual + '</div>';
-                           
+            $html += '<input type="hidden" id="hdnProjectedlblCCost' + _id + '" value=" ' + _costProjected + ' " />';       //// Added by Sohel Pathan on 10/09/2014 for Internal Review Points
             $html+=     '</div>' +
                             '</div>';
 

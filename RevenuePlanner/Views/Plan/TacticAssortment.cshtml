@@ -382,7 +382,7 @@
         var isAssortment = $("#hdnRedirectType").val();
         var hdnYear = @ViewBag.Year
         $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
-        $("#txtRevenue").val(FormatCommasBudget($("#txtRevenue").val(), false, true));
+        $("#txtRevenue").val('$' + number_format($("#txtRevenue").val().toString(), 0, 0, ',')); //Modified by Sohel Pathan on 10/09/2014 for PL ticket #760
 
         if ('@TempData["TacticMQL"]' == "N/A") {
             $("#txtmql").removeClass("priceValue");
@@ -592,7 +592,7 @@
                             $("#txtmql").attr("title", mqlValue);
                         }
                         // Added by dharmraj on 4-sep-2014, #760 Advanced budgeting – show correct revenue in Tactic fly out
-                        $("#txtRevenue").val(FormatCommasBudget(data.revenue.toString(), false, true));
+                        $("#txtRevenue").val('$' + number_format(data.revenue.toString(), 0, 0, ',')); //Modified by Sohel Pathan on 10/09/2014 for PL ticket #760
                         $("#txtRevenue").attr("title", $("#txtRevenue").val());
                     }
                 });
