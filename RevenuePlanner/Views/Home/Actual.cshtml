@@ -239,7 +239,6 @@
         var hdnTacticStatus = $("#hdnTacticStatus").val();
         var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
         var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
-        var Declinestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()";
         var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
         if (hdnTacticStatus != Approvedstatus && hdnTacticStatus != InProgressstatus && hdnTacticStatus != Completestatus) {
             $("#divActualInner").empty();
@@ -505,10 +504,10 @@
             //    else
             //        $('.table-up').removeClass("shadow-table");
             //});
-            $('.priceValue').each(function () {
-                var txtvalue = $(this).val();
-                $(this).attr('title', txtvalue);//uday 2-7-2014 //added by uday for internal point 2-7-2014
-            });
+            //$('.priceValue').each(function () {
+            //    var txtvalue = $(this).val();
+            //    $(this).attr('title', txtvalue);//uday 2-7-2014 //added by uday for internal point 2-7-2014
+            //});
 
             //$('.currency_dollar').each(function () {
             //    var txtvalue = $(this).val();

@@ -3647,6 +3647,7 @@ namespace RevenuePlanner.Controllers
                 return null;
             }
 
+            ViewBag.TacticStatus = pcpt.Status;
             // Start - Added by Sohel Pathan on 17/07/2014 for PL ticket #594 
             if (!tList.Any(t => t.TacticTypeId == pcpt.TacticTypeId))
             {
@@ -8218,7 +8219,8 @@ namespace RevenuePlanner.Controllers
                 if (tacticLineItemList.Count == 0)
                 {
                     ////object for filling input of Actual Cost Allocation
-                    actualCostAllocationData = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => ta.PlanTacticId == PlanTacticId).ToList().Select(ta => new Plan_Campaign_Program_Tactic_LineItem_Actual
+                    string costTitle=Enums.InspectStage.Cost.ToString();
+                    actualCostAllocationData = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => ta.PlanTacticId == PlanTacticId && ta.StageTitle==costTitle).ToList().Select(ta => new Plan_Campaign_Program_Tactic_LineItem_Actual
                       {
                           PlanLineItemId = 0,
                           Period = ta.Period,
