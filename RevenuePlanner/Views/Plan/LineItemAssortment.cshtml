@@ -609,8 +609,14 @@
         //Added By : Kalpesh Sharma #697 08/26/2014
         $('.budget-section-Actual').find('input').each(function () {
             $(this).keyup(function () {
-                if ($(this).val().trim() != '') {
-                    var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
+
+                //Modified By Kalpesh Sharma #761 CAMPAIGNS View: Campaign/Plan Budget field is clearing Remaining Budget/Remaining
+                var GetCurrentvalue = $(this).val().trim();
+                if (GetCurrentvalue == '') {
+                    GetCurrentvalue = '0';
+                }
+                    var currentValue = GetCurrentvalue.replace(/,/g, '').replace('$', '');
+                    
                     if (currentValue.match('^(0|[1-9][0-9]*)$')) {
                         var TotalallocationValue = 0;
                         var lstAllocInputs = $(".budget-section-Actual input").not('.unallocated-text');
@@ -618,7 +624,6 @@
                             TotalallocationValue += parseInt($(lstAllocInputs[i]).val() == '' ? 0 : ReplaceCC($(lstAllocInputs[i]).val()));
                         }
                         $("#lblTotalActualCost").html(FormatCommasBudget(TotalallocationValue.toString(), false, true));
-                    }
                 }
             });
         });
