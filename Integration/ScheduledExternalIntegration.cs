@@ -29,7 +29,8 @@ namespace Integration
             int todaysDay = currentDate.Day;
             int currentHour = currentDate.Hour;
             var lstIntegrationInstanceId = db.SyncFrequencies.Where(varS => varS.NextSyncDate.Value.Day == todaysDay &&
-                                                                            varS.NextSyncDate.Value.Hour == currentHour)
+                                                                            varS.NextSyncDate.Value.Hour == currentHour &&
+                                                                            varS.IntegrationInstance.IsDeleted == false)////Modified by Mitesh Vaishnav For PL ticket #743 -Actuals Inspect: User Name for Scheduler Integration (Add condition for checking isDeleted flag)
                                                              .ToList()
                                                              .Select(varS => varS.IntegrationInstanceId);
 
