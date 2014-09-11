@@ -672,7 +672,7 @@
                             $(".budget-section").find("#" + r[i].periodTitle).attr('rmb', remainingMonthlyCost);
                             $(".budget-section").find("#" + r[i].periodTitle).attr("myValue", $("#" + r[i].periodTitle).val()); // Added by Sohel Pathan on 18/08/2014 for Internal Review Points
                             if (parseInt(remainingMonthlyCost) < 0) {
-                                $("#" + r[i].periodTitle).addClass('error-text');
+                                $(".budget-section").find("#" + r[i].periodTitle).addClass('error-text');
                             }
                         }
                     }

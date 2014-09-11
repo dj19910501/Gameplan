@@ -8077,3 +8077,9 @@ footer a {
     font-size: 20px !important;
     color: gray;
 }
+
+
+.budget-section input:focus:invalid
+{
+  color: #5693b3;
+}
