@@ -217,5 +217,48 @@ namespace Integration.Helper
                 db.SaveChanges();
             }
         }
+
+        /// <summary>
+        /// Created By : Sohel Pathan
+        /// Created Date : 11/09/2014
+        /// Desciption : Calculate the ActualCost of the tactic
+        /// </summary>
+        /// <param name="PlanTacticId"></param>
+        /// <returns>Actual cost of a Tactic</returns>
+        public static string CalculateActualCost(int PlanTacticId)
+        {
+            string cost = "Cost";
+            string strActualCost = "0";
+            try
+            {
+                using (MRPEntities db = new MRPEntities())
+                {
+                    var lstLineItems = db.Plan_Campaign_Program_Tactic_LineItem.Where(li => li.PlanTacticId.Equals(PlanTacticId) && li.IsDeleted.Equals(false)).ToList().Select(li => li.PlanLineItemId).ToList();
+                    if (lstLineItems.Count > 0)
+                    {
+                        var lstLineItemActuals = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lia => lstLineItems.Contains(lia.PlanLineItemId)).ToList();
+                        if (lstLineItemActuals.Count > 0)
+                        {
+                            var actualCostSum = lstLineItemActuals.Sum(lia => lia.Value);
+                            strActualCost = actualCostSum.ToString();
+                        }
+                    }
+                    else
+                    {
+                        var lstPlanTacticsActuals = db.Plan_Campaign_Program_Tactic_Actual.Where(pta => pta.PlanTacticId.Equals(PlanTacticId) && pta.StageTitle.Equals(cost)).ToList();
+                        if (lstPlanTacticsActuals.Count > 0)
+                        {
+                            var actualCostSum = lstPlanTacticsActuals.Sum(pta => pta.Actualvalue);
+                            strActualCost = actualCostSum.ToString();
+                        }
+                    }
+                }
+                return strActualCost;
+            }
+            catch
+            {
+                return strActualCost;
+            }
+        }
     }
 }

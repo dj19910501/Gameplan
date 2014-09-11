@@ -200,7 +200,7 @@ namespace Integration.Salesforce
                 if (isImport)
                 {
                     GetDataForTacticandUpdate();
-                    PullingResponses();
+                    //PullingResponses();   // Commented by Sohel Pathan on 11/09/2014 for PL ticket #773
                     PullingCWRevenue();
                 }
             }
@@ -214,176 +214,176 @@ namespace Integration.Salesforce
             public DateTime FirstRespondedDate { get; set; }
         }
 
-        private void PullingResponses()
-        {
-            // Insert log into IntegrationInstanceSection, Dharmraj PL#684
-            int IntegrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), DateTime.Now, _userId);
+        //private void PullingResponses()
+        //{
+        //    // Insert log into IntegrationInstanceSection, Dharmraj PL#684
+        //    int IntegrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), DateTime.Now, _userId);
 
-            List<int> planIds = db.Plans.Where(p => p.Model.IntegrationInstanceIdINQ == _integrationInstanceId && p.Model.Status.Equals("Published")).Select(p => p.PlanId).ToList();
-            Guid ClientId = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
-            int INQStageId = db.Stages.SingleOrDefault(s => s.ClientId == ClientId && s.Code == Common.StageINQ).StageId;
-            // Get List of status after Approved Status
-            List<string> statusList = Common.GetStatusListAfterApproved();
-            List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(t => planIds.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId) && t.StageId == INQStageId && statusList.Contains(t.Status) && t.IsDeployedToIntegration && !t.IsDeleted && t.IntegrationInstanceTacticId != null).ToList();
-            string integrationTacticIds = String.Join("','", (from tactic in tacticList select tactic.IntegrationInstanceTacticId));
-            //For Testing
-            //integrationTacticIds = "'701f00000003S9R','701f00000002cGG','701f00000002cGL'";
-            if (integrationTacticIds != string.Empty)
-            {
-                try
-                {
-                    string CampaignId = string.Empty;// "CampaignId";
-                    string FirstRespondedDate = string.Empty;//"FirstRespondedDate";
-                    string Status = string.Empty;//"Status";
+        //    List<int> planIds = db.Plans.Where(p => p.Model.IntegrationInstanceIdINQ == _integrationInstanceId && p.Model.Status.Equals("Published")).Select(p => p.PlanId).ToList();
+        //    Guid ClientId = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
+        //    int INQStageId = db.Stages.SingleOrDefault(s => s.ClientId == ClientId && s.Code == Common.StageINQ).StageId;
+        //    // Get List of status after Approved Status
+        //    List<string> statusList = Common.GetStatusListAfterApproved();
+        //    List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(t => planIds.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId) && t.StageId == INQStageId && statusList.Contains(t.Status) && t.IsDeployedToIntegration && !t.IsDeleted && t.IntegrationInstanceTacticId != null).ToList();
+        //    string integrationTacticIds = String.Join("','", (from tactic in tacticList select tactic.IntegrationInstanceTacticId));
+        //    //For Testing
+        //    //integrationTacticIds = "'701f00000003S9R','701f00000002cGG','701f00000002cGL'";
+        //    if (integrationTacticIds != string.Empty)
+        //    {
+        //        try
+        //        {
+        //            string CampaignId = string.Empty;// "CampaignId";
+        //            string FirstRespondedDate = string.Empty;//"FirstRespondedDate";
+        //            string Status = string.Empty;//"Status";
 
-                    var listPullMapping = db.IntegrationInstanceDataTypeMappingPulls.Where(instance => instance.IntegrationInstanceId == _integrationInstanceId && instance.GameplanDataTypePull.Type == Common.StageINQ)
-                       .Select(mapping => new { mapping.GameplanDataTypePull.ActualFieldName, mapping.TargetDataType }).ToList();
-                    bool ErrorFlag = false;
-                    if (listPullMapping.Count > 0)
-                    {
-                        if (listPullMapping.Where(mapping => mapping.ActualFieldName == Enums.PullResponseActualField.CampaignID.ToString()).Any())
-                        {
-                            CampaignId = listPullMapping.FirstOrDefault(mapping => mapping.ActualFieldName == Enums.PullResponseActualField.CampaignID.ToString()).TargetDataType;
-                        }
-                        if (listPullMapping.Where(mapping => mapping.ActualFieldName == Enums.PullResponseActualField.Timestamp.ToString()).Any())
-                        {
-                            FirstRespondedDate = listPullMapping.FirstOrDefault(mapping => mapping.ActualFieldName == Enums.PullResponseActualField.Timestamp.ToString()).TargetDataType;
-                        }
-                        if (listPullMapping.Where(mapping => mapping.ActualFieldName == Enums.PullResponseActualField.Status.ToString()).Any())
-                        {
-                            Status = listPullMapping.FirstOrDefault(mapping => mapping.ActualFieldName == Enums.PullResponseActualField.Status.ToString()).TargetDataType;
-                        }
+        //            var listPullMapping = db.IntegrationInstanceDataTypeMappingPulls.Where(instance => instance.IntegrationInstanceId == _integrationInstanceId && instance.GameplanDataTypePull.Type == Common.StageINQ)
+        //               .Select(mapping => new { mapping.GameplanDataTypePull.ActualFieldName, mapping.TargetDataType }).ToList();
+        //            bool ErrorFlag = false;
+        //            if (listPullMapping.Count > 0)
+        //            {
+        //                if (listPullMapping.Where(mapping => mapping.ActualFieldName == Enums.PullResponseActualField.CampaignID.ToString()).Any())
+        //                {
+        //                    CampaignId = listPullMapping.FirstOrDefault(mapping => mapping.ActualFieldName == Enums.PullResponseActualField.CampaignID.ToString()).TargetDataType;
+        //                }
+        //                if (listPullMapping.Where(mapping => mapping.ActualFieldName == Enums.PullResponseActualField.Timestamp.ToString()).Any())
+        //                {
+        //                    FirstRespondedDate = listPullMapping.FirstOrDefault(mapping => mapping.ActualFieldName == Enums.PullResponseActualField.Timestamp.ToString()).TargetDataType;
+        //                }
+        //                if (listPullMapping.Where(mapping => mapping.ActualFieldName == Enums.PullResponseActualField.Status.ToString()).Any())
+        //                {
+        //                    Status = listPullMapping.FirstOrDefault(mapping => mapping.ActualFieldName == Enums.PullResponseActualField.Status.ToString()).TargetDataType;
+        //                }
 
-                        if (CampaignId != string.Empty && FirstRespondedDate != string.Empty && Status != string.Empty)
-                        {
-                            List<CampaignMember> CampaignMemberList = new List<CampaignMember>();
-                            var responsePull = _client.Query<object>("SELECT " + CampaignId + "," + FirstRespondedDate + " FROM CampaignMember WHERE " + CampaignId + " IN ('" + integrationTacticIds + "') AND " + Status + "= '" + Common.Responded + "'");
+        //                if (CampaignId != string.Empty && FirstRespondedDate != string.Empty && Status != string.Empty)
+        //                {
+        //                    List<CampaignMember> CampaignMemberList = new List<CampaignMember>();
+        //                    var responsePull = _client.Query<object>("SELECT " + CampaignId + "," + FirstRespondedDate + " FROM CampaignMember WHERE " + CampaignId + " IN ('" + integrationTacticIds + "') AND " + Status + "= '" + Common.Responded + "'");
 
-                            foreach (var resultin in responsePull)
-                            {
-                                string TacticResult = resultin.ToString();
-                                JObject jobj = JObject.Parse(TacticResult);
-                                CampaignMember objCampaign = new CampaignMember();
-                                try
-                                {
-                                    objCampaign.CampaignId = Convert.ToString(jobj[CampaignId]);
-                                    objCampaign.FirstRespondedDate = Convert.ToDateTime(jobj[FirstRespondedDate]);
-                                }
-                                catch (SalesforceException e)
-                                {
-                                    ErrorFlag = true;
-                                    string TacticId = Convert.ToString(jobj[ColumnId]);
-                                    var tactic = tacticList.SingleOrDefault(t => t.IntegrationInstanceTacticId == TacticId);
-                                    IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
-                                    instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
-                                    instanceTactic.IntegrationInstanceId = _integrationInstanceId;
-                                    instanceTactic.EntityId = tactic.PlanTacticId;
-                                    instanceTactic.EntityType = EntityType.Tactic.ToString();
-                                    instanceTactic.Status = StatusResult.Error.ToString();
-                                    instanceTactic.Operation = Operation.Import_Cost.ToString();
-                                    instanceTactic.SyncTimeStamp = DateTime.Now;
-                                    instanceTactic.CreatedDate = DateTime.Now;
-                                    instanceTactic.ErrorDescription = GetErrorMessage(e);
-                                    instanceTactic.CreatedBy = _userId;
-                                    db.Entry(instanceTactic).State = EntityState.Added;
-                                }
-                                CampaignMemberList.Add(objCampaign);
-                            }
+        //                    foreach (var resultin in responsePull)
+        //                    {
+        //                        string TacticResult = resultin.ToString();
+        //                        JObject jobj = JObject.Parse(TacticResult);
+        //                        CampaignMember objCampaign = new CampaignMember();
+        //                        try
+        //                        {
+        //                            objCampaign.CampaignId = Convert.ToString(jobj[CampaignId]);
+        //                            objCampaign.FirstRespondedDate = Convert.ToDateTime(jobj[FirstRespondedDate]);
+        //                        }
+        //                        catch (SalesforceException e)
+        //                        {
+        //                            ErrorFlag = true;
+        //                            string TacticId = Convert.ToString(jobj[ColumnId]);
+        //                            var tactic = tacticList.SingleOrDefault(t => t.IntegrationInstanceTacticId == TacticId);
+        //                            IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
+        //                            instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
+        //                            instanceTactic.IntegrationInstanceId = _integrationInstanceId;
+        //                            instanceTactic.EntityId = tactic.PlanTacticId;
+        //                            instanceTactic.EntityType = EntityType.Tactic.ToString();
+        //                            instanceTactic.Status = StatusResult.Error.ToString();
+        //                            instanceTactic.Operation = Operation.Import_Cost.ToString();
+        //                            instanceTactic.SyncTimeStamp = DateTime.Now;
+        //                            instanceTactic.CreatedDate = DateTime.Now;
+        //                            instanceTactic.ErrorDescription = GetErrorMessage(e);
+        //                            instanceTactic.CreatedBy = _userId;
+        //                            db.Entry(instanceTactic).State = EntityState.Added;
+        //                        }
+        //                        CampaignMemberList.Add(objCampaign);
+        //                    }
 
-                            List<int> OuterTacticIds = tacticList.Select(t => t.PlanTacticId).ToList();
-                            List<Plan_Campaign_Program_Tactic_Actual> OuteractualTacticList = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => OuterTacticIds.Contains(actual.PlanTacticId) && actual.StageTitle == Common.StageProjectedStageValue).ToList();
-                            OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
-                            db.SaveChanges();
+        //                    List<int> OuterTacticIds = tacticList.Select(t => t.PlanTacticId).ToList();
+        //                    List<Plan_Campaign_Program_Tactic_Actual> OuteractualTacticList = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => OuterTacticIds.Contains(actual.PlanTacticId) && actual.StageTitle == Common.StageProjectedStageValue).ToList();
+        //                    OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+        //                    db.SaveChanges();
 
-                            if (CampaignMemberList.Count > 0)
-                            {
-                                var CampaignMemberListGroup = CampaignMemberList.GroupBy(cl => new { CampaignId = cl.CampaignId, Month = cl.FirstRespondedDate.ToString("MM/yyyy") }).Select(cl =>
-                                    new
-                                    {
-                                        CampaignId = cl.Key.CampaignId,
-                                        TacticId = tacticList.Single(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).PlanTacticId,
-                                        Period = "Y" + Convert.ToDateTime(cl.Key.Month).Month,
-                                        IsYear = (tacticList.Single(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).StartDate.Year == Convert.ToDateTime(cl.Key.Month).Year) ? true : false,
-                                        Count = cl.Count()
-                                    }
-                                    ).Where(cm => cm.IsYear).ToList();
+        //                    if (CampaignMemberList.Count > 0)
+        //                    {
+        //                        var CampaignMemberListGroup = CampaignMemberList.GroupBy(cl => new { CampaignId = cl.CampaignId, Month = cl.FirstRespondedDate.ToString("MM/yyyy") }).Select(cl =>
+        //                            new
+        //                            {
+        //                                CampaignId = cl.Key.CampaignId,
+        //                                TacticId = tacticList.Single(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).PlanTacticId,
+        //                                Period = "Y" + Convert.ToDateTime(cl.Key.Month).Month,
+        //                                IsYear = (tacticList.Single(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).StartDate.Year == Convert.ToDateTime(cl.Key.Month).Year) ? true : false,
+        //                                Count = cl.Count()
+        //                            }
+        //                            ).Where(cm => cm.IsYear).ToList();
 
                                 
 
-                                foreach (var tactic in tacticList)
-                                {
-                                    var innerCampaignMember = CampaignMemberListGroup.Where(cm => cm.TacticId == tactic.PlanTacticId).ToList();
-                                    foreach (var objCampaignMember in innerCampaignMember)
-                                    {
-                                        Plan_Campaign_Program_Tactic_Actual objPlanTacticActual = new Plan_Campaign_Program_Tactic_Actual();
-                                        objPlanTacticActual = new Plan_Campaign_Program_Tactic_Actual();
-                                        objPlanTacticActual.PlanTacticId = objCampaignMember.TacticId;
-                                        objPlanTacticActual.Period = objCampaignMember.Period;
-                                        objPlanTacticActual.StageTitle = Common.StageProjectedStageValue;
-                                        objPlanTacticActual.Actualvalue = objCampaignMember.Count;
-                                        objPlanTacticActual.CreatedBy = _userId;
-                                        objPlanTacticActual.CreatedDate = DateTime.Now;
-                                        db.Entry(objPlanTacticActual).State = EntityState.Added;
-                                    }
+        //                        foreach (var tactic in tacticList)
+        //                        {
+        //                            var innerCampaignMember = CampaignMemberListGroup.Where(cm => cm.TacticId == tactic.PlanTacticId).ToList();
+        //                            foreach (var objCampaignMember in innerCampaignMember)
+        //                            {
+        //                                Plan_Campaign_Program_Tactic_Actual objPlanTacticActual = new Plan_Campaign_Program_Tactic_Actual();
+        //                                objPlanTacticActual = new Plan_Campaign_Program_Tactic_Actual();
+        //                                objPlanTacticActual.PlanTacticId = objCampaignMember.TacticId;
+        //                                objPlanTacticActual.Period = objCampaignMember.Period;
+        //                                objPlanTacticActual.StageTitle = Common.StageProjectedStageValue;
+        //                                objPlanTacticActual.Actualvalue = objCampaignMember.Count;
+        //                                objPlanTacticActual.CreatedBy = _userId;
+        //                                objPlanTacticActual.CreatedDate = DateTime.Now;
+        //                                db.Entry(objPlanTacticActual).State = EntityState.Added;
+        //                            }
 
-                                    tactic.LastSyncDate = DateTime.Now;
-                                    tactic.ModifiedDate = DateTime.Now;
-                                    tactic.ModifiedBy = _userId;
+        //                            tactic.LastSyncDate = DateTime.Now;
+        //                            tactic.ModifiedDate = DateTime.Now;
+        //                            tactic.ModifiedBy = _userId;
 
-                                    IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
-                                    instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
-                                    instanceTactic.IntegrationInstanceId = _integrationInstanceId;
-                                    instanceTactic.EntityId = tactic.PlanTacticId;
-                                    instanceTactic.EntityType = EntityType.Tactic.ToString();
-                                    instanceTactic.Status = StatusResult.Success.ToString();
-                                    instanceTactic.Operation = Operation.Pull_Responses.ToString();
-                                    instanceTactic.SyncTimeStamp = DateTime.Now;
-                                    instanceTactic.CreatedDate = DateTime.Now;
-                                    instanceTactic.CreatedBy = _userId;
-                                    db.Entry(instanceTactic).State = EntityState.Added;
-                                }
+        //                            IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
+        //                            instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
+        //                            instanceTactic.IntegrationInstanceId = _integrationInstanceId;
+        //                            instanceTactic.EntityId = tactic.PlanTacticId;
+        //                            instanceTactic.EntityType = EntityType.Tactic.ToString();
+        //                            instanceTactic.Status = StatusResult.Success.ToString();
+        //                            instanceTactic.Operation = Operation.Pull_Responses.ToString();
+        //                            instanceTactic.SyncTimeStamp = DateTime.Now;
+        //                            instanceTactic.CreatedDate = DateTime.Now;
+        //                            instanceTactic.CreatedBy = _userId;
+        //                            db.Entry(instanceTactic).State = EntityState.Added;
+        //                        }
 
-                                db.SaveChanges();
-                            }
+        //                        db.SaveChanges();
+        //                    }
 
-                            if (ErrorFlag)
-                            {
-                                // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
-                                Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, string.Empty);
-                            }
-                            else
-                            {
-                                // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
-                                Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
-                            }
-                        }
-                        else
-                        {
-                            _isResultError = true;
-                            // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
-                            Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, Common.msgMappingNotFoundForSalesforcePullResponse);
-                        }
-                    }
-                    else
-                    {
-                        // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
-                        Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
-                    }
-                }
-                catch (SalesforceException e)
-                {
-                    string msg = GetErrorMessage(e);
-                    // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
-                    Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, msg);
-                }
-            }
-            else
-            {
-                // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
-                Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
-            }
+        //                    if (ErrorFlag)
+        //                    {
+        //                        // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
+        //                        Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, string.Empty);
+        //                    }
+        //                    else
+        //                    {
+        //                        // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
+        //                        Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    _isResultError = true;
+        //                    // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
+        //                    Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, Common.msgMappingNotFoundForSalesforcePullResponse);
+        //                }
+        //            }
+        //            else
+        //            {
+        //                // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
+        //                Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
+        //            }
+        //        }
+        //        catch (SalesforceException e)
+        //        {
+        //            string msg = GetErrorMessage(e);
+        //            // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
+        //            Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, msg);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
+        //        Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
+        //    }
 
-        }
+        //}
 
         private class OpportunityMember
         {
@@ -1950,6 +1950,7 @@ namespace Integration.Salesforce
             string statDate = "StartDate";
             string endDate = "EndDate";
             string effectiveDate = "EffectiveDate";
+            string costActual = "CostActual";   // Added by Sohel Pathan on 11/09/2014 for PL ticket #773
 
             Type sourceType = ((T)obj).GetType();
             PropertyInfo[] sourceProps = sourceType.GetProperties();
@@ -1989,6 +1990,12 @@ namespace Integration.Salesforce
                     {
                         value = Convert.ToDateTime(value).ToString("yyyy-MM-ddThh:mm:ss+hh:mm");
                     }
+                    // Start - Added by Sohel Pathan on 11/09/2014 for PL ticket #773
+                    else if (mapping.Key == costActual)
+                    {
+                        value = Common.CalculateActualCost(((Plan_Campaign_Program_Tactic)obj).PlanTacticId);
+                    }
+                    // End - Added by Sohel Pathan on 11/09/2014 for PL ticket #773
 
                     keyvaluepair.Add(mapping.Value, value);
                 }
