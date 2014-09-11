@@ -186,7 +186,7 @@
                     <tr class="height42">
                         <th id="cP" class="text-align-right projected font908D88 ActualsFormater">@tacticActual.Cost</th>
                         <input type="hidden" id="hdnCp" value="@tacticActual.Cost" />  @* Added by Sohel Pathan on 10/09/2014 for Internal Review Points *@
-                        <th class="border-r font3F3F3F text-align-right ActualsFormater" id="lblTotalCost">0</th>
+                        <th class="border-r font3F3F3F text-align-right" id="lblTotalCost">0</th>
                             @*<input id="lblTotalCost" class="backgroundC6EBF3 font3F3F3F text-align-right width75px currency_dollar" placeholder="- - -" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" value="@tacticActual.CostActual"></th>*@
                     </tr>
                      @if (lineItemList.Count > 0)
@@ -198,7 +198,7 @@
                             string totalId = "lblTotal-" + item.PlanLineItemId;
                              <tr class="height42">
                         <th id="@projectedId" class="text-align-right height22 projected padding-bottom9 font908D88 ActualsFormater">$@item.Cost</th>
-                        <th id="@totalId" class="border-r font3F3F3F text-align-right ActualsFormater"></th>
+                        <th id="@totalId" class="border-r font3F3F3F text-align-right"></th>
                     </tr>
                         }
                     }
@@ -260,6 +260,7 @@
                         LineItemActual = r.ActualCostAllocationData;
                         fillLineItemValue();
                     }
+                    
                     fillTacticActualTable();
                     getLoadActual();
                     AssignDefaultValue(); // added by dharmraj, #547
@@ -338,7 +339,8 @@
 
                             document.getElementById("lblTotal-" + ids[i].toString()).innerHTML = totalLineCost;
 
-                            document.getElementById("lblTotal-" + ids[i].toString()).innerHTML = FormatCurrency(document.getElementById("lblTotal-" + ids[i].toString()).innerHTML, false);
+                            document.getElementById("lblTotal-" + ids[i].toString()).innerHTML = FormatCurrency(totalLineCost.toString(), false);
+                            SetBudget("#lblTotal-" + ids[i].toString());
                             $("#lblTotal-" + ids[i].toString()).attr('ov', totalLineCost.toString());
 
 
@@ -431,6 +433,7 @@
                 });
             }
             $("#lblTotalCost").html(FormatCurrency(cost.toString(), false));
+            SetBudget("#lblTotalCost");
             $("#lblTotalCost").attr('ov', cost.toString());
             calculateRIO();
         }
