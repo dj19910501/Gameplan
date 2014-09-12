@@ -2255,7 +2255,7 @@ namespace RevenuePlanner.Controllers
                     TrendCost = 0,//GetTrendCostDataContribution(p.planTacticList, lastMonth),
                     RunRate = ActualRevenueTrendList.Where(ar => p.planTacticList.Contains(ar.PlanTacticId)).Sum(ar => ar.MQL),//GetTrendRevenueDataContribution(p.planTacticList, lastMonth, monthList),
                     PipelineCoverage = 0,//GetPipelineCoverage(p.planTacticList, lastMonth),
-                    RevSpend = GetRevenueVSSpendContribution(Tacticdata, ActualTacticList, p.planTacticList, monthWithYearList, monthList, revenue),
+                    RevSpend = GetRevenueVSSpendContribution(ActualCostDatatable, ActualTacticList, p.planTacticList, monthWithYearList, monthList, revenue),
                     RevenueTotal = GetActualRevenueTotal(ActualTacticList, p.planTacticList, monthList, revenue),
                     CostTotal = ActualCostDatatable.AsEnumerable().AsQueryable().Where(mr => p.planTacticList.Contains(mr.Field<int>(ColumnId)) && monthWithYearList.Contains(mr.Field<string>(ColumnMonth))).Sum(r => r.Field<double>(ColumnValue))
                 }).Select(p => p).Distinct().OrderBy(p => p.Title);
@@ -2330,13 +2330,9 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="cl"></param>
         /// <returns></returns>
-        public double GetRevenueVSSpendContribution(List<TacticStageValue> TacticList, List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, List<int> planTacticList, List<string> monthWithYearList, List<string> monthList, string revenue)
+        public double GetRevenueVSSpendContribution(DataTable ActualDT,List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, List<int> planTacticList, List<string> monthWithYearList, List<string> monthList, string revenue)
         {
-            List<TacticDataTable> tacticdata = (from td in TacticList
-                                                where planTacticList.Contains(td.TacticObj.PlanTacticId)
-                                                select new TacticDataTable { TacticId = td.TacticObj.PlanTacticId, Value = td.TacticObj.CostActual.HasValue ? (double)td.TacticObj.CostActual : 0, StartMonth = td.TacticObj.StartDate.Month, EndMonth = td.TacticObj.EndDate.Month, StartYear = td.TacticObj.StartDate.Year, EndYear = td.TacticObj.EndDate.Year }).ToList();
-
-            double costTotal = GetDatatable(tacticdata).AsEnumerable().AsQueryable().Where(c => monthWithYearList.Contains(c.Field<string>(ColumnMonth))).Sum(r => r.Field<double>(ColumnValue));
+            double costTotal = ActualDT.AsEnumerable().AsQueryable().Where(c => planTacticList.Contains(c.Field<int>(ColumnId)) && monthWithYearList.Contains(c.Field<string>(ColumnMonth))).Sum(r => r.Field<double>(ColumnValue));
 
             double revenueTotal = ActualTacticList.Where(ta => planTacticList.Contains(ta.PlanTacticId) && monthList.Contains(ta.Period) && ta.StageTitle == revenue).ToList().Sum(a => a.Actualvalue);
 
