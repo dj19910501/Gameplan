@@ -179,9 +179,9 @@
                         <th id="lblTotalCW" class="border-r font3F3F3F text-align-right addFormatterActualNumber">@tacticActual.CWsActual</th>  @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
                     </tr>
                     <tr class="height42">
-                        <th id="rP" class="text-align-right projected font908D88 ActualsFormater">@tacticActual.Revenues</th> @* Modified by Sohel Pathan on 10/09/2014 for Internal Review Points *@
+                        <th id="rP" class="text-align-right projected font908D88 setBudget">@tacticActual.Revenues</th> @* Modified by Sohel Pathan on 10/09/2014 for Internal Review Points *@
                         <input type="hidden" id="hdnRp" value="@tacticActual.Revenues" />  @* Added by Sohel Pathan on 10/09/2014 for Internal Review Points *@
-                        <th id="lblTotalRevenue" class="border-r font3F3F3F text-align-right ActualsFormater" ov="@tacticActual.RevenuesActual">@tacticActual.RevenuesActual</th>
+                        <th id="lblTotalRevenue" class="border-r font3F3F3F text-align-right setBudget" ov="@tacticActual.RevenuesActual">@tacticActual.RevenuesActual</th> @* Modified by Sohel Pathan on 12/09/2014 for PL ticket #760 *@
                     </tr>
                     <tr class="height42">
                         <th id="cP" class="text-align-right projected font908D88 ActualsFormater">@tacticActual.Cost</th>
@@ -197,7 +197,7 @@
                             string projectedId="lblProjected-"+item.PlanLineItemId;
                             string totalId = "lblTotal-" + item.PlanLineItemId;
                              <tr class="height42">
-                        <th id="@projectedId" class="text-align-right height22 projected padding-bottom9 font908D88 ActualsFormater">$@item.Cost</th>
+                        <th id="@projectedId" class="text-align-right height22 projected padding-bottom9 font908D88">$@item.Cost</th>  @* Modified by Sohel Pathan on 12/09/2014 for PL ticket #760 *@ 
                         <th id="@totalId" class="border-r font3F3F3F text-align-right"></th>
                     </tr>
                         }
@@ -272,6 +272,12 @@
                         SetLabelFormaterWithTipsy($(this));
                     });
 
+                    // Start - Added by Sohel Pathan on 12/09/2014 for PL ticket #760
+                    $('.setBudget').each(function () {
+                        SetBudget($(this));
+                    });
+                    // End - Added by Sohel Pathan on 12/09/2014 for PL ticket #760
+
                     // Start - Added by Sohel Pathan on 02/09/2014 for PL ticket #742.
                     $('.addFormatterActualNumber').each(function () {
                         SetLabelFormaterWithTipsyNumbers($(this));
@@ -343,7 +349,12 @@
                             SetBudget("#lblTotal-" + ids[i].toString());
                             $("#lblTotal-" + ids[i].toString()).attr('ov', totalLineCost.toString());
 
-
+                            // Start - Added by Sohel Pathan on 12/09/2014 for PL ticket #760
+                            var lblProjected = ReplaceCC(document.getElementById("lblProjected-" + ids[i].toString()).innerHTML);
+                            document.getElementById("lblProjected-" + ids[i].toString()).innerHTML = lblProjected;
+                            document.getElementById("lblProjected-" + ids[i].toString()).innerHTML = FormatCurrency(lblProjected.toString(), false);
+                            SetBudget("#lblProjected-" + ids[i].toString());
+                            // End - Added by Sohel Pathan on 12/09/2014 for PL ticket #760
                         }
                     }
                 }
@@ -461,10 +472,10 @@
             if (document.getElementById('lblTotalMQL') != null)
             document.getElementById('lblTotalMQL').innerHTML = FormatCommas(document.getElementById('lblTotalMQL').innerHTML, false);
 
-            document.getElementById('cwP').innerHTML = FormatCommas(document.getElementById('cwP').innerHTML, true);
+            document.getElementById('cwP').innerHTML = number_format(document.getElementById('cwP').innerHTML, 0, 0, ',');  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
             document.getElementById('lblTotalCW').innerHTML = FormatCommas(document.getElementById('lblTotalCW').innerHTML, false);
-
-            document.getElementById('rP').innerHTML = FormatCurrency(document.getElementById('rP').innerHTML, false);   // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
+            
+            document.getElementById('rP').innerHTML = FormatCurrency(document.getElementById('rP').innerHTML, true);   // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
             document.getElementById('lblTotalRevenue').innerHTML = FormatCurrency(document.getElementById('lblTotalRevenue').innerHTML, false);
 
             document.getElementById('cP').innerHTML = FormatCurrency(document.getElementById('cP').innerHTML, false);

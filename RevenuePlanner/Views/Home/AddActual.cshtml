@@ -878,6 +878,12 @@
                     //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
                     SetLabelFormaterWithTipsyNumbers($(this));
                 });
+
+                // Start - Added by Sohel Pathan on 12/09/2014 for PL ticket #760
+                $('.setBudget').each(function () {
+                    SetBudget($(this));
+                });
+                // End - Added by Sohel Pathan on 12/09/2014 for PL ticket #760
             }
         }
 
@@ -1047,7 +1053,7 @@
 
             $html += '<div class="body-toogle-actual">@Html.LabelForCW("CW")<div class="table-info-actual-left-wraper">' +
                                             '<div class="table-info-actual-left truncate addFormatterActualNumber" id="ProjectedlblValueCW' + _id + '">' +
-                                                _cwProjected +
+                                                number_format(_cwProjected, 0, 0, ',') +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                             '</div>' +
                                             '<div class="table-info-actual-left table-info-actual-width truncate addFormatterActualNumber" id="ActuallblPCW' + _id + '">' +
                                                 _cwActual +
@@ -1056,11 +1062,11 @@
                                     '</div>';
 
             $html += '<div class="body-toogle-actual">Revenue<div class="table-info-actual-left-wraper">' +
-                                            '<div class="table-info-actual-left truncate addFormatterActualCurrency" id="ProjectedlblValueRevenue' + _id + '">' +
-                                                _revenueProjected +
+                                            '<div class="table-info-actual-left truncate setBudget" id="ProjectedlblValueRevenue' + _id + '">' +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                                FormatCurrency(_revenueProjected, true) +   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                             '</div>' +
-                                            '<div orignal-value="' + _revenueActual + '" class="table-info-actual-left table-info-actual-width truncate addFormatterActualCurrency" id="ActuallblCRevenue' + _id + '">' +
-                                                _revenueActual +
+                                            '<div orignal-value="' + _revenueActual + '" class="table-info-actual-left table-info-actual-width truncate setBudget" id="ActuallblCRevenue' + _id + '">' +    // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                                FormatCurrency(_revenueActual, true) +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                             '</div>' +
                                             '<input type="hidden" id="hdnProjectedlblValueRevenue' + _id + '" value=" ' + _revenueProjected + ' " />' +       //// Added by Sohel Pathan on 10/09/2014 for Internal Review Points
                                         '</div>' +
@@ -1074,7 +1080,7 @@
 
             //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
                 @*$html += '<input placeholder="---" class="currency_dollar truncate addFormatterActualCurrency" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" id="ActuallblCCost' + _id + '" value="' + _costActual + '">' + '</input>';    // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point*@
-            $html += '<div orignal-value="' + _costActual + '" id="ActuallblCCost' + _id + '" class="table-info-actual-left table-info-actual-width truncate addFormatterActualCurrency">' + _costActual + '</div>';
+            $html += '<div orignal-value="' + _costActual + '" id="ActuallblCCost' + _id + '" class="table-info-actual-left table-info-actual-width truncate setBudget">' + FormatCurrency(_costActual, true) + '</div>';   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
             $html += '<input type="hidden" id="hdnProjectedlblCCost' + _id + '" value=" ' + _costProjected + ' " />';       //// Added by Sohel Pathan on 10/09/2014 for Internal Review Points
             $html+=     '</div>' +
                             '</div>';
@@ -1084,11 +1090,11 @@
                 var Title = _LineItemsData[line].Title.replace(/ /g, "_");
                 $html += '<div class="body-toogle-actual"><span class="inner-lineItem">' + _LineItemsData[line].Title +
                                              '</span><div id="border-right" class="table-info-actual-left-wraper">' +
-                                                 '<div class="table-info-actual-left truncate addFormatterActualCurrency" id="lineItemProjectedCost' + _LineItemsData[line].id + '">' +
-                                                     _LineItemsData[line].LineItemCost +
+                                                 '<div class="table-info-actual-left truncate setBudget" id="lineItemProjectedCost' + _LineItemsData[line].id + '">' +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                                     FormatCurrency(_LineItemsData[line].LineItemCost, true) +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                                  '</div>' +
-                                                 '<div lineValue="' + _LineItemsData[line].LineItemActualCost + '" class="table-info-actual-left addFormatterActualCurrency lineItemActualsValues" style="float: right;" id="ActuallblP' + Title + _LineItemsData[line].id + '">' +
-                                                  _LineItemsData[line].LineItemActualCost +
+                                                 '<div lineValue="' + _LineItemsData[line].LineItemActualCost + '" class="table-info-actual-left setBudget lineItemActualsValues" style="float: right;" id="ActuallblP' + Title + _LineItemsData[line].id + '">' +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
+                                                  FormatCurrency(_LineItemsData[line].LineItemActualCost, true) +   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                                      @*'<input placeholder="0" class="currency_dollarCost truncate" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" id="lineItemlblCCost' + _LineItemsData[line].id + '" value="' + _LineItemsData[line].LineItemCost + '">' + '</input>' +*@
                                     '</div>' +
                                 '</div>' +
