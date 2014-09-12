@@ -3674,13 +3674,13 @@ namespace RevenuePlanner.Helpers
                         cwStagelist = stageList.Where(s => s.Level >= levelINQ && s.Level <= levelCW).Select(s => s.StageId).ToList();
                         var modelFunnelStageListCW = ModelFunnelStageList.Where(mfs => cwStagelist.Contains(mfs.StageId)).ToList();
                         double convalue = ((modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100))) * averageDealSize);
-                        double INQValue = (inputValue) / convalue;//((modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100))) * averageDealSize);
+                        double INQValue = (inputValue) / convalue;
                         objBudgetAllocationModel.INQValue = INQValue;
 
                         // Calculate MQL
                         cwStagelist = stageList.Where(s => s.Level >= levelMQL && s.Level <= levelCW).Select(s => s.StageId).ToList();
                         var modelFunnelStageListMQL = ModelFunnelStageList.Where(mfs => cwStagelist.Contains(mfs.StageId)).ToList();
-                        double MQLValue = (INQValue) * (modelFunnelStageListMQL.Aggregate(1.0, (x, y) => x * (y.Value / 100)));
+                        double MQLValue = (inputValue) / (modelFunnelStageListMQL.Aggregate(1.0, (x, y) => x * (y.Value / 100)) * averageDealSize); // Modified by Sohel Pathan on 12/09/2014 for PL ticket #775
                         objBudgetAllocationModel.MQLValue = MQLValue;
                     }
                 }
