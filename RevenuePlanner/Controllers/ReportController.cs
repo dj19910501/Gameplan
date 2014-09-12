@@ -2229,11 +2229,7 @@ namespace RevenuePlanner.Controllers
                 List<string> includeMonth = GetMonthListForReport(selectOption, true);
                 List<string> monthList = GetUpToCurrentMonth();
                 DataTable ProjectedRevenueDatatable = GetProjectedRevenueValueDataTableForReport(Tacticdata);
-                DataTable ProjectedCostDatatable = GetProjectedCostData(Tacticdata, true);
-                DataTable ActualCostDatatable = GetProjectedCostData(Tacticdata, false);
-
-                //Added By : Kalpesh Sharma #734 Actual cost - Verify that report section is up to date with actual cost changes
-                var getCostActualsMonths = ActualCostDatatable.AsEnumerable().Select(r => r.Field<string>("Month")).ToList();
+                DataTable ProjectedCostDatatable = GetProjectedCostData(Tacticdata);
 
                 List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
                 Tacticdata.ForEach(t => t.ActualTacticList.ForEach(a => ActualTacticList.Add(a)));
@@ -2243,9 +2239,9 @@ namespace RevenuePlanner.Controllers
 
                 List<int> ObjTactic = Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList();
                 List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => ObjTactic.Contains(l.PlanTacticId) && l.IsDeleted == false).ToList();
-                List<Plan_Campaign_Program_Tactic_Actual> TacticAcuals = db.Plan_Campaign_Program_Tactic_Actual.Where(l => ObjTactic.Contains(l.PlanTacticId) && (l.StageTitle == "Cost")).ToList();
                 List<int> ObjTacticLineItemList = LineItemList.Select(t => t.PlanLineItemId).ToList();
                 List<Plan_Campaign_Program_Tactic_LineItem_Actual> LineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(l => ObjTacticLineItemList.Contains(l.PlanLineItemId)).ToList();
+                DataTable ActualCostDatatable = GetActualCostData(Tacticdata, LineItemList, LineItemActualList);
 
                 var campaignListFinal = campaignList.Select(p => new
                 {
@@ -2254,15 +2250,14 @@ namespace RevenuePlanner.Controllers
                     ActualRevenue = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => p.planTacticList.Contains(ta.PlanTacticId) && ta.StageTitle.Equals(revenue) && includeMonth.Contains(ta.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + ta.Period)).ToList().Sum(ta => ta.Actualvalue),
                     TrendRevenue = 0,//GetTrendRevenueDataContribution(p.planTacticList, lastMonth),
                     PlanCost = ProjectedCostDatatable.AsEnumerable().AsQueryable().Where(mr => p.planTacticList.Contains(mr.Field<int>(ColumnId)) && includeMonth.Contains(mr.Field<string>(ColumnMonth))).Sum(r => r.Field<double>(ColumnValue)),
-                    //ActualCost = ActualCostDatatable.AsEnumerable().AsQueryable().Where(mr => p.planTacticList.Contains(mr.Field<int>(ColumnId)) && includeMonth.Contains(mr.Field<string>(ColumnMonth))).Sum(r => r.Field<double>(ColumnValue)),
                     //Added By : Kalpesh Sharma #734 Actual cost - Verify that report section is up to date with actual cost changes
-                    ActualCost = GetActualCost(Tacticdata, p.planTacticList, TacticAcuals,LineItemList, LineItemActualList, includeMonth),
+                    ActualCost = ActualCostDatatable.AsEnumerable().AsQueryable().Where(mr => p.planTacticList.Contains(mr.Field<int>(ColumnId)) && includeMonth.Contains(mr.Field<string>(ColumnMonth))).Sum(r => r.Field<double>(ColumnValue)),
                     TrendCost = 0,//GetTrendCostDataContribution(p.planTacticList, lastMonth),
                     RunRate = ActualRevenueTrendList.Where(ar => p.planTacticList.Contains(ar.PlanTacticId)).Sum(ar => ar.MQL),//GetTrendRevenueDataContribution(p.planTacticList, lastMonth, monthList),
                     PipelineCoverage = 0,//GetPipelineCoverage(p.planTacticList, lastMonth),
                     RevSpend = GetRevenueVSSpendContribution(Tacticdata, ActualTacticList, p.planTacticList, monthWithYearList, monthList, revenue),
                     RevenueTotal = GetActualRevenueTotal(ActualTacticList, p.planTacticList, monthList, revenue),
-                    CostTotal = ActualCostDatatable.AsEnumerable().AsQueryable().Where(mr => p.planTacticList.Contains(mr.Field<int>(ColumnId)) && monthWithYearList.Contains(mr.Field<string>(ColumnMonth))).Sum(r => r.Field<double>(ColumnValue))//GetActualCostTotal(p.planTacticList, selectOption),
+                    CostTotal = ActualCostDatatable.AsEnumerable().AsQueryable().Where(mr => p.planTacticList.Contains(mr.Field<int>(ColumnId)) && monthWithYearList.Contains(mr.Field<string>(ColumnMonth))).Sum(r => r.Field<double>(ColumnValue))
                 }).Select(p => p).Distinct().OrderBy(p => p.Title);
 
                 return Json(campaignListFinal, JsonRequestBehavior.AllowGet);
@@ -2271,72 +2266,29 @@ namespace RevenuePlanner.Controllers
         }
 
 
-        private double GetActualCost(List<TacticStageValue> Tacticdata, List<int> planTacticList, List<Plan_Campaign_Program_Tactic_Actual> TacticAcuals, List<Plan_Campaign_Program_Tactic_LineItem> LineItemList, List<Plan_Campaign_Program_Tactic_LineItem_Actual> LineItemActualList, List<string> Filtermonth)
+        private DataTable GetActualCostData(List<TacticStageValue> Tacticdata, List<Plan_Campaign_Program_Tactic_LineItem> LineItemList, List<Plan_Campaign_Program_Tactic_LineItem_Actual> LineItemActualList)
         {
-            double CostActual = 0;
             DataTable dt = new DataTable();
             dt.Columns.Add(ColumnId, typeof(int));
             dt.Columns.Add(ColumnMonth, typeof(string));
             dt.Columns.Add(ColumnValue, typeof(double));
-            foreach (int id in planTacticList)
+            foreach (var t in Tacticdata)
             {
+                int id = t.TacticObj.PlanTacticId;
                 var InnerLineItemList = LineItemList.Where(l => l.PlanTacticId == id).ToList();
                 if (InnerLineItemList.Count() > 0)
                 {
                     var innerLineItemActualList = LineItemActualList.Where(la => InnerLineItemList.Select(line => line.PlanLineItemId).Contains(la.PlanLineItemId)).ToList();
-                    innerLineItemActualList.ForEach(innerline => dt.Rows.Add(id, Tacticdata.Single(t => t.TacticObj.PlanTacticId == id).TacticYear + innerline.Period, innerline.Value));
+                    innerLineItemActualList.ForEach(innerline => dt.Rows.Add(id, t.TacticYear + innerline.Period, innerline.Value));
                 }
                 else
                 {
-                    var innerTacticActualList = TacticAcuals.Where(la => planTacticList.Contains(la.PlanTacticId)).ToList();
-                    // Data from Actual
-                    innerTacticActualList.ForEach(innerTactic => dt.Rows.Add(id, Tacticdata.Single(t => t.TacticObj.PlanTacticId == id).TacticYear + innerTactic.Period, innerTactic.Actualvalue));
+                    var innerTacticActualList = t.ActualTacticList.Where(a => a.StageTitle == Enums.InspectStage.Cost.ToString()).ToList();
+                    innerTacticActualList.ForEach(innerTactic => dt.Rows.Add(id, t.TacticYear + innerTactic.Period, innerTactic.Actualvalue));
                 }
             }
-
-            CostActual = dt.AsEnumerable().AsQueryable().Where(mr => Filtermonth.Contains(mr.Field<string>(ColumnMonth))).Sum(r => r.Field<double>(ColumnValue));
-            return CostActual;
-        }
-
-
-
-        //Added By : Kalpesh Sharma #734 Actual cost - Verify that report section is up to date with actual cost changes
-        /// <summary>
-        /// Get the List of ListItemId 's Based on Current Tactic.
-        /// </summary>
-        /// <param name="planTacticList">List of Current Tactic</param>
-        /// <returns></returns>
-        public List<int> GetLineItemIdsByTactics(List<int> planTacticList)
-        {
-            //Intialize the local varibles , We will use it for add the Line Items value into it. 
-            List<int> LineItemIds = new List<int>();
-            //Fetch the Tctic line items based on Plan Tactic IDs
-            var objLineItems = db.Plan_Campaign_Program_Tactic_LineItem.Where(s => planTacticList.Contains(s.PlanTacticId)).Select(q=>q.PlanLineItemId);
-            foreach (int value in objLineItems)
-            {
-                //Add the line item Id into the Pre define variables  
-                LineItemIds.Add(value);
-            }
-            //Return the list of ListItemId. 
-            return LineItemIds;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="planTacticList"></param>
-        /// <returns></returns>
-        public bool IsTacticHasLineItem(List<int> planTacticList)
-        {
-            //Intialize the local varibles , We will use it for add the Line Items value into it. 
-            bool IsLineItemContain = false;
-            var costData = db.Plan_Campaign_Program_Tactic_LineItem.Where(s => planTacticList.Contains(s.PlanTacticId)).Select(q => q.PlanLineItemId);
-            //Check that costData variables has value or not. 
-            if (costData.Count() > 0)
-            {
-                IsLineItemContain = true;
-            }
-            return IsLineItemContain;
+          
+            return dt;
         }
 
         /// <summary>
@@ -2344,12 +2296,10 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="cl"></param>
         /// <returns></returns>
-        public DataTable GetProjectedCostData(List<TacticStageValue> tacticData, bool isprojected = true)
+        public DataTable GetProjectedCostData(List<TacticStageValue> tacticDataList)
         {
             List<TacticDataTable> tacticdata = new List<TacticDataTable>();
-            if (isprojected)
-            {
-                tacticdata = tacticData.Select(
+            tacticdata = tacticDataList.Select(
                 td => new TacticDataTable {
                     TacticId = td.TacticObj.PlanTacticId,
                     Value = td.TacticObj.Cost , 
@@ -2357,18 +2307,6 @@ namespace RevenuePlanner.Controllers
                     EndMonth = td.TacticObj.EndDate.Month,
                     StartYear = td.TacticObj.StartDate.Year,
                     EndYear = td.TacticObj.EndDate.Year }).ToList();
-            }
-            else
-            {
-            tacticdata = tacticData.Select(
-                td => new TacticDataTable {
-                    TacticId = td.TacticObj.PlanTacticId,
-                    Value = 0, 
-                    StartMonth = td.TacticObj.StartDate.Month,
-                    EndMonth = td.TacticObj.EndDate.Month,
-                    StartYear = td.TacticObj.StartDate.Year,
-                    EndYear = td.TacticObj.EndDate.Year }).ToList();
-            }
             
             return GetDatatable(tacticdata);
         }
