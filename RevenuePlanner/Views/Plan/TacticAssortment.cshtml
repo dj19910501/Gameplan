@@ -394,8 +394,9 @@
             $("#txtmql").attr('title','N/A');
         }
         else {
-            $("#txtmql").val(FormatCommas($("#txtmql").val(), false));
-            $("#txtmql").attr('title', FormatCommas($("#txtmql").val(), false));
+            var mqlValue = FormatCommas($("#txtmql").val(), false);
+            $("#txtmql").val(mqlValue);
+            $("#txtmql").attr('title', mqlValue);
         }
 
         $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
