@@ -1603,6 +1603,8 @@ namespace RevenuePlanner.Controllers
                                 objIntegrationInstance.CreatedDate = DateTime.Now;
                                 objIntegrationInstance.IsDeleted = false;
                                 objIntegrationInstance.IntegrationTypeId = form.IntegrationTypeId;
+                                //Added By : Kalpesh Sharma #781 Synchronization with Scheduler
+                                objIntegrationInstance.CreatedBy = Sessions.User.UserId;
                             }
                             else
                             {
