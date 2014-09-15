@@ -793,6 +793,16 @@ namespace RevenuePlanner.Helpers
             Audience
         }
 
+        /// <summary>
+        /// Enum for custom field type
+        /// Added By : Mitesh Vaishnav for PL ticket #718
+        /// </summary>
+        public enum CustomFieldType
+        {
+            TextBox,
+            DropDownList
+        }
+
     }
 
     #region Authorization

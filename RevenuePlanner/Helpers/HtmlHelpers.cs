@@ -512,7 +512,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ActivityId"></param>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static MvcHtmlString PlanMonth(this HtmlHelper helper, string ActivityType, string ActivityId, BudgetMonth obj, BudgetMonth parent, string AllocatedBy,string strTab)
+        public static MvcHtmlString PlanMonth(this HtmlHelper helper, string ActivityType, string ActivityId, BudgetMonth obj, BudgetMonth parent, string AllocatedBy, string strTab)
         {
             StringBuilder sb = new StringBuilder();
             TagBuilder trHeader = new TagBuilder("tr");
@@ -685,67 +685,67 @@ namespace RevenuePlanner.Helpers
                         if (i == 1)
                         {
                             divValue.InnerHtml = obj.Jan.ToString(formatThousand);
-                            
+
                         }
                         else if (i == 2)
                         {
                             divValue.InnerHtml = obj.Feb.ToString(formatThousand);
-                            
+
                         }
                         else if (i == 3)
                         {
                             divValue.InnerHtml = obj.Mar.ToString(formatThousand);
-                            
+
                         }
                         else if (i == 4)
                         {
                             divValue.InnerHtml = obj.Apr.ToString(formatThousand);
-                            
+
                         }
                         else if (i == 5)
                         {
                             divValue.InnerHtml = obj.May.ToString(formatThousand);
-                            
+
                         }
                         else if (i == 6)
                         {
                             divValue.InnerHtml = obj.Jun.ToString(formatThousand);
-                            
+
                         }
                         else if (i == 7)
                         {
                             divValue.InnerHtml = obj.Jul.ToString(formatThousand);
-                            
+
                         }
                         else if (i == 8)
                         {
                             divValue.InnerHtml = obj.Aug.ToString(formatThousand);
-                            
+
                         }
                         else if (i == 9)
                         {
                             divValue.InnerHtml = obj.Sep.ToString(formatThousand);
-                            
+
                         }
                         else if (i == 10)
                         {
                             divValue.InnerHtml = obj.Oct.ToString(formatThousand);
-                            
+
                         }
                         else if (i == 11)
                         {
                             divValue.InnerHtml = obj.Nov.ToString(formatThousand);
-                            
+
                         }
                         else if (i == 12)
                         {
                             divValue.InnerHtml = obj.Dec.ToString(formatThousand);
-                            
+
                         }
                     }
                     else
                     {
-                          divValue.InnerHtml = "---";
+                        divValue.InnerHtml = "---";
                     }
                     tdValue.AddCssClass(className);
                     tdHeader.InnerHtml += divHeader.ToString();
@@ -904,7 +904,7 @@ namespace RevenuePlanner.Helpers
                         div.AddCssClass(className);
                         td.InnerHtml = div.ToString();
 
-                        td.InnerHtml += ProgramMonth(helper, Helpers.ActivityType.ActivityProgram, c.ActivityId, model, AllocatedBy, i,strTab).ToString();
+                        td.InnerHtml += ProgramMonth(helper, Helpers.ActivityType.ActivityProgram, c.ActivityId, model, AllocatedBy, i, strTab).ToString();
                         tr.InnerHtml += td.ToString();
                     }
                 }
@@ -989,7 +989,7 @@ namespace RevenuePlanner.Helpers
                         div.AddCssClass(className);
                         td.InnerHtml = div.ToString();
 
-                        td.InnerHtml += ProgramMonth(helper, Helpers.ActivityType.ActivityProgram, c.ActivityId, model, AllocatedBy, i,strTab).ToString();
+                        td.InnerHtml += ProgramMonth(helper, Helpers.ActivityType.ActivityProgram, c.ActivityId, model, AllocatedBy, i, strTab).ToString();
                         tr.InnerHtml += td.ToString();
                     }
                 }
@@ -1481,7 +1481,7 @@ namespace RevenuePlanner.Helpers
                     div.InnerHtml += divProgram.ToString();
 
                     if (ActivityType == Helpers.ActivityType.ActivityProgram)
-                        div.InnerHtml += ProgramMonth(helper, Helpers.ActivityType.ActivityTactic, p.ActivityId, model, AllocatedBy, month,strTab).ToString();
+                        div.InnerHtml += ProgramMonth(helper, Helpers.ActivityType.ActivityTactic, p.ActivityId, model, AllocatedBy, month, strTab).ToString();
                     else if (ActivityType == Helpers.ActivityType.ActivityTactic)
                         div.InnerHtml += ProgramMonth(helper, Helpers.ActivityType.ActivityLineItem, p.ActivityId, model, AllocatedBy, month, strTab).ToString();
                 }
@@ -2664,7 +2664,7 @@ namespace RevenuePlanner.Helpers
                             div.AddCssClass(className);
                             td.InnerHtml = div.ToString();
 
-                            td.InnerHtml += ChildMonth(helper, Helpers.ActivityType.ActivityCampaign, c.ActivityId, model, AllocatedBy, i, strTab,View).ToString();
+                            td.InnerHtml += ChildMonth(helper, Helpers.ActivityType.ActivityCampaign, c.ActivityId, model, AllocatedBy, i, strTab, View).ToString();
                             tr.InnerHtml += td.ToString();
                         }
                     }
@@ -3302,7 +3302,7 @@ namespace RevenuePlanner.Helpers
                     div.InnerHtml += divProgram.ToString();
 
                     if (ActivityType == Helpers.ActivityType.ActivityCampaign)
-                        div.InnerHtml += ChildMonth(helper, Helpers.ActivityType.ActivityProgram, p.ActivityId, model, AllocatedBy, month,strTab, View).ToString();
+                        div.InnerHtml += ChildMonth(helper, Helpers.ActivityType.ActivityProgram, p.ActivityId, model, AllocatedBy, month, strTab, View).ToString();
 
                     else if (ActivityType == Helpers.ActivityType.ActivityProgram)
                         div.InnerHtml += ChildMonth(helper, Helpers.ActivityType.ActivityTactic, p.ActivityId, model, AllocatedBy, month, strTab, View).ToString();
@@ -3643,5 +3643,78 @@ namespace RevenuePlanner.Helpers
 
 
         #endregion //Advance Budgeting
+
+        #region Custom Fields
+
+        /// <summary>
+        /// Added by Mitesh Vaishnav for PL ticket #718
+        /// function generate html output for custom fields of campaign,program or tactic
+        /// </summary>
+        /// <param name="id">Plan Tactic Id or Plan Campaign Id or Plan Program Id</param>
+        /// <param name="section">Perameter contains value from enum Section like Campaign or Program or Tactic.</param>
+        /// <returns>If Plan Tactic or Plan Campaign or Plan Program contains custom fields than returns html string else empty string</returns>
+        public static MvcHtmlString GenerateCustomFields(int id, string section)
+        {
+            //list of custom fields for perticular campaign or Program or Tactic
+            List<CustomFieldModel> customFieldList = Common.GetCustomFields(id, section);
+            string sb = string.Empty;
+            if (customFieldList.Count != 0)
+            {
+                //count variable for defining alternate raw
+                int count = 0;
+                foreach (var item in customFieldList)
+                {
+                    if (count % 2 == 0)
+                    {
+                        sb += "<div class=\"content-row \"><label class=\"padding-left4\" title=\"" + item.name + "\">" + Common.TruncateLable(item.name, 40) + "</label>";
+                    }
+                    else
+                    {
+                        sb += "<div class=\"content-row alternate\"><label class=\"padding-left4\" title=\"" + item.name + "\">" + Common.TruncateLable(item.name, 40) + "</label>";
+                    }
+                    if (item.customFieldType == Enums.CustomFieldType.TextBox.ToString())
+                    {
+                        sb += "<input id=\"cf_" + item.customFieldId + "\" type=\"text\" value=\"" + item.value + "\" cf_id=\"" + item.customFieldId + "\" maxlength=\"255\"";
+                        //If custom field is required than add attribute require
+                        if (item.isRequired)
+                        {
+                            sb += " require=\"true\"";
+                        }
+                        sb += "></div>";
+                    }
+                    else if (item.customFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                    {
+                        sb += "<span class=\"cf-selectbox\">  <select id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"ddlStyle\"";
+                        //If custom field is required than add attribute require
+                        if (item.isRequired)
+                        {
+                            sb += " require=\"true\"";
+                        }
+                        sb += "><option value=\"\">Please Select</option>";
+                        //set dropdown option values
+                        if (item.option.Count != 0)
+                        {
+                            foreach (var objOption in item.option)
+                            {
+                                if (item.value != objOption.customFieldOptionId.ToString())
+                                {
+                                    sb += "<option value=\"" + objOption.customFieldOptionId + "\">" + objOption.value + "</option>";
+                                }
+                                else
+                                {
+                                    sb += "<option value=\"" + objOption.customFieldOptionId + "\" selected=true>" + objOption.value + "</option>";
+                                }
+                            }
+                        }
+                        sb += "</select></span></div>";
+
+                    }
+                    count = count + 1;
+                }
+            }
+            return new MvcHtmlString(sb.ToString());
+        }
+
+        #endregion
     }
 }

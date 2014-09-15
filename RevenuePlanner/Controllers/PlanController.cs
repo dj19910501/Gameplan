@@ -11,6 +11,7 @@ using System.Data.Objects;
 using System.IO;
 using RevenuePlanner.BDSService;
 using System.Web;
+using Newtonsoft.Json;
 
 namespace RevenuePlanner.Controllers
 {
@@ -2403,7 +2404,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveCampaign(Plan_CampaignModel form, string programs, bool RedirectType, string closedTask, string BudgetInputValues, string UserId = "", string CalledFromBudget = "")
+        public ActionResult SaveCampaign(Plan_CampaignModel form, string programs, bool RedirectType, string closedTask, string BudgetInputValues,string customFieldInputs, string UserId = "", string CalledFromBudget = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -2415,6 +2416,7 @@ namespace RevenuePlanner.Controllers
             }
             try
             {
+                var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string,string>>>(customFieldInputs);
                 string[] arrBudgetInputValues = BudgetInputValues.Split(',');
 
                 if (form.PlanCampaignId == 0)
@@ -2524,7 +2526,23 @@ namespace RevenuePlanner.Controllers
                                         }
                                     }
                                     // End Added By Dharmraj #567 : Budget allocation for campaign
+                                    ////Start Added by Mitesh Vaishnav for PL ticket #718 Custom fields for Campaigns
+                                    ////save custom fields value for perticular campaign
+                                    if (customFields.Count != 0)
+                                    {
+                                        foreach (var item in customFields)
+                                        {
+                                            CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
+                                            objcustomFieldEntity.EntityId = campaignid;
+                                            objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
+                                            objcustomFieldEntity.Value = item.Value;
+                                            objcustomFieldEntity.CreatedDate = DateTime.Now;
+                                            objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
+                                            db.Entry(objcustomFieldEntity).State = EntityState.Added;
 
+                                        }
+                                    }
+                                    ////End Added by Mitesh Vaishnav for PL ticket #718 Custom fields for Campaigns
                                     db.SaveChanges();
 
                                 }
@@ -2708,6 +2726,27 @@ namespace RevenuePlanner.Controllers
                                     }
                                 }
                                 // End Added By Dharmraj #567 : Budget allocation for campaign
+                                ////Start Added by Mitesh Vaishnav for PL ticket #718 Custom fields for Campaigns
+                                //// delete previous custom field values and save modified custom fields value for perticular campaign
+                                string entityTypeCampaign=Enums.Section.Campaign.ToString();
+                                var prevCustomFieldList = db.CustomField_Entity.Where(c => c.EntityId == pcobj.PlanCampaignId && c.CustomField.EntityType == entityTypeCampaign).ToList();
+                                prevCustomFieldList.ForEach(c => db.Entry(c).State = EntityState.Deleted);
+
+                                if (customFields.Count != 0)
+                                {
+                                    foreach (var item in customFields)
+                                    {
+                                        CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
+                                        objcustomFieldEntity.EntityId = pcobj.PlanCampaignId;
+                                        objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
+                                        objcustomFieldEntity.Value = item.Value;
+                                        objcustomFieldEntity.CreatedDate = DateTime.Now;
+                                        objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
+                                        db.Entry(objcustomFieldEntity).State = EntityState.Added;
+
+                                    }
+                                }
+                                ////End Added by Mitesh Vaishnav for PL ticket #718 Custom fields for Campaigns
                                 db.SaveChanges();
 
 

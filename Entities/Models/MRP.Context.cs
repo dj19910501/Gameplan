@@ -86,5 +86,9 @@ namespace RevenuePlanner.Models
         public DbSet<Vertical> Verticals { get; set; }
         public DbSet<Plan_Campaign_Program_Tactic_LineItem_Actual> Plan_Campaign_Program_Tactic_LineItem_Actual { get; set; }
         public DbSet<CustomLabel> CustomLabels { get; set; }
+        public DbSet<CustomField> CustomFields { get; set; }
+        public DbSet<CustomField_Entity> CustomField_Entity { get; set; }
+        public DbSet<CustomFieldOption> CustomFieldOptions { get; set; }
+        public DbSet<CustomFieldType> CustomFieldTypes { get; set; }
     }
 }

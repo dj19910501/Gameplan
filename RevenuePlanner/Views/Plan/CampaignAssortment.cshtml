@@ -123,6 +123,8 @@
                 @*<input id="txtCost" class="currency_dollar margin-top3px"  type="text" value="1,500,000" placeholder="$1,500,000" name="Cost" maxlength="13" data-val-required="The Cost field is required." data-val-number="The field Cost must be a number." data-val="true" readonly myvalue="$1,500,000" title="$1,500,000">                      *@
                 @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
             </div>
+            @*start -Added by Mitesh Vaishnav for PL ticket #718*@
+            @RevenuePlanner.Helpers.HtmlHelpers.GenerateCustomFields(Model.PlanCampaignId, Enums.Section.Campaign.ToString())
         </div>
         <!--End content-->
         <!-- Start added by dharmraj #567: Budget allocation for campaign  -->
@@ -249,6 +251,8 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
+
+        $(".cf-selectbox select").selectbox();//set drop down style for custom field's dropdownlist
         $('#slidepanel-container').slimScroll({ scrollTo: '0px' });
         //start added by dharmraj #567: Budget allocation for campaign
         $(".budget-head a").click(function () {
@@ -626,7 +630,19 @@
             for (var i = 0; i < lstAllocInputs.length; i++) {
                 allocationValue.push(ReplaceCC($(lstAllocInputs[i]).val()));
             }
-
+            ////Start Added by Mitesh Vaishnav for PL ticket #718
+            ////creating object which contains value of custom fields
+            var _customFieldValues = [];
+            $('form').find('input[type=text], select').each(function () {
+                if ($(this).attr('cf_id') != '' && typeof $(this).attr('cf_id') != 'undefined' && $(this).val()!='') {
+                    _customFieldValues.push({
+                        Key: $(this).attr('cf_id').toString(),
+                        Value: $(this).val().toString()
+                    });
+                    }
+            });
+            _customFieldValues = JSON.stringify(_customFieldValues);
+            ////End Added by Mitesh Vaishnav for PL ticket #718
             document.getElementById("txtTitle").value = htmlEncode($('#txtTitle').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             document.getElementById("Description").value = htmlEncode($('#Description').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             $("#txtCampaignBudget").val(ReplaceCC($("#txtCampaignBudget").val()));
@@ -636,7 +652,7 @@
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/SaveCampaign")',
-                data: formData + '&programs=' + escape(arProgram) + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&BudgetInputValues=' + allocationValue.toString() + '&UserId=' + uId + '&CalledFromBudget=' + '@CalledFromBudget',
+                data: formData + '&programs=' + escape(arProgram) + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&BudgetInputValues=' + allocationValue.toString() + '&UserId=' + uId + '&CalledFromBudget=' + '@CalledFromBudget' + '&customFieldInputs=' + _customFieldValues,
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
                         window.location = '@Url.Content("~/Login/Index")';

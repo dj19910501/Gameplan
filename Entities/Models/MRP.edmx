@@ -11,6 +11,10 @@
           <EntitySet Name="BusinessUnit" EntityType="MRPModel.Store.BusinessUnit" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="ChangeLog" EntityType="MRPModel.Store.ChangeLog" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="ClientTacticType" EntityType="MRPModel.Store.ClientTacticType" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="CustomField" EntityType="MRPModel.Store.CustomField" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="CustomField_Entity" EntityType="MRPModel.Store.CustomField_Entity" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="CustomFieldOption" EntityType="MRPModel.Store.CustomFieldOption" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="CustomFieldType" EntityType="MRPModel.Store.CustomFieldType" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="CustomLabel" EntityType="MRPModel.Store.CustomLabel" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Field" EntityType="MRPModel.Store.Field" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Funnel" EntityType="MRPModel.Store.Funnel" store:Type="Tables" Schema="dbo" />
@@ -86,6 +90,18 @@
           <AssociationSet Name="FK_BestInClass_Stage" Association="MRPModel.Store.FK_BestInClass_Stage">
             <End Role="Stage" EntitySet="Stage" />
             <End Role="BestInClass" EntitySet="BestInClass" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomField_CustomFieldType" Association="MRPModel.Store.FK_CustomField_CustomFieldType">
+            <End Role="CustomFieldType" EntitySet="CustomFieldType" />
+            <End Role="CustomField" EntitySet="CustomField" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomField_Entity_CustomField" Association="MRPModel.Store.FK_CustomField_Entity_CustomField">
+            <End Role="CustomField" EntitySet="CustomField" />
+            <End Role="CustomField_Entity" EntitySet="CustomField_Entity" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomFieldOption_CustomField" Association="MRPModel.Store.FK_CustomFieldOption_CustomField">
+            <End Role="CustomField" EntitySet="CustomField" />
+            <End Role="CustomFieldOption" EntitySet="CustomFieldOption" />
           </AssociationSet>
           <AssociationSet Name="FK_Funnel_Field_Field" Association="MRPModel.Store.FK_Funnel_Field_Field">
             <End Role="Field" EntitySet="Field" />
@@ -468,6 +484,52 @@
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
+        </EntityType>
+        <EntityType Name="CustomField">
+          <Key>
+            <PropertyRef Name="CustomFieldId" />
+          </Key>
+          <Property Name="CustomFieldId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="CustomFieldTypeId" Type="int" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" />
+          <Property Name="IsRequired" Type="bit" Nullable="false" />
+          <Property Name="EntityType" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="ModifiedBy" Type="uniqueidentifier" />
+        </EntityType>
+        <EntityType Name="CustomField_Entity">
+          <Key>
+            <PropertyRef Name="CustomFieldEntityId" />
+          </Key>
+          <Property Name="CustomFieldEntityId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="EntityId" Type="int" Nullable="false" />
+          <Property Name="CustomFieldId" Type="int" Nullable="false" />
+          <Property Name="Value" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CustomFieldOption">
+          <Key>
+            <PropertyRef Name="CustomFieldOptionId" />
+          </Key>
+          <Property Name="CustomFieldOptionId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="CustomFieldId" Type="int" Nullable="false" />
+          <Property Name="Value" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CustomFieldType">
+          <Key>
+            <PropertyRef Name="CustomFieldTypeId" />
+          </Key>
+          <Property Name="CustomFieldTypeId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="Description" Type="nvarchar" />
         </EntityType>
         <EntityType Name="CustomLabel">
           <Key>
@@ -1363,6 +1425,42 @@
             </Principal>
             <Dependent Role="BestInClass">
               <PropertyRef Name="StageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomField_CustomFieldType">
+          <End Role="CustomFieldType" Type="MRPModel.Store.CustomFieldType" Multiplicity="1" />
+          <End Role="CustomField" Type="MRPModel.Store.CustomField" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomFieldType">
+              <PropertyRef Name="CustomFieldTypeId" />
+            </Principal>
+            <Dependent Role="CustomField">
+              <PropertyRef Name="CustomFieldTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomField_Entity_CustomField">
+          <End Role="CustomField" Type="MRPModel.Store.CustomField" Multiplicity="1" />
+          <End Role="CustomField_Entity" Type="MRPModel.Store.CustomField_Entity" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomField">
+              <PropertyRef Name="CustomFieldId" />
+            </Principal>
+            <Dependent Role="CustomField_Entity">
+              <PropertyRef Name="CustomFieldId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomFieldOption_CustomField">
+          <End Role="CustomField" Type="MRPModel.Store.CustomField" Multiplicity="1" />
+          <End Role="CustomFieldOption" Type="MRPModel.Store.CustomFieldOption" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomField">
+              <PropertyRef Name="CustomFieldId" />
+            </Principal>
+            <Dependent Role="CustomFieldOption">
+              <PropertyRef Name="CustomFieldId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2668,6 +2766,22 @@
             <End Role="Plan_Campaign_Program_Tactic_LineItem_Actual" EntitySet="Plan_Campaign_Program_Tactic_LineItem_Actual" />
           </AssociationSet>
           <EntitySet Name="CustomLabels" EntityType="MRPModel.CustomLabel" />
+          <EntitySet Name="CustomFields" EntityType="MRPModel.CustomField" />
+          <EntitySet Name="CustomField_Entity" EntityType="MRPModel.CustomField_Entity" />
+          <EntitySet Name="CustomFieldOptions" EntityType="MRPModel.CustomFieldOption" />
+          <EntitySet Name="CustomFieldTypes" EntityType="MRPModel.CustomFieldType" />
+          <AssociationSet Name="FK_CustomField_CustomFieldType" Association="MRPModel.FK_CustomField_CustomFieldType">
+            <End Role="CustomFieldType" EntitySet="CustomFieldTypes" />
+            <End Role="CustomField" EntitySet="CustomFields" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomField_Entity_CustomField" Association="MRPModel.FK_CustomField_Entity_CustomField">
+            <End Role="CustomField" EntitySet="CustomFields" />
+            <End Role="CustomField_Entity" EntitySet="CustomField_Entity" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomFieldOption_CustomField" Association="MRPModel.FK_CustomFieldOption_CustomField">
+            <End Role="CustomField" EntitySet="CustomFields" />
+            <End Role="CustomFieldOption" EntitySet="CustomFieldOptions" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Audience">
           <Key>
@@ -4717,6 +4831,94 @@
           <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
           <Property Type="Guid" Name="ModifiedBy" />
         </EntityType>
+        <EntityType Name="CustomField">
+          <Key>
+            <PropertyRef Name="CustomFieldId" />
+          </Key>
+          <Property Type="Int32" Name="CustomFieldId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="CustomFieldTypeId" Nullable="false" />
+          <Property Type="String" Name="Description" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Type="Boolean" Name="IsRequired" Nullable="false" />
+          <Property Type="String" Name="EntityType" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="Guid" Name="ClientId" Nullable="false" />
+          <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
+          <Property Type="Guid" Name="ModifiedBy" />
+          <NavigationProperty Name="CustomFieldType" Relationship="MRPModel.FK_CustomField_CustomFieldType" FromRole="CustomField" ToRole="CustomFieldType" />
+          <NavigationProperty Name="CustomField_Entity" Relationship="MRPModel.FK_CustomField_Entity_CustomField" FromRole="CustomField" ToRole="CustomField_Entity" />
+          <NavigationProperty Name="CustomFieldOptions" Relationship="MRPModel.FK_CustomFieldOption_CustomField" FromRole="CustomField" ToRole="CustomFieldOption" />
+        </EntityType>
+        <EntityType Name="CustomField_Entity">
+          <Key>
+            <PropertyRef Name="CustomFieldEntityId" />
+          </Key>
+          <Property Type="Int32" Name="CustomFieldEntityId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="EntityId" Nullable="false" />
+          <Property Type="Int32" Name="CustomFieldId" Nullable="false" />
+          <Property Type="String" Name="Value" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <NavigationProperty Name="CustomField" Relationship="MRPModel.FK_CustomField_Entity_CustomField" FromRole="CustomField_Entity" ToRole="CustomField" />
+        </EntityType>
+        <EntityType Name="CustomFieldOption">
+          <Key>
+            <PropertyRef Name="CustomFieldOptionId" />
+          </Key>
+          <Property Type="Int32" Name="CustomFieldOptionId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="CustomFieldId" Nullable="false" />
+          <Property Type="String" Name="Value" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <NavigationProperty Name="CustomField" Relationship="MRPModel.FK_CustomFieldOption_CustomField" FromRole="CustomFieldOption" ToRole="CustomField" />
+        </EntityType>
+        <EntityType Name="CustomFieldType">
+          <Key>
+            <PropertyRef Name="CustomFieldTypeId" />
+          </Key>
+          <Property Type="Int32" Name="CustomFieldTypeId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Description" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="CustomFields" Relationship="MRPModel.FK_CustomField_CustomFieldType" FromRole="CustomFieldType" ToRole="CustomField" />
+        </EntityType>
+        <Association Name="FK_CustomField_CustomFieldType">
+          <End Type="MRPModel.CustomFieldType" Role="CustomFieldType" Multiplicity="1" />
+          <End Type="MRPModel.CustomField" Role="CustomField" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomFieldType">
+              <PropertyRef Name="CustomFieldTypeId" />
+            </Principal>
+            <Dependent Role="CustomField">
+              <PropertyRef Name="CustomFieldTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomField_Entity_CustomField">
+          <End Type="MRPModel.CustomField" Role="CustomField" Multiplicity="1" />
+          <End Type="MRPModel.CustomField_Entity" Role="CustomField_Entity" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomField">
+              <PropertyRef Name="CustomFieldId" />
+            </Principal>
+            <Dependent Role="CustomField_Entity">
+              <PropertyRef Name="CustomFieldId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomFieldOption_CustomField">
+          <End Type="MRPModel.CustomField" Role="CustomField" Multiplicity="1" />
+          <End Type="MRPModel.CustomFieldOption" Role="CustomFieldOption" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomField">
+              <PropertyRef Name="CustomFieldId" />
+            </Principal>
+            <Dependent Role="CustomFieldOption">
+              <PropertyRef Name="CustomFieldId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -5687,6 +5889,56 @@
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="ClientId" ColumnName="ClientId" />
                 <ScalarProperty Name="CustomLabelId" ColumnName="CustomLabelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CustomFields">
+            <EntityTypeMapping TypeName="MRPModel.CustomField">
+              <MappingFragment StoreEntitySet="CustomField">
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
+                <ScalarProperty Name="EntityType" ColumnName="EntityType" />
+                <ScalarProperty Name="IsRequired" ColumnName="IsRequired" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="CustomFieldTypeId" ColumnName="CustomFieldTypeId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="CustomFieldId" ColumnName="CustomFieldId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CustomField_Entity">
+            <EntityTypeMapping TypeName="MRPModel.CustomField_Entity">
+              <MappingFragment StoreEntitySet="CustomField_Entity">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="CustomFieldId" ColumnName="CustomFieldId" />
+                <ScalarProperty Name="EntityId" ColumnName="EntityId" />
+                <ScalarProperty Name="CustomFieldEntityId" ColumnName="CustomFieldEntityId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CustomFieldOptions">
+            <EntityTypeMapping TypeName="MRPModel.CustomFieldOption">
+              <MappingFragment StoreEntitySet="CustomFieldOption">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="CustomFieldId" ColumnName="CustomFieldId" />
+                <ScalarProperty Name="CustomFieldOptionId" ColumnName="CustomFieldOptionId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CustomFieldTypes">
+            <EntityTypeMapping TypeName="MRPModel.CustomFieldType">
+              <MappingFragment StoreEntitySet="CustomFieldType">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="CustomFieldTypeId" ColumnName="CustomFieldTypeId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

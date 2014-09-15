@@ -366,4 +366,33 @@ namespace RevenuePlanner.Models
         public string costValue { get; set; }
         public double remainingMonthlyCost { get; set; }
     }
+
+    /// <summary>
+    /// Added By : Mitesh Vaishnav for PL ticket #718
+    /// Added Date : 15/09/2014
+    /// class for return mapped list of custom fields
+    /// </summary>
+    public class CustomFieldModel
+    {
+        public int customFieldId { get; set; }
+        public string name { get; set; }
+        public string customFieldType { get; set; }
+        public string description { get; set; }
+        public bool isRequired { get; set; }
+        public string entityType { get; set; }
+        public List<CustomFieldOptionModel> option { get; set; }
+        public string value { get; set; }
+
+    }
+
+    /// <summary>
+    /// Added By : Mitesh Vaishnav for PL ticket #718
+    /// Added Date : 15/09/2014
+    /// return mapped list for option values of dropdownlist custom fields 
+    /// </summary>
+    public class CustomFieldOptionModel
+    {
+        public int customFieldOptionId { get; set; }
+        public string value { get; set; }
+    }
 }

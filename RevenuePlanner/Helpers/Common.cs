@@ -4000,6 +4000,60 @@ namespace RevenuePlanner.Helpers
 
             return lastModifiedMessage;
         }
+
+        #region Custom Fields
+
+        /// <summary>
+        /// Function for get custom fields of tactic,program or campaign.
+        /// Added by Mitesh Vaishnav on 12/09/2014
+        /// #718 - Custom fields for Campaigns
+        /// </summary>
+        /// <param name="id">Plan Tactic Id or Plan Campaign Id or Plan Program Id</param>
+        /// <param name="section">Perameter contains value from enum like Campaign or Program or Tactic Section</param>
+        /// <returns></returns>
+        public static List<CustomFieldModel> GetCustomFields(int id, string section)
+        {
+            MRPEntities db = new MRPEntities();
+
+            var lstCustomFields = db.CustomFields.Where(customField => customField.EntityType == section && customField.ClientId == Sessions.User.ClientId && customField.IsDeleted == false).ToList().Select(a => new CustomFieldModel
+            {
+                customFieldId = a.CustomFieldId,
+                name = a.Name,
+                customFieldType = a.CustomFieldType.Name,
+                description = a.Description,
+                isRequired = a.IsRequired,
+                entityType = a.EntityType,
+                value = a.CustomField_Entity.Where(ct => ct.EntityId == id).FirstOrDefault() != null ? a.CustomField_Entity.Where(ct => ct.EntityId == id).FirstOrDefault().Value : null,
+                option = a.CustomFieldOptions.ToList().Select(o => new CustomFieldOptionModel
+                {
+                    customFieldOptionId = o.CustomFieldOptionId,
+                    value = o.Value
+                }).ToList()
+
+            }).ToList();
+            return lstCustomFields;
+        }
+        /// <summary>
+        /// Added by Mitesh Vaishnav for PL ticket #718 
+        /// Function for truncate length of input string
+        /// </summary>
+        /// <param name="input">input string</param>
+        /// <param name="length">length of string</param>
+        /// <returns>if string contains less or equal length than returns input string else returns substring with ... </returns>
+        public static string TruncateLable(string input, int length)
+        {
+            if (input.Length <= length)
+            {
+                return input;
+            }
+            else
+            {
+                return input.Substring(0, length) + "...";
+            }
+        }
+
+        #endregion
+
     }
 
     ////Start Manoj PL #490 Date:27May2014

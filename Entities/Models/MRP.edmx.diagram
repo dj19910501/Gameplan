@@ -147,6 +147,13 @@
         <EntityTypeShape EntityType="MRPModel.Plan_Campaign_Program_Tactic_LineItem_Actual" Width="1.5" PointX="11.92156797271295" PointY="18.917599999773131" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Actual_Plan_Campaign_Program_Tactic_LineItem" />
         <EntityTypeShape EntityType="MRPModel.CustomLabel" Width="1.5" PointX="4.0717216190284686" PointY="26.101550546522041" />
+        <EntityTypeShape EntityType="MRPModel.CustomField" Width="1.5" PointX="4.4280604070183172" PointY="12.693659952233388" />
+        <EntityTypeShape EntityType="MRPModel.CustomField_Entity" Width="1.5" PointX="1.3230632493845482" PointY="2.1060301373275139" />
+        <EntityTypeShape EntityType="MRPModel.CustomFieldOption" Width="1.5" PointX="10.993989452251228" PointY="15.907345853702791" />
+        <EntityTypeShape EntityType="MRPModel.CustomFieldType" Width="1.5" PointX="8.2663294432062333" PointY="23.17057308143497" />
+        <AssociationConnector Association="MRPModel.FK_CustomField_CustomFieldType" />
+        <AssociationConnector Association="MRPModel.FK_CustomField_Entity_CustomField" />
+        <AssociationConnector Association="MRPModel.FK_CustomFieldOption_CustomField" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
