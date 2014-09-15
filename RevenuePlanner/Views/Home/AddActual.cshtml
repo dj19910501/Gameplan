@@ -1074,8 +1074,8 @@
 
             $html += '<div class="body-toogle-actual">Cost' +
                                 '<div id="border-right" class="table-info-actual-left-wraper">' +
-                                    '<div class="table-info-actual-left truncate addFormatterActualCurrency" id="ProjectedlblCCost' + _id + '">' +
-                                        _costProjected +
+                                    '<div class="table-info-actual-left truncate setBudget" id="ProjectedlblCCost' + _id + '">' +   // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
+                                        FormatCurrency(_costProjected, true) +  // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
                                     '</div>' ;
 
             //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
