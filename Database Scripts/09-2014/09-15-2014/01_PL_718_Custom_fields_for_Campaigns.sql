@@ -52,11 +52,10 @@ ALTER TABLE [dbo].[CustomField] ADD  CONSTRAINT [DF_CustomField_IsRequired]  DEF
 ALTER TABLE [dbo].[CustomField] ADD  CONSTRAINT [DF_CustomField_IsDeleted]  DEFAULT ((0)) FOR [IsDeleted]
 
 
-ALTER TABLE [dbo].[CustomField]  WITH CHECK ADD  CONSTRAINT [FK_CustomField_CustomField] FOREIGN KEY([CustomFieldId])
-REFERENCES [dbo].[CustomField] ([CustomFieldId])
+ALTER TABLE [dbo].[CustomField]  WITH CHECK ADD  CONSTRAINT [FK_CustomField_CustomFieldType] FOREIGN KEY([CustomFieldTypeId])
+REFERENCES [dbo].[CustomFieldType] ([CustomFieldTypeId])
 
-
-ALTER TABLE [dbo].[CustomField] CHECK CONSTRAINT [FK_CustomField_CustomField]
+ALTER TABLE [dbo].[CustomField] CHECK CONSTRAINT [FK_CustomField_CustomFieldType]
 
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'An auto increment primary key to uniquely identify custom field.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'CustomField', @level2type=N'COLUMN',@level2name=N'CustomFieldId'
