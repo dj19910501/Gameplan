@@ -199,6 +199,8 @@
                     if ('@strPlanid' == '' || '@strPlanid' == '0') {
                         $('#LeftNavCampaigns').attr('style', 'cursor:default !important');
                         $('#aApplyToCalender').attr('style', 'cursor:default !important');
+                        $('#aBudgeting').attr('style', 'cursor:default !important');
+
                     $('#liCampaign').attr('style', 'on:default !important');
                     $('#ulplan').removeClass();
                     $('#ulplan').addClass('nav nav-list nav-gray-planc');
@@ -206,6 +208,9 @@
                         $('#LeftNavCampaigns').attr('href', '#');
                         $('#aApplyToCalender').removeAttr('id');
                         $('#aApplyToCalender').attr('href', '#');
+                        $('#aBudgeting').removeAttr('id');
+                        $('#aBudgeting').attr('href', '#');
+
                     $('#LeftNavInput').removeAttr('id');
                     }
                     else {
@@ -215,6 +220,8 @@
                         $('#LeftNavCampaigns').removeAttr('href','#');
                         $('#aApplyToCalender').attr("id", "aApplyToCalender");
                         $('#aApplyToCalender').removeAttr('href', '#');
+                        $('#aBudgeting').attr("id", "aBudgeting");
+                        $('#aBudgeting').removeAttr('href', '#');
                     $('#LeftNavInput').removeAttr('id');
                     }
                 }
