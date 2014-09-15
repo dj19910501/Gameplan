@@ -331,9 +331,8 @@ function LoadPlanBuBusinessUnit(Bid) {
 
     $(document).on("click", "#LeftNavInput", function (e) {
         //Added By : Kalpesh Sharma : #741: Maintain context while switching with in plan's tabs
-        var PlanUri = '@Url.Content("~/Plan/Create")' + "/" + CurrentPlanId + "";
         @*displayconfirm('@Url.Action("Create", "Plan", new { id = CurrentPlanId })');*@
-        window.location.href = PlanUri;
+        displayconfirm('@Url.Content("~/Plan/Create")' + "/" + CurrentPlanId + "");
     });
 
 $(document).on("click", "#LeftNavCampaigns", function (e) {
