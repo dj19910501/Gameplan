@@ -3751,7 +3751,7 @@ namespace RevenuePlanner.Controllers
             // Set Revenue
             if (varTacticStageValue.Count > 0)
             {
-                pcptm.Revenue = varTacticStageValue[0].RevenueValue;
+                pcptm.Revenue = Math.Round(varTacticStageValue[0].RevenueValue, 1); // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
             }
             else
             {
