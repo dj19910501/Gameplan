@@ -3927,7 +3927,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveTactic(Plan_Campaign_Program_TacticModel form, string lineitems, bool RedirectType, string closedTask, string BudgetInputValues, string actualInputValues, string UserId = "", string CalledFromBudget = "")
+        public ActionResult SaveTactic(Plan_Campaign_Program_TacticModel form, string lineitems, bool RedirectType, string closedTask, string BudgetInputValues, string actualInputValues, string customFieldInputs, string UserId = "", string CalledFromBudget = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -3944,6 +3944,7 @@ namespace RevenuePlanner.Controllers
 
                 string[] arrBudgetInputValues = BudgetInputValues.Split(',');
                 string[] arrActualCostInputValues = actualInputValues.Split(',');
+                var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(customFieldInputs);
 
                 if (form.PlanTacticId == 0)
                 {
@@ -4090,9 +4091,25 @@ namespace RevenuePlanner.Controllers
                                     }
                                 }
 
-                                db.SaveChanges();
+                                ////Start Added by Mitesh Vaishnav for PL ticket #720 Custom fields for Tactics
+                                ////save custom fields value for particular Tactic
+                                if (customFields.Count != 0)
+                                {
+                                    foreach (var item in customFields)
+                                    {
+                                        CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
+                                        objcustomFieldEntity.EntityId = tacticId;
+                                        objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
+                                        objcustomFieldEntity.Value = item.Value;
+                                        objcustomFieldEntity.CreatedDate = DateTime.Now;
+                                        objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
+                                        db.Entry(objcustomFieldEntity).State = EntityState.Added;
 
-                                ////End - Added by : Mitesh Vaishnav on 25-06-2014    for PL ticket 554 Home & Plan Pages: Program and Campaign Blocks are not covering newly added Tactic.
+                                    }
+                                }
+                                ////End Added by Mitesh Vaishnav for PL ticket #720 Custom fields for Tactics
+
+                                db.SaveChanges();
 
                                 //result = TacticValueCalculate(pcpobj.PlanProgramId); // Commented by Dharmraj for PL #440
                                 result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
@@ -4478,6 +4495,29 @@ namespace RevenuePlanner.Controllers
                                     }
                                 }
                                 // End Added by dharmraj for ticket #644
+
+                                ////Start Added by Mitesh Vaishnav for PL ticket #720 Custom fields for Tactics
+                                //// delete previous custom field values and save modified custom fields value for particular Tactic
+                                string entityTypeCampaign = Enums.Section.Tactic.ToString();
+                                var prevCustomFieldList = db.CustomField_Entity.Where(c => c.EntityId == pcpobj.PlanTacticId && c.CustomField.EntityType == entityTypeCampaign).ToList();
+                                prevCustomFieldList.ForEach(c => db.Entry(c).State = EntityState.Deleted);
+
+                                if (customFields.Count != 0)
+                                {
+                                    foreach (var item in customFields)
+                                    {
+                                        CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
+                                        objcustomFieldEntity.EntityId = pcpobj.PlanTacticId;
+                                        objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
+                                        objcustomFieldEntity.Value = item.Value;
+                                        objcustomFieldEntity.CreatedDate = DateTime.Now;
+                                        objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
+                                        db.Entry(objcustomFieldEntity).State = EntityState.Added;
+
+                                    }
+                                }
+                                ////End Added by Mitesh Vaishnav for PL ticket #720 Custom fields for Tactics
+
                                 db.SaveChanges();
 
                                 //result = TacticValueCalculate(pcpobj.PlanProgramId); // Modified by Dharmraj for PL #440
