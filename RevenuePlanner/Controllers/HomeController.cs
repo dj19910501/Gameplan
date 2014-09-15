@@ -2810,7 +2810,7 @@ namespace RevenuePlanner.Controllers
 
             List<Plan_Campaign_Program_Tactic> tid = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == id).ToList();
             List<ProjectedRevenueClass> tacticList = Common.ProjectedRevenueCalculateList(tid);
-            im.Revenues = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 1);
+            im.Revenues = Math.Round(tacticList.Where(tl => tl.PlanTacticId == id).Select(tl => tl.ProjectedRevenue).SingleOrDefault(), 2); // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
             tacticList = Common.ProjectedRevenueCalculateList(tid, true);
 
             string TitleProjectedStageValue = Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString();
