@@ -147,6 +147,9 @@
                 @Html.TextBox("txtRemainingBudget", planRemainingBudget, new { @class = "margin-top3px", id = "txtRemainingBudget", @readonly = "true" })
             </div>
 
+            @*start -Added by Mitesh Vaishnav for PL ticket #719*@
+            @RevenuePlanner.Helpers.HtmlHelpers.GenerateCustomFields(Model.PlanProgramId, Enums.Section.Program.ToString())
+
         </div>
         <!--End content-->
         
@@ -679,13 +682,27 @@
 
             $("#txtProgramBudget").val(ReplaceCC($("#txtProgramBudget").val()));
 
+            ////Start Added by Mitesh Vaishnav for PL ticket #719
+            ////creating object which contains value of custom fields
+            var _customFieldValues = [];
+            $('form').find('input[type=text], select').each(function () {
+                if ($(this).attr('cf_id') != '' && typeof $(this).attr('cf_id') != 'undefined' && $(this).val() != '') {
+                    _customFieldValues.push({
+                        Key: $(this).attr('cf_id').toString(),
+                        Value: $(this).val().toString()
+                    });
+                }
+            });
+            _customFieldValues = JSON.stringify(_customFieldValues);
+            ////End Added by Mitesh Vaishnav for PL ticket #719
+
             document.getElementById("txtTitle").value = htmlEncode($('#txtTitle').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             document.getElementById("Description").value = htmlEncode($('#Description').val());////Added by Mitesh Vaishnav on 07/07/2014 for PL ticket #584
             var uId = $(window).attr('name');
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Plan/SaveProgram")',
-                data: $("form").serialize() + '&tactics=' + arTactic + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&BudgetInputValues=' + allocationValue.toString() + '&UserId=' + uId + '&CalledFromBudget=' + '@CalledFromBudget',
+                data: $("form").serialize() + '&tactics=' + arTactic + '&RedirectType=' + isAssortment + '&closedTask=' + arrClosedTaskString + '&BudgetInputValues=' + allocationValue.toString() + '&UserId=' + uId + '&CalledFromBudget=' + '@CalledFromBudget' + '&customFieldInputs=' + _customFieldValues,
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
                         window.location = '@Url.Content("~/Login/Index")';

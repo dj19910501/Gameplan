@@ -3684,7 +3684,7 @@ namespace RevenuePlanner.Helpers
                     }
                     else if (item.customFieldType == Enums.CustomFieldType.DropDownList.ToString())
                     {
-                        sb += "<span class=\"cf-selectbox\">  <select id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"ddlStyle\"";
+                        sb += "<span class=\"verticalIdSelectBox\">  <select id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"ddlStyle\"";
                         //If custom field is required than add attribute require
                         if (item.isRequired)
                         {

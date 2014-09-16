@@ -3079,7 +3079,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="RedirectType">Redirect Type.</param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveProgram(Plan_Campaign_ProgramModel form, string tactics, bool RedirectType, string closedTask, string BudgetInputValues, string UserId = "", string CalledFromBudget = "")
+        public ActionResult SaveProgram(Plan_Campaign_ProgramModel form, string tactics, bool RedirectType, string closedTask, string BudgetInputValues, string customFieldInputs, string UserId = "", string CalledFromBudget = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -3091,6 +3091,7 @@ namespace RevenuePlanner.Controllers
             }
             try
             {
+                var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(customFieldInputs);
                 string[] arrBudgetInputValues = BudgetInputValues.Split(',');
 
                 if (form.PlanProgramId == 0)
@@ -3176,6 +3177,25 @@ namespace RevenuePlanner.Controllers
 
                                 int result = db.SaveChanges();
                                 int programid = pcpobj.PlanProgramId;
+
+                                ////Start Added by Mitesh Vaishnav for PL ticket #719 Custom fields for Program
+                                ////save custom fields value for perticular Program
+                                if (customFields.Count != 0)
+                                {
+                                    foreach (var item in customFields)
+                                    {
+                                        CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
+                                        objcustomFieldEntity.EntityId = programid;
+                                        objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
+                                        objcustomFieldEntity.Value = item.Value;
+                                        objcustomFieldEntity.CreatedDate = DateTime.Now;
+                                        objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
+                                        db.Entry(objcustomFieldEntity).State = EntityState.Added;
+
+                                    }
+                                }
+                                ////End Added by Mitesh Vaishnav for PL ticket #719 Custom fields for Program
+
                                 // Start - Added by Sohel Pathan on 09/07/2014 for PL ticket #549 to add Start and End date field in Campaign. Program and Tactic screen
                                 Plan_Campaign pcp = db.Plan_Campaign.Where(pcobj => pcobj.PlanCampaignId.Equals(pcpobj.PlanCampaignId) && pcobj.IsDeleted.Equals(false)).SingleOrDefault();
                                 if (pcp != null)
@@ -3454,6 +3474,28 @@ namespace RevenuePlanner.Controllers
                                 }
 
                                 db.Entry(pcpobj).State = EntityState.Modified;
+
+                                ////Start Added by Mitesh Vaishnav for PL ticket #719 Custom fields for Program
+                                //// delete previous custom field values and save modified custom fields value for particular Program
+                                string entityTypeProgram = Enums.Section.Program.ToString();
+                                var prevCustomFieldList = db.CustomField_Entity.Where(c => c.EntityId == form.PlanProgramId && c.CustomField.EntityType == entityTypeProgram).ToList();
+                                prevCustomFieldList.ForEach(c => db.Entry(c).State = EntityState.Deleted);
+
+                                if (customFields.Count != 0)
+                                {
+                                    foreach (var item in customFields)
+                                    {
+                                        CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
+                                        objcustomFieldEntity.EntityId = form.PlanProgramId;
+                                        objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
+                                        objcustomFieldEntity.Value = item.Value;
+                                        objcustomFieldEntity.CreatedDate = DateTime.Now;
+                                        objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
+                                        db.Entry(objcustomFieldEntity).State = EntityState.Added;
+                                    }
+                                }
+                                ////End Added by Mitesh Vaishnav for PL ticket #719 Custom fields for Program
+
                                 int result = db.SaveChanges();
                                 result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
                                 if (result >= 1)
@@ -4498,8 +4540,8 @@ namespace RevenuePlanner.Controllers
 
                                 ////Start Added by Mitesh Vaishnav for PL ticket #720 Custom fields for Tactics
                                 //// delete previous custom field values and save modified custom fields value for particular Tactic
-                                string entityTypeCampaign = Enums.Section.Tactic.ToString();
-                                var prevCustomFieldList = db.CustomField_Entity.Where(c => c.EntityId == pcpobj.PlanTacticId && c.CustomField.EntityType == entityTypeCampaign).ToList();
+                                string entityTypeTactic = Enums.Section.Tactic.ToString();
+                                var prevCustomFieldList = db.CustomField_Entity.Where(c => c.EntityId == pcpobj.PlanTacticId && c.CustomField.EntityType == entityTypeTactic).ToList();
                                 prevCustomFieldList.ForEach(c => db.Entry(c).State = EntityState.Deleted);
 
                                 if (customFields.Count != 0)
