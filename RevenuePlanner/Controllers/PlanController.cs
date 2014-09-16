@@ -4772,6 +4772,7 @@ namespace RevenuePlanner.Controllers
                 {
                     calculatedMQL = lstTacticStageRelation[0].MQLValue;
                     CalculatedRevenue = lstTacticStageRelation[0].RevenueValue;
+                    CalculatedRevenue = Math.Round(CalculatedRevenue, 2); // Modified by Sohel Pathan on 16/09/2014 for PL ticket #760
                 }
                 else
                 {
@@ -4844,6 +4845,7 @@ namespace RevenuePlanner.Controllers
                 {
                     calculatedMQL = lstTacticStageRelation[0].MQLValue;
                     CalculatedRevenue = lstTacticStageRelation[0].RevenueValue;
+                    CalculatedRevenue = Math.Round(CalculatedRevenue, 2); // Modified by Sohel Pathan on 16/09/2014 for PL ticket #760
                 }
                 else
                 {
