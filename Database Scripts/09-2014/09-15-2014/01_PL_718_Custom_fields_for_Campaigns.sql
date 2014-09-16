@@ -3,12 +3,12 @@
 IF NOT EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME='CustomFieldType')
 BEGIN
 CREATE TABLE [dbo].[CustomFieldType](
-	[CustomFieldTypeId] [int] IDENTITY(1,1) NOT NULL,
-	[Name] [nvarchar](50) NOT NULL,
-	[Description] [nvarchar](4000) NULL,
- CONSTRAINT [PK_CustomFieldType] PRIMARY KEY CLUSTERED 
+       [CustomFieldTypeId] [int] IDENTITY(1,1) NOT NULL,
+       [Name] [nvarchar](50) NOT NULL,
+       [Description] [nvarchar](4000) NULL,
+CONSTRAINT [PK_CustomFieldType] PRIMARY KEY CLUSTERED 
 (
-	[CustomFieldTypeId] ASC
+       [CustomFieldTypeId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
@@ -26,21 +26,21 @@ END
 IF NOT EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME='CustomField')
 BEGIN
 CREATE TABLE [dbo].[CustomField](
-	[CustomFieldId] [int] IDENTITY(1,1) NOT NULL,
-	[Name] [nvarchar](255) NOT NULL,
-	[CustomFieldTypeId] [int] NOT NULL,
-	[Description] [nvarchar](4000) NULL,
-	[IsRequired] [bit] NOT NULL,
-	[EntityType] [nvarchar](50) NOT NULL,
-	[ClientId] [uniqueidentifier] NOT NULL,
-	[IsDeleted] [bit] NOT NULL,
-	[CreatedDate] [datetime] NOT NULL,
-	[CreatedBy] [uniqueidentifier] NOT NULL,
-	[ModifiedDate] [datetime] NULL,
-	[ModifiedBy] [uniqueidentifier] NULL,
- CONSTRAINT [PK_CustomField] PRIMARY KEY CLUSTERED 
+       [CustomFieldId] [int] IDENTITY(1,1) NOT NULL,
+       [Name] [nvarchar](255) NOT NULL,
+       [CustomFieldTypeId] [int] NOT NULL,
+       [Description] [nvarchar](4000) NULL,
+       [IsRequired] [bit] NOT NULL,
+       [EntityType] [nvarchar](50) NOT NULL,
+       [ClientId] [uniqueidentifier] NOT NULL,
+       [IsDeleted] [bit] NOT NULL,
+       [CreatedDate] [datetime] NOT NULL,
+       [CreatedBy] [uniqueidentifier] NOT NULL,
+       [ModifiedDate] [datetime] NULL,
+       [ModifiedBy] [uniqueidentifier] NULL,
+CONSTRAINT [PK_CustomField] PRIMARY KEY CLUSTERED 
 (
-	[CustomFieldId] ASC
+       [CustomFieldId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
@@ -104,14 +104,14 @@ IF NOT EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' A
 BEGIN
 
 CREATE TABLE [dbo].[CustomFieldOption](
-	[CustomFieldOptionId] [int] IDENTITY(1,1) NOT NULL,
-	[CustomFieldId] [int] NOT NULL,
-	[Value] [nvarchar](255) NOT NULL,
-	[CreatedDate] [datetime] NOT NULL,
-	[CreatedBy] [uniqueidentifier] NOT NULL,
- CONSTRAINT [PK_CustomFieldOption] PRIMARY KEY CLUSTERED 
+       [CustomFieldOptionId] [int] IDENTITY(1,1) NOT NULL,
+       [CustomFieldId] [int] NOT NULL,
+       [Value] [nvarchar](255) NOT NULL,
+       [CreatedDate] [datetime] NOT NULL,
+       [CreatedBy] [uniqueidentifier] NOT NULL,
+CONSTRAINT [PK_CustomFieldOption] PRIMARY KEY CLUSTERED 
 (
-	[CustomFieldOptionId] ASC
+       [CustomFieldOptionId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
@@ -145,15 +145,15 @@ IF NOT EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' A
 BEGIN
 
 CREATE TABLE [dbo].[CustomField_Entity](
-	[CustomFieldEntityId] [int] IDENTITY(1,1) NOT NULL,
-	[EntityId] [int] NOT NULL,
-	[CustomFieldId] [int] NOT NULL,
-	[Value] [nvarchar](255) NOT NULL,
-	[CreatedDate] [datetime] NOT NULL,
-	[CreatedBy] [uniqueidentifier] NOT NULL,
- CONSTRAINT [PK_CustomField_Entity] PRIMARY KEY CLUSTERED 
+       [CustomFieldEntityId] [int] IDENTITY(1,1) NOT NULL,
+       [EntityId] [int] NOT NULL,
+       [CustomFieldId] [int] NOT NULL,
+       [Value] [nvarchar](255) NOT NULL,
+       [CreatedDate] [datetime] NOT NULL,
+       [CreatedBy] [uniqueidentifier] NOT NULL,
+CONSTRAINT [PK_CustomField_Entity] PRIMARY KEY CLUSTERED 
 (
-	[CustomFieldEntityId] ASC
+       [CustomFieldEntityId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
@@ -180,3 +180,4 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Refers to asso
 END
 
 --==================End CustomField_Entity=====================
+
