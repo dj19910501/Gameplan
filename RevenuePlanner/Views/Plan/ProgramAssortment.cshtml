@@ -208,17 +208,17 @@
                         @Html.TextBoxFor(model => model.INQs, new { placeholder = "0", id = "txtinq", @class = "priceValue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
                     </div>*@
 
-                    <div class="width65px margin-right20 pull-left" style="width:22%;">
+                    <div class="width65px margin-right20 pull-left" style="width:30%;">
                         <label title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</label>
                         @Html.TextBoxFor(model => model.MQLs, new { placeholder = "0", id = "txtmql", @class = "priceValue", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
                     </div>
 
-                    <div class="width65px margin-right20 pull-left" style="width:22%;">
+                    <div class="width65px margin-right20 pull-left" style="width:30%;">
                         <label title="Cost">Cost</label>
                         @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", id = "txtCost", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                     </div>
 
-                    <div class="width65px pull-left" style="width:42%;">
+                    <div class="width65px pull-left" style="width:30%;">
                         <label title="Revenue">Revenue</label>
                         @Html.TextBoxFor(model => model.Revenue, new { placeholder = "$0", id = "txtRevenue", @class = "currency_dollar", @readonly = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                     </div>
