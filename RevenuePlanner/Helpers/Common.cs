@@ -3829,6 +3829,22 @@ namespace RevenuePlanner.Helpers
                             var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => lineItemIds.Contains(a.PlanLineItemId)).ToList();
                             plan_campaign_Program_Tactic_LineItem_ActualList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
 
+                            ////Start Added by Mitesh Vaishnav for PL ticket #718 Custom fields for Campaigns
+                            //// when campaign deleted then custom field's value for this campaign and custom field's value of appropriate program and tactic will be deleted
+                            var campaign_customFieldList = db.CustomField_Entity.Where(a => a.EntityId == id && a.CustomField.EntityType == section).ToList();
+                            campaign_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+
+                            var programIds=Plan_Campaign_ProgramList.Select(a=>a.PlanProgramId).ToList();
+                            string sectionProgram = Enums.EntityType.Program.ToString();
+                            var program_customFieldList = db.CustomField_Entity.Where(a => programIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionProgram).ToList();
+                            program_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+
+                            var tacticIds = Plan_Campaign_Program_TacticList.Select(a => a.PlanTacticId).ToList();
+                            string sectionTactic = Enums.EntityType.Tactic.ToString();
+                            var tactic_customFieldList = db.CustomField_Entity.Where(a => tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic).ToList();
+                            tactic_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                            ////End Added by Mitesh Vaishnav for PL ticket #718 Custom fields for Campaigns
+
                         }
                         else if (section == Enums.Section.Program.ToString() && id != 0)
                         {
@@ -3845,6 +3861,17 @@ namespace RevenuePlanner.Helpers
                             var lineItemIds = plan_campaign_Program_Tactic_LineItemList.Select(a => a.PlanLineItemId).ToList();
                             var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => lineItemIds.Contains(a.PlanLineItemId)).ToList();
                             plan_campaign_Program_Tactic_LineItem_ActualList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+
+                            ////Start Added by Mitesh Vaishnav for PL ticket #719 Custom fields for programs
+                            //// when program deleted then custom field's value for this program and custom field's value of appropriate tactic will be deleted
+                            var program_customFieldList = db.CustomField_Entity.Where(a => a.EntityId==id && a.CustomField.EntityType == section).ToList();
+                            program_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+
+                            var tacticIds = Plan_Campaign_Program_TacticList.Select(a => a.PlanTacticId).ToList();
+                            string sectionTactic = Enums.EntityType.Tactic.ToString();
+                            var tactic_customFieldList = db.CustomField_Entity.Where(a => tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic).ToList();
+                            tactic_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                            ////End Added by Mitesh Vaishnav for PL ticket #719 Custom fields for programs
                         }
                         else if (section == Enums.Section.Tactic.ToString() && id != 0)
                         {
@@ -3858,6 +3885,12 @@ namespace RevenuePlanner.Helpers
                             var lineItemIds = plan_campaign_Program_Tactic_LineItemList.Select(a => a.PlanLineItemId).ToList();
                             var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => lineItemIds.Contains(a.PlanLineItemId)).ToList();
                             plan_campaign_Program_Tactic_LineItem_ActualList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+
+                            ////Start Added by Mitesh Vaishnav for PL ticket #720 Custom fields for tactics
+                            //// when tactic deleted then custom field's value for this tactic will be deleted 
+                            var tactic_customFieldList = db.CustomField_Entity.Where(a => a.EntityId==id && a.CustomField.EntityType == section).ToList();
+                            tactic_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                            ////End Added by Mitesh Vaishnav for PL ticket #720 Custom fields for tactic
                         }
                         else if (section == Enums.Section.LineItem.ToString() && id != 0)
                         {

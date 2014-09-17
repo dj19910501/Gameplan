@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace RevenuePlanner.Models
 {
@@ -74,6 +75,8 @@ namespace RevenuePlanner.Models
         public double CampaignBudget { get; set; }
         public string AllocatedBy { get; set; }
         public double Revenue { get; set; }
+        //Added by Mitesh Vaishnav for PL ticket #718
+        public MvcHtmlString CustomFieldHtmlContent { get; set; }
     }
 
     public class Plan_Campaign_ProgramModel
@@ -102,6 +105,8 @@ namespace RevenuePlanner.Models
         public double ProgramBudget { get; set; }
         public string AllocatedBy { get; set; }
         public double Revenue { get; set; }
+        //Added by Mitesh Vaishnav for PL ticket #719
+        public MvcHtmlString CustomFieldHtmlContent { get; set; }
     }
 
     public class Plan_Campaign_Program_TacticModel
@@ -137,6 +142,8 @@ namespace RevenuePlanner.Models
         public double TacticCost { get; set; }
         public string AllocatedBy { get; set; }
         public double Revenue { get; set; }
+        //Added by Mitesh Vaishnav for PL ticket #720
+        public MvcHtmlString CustomFieldHtmlContent { get; set; }
     }
 
     public class Plan_Campaign_Program_Tactic_LineItemModel

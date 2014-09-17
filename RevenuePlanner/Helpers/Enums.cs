@@ -803,6 +803,17 @@ namespace RevenuePlanner.Helpers
             DropDownList
         }
 
+        /// <summary>
+        /// Enum for custom field entity type
+        /// Added by Mitesh Vaishnav for PL ticket #718
+        /// </summary>
+        public enum EntityType
+        {
+            Campaign,
+            Program,
+            Tactic
+        }
+
     }
 
     #region Authorization

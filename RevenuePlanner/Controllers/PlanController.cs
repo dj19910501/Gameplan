@@ -2151,6 +2151,8 @@ namespace RevenuePlanner.Controllers
             pc.CampaignBudget = 0; // Added By Dharmraj #567 : Budget allocation for campaign
             pc.AllocatedBy = objPlan.AllocatedBy;
 
+            pc.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(0, Enums.EntityType.Campaign.ToString());//Added by Mitesh Vaishnav for PL ticket #718
+
             var lstAllCampaign = db.Plan_Campaign.Where(c => c.PlanId == Sessions.PlanId && c.IsDeleted == false).ToList();
             double allCampaignBudget = lstAllCampaign.Sum(c => c.CampaignBudget);
             double planBudget = objPlan.Budget;
@@ -2249,6 +2251,8 @@ namespace RevenuePlanner.Controllers
 
             pcm.Revenue = Math.Round(PlanTacticValuesList.Sum(tm => tm.Revenue)); //  Update by Bhavesh to Display Revenue
             // End Added By Dharmraj #567 : Budget allocation for campaign
+
+            pcm.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(id, Enums.EntityType.Campaign.ToString());//Added by Mitesh Vaishnav for PL ticket #718
             if (Sessions.User.UserId == pc.CreatedBy)
             {
                 ViewBag.IsOwner = true;
@@ -2416,6 +2420,9 @@ namespace RevenuePlanner.Controllers
             }
             try
             {
+                //If "customFieldInputs" parameter contain html encoded value then it will be decoded
+                customFieldInputs = HttpUtility.HtmlDecode(customFieldInputs);
+                //Deserialize customFieldInputs json string to  KeyValuePair List
                 var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string,string>>>(customFieldInputs);
                 string[] arrBudgetInputValues = BudgetInputValues.Split(',');
 
@@ -2527,7 +2534,7 @@ namespace RevenuePlanner.Controllers
                                     }
                                     // End Added By Dharmraj #567 : Budget allocation for campaign
                                     ////Start Added by Mitesh Vaishnav for PL ticket #718 Custom fields for Campaigns
-                                    ////save custom fields value for perticular campaign
+                                    ////save custom fields value for particular campaign
                                     if (customFields.Count != 0)
                                     {
                                         foreach (var item in customFields)
@@ -2535,7 +2542,7 @@ namespace RevenuePlanner.Controllers
                                             CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
                                             objcustomFieldEntity.EntityId = campaignid;
                                             objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
-                                            objcustomFieldEntity.Value = item.Value;
+                                            objcustomFieldEntity.Value = item.Value.Trim().ToString();
                                             objcustomFieldEntity.CreatedDate = DateTime.Now;
                                             objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
                                             db.Entry(objcustomFieldEntity).State = EntityState.Added;
@@ -2727,8 +2734,8 @@ namespace RevenuePlanner.Controllers
                                 }
                                 // End Added By Dharmraj #567 : Budget allocation for campaign
                                 ////Start Added by Mitesh Vaishnav for PL ticket #718 Custom fields for Campaigns
-                                //// delete previous custom field values and save modified custom fields value for perticular campaign
-                                string entityTypeCampaign=Enums.Section.Campaign.ToString();
+                                //// delete previous custom field values and save modified custom fields value for particular campaign
+                                string entityTypeCampaign=Enums.EntityType.Campaign.ToString();
                                 var prevCustomFieldList = db.CustomField_Entity.Where(c => c.EntityId == pcobj.PlanCampaignId && c.CustomField.EntityType == entityTypeCampaign).ToList();
                                 prevCustomFieldList.ForEach(c => db.Entry(c).State = EntityState.Deleted);
 
@@ -2739,7 +2746,7 @@ namespace RevenuePlanner.Controllers
                                         CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
                                         objcustomFieldEntity.EntityId = pcobj.PlanCampaignId;
                                         objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
-                                        objcustomFieldEntity.Value = item.Value;
+                                        objcustomFieldEntity.Value = item.Value.Trim().ToString();
                                         objcustomFieldEntity.CreatedDate = DateTime.Now;
                                         objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
                                         db.Entry(objcustomFieldEntity).State = EntityState.Added;
@@ -2942,6 +2949,8 @@ namespace RevenuePlanner.Controllers
             pcpm.ProgramBudget = 0; // Added By Kalpesh #604 : Budget allocation for campaign
             pcpm.AllocatedBy = objPlan.AllocatedBy;
 
+            pcpm.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(0, Enums.EntityType.Program.ToString());//Added by Mitesh Vaishnav for PL ticket #719
+
             return PartialView("ProgramAssortment", pcpm);
         }
 
@@ -3024,6 +3033,8 @@ namespace RevenuePlanner.Controllers
 
             pcpm.IsDeployedToIntegration = pcp.IsDeployedToIntegration;
 
+            pcpm.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(id, Enums.EntityType.Program.ToString());//Added by Mitesh Vaishnav for PL ticket #719
+
             if (Sessions.User.UserId == pcp.CreatedBy)
             {
                 ViewBag.IsOwner = true;
@@ -3091,6 +3102,9 @@ namespace RevenuePlanner.Controllers
             }
             try
             {
+                //If "customFieldInputs" parameter contain html encoded value then it will be decoded
+                customFieldInputs = HttpUtility.HtmlDecode(customFieldInputs);
+                //Deserialize customFieldInputs json string to  KeyValuePair List
                 var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(customFieldInputs);
                 string[] arrBudgetInputValues = BudgetInputValues.Split(',');
 
@@ -3179,7 +3193,7 @@ namespace RevenuePlanner.Controllers
                                 int programid = pcpobj.PlanProgramId;
 
                                 ////Start Added by Mitesh Vaishnav for PL ticket #719 Custom fields for Program
-                                ////save custom fields value for perticular Program
+                                ////save custom fields value for particular Program
                                 if (customFields.Count != 0)
                                 {
                                     foreach (var item in customFields)
@@ -3187,7 +3201,7 @@ namespace RevenuePlanner.Controllers
                                         CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
                                         objcustomFieldEntity.EntityId = programid;
                                         objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
-                                        objcustomFieldEntity.Value = item.Value;
+                                        objcustomFieldEntity.Value = item.Value.Trim().ToString();
                                         objcustomFieldEntity.CreatedDate = DateTime.Now;
                                         objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
                                         db.Entry(objcustomFieldEntity).State = EntityState.Added;
@@ -3477,7 +3491,7 @@ namespace RevenuePlanner.Controllers
 
                                 ////Start Added by Mitesh Vaishnav for PL ticket #719 Custom fields for Program
                                 //// delete previous custom field values and save modified custom fields value for particular Program
-                                string entityTypeProgram = Enums.Section.Program.ToString();
+                                string entityTypeProgram = Enums.EntityType.Program.ToString();
                                 var prevCustomFieldList = db.CustomField_Entity.Where(c => c.EntityId == form.PlanProgramId && c.CustomField.EntityType == entityTypeProgram).ToList();
                                 prevCustomFieldList.ForEach(c => db.Entry(c).State = EntityState.Deleted);
 
@@ -3488,7 +3502,7 @@ namespace RevenuePlanner.Controllers
                                         CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
                                         objcustomFieldEntity.EntityId = form.PlanProgramId;
                                         objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
-                                        objcustomFieldEntity.Value = item.Value;
+                                        objcustomFieldEntity.Value = item.Value.Trim().ToString();
                                         objcustomFieldEntity.CreatedDate = DateTime.Now;
                                         objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
                                         db.Entry(objcustomFieldEntity).State = EntityState.Added;
@@ -3686,6 +3700,8 @@ namespace RevenuePlanner.Controllers
             //Start by Kalpesh Sharma #605: Cost allocation for Tactic
             pcptm.TacticCost = 0;
             pcptm.AllocatedBy = objPlan.AllocatedBy;
+
+            pcptm.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(0, Enums.EntityType.Tactic.ToString());//Added by Mitesh Vaishnav for PL ticket #720
 
             return PartialView("TacticAssortment", pcptm);
         }
@@ -3890,6 +3906,8 @@ namespace RevenuePlanner.Controllers
             var objPlan = db.Plans.SingleOrDefault(varP => varP.PlanId == Sessions.PlanId);
             pcptm.AllocatedBy = objPlan.AllocatedBy;
 
+            pcptm.CustomFieldHtmlContent = HtmlHelpers.GenerateCustomFields(id, Enums.EntityType.Tactic.ToString());//Added by Mitesh Vaishnav for PL ticket #720
+
             //Added By : Kalpesh Sharma : PL #605 : 07/29/2014
             //List<Plan_Tactic_Values> PlanTacticValuesList = Common.GetMQLValueTacticList(db.Plan_Campaign_Program_Tactic.Where(t => t.PlanProgramId == pcpt.PlanProgramId &&
             //    t.PlanTacticId == pcpt.PlanTacticId && t.IsDeleted == false).ToList());
@@ -3986,6 +4004,9 @@ namespace RevenuePlanner.Controllers
 
                 string[] arrBudgetInputValues = BudgetInputValues.Split(',');
                 string[] arrActualCostInputValues = actualInputValues.Split(',');
+                //If "customFieldInputs" parameter contain html encoded value then it will be decoded
+                customFieldInputs = HttpUtility.HtmlDecode(customFieldInputs);
+                //Deserialize customFieldInputs json string to  KeyValuePair List
                 var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(customFieldInputs);
 
                 if (form.PlanTacticId == 0)
@@ -4142,7 +4163,7 @@ namespace RevenuePlanner.Controllers
                                         CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
                                         objcustomFieldEntity.EntityId = tacticId;
                                         objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
-                                        objcustomFieldEntity.Value = item.Value;
+                                        objcustomFieldEntity.Value = item.Value.Trim().ToString();
                                         objcustomFieldEntity.CreatedDate = DateTime.Now;
                                         objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
                                         db.Entry(objcustomFieldEntity).State = EntityState.Added;
@@ -4540,7 +4561,7 @@ namespace RevenuePlanner.Controllers
 
                                 ////Start Added by Mitesh Vaishnav for PL ticket #720 Custom fields for Tactics
                                 //// delete previous custom field values and save modified custom fields value for particular Tactic
-                                string entityTypeTactic = Enums.Section.Tactic.ToString();
+                                string entityTypeTactic = Enums.EntityType.Tactic.ToString();
                                 var prevCustomFieldList = db.CustomField_Entity.Where(c => c.EntityId == pcpobj.PlanTacticId && c.CustomField.EntityType == entityTypeTactic).ToList();
                                 prevCustomFieldList.ForEach(c => db.Entry(c).State = EntityState.Deleted);
 
@@ -4551,7 +4572,7 @@ namespace RevenuePlanner.Controllers
                                         CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
                                         objcustomFieldEntity.EntityId = pcpobj.PlanTacticId;
                                         objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
-                                        objcustomFieldEntity.Value = item.Value;
+                                        objcustomFieldEntity.Value = item.Value.Trim().ToString();
                                         objcustomFieldEntity.CreatedDate = DateTime.Now;
                                         objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
                                         db.Entry(objcustomFieldEntity).State = EntityState.Added;

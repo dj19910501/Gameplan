@@ -3651,11 +3651,11 @@ namespace RevenuePlanner.Helpers
         /// function generate html output for custom fields of campaign,program or tactic
         /// </summary>
         /// <param name="id">Plan Tactic Id or Plan Campaign Id or Plan Program Id</param>
-        /// <param name="section">Perameter contains value from enum Section like Campaign or Program or Tactic.</param>
+        /// <param name="section">Parameter contains value from enum EntityType like Campaign or Program or Tactic.</param>
         /// <returns>If Plan Tactic or Plan Campaign or Plan Program contains custom fields than returns html string else empty string</returns>
         public static MvcHtmlString GenerateCustomFields(int id, string section)
         {
-            //list of custom fields for perticular campaign or Program or Tactic
+            //list of custom fields for particular campaign or Program or Tactic
             List<CustomFieldModel> customFieldList = Common.GetCustomFields(id, section);
             string sb = string.Empty;
             if (customFieldList.Count != 0)
@@ -3666,15 +3666,18 @@ namespace RevenuePlanner.Helpers
                 {
                     if (count % 2 == 0)
                     {
-                        sb += "<div class=\"content-row \"><label class=\"padding-left4\" title=\"" + item.name + "\">" + Common.TruncateLable(item.name, 40) + "</label>";
+                        sb += "<div class=\"content-row \"><label class=\"padding-left4\" title=\"" + item.name + "\">" + Common.TruncateLable(item.name, 33) + "</label>";
                     }
                     else
                     {
-                        sb += "<div class=\"content-row alternate\"><label class=\"padding-left4\" title=\"" + item.name + "\">" + Common.TruncateLable(item.name, 40) + "</label>";
+                        sb += "<div class=\"content-row alternate\"><label class=\"padding-left4\" title=\"" + item.name + "\">" + Common.TruncateLable(item.name, 33) + "</label>";
                     }
+                    //check if custom field type is textbox then generate textbox and if custom field type is dropdownlist then generate dropdownlist
                     if (item.customFieldType == Enums.CustomFieldType.TextBox.ToString())
                     {
-                        sb += "<input id=\"cf_" + item.customFieldId + "\" type=\"text\" value=\"" + item.value + "\" cf_id=\"" + item.customFieldId + "\" maxlength=\"255\"";
+                        //When item value contains double quots then it would be replaced 
+                        string customFieldEntityValue = item.value != null ? item.value.Replace("\"", "&quot;") : string.Empty;
+                        sb += "<input id=\"cf_" + item.customFieldId + "\" type=\"text\" value=\"" + customFieldEntityValue + "\" cf_id=\"" + item.customFieldId + "\" maxlength=\"255\"";
                         //If custom field is required than add attribute require
                         if (item.isRequired)
                         {
@@ -3696,6 +3699,7 @@ namespace RevenuePlanner.Helpers
                         {
                             foreach (var objOption in item.option)
                             {
+                                //check - if custom field's value inserted before from dropdownlist then set it as selected
                                 if (item.value != objOption.customFieldOptionId.ToString())
                                 {
                                     sb += "<option value=\"" + objOption.customFieldOptionId + "\">" + objOption.value + "</option>";
