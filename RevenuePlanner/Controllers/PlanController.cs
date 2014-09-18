@@ -2420,8 +2420,6 @@ namespace RevenuePlanner.Controllers
             }
             try
             {
-                //If "customFieldInputs" parameter contain html encoded value then it will be decoded
-                customFieldInputs = HttpUtility.HtmlDecode(customFieldInputs);
                 //Deserialize customFieldInputs json string to  KeyValuePair List
                 var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string,string>>>(customFieldInputs);
                 string[] arrBudgetInputValues = BudgetInputValues.Split(',');
@@ -3102,8 +3100,6 @@ namespace RevenuePlanner.Controllers
             }
             try
             {
-                //If "customFieldInputs" parameter contain html encoded value then it will be decoded
-                customFieldInputs = HttpUtility.HtmlDecode(customFieldInputs);
                 //Deserialize customFieldInputs json string to  KeyValuePair List
                 var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(customFieldInputs);
                 string[] arrBudgetInputValues = BudgetInputValues.Split(',');
@@ -4004,8 +4000,6 @@ namespace RevenuePlanner.Controllers
 
                 string[] arrBudgetInputValues = BudgetInputValues.Split(',');
                 string[] arrActualCostInputValues = actualInputValues.Split(',');
-                //If "customFieldInputs" parameter contain html encoded value then it will be decoded
-                customFieldInputs = HttpUtility.HtmlDecode(customFieldInputs);
                 //Deserialize customFieldInputs json string to  KeyValuePair List
                 var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(customFieldInputs);
 
