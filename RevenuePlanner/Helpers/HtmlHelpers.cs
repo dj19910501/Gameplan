@@ -3664,17 +3664,15 @@ namespace RevenuePlanner.Helpers
                 int count = 0;
                 foreach (var item in customFieldList)
                 {
-                    if (count % 2 == 0)
+                    string classname = "content-row";
+                    if (count % 2 != 0)
                     {
-                        sb += "<div class=\"content-row \"><label class=\"padding-left4\" title=\"" + item.name + "\">" + Common.TruncateLable(item.name, 33) + "</label>";
-                    }
-                    else
-                    {
-                        sb += "<div class=\"content-row alternate\"><label class=\"padding-left4\" title=\"" + item.name + "\">" + Common.TruncateLable(item.name, 33) + "</label>";
+                        classname += " alternate";
                     }
                     //check if custom field type is textbox then generate textbox and if custom field type is dropdownlist then generate dropdownlist
                     if (item.customFieldType == Enums.CustomFieldType.TextBox.ToString())
                     {
+                        sb += "<div class=\""+classname+" \"><label class=\"padding-left4\" title=\"" + item.name + "\">" + Common.TruncateLable(item.name, 33) + "</label>";
                         //When item value contains double quots then it would be replaced 
                         string customFieldEntityValue = item.value != null ? item.value.Replace("\"", "&quot;") : string.Empty;
                         sb += "<input id=\"cf_" + item.customFieldId + "\" type=\"text\" value=\"" + customFieldEntityValue + "\" cf_id=\"" + item.customFieldId + "\" maxlength=\"255\"";
@@ -3687,6 +3685,8 @@ namespace RevenuePlanner.Helpers
                     }
                     else if (item.customFieldType == Enums.CustomFieldType.DropDownList.ToString())
                     {
+                        classname += " margin-bottom10";
+                        sb += "<div class=\"" + classname + " \"><label class=\"padding-left4\" title=\"" + item.name + "\">" + Common.TruncateLable(item.name, 33) + "</label>";
                         sb += "<span class=\"verticalIdSelectBox\">  <select id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"ddlStyle\"";
                         //If custom field is required than add attribute require
                         if (item.isRequired)
