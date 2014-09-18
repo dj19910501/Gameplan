@@ -49,9 +49,43 @@ namespace RevenuePlanner.Models
         public int VerticalId { get; set; }
         public string VerticalTitle { get; set; }
     }
+
+    public class BudgetModelReport
+    {
+        public string Id { get; set; }
+        public string ActivityId { get; set; }
+        public string ActivityName { get; set; }
+        public string ActivityType { get; set; }
+        public string ParentActivityId { get; set; }
+        public string TabActivityId { get; set; }
+
+        public BudgetMonth MonthPlanned { get; set; }
+        public BudgetMonth SumMonthPlanned { get; set; }
+        public BudgetMonth ParentMonthPlanned { get; set; }
+
+        public BudgetMonth MonthActual { get; set; }
+        public BudgetMonth SumMonthActual { get; set; }
+        public BudgetMonth ParentMonthActual { get; set; }
+
+        public BudgetMonth MonthAllocated { get; set; }
+        public BudgetMonth SumMonthAllocated { get; set; }
+        public BudgetMonth ChildMonthAllocated { get; set; }
+
+        public double Allocated { get; set; }
+        public double Budgeted { get; set; }
+        public double Actual { get; set; }
+        public double Planned { get; set; }
+        
+    }
     public class BudgetedValue
     {
         public string Period { get; set; }
         public double Value { get; set; }
+    }
+
+    public class BudgetReportTab
+    {
+        public string Id { get; set; }
+        public string Title { get; set; }
     }
 }

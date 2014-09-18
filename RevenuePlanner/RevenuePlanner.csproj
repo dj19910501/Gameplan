@@ -266,6 +266,7 @@
     <Content Include="Content\css\font-awesome.min.css" />
     <Content Include="Content\css\font.css" />
     <Content Include="Content\css\jquery.mCustomScrollbar.css" />
+    <Content Include="Content\css\jquery.multiselect.css" />
     <Content Include="Content\css\jquery.slidepanel.css" />
     <Content Include="Content\css\jquery.treeview.css" />
     <Content Include="Content\css\NaturalLanguageForm\component.css" />
@@ -383,6 +384,7 @@
     <Content Include="Content\images\icon-collapse.png" />
     <Content Include="Content\images\icon-dollar.png" />
     <Content Include="Content\images\icon-expand.png" />
+    <Content Include="Content\images\icon-filter-search.gif" />
     <Content Include="Content\images\icon-return-to-sign-in-blue.png" />
     <Content Include="Content\images\icons-accept-reject.png" />
     <Content Include="Content\images\icons-nav-blue-model-long.png" />
@@ -579,8 +581,11 @@
     <Content Include="Content\fonts\fontawesome-webfont.eot" />
     <Content Include="Content\fonts\fontawesome-webfont.ttf" />
     <Content Include="Content\fonts\fontawesome-webfont.woff" />
+    <Content Include="Scripts\js\jquery-ui.js" />
     <Content Include="Scripts\js\jquery.actual.js" />
     <Content Include="Scripts\js\jquery.mCustomScrollbar.concat.min.js" />
+    <Content Include="Scripts\js\jquery.multiselect.filter.js" />
+    <Content Include="Scripts\js\jquery.multiselect.js" />
     <Content Include="Scripts\js\ReportConversion.js" />
     <Content Include="Scripts\js\ReportRevenue.js" />
     <Content Include="Scripts\js\ReportSummary.js" />
@@ -839,6 +844,8 @@
     <Content Include="Views\Model\IntegrationSelection.cshtml" />
     <Content Include="Views\Model\_modelIntegration.cshtml" />
     <Content Include="Views\ExternalService\_Responses.cshtml" />
+    <Content Include="Views\Report\Budget.cshtml" />
+    <Content Include="Views\Report\_Budget.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

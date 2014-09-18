@@ -12,6 +12,17 @@
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
     <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
 }
+<link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.mCustomScrollbar.css")" type="text/css" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.slimscroll.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/slimScrollHorizontal.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.mCustomScrollbar.concat.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.actual.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.multiselect.filter.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.multiselect.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery-ui.js")"></script>
+<link href="@Url.Content("~/Content/css/jquery.multiselect.css")" rel="stylesheet" type="text/css" />
+
+
 @section Sidebar
 {
     <div class="padding-content padding-bottom0">
@@ -56,6 +67,9 @@
         <li class="item" id="liConversion">
             <a class="source-sans-probold conversion"><span></span>CONVERSION</a>
         </li>
+         <li class="item" id="liBudget">
+            <a class="source-sans-probold budget"><span></span>Budget</a>
+        </li>
     </ul>
 }
 
@@ -99,7 +113,7 @@
     </div>
 </div>
 
-<ul class="nav nav-tabs" style="border-bottom: 0px;">
+<ul class="nav nav-tabs" style="border-bottom: 0px;" id="UlPlanHeader">
     <li class="source-sans-proregular">
         <h2 class="title-header plan" id="h2PlanTitle">@ViewBag.PlanTitle</h2>
     </li>
@@ -305,6 +319,16 @@
             }
         });
 
+        $('#liBudget').click(function () {
+            if (isAllowClick) {
+                isAllowClick = false;
+                leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()';
+                RemoveAllActiveItem();
+                $(this).addClass('active');
+                LoadBudgetView();
+            }
+        });
+
         function LoadRespectiveData() {
             if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()') {
                 LoadRevenueData();
@@ -430,6 +454,17 @@
                 myApp.hidePleaseWait();
             });
         }
+
+        function LoadBudgetView() {
+            $('#reportHeader').css('display', 'none');
+            $('#UlPlanHeader').css('display', 'none');
+            var url = '@Url.Content("~/Report/GetBudget/")';
+            $('#divMainReportPart').load(url, function () {
+                isAllowClick = true;
+                myApp.hidePleaseWait();
+            });
+        }
+        
 
         $("#DivShareReport").hide();
 

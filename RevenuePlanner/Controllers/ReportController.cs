@@ -3009,5 +3009,732 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 
+        #region Budget
+
+        #region Constant variable declaration those needs to move to common
+        public const string Jan = "Y1";
+        public const string Feb = "Y2";
+        public const string Mar = "Y3";
+        public const string Apr = "Y4";
+        public const string May = "Y5";
+        public const string Jun = "Y6";
+        public const string Jul = "Y7";
+        public const string Aug = "Y8";
+        public const string Sep = "Y9";
+        public const string Oct = "Y10";
+        public const string Nov = "Y11";
+        public const string Dec = "Y12";
+        #endregion
+
+        [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
+        public ActionResult GetBudget()
+        {
+            List<ViewByModel> lstViewByTab = new List<ViewByModel>();
+            lstViewByTab.Add(new ViewByModel { Text = ReportTabType.Plan.ToString(), Value = ReportTabType.Plan.ToString() });
+            lstViewByTab.Add(new ViewByModel { Text = ReportTabType.Vertical.ToString(), Value = ReportTabType.Vertical.ToString() });
+            lstViewByTab.Add(new ViewByModel { Text = ReportTabType.Geography.ToString(), Value = ReportTabType.Geography.ToString() });
+            lstViewByTab.Add(new ViewByModel { Text = ReportTabType.BusinessUnit.ToString(), Value = ReportTabType.BusinessUnit.ToString() });
+            lstViewByTab.Add(new ViewByModel { Text = ReportTabType.Audience.ToString(), Value = ReportTabType.Audience.ToString() });
+            ViewBag.ViewByTab = lstViewByTab;
+
+            List<ViewByModel> lstViewByAllocated = new List<ViewByModel>();
+            lstViewByAllocated.Add(new ViewByModel { Text = "Monthly", Value = Enums.PlanAllocatedBy.months.ToString() });
+            lstViewByAllocated.Add(new ViewByModel { Text = "Quarterly", Value = Enums.PlanAllocatedBy.quarters.ToString() });
+            ViewBag.ViewByAllocated = lstViewByAllocated;
+
+            List<SelectListItem> lstGeography = new List<SelectListItem>();
+            lstGeography = db.Geographies.Where(g => g.ClientId == Sessions.User.ClientId && g.IsDeleted == false).ToList().Select(g => new SelectListItem { Text = g.Title, Value = g.GeographyId.ToString(), Selected = true }).ToList();
+            ViewBag.ViewGeography = lstGeography;
+
+            List<SelectListItem> lstBusinessUnit = new List<SelectListItem>();
+            lstBusinessUnit = db.BusinessUnits.Where(b => b.ClientId == Sessions.User.ClientId && b.IsDeleted == false).ToList().Select(b => new SelectListItem { Text = b.Title, Value = b.BusinessUnitId.ToString(), Selected = true }).ToList();
+            ViewBag.ViewBusinessUnit = lstBusinessUnit;
+
+            List<SelectListItem> lstVertical = new List<SelectListItem>();
+            lstVertical = db.Verticals.Where(v => v.ClientId == Sessions.User.ClientId && v.IsDeleted == false).ToList().Select(v => new SelectListItem { Text = v.Title, Value = v.VerticalId.ToString(), Selected = true }).ToList();
+            ViewBag.ViewVertical = lstVertical;
+
+            List<SelectListItem> lstAudience = new List<SelectListItem>();
+            lstAudience = db.Audiences.Where(a => a.ClientId == Sessions.User.ClientId && a.IsDeleted == false).ToList().Select(a => new SelectListItem { Text = a.Title, Value = a.AudienceId.ToString(), Selected = true }).ToList();
+            ViewBag.ViewAudience = lstAudience;
+
+            string published = Enums.PlanStatus.Published.ToString();
+            List<SelectListItem> lstYear = new List<SelectListItem>();
+            var lstPlan = db.Plans.Where(p => p.IsDeleted == false && p.Status == published).ToList();
+            var yearlist = lstPlan.Select(p => p.Year).Distinct().ToList();
+            yearlist.ForEach(year => lstYear.Add(new SelectListItem { Text = "FY " + year, Value = year }));
+            ViewBag.ViewYear = lstYear;
+
+            List<SelectListItem> lstPlanList = new List<SelectListItem>();
+            lstPlanList = lstPlan.Select(p => new SelectListItem { Text = p.Title, Value = p.PlanId.ToString() }).ToList();
+            ViewBag.ViewPlan = lstPlanList;
+
+            return PartialView("Budget");
+        }
+
+        /// <summary>
+        /// Load Plan values
+        /// </summary>
+        /// <param name="BusinessUnitId"></param>
+        /// <param name="isBusinessUnit"></param>
+        /// <returns></returns>
+        public JsonResult GetBudgetPlanBasedOnYear(string Year)
+        {
+            string published = Enums.PlanStatus.Published.ToString();
+            var planList = db.Plans.Where(p => p.Year == Year && p.IsDeleted == false && p.Status == published).ToList().Select(p => new
+            {
+                Text = p.Title,
+                Value = p.PlanId.ToString()
+            }).ToList();
+
+            return Json(planList, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult GetReportBudgetData(string PlanIds, string GeographyIds, string BusinessUnitIds, string VerticalIds, string AudienceIds, string Year, string AllocatedBy, string Tab)
+        {
+            List<int> PlanIdList = new List<int>();
+            if (PlanIds.ToString() != string.Empty)
+            {
+                PlanIdList = PlanIds.Split(',').Select(int.Parse).ToList<int>();
+            }
+
+            List<int> AudienceIdList = new List<int>();
+            if (AudienceIds.ToString() != string.Empty)
+            {
+                AudienceIdList = AudienceIds.Split(',').Select(int.Parse).ToList<int>();
+            }
+
+            List<int> VerticalIdList = new List<int>();
+            if (VerticalIds.ToString() != string.Empty)
+            {
+                VerticalIdList = VerticalIds.Split(',').Select(int.Parse).ToList<int>();
+            }
+
+            List<Guid> BusinessUnitIdList = new List<Guid>();
+            if (BusinessUnitIds.ToString() != string.Empty)
+            {
+                BusinessUnitIdList = BusinessUnitIds.Split(',').Select(Guid.Parse).ToList<Guid>();
+            }
+
+            List<Guid> GeographyIdList = new List<Guid>();
+            if (GeographyIds.ToString() != string.Empty)
+            {
+                GeographyIdList = GeographyIds.Split(',').Select(Guid.Parse).ToList<Guid>();
+            }
+
+            //int PlanId = 3533;
+            // Apply filter on tactic
+            var tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => 
+                            PlanIdList.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) 
+                            && BusinessUnitIdList.Contains(tactic.BusinessUnitId) 
+                            && GeographyIdList.Contains(tactic.GeographyId) 
+                            && VerticalIdList.Contains(tactic.VerticalId) 
+                            && AudienceIdList.Contains(tactic.AudienceId)
+                            && tactic.IsDeleted.Equals(false)
+                            ).ToList();
+
+            List<int> TacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
+            var LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => TacticIds.Contains(lineitem.PlanTacticId) && lineitem.IsDeleted.Equals(false)).ToList();
+            List<int> ProgramIds = tacticList.Select(tactic => tactic.PlanProgramId).ToList();
+            var ProgramList = db.Plan_Campaign_Program.Where(program => ProgramIds.Contains(program.PlanProgramId) && program.IsDeleted.Equals(false)).ToList();
+            List<int> CampaignIds = ProgramList.Select(tactic => tactic.PlanCampaignId).ToList();
+            var CampaignList = db.Plan_Campaign.Where(campaign => CampaignIds.Contains(campaign.PlanCampaignId) && campaign.IsDeleted.Equals(false)).ToList();
+            List<int> PlanIdsInner = CampaignList.Select(campaign => campaign.PlanId).ToList();
+            List<int> AudienceIdsInner = tacticList.Select(tactic => tactic.AudienceId).Distinct().ToList();
+            List<Guid> BusinessUnitIdsInner = tacticList.Select(tactic => tactic.BusinessUnitId).Distinct().ToList();
+            List<int> VerticalIdsInner = tacticList.Select(tactic => tactic.VerticalId).Distinct().ToList();
+            List<Guid> GeographyIdsInner = tacticList.Select(tactic => tactic.GeographyId).Distinct().ToList();
+
+            List<BudgetedValue> EmptyBudgetList = new List<BudgetedValue>();
+            EmptyBudgetList = GetEmptyList();
+
+            List<BudgetModelReport> model = new List<BudgetModelReport>();
+            BudgetModelReport obj = new BudgetModelReport();
+            obj.Id = "0";
+            obj.ActivityId = "main_0";
+            obj.ActivityName = "";
+            obj.ActivityType = ActivityType.ActivityMain;
+            obj.ParentActivityId = "0";
+            obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Planned.ToString());
+            obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
+            obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Allocated.ToString());
+            model.Add(obj);
+            string parentPlanId = "0", parentCampaignId = "0", parentProgramId = "0", parentTacticId = "0";
+            string parentMainId = "main_0";
+            if (Tab == ReportTabType.Plan.ToString())
+            {
+
+                var planobj = db.Plans.Where(plan => PlanIdsInner.Contains(plan.PlanId)).ToList();
+                if (planobj != null)
+                {
+                    foreach (var p in planobj)
+                    {
+                        obj = new BudgetModelReport();
+                        //List<BudgetedValue> lst = (from bv in p.Plan_Budget
+                        //                           select new BudgetedValue
+                        //                           {
+                        //                               Period = bv.Period,
+                        //                               Value = bv.Value
+                        //                           }).ToList();
+                        obj.Id = p.PlanId.ToString();
+                        obj.ActivityId = "plan_" + p.PlanId.ToString();
+                        obj.ActivityName = p.Title;
+                        obj.ActivityType = ActivityType.ActivityPlan;
+                        obj.ParentActivityId = parentMainId;
+                        obj.TabActivityId = p.PlanId.ToString();
+                        obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Planned.ToString());
+                        obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
+                        obj = GetMonthWiseDataReport(obj, p.Plan_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Allocated.ToString());
+                        model.Add(obj);
+                        parentPlanId = "plan_" + p.PlanId.ToString();
+
+                        var campaignObj = CampaignList.Where(c => c.PlanId == p.PlanId).ToList();
+                        foreach (var c in campaignObj)
+                        {
+                            obj = new BudgetModelReport();
+                            obj.Id = c.PlanCampaignId.ToString();
+                            obj.ActivityId = "c_" + c.PlanCampaignId.ToString();
+                            obj.ActivityName = c.Title;
+                            obj.ActivityType = ActivityType.ActivityCampaign;
+                            obj.ParentActivityId = parentPlanId;
+                            obj.TabActivityId = p.PlanId.ToString();
+                            obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Planned.ToString());
+                            obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
+                            obj = GetMonthWiseDataReport(obj, c.Plan_Campaign_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Allocated.ToString());
+                            model.Add(obj);
+                            parentCampaignId = "c_" + c.PlanCampaignId.ToString();
+                            var ProgramObj = ProgramList.Where(pr => pr.PlanCampaignId == c.PlanCampaignId).ToList();
+                            foreach (var pr in ProgramObj)
+                            {
+                                obj = new BudgetModelReport();
+                                obj.Id = pr.PlanProgramId.ToString();
+                                obj.ActivityId = "cp_" + pr.PlanProgramId.ToString();
+                                obj.ActivityName = pr.Title;
+                                obj.ActivityType = ActivityType.ActivityProgram;
+                                obj.ParentActivityId = parentCampaignId;
+                                obj.TabActivityId = p.PlanId.ToString();
+                                obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Planned.ToString());
+                                obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
+                                obj = GetMonthWiseDataReport(obj, pr.Plan_Campaign_Program_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Allocated.ToString());
+                                model.Add(obj);
+                                parentProgramId = "cp_" + pr.PlanProgramId.ToString();
+
+                                var TacticObj = tacticList.Where(t => t.PlanProgramId == pr.PlanProgramId).ToList();
+                                foreach (var t in TacticObj)
+                                {
+                                    obj = new BudgetModelReport();
+                                    obj.Id = t.PlanTacticId.ToString();
+                                    obj.ActivityId = "cpt_" + t.PlanTacticId.ToString();
+                                    obj.ActivityName = t.Title;
+                                    obj.ActivityType = ActivityType.ActivityTactic;
+                                    obj.ParentActivityId = parentProgramId;
+                                    obj.TabActivityId = p.PlanId.ToString();
+                                    obj = GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Planned.ToString());
+                                    obj = GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Actual.Where(b => b.StageTitle == "Cost").Select(b => new BudgetedValue { Period = b.Period, Value = b.Actualvalue }).ToList(), ReportColumnType.Actual.ToString());
+                                    obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Allocated.ToString());
+                                    model.Add(obj);
+                                    parentTacticId = "cpt_" + t.PlanTacticId.ToString();
+
+                                    var LineItemObj = LineItemList.Where(l => l.PlanTacticId == t.PlanTacticId).ToList();
+                                    foreach (var l in LineItemObj)
+                                    {
+                                        obj = new BudgetModelReport();
+                                        obj.Id = l.PlanLineItemId.ToString();
+                                        obj.ActivityId = "cptl_" + l.PlanLineItemId.ToString();
+                                        obj.ActivityName = l.Title;
+                                        obj.ActivityType = ActivityType.ActivityLineItem;
+                                        obj.ParentActivityId = parentTacticId;
+                                        obj.TabActivityId = p.PlanId.ToString();
+                                        obj = GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Planned.ToString());
+                                        obj = GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Actual.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Actual.ToString());
+                                        obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Allocated.ToString());
+                                        model.Add(obj);
+                                    }
+
+                                }
+                            }
+
+
+                        }
+                    }
+                }
+            }
+            else
+            {
+                List<BudgetReportTab> planobj = new List<BudgetReportTab>();
+                if (Tab == ReportTabType.Audience.ToString())
+                {
+                    planobj = db.Audiences.Where(a => AudienceIdsInner.Contains(a.AudienceId)).ToList().Select(a => new BudgetReportTab { Id = a.AudienceId.ToString(), Title = a.Title }).ToList();
+                }
+                if (Tab == ReportTabType.BusinessUnit.ToString())
+                {
+                    planobj = db.BusinessUnits.Where(a => BusinessUnitIdsInner.Contains(a.BusinessUnitId)).ToList().Select(a => new BudgetReportTab { Id = a.BusinessUnitId.ToString(), Title = a.Title }).ToList();
+                }
+                else if (Tab == ReportTabType.Geography.ToString())
+                {
+                    planobj = db.Geographies.Where(a => GeographyIdsInner.Contains(a.GeographyId)).ToList().Select(a => new BudgetReportTab { Id = a.GeographyId.ToString(), Title = a.Title }).ToList();
+                }
+                else if (Tab == ReportTabType.Vertical.ToString())
+                {
+                    planobj = db.Verticals.Where(a => VerticalIdsInner.Contains(a.VerticalId)).ToList().Select(a => new BudgetReportTab { Id = a.VerticalId.ToString(), Title = a.Title }).ToList();
+                }
+                
+                if (planobj != null)
+                {
+                    foreach (var p in planobj)
+                    {
+                        obj = new BudgetModelReport();
+                        obj.Id = p.Id.ToString();
+                        obj.ActivityId = "plan_" + p.Id.ToString();
+                        obj.ActivityName = p.Title;
+                        obj.ActivityType = ActivityType.ActivityPlan;
+                        obj.ParentActivityId = parentMainId;
+                        obj.TabActivityId = p.Id.ToString();
+                        obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Planned.ToString());
+                        obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
+                        obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Allocated.ToString());
+                        model.Add(obj);
+                        parentPlanId = "plan_" + p.Id.ToString();
+
+                        var TacticListInner = tacticList;
+
+                        if (Tab == ReportTabType.Audience.ToString())
+                        {
+                            TacticListInner = tacticList.Where(tactic => tactic.AudienceId.ToString() == p.Id).ToList();
+                        }
+                        if (Tab == ReportTabType.BusinessUnit.ToString())
+                        {
+                            TacticListInner = tacticList.Where(tactic => tactic.BusinessUnitId.ToString() == p.Id).ToList();
+                        }
+                        else if (Tab == ReportTabType.Geography.ToString())
+                        {
+                            TacticListInner = tacticList.Where(tactic => tactic.GeographyId.ToString() == p.Id).ToList();
+                        }
+                        else if (Tab == ReportTabType.Vertical.ToString())
+                        {
+                            TacticListInner = tacticList.Where(tactic => tactic.VerticalId.ToString() == p.Id).ToList();
+                        }
+
+                        var ProgramListInner = ProgramList.Where(program => TacticListInner.Select(t => t.PlanProgramId).Contains(program.PlanProgramId)).ToList();
+                        var campaignObj = CampaignList.Where(campaign => ProgramListInner.Select(program => program.PlanCampaignId).Contains(campaign.PlanCampaignId)).ToList();
+
+                        foreach (var c in campaignObj)
+                        {
+                            obj = new BudgetModelReport();
+                            obj.Id = c.PlanCampaignId.ToString();
+                            obj.ActivityId = "c_" + p.Id + c.PlanCampaignId.ToString();
+                            obj.ActivityName = c.Title;
+                            obj.ActivityType = ActivityType.ActivityCampaign;
+                            obj.ParentActivityId = parentPlanId;
+                            obj.TabActivityId = p.Id.ToString();
+                            obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Planned.ToString());
+                            obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
+                            obj = GetMonthWiseDataReport(obj, c.Plan_Campaign_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Allocated.ToString());
+                            model.Add(obj);
+                            parentCampaignId = "c_" + p.Id + c.PlanCampaignId.ToString();
+                            var ProgramObj = ProgramListInner.Where(pr => pr.PlanCampaignId == c.PlanCampaignId).ToList();
+                            foreach (var pr in ProgramObj)
+                            {
+                                obj = new BudgetModelReport();
+                                obj.Id = pr.PlanProgramId.ToString();
+                                obj.ActivityId = "cp_" + p.Id + pr.PlanProgramId.ToString();
+                                obj.ActivityName = pr.Title;
+                                obj.ActivityType = ActivityType.ActivityProgram;
+                                obj.ParentActivityId = parentCampaignId;
+                                obj.TabActivityId = p.Id.ToString();
+                                obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Planned.ToString());
+                                obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
+                                obj = GetMonthWiseDataReport(obj, pr.Plan_Campaign_Program_Budget.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Allocated.ToString());
+                                model.Add(obj);
+                                parentProgramId = "cp_" + p.Id +  pr.PlanProgramId.ToString();
+
+                                var TacticObj = TacticListInner.Where(t => t.PlanProgramId == pr.PlanProgramId).ToList();
+                                foreach (var t in TacticObj)
+                                {
+                                    obj = new BudgetModelReport();
+                                    obj.Id = t.PlanTacticId.ToString();
+                                    obj.ActivityId = "cpt_"  + p.Id + t.PlanTacticId.ToString();
+                                    obj.ActivityName = t.Title;
+                                    obj.ActivityType = ActivityType.ActivityTactic;
+                                    obj.ParentActivityId = parentProgramId;
+                                    obj.TabActivityId = p.Id.ToString();
+                                    obj = GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Planned.ToString());
+                                    obj = GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Actual.Where(b => b.StageTitle == "Cost").Select(b => new BudgetedValue { Period = b.Period, Value = b.Actualvalue }).ToList(), ReportColumnType.Actual.ToString());
+                                    obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Allocated.ToString());
+                                    model.Add(obj);
+                                    parentTacticId = "cpt_" + p.Id + t.PlanTacticId.ToString();
+
+                                    var LineItemObj = LineItemList.Where(l => l.PlanTacticId == t.PlanTacticId).ToList();
+                                    foreach (var l in LineItemObj)
+                                    {
+                                        obj = new BudgetModelReport();
+                                        obj.Id = l.PlanLineItemId.ToString();
+                                        obj.ActivityId = "cptl_" + l.PlanLineItemId.ToString();
+                                        obj.ActivityName = l.Title;
+                                        obj.ActivityType = ActivityType.ActivityLineItem;
+                                        obj.ParentActivityId = parentTacticId;
+                                        obj.TabActivityId = p.Id.ToString();
+                                        obj = GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Planned.ToString());
+                                        obj = GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Actual.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Actual.ToString());
+                                        obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Allocated.ToString());
+                                        model.Add(obj);
+                                    }
+
+                                }
+                            }
+
+
+                        }
+                    }
+                }
+            }
+
+            
+
+            //Threre is no need to manage lines for actuals
+            //if (Tab == BudgetTab.Planned)
+            //{
+            //    model = ManageLineItems(model);
+            //}
+
+            //Set actual for quarters
+            if (AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString())  // Modified by Sohel Pathan on 08/09/2014 for PL ticket #642.
+            {
+                foreach (BudgetModelReport bm in model)
+                {
+                    if (bm.ActivityType == ActivityType.ActivityLineItem || bm.ActivityType == ActivityType.ActivityTactic)
+                    {
+                        bm.MonthActual.Jan = bm.MonthActual.Jan + bm.MonthActual.Feb + bm.MonthActual.Mar;
+                        bm.MonthActual.Apr = bm.MonthActual.Apr + bm.MonthActual.May + bm.MonthActual.Jun;
+                        bm.MonthActual.Jul = bm.MonthActual.Jul + bm.MonthActual.Aug + bm.MonthActual.Sep;
+                        bm.MonthActual.Oct = bm.MonthActual.Oct + bm.MonthActual.Nov + bm.MonthActual.Dec;
+                        bm.MonthActual.Feb = 0;
+                        bm.MonthActual.Mar = 0;
+                        bm.MonthActual.May = 0;
+                        bm.MonthActual.Jun = 0;
+                        bm.MonthActual.Aug = 0;
+                        bm.MonthActual.Sep = 0;
+                        bm.MonthActual.Nov = 0;
+                        bm.MonthActual.Dec = 0;
+
+                        bm.MonthPlanned.Jan = bm.MonthPlanned.Jan + bm.MonthPlanned.Feb + bm.MonthPlanned.Mar;
+                        bm.MonthPlanned.Apr = bm.MonthPlanned.Apr + bm.MonthPlanned.May + bm.MonthPlanned.Jun;
+                        bm.MonthPlanned.Jul = bm.MonthPlanned.Jul + bm.MonthPlanned.Aug + bm.MonthPlanned.Sep;
+                        bm.MonthPlanned.Oct = bm.MonthPlanned.Oct + bm.MonthPlanned.Nov + bm.MonthPlanned.Dec;
+                        bm.MonthPlanned.Feb = 0;
+                        bm.MonthPlanned.Mar = 0;
+                        bm.MonthPlanned.May = 0;
+                        bm.MonthPlanned.Jun = 0;
+                        bm.MonthPlanned.Aug = 0;
+                        bm.MonthPlanned.Sep = 0;
+                        bm.MonthPlanned.Nov = 0;
+                        bm.MonthPlanned.Dec = 0;
+                    }
+                    else
+                    {
+                        bm.MonthAllocated.Jan = bm.MonthAllocated.Jan + bm.MonthAllocated.Feb + bm.MonthAllocated.Mar;
+                        bm.MonthAllocated.Apr = bm.MonthAllocated.Apr + bm.MonthAllocated.May + bm.MonthAllocated.Jun;
+                        bm.MonthAllocated.Jul = bm.MonthAllocated.Jul + bm.MonthAllocated.Aug + bm.MonthAllocated.Sep;
+                        bm.MonthAllocated.Oct = bm.MonthAllocated.Oct + bm.MonthAllocated.Nov + bm.MonthAllocated.Dec;
+                        bm.MonthAllocated.Feb = 0;
+                        bm.MonthAllocated.Mar = 0;
+                        bm.MonthAllocated.May = 0;
+                        bm.MonthAllocated.Jun = 0;
+                        bm.MonthAllocated.Aug = 0;
+                        bm.MonthAllocated.Sep = 0;
+                        bm.MonthAllocated.Nov = 0;
+                        bm.MonthAllocated.Dec = 0;
+                    }
+                }
+            }
+
+
+            model = CalculateBottomUpReport(model, ActivityType.ActivityTactic, ActivityType.ActivityLineItem);
+            model = CalculateBottomUpReport(model, ActivityType.ActivityProgram, ActivityType.ActivityTactic);
+            model = CalculateBottomUpReport(model, ActivityType.ActivityCampaign, ActivityType.ActivityProgram);
+            model = CalculateBottomUpReport(model, ActivityType.ActivityPlan, ActivityType.ActivityCampaign);
+            model = CalculateBottomUpReport(model, ActivityType.ActivityMain, ActivityType.ActivityPlan);
+
+            ViewBag.AllocatedBy = AllocatedBy;
+            ViewBag.Tab = Tab;
+
+            double MainTotalActual = 0;
+            double MainTotalAllocated = 0;
+            BudgetMonth ActualTotal = new BudgetMonth();
+            BudgetMonth AllocatedTotal = new BudgetMonth();
+            BudgetMonth PercAllocated = new BudgetMonth();
+            ActualTotal = model.Where(m => m.ActivityType == ActivityType.ActivityMain).Select(m => m.MonthActual).SingleOrDefault();
+            MainTotalActual = ActualTotal.Jan + ActualTotal.Feb + ActualTotal.Mar + ActualTotal.Apr + ActualTotal.May + ActualTotal.Jun + ActualTotal.Jul + ActualTotal.Aug + ActualTotal.Sep + ActualTotal.Oct + ActualTotal.Nov + ActualTotal.Dec;
+            if (Tab == ReportTabType.Plan.ToString())
+            {
+                AllocatedTotal = model.Where(m => m.ActivityType == ActivityType.ActivityMain).Select(m => m.ChildMonthAllocated).SingleOrDefault();
+                MainTotalAllocated = AllocatedTotal.Jan + AllocatedTotal.Feb + AllocatedTotal.Mar + AllocatedTotal.Apr + AllocatedTotal.May + AllocatedTotal.Jun + AllocatedTotal.Jul + AllocatedTotal.Aug + AllocatedTotal.Sep + AllocatedTotal.Oct + AllocatedTotal.Nov + AllocatedTotal.Dec;
+            }
+            else
+            {
+                AllocatedTotal = model.Where(m => m.ActivityType == ActivityType.ActivityMain).Select(m => m.MonthPlanned).SingleOrDefault();
+                MainTotalAllocated = AllocatedTotal.Jan + AllocatedTotal.Feb + AllocatedTotal.Mar + AllocatedTotal.Apr + AllocatedTotal.May + AllocatedTotal.Jun + AllocatedTotal.Jul + AllocatedTotal.Aug + AllocatedTotal.Sep + AllocatedTotal.Oct + AllocatedTotal.Nov + AllocatedTotal.Dec;
+            }
+
+            PercAllocated.Jan = (AllocatedTotal.Jan == 0 && ActualTotal.Jan == 0) ? 0 : (AllocatedTotal.Jan == 0 && ActualTotal.Jan > 0) ? 101 : ActualTotal.Jan / AllocatedTotal.Jan * 100;
+            PercAllocated.Feb = (AllocatedTotal.Feb == 0 && ActualTotal.Feb == 0) ? 0 : (AllocatedTotal.Feb == 0 && ActualTotal.Feb > 0) ? 101 : ActualTotal.Feb / AllocatedTotal.Feb * 100;
+            PercAllocated.Mar = (AllocatedTotal.Mar == 0 && ActualTotal.Mar == 0) ? 0 : (AllocatedTotal.Mar == 0 && ActualTotal.Mar > 0) ? 101 : ActualTotal.Mar / AllocatedTotal.Mar * 100;
+            PercAllocated.Apr = (AllocatedTotal.Apr == 0 && ActualTotal.Apr == 0) ? 0 : (AllocatedTotal.Apr == 0 && ActualTotal.Apr > 0) ? 101 : ActualTotal.Apr / AllocatedTotal.Apr * 100;
+            PercAllocated.May = (AllocatedTotal.May == 0 && ActualTotal.May == 0) ? 0 : (AllocatedTotal.May == 0 && ActualTotal.May > 0) ? 101 : ActualTotal.May / AllocatedTotal.May * 100;
+            PercAllocated.Jun = (AllocatedTotal.Jun == 0 && ActualTotal.Jun == 0) ? 0 : (AllocatedTotal.Jun == 0 && ActualTotal.Jun > 0) ? 101 : ActualTotal.Jun / AllocatedTotal.Jun * 100;
+            PercAllocated.Jul = (AllocatedTotal.Jul == 0 && ActualTotal.Jul == 0) ? 0 : (AllocatedTotal.Jul == 0 && ActualTotal.Jul > 0) ? 101 : ActualTotal.Jul / AllocatedTotal.Jul * 100;
+            PercAllocated.Aug = (AllocatedTotal.Aug == 0 && ActualTotal.Aug == 0) ? 0 : (AllocatedTotal.Aug == 0 && ActualTotal.Aug > 0) ? 101 : ActualTotal.Aug / AllocatedTotal.Aug * 100;
+            PercAllocated.Sep = (AllocatedTotal.Sep == 0 && ActualTotal.Sep == 0) ? 0 : (AllocatedTotal.Sep == 0 && ActualTotal.Sep > 0) ? 101 : ActualTotal.Sep / AllocatedTotal.Sep * 100;
+            PercAllocated.Oct = (AllocatedTotal.Oct == 0 && ActualTotal.Oct == 0) ? 0 : (AllocatedTotal.Oct == 0 && ActualTotal.Oct > 0) ? 101 : ActualTotal.Oct / AllocatedTotal.Oct * 100;
+            PercAllocated.Nov = (AllocatedTotal.Nov == 0 && ActualTotal.Nov == 0) ? 0 : (AllocatedTotal.Nov == 0 && ActualTotal.Nov > 0) ? 101 : ActualTotal.Nov / AllocatedTotal.Nov * 100;
+            PercAllocated.Dec = (AllocatedTotal.Dec == 0 && ActualTotal.Dec == 0) ? 0 : (AllocatedTotal.Dec == 0 && ActualTotal.Dec > 0) ? 101 : ActualTotal.Dec / AllocatedTotal.Dec * 100;
+
+            ViewBag.PercAllocated = PercAllocated;
+            ViewBag.MainTotalActual = MainTotalActual;
+            ViewBag.MainTotalAllocated = MainTotalAllocated;
+
+            DateTime CurrentDate = DateTime.Now;
+            int currentQuarter = ((CurrentDate.Month - 1) / 3) + 1;
+            string TodayDate = CurrentDate.ToString("MM/dd/yyyy");
+            ViewBag.CurrentQuarter = "Q" + currentQuarter;
+            ViewBag.TodayDate = TodayDate;
+
+            return PartialView("_Budget", model);
+        }
+
+        private List<BudgetedValue> GetEmptyList()
+        {
+            List<BudgetedValue> emptyList = new List<BudgetedValue>();
+            for (int i = 1; i < 13; i++)
+            {
+                BudgetedValue month = new BudgetedValue();
+                month.Period = "Y" + i;
+                month.Value = 0;
+                emptyList.Add(month);
+            }
+            return emptyList;
+        }
+
+         /// <summary>
+         /// set monthly data for the object
+         /// </summary>
+         /// <param name="obj"></param>
+         /// <param name="lst"></param>
+         /// <returns></returns>
+         private BudgetModelReport GetMonthWiseDataReport(BudgetModelReport obj, List<BudgetedValue> lst, string columnType)
+         {
+             BudgetMonth month = new BudgetMonth();
+             month.Jan = lst.Where(v => v.Period.ToUpper() == Jan).Select(v => v.Value).SingleOrDefault();
+             month.Feb = lst.Where(v => v.Period.ToUpper() == Feb).Select(v => v.Value).SingleOrDefault();
+             month.Mar = lst.Where(v => v.Period.ToUpper() == Mar).Select(v => v.Value).SingleOrDefault();
+             month.Apr = lst.Where(v => v.Period.ToUpper() == Apr).Select(v => v.Value).SingleOrDefault();
+             month.May = lst.Where(v => v.Period.ToUpper() == May).Select(v => v.Value).SingleOrDefault();
+             month.Jun = lst.Where(v => v.Period.ToUpper() == Jun).Select(v => v.Value).SingleOrDefault();
+             month.Jul = lst.Where(v => v.Period.ToUpper() == Jul).Select(v => v.Value).SingleOrDefault();
+             month.Aug = lst.Where(v => v.Period.ToUpper() == Aug).Select(v => v.Value).SingleOrDefault();
+             month.Sep = lst.Where(v => v.Period.ToUpper() == Sep).Select(v => v.Value).SingleOrDefault();
+             month.Oct = lst.Where(v => v.Period.ToUpper() == Oct).Select(v => v.Value).SingleOrDefault();
+             month.Nov = lst.Where(v => v.Period.ToUpper() == Nov).Select(v => v.Value).SingleOrDefault();
+             month.Dec = lst.Where(v => v.Period.ToUpper() == Dec).Select(v => v.Value).SingleOrDefault();
+             
+             if(columnType.ToString() == ReportColumnType.Planned.ToString())
+             {
+                 obj.MonthPlanned = month;
+                 obj.ParentMonthPlanned = month;
+                 obj.Planned = lst.Sum(v => v.Value);
+             }
+             else if (columnType.ToString() == ReportColumnType.Actual.ToString())
+             {
+                 obj.MonthActual = month;
+                 obj.ParentMonthActual = month;
+                 obj.Actual = lst.Sum(v => v.Value);
+             }
+             else
+             {
+                 obj.MonthAllocated = month;
+                 obj.ChildMonthAllocated = month;
+                 obj.Allocated = lst.Sum(v => v.Value);
+             }
+
+             return obj;
+         }
+
+         /// <summary>
+         /// Calculate the bottom up planeed cost
+         /// </summary>
+         /// <param name="model"></param>
+         /// <param name="ParentActivityType"></param>
+         /// <param name="ChildActivityType"></param>
+         /// <returns></returns>
+         public List<BudgetModelReport> CalculateBottomUpReport(List<BudgetModelReport> model, string ParentActivityType, string ChildActivityType)
+         {
+             if (ParentActivityType == ActivityType.ActivityTactic)
+             {
+                 foreach (BudgetModelReport l in model.Where(l => l.ActivityType == ParentActivityType))
+                 {
+                     List<BudgetModelReport> LineCheck = model.Where(lines => lines.ParentActivityId == l.ActivityId && lines.ActivityType == ActivityType.ActivityLineItem).ToList();
+                     if (LineCheck.Count() > 0)
+                     {
+                         BudgetMonth parent = new BudgetMonth();
+                         parent.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Jan) ?? 0;
+                         parent.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Feb) ?? 0;
+                         parent.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Mar) ?? 0;
+                         parent.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Apr) ?? 0;
+                         parent.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.May) ?? 0;
+                         parent.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Jun) ?? 0;
+                         parent.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Jul) ?? 0;
+                         parent.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Aug) ?? 0;
+                         parent.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Sep) ?? 0;
+                         parent.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Oct) ?? 0;
+                         parent.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Nov) ?? 0;
+                         parent.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Dec) ?? 0;
+                         model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthPlanned = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned;
+                         model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned = parent;
+
+                         BudgetMonth parentActual = new BudgetMonth();
+                         parentActual.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Jan) ?? 0;
+                         parentActual.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Feb) ?? 0;
+                         parentActual.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Mar) ?? 0;
+                         parentActual.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Apr) ?? 0;
+                         parentActual.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.May) ?? 0;
+                         parentActual.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Jun) ?? 0;
+                         parentActual.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Jul) ?? 0;
+                         parentActual.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Aug) ?? 0;
+                         parentActual.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Sep) ?? 0;
+                         parentActual.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Oct) ?? 0;
+                         parentActual.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Nov) ?? 0;
+                         parentActual.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Dec) ?? 0;
+                         model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthActual = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthActual;
+                         model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthActual = parentActual;
+                     }
+                     else
+                     {
+                         model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthActual = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned;
+                         model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthActual = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthActual;
+                     }
+                 }
+             }
+             else
+             {
+                 foreach (BudgetModelReport l in model.Where(l => l.ActivityType == ParentActivityType))
+                 {
+                     BudgetMonth parent = new BudgetMonth();
+                     parent.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Jan) ?? 0;
+                     parent.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Feb) ?? 0;
+                     parent.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Mar) ?? 0;
+                     parent.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Apr) ?? 0;
+                     parent.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.May) ?? 0;
+                     parent.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Jun) ?? 0;
+                     parent.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Jul) ?? 0;
+                     parent.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Aug) ?? 0;
+                     parent.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Sep) ?? 0;
+                     parent.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Oct) ?? 0;
+                     parent.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Nov) ?? 0;
+                     parent.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthPlanned.Dec) ?? 0;
+                     model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthPlanned = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned;
+                     model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned = parent;
+                     //l.ParentMonth = parent;
+
+                     BudgetMonth parentActual = new BudgetMonth();
+                     parentActual.Jan = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Jan) ?? 0;
+                     parentActual.Feb = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Feb) ?? 0;
+                     parentActual.Mar = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Mar) ?? 0;
+                     parentActual.Apr = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Apr) ?? 0;
+                     parentActual.May = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.May) ?? 0;
+                     parentActual.Jun = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Jun) ?? 0;
+                     parentActual.Jul = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Jul) ?? 0;
+                     parentActual.Aug = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Aug) ?? 0;
+                     parentActual.Sep = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Sep) ?? 0;
+                     parentActual.Oct = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Oct) ?? 0;
+                     parentActual.Nov = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Nov) ?? 0;
+                     parentActual.Dec = model.Where(line => line.ActivityType == ChildActivityType && line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthActual.Dec) ?? 0;
+                     model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthActual = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthActual;
+                     model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthActual = parentActual;
+
+                     BudgetMonth parentAllocated = new BudgetMonth();
+                     parentAllocated.Jan = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Jan) ?? 0;
+                     parentAllocated.Feb = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Feb) ?? 0;
+                     parentAllocated.Mar = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Mar) ?? 0;
+                     parentAllocated.Apr = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Apr) ?? 0;
+                     parentAllocated.May = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.May) ?? 0;
+                     parentAllocated.Jun = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Jun) ?? 0;
+                     parentAllocated.Jul = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Jul) ?? 0;
+                     parentAllocated.Aug = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Aug) ?? 0;
+                     parentAllocated.Sep = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Sep) ?? 0;
+                     parentAllocated.Oct = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Oct) ?? 0;
+                     parentAllocated.Nov = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Nov) ?? 0;
+                     parentAllocated.Dec = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Dec) ?? 0;
+                     model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ChildMonthAllocated = parentAllocated;
+                 }
+             }
+             return model;
+         }
+
+         /// <summary>
+         /// Manage lines items if cost is allocated to other
+         /// </summary>
+         /// <param name="model"></param>
+         /// <returns></returns>
+         private List<BudgetModelReport> ManageLineItems(List<BudgetModelReport> model)
+         {
+             foreach (BudgetModelReport l in model.Where(l => l.ActivityType == ActivityType.ActivityTactic))
+             {
+                 BudgetMonth lineDiff = new BudgetMonth();
+                 List<BudgetModelReport> lines = model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId).ToList();
+                 BudgetModelReport otherLine = lines.Where(ol => ol.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault();
+                 lines = lines.Where(ol => ol.ActivityName != Common.DefaultLineItemTitle).ToList();
+                 if (otherLine != null)
+                 {
+                     if (lines.Count > 0)
+                     {
+                         lineDiff.Jan = l.MonthPlanned.Jan - lines.Sum(lmon => (double?)lmon.MonthPlanned.Jan) ?? 0;
+                         lineDiff.Feb = l.MonthPlanned.Feb - lines.Sum(lmon => (double?)lmon.MonthPlanned.Feb) ?? 0;
+                         lineDiff.Mar = l.MonthPlanned.Mar - lines.Sum(lmon => (double?)lmon.MonthPlanned.Mar) ?? 0;
+                         lineDiff.Apr = l.MonthPlanned.Apr - lines.Sum(lmon => (double?)lmon.MonthPlanned.Apr) ?? 0;
+                         lineDiff.May = l.MonthPlanned.May - lines.Sum(lmon => (double?)lmon.MonthPlanned.May) ?? 0;
+                         lineDiff.Jun = l.MonthPlanned.Jun - lines.Sum(lmon => (double?)lmon.MonthPlanned.Jun) ?? 0;
+                         lineDiff.Jul = l.MonthPlanned.Jul - lines.Sum(lmon => (double?)lmon.MonthPlanned.Jul) ?? 0;
+                         lineDiff.Aug = l.MonthPlanned.Aug - lines.Sum(lmon => (double?)lmon.MonthPlanned.Aug) ?? 0;
+                         lineDiff.Sep = l.MonthPlanned.Sep - lines.Sum(lmon => (double?)lmon.MonthPlanned.Sep) ?? 0;
+                         lineDiff.Oct = l.MonthPlanned.Oct - lines.Sum(lmon => (double?)lmon.MonthPlanned.Oct) ?? 0;
+                         lineDiff.Nov = l.MonthPlanned.Nov - lines.Sum(lmon => (double?)lmon.MonthPlanned.Nov) ?? 0;
+                         lineDiff.Dec = l.MonthPlanned.Dec - lines.Sum(lmon => (double?)lmon.MonthPlanned.Dec) ?? 0;
+
+                         lineDiff.Jan = lineDiff.Jan < 0 ? 0 : lineDiff.Jan;
+                         lineDiff.Feb = lineDiff.Feb < 0 ? 0 : lineDiff.Feb;
+                         lineDiff.Mar = lineDiff.Mar < 0 ? 0 : lineDiff.Mar;
+                         lineDiff.Apr = lineDiff.Apr < 0 ? 0 : lineDiff.Apr;
+                         lineDiff.May = lineDiff.May < 0 ? 0 : lineDiff.May;
+                         lineDiff.Jun = lineDiff.Jun < 0 ? 0 : lineDiff.Jun;
+                         lineDiff.Jul = lineDiff.Jul < 0 ? 0 : lineDiff.Jul;
+                         lineDiff.Aug = lineDiff.Aug < 0 ? 0 : lineDiff.Aug;
+                         lineDiff.Sep = lineDiff.Sep < 0 ? 0 : lineDiff.Sep;
+                         lineDiff.Oct = lineDiff.Oct < 0 ? 0 : lineDiff.Oct;
+                         lineDiff.Nov = lineDiff.Nov < 0 ? 0 : lineDiff.Nov;
+                         lineDiff.Dec = lineDiff.Dec < 0 ? 0 : lineDiff.Dec;
+
+                         model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().MonthPlanned = lineDiff;
+                         model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().ParentMonthPlanned = lineDiff;
+
+                         double allocated = l.Allocated - lines.Sum(l1 => l1.Allocated);
+                         allocated = allocated < 0 ? 0 : allocated;
+                         model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Planned = allocated;
+                     }
+                     else
+                     {
+                         model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().MonthPlanned = l.MonthPlanned;
+                         model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().ParentMonthPlanned = l.MonthPlanned;
+                         model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Planned = l.Planned < 0 ? 0 : l.Planned;
+                     }
+                 }
+             }
+             //foreach (BudgetModel l in model.Where(l => l.ActivityType == ActivityLineItem && l.ActivityName == "Other"))
+             //{
+             //    l.Allocated = l.Month.Jan + l.Month.Feb + l.Month.Mar + l.Month.Apr + l.Month.May + l.Month.Jun + l.Month.Jul + l.Month.Aug + l.Month.Sep + l.Month.Oct + l.Month.Nov + l.Month.Dec;
+             //}
+             return model;
+         }
+
+        #endregion
     }
 }

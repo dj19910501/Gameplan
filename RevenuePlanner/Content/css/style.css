@@ -7639,6 +7639,7 @@ div.sub{display:none; transition: height 0.35s ease 0s; padding:0;}
 .column1 .event-row div,
 .column1 .firstLevel,
 .column1 .campaignLevel,
+.column1 .campaignLevelReport,
 .column1 .programLevel,
 .column1 .tacticLevel,
 .column1 .lineitemLevel
@@ -7646,6 +7647,7 @@ div.sub{display:none; transition: height 0.35s ease 0s; padding:0;}
 .event-row div,
 .firstLevel,
 .campaignLevel,
+.campaignLevelReport,
 .programLevel,
 .tacticLevel,
 .lineitemLevel {
@@ -7655,7 +7657,7 @@ div.sub{display:none; transition: height 0.35s ease 0s; padding:0;}
 .column1 .programLevel{padding-left:50px;}
 .column1 .tacticLevel{padding-left:82px;}
 .column1 .lineitemLevel{padding-left:138px;}
-
+.column1 .audience .campaignLevelReport{padding-left:50px;}
 .column1 .audience .campaignLevel{padding-left:50px;}
 .column1 .audience .programLevel{padding-left:82px;}
 .column1 .audience .tacticLevel{padding-left:118px;}
@@ -8078,8 +8080,105 @@ footer a {
     color: gray;
 }
 
-
 .budget-section input:focus:invalid
 {
   color: #5693b3;
+}
+
+/* Bhavesh Budgeting Report*/
+.campaign-rowReport{background:#E6E6E6;}
+.campaignLevelReport {background:#F2F2F2;}
+.event-rowReport{background:#e6e6e6;}
+.column1 .event-rowReport div
+{padding:11px 15px;}
+.event-rowReport .campaign-row
+{
+       border-bottom:1px solid #ccc;
+}
+.event-rowReport,.campaign-rowReport
+{
+       border-top:1px solid #ccc;
+}
+
+.nav-gray-reports li a.budget span {
+    background-position: 0 -90px !important;
+}
+
+.nav-gray-reports li a.budget:hover span {
+    background-position: -30px -90px !important;
+}
+
+.nav-gray-reports li.active a.budget span {
+    background-position: -30px -90px !important;
+}
+
+
+/*Added By Kapil*/
+/* Budget Reporting - #765,#572 */
+.budgetReporting{border-bottom:1px solid #e6e6e6;}
+.budgetColums.budgetReporting{padding-bottom: 15px; margin-left: 20px; margin-right: 20px; padding-left: 0; padding-right: 0;}
+.budgetColums.budgetReporting > div{padding:5px 0 0 !important; border:none; min-height:87px;}
+.budgetReporting .plannedCost{min-width:540px; border-right:1px solid #e6e6e6 !important; padding-top:10px; width:57%;}
+.budgetReporting .plannedCost h3{font-size:29px; line-height:36px; padding-bottom:0;}
+.budgetReporting .budgetCompare{width:40%; max-width:380px;}
+.budgetReporting .budgetCompare h3{font-size:24px; padding-bottom:0;}
+
+.budgetReportFilter-area{border-bottom:1px solid #e6e6e6; margin:0 20px 35px; padding:15px 0;}
+.budgetReportFilter-area-left{padding-right:15px; margin-right:15px; border-right:1px solid #e6e6e6; width:85%; float:left;}
+.filter-detail{width:100%; margin-top:6px;}
+.filter-details{float:left; display:inline-block; margin-right:13px; border-right:1px solid #808080; padding:5px 13px 5px 0;}
+.filter-details:last-child{border-right:none;}
+.filter-details label, .filter-details > div{float:left; color:#808080; font-size:13px;}
+.filter-details label{padding-right:3px; margin-bottom:0; color:#000;}
+
+.budgetReportFilter-area-right{width:110px; float:right;}
+.budgetReportFilter-area-right .btn-blue, .budgetReportFilter-area-right .btn-blue-disable{min-width:72px; font-size:14px; height:30 !important; margin-bottom:0 !important; margin-top:18px;}
+
+.budgetReport .title-header {
+    font-size: 30px;
+}
+.budgetReport .title-header h2
+{
+    margin: 0;
+    font-size:30px;
+    line-height: 0.7;
+}
+#lblViewBy
+{
+    display: inline-block;
+}
+.report-budget-quarters tbody.column2
+{
+    max-width: 55%;
+}
+.report-budget-quarters tbody.column3
+{
+    max-width: 24%;
+    width: 24%;
+}
+
+.report-budget-months tbody.column1
+{
+    width: 7%;
+    max-width:7%;
+}
+.report-budget-months tbody.column2
+{
+    max-width: 20%;
+}
+.report-budget-months tbody.column3
+{
+    max-width: 8%;
+    width: 8%;
+}
+/* */
+.report-budget-months .column2 tr:nth-child(2) td div, .report-budget-quarters .column2 tr:nth-child(2) td div,
+.report-budget-months .column2 tr:nth-child(3) td div, .report-budget-quarters .column2 tr:nth-child(3) td div,
+.report-budget-months .column1 tr:nth-child(2) td div, .report-budget-quarters .column1 tr:nth-child(2) td div,
+.report-budget-months .column1 tr:nth-child(3) td div, .report-budget-quarters .column1 tr:nth-child(3) td div,
+.report-budget-months .column3 tr:nth-child(2) td div, .report-budget-quarters .column3 tr:nth-child(2) td div,
+.report-budget-months .column3 tr:nth-child(3) td div, .report-budget-quarters .column3 tr:nth-child(3) td div
+{
+    padding-bottom: 0px;
+    padding-top: 0px;
 }

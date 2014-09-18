@@ -618,7 +618,8 @@ namespace RevenuePlanner.Helpers
         {
             Summary = 0,
             Revenue = 1,
-            Conversion = 2
+            Conversion = 2,
+            Budget = 3
         }
 
         /// <summary>
@@ -854,6 +855,7 @@ namespace RevenuePlanner.Helpers
 
     public static class ActivityType
     {
+        public const string ActivityMain = "main";
         public const string ActivityPlan = "plan";
         public const string ActivityCampaign = "campaign";
         public const string ActivityProgram = "program";
@@ -862,5 +864,21 @@ namespace RevenuePlanner.Helpers
         public const string ActivityAudience = "audience";
         public const string ActivityGeography = "geography";
         public const string ActivityVertical = "vertical";
+    }
+
+    public static class ReportColumnType
+    {
+        public const string Planned = "Planned";
+        public const string Actual = "Actual";
+        public const string Allocated = "Allocated";
+    }
+
+    public static class ReportTabType
+    {
+        public const string Plan = "Plan";
+        public const string Audience = "Audience";
+        public const string BusinessUnit = "BusienessUnit";
+        public const string Geography = "Geography";
+        public const string Vertical = "Vertical";
     }
 }

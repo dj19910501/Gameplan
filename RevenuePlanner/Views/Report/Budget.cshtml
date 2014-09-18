@@ -1,0 +1,274 @@
+﻿@{
+    string myView = "0";
+    string expand = "expand";
+}
+<div class="budgetReport">
+    <div class="budgetColums budgetReporting">
+        <div class="plannedCost">
+            <h3 class="source-sans-proregular">Today is <span id="SpanTodayDate">08/15/2014</span>. You are in <span id="SpanCurrentQuarter">Q3</span>.<br>
+                So far, you've spent <span id="SpanTotalSpend">$2.5M</span> out of <span id="SpanTotalBudgeted">$4.8M</span>.</h3>
+            <div style="clear: both;"></div>
+        </div>
+        <div class="budgetCompare">
+            <h3 class="source-sans-proregular" id="monthCompareTitle"></h3>
+            <div class="budgetCompareInner" id="monthContainer">
+            </div>
+            <div style="clear: both;"></div>
+        </div>
+    </div>
+
+    <!-- Budget Reporting Filter area -->
+    <div class="budgetReportFilter-area clearfix">
+        <div class="budgetReportFilter-area-left">
+            <div>
+            </div>
+            <!--Start modified by Mitesh Vaishnav for PL ticket #727 - Added "noneselectedvalue" attribute to dropdownlist.-->
+            <div class="multiselection-area">
+                <span class="selectBox" id="ddlYearSpan" style="width: 115px; line-height: 2.5; padding-right: 7px;">
+                    @Html.DropDownList("ddlYear", new SelectList((System.Collections.IEnumerable)ViewBag.ViewYear, "Value", "Text"), new { @class = "ddlStyleReport" })
+                </span>
+                @Html.DropDownList("ddlPlan", new SelectList((System.Collections.IEnumerable)ViewBag.ViewPlan, "Value", "Text"), new { @class = "multiselection-select", multiple = "multiple", id = "ddlPlan", noneselectedvalue = "Plans" })
+                @Html.DropDownList("ddlViewGeography", new SelectList((System.Collections.IEnumerable)ViewBag.ViewGeography, "Value", "Text"), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewGeography", noneselectedvalue = "Geography" })
+                @Html.DropDownList("ddlViewBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.ViewBusinessUnit, "Value", "Text"), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewBusinessUnit", noneselectedvalue = "Business Units" })
+                @Html.DropDownList("ddlViewVertical", new SelectList((System.Collections.IEnumerable)ViewBag.ViewVertical, "Value", "Text"), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewVertical", noneselectedvalue = "Verticals" })
+                @Html.DropDownList("ddlViewAudience", new SelectList((System.Collections.IEnumerable)ViewBag.ViewAudience, "Value", "Text"), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewAudience", noneselectedvalue = "Audience" })
+
+            </div>
+            <!--End modified by Mitesh Vaishnav for PL ticket #727 - Added "noneselectedvalue" attribute to dropdownlist.-->
+            <div class="filter-detail">
+                <div class="filter-details">
+                    <label>Year:</label>
+                    <div class="details" id="yeardetail">FY 2015</div>
+                </div>
+                <div class="filter-details">
+                    <label>Plans:</label>
+                    <div class="details" id="plandetail"></div>
+                </div>
+                <div class="filter-details">
+                    <label>Geography:</label>
+                    <div class="details" id="geographydetail">All</div>
+                </div>
+                <div class="filter-details">
+                    <label>Business Units:</label>
+                    <div class="details" id="businessunitdetail">All</div>
+                </div>
+                <div class="filter-details">
+                    <label>Verticals:</label>
+                    <div class="details" id="verticaldetail">All</div>
+                </div>
+                <div class="filter-details">
+                    <label>Audience:</label>
+                    <div class="details" id="audiencedetail">All</div>
+                </div>
+            </div>
+        </div>
+        <div class="budgetReportFilter-area-right">
+            <button id="button-save" class="btn btn-blue btn-large text-shadow-blue source-sans-proregular" name="button-save">Update</button>
+        </div>
+    </div>
+    <!-- Budget Reporting Filter area -->
+    <div style="margin-left: 18px; margin-right: 20px; margin-bottom: 10px; width: 97%; float: left;">
+        <div class="title-header source-sans-proregular bold budget-title">
+            <div style="float: right;">
+                @Html.Label("View By:", new { id = "lblViewBy" })
+                <span class="selectBox" id="ddlTabSelectBox" style="width: 158px;">
+                    @Html.DropDownList("ddlTabViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByTab, "Value", "Text", @RevenuePlanner.Helpers.ReportTabType.Plan.ToString()), new { @class = "ddlStyleReport" })
+                </span>
+                <span class="selectBox" id="ddlAllocatedBySelectBox" style="width: 158px;">
+                    @Html.DropDownList("ddlAllocateViewBy", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", @RevenuePlanner.Helpers.Enums.PlanAllocatedBy.quarters.ToString()), new { @class = "ddlStyleReport" })
+                </span>
+            </div>
+            <h2>Budget Summary</h2>
+        </div>
+
+    </div>
+
+    <div id="divTabData" style="margin-top: 20px; clear: left;"></div>
+</div>
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.multiselect.filter.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.multiselect.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery-ui.js")"></script>
+<link href="@Url.Content("~/Content/css/jquery.multiselect.css")" rel="stylesheet" type="text/css" />
+<script>
+    $(document).ready(function () {
+        $(".budgetCompareInner").mCustomScrollbar({
+            scrollButtons: {
+                enable: true
+            },
+            horizontalScroll: true,
+            advanced: { autoExpandHorizontalScroll: true, updateOnContentResize: true }
+        });
+
+        //$(".budgetReportFilter-area select").multiselect().multiselectfilter();
+
+        $(".selectBox select").selectbox();
+
+        ///Start Modified by Mitesh Vaishnav for PL ticket #727
+        $(".budgetReportFilter-area").find(".multiselection-select").each(function () {
+            $(this).multiselect({ noneSelectedText: $(this).attr('noneselectedvalue') }).multiselectfilter();
+        });
+
+        var multiselectPlanId = "ddlPlan";
+        var filterPlanid = "#plandetail";
+        var ddlViewAudience = "ddlViewAudience";
+        var ddlViewVertical = "ddlViewVertical"
+        var ddlViewBusinessUnit = "ddlViewBusinessUnit";
+        var ddlViewGeography = "ddlViewGeography";
+
+        var audiencedetail = "#audiencedetail";
+        var verticaldetail = "#verticaldetail";
+        var businessunitdetail = "#businessunitdetail";
+        var geographydetail = "#geographydetail";
+
+        OnLoadMultiselectFilter(multiselectPlanId, filterPlanid);
+        OnLoadMultiselectFilter(ddlViewAudience, audiencedetail);
+        OnLoadMultiselectFilter(ddlViewVertical, verticaldetail);
+        OnLoadMultiselectFilter(ddlViewBusinessUnit, businessunitdetail);
+        OnLoadMultiselectFilter(ddlViewGeography, geographydetail);
+
+        LoadMultiselectFilter(multiselectPlanId, filterPlanid);
+        LoadMultiselectFilter(ddlViewAudience, audiencedetail);
+        LoadMultiselectFilter(ddlViewVertical, verticaldetail);
+        LoadMultiselectFilter(ddlViewBusinessUnit, businessunitdetail);
+        LoadMultiselectFilter(ddlViewGeography, geographydetail);
+
+        function LoadMultiselectFilter(multiselectId, filterid) {
+            $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
+                $(this).change(function (e) {
+                    var finalValue = "";
+                    $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
+                        if (this.checked) {
+                            finalValue += $(this).parent().find('span').eq(0).html() + ",";
+                        }
+                    });
+                    finalValue = finalValue.slice(0, -1);
+                    if (finalValue == '') {
+                        finalValue = 'None';
+                    }
+                    $(filterid).html(finalValue);
+                });
+            });
+
+            $('#selectAll_' + multiselectId).click(function () {
+                var finalValue = "";
+                $("#multipleselect_" + multiselectId).find("input[type='checkbox']").each(function () {
+                    finalValue += $(this).parent().find('span').eq(0).html() + ",";
+                });
+                finalValue = finalValue.slice(0, -1);
+                if (finalValue == '') {
+                    finalValue = 'None';
+                }
+                $(filterid).html(finalValue);
+            });
+
+            $('#deselectAll_' + multiselectId).click(function () {
+                $(filterid).html('None');
+            });
+        }
+
+        function OnLoadMultiselectFilter(multiselectId, filterid) {
+            var finalValue = "";
+            $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
+                if (this.checked) {
+                    finalValue += $(this).parent().find('span').eq(0).html() + ",";
+                }
+            });
+            finalValue = finalValue.slice(0, -1);
+            if (finalValue == '') {
+                finalValue = 'None';
+            }
+            $(filterid).html(finalValue);
+        }
+
+        function GetFilterId(multiselectId) {
+            var finalValue = "";
+            $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
+                if (this.checked) {
+                    finalValue += $(this).val() + ",";
+                }
+            });
+            
+            finalValue = finalValue.slice(0, -1);
+            if (finalValue == '') {
+                finalValue = '';
+            }
+            return finalValue;
+         
+        }
+
+        var PlanIds = '3533';
+        var VerticalIds = '121';
+        var GeographyIds = '79D9D6CB-A6E3-43A7-81ED-1394729D93E8';
+        var BusinessUnitIds = '095FF578-7279-4C88-9664-7D3BF8FDA116';
+        var AudienceIds = '46';
+        var Year = '2015';
+        var AllocatedBy = '@RevenuePlanner.Helpers.Enums.PlanAllocatedBy.quarters.ToString()';
+        var Tab = '@RevenuePlanner.Helpers.ReportTabType.Plan.ToString()';
+
+        $('#button-save').click(function () {
+            PlanIds = GetFilterId(multiselectPlanId);
+            VerticalIds = GetFilterId(ddlViewVertical);
+            GeographyIds = GetFilterId(ddlViewGeography);
+            BusinessUnitIds = GetFilterId(ddlViewBusinessUnit);
+            AudienceIds = GetFilterId(ddlViewAudience);
+            alert(PlanIds);
+            LoadBudgetData();
+        });
+
+        $("#ddlYear").change(function () {
+            Year = $('#ddlYear').val();
+            LoadPlanData();
+        });
+        function LoadPlanData() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Report/GetBudgetPlanBasedOnYear/")',
+            data: {
+                Year: Year
+            },
+            success: function (r) {
+                //   alert(JSON.stringify(r));
+                populatePlan(r, "ddlPlan");
+
+            }
+        });
+    }
+
+        function populatePlan(items, id) {
+            var $dropdown = $("#" + id);
+            $dropdown.empty();
+            var $html = '';
+            if (items.length > 0) {
+                $.each(items, function (index, planobj) {
+                    if (planobj.Selected) {
+                        $html += '<option value="' + planobj.Value + '" selected>' + planobj.Text + '</option>';
+                        OptionMain = planobj.Value;
+                    } else {
+                        $html += '<option value="' + planobj.Value + '">' + planobj.Text + '</option>';
+                    }
+                });
+            }
+            // alert($html);
+            $dropdown.append($html);
+            //$('#multipleselect_ddlPlan').empty();
+            //$dropdown.next().find('.ui-multiselect').empty();
+            //$dropdown.multiselect({ noneSelectedText: $dropdown.attr('noneselectedvalue') }).multiselectfilter();
+        }
+
+       
+        $("#ddlTabViewBy").change(function () {
+            Tab = $('#ddlTabViewBy').val();
+            LoadBudgetData();
+        });
+        $("#ddlAllocateViewBy").change(function () {
+            AllocatedBy = $('#ddlAllocateViewBy').val();
+            LoadBudgetData();
+        });
+
+        LoadBudgetData();
+        //, function () { LoadBudgetData(); });
+        function LoadBudgetData() {
+            $('#divTabData').load('@Url.Action("GetReportBudgetData", "Report")' + '?PlanIds=' + PlanIds + '&GeographyIds=' + GeographyIds + '&BusinessUnitIds=' + BusinessUnitIds + '&VerticalIds=' + VerticalIds + '&AudienceIds=' + AudienceIds + '&Year=' + Year + '&AllocatedBy=' + AllocatedBy + '&Tab=' + Tab);
+    }
+    });
+</script>

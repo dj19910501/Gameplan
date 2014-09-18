@@ -41,7 +41,7 @@
                 var actualWidth = $tip[0].offsetWidth,
                     actualHeight = $tip[0].offsetHeight,
                     gravity = maybeCall(this.options.gravity, this.$element[0]);
-                
+                var redColor = this.options.redColor;
                 var tp;
                 switch (gravity.charAt(0)) {
                     case 'n':
@@ -110,7 +110,11 @@
         
         tip: function() {
             if (!this.$tip) {
-                this.$tip = $('<div class="tipsy"></div>').html('<div class="tipsy-arrow"></div><div class="tipsy-inner"></div>');
+                var ColorClass = 'tipsy-innerWhite';
+                if (this.options.redColor) {
+                    ColorClass = 'tipsy-innerRed';
+                }
+                this.$tip = $('<div class="tipsy"></div>').html('<div class="tipsy-arrow"></div><div class="tipsy-inner ' + ColorClass + '"></div>');
                 this.$tip.data('tipsy-pointee', this.$element[0]);
             }
             return this.$tip;
@@ -196,7 +200,8 @@
         offset: 0,
         //opacity: 0.8, //remove by kapil - 100614 - #508
         title: 'title',
-        trigger: 'hover'
+        trigger: 'hover',
+        redColor: false
     };
     
     $.fn.tipsy.revalidate = function() {
