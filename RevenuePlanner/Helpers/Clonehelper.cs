@@ -223,7 +223,7 @@ namespace RevenuePlanner.Helpers
                     {
                         var programCustomField = db.CustomField_Entity.Where(a => a.EntityId == program.PlanProgramId && a.CustomField.EntityType == entityTypeProgram).ToList();
                         var clonedProgram = objPlanCampaign.Plan_Campaign_Program.Where(a => a.Title == program.Title).ToList().FirstOrDefault();
-                        programCustomField.ForEach(a => { a.EntityId = clonedProgram.PlanCampaignId; db.Entry(a).State = EntityState.Added; CustomFieldsList.Add(a); });
+                        programCustomField.ForEach(a => { a.EntityId = clonedProgram.PlanProgramId; db.Entry(a).State = EntityState.Added; CustomFieldsList.Add(a); });
 
                         foreach (var tactic in program.Plan_Campaign_Program_Tactic.ToList())
                         {
