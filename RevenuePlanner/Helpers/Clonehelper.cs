@@ -154,6 +154,8 @@ namespace RevenuePlanner.Helpers
 
             if (PlanId == 0 || ID == 0)
                 return returnFlag;
+
+            List<Plan_Campaign_Program> programList = new List<Plan_Campaign_Program>();
             try
             {
                 Plan_Campaign objPlanCampaign = db.Plan_Campaign.AsNoTracking().First(p => p.PlanId == PlanId && p.PlanCampaignId == ID && p.IsDeleted == false);
@@ -207,6 +209,34 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaign.Plan_Campaign_Program = objPlanCampaign.Plan_Campaign_Program.ToList();
                     db.Plan_Campaign.Add(objPlanCampaign);
                     db.SaveChanges();
+
+                    ////Start Added by Mitesh Vaishnav for PL ticket #718
+                    ////cloning custom field values for particular campaign,program of particular campaign and tactic of particular program
+                    string entityTypeCampaign = Enums.EntityType.Campaign.ToString();
+                    var CustomFieldsList = db.CustomField_Entity.Where(a => a.EntityId == ID && a.CustomField.EntityType == entityTypeCampaign).ToList();
+                    CustomFieldsList.ForEach(a => { a.EntityId = objPlanCampaign.PlanCampaignId; db.Entry(a).State = EntityState.Added; });
+
+                    programList = db.Plan_Campaign_Program.Where(a => a.PlanCampaignId == ID && a.IsDeleted == false).ToList();
+                    string entityTypeProgram = Enums.EntityType.Program.ToString();
+                    string entityTypeTactic = Enums.EntityType.Tactic.ToString();
+                    foreach (var program in programList)
+                    {
+                        var programCustomField = db.CustomField_Entity.Where(a => a.EntityId == program.PlanProgramId && a.CustomField.EntityType == entityTypeProgram).ToList();
+                        var clonedProgram = objPlanCampaign.Plan_Campaign_Program.Where(a => a.Title == program.Title).ToList().FirstOrDefault();
+                        programCustomField.ForEach(a => { a.EntityId = clonedProgram.PlanCampaignId; db.Entry(a).State = EntityState.Added; CustomFieldsList.Add(a); });
+
+                        foreach (var tactic in program.Plan_Campaign_Program_Tactic.ToList())
+                        {
+                            var tacticCustomField = db.CustomField_Entity.Where(a => a.EntityId == tactic.PlanTacticId && a.CustomField.EntityType == entityTypeTactic).ToList();
+                            int clonedTacticId = clonedProgram.Plan_Campaign_Program_Tactic.Where(a => a.Title == tactic.Title).ToList().FirstOrDefault().PlanTacticId;
+                            tacticCustomField.ForEach(a => { a.EntityId = clonedTacticId; db.Entry(a).State = EntityState.Added; CustomFieldsList.Add(a); });
+                        }
+                        
+                    }
+
+                    db.SaveChanges();
+                    ////End Added by Mitesh Vaishnav for PL ticket #718
+                    
                     Common.InsertChangeLog(Sessions.PlanId, null, returnFlag, objPlanCampaign.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                     returnFlag = 1;
                     return returnFlag;
@@ -234,6 +264,8 @@ namespace RevenuePlanner.Helpers
             
             if (ID == 0)
                 return returnFlag;
+
+            List<Plan_Campaign_Program_Tactic> tacticList = new List<Plan_Campaign_Program_Tactic>();
             try
             {
                 Plan_Campaign_Program objPlanCampaignPrograms = db.Plan_Campaign_Program.AsNoTracking().First(p => p.PlanProgramId == ID && p.IsDeleted == false);
@@ -276,6 +308,26 @@ namespace RevenuePlanner.Helpers
                             objPlanCampaignPrograms.Plan_Campaign_Program_Tactic = objPlanCampaignPrograms.Plan_Campaign_Program_Tactic.ToList();
                             db.Plan_Campaign_Program.Add(objPlanCampaignPrograms);
                             db.SaveChanges();
+
+                            ////Start Added by Mitesh Vaishnav for PL ticket #719
+                            ////cloning custom field values for particular program and tactic of particular program
+                            string entityTypeProgram = Enums.EntityType.Program.ToString();
+                            string entityTypeTactic = Enums.EntityType.Tactic.ToString();
+                            var CustomFieldsList = db.CustomField_Entity.Where(a => a.EntityId == ID && a.CustomField.EntityType == entityTypeProgram).ToList();
+                            CustomFieldsList.ForEach(a => { a.EntityId = objPlanCampaignPrograms.PlanProgramId; db.Entry(a).State = EntityState.Added; });
+
+                            tacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.PlanProgramId == ID && a.IsDeleted == false).ToList();
+
+                            foreach (var tactic in tacticList)
+                            {
+                                var tacticCustomField = db.CustomField_Entity.Where(a => a.EntityId == tactic.PlanTacticId && a.CustomField.EntityType == entityTypeTactic).ToList();
+                                int clonedTacticId = objPlanCampaignPrograms.Plan_Campaign_Program_Tactic.Where(a => a.Title == tactic.Title).ToList().FirstOrDefault().PlanTacticId;
+                                tacticCustomField.ForEach(a => { a.EntityId = clonedTacticId; db.Entry(a).State = EntityState.Added; CustomFieldsList.Add(a); });
+                            }
+
+                            db.SaveChanges();
+                            ////End Added by Mitesh Vaishnav for PL ticket #719
+
                             Common.InsertChangeLog(Sessions.PlanId, null, returnFlag, objPlanCampaignPrograms.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                     returnFlag = 1;
                     return returnFlag;
@@ -338,6 +390,15 @@ namespace RevenuePlanner.Helpers
                 objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_Cost = objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_Cost.ToList();
                 db.Plan_Campaign_Program_Tactic.Add(objPlanCampaignProgramTactic);
                 db.SaveChanges();
+
+                ////Start Added by Mitesh Vaishnav for PL ticket #720
+                ////cloning custom field values for particular tactic.
+                string entityTypeTactic = Enums.EntityType.Tactic.ToString();
+                var CustomFieldsList = db.CustomField_Entity.Where(a => a.EntityId == ID && a.CustomField.EntityType == entityTypeTactic).ToList();
+                CustomFieldsList.ForEach(a => { a.EntityId = objPlanCampaignProgramTactic.PlanTacticId; db.Entry(a).State = EntityState.Added; });
+                db.SaveChanges();
+                ////End Added by Mitesh Vaishnav for PL ticket #720
+
                 Common.InsertChangeLog(Sessions.PlanId, null, returnFlag, objPlanCampaignProgramTactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                 returnFlag = 1;
                 return returnFlag;
