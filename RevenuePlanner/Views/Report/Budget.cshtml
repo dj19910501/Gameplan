@@ -20,13 +20,13 @@
     <!-- Budget Reporting Filter area -->
     <div class="budgetReportFilter-area clearfix">
         <div class="budgetReportFilter-area-left">
-            <div>
-            </div>
+            
             <!--Start modified by Mitesh Vaishnav for PL ticket #727 - Added "noneselectedvalue" attribute to dropdownlist.-->
             <div class="multiselection-area">
                 <span class="selectBox" id="ddlYearSpan" style="width: 115px; line-height: 2.5; padding-right: 7px;">
                     @Html.DropDownList("ddlYear", new SelectList((System.Collections.IEnumerable)ViewBag.ViewYear, "Value", "Text"), new { @class = "ddlStyleReport" })
                 </span>
+
                 @Html.DropDownList("ddlPlan", new SelectList((System.Collections.IEnumerable)ViewBag.ViewPlan, "Value", "Text"), new { @class = "multiselection-select", multiple = "multiple", id = "ddlPlan", noneselectedvalue = "Plans" })
                 @Html.DropDownList("ddlViewGeography", new SelectList((System.Collections.IEnumerable)ViewBag.ViewGeography, "Value", "Text"), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewGeography", noneselectedvalue = "Geography" })
                 @Html.DropDownList("ddlViewBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.ViewBusinessUnit, "Value", "Text"), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewBusinessUnit", noneselectedvalue = "Business Units" })
@@ -85,9 +85,9 @@
 
     <div id="divTabData" style="margin-top: 20px; clear: left;"></div>
 </div>
-<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.multiselect.filter.js")"></script>
-<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.multiselect.js")"></script>
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery-ui.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.multiselect.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.multiselect.filter.js")"></script>
 <link href="@Url.Content("~/Content/css/jquery.multiselect.css")" rel="stylesheet" type="text/css" />
 <script>
     $(document).ready(function () {
@@ -250,6 +250,13 @@
             }
             // alert($html);
             $dropdown.append($html);
+
+            //start Added by Mitesh Vaishnav for PL ticket #727
+            //update multiselect box as its related dropdownlist's option will be changed
+            var updatedOption = $("#ddlPlan").find('option');
+            $('#ddlPlan').multiselect("refresh", updatedOption);
+            //End Added by Mitesh Vaishnav for PL ticket #727
+
             //$('#multipleselect_ddlPlan').empty();
             //$dropdown.next().find('.ui-multiselect').empty();
             //$dropdown.multiselect({ noneSelectedText: $dropdown.attr('noneselectedvalue') }).multiselectfilter();

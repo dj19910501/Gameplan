@@ -324,7 +324,9 @@
             sbHolder.insertAfter($target);
 
             $("html").on('mousedown', function (e) {
-                e.stopPropagation();
+                ////Modified by Mitesh Vaishnav for budgeting screen in report
+                ////jquery.multiselect and jquery.selectbox conflicted with each other because of it multiselect box not closed when clicking outside the screen
+                //e.stopPropagation();
                 $("select").selectbox('close');
             });
             $([".", inst.settings.classHolder, ", .", inst.settings.classSelector].join("")).mousedown(function (e) {

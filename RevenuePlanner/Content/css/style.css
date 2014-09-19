@@ -760,6 +760,19 @@ body {
 .nav-gray-reports li a.conversion span {
     background-position: 0 -60px !important;
 }
+/*Start Added by mitesh vaishnav for budget icon in report module's left panel*/
+.nav-gray-reports li a.budget span {
+    background-position: 0 -90px !important;
+}
+
+.nav-gray-reports li a.budget:hover span {
+    background-position: -30px -90px !important;
+}
+
+.nav-gray-reports li.active a.budget span {
+    background-position: -30px -90px !important;
+}
+/*End Added by mitesh vaishnav for budget icon in report module's left panel*/
 
 .nav-gray-reports li a:hover {
     color: #1a638a !important;
