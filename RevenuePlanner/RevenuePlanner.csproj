@@ -590,13 +590,6 @@
     <Content Include="Scripts\js\ReportRevenue.js" />
     <Content Include="Scripts\js\ReportSummary.js" />
     <Content Include="Scripts\summernote.min.js" />
-    <Content Include="Properties\DataSources\Integration.BDSService.Client.datasource" />
-    <Content Include="Properties\DataSources\Integration.BDSService.Menu.datasource" />
-    <Content Include="Properties\DataSources\Integration.BDSService.PasswordResetRequest.datasource" />
-    <Content Include="Properties\DataSources\Integration.BDSService.Permission.datasource" />
-    <Content Include="Properties\DataSources\Integration.BDSService.Role.datasource" />
-    <Content Include="Properties\DataSources\Integration.BDSService.SecurityQuestion.datasource" />
-    <Content Include="Properties\DataSources\Integration.BDSService.User.datasource" />
     <None Include="Service References\BDSService\BDSService1.wsdl" />
     <None Include="Service References\BDSService\BDSService4.xsd">
       <SubType>Designer</SubType>
@@ -857,6 +850,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Filters\" />
+    <Folder Include="Properties\DataSources\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
