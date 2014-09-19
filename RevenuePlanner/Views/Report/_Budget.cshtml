@@ -16,10 +16,11 @@
     BudgetMonth PercAllocated = ViewBag.PercAllocated;
     double MainTotalActual = ViewBag.MainTotalActual;
     double MainTotalAllocated = ViewBag.MainTotalAllocated;
-    double planAllocation = (MainTotalAllocated == 0 && MainTotalActual == 0) ? 0 : (MainTotalAllocated > 0 && MainTotalActual == 0) ? 101 : MainTotalAllocated / MainTotalActual * 100;
+    double planAllocation = (MainTotalActual == 0 && MainTotalAllocated == 0) ? 0 : (MainTotalActual > 0 && MainTotalAllocated == 0) ? 101 : MainTotalActual / MainTotalAllocated * 100;
     string CurrentQuarter = ViewBag.CurrentQuarter;
     string TodayDate = ViewBag.TodayDate;
     bool isData = true;
+    string SortingId = ViewBag.SortingId;
 }
 <div class="tab-content all-height cf">
     <div class="tab-pane active all-height" id="panel-656352">
@@ -30,17 +31,17 @@
                         <tbody class="column1">
                             <tr>
                                 <td>
-                                    <div id="div2PlanDetails">&nbsp;</div>
+                                    <div>&nbsp;</div>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <div id="div2PlanDetails1">&nbsp;</div>
+                                    <div>&nbsp;</div>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="">
-                                    <div id="divPlanDetails"><a id="aPlanDetails">@main.ActivityName</a></div>
+                                <td>
+                                    <div><a id="aPlanDetails">@main.ActivityName</a></div>
                                 </td>
                             </tr>
                                 @Html.ActivityMainParentReport(ActivityType.ActivityPlan, main.ActivityId, Model)
@@ -53,18 +54,28 @@
                         <tbody class="column3">
                             <tr>
                                 <td colspan="3">
-                                    <div>FY 2020</div>
+                                    <div>FY @ViewBag.DisplayYear</div>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <div>Actual</div>
+                                    <div>Actual
+                                        <a id="Actual_Up_Total" class="UpperArrowReport"></a>
+                                        <a id="Actual_Down_Total" class="DownArrowReport"></a>
+                                    </div>
+
                                 </td>
                                 <td>
-                                    <div>Planned</div>
+                                    <div>Planned
+                                        <a id="Planned_Up_Total" class="UpperArrowReport"></a>
+                                        <a id="Planned_Down_Total" class="DownArrowReport"></a>
+                                    </div>
                                 </td>
                                 <td>
-                                    <div>Allocated</div>
+                                    <div>Allocated
+                                        <a id="Allocated_Up_Total" class="UpperArrowReport"></a>
+                                        <a id="Allocated_Down_Total" class="DownArrowReport"></a>
+                                    </div>
                                 </td>
                             </tr>
                            
@@ -82,8 +93,29 @@
     
     AddTipsy();
     SetHeader();
+    if ('@SortingId' != '') {
+        var sortid = '#' + '@SortingId';
+        if ($(sortid).hasClass('UpperArrowReport')) {
+            $(sortid).removeClass('UpperArrowReport');
+            $(sortid).addClass('UpperArrowReportBlue');
+        }
+        else if ($(sortid).hasClass('DownArrowReport')) {
+            $(sortid).removeClass('DownArrowReport');
+            $(sortid).addClass('DownArrowReportBlue');
+        }
+        else if ($(sortid).hasClass('UpperArrowReportBlue')) {
+            //$(sortid).removeClass('UpperArrowReport');
+            //$(sortid).addClass('UpperArrowReportBlue');
+        }
+        else if ($(sortid).hasClass('DownArrowReportBlue')) {
+           // $(sortid).removeClass('UpperArrowReport');
+           // $(sortid).addClass('UpperArrowReportBlue');
+        }
+    }
+
+    LoadBudgetSortingEvent();
     $(document).ready(function () {
-        $('.budget-table .sub').css('display', 'block');
+       // $('.budget-table .sub').css('display', 'block');
 
         $.fn.hasScrollBar = function () {
             return this.get(0).scrollWidth > this.width();
@@ -146,6 +178,39 @@
     var column3DivWidth = $('.column3 div').css('min-width').replace("px", "");
     var minwidthcolumn3 = ((parseFloat(column3DivWidth) * 3) + 2) + "px";
     $('.column3 tr:first td div').css('min-width', minwidthcolumn3);
+
+    $('.column1').find('div').each(function () {
+        var id = $(this).attr('id');
+        
+        $(this).mouseover(function () {
+            $('.budget-table .column1').find('#' + id).each(function () {
+                $(this).addClass('reportRowHover');
+            });
+            $('.budget-table .column2').find('#' + id).each(function () {
+                $(this).addClass('reportRowHover');
+            });
+            $('.budget-table .column3').find('#' + id).each(function () {
+                $(this).addClass('reportRowHover');
+            });
+        });
+
+        $(this).mouseout(function () {
+            $('.budget-table .column1').find('#' + id).each(function () {
+                $(this).removeClass('reportRowHover');
+            });
+            $('.budget-table .column2').find('#' + id).each(function () {
+                $(this).removeClass('reportRowHover');
+            });
+            $('.budget-table .column3').find('#' + id).each(function () {
+                $(this).removeClass('reportRowHover');
+            });
+        });
+        
+    });
+
+   // $('.column1 tr:nth-child(2) div').css('padding-top', '1px');
+
+    //$('.column1 .tacticLevel').css('min-height', '25px');
 
    // $('.column2 tr:second td div').css('padding-bottom', '0');
    // $('.column2 tr:second td div').css('padding - top', '0');

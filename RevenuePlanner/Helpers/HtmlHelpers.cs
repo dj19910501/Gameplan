@@ -3752,7 +3752,7 @@ namespace RevenuePlanner.Helpers
                     {
                         TagBuilder aAccordian = new TagBuilder("a");
                         aAccordian.AddCssClass("accordionClick");
-                        aAccordian.AddCssClass("collapse");
+                       // aAccordian.AddCssClass("collapse");
                         div.InnerHtml = aAccordian.ToString();
                         //aLink.Attributes.Add("style", "cursor:pointer;");
                     }
@@ -3842,7 +3842,7 @@ namespace RevenuePlanner.Helpers
                             TagBuilder aAccordian = new TagBuilder("a");
                             //aAccordian.Attributes.Add("href", "#");
                             aAccordian.AddCssClass("accordionClick");
-                            aAccordian.AddCssClass("collapse");
+                            //aAccordian.AddCssClass("collapse");
                             divProgram.InnerHtml = aAccordian.ToString();
                         }
                         else
@@ -3926,6 +3926,14 @@ namespace RevenuePlanner.Helpers
                 TagBuilder tdValueInnerActual = new TagBuilder("td");
                 TagBuilder divValueInnerActual = new TagBuilder("div");
                 divHeaderInnerActual.InnerHtml = "Actual";
+                TagBuilder aActual = new TagBuilder("a");
+                aActual.AddCssClass("UpperArrowReport");
+                aActual.Attributes.Add("id", "Actual_Up_" + i);
+                divHeaderInnerActual.InnerHtml += aActual;
+                aActual = new TagBuilder("a");
+                aActual.AddCssClass("DownArrowReport");
+                aActual.Attributes.Add("id", "Actual_Down_" + i);
+                divHeaderInnerActual.InnerHtml += aActual;
 
                 divValueInnerActual.Attributes.Add("id", ActivityType + ActivityId.ToString());
 
@@ -4059,6 +4067,14 @@ namespace RevenuePlanner.Helpers
                 TagBuilder tdValueInnerPlanned = new TagBuilder("td");
                 TagBuilder divValueInnerPlanned = new TagBuilder("div");
                 divHeaderInnerPlanned.InnerHtml = "Planned";
+                TagBuilder aPlanned = new TagBuilder("a");
+                aPlanned.AddCssClass("UpperArrowReport");
+                aPlanned.Attributes.Add("id", "Planned_Up_" + i);
+                divHeaderInnerPlanned.InnerHtml += aPlanned;
+                aPlanned = new TagBuilder("a");
+                aPlanned.AddCssClass("DownArrowReport");
+                aPlanned.Attributes.Add("id", "Planned_Down_" + i);
+                divHeaderInnerPlanned.InnerHtml += aPlanned;
 
                 divValueInnerPlanned.Attributes.Add("id", ActivityType + ActivityId.ToString());
                 divValueInnerPlanned.InnerHtml = PlannedValue.ToString(formatThousand);
@@ -4099,6 +4115,15 @@ namespace RevenuePlanner.Helpers
                 TagBuilder tdValueInnerAllocated = new TagBuilder("td");
                 TagBuilder divValueInnerAllocated = new TagBuilder("div");
                 divHeaderInnerAllocated.InnerHtml = "Allocated";
+
+                TagBuilder aAllocated = new TagBuilder("a");
+                aAllocated.AddCssClass("UpperArrowReport");
+                aAllocated.Attributes.Add("id", "Allocated_Up_" + i);
+                divHeaderInnerAllocated.InnerHtml += aAllocated;
+                aAllocated = new TagBuilder("a");
+                aAllocated.AddCssClass("DownArrowReport");
+                aAllocated.Attributes.Add("id", "Allocated_Down_" + i);
+                divHeaderInnerAllocated.InnerHtml += aAllocated;
 
                 divValueInnerAllocated.Attributes.Add("id", ActivityType + ActivityId.ToString());
                 if (isPlanTab)
@@ -4867,7 +4892,7 @@ namespace RevenuePlanner.Helpers
 
                 double sumMonthActual = plan.MonthActual.Jan + plan.MonthActual.Feb + plan.MonthActual.Mar + plan.MonthActual.Apr + plan.MonthActual.May + plan.MonthActual.Jun + plan.MonthActual.Jul + plan.MonthActual.Aug + plan.MonthActual.Sep + plan.MonthActual.Oct + plan.MonthActual.Nov + plan.MonthActual.Dec;
                 double sumMonthPlanned = plan.MonthPlanned.Jan + plan.MonthPlanned.Feb + plan.MonthPlanned.Mar + plan.MonthPlanned.Apr + plan.MonthPlanned.May + plan.MonthPlanned.Jun + plan.MonthPlanned.Jul + plan.MonthPlanned.Aug + plan.MonthPlanned.Sep + plan.MonthPlanned.Oct + plan.MonthPlanned.Nov + plan.MonthPlanned.Dec;
-                double sumMonthAllocated = plan.MonthAllocated.Jan + plan.MonthAllocated.Feb + plan.MonthAllocated.Mar + plan.MonthAllocated.Apr + plan.MonthAllocated.May + plan.MonthAllocated.Jun + plan.MonthAllocated.Jul + plan.MonthAllocated.Aug + plan.MonthAllocated.Sep + plan.MonthAllocated.Oct + plan.MonthAllocated.Nov + plan.MonthAllocated.Dec;
+                double sumMonthAllocated = plan.ChildMonthAllocated.Jan + plan.ChildMonthAllocated.Feb + plan.ChildMonthAllocated.Mar + plan.ChildMonthAllocated.Apr + plan.ChildMonthAllocated.May + plan.ChildMonthAllocated.Jun + plan.ChildMonthAllocated.Jul + plan.ChildMonthAllocated.Aug + plan.ChildMonthAllocated.Sep + plan.ChildMonthAllocated.Oct + plan.ChildMonthAllocated.Nov + plan.ChildMonthAllocated.Dec;
                 TagBuilder span = new TagBuilder("span");
 
                 double dblProgress = 0;
@@ -4928,14 +4953,7 @@ namespace RevenuePlanner.Helpers
                 div = new TagBuilder("div");
                 if (isPlanTab)
                 {
-                    div.InnerHtml = sumMonthPlanned.ToString(formatThousand);
-
-                    dblProgress = 0;
-                    //dblProgress = (sumMonthPlanned == 0 && sumMonthAllocated == 0) ? 0 : (sumMonthPlanned > 0 && sumMonthAllocated == 0) ? 101 : sumMonthPlanned / sumMonthAllocated * 100;
-                    if (dblProgress > 100)
-                    {
-                        div.AddCssClass("budgetError");
-                    }
+                    div.InnerHtml = sumMonthAllocated.ToString(formatThousand);
                 }
                 else
                 {

@@ -1,6 +1,11 @@
-﻿@{
-    string myView = "0";
-    string expand = "expand";
+﻿@using RevenuePlanner.Helpers
+@{
+    var ViewPlanSelectedValue = (List<SelectListItem>)ViewBag.ViewPlan;
+    var ViewGeographySelectedValue = (List<SelectListItem>)ViewBag.ViewGeography;
+    var ViewBusinessUnitSelectedValue = (List<SelectListItem>)ViewBag.ViewBusinessUnit;
+    var ViewVerticalSelectedValue = (List<SelectListItem>)ViewBag.ViewVertical;
+    var ViewAudienceSelectedValue = (List<SelectListItem>)ViewBag.ViewAudience;
+    string SelectedYear = ViewBag.SelectedYear;
 }
 <div class="budgetReport">
     <div class="budgetColums budgetReporting">
@@ -24,21 +29,20 @@
             <!--Start modified by Mitesh Vaishnav for PL ticket #727 - Added "noneselectedvalue" attribute to dropdownlist.-->
             <div class="multiselection-area">
                 <span class="selectBox" id="ddlYearSpan" style="width: 115px; line-height: 2.5; padding-right: 7px;">
-                    @Html.DropDownList("ddlYear", new SelectList((System.Collections.IEnumerable)ViewBag.ViewYear, "Value", "Text"), new { @class = "ddlStyleReport" })
+                    @Html.DropDownList("ddlYear", new SelectList((System.Collections.IEnumerable)ViewBag.ViewYear, "Value", "Text",SelectedYear), new { @class = "ddlStyleReport" })
                 </span>
-
-                @Html.DropDownList("ddlPlan", new SelectList((System.Collections.IEnumerable)ViewBag.ViewPlan, "Value", "Text"), new { @class = "multiselection-select", multiple = "multiple", id = "ddlPlan", noneselectedvalue = "Plans" })
-                @Html.DropDownList("ddlViewGeography", new SelectList((System.Collections.IEnumerable)ViewBag.ViewGeography, "Value", "Text"), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewGeography", noneselectedvalue = "Geography" })
-                @Html.DropDownList("ddlViewBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.ViewBusinessUnit, "Value", "Text"), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewBusinessUnit", noneselectedvalue = "Business Units" })
-                @Html.DropDownList("ddlViewVertical", new SelectList((System.Collections.IEnumerable)ViewBag.ViewVertical, "Value", "Text"), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewVertical", noneselectedvalue = "Verticals" })
-                @Html.DropDownList("ddlViewAudience", new SelectList((System.Collections.IEnumerable)ViewBag.ViewAudience, "Value", "Text"), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewAudience", noneselectedvalue = "Audience" })
+                @Html.DropDownList("ddlPlan", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewPlan, "Value", "Text", ViewPlanSelectedValue.Where(p => p.Selected).Select(p => p.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlPlan", noneselectedvalue = "Plans" })
+                @Html.DropDownList("ddlViewGeography", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewGeography, "Value", "Text", ViewGeographySelectedValue.Where(g => g.Selected).Select(g => g.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewGeography", noneselectedvalue = "Geography" })
+                @Html.DropDownList("ddlViewBusinessUnit", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewBusinessUnit, "Value", "Text", ViewBusinessUnitSelectedValue.Where(b => b.Selected).Select(b => b.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewBusinessUnit", noneselectedvalue = "Business Units" })
+                @Html.DropDownList("ddlViewVertical", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewVertical, "Value", "Text", ViewVerticalSelectedValue.Where(v => v.Selected).Select(v => v.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewVertical", noneselectedvalue = "Verticals" })
+                @Html.DropDownList("ddlViewAudience", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewAudience, "Value", "Text", ViewAudienceSelectedValue.Where(a => a.Selected).Select(a => a.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewAudience", noneselectedvalue = @Html.CustomLabelFor(Enums.CustomLabelCode.Audience) })
 
             </div>
             <!--End modified by Mitesh Vaishnav for PL ticket #727 - Added "noneselectedvalue" attribute to dropdownlist.-->
             <div class="filter-detail">
                 <div class="filter-details">
                     <label>Year:</label>
-                    <div class="details" id="yeardetail">FY 2015</div>
+                    <div class="details" id="yeardetail"></div>
                 </div>
                 <div class="filter-details">
                     <label>Plans:</label>
@@ -57,7 +61,7 @@
                     <div class="details" id="verticaldetail">All</div>
                 </div>
                 <div class="filter-details">
-                    <label>Audience:</label>
+                    <label>@Html.CustomLabelFor(Enums.CustomLabelCode.Audience):</label>
                     <div class="details" id="audiencedetail">All</div>
                 </div>
             </div>
@@ -90,7 +94,23 @@
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.multiselect.filter.js")"></script>
 <link href="@Url.Content("~/Content/css/jquery.multiselect.css")" rel="stylesheet" type="text/css" />
 <script>
+
+    var PlanIds = '';
+    var VerticalIds = '';
+    var GeographyIds = '';
+    var BusinessUnitIds = '';
+    var AudienceIds = '';
+    var Year = $('#ddlYear').val();
+    var AllocatedBy = '@RevenuePlanner.Helpers.Enums.PlanAllocatedBy.quarters.ToString()';
+    var Tab = '@RevenuePlanner.Helpers.ReportTabType.Plan.ToString()';
+    var SortingId = '';
+    var isByAllocated = true;
+
     $(document).ready(function () {
+        var viewByDisplay = true;
+        var monthvalue = '@RevenuePlanner.Helpers.Enums.PlanAllocatedByList[RevenuePlanner.Helpers.Enums.PlanAllocatedBy.months.ToString()].ToString()';
+        var Quartervalue = '@RevenuePlanner.Helpers.Enums.PlanAllocatedByList[RevenuePlanner.Helpers.Enums.PlanAllocatedBy.quarters.ToString()].ToString()';
+
         $(".budgetCompareInner").mCustomScrollbar({
             scrollButtons: {
                 enable: true
@@ -120,13 +140,13 @@
         var businessunitdetail = "#businessunitdetail";
         var geographydetail = "#geographydetail";
 
-        OnLoadMultiselectFilter(multiselectPlanId, filterPlanid);
+        OnLoadMultiselectFilterPlan(multiselectPlanId, filterPlanid);
         OnLoadMultiselectFilter(ddlViewAudience, audiencedetail);
         OnLoadMultiselectFilter(ddlViewVertical, verticaldetail);
         OnLoadMultiselectFilter(ddlViewBusinessUnit, businessunitdetail);
         OnLoadMultiselectFilter(ddlViewGeography, geographydetail);
 
-        LoadMultiselectFilter(multiselectPlanId, filterPlanid);
+        LoadMultiselectFilterPlan(multiselectPlanId, filterPlanid);
         LoadMultiselectFilter(ddlViewAudience, audiencedetail);
         LoadMultiselectFilter(ddlViewVertical, verticaldetail);
         LoadMultiselectFilter(ddlViewBusinessUnit, businessunitdetail);
@@ -151,8 +171,20 @@
 
             $('#selectAll_' + multiselectId).click(function () {
                 var finalValue = "";
+                $("#multipleselect_" + multiselectId).find("li").each(function () {
+                    if ($(this).css('display') == 'list-item') {
+                        $(this).find("input[type='checkbox']").each(function () {
+                            if (!this.checked) {
+                                finalValue += $(this).parent().find('span').eq(0).html() + ",";
+                            }
+                        });
+                    }
+                });
+
                 $("#multipleselect_" + multiselectId).find("input[type='checkbox']").each(function () {
+                    if (this.checked) {
                     finalValue += $(this).parent().find('span').eq(0).html() + ",";
+                    }
                 });
                 finalValue = finalValue.slice(0, -1);
                 if (finalValue == '') {
@@ -162,7 +194,23 @@
             });
 
             $('#deselectAll_' + multiselectId).click(function () {
-                $(filterid).html('None');
+                var delay = 50;//1 seconds
+                setTimeout(function () {
+                    var finalValue = "";
+                    $("#multipleselect_" + multiselectId).find("input[type='checkbox']").each(function () {
+                        if (this.checked) {
+                            finalValue += $(this).parent().find('span').eq(0).html() + ",";
+                        }
+                    });
+                    finalValue = finalValue.slice(0, -1);
+                    if (finalValue == '') {
+                        finalValue = 'None';
+                    }
+                    $(filterid).html(finalValue);
+                    //your code to be executed after 1 seconds
+                }, delay);
+
+                
             });
         }
 
@@ -178,6 +226,177 @@
                 finalValue = 'None';
             }
             $(filterid).html(finalValue);
+        }
+
+        function LoadMultiselectFilterPlan(multiselectId, filterid) {
+            
+            $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
+                $(this).change(function (e) {
+                    viewByDisplay = true;
+                    var finalValue = "";
+                    $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
+                        if (this.checked) {
+                            finalValue += $(this).parent().find('span').eq(0).html() + ",";
+                            var getAllocatedBy = $(this).val().split("_");
+                            if (getAllocatedBy[1] == Quartervalue && viewByDisplay == true) {
+                                viewByDisplay = false;
+                            }
+                        }
+                    });
+                    finalValue = finalValue.slice(0, -1);
+                    if (finalValue == '') {
+                        finalValue = 'None';
+                    }
+                    $(filterid).html(finalValue);
+                    if (viewByDisplay == false) {
+                        DisableViewByAllocated();
+                    }
+                    else {
+                        EnableViewByAllocated();
+                    }
+                });
+            });
+
+            $('#selectAll_' + multiselectId).click(function () {
+                var finalValue = "";
+                viewByDisplay = true;
+                
+                $("#multipleselect_" + multiselectId).find("li").each(function () {
+                    if ($(this).css('display') == 'list-item') {
+                        $(this).find("input[type='checkbox']").each(function () {
+                            if (!this.checked) {
+                                finalValue += $(this).parent().find('span').eq(0).html() + ",";
+                            }
+                        });
+                    }
+                });
+
+                $("#multipleselect_" + multiselectId).find("input[type='checkbox']").each(function () {
+                    if (this.checked) {
+                        finalValue += $(this).parent().find('span').eq(0).html() + ",";
+                        var getAllocatedBy = $(this).val().split("_");
+                        if (getAllocatedBy[1] == Quartervalue && viewByDisplay == true) {
+                            viewByDisplay = false;
+                        }
+                    }
+                });
+                
+                //display: list - item;
+                finalValue = finalValue.slice(0, -1);
+                if (finalValue == '') {
+                    finalValue = 'None';
+                }
+                $(filterid).html(finalValue);
+                if (viewByDisplay == false) {
+                    DisableViewByAllocated();
+                }
+                else {
+                    EnableViewByAllocated();
+                }
+            });
+
+            $('#deselectAll_' + multiselectId).click(function () {
+                var delay = 50;//1 seconds
+                setTimeout(function () {
+                    viewByDisplay = true;
+                    $(filterid).html('None');
+                    EnableViewByAllocated(); var finalValue = "";
+                    viewByDisplay = true;
+                    $("#multipleselect_" + multiselectId).find("input[type='checkbox']").each(function () {
+                        if (this.checked) {
+                            finalValue += $(this).parent().find('span').eq(0).html() + ",";
+                            var getAllocatedBy = $(this).val().split("_");
+                            if (getAllocatedBy[1] == Quartervalue && viewByDisplay == true) {
+                                viewByDisplay = false;
+                            }
+                        }
+                    });
+                    //$("#multipleselect_" + multiselectId).find("li").each(function () {
+                    //    if ($(this).css('display') == 'list-item') {
+                    //        $(this).find("input[type='checkbox']").each(function () {
+                    //            if (this.checked) {
+                    //                finalValue.replace($(this).parent().find('span').eq(0).html() + ",",'');
+                    //            }
+                    //        });
+                    //    }
+                    //});
+                    finalValue = finalValue.slice(0, -1);
+                    if (finalValue == '') {
+                        finalValue = 'None';
+                    }
+                    $(filterid).html(finalValue);
+                    if (viewByDisplay == false) {
+                        DisableViewByAllocated();
+                    }
+                    else {
+                        EnableViewByAllocated();
+                    }
+                    //your code to be executed after 1 seconds
+                }, delay);
+
+               
+            });
+        }
+
+        function OnLoadMultiselectFilterPlan(multiselectId, filterid) {
+            var finalValue = "";
+            viewByDisplay = true;
+            $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
+                if (this.checked) {
+                    finalValue += $(this).parent().find('span').eq(0).html() + ",";
+                    var getAllocatedBy = $(this).val().split("_");
+                    if (getAllocatedBy[1] == Quartervalue && viewByDisplay == true) {
+                        viewByDisplay = false;
+                    }
+                }
+            });
+            finalValue = finalValue.slice(0, -1);
+            if (finalValue == '') {
+                finalValue = 'None';
+            }
+            $(filterid).html(finalValue);
+            if (viewByDisplay == false) {
+                DisableViewByAllocated();
+            }
+            else {
+                EnableViewByAllocated();
+            }
+        }
+
+        function DisableViewByAllocated() {
+            $('#ddlAllocatedBySelectBox').find("li").each(function () {
+                var innerlivalue = $(this).find("a").attr("rel");
+                if (innerlivalue == monthvalue) {
+                    $(this).css("display", "none");
+                }
+                else if (innerlivalue == Quartervalue) {
+                    isByAllocated = false;
+                    $(this).find("a").click();
+                    isByAllocated = true;
+                }
+            });
+        }
+        function EnableViewByAllocated() {
+            $('#ddlAllocatedBySelectBox').find("li").each(function () {
+                $(this).css("display", "block");
+            });
+        }
+
+        function GetFilterIdForPlan(multiselectId) {
+            var finalValue = "";
+            $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
+                if (this.checked) {
+                    var splitvalue = $(this).val().split("_");
+                    finalValue += splitvalue[0] + ",";
+                }
+            });
+
+            finalValue = finalValue.slice(0, -1);
+            if (finalValue == '') {
+                finalValue = '';
+            }
+            return finalValue;
+
         }
 
         function GetFilterId(multiselectId) {
@@ -196,27 +415,21 @@
          
         }
 
-        var PlanIds = '3533';
-        var VerticalIds = '121';
-        var GeographyIds = '79D9D6CB-A6E3-43A7-81ED-1394729D93E8';
-        var BusinessUnitIds = '095FF578-7279-4C88-9664-7D3BF8FDA116';
-        var AudienceIds = '46';
-        var Year = '2015';
-        var AllocatedBy = '@RevenuePlanner.Helpers.Enums.PlanAllocatedBy.quarters.ToString()';
-        var Tab = '@RevenuePlanner.Helpers.ReportTabType.Plan.ToString()';
 
+        $("#yeardetail").html("FY " + $('#ddlYear').val());
         $('#button-save').click(function () {
-            PlanIds = GetFilterId(multiselectPlanId);
+            PlanIds = GetFilterIdForPlan(multiselectPlanId);
             VerticalIds = GetFilterId(ddlViewVertical);
             GeographyIds = GetFilterId(ddlViewGeography);
             BusinessUnitIds = GetFilterId(ddlViewBusinessUnit);
             AudienceIds = GetFilterId(ddlViewAudience);
-            alert(PlanIds);
+            SortingId = '';
             LoadBudgetData();
         });
 
         $("#ddlYear").change(function () {
             Year = $('#ddlYear').val();
+            $("#yeardetail").html("FY " + $('#ddlYear').val());
             LoadPlanData();
         });
         function LoadPlanData() {
@@ -256,7 +469,10 @@
             var updatedOption = $("#ddlPlan").find('option');
             $('#ddlPlan').multiselect("refresh", updatedOption);
             //End Added by Mitesh Vaishnav for PL ticket #727
-
+            $("#multipleselect_ddlPlan").find("input[type='search']").val('');
+            OnLoadMultiselectFilterPlan(multiselectPlanId, filterPlanid);
+            LoadMultiselectFilterPlan(multiselectPlanId, filterPlanid);
+            
             //$('#multipleselect_ddlPlan').empty();
             //$dropdown.next().find('.ui-multiselect').empty();
             //$dropdown.multiselect({ noneSelectedText: $dropdown.attr('noneselectedvalue') }).multiselectfilter();
@@ -265,17 +481,50 @@
        
         $("#ddlTabViewBy").change(function () {
             Tab = $('#ddlTabViewBy').val();
+            SortingId = '';
             LoadBudgetData();
         });
         $("#ddlAllocateViewBy").change(function () {
             AllocatedBy = $('#ddlAllocateViewBy').val();
+            SortingId = '';
             LoadBudgetData();
         });
 
+        PlanIds = GetFilterIdForPlan(multiselectPlanId);
+        VerticalIds = GetFilterId(ddlViewVertical);
+        GeographyIds = GetFilterId(ddlViewGeography);
+        BusinessUnitIds = GetFilterId(ddlViewBusinessUnit);
+        AudienceIds = GetFilterId(ddlViewAudience);
         LoadBudgetData();
         //, function () { LoadBudgetData(); });
-        function LoadBudgetData() {
-            $('#divTabData').load('@Url.Action("GetReportBudgetData", "Report")' + '?PlanIds=' + PlanIds + '&GeographyIds=' + GeographyIds + '&BusinessUnitIds=' + BusinessUnitIds + '&VerticalIds=' + VerticalIds + '&AudienceIds=' + AudienceIds + '&Year=' + Year + '&AllocatedBy=' + AllocatedBy + '&Tab=' + Tab);
-    }
+    
     });
+
+    function LoadBudgetSortingEvent() {
+
+        $('.UpperArrowReport').click(function () {
+            SortingId = $(this).attr('id');
+            LoadBudgetData();
+        });
+
+        $('.DownArrowReport').click(function () {
+            SortingId = $(this).attr('id');
+            LoadBudgetData();
+        });
+
+        $('.UpperArrowReportBlue').click(function () {
+
+        });
+
+        $('.DownArrowReportBlue').click(function () {
+
+        });
+    }
+
+        function LoadBudgetData() {
+         if(isByAllocated)
+         {
+             $('#divTabData').load('@Url.Action("GetReportBudgetData", "Report")' + '?PlanIds=' + PlanIds + '&GeographyIds=' + GeographyIds + '&BusinessUnitIds=' + BusinessUnitIds + '&VerticalIds=' + VerticalIds + '&AudienceIds=' + AudienceIds + '&Year=' + Year + '&AllocatedBy=' + AllocatedBy + '&Tab=' + Tab + '&SortingId=' + SortingId);
+         }
+        }
 </script>

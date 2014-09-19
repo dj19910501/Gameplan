@@ -8160,6 +8160,11 @@ footer a {
 {
     display: inline-block;
 }
+
+.report-budget-months
+{
+    overflow: hidden;
+}
 .report-budget-quarters tbody.column2
 {
     max-width: 55%;
@@ -8186,12 +8191,110 @@ footer a {
 }
 /* */
 .report-budget-months .column2 tr:nth-child(2) td div, .report-budget-quarters .column2 tr:nth-child(2) td div,
-.report-budget-months .column2 tr:nth-child(3) td div, .report-budget-quarters .column2 tr:nth-child(3) td div,
 .report-budget-months .column1 tr:nth-child(2) td div, .report-budget-quarters .column1 tr:nth-child(2) td div,
-.report-budget-months .column1 tr:nth-child(3) td div, .report-budget-quarters .column1 tr:nth-child(3) td div,
-.report-budget-months .column3 tr:nth-child(2) td div, .report-budget-quarters .column3 tr:nth-child(2) td div,
-.report-budget-months .column3 tr:nth-child(3) td div, .report-budget-quarters .column3 tr:nth-child(3) td div
+.report-budget-months .column3 tr:nth-child(2) td div, .report-budget-quarters .column3 tr:nth-child(2) td div
 {
     padding-bottom: 0px;
     padding-top: 0px;
 }
+
+.report-budget-months .column2 tr:nth-child(3) td div, .report-budget-quarters .column2 tr:nth-child(3) td div,
+.report-budget-months .column1 tr:nth-child(3) td div, .report-budget-quarters .column1 tr:nth-child(3) td div,
+.report-budget-months .column3 tr:nth-child(3) td div, .report-budget-quarters .column3 tr:nth-child(3) td div
+{
+    padding-bottom: 5px;
+    padding-top: 5px;
+}
+
+.report-budget-months .column2 tr:nth-child(1) td div, .report-budget-quarters .column2 tr:nth-child(1) td div,
+.report-budget-months .column1 tr:nth-child(1) td div, .report-budget-quarters .column1 tr:nth-child(1) td div,
+.report-budget-months .column3 tr:nth-child(1) td div, .report-budget-quarters .column3 tr:nth-child(1) td div
+{
+    background-color: #E6E6E6;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+.report-budget-months .column2 tr:nth-child(2) td div, .report-budget-quarters .column2 tr:nth-child(2) td div,
+.report-budget-months .column3 tr:nth-child(2) td div, .report-budget-quarters .column3 tr:nth-child(2) td div
+{
+    border-bottom: 1px solid #CCCCCC;
+}
+
+.budgetReport .column1 tr:nth-child(2) td div
+{
+    padding-top: 1px;
+}
+
+.UpperArrowReport
+{
+    border-left: 4px solid rgba(0, 0, 0, 0);
+    border-right: 4px solid rgba(0, 0, 0, 0);
+    border-bottom: 4px solid #000000;
+    content: "";
+    display: inline-block;
+    height: 0;
+    margin-top: -3px;
+    outline: medium none;
+    position: absolute;
+    right: 6px;
+    top: 45%;
+    vertical-align: top;
+    width: 0;
+    cursor: pointer;
+}
+.DownArrowReport
+{
+    border-left: 4px solid rgba(0, 0, 0, 0);
+    border-right: 4px solid rgba(0, 0, 0, 0);
+    border-top: 4px solid #000000;
+    content: "";
+    display: inline-block;
+    height: 0;
+    margin-top: -3px;
+    outline: medium none;
+    position: absolute;
+    right: 6px;
+    top: 70%;/*65*/
+    vertical-align: top;
+    width: 0;
+    cursor: pointer;
+}
+.UpperArrowReportBlue
+{
+    border-left: 4px solid rgba(0, 0, 0, 0);
+    border-right: 4px solid rgba(0, 0, 0, 0);
+    border-bottom: 4px solid #0f0cf2;
+    content: "";
+    display: inline-block;
+    height: 0;
+    margin-top: -3px;
+    outline: medium none;
+    position: absolute;
+    right: 6px;
+    top: 45%;
+    vertical-align: top;
+    width: 0;
+    cursor: pointer;
+}
+.DownArrowReportBlue
+{
+    border-left: 4px solid rgba(0, 0, 0, 0);
+    border-right: 4px solid rgba(0, 0, 0, 0);
+    border-top: 4px solid #0f0cf2;
+    content: "";
+    display: inline-block;
+    height: 0;
+    margin-top: -3px;
+    outline: medium none;
+    position: absolute;
+    right: 6px;
+    top: 70%;/*65*/
+    vertical-align: top;
+    width: 0;
+    cursor: pointer;
+}
+.reportRowHover
+{
+    background-color: #DFF0F8;
+}
+
