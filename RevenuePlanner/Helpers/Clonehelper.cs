@@ -139,14 +139,16 @@ namespace RevenuePlanner.Helpers
                        var campaignCustomFieldsList = db.CustomField_Entity.Where(a => a.EntityId == campaign.PlanCampaignId && a.CustomField.EntityType == entityTypeCampaign).ToList();
                         var clonedCampaign = proj.Plan_Campaign.Where(a => a.Title == campaign.Title && a.IsDeleted == false).FirstOrDefault();
                         campaignCustomFieldsList.ForEach(a => { a.EntityId = clonedCampaign.PlanCampaignId; db.Entry(a).State = EntityState.Added; CustomFieldsList.Add(a); });
+                        var programList=campaign.Plan_Campaign_Program.Where(a=>a.IsDeleted==false).ToList();
 
-                        foreach (var program in campaign.Plan_Campaign_Program.ToList())
+                        foreach (var program in programList)
                         {
                             var programCustomField = db.CustomField_Entity.Where(a => a.EntityId == program.PlanProgramId && a.CustomField.EntityType == entityTypeProgram).ToList();
                             var clonedProgram = clonedCampaign.Plan_Campaign_Program.Where(a => a.Title == program.Title).ToList().FirstOrDefault();
                             programCustomField.ForEach(a => { a.EntityId = clonedProgram.PlanProgramId; db.Entry(a).State = EntityState.Added; CustomFieldsList.Add(a); });
+                            var tacticList=program.Plan_Campaign_Program_Tactic.Where(a=>a.IsDeleted==false).ToList();
 
-                            foreach (var tactic in program.Plan_Campaign_Program_Tactic.ToList())
+                            foreach (var tactic in tacticList)
                             {
                                 var tacticCustomField = db.CustomField_Entity.Where(a => a.EntityId == tactic.PlanTacticId && a.CustomField.EntityType == entityTypeTactic).ToList();
                                 int clonedTacticId = clonedProgram.Plan_Campaign_Program_Tactic.Where(a => a.Title == tactic.Title).ToList().FirstOrDefault().PlanTacticId;
@@ -260,8 +262,9 @@ namespace RevenuePlanner.Helpers
                         var programCustomField = db.CustomField_Entity.Where(a => a.EntityId == program.PlanProgramId && a.CustomField.EntityType == entityTypeProgram).ToList();
                         var clonedProgram = objPlanCampaign.Plan_Campaign_Program.Where(a => a.Title == program.Title).ToList().FirstOrDefault();
                         programCustomField.ForEach(a => { a.EntityId = clonedProgram.PlanProgramId; db.Entry(a).State = EntityState.Added; CustomFieldsList.Add(a); });
+                        var tacticList=program.Plan_Campaign_Program_Tactic.Where(a=>a.IsDeleted==false).ToList();
 
-                        foreach (var tactic in program.Plan_Campaign_Program_Tactic.ToList())
+                        foreach (var tactic in tacticList)
                         {
                             var tacticCustomField = db.CustomField_Entity.Where(a => a.EntityId == tactic.PlanTacticId && a.CustomField.EntityType == entityTypeTactic).ToList();
                             int clonedTacticId = clonedProgram.Plan_Campaign_Program_Tactic.Where(a => a.Title == tactic.Title).ToList().FirstOrDefault().PlanTacticId;
