@@ -51,6 +51,7 @@ namespace RevenuePlanner.Helpers
         public static readonly string FromAlias = System.Configuration.ConfigurationManager.AppSettings.Get("FromAlias"); //"192.168.100.225"
         public static readonly string EvoKey = System.Configuration.ConfigurationManager.AppSettings.Get("EvoKey");
         public static readonly string FromSupportMail = System.Configuration.ConfigurationManager.AppSettings.Get("FromSupportMail");
+        public static readonly bool IsOffline = Convert.ToBoolean(System.Configuration.ConfigurationManager.AppSettings["IsOffline"]); ////Added by :- Pratik Chauhan on 22/09/2014 for PL ticket #468 to display maintenance page
 
         public const string OptionTextRegex = "^[^<>]+";
         public const string MessageForOptionTextRegex = "<> characters are not allowed";

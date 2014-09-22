@@ -72,7 +72,17 @@ namespace RevenuePlanner.Controllers
             ViewBag.ApplicationReleaseVersion = applicationReleaseVersion;
             //// End - Added by :- Sohel Pathan on 22/05/2014 for PL ticket #469 to display release version from database
 
-            return View();
+            //// Start - Added by :- Pratik Chauhan on 22/09/2014 for PL ticket #468 to display maintenance page
+            if (Common.IsOffline)
+            {
+                ViewBag.LastUpdated = System.IO.File.GetLastWriteTime(Server.MapPath("~/Web.Config").Replace(@"\", "/")).ToString("hh:mm tt, MM/dd/yyyy");
+                return View("App_offline");
+            }
+            else
+            {
+                return View();
+            }
+            //// End - Added by :- Pratik Chauhan on 22/09/2014 for PL ticket #468 to display maintenance page
         }
 
         /// <summary>

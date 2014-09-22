@@ -128,7 +128,15 @@
     });
     var isAlerted = false;
     $(document).ready(function () {
-        $(window).attr('name', '@RevenuePlanner.Helpers.Sessions.User.UserId');
+
+        var IsOffline = '@RevenuePlanner.Helpers.Common.IsOffline';
+
+        //// Start - Added by :- Pratik Chauhan on 22/09/2014 for PL ticket #468 to display maintenance page
+        if (!IsOffline) {
+            $(window).attr('name', '@RevenuePlanner.Helpers.Sessions.User.UserId');
+        }
+        //// End - Added by :- Pratik Chauhan on 22/09/2014 for PL ticket #468 to display maintenance page
+
         $('#ContactSupport').click(function () {
             $("#div_contactSupport").empty();
             var url = '@Url.Content("~/Common/LoadSupportPartial/")';   //// Modified by Sohel Pathan on 23/05/2014 for internal review points.

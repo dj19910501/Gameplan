@@ -8298,3 +8298,10 @@ footer a {
     background-color: #DFF0F8;
 }
 
+/*Added By Pratik - Maintenence css Start PL #468 9/17/2014*/
+.maintenence-wrapper{margin:164px auto 0; width:363px; text-align:center; font-family: 'source_sans_proregular', Arial, "sans-serif" !important;}
+.maintenence-wrapper img{display: block; height: 140px; margin: 0 auto 25px; width: 139px; }
+.maintenence-wrapper sup{font-size:12px;}
+.maintenence-wrapper span{padding-bottom:14px; font-size:18px; color:#000; display:block;}
+.maintenence-wrapper p{ font-size:12px; color:#808080;}
+/* Added By Pratik - Maintenence css End PL #468 9/17/2014*/
