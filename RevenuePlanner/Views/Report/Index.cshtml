@@ -29,7 +29,7 @@
         <h4 class="text-shadow-black source-sans-prolight">Reports</h4>
 
         @*To resolve Bug 312: Report plan selector needs to be moved*@
-        <form class="nl-form-plan-title without-margin report-summry">
+        <form class="nl-form-plan-title without-margin report-summry" id="formSideFilter">
             <span class="report-summry-select" id="nl-ReportSummry">
                 <select id="reportSummry" data-default="0%" class="">
                 </select>
@@ -68,7 +68,7 @@
             <a class="source-sans-probold conversion"><span></span>CONVERSION</a>
         </li>
          <li class="item" id="liBudget">
-            <a class="source-sans-probold budget"><span></span>Budget</a>
+            <a class="source-sans-probold budget"><span></span>BUDGET</a>
         </li>
     </ul>
 }
@@ -339,6 +339,8 @@
         }
 
         function LoadSummary() {
+            $('#UlPlanHeader').css('display', 'block');
+            $('#formSideFilter').css('display', 'block');
             $('#divMainReportPart').empty();
             //  $('#BtnAddActual').enabled = true;
             $('#reportHeader').css('display', 'none');
@@ -437,6 +439,8 @@
     }
 
         function LoadRevenueData() {
+            $('#UlPlanHeader').css('display', 'block');
+            $('#formSideFilter').css('display', 'block');
             $('#divMainReportPart').empty();
 
             var url = '@Url.Content("~/Report/GetRevenueData/")';
@@ -447,6 +451,8 @@
         }
 
         function LoadConversionData() {
+            $('#UlPlanHeader').css('display', 'block');
+            $('#formSideFilter').css('display', 'block');
             $('#divMainReportPart').empty();
             var url = '@Url.Content("~/Report/GetConversionData/")';
             $('#divMainReportPart').load(url + '?BusinessUnitId=' + SelectedBUId + '&PlanId=' + SelectedPlanId + '&timeFrameOption=' + OptionMain, function () {
@@ -458,6 +464,8 @@
         function LoadBudgetView() {
             $('#reportHeader').css('display', 'none');
             $('#UlPlanHeader').css('display', 'none');
+            $('#formSideFilter').css('display', 'none');
+            
             var url = '@Url.Content("~/Report/GetBudget/")';
             $('#divMainReportPart').load(url, function () {
                 isAllowClick = true;

@@ -6,6 +6,13 @@
     var ViewVerticalSelectedValue = (List<SelectListItem>)ViewBag.ViewVertical;
     var ViewAudienceSelectedValue = (List<SelectListItem>)ViewBag.ViewAudience;
     string SelectedYear = ViewBag.SelectedYear;
+    string AudienceLabel = Common.CustomLabelFor(Enums.CustomLabelCode.Audience);
+    string AudienceLabelTitle = string.Empty;
+    if(AudienceLabel.Length > 10)
+    {
+        AudienceLabelTitle = AudienceLabel;
+        AudienceLabel = AudienceLabel.Substring(0, 10) + "...";
+    }
 }
 <div class="budgetReport">
     <div class="budgetColums budgetReporting">
@@ -31,39 +38,27 @@
                 <span class="selectBox" id="ddlYearSpan" style="width: 115px; line-height: 2.5; padding-right: 7px;">
                     @Html.DropDownList("ddlYear", new SelectList((System.Collections.IEnumerable)ViewBag.ViewYear, "Value", "Text",SelectedYear), new { @class = "ddlStyleReport" })
                 </span>
-                @Html.DropDownList("ddlPlan", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewPlan, "Value", "Text", ViewPlanSelectedValue.Where(p => p.Selected).Select(p => p.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlPlan", noneselectedvalue = "Plans" })
-                @Html.DropDownList("ddlViewGeography", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewGeography, "Value", "Text", ViewGeographySelectedValue.Where(g => g.Selected).Select(g => g.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewGeography", noneselectedvalue = "Geography" })
-                @Html.DropDownList("ddlViewBusinessUnit", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewBusinessUnit, "Value", "Text", ViewBusinessUnitSelectedValue.Where(b => b.Selected).Select(b => b.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewBusinessUnit", noneselectedvalue = "Business Units" })
-                @Html.DropDownList("ddlViewVertical", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewVertical, "Value", "Text", ViewVerticalSelectedValue.Where(v => v.Selected).Select(v => v.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewVertical", noneselectedvalue = "Verticals" })
-                @Html.DropDownList("ddlViewAudience", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewAudience, "Value", "Text", ViewAudienceSelectedValue.Where(a => a.Selected).Select(a => a.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewAudience", noneselectedvalue = @Html.CustomLabelFor(Enums.CustomLabelCode.Audience) })
+                @Html.DropDownList("ddlViewBusinessUnit", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewBusinessUnit, "Value", "Text", ViewBusinessUnitSelectedValue.Where(b => b.Selected).Select(b => b.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewBusinessUnit", noneselectedvalue = "Business Units", style = "display:none" })
+                @Html.DropDownList("ddlPlan", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewPlan, "Value", "Text", ViewPlanSelectedValue.Where(p => p.Selected).Select(p => p.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlPlan", noneselectedvalue = "Plans", style = "display:none" })
+                @Html.DropDownList("ddlViewGeography", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewGeography, "Value", "Text", ViewGeographySelectedValue.Where(g => g.Selected).Select(g => g.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewGeography", noneselectedvalue = "Geography", style = "display:none" })
+                @Html.DropDownList("ddlViewVertical", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewVertical, "Value", "Text", ViewVerticalSelectedValue.Where(v => v.Selected).Select(v => v.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewVertical", noneselectedvalue = "Verticals", style = "display:none" })
+                @Html.DropDownList("ddlViewAudience", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewAudience, "Value", "Text", ViewAudienceSelectedValue.Where(a => a.Selected).Select(a => a.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewAudience", noneselectedvalue = @AudienceLabel, style = "display:none" })
 
             </div>
             <!--End modified by Mitesh Vaishnav for PL ticket #727 - Added "noneselectedvalue" attribute to dropdownlist.-->
             <div class="filter-detail">
-                <div class="filter-details">
                     <label>Year:</label>
                     <div class="details" id="yeardetail"></div>
-                </div>
-                <div class="filter-details">
-                    <label>Plans:</label>
-                    <div class="details" id="plandetail"></div>
-                </div>
-                <div class="filter-details">
-                    <label>Geography:</label>
-                    <div class="details" id="geographydetail">All</div>
-                </div>
-                <div class="filter-details">
                     <label>Business Units:</label>
                     <div class="details" id="businessunitdetail">All</div>
-                </div>
-                <div class="filter-details">
+                    <label>Plans:</label>
+                    <div class="details" id="plandetail"></div>
+                    <label>Geography:</label>
+                    <div class="details" id="geographydetail">All</div>
                     <label>Verticals:</label>
                     <div class="details" id="verticaldetail">All</div>
-                </div>
-                <div class="filter-details">
                     <label>@Html.CustomLabelFor(Enums.CustomLabelCode.Audience):</label>
                     <div class="details" id="audiencedetail">All</div>
-                </div>
             </div>
         </div>
         <div class="budgetReportFilter-area-right">
@@ -128,6 +123,10 @@
             $(this).multiselect({ noneSelectedText: $(this).attr('noneselectedvalue') }).multiselectfilter();
         });
 
+        $("#ddlViewAudience").next().attr('title', '@AudienceLabelTitle');
+
+        $(".sbSelector").css("color", "#6D6D6D");
+
         var multiselectPlanId = "ddlPlan";
         var filterPlanid = "#plandetail";
         var ddlViewAudience = "ddlViewAudience";
@@ -140,11 +139,11 @@
         var businessunitdetail = "#businessunitdetail";
         var geographydetail = "#geographydetail";
 
-        OnLoadMultiselectFilterPlan(multiselectPlanId, filterPlanid);
-        OnLoadMultiselectFilter(ddlViewAudience, audiencedetail);
-        OnLoadMultiselectFilter(ddlViewVertical, verticaldetail);
-        OnLoadMultiselectFilter(ddlViewBusinessUnit, businessunitdetail);
-        OnLoadMultiselectFilter(ddlViewGeography, geographydetail);
+        LoadCheckBoxValueForPlan(multiselectPlanId, filterPlanid);
+        LoadCheckBoxValue(ddlViewAudience, audiencedetail);
+        LoadCheckBoxValue(ddlViewVertical, verticaldetail);
+        LoadCheckBoxValue(ddlViewBusinessUnit, businessunitdetail);
+        LoadCheckBoxValue(ddlViewGeography, geographydetail);
 
         LoadMultiselectFilterPlan(multiselectPlanId, filterPlanid);
         LoadMultiselectFilter(ddlViewAudience, audiencedetail);
@@ -152,195 +151,63 @@
         LoadMultiselectFilter(ddlViewBusinessUnit, businessunitdetail);
         LoadMultiselectFilter(ddlViewGeography, geographydetail);
 
-        function LoadMultiselectFilter(multiselectId, filterid) {
-            $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
-                $(this).change(function (e) {
-                    var finalValue = "";
-                    $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
-                        if (this.checked) {
-                            finalValue += $(this).parent().find('span').eq(0).html() + ",";
-                        }
-                    });
-                    finalValue = finalValue.slice(0, -1);
-                    if (finalValue == '') {
-                        finalValue = 'None';
-                    }
-                    $(filterid).html(finalValue);
-                });
-            });
-
-            $('#selectAll_' + multiselectId).click(function () {
-                var finalValue = "";
-                $("#multipleselect_" + multiselectId).find("li").each(function () {
-                    if ($(this).css('display') == 'list-item') {
-                        $(this).find("input[type='checkbox']").each(function () {
-                            if (!this.checked) {
-                                finalValue += $(this).parent().find('span').eq(0).html() + ",";
-                            }
-                        });
-                    }
-                });
-
-                $("#multipleselect_" + multiselectId).find("input[type='checkbox']").each(function () {
-                    if (this.checked) {
-                    finalValue += $(this).parent().find('span').eq(0).html() + ",";
-                    }
-                });
-                finalValue = finalValue.slice(0, -1);
-                if (finalValue == '') {
-                    finalValue = 'None';
-                }
-                $(filterid).html(finalValue);
-            });
-
-            $('#deselectAll_' + multiselectId).click(function () {
-                var delay = 50;//1 seconds
-                setTimeout(function () {
-                    var finalValue = "";
-                    $("#multipleselect_" + multiselectId).find("input[type='checkbox']").each(function () {
-                        if (this.checked) {
-                            finalValue += $(this).parent().find('span').eq(0).html() + ",";
-                        }
-                    });
-                    finalValue = finalValue.slice(0, -1);
-                    if (finalValue == '') {
-                        finalValue = 'None';
-                    }
-                    $(filterid).html(finalValue);
-                    //your code to be executed after 1 seconds
-                }, delay);
-
-                
-            });
-        }
-
-        function OnLoadMultiselectFilter(multiselectId, filterid) {
+        function LoadCheckBoxValue(multiselectId, filterid) {
             var finalValue = "";
+            var isAll = true;
             $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
                 if (this.checked) {
-                    finalValue += $(this).parent().find('span').eq(0).html() + ",";
+                    finalValue += $(this).parent().find('span').eq(0).html() + ",  ";
+                }
+                else {
+                    isAll = false;
                 }
             });
-            finalValue = finalValue.slice(0, -1);
+            finalValue = finalValue.slice(0, -3);
             if (finalValue == '') {
                 finalValue = 'None';
+            }
+            if (isAll) {
+                finalValue = 'All';
             }
             $(filterid).html(finalValue);
         }
 
-        function LoadMultiselectFilterPlan(multiselectId, filterid) {
-            
+        function LoadMultiselectFilter(multiselectId, filterid) {
             $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
                 $(this).change(function (e) {
-                    viewByDisplay = true;
-                    var finalValue = "";
-                    $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
-                        if (this.checked) {
-                            finalValue += $(this).parent().find('span').eq(0).html() + ",";
-                            var getAllocatedBy = $(this).val().split("_");
-                            if (getAllocatedBy[1] == Quartervalue && viewByDisplay == true) {
-                                viewByDisplay = false;
-                            }
-                        }
-                    });
-                    finalValue = finalValue.slice(0, -1);
-                    if (finalValue == '') {
-                        finalValue = 'None';
-                    }
-                    $(filterid).html(finalValue);
-                    if (viewByDisplay == false) {
-                        DisableViewByAllocated();
-                    }
-                    else {
-                        EnableViewByAllocated();
-                    }
+                    LoadCheckBoxValue(multiselectId, filterid);
                 });
             });
 
             $('#selectAll_' + multiselectId).click(function () {
-                var finalValue = "";
-                viewByDisplay = true;
-                
-                $("#multipleselect_" + multiselectId).find("li").each(function () {
-                    if ($(this).css('display') == 'list-item') {
-                        $(this).find("input[type='checkbox']").each(function () {
-                            if (!this.checked) {
-                                finalValue += $(this).parent().find('span').eq(0).html() + ",";
-                            }
-                        });
-                    }
-                });
-
-                $("#multipleselect_" + multiselectId).find("input[type='checkbox']").each(function () {
-                    if (this.checked) {
-                        finalValue += $(this).parent().find('span').eq(0).html() + ",";
-                        var getAllocatedBy = $(this).val().split("_");
-                        if (getAllocatedBy[1] == Quartervalue && viewByDisplay == true) {
-                            viewByDisplay = false;
-                        }
-                    }
-                });
-                
-                //display: list - item;
-                finalValue = finalValue.slice(0, -1);
-                if (finalValue == '') {
-                    finalValue = 'None';
-                }
-                $(filterid).html(finalValue);
-                if (viewByDisplay == false) {
-                    DisableViewByAllocated();
-                }
-                else {
-                    EnableViewByAllocated();
-                }
+                //var finalValue = "";
+                //$("#multipleselect_" + multiselectId).find("li").each(function () {
+                //    if ($(this).css('display') == 'list-item') {
+                //        $(this).find("input[type='checkbox']").each(function () {
+                //            if (!this.checked) {
+                //                finalValue += $(this).parent().find('span').eq(0).html() + ",  ";
+                //            }
+                //        });
+                //    }
+                //});
+                var delay = 50;//1 seconds
+                setTimeout(function () {
+                    LoadCheckBoxValue(multiselectId, filterid);
+                }, delay);
             });
 
             $('#deselectAll_' + multiselectId).click(function () {
                 var delay = 50;//1 seconds
                 setTimeout(function () {
-                    viewByDisplay = true;
-                    $(filterid).html('None');
-                    EnableViewByAllocated(); var finalValue = "";
-                    viewByDisplay = true;
-                    $("#multipleselect_" + multiselectId).find("input[type='checkbox']").each(function () {
-                        if (this.checked) {
-                            finalValue += $(this).parent().find('span').eq(0).html() + ",";
-                            var getAllocatedBy = $(this).val().split("_");
-                            if (getAllocatedBy[1] == Quartervalue && viewByDisplay == true) {
-                                viewByDisplay = false;
-                            }
-                        }
-                    });
-                    //$("#multipleselect_" + multiselectId).find("li").each(function () {
-                    //    if ($(this).css('display') == 'list-item') {
-                    //        $(this).find("input[type='checkbox']").each(function () {
-                    //            if (this.checked) {
-                    //                finalValue.replace($(this).parent().find('span').eq(0).html() + ",",'');
-                    //            }
-                    //        });
-                    //    }
-                    //});
-                    finalValue = finalValue.slice(0, -1);
-                    if (finalValue == '') {
-                        finalValue = 'None';
-                    }
-                    $(filterid).html(finalValue);
-                    if (viewByDisplay == false) {
-                        DisableViewByAllocated();
-                    }
-                    else {
-                        EnableViewByAllocated();
-                    }
-                    //your code to be executed after 1 seconds
+                    LoadCheckBoxValue(multiselectId, filterid);
                 }, delay);
-
-               
             });
         }
 
-        function OnLoadMultiselectFilterPlan(multiselectId, filterid) {
-            var finalValue = "";
+        function LoadCheckBoxValueForPlan(multiselectId, filterid) {
             viewByDisplay = true;
+            var isAll = true;
+            var finalValue = "";
             $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
                 if (this.checked) {
                     finalValue += $(this).parent().find('span').eq(0).html() + ",";
@@ -349,18 +216,49 @@
                         viewByDisplay = false;
                     }
                 }
+                else {
+                    isAll = false;
+                }
             });
-            finalValue = finalValue.slice(0, -1);
+            finalValue = finalValue.slice(0, -3);
             if (finalValue == '') {
                 finalValue = 'None';
             }
+            if (isAll) {
+                finalValue = 'All';
+            }
             $(filterid).html(finalValue);
+           
             if (viewByDisplay == false) {
                 DisableViewByAllocated();
             }
             else {
                 EnableViewByAllocated();
             }
+        }
+
+        function LoadMultiselectFilterPlan(multiselectId, filterid) {
+            
+            $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
+                $(this).change(function (e) {
+                    LoadCheckBoxValueForPlan(multiselectId, filterid);
+                });
+            });
+
+            $('#selectAll_' + multiselectId).click(function () {
+                var delay = 50;//1 seconds
+                setTimeout(function () {
+                    LoadCheckBoxValueForPlan(multiselectId, filterid);
+                }, delay);
+            });
+
+            $('#deselectAll_' + multiselectId).click(function () {
+                var delay = 50;//1 seconds
+                setTimeout(function () {
+                    LoadCheckBoxValueForPlan(multiselectId, filterid);
+                    //your code to be executed after 1 seconds
+                }, delay);
+            });
         }
 
         function DisableViewByAllocated() {
@@ -415,7 +313,6 @@
          
         }
 
-
         $("#yeardetail").html("FY " + $('#ddlYear').val());
         $('#button-save').click(function () {
             PlanIds = GetFilterIdForPlan(multiselectPlanId);
@@ -452,6 +349,7 @@
             $dropdown.empty();
             var $html = '';
             if (items.length > 0) {
+              
                 $.each(items, function (index, planobj) {
                     if (planobj.Selected) {
                         $html += '<option value="' + planobj.Value + '" selected>' + planobj.Text + '</option>';
@@ -470,7 +368,7 @@
             $('#ddlPlan').multiselect("refresh", updatedOption);
             //End Added by Mitesh Vaishnav for PL ticket #727
             $("#multipleselect_ddlPlan").find("input[type='search']").val('');
-            OnLoadMultiselectFilterPlan(multiselectPlanId, filterPlanid);
+            LoadCheckBoxValueForPlan(multiselectPlanId, filterPlanid);
             LoadMultiselectFilterPlan(multiselectPlanId, filterPlanid);
             
             //$('#multipleselect_ddlPlan').empty();

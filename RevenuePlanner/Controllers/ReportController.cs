@@ -3026,14 +3026,18 @@ namespace RevenuePlanner.Controllers
         public const string Dec = "Y12";
         #endregion
 
+        /// <summary>
+        /// View Budget 
+        /// </summary>
+        /// <returns></returns>
         [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult GetBudget()
         {
             List<ViewByModel> lstViewByTab = new List<ViewByModel>();
-            lstViewByTab.Add(new ViewByModel { Text = ReportTabType.Plan.ToString(), Value = ReportTabType.Plan.ToString() });
-            lstViewByTab.Add(new ViewByModel { Text = ReportTabType.Vertical.ToString(), Value = ReportTabType.Vertical.ToString() });
-            lstViewByTab.Add(new ViewByModel { Text = ReportTabType.Geography.ToString(), Value = ReportTabType.Geography.ToString() });
-            lstViewByTab.Add(new ViewByModel { Text = ReportTabType.BusinessUnit.ToString(), Value = ReportTabType.BusinessUnit.ToString() });
+            lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.Plan.ToString(), Value = ReportTabType.Plan.ToString() });
+            lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.Vertical.ToString(), Value = ReportTabType.Vertical.ToString() });
+            lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.Geography.ToString(), Value = ReportTabType.Geography.ToString() });
+            lstViewByTab.Add(new ViewByModel { Text = ReportTabTypeText.BusinessUnit.ToString(), Value = ReportTabType.BusinessUnit.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = Common.CustomLabelFor(Enums.CustomLabelCode.Audience), Value = ReportTabType.Audience.ToString() });
             ViewBag.ViewByTab = lstViewByTab;
 
@@ -3069,12 +3073,9 @@ namespace RevenuePlanner.Controllers
             string Noneallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString();
 
             List<SelectListItem> lstPlanList = new List<SelectListItem>();
-            lstPlanList = lstPlan.Select(p => new SelectListItem { Text = p.Title + " - " + (p.AllocatedBy == defaultallocatedby ? Noneallocatedby : p.AllocatedBy), Value = p.PlanId.ToString() + "_" + p.AllocatedBy, Selected = p.PlanId == Sessions.ReportPlanId ? true : false }).ToList();
-            string planyear = lstYear.Select(l => l.Value).FirstOrDefault();
-            if (Sessions.ReportPlanId != 0)
-            {
-                planyear = lstPlan.Where(p => p.PlanId == Sessions.ReportPlanId).Select(p => p.Year).FirstOrDefault();
-            }
+            string planyear = DateTime.Now.Year.ToString();
+           
+            lstPlanList = lstPlan.Where(p => p.Year == planyear).Select(p => new SelectListItem { Text = p.Title + " - " + (p.AllocatedBy == defaultallocatedby ? Noneallocatedby : p.AllocatedBy), Value = p.PlanId.ToString() + "_" + p.AllocatedBy, Selected = (p.PlanId == Sessions.ReportPlanId ? true : false) }).ToList();
             ViewBag.ViewPlan = lstPlanList;
             ViewBag.ViewYear = lstYear;
             ViewBag.SelectedYear = planyear;
@@ -3100,6 +3101,19 @@ namespace RevenuePlanner.Controllers
             return Json(planList, JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// Get Data For Budget Report
+        /// </summary>
+        /// <param name="PlanIds"></param>
+        /// <param name="GeographyIds"></param>
+        /// <param name="BusinessUnitIds"></param>
+        /// <param name="VerticalIds"></param>
+        /// <param name="AudienceIds"></param>
+        /// <param name="Year"></param>
+        /// <param name="AllocatedBy"></param>
+        /// <param name="Tab"></param>
+        /// <param name="SortingId"></param>
+        /// <returns></returns>
         public ActionResult GetReportBudgetData(string PlanIds, string GeographyIds, string BusinessUnitIds, string VerticalIds, string AudienceIds, string Year, string AllocatedBy, string Tab, string SortingId)
         {
             List<int> PlanIdList = new List<int>();
@@ -3402,10 +3416,10 @@ namespace RevenuePlanner.Controllers
             
 
             //Threre is no need to manage lines for actuals
-            //if (Tab == BudgetTab.Planned)
+            //if (Tab == ReportTabType.Plan.ToString())
             //{
-            //    model = ManageLineItems(model);
-            //}
+                model = ManageLineItems(model);
+           // }
 
             //Set actual for quarters
             if (AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString())  // Modified by Sohel Pathan on 08/09/2014 for PL ticket #642.
@@ -3825,6 +3839,10 @@ namespace RevenuePlanner.Controllers
             return PartialView("_Budget", model);
         }
 
+        /// <summary>
+        /// Get Empty Month List
+        /// </summary>
+        /// <returns></returns>
         private List<BudgetedValue> GetEmptyList()
         {
             List<BudgetedValue> emptyList = new List<BudgetedValue>();
@@ -4002,7 +4020,7 @@ namespace RevenuePlanner.Controllers
          {
              foreach (BudgetModelReport l in model.Where(l => l.ActivityType == ActivityType.ActivityTactic))
              {
-                 BudgetMonth lineDiff = new BudgetMonth();
+                BudgetMonth lineDiffPlanned = new BudgetMonth();
                  List<BudgetModelReport> lines = model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId).ToList();
                  BudgetModelReport otherLine = lines.Where(ol => ol.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault();
                  lines = lines.Where(ol => ol.ActivityName != Common.DefaultLineItemTitle).ToList();
@@ -4010,38 +4028,38 @@ namespace RevenuePlanner.Controllers
                  {
                      if (lines.Count > 0)
                      {
-                         lineDiff.Jan = l.MonthPlanned.Jan - lines.Sum(lmon => (double?)lmon.MonthPlanned.Jan) ?? 0;
-                         lineDiff.Feb = l.MonthPlanned.Feb - lines.Sum(lmon => (double?)lmon.MonthPlanned.Feb) ?? 0;
-                         lineDiff.Mar = l.MonthPlanned.Mar - lines.Sum(lmon => (double?)lmon.MonthPlanned.Mar) ?? 0;
-                         lineDiff.Apr = l.MonthPlanned.Apr - lines.Sum(lmon => (double?)lmon.MonthPlanned.Apr) ?? 0;
-                         lineDiff.May = l.MonthPlanned.May - lines.Sum(lmon => (double?)lmon.MonthPlanned.May) ?? 0;
-                         lineDiff.Jun = l.MonthPlanned.Jun - lines.Sum(lmon => (double?)lmon.MonthPlanned.Jun) ?? 0;
-                         lineDiff.Jul = l.MonthPlanned.Jul - lines.Sum(lmon => (double?)lmon.MonthPlanned.Jul) ?? 0;
-                         lineDiff.Aug = l.MonthPlanned.Aug - lines.Sum(lmon => (double?)lmon.MonthPlanned.Aug) ?? 0;
-                         lineDiff.Sep = l.MonthPlanned.Sep - lines.Sum(lmon => (double?)lmon.MonthPlanned.Sep) ?? 0;
-                         lineDiff.Oct = l.MonthPlanned.Oct - lines.Sum(lmon => (double?)lmon.MonthPlanned.Oct) ?? 0;
-                         lineDiff.Nov = l.MonthPlanned.Nov - lines.Sum(lmon => (double?)lmon.MonthPlanned.Nov) ?? 0;
-                         lineDiff.Dec = l.MonthPlanned.Dec - lines.Sum(lmon => (double?)lmon.MonthPlanned.Dec) ?? 0;
+                        lineDiffPlanned.Jan = l.MonthPlanned.Jan - lines.Sum(lmon => (double?)lmon.MonthPlanned.Jan) ?? 0;
+                        lineDiffPlanned.Feb = l.MonthPlanned.Feb - lines.Sum(lmon => (double?)lmon.MonthPlanned.Feb) ?? 0;
+                        lineDiffPlanned.Mar = l.MonthPlanned.Mar - lines.Sum(lmon => (double?)lmon.MonthPlanned.Mar) ?? 0;
+                        lineDiffPlanned.Apr = l.MonthPlanned.Apr - lines.Sum(lmon => (double?)lmon.MonthPlanned.Apr) ?? 0;
+                        lineDiffPlanned.May = l.MonthPlanned.May - lines.Sum(lmon => (double?)lmon.MonthPlanned.May) ?? 0;
+                        lineDiffPlanned.Jun = l.MonthPlanned.Jun - lines.Sum(lmon => (double?)lmon.MonthPlanned.Jun) ?? 0;
+                        lineDiffPlanned.Jul = l.MonthPlanned.Jul - lines.Sum(lmon => (double?)lmon.MonthPlanned.Jul) ?? 0;
+                        lineDiffPlanned.Aug = l.MonthPlanned.Aug - lines.Sum(lmon => (double?)lmon.MonthPlanned.Aug) ?? 0;
+                        lineDiffPlanned.Sep = l.MonthPlanned.Sep - lines.Sum(lmon => (double?)lmon.MonthPlanned.Sep) ?? 0;
+                        lineDiffPlanned.Oct = l.MonthPlanned.Oct - lines.Sum(lmon => (double?)lmon.MonthPlanned.Oct) ?? 0;
+                        lineDiffPlanned.Nov = l.MonthPlanned.Nov - lines.Sum(lmon => (double?)lmon.MonthPlanned.Nov) ?? 0;
+                        lineDiffPlanned.Dec = l.MonthPlanned.Dec - lines.Sum(lmon => (double?)lmon.MonthPlanned.Dec) ?? 0;
 
-                         lineDiff.Jan = lineDiff.Jan < 0 ? 0 : lineDiff.Jan;
-                         lineDiff.Feb = lineDiff.Feb < 0 ? 0 : lineDiff.Feb;
-                         lineDiff.Mar = lineDiff.Mar < 0 ? 0 : lineDiff.Mar;
-                         lineDiff.Apr = lineDiff.Apr < 0 ? 0 : lineDiff.Apr;
-                         lineDiff.May = lineDiff.May < 0 ? 0 : lineDiff.May;
-                         lineDiff.Jun = lineDiff.Jun < 0 ? 0 : lineDiff.Jun;
-                         lineDiff.Jul = lineDiff.Jul < 0 ? 0 : lineDiff.Jul;
-                         lineDiff.Aug = lineDiff.Aug < 0 ? 0 : lineDiff.Aug;
-                         lineDiff.Sep = lineDiff.Sep < 0 ? 0 : lineDiff.Sep;
-                         lineDiff.Oct = lineDiff.Oct < 0 ? 0 : lineDiff.Oct;
-                         lineDiff.Nov = lineDiff.Nov < 0 ? 0 : lineDiff.Nov;
-                         lineDiff.Dec = lineDiff.Dec < 0 ? 0 : lineDiff.Dec;
+                        lineDiffPlanned.Jan = lineDiffPlanned.Jan < 0 ? 0 : lineDiffPlanned.Jan;
+                        lineDiffPlanned.Feb = lineDiffPlanned.Feb < 0 ? 0 : lineDiffPlanned.Feb;
+                        lineDiffPlanned.Mar = lineDiffPlanned.Mar < 0 ? 0 : lineDiffPlanned.Mar;
+                        lineDiffPlanned.Apr = lineDiffPlanned.Apr < 0 ? 0 : lineDiffPlanned.Apr;
+                        lineDiffPlanned.May = lineDiffPlanned.May < 0 ? 0 : lineDiffPlanned.May;
+                        lineDiffPlanned.Jun = lineDiffPlanned.Jun < 0 ? 0 : lineDiffPlanned.Jun;
+                        lineDiffPlanned.Jul = lineDiffPlanned.Jul < 0 ? 0 : lineDiffPlanned.Jul;
+                        lineDiffPlanned.Aug = lineDiffPlanned.Aug < 0 ? 0 : lineDiffPlanned.Aug;
+                        lineDiffPlanned.Sep = lineDiffPlanned.Sep < 0 ? 0 : lineDiffPlanned.Sep;
+                        lineDiffPlanned.Oct = lineDiffPlanned.Oct < 0 ? 0 : lineDiffPlanned.Oct;
+                        lineDiffPlanned.Nov = lineDiffPlanned.Nov < 0 ? 0 : lineDiffPlanned.Nov;
+                        lineDiffPlanned.Dec = lineDiffPlanned.Dec < 0 ? 0 : lineDiffPlanned.Dec;
 
-                         model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().MonthPlanned = lineDiff;
-                         model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().ParentMonthPlanned = lineDiff;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().MonthPlanned = lineDiffPlanned;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().ParentMonthPlanned = lineDiffPlanned;
 
-                         double allocated = l.Allocated - lines.Sum(l1 => l1.Allocated);
-                         allocated = allocated < 0 ? 0 : allocated;
-                         model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Planned = allocated;
+                        double planned = l.Planned - lines.Sum(l1 => l1.Planned);
+                        planned = planned < 0 ? 0 : planned;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == l.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Planned = planned;
                      }
                      else
                      {

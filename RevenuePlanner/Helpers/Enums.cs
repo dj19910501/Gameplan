@@ -881,4 +881,14 @@ namespace RevenuePlanner.Helpers
         public const string Geography = "Geography";
         public const string Vertical = "Vertical";
     }
+
+    public static class ReportTabTypeText
+    {
+        public const string Plan = "Plan";
+        public const string Audience = "Audience";
+        public const string BusinessUnit = "Busieness Unit";
+        public const string Geography = "Geography";
+        public const string Vertical = "Vertical";
+    }
+
 }
