@@ -5212,13 +5212,89 @@ namespace RevenuePlanner.Controllers
             }
             try
             {
-                string[] arrCostInputValues = CostInputValues.Split(',');
 
                 //Added By : Kalpesh Sharma #697 08/26/2014
                 //Spilt the Actuals allocation values into the array (Comma Seprated)
+                string[] arrCostInputValues = CostInputValues.Split(',');
                 string[] arrActualInputValues = ActualInputValues.Split(',');
 
+                ////Start Added by Mitesh Vaishnav for PL ticket #752 - Update line item cost with the total cost from the monthly/quarterly allocation
+                //// Check when monthly planned cost of tactic is lower than total monthly planned cost of line items than update monthly planned cost of tactic
+                var lineItemIds = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.PlanTacticId == form.PlanTacticId && a.IsDeleted == false && a.PlanLineItemId != form.PlanLineItemId).Select(a => a.PlanLineItemId).ToList();
+                ////list of Total monthly planned cost
+                var lstMonthlyLineItemCost = db.Plan_Campaign_Program_Tactic_LineItem_Cost
+                    .Where(a => lineItemIds.Contains(a.PlanLineItemId))
+                    .GroupBy(a => a.Period)
+                    .Select(a => new
+                    {
+                        Period = a.Key,
+                        Cost = a.Sum(b => b.Value)
+                    }).ToList();
+                ////List of monthly plaaned cost of tactic
+                var lstMonthlyTacticCost = db.Plan_Campaign_Program_Tactic_Cost.Where(a => a.PlanTacticId == form.PlanTacticId).ToList();
+                bool isBudgetLower = true;
+                double TotalNewPlannedCost = 0;
+                foreach (string s in arrCostInputValues)
+                {
+                    if (s != null && s != "")
+                    {
+                        TotalNewPlannedCost += Convert.ToDouble(s);
+                    }
+                }
+                TotalNewPlannedCost += lstMonthlyLineItemCost.Sum(a => a.Cost);
+                double TotalTacticCost = lstMonthlyTacticCost.Sum(a => a.Value);
+                if (TotalNewPlannedCost>=TotalTacticCost)
+                {
+                    isBudgetLower = false;
+                }
+
+                ////check budget allocation type e.g. month,Quarter etc
+                if (arrCostInputValues.Length == 12)
+                {
+                    for (int i = 0; i < 12; i++)
+                    {
+                        if (arrCostInputValues[i] != "")
+                        {
+                            string period = "Y" + (i + 1).ToString();
+                            double monthlyTotalLineItemCost = lstMonthlyLineItemCost.Where(a => a.Period == period).FirstOrDefault() == null ? 0 : lstMonthlyLineItemCost.Where(a => a.Period == period).FirstOrDefault().Cost;
+                            monthlyTotalLineItemCost = monthlyTotalLineItemCost + Convert.ToDouble(arrCostInputValues[i]);
+                            double monthlyTotalTacticCost = lstMonthlyTacticCost.Where(a => a.Period == period).FirstOrDefault() == null ? 0 : lstMonthlyTacticCost.Where(a => a.Period == period).FirstOrDefault().Value;
+                            if (monthlyTotalLineItemCost > monthlyTotalTacticCost || !isBudgetLower)
+                            {
+                                lstMonthlyTacticCost.Where(a => a.Period == period).ToList().ForEach(a => { a.Value = monthlyTotalLineItemCost; db.Entry(a).State = EntityState.Modified; });
+
+                            }
+                        }
+                    }
+                }
+                else if (arrCostInputValues.Length == 4)
+                {
+                    int QuarterCnt = 1;
+                    for (int i = 0; i < 4; i++)
+                    {
+                        if (arrCostInputValues[i] != "")
+                        {
+                            string period = "Y" + QuarterCnt.ToString();
+                            double monthlyTotalLineItemCost = lstMonthlyLineItemCost.Where(a => a.Period == period).FirstOrDefault() == null ? 0 : lstMonthlyLineItemCost.Where(a => a.Period == period).FirstOrDefault().Cost;
+                            monthlyTotalLineItemCost = monthlyTotalLineItemCost + Convert.ToDouble(arrCostInputValues[i]);
+                            double monthlyTotalTacticCost = lstMonthlyTacticCost.Where(a => a.Period == period).FirstOrDefault() == null ? 0 : lstMonthlyTacticCost.Where(a => a.Period == period).FirstOrDefault().Value;
+                            if (monthlyTotalLineItemCost > monthlyTotalTacticCost)
+                            {
+                                lstMonthlyTacticCost.Where(a => a.Period == period).ToList().ForEach(a => { a.Value = monthlyTotalLineItemCost; db.Entry(a).State = EntityState.Modified; });
+
+                            }
+                        }
+                        QuarterCnt = QuarterCnt + 3;
+                    }
+                }
+
+
                 var objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == form.PlanTacticId);
+                ////update tactic cost as per its monthly total planned cost
+                objTactic.Cost = lstMonthlyTacticCost.Sum(a => a.Value);
+                db.SaveChanges();
+
+                ////End Added by Mitesh Vaishnav for PL ticket #752 - Update line item cost with the total cost from the monthly/quarterly allocation
                 int cid = objTactic.Plan_Campaign_Program.PlanCampaignId;
                 int pid = objTactic.PlanProgramId;
                 int tid = form.PlanTacticId;

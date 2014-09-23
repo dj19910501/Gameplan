@@ -2135,6 +2135,14 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             set { _IntegrationSelectionSaved = value; }
         }
         //End :Added by Mitesh for PL ticket #559
+        //Added by Mitesh for PL ticket #752
+        private string _CannotAllocateLessThanPlanned;
+        public string CannotAllocateLessThanPlanned
+        {
+            get { return _CannotAllocateLessThanPlanned; }
+            set { _CannotAllocateLessThanPlanned = value; }
+        }
+        //End :Added by Mitesh for PL ticket #752
         #endregion
 
         #region  Functions
@@ -2780,6 +2788,11 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             _DataLoseErrorMessage = strMsgValue;
                                             break;
                                         // End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
+                                        // Start - Added by Mitesh Vaishnav on 23/09/2014 for PL ticket #752.
+                                        case "CannotAllocateLessThanPlanned":
+                                            _CannotAllocateLessThanPlanned = strMsgValue;
+                                            break;
+                                        // End - Added by Mitesh Vaishnav on 23/09/2014 for PL ticket #752.
                                     }
                                 }
                                 i = i + 1;

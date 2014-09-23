@@ -771,4 +771,10 @@
 		<value>You have unsaved changes. Do you wish to leave this page and lose your work?</value>
 	</Field>
 	<!-- End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716 -->
+	<!-- Start - Added by Mitesh Vaishnav on 23/09/2014 for PL ticket #752 -->
+	<Field>
+		<Name>CannotAllocateLessThanPlanned</Name>
+		<value>You cannot allocate less than planned</value>
+	</Field>
+	<!-- End - Added by Mitesh Vaishnav on 23/09/2014 for PL ticket #752 -->
 </Messages>

@@ -646,6 +646,54 @@
         });
 
         function saveTactic() {
+            ////Start Added by Mitesh Vaishnav for PL ticket #752
+            var isLowBudgeted = false;
+            var errorMsgForLowBudget = "@RevenuePlanner.Helpers.Common.objCached.CannotAllocateLessThanPlanned for ";
+            var lowBudgetedMonths = "";
+            var removeLength = 0;
+            ////check that tactic monthly planned cost is equal or greater than Total monthly line item planned cost
+            $(".budget-section input.error-text").each(function () {
+                var currentValue = 0;
+                if ($(this).val() != '' && $(this).val() != 'undefined') {
+                    currentValue=parseFloat($(this).val());
+                }
+                if (currentValue < parseFloat($(this).attr('pmb'))) {
+                    
+                    isLowBudgeted = true;
+                    lowBudgetedMonths += $(this).parent().prev().html()+",";
+                    
+                }
+            });
+           
+            ////Creating error message 
+            var arrlowBudgetedMonths = lowBudgetedMonths.slice(0, -1).split(',');
+            for (var i = 0; i < arrlowBudgetedMonths.length; i++) {
+                if (arrlowBudgetedMonths.length == 1) {
+                    errorMsgForLowBudget += arrlowBudgetedMonths[i].toString();
+                }
+                else if (arrlowBudgetedMonths.length == 2) {
+                    errorMsgForLowBudget += (arrlowBudgetedMonths[i].toString() + ' and ');
+                    removeLength = 4;
+                }
+                else if (arrlowBudgetedMonths.length > 2) {
+                    if (i == arrlowBudgetedMonths.length - 2) {
+                        errorMsgForLowBudget += (arrlowBudgetedMonths[i].toString() + ' and ');
+                        removeLength = 4;
+                    }
+                    else {
+                        errorMsgForLowBudget += (arrlowBudgetedMonths[i].toString() + ', ');
+                        removeLength = 2;
+                    }
+                }
+            }
+            if (isLowBudgeted) {
+                errorMsgForLowBudget = errorMsgForLowBudget.substring(0, errorMsgForLowBudget.length - removeLength);
+                errorMsgForLowBudget += '.';
+                ShowBudgetError(errorMsgForLowBudget);
+                return false;
+            }
+            ////End Added by Mitesh Vaishnav for PL ticket #752
+
             var iserror = false;
             $('form').find('input[type=text], select, textarea').each(function () {
                 if ($(this).attr('require') == 'true') {
@@ -1032,30 +1080,30 @@
                     var RemainingBudgetValue = parseInt($(this).attr("rmb"));
                     var differenceVal = OldBudgetValue - parseInt(currentValue);
                     var newRemainingBudgetValue = RemainingBudgetValue + differenceVal;
+                    var isError = false;
                     $(this).attr("rmb", newRemainingBudgetValue);
                     $(this).attr("ov", currentValue);
                     if (newRemainingBudgetValue < 0) {
                         $(this).addClass('error-text');
                         $("#lblRemainingMonthlyBudget").addClass('error-text');
+                        isError = true;
                     }
                     else {
                         $(this).removeClass('error-text');
                         $("#lblRemainingMonthlyBudget").removeClass('error-text');
                     }
-
                     //Added By : Kalpesh Sharma :: Formatted the currency and minus sign in string  
                     $("#lblRemainingMonthlyBudget").html(FormatCommasBudget(newRemainingBudgetValue.toString(), false, true));
-
                     var ProgramBudgetValue = parseInt($(this).attr("pmb"));
                     if (parseInt(currentValue) < ProgramBudgetValue) {
-                        $(this).addClass('low-budgeted');
+                        $(this).addClass('low-budgeted error-text');
                         $("#lblAllocatedProgramsBudget").addClass('error-text');
                     }
-                    else {
+                    else if(!isError) {
                         $(this).removeClass('low-budgeted');
+                        $(this).removeClass('error-text');
                         $("#lblAllocatedProgramsBudget").removeClass('error-text');
                     }
-
                     var TotalallocationValue = 0;
                     var lstAllocInputs = $("#planned-Cost-Allocation input").not('.unallocated-text');
                     for (var i = 0; i < lstAllocInputs.length; i++) {
@@ -1164,6 +1212,9 @@
                             $('#planned-Cost-Allocation').find("#" + r[i].periodTitle).attr('pmb', r[i].programMonthlyBudget);
                             $('#planned-Cost-Allocation').find("#" + r[i].periodTitle).attr("myValue", $("#" + r[i].periodTitle).val()); // Added by Sohel Pathan on 18/08/2014 for Internal Review Points
                             if (parseInt(remainingMonthlyBudget) < 0) {
+                                $('#planned-Cost-Allocation').find("#" + r[i].periodTitle).addClass('error-text');
+                            }
+                            if (parseFloat($('#planned-Cost-Allocation').find("#" + r[i].periodTitle).attr('ov')) < parseFloat(r[i].programMonthlyBudget)) {
                                 $('#planned-Cost-Allocation').find("#" + r[i].periodTitle).addClass('error-text');
                             }
                         }
