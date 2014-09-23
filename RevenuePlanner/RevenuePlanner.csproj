@@ -840,7 +840,7 @@
     <Content Include="Views\ExternalService\_Responses.cshtml" />
     <Content Include="Views\Report\Budget.cshtml" />
     <Content Include="Views\Report\_Budget.cshtml" />
-    <Content Include="Views\Login\App_offline.cshtml" />
+    <Content Include="Views\Login\MaintenanceSite.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

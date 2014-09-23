@@ -75,8 +75,7 @@ namespace RevenuePlanner.Controllers
             //// Start - Added by :- Pratik Chauhan on 22/09/2014 for PL ticket #468 to display maintenance page
             if (Common.IsOffline)
             {
-                ViewBag.LastUpdated = System.IO.File.GetLastWriteTime(Server.MapPath("~/Web.Config").Replace(@"\", "/")).ToString("hh:mm tt, MM/dd/yyyy");
-                return View("App_offline");
+                return View("MaintenanceSite");
             }
             else
             {
@@ -960,5 +959,25 @@ namespace RevenuePlanner.Controllers
         }
 
         #endregion
+
+        #region "Site Maintenance"
+
+        /// <summary>
+        /// Set site maintenance view.
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult MaintenanceSite()
+        {
+            if (Common.IsOffline)
+            {
+                return View("MaintenanceSite");
+            }
+            else
+            {
+                return View("Index");
+            }
+        }
+
+        #endregion  
     }
 }

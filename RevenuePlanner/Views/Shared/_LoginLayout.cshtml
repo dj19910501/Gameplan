@@ -97,19 +97,21 @@
                 <div class="login-wrapper">
                     @RenderBody()
 
-                    @* Start - Added by :- Pratik Chauhan on 22/09/2014 for PL ticket #468 to display maintenance page *@
-                    @if (!@Common.IsOffline)
-                    {
-                        <div class="icon-info-support conv_helveticaltstd-light">
+                    <div class="icon-info-support conv_helveticaltstd-light">
 
-                            <a href="#" id="ContactSupport">
-                                <div class="support-icon"></div>
-                                Contact Support</a><br />
-                            @Sessions.ApplicationName @Html.Raw("Release [")@ViewBag.ApplicationReleaseVersion@Html.Raw("]")    @* Modified by :- Sohel Pathan on 22/05/2014 for PL #469 to display release version from database *@
-                        </div>
-                    }
+                        <a href="#" id="ContactSupport">
+                            <div class="support-icon"></div>
+                            Contact Support</a>
+                        @* Start - Added by :- Pratik Chauhan on 22/09/2014 for PL ticket #468 to display maintenance page *@
+                        @if (!@Common.IsOffline)
+                        {
 
-                    @* Start - Added by :- Pratik Chauhan on 22/09/2014 for PL ticket #468 to display maintenance page *@
+                            <br />
+                             @Sessions.ApplicationName @Html.Raw("Release [")@ViewBag.ApplicationReleaseVersion@Html.Raw("]")    @* Modified by :- Sohel Pathan on 22/05/2014 for PL #469 to display release version from database *@
+                        
+                        }
+                    </div>
+                    @* End - Added by :- Pratik Chauhan on 22/09/2014 for PL ticket #468 to display maintenance page *@
                 </div>
             </div>
         </div>
