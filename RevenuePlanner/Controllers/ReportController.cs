@@ -3065,7 +3065,7 @@ namespace RevenuePlanner.Controllers
             string published = Enums.PlanStatus.Published.ToString();
             List<SelectListItem> lstYear = new List<SelectListItem>();
             var lstPlan = db.Plans.Where(p => p.IsDeleted == false && p.Status == published).ToList();
-            var yearlist = lstPlan.Select(p => p.Year).Distinct().ToList();
+            var yearlist = lstPlan.OrderBy(p => p.Year).Select(p => p.Year).Distinct().ToList();
             yearlist.ForEach(year => lstYear.Add(new SelectListItem { Text = "FY " + year, Value = year }));
             
 
@@ -3092,9 +3092,11 @@ namespace RevenuePlanner.Controllers
         public JsonResult GetBudgetPlanBasedOnYear(string Year)
         {
             string published = Enums.PlanStatus.Published.ToString();
+            string defaultallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString();
+            string Noneallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString();
             var planList = db.Plans.Where(p => p.Year == Year && p.IsDeleted == false && p.Status == published).ToList().Select(p => new
             {
-                Text = p.Title,
+                Text = p.Title + " - " + (p.AllocatedBy == defaultallocatedby ? Noneallocatedby : p.AllocatedBy),
                 Value = p.PlanId.ToString()
             }).ToList();
 
@@ -3168,6 +3170,8 @@ namespace RevenuePlanner.Controllers
             List<Guid> BusinessUnitIdsInner = tacticList.Select(tactic => tactic.BusinessUnitId).Distinct().ToList();
             List<int> VerticalIdsInner = tacticList.Select(tactic => tactic.VerticalId).Distinct().ToList();
             List<Guid> GeographyIdsInner = tacticList.Select(tactic => tactic.GeographyId).Distinct().ToList();
+
+            List<string> AfterApprovedStatus = Common.GetStatusListAfterApproved();
 
             List<BudgetedValue> EmptyBudgetList = new List<BudgetedValue>();
             EmptyBudgetList = GetEmptyList();
@@ -3254,7 +3258,7 @@ namespace RevenuePlanner.Controllers
                                     obj.ParentActivityId = parentProgramId;
                                     obj.TabActivityId = p.PlanId.ToString();
                                     obj = GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Planned.ToString());
-                                    obj = GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Actual.Where(b => b.StageTitle == "Cost").Select(b => new BudgetedValue { Period = b.Period, Value = b.Actualvalue }).ToList(), ReportColumnType.Actual.ToString());
+                                    obj = AfterApprovedStatus.Contains(t.Status) ? GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Actual.Where(b => b.StageTitle == "Cost").Select(b => new BudgetedValue { Period = b.Period, Value = b.Actualvalue }).ToList(), ReportColumnType.Actual.ToString()) : GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
                                     obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Allocated.ToString());
                                     model.Add(obj);
                                     parentTacticId = "cpt_" + t.PlanTacticId.ToString();
@@ -3270,7 +3274,7 @@ namespace RevenuePlanner.Controllers
                                         obj.ParentActivityId = parentTacticId;
                                         obj.TabActivityId = p.PlanId.ToString();
                                         obj = GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Planned.ToString());
-                                        obj = GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Actual.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Actual.ToString());
+                                        obj = AfterApprovedStatus.Contains(t.Status) ? GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Actual.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Actual.ToString()) : GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
                                         obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Allocated.ToString());
                                         model.Add(obj);
                                     }
@@ -3383,7 +3387,7 @@ namespace RevenuePlanner.Controllers
                                     obj.ParentActivityId = parentProgramId;
                                     obj.TabActivityId = p.Id.ToString();
                                     obj = GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Planned.ToString());
-                                    obj = GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Actual.Where(b => b.StageTitle == "Cost").Select(b => new BudgetedValue { Period = b.Period, Value = b.Actualvalue }).ToList(), ReportColumnType.Actual.ToString());
+                                    obj = AfterApprovedStatus.Contains(t.Status) ? GetMonthWiseDataReport(obj, t.Plan_Campaign_Program_Tactic_Actual.Where(b => b.StageTitle == "Cost").Select(b => new BudgetedValue { Period = b.Period, Value = b.Actualvalue }).ToList(), ReportColumnType.Actual.ToString()) : GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
                                     obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Allocated.ToString());
                                     model.Add(obj);
                                     parentTacticId = "cpt_" + p.Id + t.PlanTacticId.ToString();
@@ -3399,7 +3403,7 @@ namespace RevenuePlanner.Controllers
                                         obj.ParentActivityId = parentTacticId;
                                         obj.TabActivityId = p.Id.ToString();
                                         obj = GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Cost.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Planned.ToString());
-                                        obj = GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Actual.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Actual.ToString());
+                                        obj = AfterApprovedStatus.Contains(t.Status) ? GetMonthWiseDataReport(obj, l.Plan_Campaign_Program_Tactic_LineItem_Actual.Select(b => new BudgetedValue { Period = b.Period, Value = b.Value }).ToList(), ReportColumnType.Actual.ToString()) : GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Actual.ToString());
                                         obj = GetMonthWiseDataReport(obj, EmptyBudgetList, ReportColumnType.Allocated.ToString());
                                         model.Add(obj);
                                     }

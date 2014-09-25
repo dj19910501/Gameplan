@@ -45,7 +45,7 @@
         @*To resolve Bug 312: Report plan selector needs to be moved*@
 
         <div class="wraper-btns cf">
-            <div class="span6">
+            <div class="span6" id="divAddActual">
                 @if ((bool)ViewBag.TacticActualsAddEdit) // Added by Sohel Pathan on 27/06/2014 for PL ticket #537 to implement user permission Logic
                 {
                     <button id="BtnAddActual" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("AddActual", "Home")'">Add Actuals</button>    
@@ -341,6 +341,7 @@
         function LoadSummary() {
             $('#UlPlanHeader').css('display', 'block');
             $('#formSideFilter').css('display', 'block');
+            $("#divAddActual").css("display", "block");
             $('#divMainReportPart').empty();
             //  $('#BtnAddActual').enabled = true;
             $('#reportHeader').css('display', 'none');
@@ -441,6 +442,7 @@
         function LoadRevenueData() {
             $('#UlPlanHeader').css('display', 'block');
             $('#formSideFilter').css('display', 'block');
+            $("#divAddActual").css("display", "block");
             $('#divMainReportPart').empty();
 
             var url = '@Url.Content("~/Report/GetRevenueData/")';
@@ -453,6 +455,7 @@
         function LoadConversionData() {
             $('#UlPlanHeader').css('display', 'block');
             $('#formSideFilter').css('display', 'block');
+            $("#divAddActual").css("display", "block");
             $('#divMainReportPart').empty();
             var url = '@Url.Content("~/Report/GetConversionData/")';
             $('#divMainReportPart').load(url + '?BusinessUnitId=' + SelectedBUId + '&PlanId=' + SelectedPlanId + '&timeFrameOption=' + OptionMain, function () {

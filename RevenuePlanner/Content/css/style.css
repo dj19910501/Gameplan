@@ -8137,7 +8137,7 @@ footer a {
 .budgetReportFilter-area{border-bottom:1px solid #e6e6e6; margin:0 20px 35px; padding:15px 0; position:relative;}
 .budgetReportFilter-area-left{padding-right:15px; margin-right:15px; border-right:1px solid #e6e6e6; width:85%; float:left;}
 .filter-detail{width:100%; margin-top:6px;}
-.filter-detail{float:left; display:inline-block; padding:5px 13px 5px 0;}
+.filter-detail{float:left; display:inline-block; padding:0px 13px 5px 0;}
 .filter-detail label, .filter-detail > div{ color:#808080; font-size:13px; display:inline;}
 .filter-detail label{padding-right:3px; margin-bottom:0; color:#000; padding-left:12px; margin-left:9px; border-left:1px solid #808080;}
 .filter-detail label:first-child{border-left:none; margin-left:0; padding-left:0;}
@@ -8423,4 +8423,17 @@ li.close-list{background-color:#cccccc !important;}
 
 .gantt_grid .gantt_row.gantt_selected, .gantt_grid_data .gantt_row.odd.gantt_selected {
     background-color: #fff3a1 !important;
+}  	  
+/* Added By Bhavesh :Budget Report*/
+.ActiveFilter
+{
+    color:#000; 
+    font-size:17px; 
+}
+
+.NoDataFound
+{
+    border-top: 1px solid #808080;
+    padding-top: 10px;
+    font-size: 15px;
 }

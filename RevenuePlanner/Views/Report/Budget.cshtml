@@ -46,6 +46,9 @@
 
             </div>
             <!--End modified by Mitesh Vaishnav for PL ticket #727 - Added "noneselectedvalue" attribute to dropdownlist.-->
+            <div class="ActiveFilter">
+                Active Filters
+            </div>
             <div class="filter-detail">
                     <label>Year:</label>
                     <div class="details" id="yeardetail"></div>
@@ -126,6 +129,12 @@
         $("#ddlViewAudience").next().attr('title', '@AudienceLabelTitle');
 
         $(".sbSelector").css("color", "#6D6D6D");
+        $(".sbToggle").css("border-top-color", "#6D6D6D");
+        $(".sbSelector").click(function () {
+            $(".ui-multiselect-menu").each(function () {
+                $(this).css("display","none");
+            });
+        });
 
         var multiselectPlanId = "ddlPlan";
         var filterPlanid = "#plandetail";
@@ -282,8 +291,10 @@
 
         function GetFilterIdForPlan(multiselectId) {
             var finalValue = "";
+            var isShowAddActual = 0;
             $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
                 if (this.checked) {
+                    isShowAddActual++;
                     var splitvalue = $(this).val().split("_");
                     finalValue += splitvalue[0] + ",";
                 }
@@ -293,6 +304,13 @@
             if (finalValue == '') {
                 finalValue = '';
             }
+            if (isShowAddActual == 1) {
+                $("#divAddActual").css("display", "block");
+            }
+            else {
+                $("#divAddActual").css("display", "none");
+            }
+
             return finalValue;
 
         }
@@ -364,10 +382,11 @@
 
             //start Added by Mitesh Vaishnav for PL ticket #727
             //update multiselect box as its related dropdownlist's option will be changed
-            var updatedOption = $("#ddlPlan").find('option');
-            $('#ddlPlan').multiselect("refresh", updatedOption);
+           // var updatedOption = $("#ddlPlan").find('option');
+           
             //End Added by Mitesh Vaishnav for PL ticket #727
             $("#multipleselect_ddlPlan").find("input[type='search']").val('');
+            $('#ddlPlan').multiselect("refresh");
             LoadCheckBoxValueForPlan(multiselectPlanId, filterPlanid);
             LoadMultiselectFilterPlan(multiselectPlanId, filterPlanid);
             
