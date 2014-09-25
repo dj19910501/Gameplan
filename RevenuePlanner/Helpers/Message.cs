@@ -2143,6 +2143,16 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             set { _CannotAllocateLessThanPlanned = value; }
         }
         //End :Added by Mitesh for PL ticket #752
+
+       //Added by Pratik for PL ticket #754
+        private string _StagesConfigurationMissMatch;
+        public string StagesConfigurationMissMatch
+        {
+            get { return _StagesConfigurationMissMatch; }
+            set { _StagesConfigurationMissMatch = value; }
+        }
+        //End - Added by Pratik for PL ticket #754
+
         #endregion
 
         #region  Functions
@@ -2793,6 +2803,11 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             _CannotAllocateLessThanPlanned = strMsgValue;
                                             break;
                                         // End - Added by Mitesh Vaishnav on 23/09/2014 for PL ticket #752.
+										// Start - Added by Pratik on 24/09/2014 for PL ticket #754.
+                                        case "StagesConfigurationMissMatch":
+                                            _StagesConfigurationMissMatch = strMsgValue;
+                                            break;
+                                        // End - Added by Pratik on 24/09/2014 for PL ticket #754.
                                     }
                                 }
                                 i = i + 1;

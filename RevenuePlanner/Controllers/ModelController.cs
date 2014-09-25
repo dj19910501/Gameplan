@@ -667,21 +667,32 @@ namespace RevenuePlanner.Controllers
         /// <summary>
         /// Created By : Sohel Pathan
         /// Created Date : 08/09/2014
-        /// Description : To check when Stage is selected from BenchMark then for logged in client stages are exists?
-        /// if exists then check is there any target stage?
+        /// Description : To check weather for logged in user client stage(s) and corresponding target stage(s) are exists.
         /// </summary>
         /// <returns>Error Message for Target Stage Benchmark in Json Format</returns>
         public JsonResult CheckTargetStageBenchMark()
         {
+            //// Check Benchmark file exists at specified path or not
             if (System.IO.File.Exists(Common.xmlBenchmarkFilePath))
             {
+                //// created xml doc object
                 XmlDocument xmlDoc = new XmlDocument();
+
+                //// load Benchmark file into xml doc object
                 xmlDoc.Load(Common.xmlBenchmarkFilePath);
+
+                //// load object of BDSServiceClient
                 BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
-                List<Client> objlcient = objBDSUserRepository.GetClientList();
-                string clientcode = objlcient.Where(c => c.ClientId == Sessions.User.ClientId).Select(c => c.Code).FirstOrDefault();
+
+                //// get Client code from logged in client id.
+                string clientcode = objBDSUserRepository.GetClientById(Sessions.User.ClientId).Code;
                 bool stageExistsForClient = false;
                 bool anyTargetStageExists = false;
+
+                Stage stage = new Stage();
+                List<Stage> stageList = db.Stages.Where(c => c.IsDeleted == false && c.ClientId == Sessions.User.ClientId).ToList();
+
+                //// parse xml doc file and check stage and its corresponding target stage is exist. Based on parsing set the flags for stage and stage target.
                 foreach (XmlNode _class in xmlDoc.SelectNodes(@"/Model/ModelInput"))
                 {
                     foreach (XmlElement element1 in _class.SelectNodes(@"ClientCode"))
@@ -690,30 +701,56 @@ namespace RevenuePlanner.Controllers
                         {
                             if (element1.Attributes["value"].Value.Equals(clientcode) == true)
                             {
-                                foreach (XmlElement element in element1.SelectNodes(@"stage"))
+                                if (element1.SelectNodes(@"stage").Count == stageList.Count)
                                 {
-                                    if (element.HasAttribute("targetstage"))
+                                    foreach (XmlElement element in element1.SelectNodes(@"stage"))
                                     {
-                                        if (element.Attributes["targetstage"].Value.Equals("true"))
+                                        if (stageList.Exists(x => x.Code == element.Attributes["code"].Value))
                                         {
-                                            anyTargetStageExists = true;
+                                            if (element.HasAttribute("targetstage"))
+                                            {
+                                                if (element.Attributes["targetstage"].Value.Equals("true"))
+                                                {
+                                                    anyTargetStageExists = true;
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            //// when database stages and xml stages for client code doesn't matches.
+                                            return Json(new { errorMessage = Common.objCached.StagesConfigurationMissMatch }, JsonRequestBehavior.AllowGet);
                                         }
                                     }
                                 }
+                                else
+                                {
+                                    //// when database stages and xml stages for client doesn't matches.
+                                    return Json(new { errorMessage = Common.objCached.StagesConfigurationMissMatch }, JsonRequestBehavior.AllowGet);
+                                }
+
                                 stageExistsForClient = true;
                             }
                         }
                     }
                 }
+
                 if (!stageExistsForClient)
                 {
+                    //// check stage exist for client or not and return error message for the same
                     return Json(new { errorMessage = Common.objCached.StageNotDefined }, JsonRequestBehavior.AllowGet);
                 }
                 else if (!anyTargetStageExists)
                 {
+                    //// check target stage exist for client or not and return error message for the same
                     return Json(new { errorMessage = Common.objCached.StageNotExist }, JsonRequestBehavior.AllowGet);
                 }
             }
+            else
+            {
+                //// if Benchmark xml file doesn't exist at specified path then return error message for the same
+                return Json(new { errorMessage = Common.objCached.StageNotDefined }, JsonRequestBehavior.AllowGet);
+            }
+
             return Json(new { errorMessage = string.Empty }, JsonRequestBehavior.AllowGet);
         }
 
@@ -733,8 +770,7 @@ namespace RevenuePlanner.Controllers
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.Load(Common.xmlBenchmarkFilePath);
                 BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
-                List<Client> objlcient = objBDSUserRepository.GetClientList();
-                string clientcode = objlcient.Where(c => c.ClientId == Sessions.User.ClientId).Select(c => c.Code).FirstOrDefault();
+                string clientcode = objBDSUserRepository.GetClientById(Sessions.User.ClientId).Code;
                 bool clientflag = false;
                 foreach (XmlNode _class in xmlDoc.SelectNodes(@"/Model/ModelInput"))
                 {

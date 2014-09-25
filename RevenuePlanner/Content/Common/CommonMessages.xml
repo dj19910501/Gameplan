@@ -307,7 +307,7 @@
 	</Field>
 	<Field>
 		<Name>StageNotExist</Name>
-		<value>No stage is defined as targeted stage in Model, please define at least one stage as targeted stage in model input screen.</value>
+		<value>Please set at least one target stage under "Conversion Rates-Advanced", for "Conversion Rates-Benchmarked" please contact system administrator.</value>
 	</Field>
 	<!--For forgot Password functionality Added by Dharmraj Mangukiya on 26-March-2014-->
 	<Field>
@@ -777,4 +777,10 @@
 		<value>You cannot allocate less than planned</value>
 	</Field>
 	<!-- End - Added by Mitesh Vaishnav on 23/09/2014 for PL ticket #752 -->
+	<!-- Start - Added by Pratik on 24/09/2014 for PL ticket #754 -->
+  <Field>
+    <Name>StagesConfigurationMissMatch</Name>
+    <value>Stages configured for your organization doesn't match with those defined as benchmark stages. Please contact system administrator.</value>
+  </Field>
+  <!-- End - Added by Pratik on 24/09/2014 for PL ticket #754 -->
 </Messages>
