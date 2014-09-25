@@ -49,7 +49,26 @@
 <script type="text/javascript">
     SetBudget("#pbudget");
     SetPriceValue("#pMQLs");
-    $(document).on("click", "#DivBulldollerbg", function (e) {
-        window.location.href = '@Url.Action("Budgeting", "Plan")';
-    });
+    debugger;
+
+    if (typeof filters != "undefined") {
+        var SelectedPlansCount = filters.SelectedPlans.length;
+        if (SelectedPlansCount > 1) {
+            $('#DivBulldollerbg').click(function () { return false; });
+        }
+        else {
+            $(document).on("click", "#DivBulldollerbg", function (e) {
+                window.location.href = '@Url.Action("Budgeting", "Plan")';
+                });
+        }
+    }
+    else {
+        $(document).on("click", "#DivBulldollerbg", function (e) {
+            window.location.href = '@Url.Action("Budgeting", "Plan")';
+            });
+    }
+
+    
+
+
 </script>

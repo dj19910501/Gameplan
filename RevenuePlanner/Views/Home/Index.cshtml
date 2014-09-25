@@ -1437,7 +1437,6 @@
     //// Function to make ajax request.
     function AjaxRequest() {
 
-        //Kalpesh 888
         var Planid = filters.SelectedPlans;
         var BUId = filters.BUId;
         var GeoId = filters.geographyIds;
@@ -1476,7 +1475,7 @@
                       var isDataExistForTacticTable = false;
 
                       // To hide/show current plan edit button based on user plan edit permission
-                      if (CurrentPlanId > 0) {
+                      if (CurrentPlanId > 0 && GetSelectedPlanNo == 1) {
                           GetCurrentPlanPermissionDetail();
                       }
 
