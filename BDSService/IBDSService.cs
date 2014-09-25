@@ -23,6 +23,9 @@ namespace BDSService
         [OperationContract]
         List<BDSEntities.Client> GetClientList();
 
+        [OperationContract]
+        BDSEntities.Client GetClientById(Guid clientId);
+
         //Modified By : Kalpesh Sharma
         //Role logical deletion and Application id in Custom restrication
         //Changes : Currenlty we are not use this method that's why we are commnet it .

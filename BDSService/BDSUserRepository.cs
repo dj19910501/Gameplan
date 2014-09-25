@@ -150,6 +150,37 @@ namespace BDSService
             return clientList;
         }
 
+        /// <summary>
+        /// Function to get client by  client Id.
+        /// </summary>
+        /// <returns>Returns client object.</returns>
+        public BDSEntities.Client GetClientById(Guid Id)
+        {
+            BDSEntities.Client clientObj = new BDSEntities.Client();
+
+            Client client = db.Clients.Single(c => c.IsDeleted == false && c.ClientId == Id);
+            if (client != null)
+            {
+                clientObj.Address1 = client.Address1;
+                clientObj.Address2 = client.Address2;
+                clientObj.City = client.City;
+                clientObj.ClientId = client.ClientId;
+                clientObj.Code = client.Code;
+                clientObj.Country = client.Country;
+                clientObj.IsDeleted = client.IsDeleted;
+                clientObj.Logo = Convert.ToString(client.Logo);
+                clientObj.Name = client.Name;
+                clientObj.State = client.State;
+                clientObj.ZipCode = client.ZipCode;
+                clientObj.CreatedBy = client.CreatedBy;
+                clientObj.CreatedDate = client.CreatedDate;
+                clientObj.ModifiedBy = client.ModifiedBy;
+                clientObj.ModifiedDate = client.ModifiedDate;
+            }
+
+            return clientObj;
+        }
+
         #endregion
 
         #region Get Role List

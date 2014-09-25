@@ -35,6 +35,12 @@ namespace BDSService
             return obj.GetClientList();
         }
 
+        public BDSEntities.Client GetClientById(Guid clientId)
+        {
+            BDSUserRepository obj = new BDSUserRepository();
+            return obj.GetClientById(clientId);
+        }
+
         //Modified By : Kalpesh Sharma
         //Role logical deletion and Application id in Custom restrication
         //Changes : Currenlty we are not use this method that's why we are commnet it . 
