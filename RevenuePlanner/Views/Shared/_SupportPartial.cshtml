@@ -97,7 +97,8 @@
 
     $(function () {
 
-        $("#errorMessageContactSupportPopup").find(".close").on("click", function (e) {
+        //modified by Mitesh Vaishnav for closing success popup
+        $("#errorMessageContactSupportPopup , #SuccessMessageContactSupportPopup").find(".close").on("click", function (e) {
             SetHeight("#DivContactSupportPopup", 60, false);
             e.stopPropagation();
             e.preventDefault();
@@ -200,9 +201,7 @@
                                 var msgspan = "Contact support request submitted successfully";
                                 $("#spanSuccessMessageContactSupportPopup").text(msgspan);
                                 $("#SuccessMessageContactSupportPopup").css("display", "block");
-                                $("#SuccessMessageContactSupportPopup").slideUp(5500).promise().always(function () {
-                                    close_popup();
-                                });
+                               
     
                             }
                             else {

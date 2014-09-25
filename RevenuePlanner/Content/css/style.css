@@ -62,12 +62,15 @@ body.gradient {
     background: url("../images/gradient-body.jpg") repeat-x #fff;
 }
 
+/* Edited by Kapil - Header V2.2 - #637 */
 #header {
-    background: none repeat scroll 0 0 #2384B8;/*changed - added by uday #559*/
-    border-bottom: 4px solid #144D6B;/*changed - added by uday #559*/
-    height: 78px;/*changed - added by uday #559*/
+     background:none #2384b8;
+     height: 78px; 
     position: relative;
-    z-index: 1500; /*min-width: 1200px;*/
+     z-index: 1500; 
+     /*min-width: 1200px;*/
+     border-bottom: 1px solid #144d6b;
+
 }
 
 /* added by kapil - #139 - to resolve popup issue */
@@ -394,17 +397,11 @@ body {
         list-style: none;
         margin-bottom: 0;
     }
-
-        .main-nav ul li a {
-            width: 58px;
-            height: 58px;
-            padding-top: 20px;
-            display: block;
-            float: left;
-            color: #1a415c;
-            border-right: 1px solid #23567b;
-        }
-
+    /* Edited by Kapil - Header V2.2 - #637 */
+    .main-nav ul li{float:left; border-right: 1px solid #23567b;}
+        .main-nav ul li a{width:58px; height: 58px; padding-top: 20px; display: block; float: left; color:#1a415c; border-right: 1px solid #40acdb;}
+        .main-nav ul li.active a{border-right:none;}
+        /* Edited by Kapil - Header V2.2 - #637 */
         .main-nav ul li:first-child a {
             border-left: 1px solid #23567b;
         }
