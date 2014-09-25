@@ -988,6 +988,35 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
+        #region Get Multiple plans data
+        /// <summary>
+        /// Added By : Sohel Pathan
+        /// Added Date : 22/09/2014
+        /// Description : Get plan/home header data for multiple plans
+        /// </summary>
+        /// <param name="strPlanIds">Comma separated list of plan ids</param>
+        /// <returns>returns Json object with values required to show in plan/home header</returns>
+        public JsonResult GetPlanByMultiplePlanIDs(string strPlanIds)
+        {
+            strPlanIds = System.Web.HttpUtility.UrlDecode(strPlanIds);
+            List<int> planIds = string.IsNullOrWhiteSpace(strPlanIds) ? new List<int>() : strPlanIds.Split(',').Select(p => int.Parse(p)).ToList();
+
+
+            try
+            {
+                return Json(new
+                {
+                    lstHomePlanModelHeader = Common.GetPlanHeaderValueForMultiplePlans(planIds),
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            return Json(new { }, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
         #region "Apply To Calendar"
 
         /// <summary>

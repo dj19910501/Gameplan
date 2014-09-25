@@ -1528,6 +1528,120 @@ namespace RevenuePlanner.Helpers
 
         #endregion
 
+        #region Plan Header for Multiple Plans
+        /// <summary>
+        /// Added By : Sohel Pathan
+        /// Added Date : 22/09/2014
+        /// Description : Prepare plan header section for multiple plans
+        /// </summary>
+        /// <param name="planIds">list plan ids</param>
+        /// <returns></returns>
+        public static HomePlanModelHeader GetPlanHeaderValueForMultiplePlans(List<int> planIds)
+        {
+            HomePlanModelHeader newHomePlanModelHeader = new HomePlanModelHeader();
+            MRPEntities db = new MRPEntities();
+            List<string> tacticStatus = GetStatusListAfterApproved();
+
+            double TotalMQLs = 0, TotalBudget = 0, TotalPercentageMQLImproved = 0;
+            int TotalTacticCount = 0;
+
+            var planList = db.Plans.Where(p => planIds.Contains(p.PlanId) && p.IsDeleted == false && p.IsActive == true).Select(m => m).ToList();
+            if (planList != null && planList.Count > 0)
+            {
+                List<Plan_Campaign_Program_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && tacticStatus.Contains(t.Status) && planIds.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId)).ToList();
+                var improvementTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(imp => planIds.Contains(imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId) && imp.IsDeleted == false).ToList();
+
+                foreach (var plan in planList)
+                {
+                    HomePlanModelHeader objHomePlanModelHeader = new HomePlanModelHeader();
+
+                    List<Plan_Campaign_Program_Tactic> planTacticIds = planTacticsList.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId == plan.PlanId).ToList();
+
+                    if (plan.Status == Enums.PlanStatusValues[Enums.PlanStatus.Draft.ToString()].ToString())
+                    {
+                        if (plan.GoalType.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower())
+                        {
+                            objHomePlanModelHeader.MQLs = plan.GoalValue;
+                        }
+                        else
+                        {
+                            // Get ADS value
+                            string marketing = Enums.Funnel.Marketing.ToString();
+                            double ADSValue = db.Model_Funnel.Single(mf => mf.ModelId == plan.ModelId && mf.Funnel.Title == marketing).AverageDealSize;
+
+                            objHomePlanModelHeader.MQLs = Common.CalculateMQLOnly(plan.ModelId, plan.GoalType, plan.GoalValue.ToString(), ADSValue);
+                        }
+
+                        string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
+                        if (string.IsNullOrEmpty(MQLStageLabel))
+                        {
+                            newHomePlanModelHeader.mqlLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.ProjectedMQLLabel.ToString()].ToString();
+                        }
+                        else
+                        {
+                            newHomePlanModelHeader.mqlLabel = "Projected " + MQLStageLabel;
+                        }
+                        objHomePlanModelHeader.Budget = plan.Budget;
+                        newHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Budget.ToString()].ToString();
+                    }
+                    else
+                    {
+                        objHomePlanModelHeader.MQLs = GetTacticStageRelation(planTacticIds, false).Sum(t => t.MQLValue);
+                        string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
+                        if (string.IsNullOrEmpty(MQLStageLabel))
+                        {
+                            newHomePlanModelHeader.mqlLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.MQLLabel.ToString()].ToString();
+                        }
+                        else
+                        {
+                            newHomePlanModelHeader.mqlLabel = MQLStageLabel;
+                        }
+                        if (planTacticIds.Count() > 0)
+                        {
+                            var tacticIds = planTacticIds.Select(t => t.PlanTacticId).ToList();
+                            objHomePlanModelHeader.Budget = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => tacticIds.Contains(l.PlanTacticId) && l.IsDeleted == false).ToList().Sum(l => l.Cost);
+                        }
+                        newHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Cost.ToString()].ToString();
+                    }
+
+                    var impList = improvementTacticList.Where(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == plan.PlanId).ToList();
+                    if (impList.Count > 0)
+                    {
+                        //// Getting improved MQL.
+                        double? improvedMQL = GetTacticStageRelation(planTacticIds, true).Sum(t => t.MQLValue);
+
+                        //// Calculating percentage increase.
+                        if (improvedMQL.HasValue && objHomePlanModelHeader.MQLs != 0)
+                        {
+                            objHomePlanModelHeader.PercentageMQLImproved = ((improvedMQL - objHomePlanModelHeader.MQLs) / objHomePlanModelHeader.MQLs) * 100;
+                            objHomePlanModelHeader.MQLs = Convert.ToDouble(improvedMQL);
+                        }
+                    }
+
+                    if (planTacticIds != null)
+                    {
+                        objHomePlanModelHeader.TacticCount = planTacticIds.Count();
+                    }
+
+                    TotalMQLs += objHomePlanModelHeader.MQLs;
+                    TotalBudget += objHomePlanModelHeader.Budget;
+                    TotalTacticCount += objHomePlanModelHeader.TacticCount;
+                    if (objHomePlanModelHeader.PercentageMQLImproved.HasValue)
+                    {
+                        TotalPercentageMQLImproved += objHomePlanModelHeader.PercentageMQLImproved.Value;
+                    }
+                }
+            }
+
+            newHomePlanModelHeader.MQLs = TotalMQLs;
+            newHomePlanModelHeader.Budget = TotalBudget;
+            newHomePlanModelHeader.TacticCount = TotalTacticCount;
+            newHomePlanModelHeader.PercentageMQLImproved = TotalPercentageMQLImproved;
+
+            return newHomePlanModelHeader;
+        }
+        #endregion
+
         #region DefaultRedirecr
 
         public static MVCUrl DefaultRedirectURL(Enums.ActiveMenu from)
@@ -1753,13 +1867,13 @@ namespace RevenuePlanner.Helpers
         /// <param name="calendarEndDate">Calendar end date.</param>
         /// <param name="isApplyTocalendar">Flag to indicate whether it is called from apply to calendar.</param>
         /// <returns>Returns task data after appending improvement task data.</returns>
-        public static List<object> AppendImprovementTaskData(List<object> taskData, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics, DateTime calendarStartDate, DateTime calendarEndDate, bool isApplyTocalendar)
+        public static List<object> AppendImprovementTaskData(List<object> taskData, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics, DateTime calendarStartDate, DateTime calendarEndDate, bool isApplyTocalendar, bool IsPlanTabContainer = false)
         {
-            var improvementTacticTaskData = GetImprovementTacticTaskData(improvementTactics, calendarStartDate, calendarEndDate, isApplyTocalendar);
+            var improvementTacticTaskData = GetImprovementTacticTaskData(improvementTactics, calendarStartDate, calendarEndDate, isApplyTocalendar, IsPlanTabContainer);
             if (improvementTacticTaskData.Count() > 0)
             {
                 taskData = improvementTacticTaskData.Concat<object>(taskData).ToList<object>();
-                var improvementActivityTaskData = GetImprovementActivityTaskData(improvementTactics, calendarStartDate, calendarEndDate, isApplyTocalendar);
+                var improvementActivityTaskData = GetImprovementActivityTaskData(improvementTactics, calendarStartDate, calendarEndDate, isApplyTocalendar, IsPlanTabContainer);
                 taskData.Insert(0, improvementActivityTaskData);
             }
 
@@ -1774,7 +1888,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="calendarEndDate">Calendar end date.</param>
         /// <param name="isApplyTocalendar">Flag to indicate whether it is called from apply to calendar.</param>
         /// <returns>Return list of object containing improvement tactic task data.</returns>
-        private static List<object> GetImprovementTacticTaskData(List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics, DateTime calendarStartDate, DateTime calendarEndDate, bool isApplyTocalendar)
+        private static List<object> GetImprovementTacticTaskData(List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics, DateTime calendarStartDate, DateTime calendarEndDate, bool isApplyTocalendar, bool IsPlanTabContainer = false)
         {
             //// Modified By: Maninder Singh Wadhva to address Ticket 395
             MRPEntities db = new MRPEntities();
@@ -1792,7 +1906,7 @@ namespace RevenuePlanner.Helpers
             //// Modified By Maninder Singh Wadhva PL Ticket#47, 337
             var taskDataImprovementTactic = improvementTactics.Select(improvementTactic => new
             {
-                id = string.Format("M{0}_I{1}_Y{2}", improvementPlanCampaignId, improvementTactic.ImprovementPlanTacticId, improvementTactic.ImprovementTacticTypeId),
+                id = IsPlanTabContainer ? string.Format("PL{0}_M{1}_I{2}_Y{3}", improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, improvementPlanCampaignId, improvementTactic.ImprovementPlanTacticId, improvementTactic.ImprovementTacticTypeId) : string.Format("M{0}_I{1}_Y{2}", improvementPlanCampaignId, improvementTactic.ImprovementPlanTacticId, improvementTactic.ImprovementTacticTypeId),
                 text = improvementTactic.Title,
                 start_date = Common.GetStartDateAsPerCalendar(calendarStartDate, improvementTactic.EffectiveDate),
                 duration = Common.GetEndDateAsPerCalendar(calendarStartDate,
@@ -1801,7 +1915,7 @@ namespace RevenuePlanner.Helpers
                                                           calendarEndDate) - 1,
                 progress = 0,
                 open = true,
-                parent = string.Format("M{0}", improvementPlanCampaignId),
+                parent = IsPlanTabContainer ? string.Format("PL{0}_M{1}", improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, improvementPlanCampaignId) : string.Format("M{0}", improvementPlanCampaignId),
                 color = (isApplyTocalendar ? Common.COLORC6EBF3_WITH_BORDER_IMPROVEMENT : string.Concat(GANTT_BAR_CSS_CLASS_PREFIX_IMPROVEMENT, improvementTactic.ImprovementTacticType.ColorCode.ToLower())),
                 isSubmitted = improvementTactic.Status.Equals(tacticStatusSubmitted),
                 isDeclined = improvementTactic.Status.Equals(tacticStatusDeclined),
@@ -1827,7 +1941,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="calendarEndDate">Calendar end date.</param>
         /// <param name="isApplyTocalendar">Flag to indicate whether it is called from apply to calendar.</param>
         /// <returns>Return improvement activity task data.</returns>
-        private static object GetImprovementActivityTaskData(List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics, DateTime calendarStartDate, DateTime calendarEndDate, bool isApplyTocalendar)
+        private static object GetImprovementActivityTaskData(List<Plan_Improvement_Campaign_Program_Tactic> improvementTactics, DateTime calendarStartDate, DateTime calendarEndDate, bool isApplyTocalendar, bool IsPlanTabContainer = false)
         {
             //// Modified By: Maninder Singh Wadhva to address Ticket 395
             MRPEntities db = new MRPEntities();
@@ -1841,7 +1955,7 @@ namespace RevenuePlanner.Helpers
             //// Creating task Data for the only parent of all plan improvement tactic.
             var taskDataImprovementActivity = new
             {
-                id = string.Format("M{0}", improvementCampaign.ImprovementPlanCampaignId),
+                id = IsPlanTabContainer ? string.Format("PL{0}_M{1}", improvementCampaign.Plan.PlanId, improvementCampaign.ImprovementPlanCampaignId) : string.Format("M{0}", improvementCampaign.ImprovementPlanCampaignId),
                 text = improvementCampaign.Title,
                 start_date = Common.GetStartDateAsPerCalendar(calendarStartDate, startDate),
                 duration = Common.GetEndDateAsPerCalendar(calendarStartDate,
@@ -1855,6 +1969,7 @@ namespace RevenuePlanner.Helpers
                 isImprovement = true,
                 IsHideDragHandleLeft = startDate < calendarStartDate,
                 IsHideDragHandleRight = true,
+                parent = IsPlanTabContainer ? string.Format("PL{0}", improvementCampaign.Plan.PlanId) : string.Empty,
                 Status = improvementTactics[0].Status   //// Added by Sohel on 16/05/2014 for PL #425 to Show status of tactics on Home, Plan and ApplyToCalender screen
             };
 

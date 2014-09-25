@@ -2,7 +2,7 @@
 @using RevenuePlanner.Helpers;
 
 <ul class="nav nav-tabs">
-    <li class="title-header source-sans-proregular bold font-size25px">
+  @*  <li class="title-header source-sans-proregular bold font-size25px">
 
         <form id="nl-form2" class="nl-form-plan-title without-margin plantitle">
 
@@ -19,7 +19,7 @@
             </script>
 
         </form>
-    </li>
+    </li>*@
     <li>
        @* <span class="drop-down-logo-icon2"></span>*@
     </li>
@@ -52,40 +52,13 @@
 <script type="text/javascript">
     $(document).ready(function () {
         onClickPlanTitle();
-        if (plan.length > 0) {
-            $('#DivloadPlan').show();
-            $('.tab-content').show();
-            $('#ptacticcount').show();
-            $('#ptacticcount').show();
-            $('#chart2').show();
-            $('#pbudget').show();
-            $('#pMQLs').show();
-            $('.changes').show();
-
-            //// Modified By Maninder Singh Wadhva to Address PL#203
-            GetCollaborators(CurrentPlanId);
-            RefreshCurrentTab();
-            GetHealderData(CurrentPlanId);
-            GetNumberOfActivityPerMonByPlanId(CurrentPlanId, "planYear");
-            ShowChangeLog();
-            $('#Notabcontent').hide();
-        }
-        else {
-            $('#DivloadPlan').hide();
-            $('.tab-content').hide();
-            $('#ptacticcount').hide();
-            $('#chart2').hide();
-            $('#pbudget').hide();
-            $('#pMQLs').hide();
-            $('.changes').hide();
-            $('#Notabcontent').show();
-            // Start - Added by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #63
-            $('#marketing-activities').hide();
-            $('#divBorderBottom').hide();
-            $('#improvements').hide();
-            // End - Added by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #63
-        }
+        SetAttributeData();
+        RefreshCurrentTab();
+        var SelectedPlans = filters.SelectedPlans.toString();
+        GetHealderData(SelectedPlans);
+        GetNumberOfActivityPerMonByPlanId(SelectedPlans, "planYear");
     });
+
     $('#ATactics').click(function () {
         GetTactics();
         arrClosedTask = [];

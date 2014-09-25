@@ -308,6 +308,8 @@
     <Content Include="Content\images\arrow-down-white.png" />
     <Content Include="Content\images\arrow-expand.gif" />
     <Content Include="Content\images\arrow-expand2.gif" />
+    <Content Include="Content\images\arrow-icon-down.png" />
+    <Content Include="Content\images\arrow-icon-up.png" />
     <Content Include="Content\images\arrow-icon.png" />
     <Content Include="Content\images\arrow-right-accordion.png" />
     <Content Include="Content\images\arrow-right-icon-active.png" />
@@ -343,6 +345,7 @@
     <Content Include="Content\images\circle-check-icon-small-blue.png" />
     <Content Include="Content\images\circle-check-icon.png" />
     <Content Include="Content\images\circle-gray-check-icon.png" />
+    <Content Include="Content\images\close-icon-list.png" />
     <Content Include="Content\images\close-x.png" />
     <Content Include="Content\images\deal-icon-active.png" />
     <Content Include="Content\images\deal-icon-blue.png" />
