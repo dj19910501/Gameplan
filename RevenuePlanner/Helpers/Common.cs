@@ -1536,13 +1536,14 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="planIds">list plan ids</param>
         /// <returns></returns>
-        public static HomePlanModelHeader GetPlanHeaderValueForMultiplePlans(List<int> planIds)
+        public static HomePlanModelHeader GetPlanHeaderValueForMultiplePlans(List<int> planIds, string activeMenu)
         {
             HomePlanModelHeader newHomePlanModelHeader = new HomePlanModelHeader();
             MRPEntities db = new MRPEntities();
             List<string> tacticStatus = GetStatusListAfterApproved();
 
-            double TotalMQLs = 0, TotalBudget = 0, TotalPercentageMQLImproved = 0;
+            double TotalMQLs = 0, TotalBudget = 0;
+            double? TotalPercentageMQLImproved = 0;
             int TotalTacticCount = 0;
 
             var planList = db.Plans.Where(p => planIds.Contains(p.PlanId) && p.IsDeleted == false && p.IsActive == true).Select(m => m).ToList();
@@ -1551,57 +1552,58 @@ namespace RevenuePlanner.Helpers
                 List<Plan_Campaign_Program_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && tacticStatus.Contains(t.Status) && planIds.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId)).ToList();
                 var improvementTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(imp => planIds.Contains(imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId) && imp.IsDeleted == false).ToList();
 
+                Double MQLs = 0;
+                List<Plan_Campaign_Program_Tactic> planTacticIds = new List<Plan_Campaign_Program_Tactic>();
+                string marketing = Enums.Funnel.Marketing.ToString();
                 foreach (var plan in planList)
                 {
-                    HomePlanModelHeader objHomePlanModelHeader = new HomePlanModelHeader();
+                    //HomePlanModelHeader objHomePlanModelHeader = new HomePlanModelHeader();
 
-                    List<Plan_Campaign_Program_Tactic> planTacticIds = planTacticsList.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId == plan.PlanId).ToList();
+                    planTacticIds = planTacticsList.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId == plan.PlanId).ToList();
 
                     if (plan.Status == Enums.PlanStatusValues[Enums.PlanStatus.Draft.ToString()].ToString())
                     {
                         if (plan.GoalType.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower())
                         {
-                            objHomePlanModelHeader.MQLs = plan.GoalValue;
+                            MQLs = plan.GoalValue;
                         }
                         else
                         {
                             // Get ADS value
-                            string marketing = Enums.Funnel.Marketing.ToString();
                             double ADSValue = db.Model_Funnel.Single(mf => mf.ModelId == plan.ModelId && mf.Funnel.Title == marketing).AverageDealSize;
-
-                            objHomePlanModelHeader.MQLs = Common.CalculateMQLOnly(plan.ModelId, plan.GoalType, plan.GoalValue.ToString(), ADSValue);
+                            MQLs = Common.CalculateMQLOnly(plan.ModelId, plan.GoalType, plan.GoalValue.ToString(), ADSValue);
                         }
 
-                        string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
-                        if (string.IsNullOrEmpty(MQLStageLabel))
-                        {
-                            newHomePlanModelHeader.mqlLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.ProjectedMQLLabel.ToString()].ToString();
-                        }
-                        else
-                        {
-                            newHomePlanModelHeader.mqlLabel = "Projected " + MQLStageLabel;
-                        }
-                        objHomePlanModelHeader.Budget = plan.Budget;
-                        newHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Budget.ToString()].ToString();
+                        //string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
+                        //if (string.IsNullOrEmpty(MQLStageLabel))
+                        //{
+                        //    newHomePlanModelHeader.mqlLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.ProjectedMQLLabel.ToString()].ToString();
+                        //}
+                        //else
+                        //{
+                        //    newHomePlanModelHeader.mqlLabel = "Projected " + MQLStageLabel;
+                        //}
+                        TotalBudget += plan.Budget;
+                        //newHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Budget.ToString()].ToString();
                     }
                     else
                     {
-                        objHomePlanModelHeader.MQLs = GetTacticStageRelation(planTacticIds, false).Sum(t => t.MQLValue);
-                        string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
-                        if (string.IsNullOrEmpty(MQLStageLabel))
-                        {
-                            newHomePlanModelHeader.mqlLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.MQLLabel.ToString()].ToString();
-                        }
-                        else
-                        {
-                            newHomePlanModelHeader.mqlLabel = MQLStageLabel;
-                        }
+                        MQLs = GetTacticStageRelation(planTacticIds, false).Sum(t => t.MQLValue);
+                        //string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
+                        //if (string.IsNullOrEmpty(MQLStageLabel))
+                        //{
+                        //    newHomePlanModelHeader.mqlLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.MQLLabel.ToString()].ToString();
+                        //}
+                        //else
+                        //{
+                        //    newHomePlanModelHeader.mqlLabel = MQLStageLabel;
+                        //}
                         if (planTacticIds.Count() > 0)
                         {
                             var tacticIds = planTacticIds.Select(t => t.PlanTacticId).ToList();
-                            objHomePlanModelHeader.Budget = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => tacticIds.Contains(l.PlanTacticId) && l.IsDeleted == false).ToList().Sum(l => l.Cost);
+                            TotalBudget += db.Plan_Campaign_Program_Tactic_LineItem.Where(l => tacticIds.Contains(l.PlanTacticId) && l.IsDeleted == false).ToList().Sum(l => l.Cost);
                         }
-                        newHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Cost.ToString()].ToString();
+                        //newHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Cost.ToString()].ToString();
                     }
 
                     var impList = improvementTacticList.Where(imp => imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == plan.PlanId).ToList();
@@ -1611,25 +1613,26 @@ namespace RevenuePlanner.Helpers
                         double? improvedMQL = GetTacticStageRelation(planTacticIds, true).Sum(t => t.MQLValue);
 
                         //// Calculating percentage increase.
-                        if (improvedMQL.HasValue && objHomePlanModelHeader.MQLs != 0)
+                        if (improvedMQL.HasValue && MQLs != 0)
                         {
-                            objHomePlanModelHeader.PercentageMQLImproved = ((improvedMQL - objHomePlanModelHeader.MQLs) / objHomePlanModelHeader.MQLs) * 100;
-                            objHomePlanModelHeader.MQLs = Convert.ToDouble(improvedMQL);
+                            TotalPercentageMQLImproved += ((improvedMQL - MQLs) / MQLs) * 100;
+                            MQLs = Convert.ToDouble(improvedMQL);
                         }
                     }
 
                     if (planTacticIds != null)
                     {
-                        objHomePlanModelHeader.TacticCount = planTacticIds.Count();
+                        TotalTacticCount += planTacticIds.Count();
                     }
 
-                    TotalMQLs += objHomePlanModelHeader.MQLs;
-                    TotalBudget += objHomePlanModelHeader.Budget;
-                    TotalTacticCount += objHomePlanModelHeader.TacticCount;
-                    if (objHomePlanModelHeader.PercentageMQLImproved.HasValue)
-                    {
-                        TotalPercentageMQLImproved += objHomePlanModelHeader.PercentageMQLImproved.Value;
-                    }
+                    TotalMQLs += MQLs;
+                    //TotalBudget += objHomePlanModelHeader.Budget;
+                    //TotalTacticCount += objHomePlanModelHeader.TacticCount;
+                    //if (objHomePlanModelHeader.PercentageMQLImproved.HasValue)
+                    //{
+                    //    TotalPercentageMQLImproved += objHomePlanModelHeader.PercentageMQLImproved.Value;
+                    //}
+                    MQLs = 0;
                 }
             }
 
@@ -1637,7 +1640,32 @@ namespace RevenuePlanner.Helpers
             newHomePlanModelHeader.Budget = TotalBudget;
             newHomePlanModelHeader.TacticCount = TotalTacticCount;
             newHomePlanModelHeader.PercentageMQLImproved = TotalPercentageMQLImproved;
-
+            if (activeMenu == Enums.ActiveMenu.Home.ToString().ToLower())
+            {
+                string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
+                if (string.IsNullOrEmpty(MQLStageLabel))
+                {
+                    newHomePlanModelHeader.mqlLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.MQLLabel.ToString()].ToString();
+                }
+                else
+                {
+                    newHomePlanModelHeader.mqlLabel = MQLStageLabel;
+                }
+                newHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Cost.ToString()].ToString();
+            }
+            else if (activeMenu == Enums.ActiveMenu.Plan.ToString().ToLower())
+            {
+                string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
+                if (string.IsNullOrEmpty(MQLStageLabel))
+                {
+                    newHomePlanModelHeader.mqlLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.ProjectedMQLLabel.ToString()].ToString();
+                }
+                else
+                {
+                    newHomePlanModelHeader.mqlLabel = "Projected " + MQLStageLabel;
+                }
+                newHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Budget.ToString()].ToString();
+            }
             return newHomePlanModelHeader;
         }
         #endregion

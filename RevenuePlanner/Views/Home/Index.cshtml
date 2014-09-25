@@ -2411,13 +2411,15 @@ function loadInspectPopup(id, section, tabValue) {
 
         /// Ended Script Of Inspect Popup
         function GetHealderData(selectedPlanIds) {
+            var ActiveMenu = $('#ActiveMenu').val().toLowerCase();
             $.ajax(
             {
                 type: "GET",
                 cache: false,
                 url: '@Url.Action("GetPlanByMultiplePlanIDs", "Plan")',
                 data: {
-                    strPlanIds: selectedPlanIds
+                    strPlanIds: selectedPlanIds,
+                    activeMenu: ActiveMenu
                 },
                 dataType: "json",
                 success: function (data) {

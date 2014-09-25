@@ -270,7 +270,7 @@ function SetPriceValue(idName) {
         $(idName).html($(idName).html().substring(0, 8) + "..");
         $(idName).prop('title', budgetValue);
         $(idName).addClass('north');
-        $('.north').tipsy({ gravity: 'n' });
+        $('.north').tipsy({ gravity: 's' });
     }
     else {
         $(idName).removeAttr('original-title');
