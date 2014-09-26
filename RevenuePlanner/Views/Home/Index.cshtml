@@ -411,7 +411,7 @@
                 <div id="verticaldetail" class="details">All</div>
             </div>
             <div class="filter-details last">
-                <label>Product:</label>
+                <label>@Html.CustomLabelFor(Enums.CustomLabelCode.Audience):</label>
                 <div id="audiencedetail" class="details">All</div>
             </div>
         </div>
@@ -538,13 +538,13 @@
         onClickActivity();
         var All = 'All';
         var None = 'None';
-
+        var textDelimiter = ", ";
         if (filters.BuTitles.length > 0) {
             if ('@Model.BusinessUnitIds.Count' == filters.BuTitles.length.toString()) {
                 $('#businessunitdetail').html(All);
             }
             else {
-                $('#businessunitdetail').html(filters.BuTitles.toString());
+                $('#businessunitdetail').html(filters.BuTitles.join(textDelimiter).toString());
             }
         }
         else {
@@ -556,7 +556,7 @@
                 $('#plandetail').html(All);
             }
             else {
-                $('#plandetail').html(filters.PlanTitles.toString());
+                $('#plandetail').html(filters.PlanTitles.join(textDelimiter).toString());
             }
         }
         else {
@@ -568,7 +568,7 @@
                 $('#geographydetail').html(All);
             }
             else {
-                $('#geographydetail').html(filters.geographyTitle.toString());
+                $('#geographydetail').html(filters.geographyTitle.join(textDelimiter).toString());
             }
         }
         else {
@@ -580,7 +580,7 @@
                 $('#verticaldetail').html(All);
             }
             else {
-                $('#verticaldetail').html(filters.VerticalTitle.toString());
+                $('#verticaldetail').html(filters.VerticalTitle.join(textDelimiter).toString());
             }
         }
         else {
@@ -592,7 +592,7 @@
                 $('#audiencedetail').html(All);
             }
             else {
-                $('#audiencedetail').html(filters.AudienceTitle.toString());
+                $('#audiencedetail').html(filters.AudienceTitle.join(textDelimiter).toString());
             }
         }
         else {
