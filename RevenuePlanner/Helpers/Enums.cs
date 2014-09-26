@@ -877,7 +877,7 @@ namespace RevenuePlanner.Helpers
     {
         public const string Plan = "Plan";
         public const string Audience = "Audience";
-        public const string BusinessUnit = "BusienessUnit";
+        public const string BusinessUnit = "BusinessUnit";
         public const string Geography = "Geography";
         public const string Vertical = "Vertical";
     }
@@ -886,7 +886,7 @@ namespace RevenuePlanner.Helpers
     {
         public const string Plan = "Plan";
         public const string Audience = "Audience";
-        public const string BusinessUnit = "Busieness Unit";
+        public const string BusinessUnit = "Business Unit";
         public const string Geography = "Geography";
         public const string Vertical = "Vertical";
     }
