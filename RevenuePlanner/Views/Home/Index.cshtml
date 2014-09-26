@@ -539,7 +539,19 @@
     function UpdateResult() {
         var SelectedPlanIds = filters.SelectedPlans.toString();
         SetAttributeData();
-        if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Home/SetSessionPlan/")',
+            dataType: "json",
+            async: false,
+            data: {
+                planids: SelectedPlanIds
+            },
+            success: function (data) {
+                if (data.isSuccess == true) {
+                    $("#CurrentPlanId").val(data.id); 
+if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
         BindUpcomingActivites(SelectedPlanIds);
         }
         SetBudget("#pbudget");
@@ -548,6 +560,12 @@
         GetHealderData(SelectedPlanIds);
         GetNumberOfActivityPerMonByPlanId(SelectedPlanIds, "planYear");
         onClickActivity();
+                }
+            }
+        });
+
+        // Session set in This Method :  Added By Bhavesh
+       
         var All = 'All';
         var None = 'None';
         var textDelimiter = ", ";

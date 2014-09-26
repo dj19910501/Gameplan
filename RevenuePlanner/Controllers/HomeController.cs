@@ -6042,16 +6042,19 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public ActionResult BindUpcomingActivitesValues(string planids)
         {
+            HomePlanModelHeader objHomePlan = new HomePlanModelHeader();
+            //objHomePlan = Common.GetPlanHeaderValueForMultiplePlans(planIds);
+            objHomePlan.UpcomingActivity = UpComingActivity(planids);
+            return PartialView("_planheader", objHomePlan);
+        }
+        public JsonResult SetSessionPlan(string planids)
+        {
             List<int> filterplanIds = string.IsNullOrWhiteSpace(planids) ? new List<int>() : planids.Split(',').Select(p => int.Parse(p)).ToList();
             if (filterplanIds.Count == 1)
             {
                 Sessions.PlanId = filterplanIds.Select(p => p).FirstOrDefault();
             }
-            
-            HomePlanModelHeader objHomePlan = new HomePlanModelHeader();
-            //objHomePlan = Common.GetPlanHeaderValueForMultiplePlans(planIds);
-            objHomePlan.UpcomingActivity = UpComingActivity(planids);
-            return PartialView("_planheader", objHomePlan);
+            return Json(new { isSuccess = true, id = Sessions.PlanId }, JsonRequestBehavior.AllowGet);
         }
 
         public List<SelectListItem> UpComingActivity(string PlanIds)
