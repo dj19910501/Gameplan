@@ -6581,13 +6581,8 @@ namespace RevenuePlanner.Controllers
             var tactics = from t in db.ImprovementTacticTypes
                           where t.ClientId == Sessions.User.ClientId && t.IsDeployed == true && !impTacticList.Contains(t.ImprovementTacticTypeId)
                           && t.IsDeleted == false       //// Added by :- Sohel Pathan on 20/05/2014 for PL #457 to delete a boost tactic.
-                          orderby t.Title
                           select t;
-            foreach (var item in tactics)
-            {
-                item.Title = HttpUtility.HtmlDecode(item.Title);
-            }
-            ViewBag.Tactics = tactics;
+            
             /*End: Modified by Mitesh Vaishnav on 07/07/2014 for PL ticket #584  */
             ViewBag.IsCreated = false;
             if (RedirectType == "Assortment")
@@ -6609,6 +6604,23 @@ namespace RevenuePlanner.Controllers
             {
                 return null;
             }
+
+            foreach (var item in tactics)
+            {
+                item.Title = HttpUtility.HtmlDecode(item.Title);
+            }
+            ////Added by Mitesh Vaishnav for internal review point 84
+            if (!tactics.Any(a => a.ImprovementTacticTypeId == pcpt.ImprovementTacticTypeId))
+            {
+               var tacticTypeSpecial= from t in db.ImprovementTacticTypes
+                          where t.ClientId == Sessions.User.ClientId && t.ImprovementTacticTypeId==pcpt.ImprovementTacticTypeId     
+                          orderby t.Title
+                          select t;
+               tactics = tactics.Concat<ImprovementTacticType>(tacticTypeSpecial);
+               tactics.OrderBy(a => a.Title);
+                
+            }
+            ViewBag.Tactics = tactics;
 
             PlanImprovementTactic pcptm = new PlanImprovementTactic();
             pcptm.ImprovementPlanProgramId = pcpt.ImprovementPlanProgramId;

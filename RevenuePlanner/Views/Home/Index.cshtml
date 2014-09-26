@@ -1486,6 +1486,10 @@
                       if (CurrentPlanId > 0 && GetSelectedPlanNo == 1) {
                           GetCurrentPlanPermissionDetail();
                       }
+                      else {
+                          $("#divPlanEditButtonHome").hide();
+                          $("#divAddActuals").hide();
+                      }
 
                       //// Modified By Maninder Singh Wadhva PL Ticket#47
                       //// filtering non improvement task data.
