@@ -54,6 +54,9 @@
         onClickPlanTitle();
         SetAttributeData();
         RefreshCurrentTab();
+        if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+            GetCollaborators(CurrentPlanId);
+        }
         var SelectedPlans = filters.SelectedPlans.toString();
         GetHealderData(SelectedPlans);
         GetNumberOfActivityPerMonByPlanId(SelectedPlans, "planYear");

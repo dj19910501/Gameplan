@@ -76,6 +76,8 @@
                 case 'plan':
                     $("#DivButtonsHome").hide();
                     $("#DivButtonsPlanSummary").show();
+                    $('#businessunitdetail').html('@ViewBag.BusinessUnitTitle');
+                    $('#plandetail').html('@Model.PlanTitle.ToString()');
                     break;
             }
             $("#modalMainContainer").hide();
@@ -116,7 +118,9 @@
                 CurrentPlanId = $(this).attr('value');
                 $("#CurrentPlanId").val(CurrentPlanId);
                 //// Modified By Maninder Singh Wadhva to Address PL#203
-                ShowChangeLog();
+                if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+                    GetCollaborators(filters.SelectedPlans);
+                }
                 RefreshCurrentTab();
                 var selectedPlanIds = filters.SelectedPlans.toString();
                 GetHealderData(selectedPlanIds);
@@ -160,7 +164,6 @@
     </script>
 
     <div id="PlanModulesSection">
-
         <div class="padding-content padding-bottom0" id="DivButtonsHome">
             <h4 class="text-shadow-black source-sans-prolight">Planning Review</h4>
             <div class="wraper-btns cf">
@@ -174,7 +177,6 @@
                     <!-- change by kunal for edit plan  -->
                     <!-- start -->
                     @{
-                        
                         if (Model.PlanId != null)
                         {
                             int pid = Model.PlanId;
@@ -250,16 +252,28 @@
             <p>Let’s begin by filtering the information you want to see below.</p>
         </div>
         <div class="sidebar-section scroll-section">
-            <span>Filters</span>
-            <div id="accordion-1" class="dropdown-section accordion">
-                <div class="accordion-group">
-                    <div class="accordion-heading">
-                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-1" href="#accordion-element-BusniessUnit">Business Unit<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
-                    </div>
-                    <div id="accordion-element-BusniessUnit" class="accordion-body collapse">
-                        <ul class="scroll-list" id="ulBusniessUnit">
-                            
-                            @foreach (var item in Model.BusinessUnitIds)
+            <div style="width: 100%;">
+                <div class="width50 float-left ">
+                    <span class="filter-header">Filters</span>
+                </div>
+                <div class="width50 float-left">
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" type="button" id="UpdateResult" onclick="UpdateResult()">
+                        Update Results
+                    </button>
+                </div>
+            </div>
+            <div style="clear: both;"></div>
+            @if(activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
+            {
+                <div id="accordion-1" class="dropdown-section accordion">
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-1" href="#accordion-element-BusniessUnit">Business Unit<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                        </div>
+                        <div id="accordion-element-BusniessUnit" class="accordion-body collapse">
+                            <ul class="scroll-list" id="ulBusniessUnit">
+
+                                @foreach (var item in Model.BusinessUnitIds)
                             {
                                 string id = "li" + item.Value;
                                 if (item.Value == Sessions.BusinessUnitId.ToString())
@@ -271,38 +285,38 @@
                                     <li class="accordion-inner" id="@id" title="@item.Text"><span class="sidebarliwidth">@item.Text</span><a href="#" BuTitile="@item.Text" id="@item.Value" onclick="toggleBusinessUnit(this.id)">Select</a></li>
                                 }
                             }
-                        </ul>
-                        <div class="list-tab">
-                            <ul id="BUAllModule">
-                                <li><a href="#" onclick="BulkBUOperation(true)">select all</a></li>
-                                <li>|</li>
-                                <li><a onclick="BulkBUOperation(false)" href="#">deselect all</a></li>
                             </ul>
-                            <div id="NoFoundBU"></div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            <div id="accordion-2" class="dropdown-section accordion">
-                <div class="accordion-group">
-                    <div class="accordion-heading">
-                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-2" href="#accordion-element-Plan">Plan<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
-                    </div>
-                    <div id="accordion-element-Plan" class="accordion-body collapse">
-                        <ul class="scroll-list" id="ulSelectedPlans">
-                        </ul>
-                        <div class="list-tab">
-                            <ul id="PlanAllModule">
-                                <li><a href="#" onclick="BulkPlanOperation(true)">select all</a></li>
-                                <li>|</li>
-                                <li><a href="#" onclick="BulkPlanOperation(false)">deselect all</a></li>
-                            </ul>
-                            <div id="NoPlanFound" class="NoDataFoundFilter">No Plan Found</div>
+                            <div class="list-tab">
+                                <ul id="BUAllModule">
+                                    <li><a href="#" onclick="BulkBUOperation(true)">select all</a></li>
+                                    <li>|</li>
+                                    <li><a onclick="BulkBUOperation(false)" href="#">deselect all</a></li>
+                                </ul>
+                                <div id="NoFoundBU"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                <div id="accordion-2" class="dropdown-section accordion">
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-2" href="#accordion-element-Plan">Plan<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                        </div>
+                        <div id="accordion-element-Plan" class="accordion-body collapse">
+                            <ul class="scroll-list" id="ulSelectedPlans">
+                            </ul>
+                            <div class="list-tab">
+                                <ul id="PlanAllModule">
+                                    <li><a href="#" onclick="BulkPlanOperation(true)">select all</a></li>
+                                    <li>|</li>
+                                    <li><a href="#" onclick="BulkPlanOperation(false)">deselect all</a></li>
+                                </ul>
+                                <div id="NoPlanFound" class="NoDataFoundFilter">No Plan Found</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
             <div id="accordion-3" class="dropdown-section accordion">
                 <div class="accordion-group">
                     <div class="accordion-heading">
@@ -366,12 +380,6 @@
         </div>
 
     </div>
-
-    <div class="width100">
-        <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" type="button" id="UpdateResult" onclick="UpdateResult()">
-            Update Results
-        </button>
-    </div>
     <!--End sidebar-->
 }
 
@@ -430,6 +438,9 @@
         <div class=" pl20 cf">
             @if (activeMenu.ToLower() == "plan") //// Added by Sohel Pathan on 16/07/2014 for PL ticket #556 to hide "Showstatus" feature on home screen
             {
+                <div class="margin-left9 pull-left" id="divCollaborator" style="position: relative;">
+                    <!-- position:relative = added by kapil -->
+                </div>
 @* Start - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen *@
                 <div class="pull-right toggle-status source-sans-proregular">
                     <div class="pull-right">
@@ -528,8 +539,9 @@
     function UpdateResult() {
         var SelectedPlanIds = filters.SelectedPlans.toString();
         SetAttributeData();
-        // Session set in This Method :  Added By Bhavesh
+        if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
         BindUpcomingActivites(SelectedPlanIds);
+        }
         SetBudget("#pbudget");
         SetPriceValue("#pMQLs");
         RefreshCurrentTab();
@@ -539,6 +551,7 @@
         var All = 'All';
         var None = 'None';
         var textDelimiter = ", ";
+		if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
         if (filters.BuTitles.length > 0) {
             if ('@Model.BusinessUnitIds.Count' == filters.BuTitles.length.toString()) {
                 $('#businessunitdetail').html(All);
@@ -561,6 +574,11 @@
         }
         else {
             $('#plandetail').html(None);
+        }
+        }
+        else {
+            $('#businessunitdetail').html('@ViewBag.BusinessUnitTitle');
+            $('#plandetail').html('@Model.PlanTitle.ToString()');
         }
 
         if (filters.geographyTitle.length > 0) {
@@ -708,10 +726,69 @@
         }
     }
 
+    function GetCollaborators(planId) {
+        if (planId != null) {
+            planId = parseInt(planId);
+            $.ajax(
+           {
+               type: "GET",
+               cache: false,
+               url: '@Url.Action("GetCollaboratorDetails", "Plan")',
+               data: { currentPlanId: planId },
+               dataType: "json",
+               success: function (data) {
+                   // Set collaborator details
+                   $('#divCollaborator').empty(); // Clear collaborators div content
+                   ////  set collaborator's image
+                   $.each(data.collaboratorsImage.Data, function () {
+                       SetCollaboratorImage(this, appendtag);//#416
+                   })
 
+                   $('#divCollaborator').append('<span class="bold margin_left6 position_absolute">' + data.collaboratorsImage.Data.length + ' Collaborator(s) </span>');
+                   $('#divCollaborator').append('<span class="font_size10 margin_left6 updated-text-align">Last updated ' + data.lastUpdateDate + '</span>');
+                   //added by uday for #416
+                   ProfileAttachToolTip();//function written in scripts.js
+               }
+           });
+       }
+   }
+
+    function SetCollaboratorImage(collaborator, appendtag) {
+        console.log(collaborator);
+        // Get collaborator image
+        var imgs = collaborator.imageBytes;
+        var username = collaborator.name;
+        var buid = collaborator.businessUnit;//uday#416
+        var title = collaborator.jobTitle;//uday#416
+
+        // Set collaborator image
+        var collaboratorImage = "<img class=\"avatar-user img-border align_avatar_image\""
+         + "src='" + "data:image/jpg;base64,"
+         + imgs + "'/>";
+        // uday for ticket #416
+
+        var referencestart = "<a href='#' class=\"profile-info\">";
+        var referencenew = "<div class=\"profile-tooltip\">	<div class=\"profile-tooltip-arrow\"></div> <div class=\"profile-tooltip-inner\"> " +
+                                             " " + username + ', ' + title + "<br /><label>Business Unit:</label> " + buid + "</div> </div>";
+        var endreference = "</a>";
+        appendtag += referencestart;
+        appendtag += collaboratorImage;
+        appendtag += referencenew;
+        appendtag += endreference;
+        $("#divCollaborator").html($("#divCollaborator").html() + appendtag);
+    }
 
     function SetAttributeData() {
-        if (filters.SelectedPlans.length > 0) {
+        var planIds = 0;
+        if(activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()')
+        {
+            planIds = CurrentPlanId;
+        }
+        else if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()')
+        {
+            planIds = filters.SelectedPlans;
+        }
+        if (planIds.length > 0) {
             $('#DivloadPlan').show();
             $('.tab-content').show();
             $('#ptacticcount').show();
@@ -829,19 +906,23 @@
     }
 
     function BindOtherAttributes() {
-
         ResetControlsBeforeOtherAttributes();
-        var ActiveMenu = $('#ActiveMenu').val().toLowerCase();
-
-        if (filters.SelectedPlans.length > 0) {
+        var planIds = 0;
+        if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+            planIds = CurrentPlanId;
+        }
+        else {
+            planIds = filters.SelectedPlans;
+        }
+        if (planIds.length > 0) {
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Home/GetCustomAttributes/")',
                 dataType: "json",
                 async: false,
                 data: {
-                    planIds: filters.SelectedPlans.toString(),
-                    requstedModule: ActiveMenu
+                    planIds: planIds.toString(),
+                    requstedModule: activeMenu
                 },
                 success: function (data) {
                     if (data.isSuccess == true) {
@@ -1094,6 +1175,7 @@
     /// Script Start
     /// Added By: Maninder Singh Wadhva.
     //// Default load tactics in view control.
+    var activeMenu = $('#ActiveMenu').val().toLowerCase();
     function DuplicatePlan() {
         $.ajax({
             type: 'POST',
@@ -1161,18 +1243,17 @@
             //functions added to show campagin and program popup from email url link click when email sent to user when comapign or program shared
             ShowInspectForPlanCampaignId();
             ShowInspectForPlanProgramId();
+            if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
             SetBusinessUnitSection();
-
-            
-            
+            }
+            else {
+                BindOtherAttributes();
+            }
         });
 
     function SetBusinessUnitSection() {
         BindPlanBySelectedBusniessUnit();
     }
-
-    
-
 
     var appendtag = '';//uday
     function DuplicatePlanMessage() {
@@ -1453,11 +1534,18 @@
 
         var GetSelectedPlanNo = filters.SelectedPlans.length;
 
+        if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
         if (GetSelectedPlanNo > 1) {
             $('#PlanModulesSection').css("display", "none");
         }
         else {
             $('#PlanModulesSection').css("display", "block");
+        }
+        }
+        else if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()')
+        {
+            Planid = CurrentPlanId;
+            GetSelectedPlanNo = 1;
         }
 
         $.ajax(
@@ -2214,7 +2302,12 @@
 }
 
 $("#modal-container-186470").on("show", function (e) { $("#modalMainContainer").show(); });
-$("#modal-container-186470").on("hide", function (e) { $("#modalMainContainer").hide(); });
+$("#modal-container-186470").on("hide", function (e) {
+    $("#modalMainContainer").hide();
+    if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+        $("#divCollaborator").unbind('click');
+    }
+});
 
 //Scrip Addded By Bhavesh for Inspect Popup
 
@@ -2423,15 +2516,22 @@ function loadInspectPopup(id, section, tabValue) {
 
         /// Ended Script Of Inspect Popup
         function GetHealderData(selectedPlanIds) {
-            var ActiveMenu = $('#ActiveMenu').val().toLowerCase();
+            var newUrl = '';
+            if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
+                newUrl = '@Url.Action("GetPlanByMultiplePlanIDs", "Plan")';
+            }
+            else if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+                newUrl = '@Url.Action("GetPlanByPlanID", "Plan")';
+                selectedPlanIds = parseInt(CurrentPlanId);
+            }
             $.ajax(
             {
                 type: "GET",
                 cache: false,
-                url: '@Url.Action("GetPlanByMultiplePlanIDs", "Plan")',
+                url: newUrl,
                 data: {
-                    strPlanIds: selectedPlanIds,
-                    activeMenu: ActiveMenu
+                    planid: selectedPlanIds,
+                    activeMenu: activeMenu
                 },
                 dataType: "json",
                 success: function (data) {
@@ -2490,14 +2590,21 @@ function loadInspectPopup(id, section, tabValue) {
             });
         }
         function GetNumberOfActivityPerMonByPlanId(selectedPlanIds, strParam) {
-
+            var newUrl = '';
+            if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
+                newUrl = '@Url.Action("GetNumberOfActivityPerMonthByMultiplePlanId", "Home")';
+            }
+            else if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+                newUrl = '@Url.Action("GetNumberOfActivityPerMonthByPlanId", "Home")';
+                selectedPlanIds = parseInt(CurrentPlanId);
+            }
             $.ajax(
             {
                 type: "GET",
                 cache: false,
-                url: '@Url.Action("GetNumberOfActivityPerMonthByMultiplePlanId", "Home")',
+                url: newUrl,
                 data: {
-                    strPlanIds: selectedPlanIds,
+                    planid: selectedPlanIds,
                     strparam: strParam
                 },
                 dataType: "json",
@@ -2627,9 +2734,9 @@ function loadInspectPopup(id, section, tabValue) {
         //var r = $('#content_wraper').height() - 170;
         //$('.scroll-section').css('height', r);
 
-        $(function () {
-            $('.sidebar-section .accordion-body .scroll-list,.scroll-section,.sidebar').slimScroll();
-        });
+        //$(function () {
+        //    $('.sidebar-section .accordion-body .scroll-list,.scroll-section,.sidebar').slimScroll();
+        //});
 
         function toggleChevron(e) {
             $(e.target)

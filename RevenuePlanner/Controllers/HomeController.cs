@@ -68,6 +68,7 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.SuccessMessageDuplicatePlan = TempData["SuccessMessageDuplicatePlan"];
             ViewBag.ErrorMessageDuplicatePlan = TempData["ErrorMessageDuplicatePlan"];
+            ViewBag.BusinessUnitTitle = "";
 
             if (TempData["SuccessMessageDeletedPlan"] != null)
             {
@@ -180,6 +181,10 @@ namespace RevenuePlanner.Controllers
                     if (currentPlanId != 0)
                     {
                         currentPlan = activePlan.Where(p => p.PlanId.Equals(currentPlanId)).FirstOrDefault();
+                        if(planmodel.BusinessUnitIds.Count > 0)
+                        {
+                            ViewBag.BusinessUnitTitle = planmodel.BusinessUnitIds.Where(b => b.Value.ToLower() == currentPlan.Model.BusinessUnitId.ToString().ToLower()).Select(b => b.Text).FirstOrDefault();
+                        }
                     }
                     else if (!Common.IsPlanPublished(Sessions.PlanId))
                     {
@@ -4717,10 +4722,10 @@ namespace RevenuePlanner.Controllers
         /// <param name="strparam">Upcoming Activity dropdown selected option e.g. planyear, thisyear</param>
         /// <param name="strPlanIds">Comma separated string of Plan Ids</param>
         /// <returns>JsonResult.</returns>
-        public JsonResult GetNumberOfActivityPerMonthByMultiplePlanId(string strPlanIds, string strparam)
+        public JsonResult GetNumberOfActivityPerMonthByMultiplePlanId(string planid, string strparam)
         {
-            strPlanIds = System.Web.HttpUtility.UrlDecode(strPlanIds);
-            List<int> planIds = string.IsNullOrWhiteSpace(strPlanIds) ? new List<int>() : strPlanIds.Split(',').Select(p => int.Parse(p)).ToList();
+            planid = System.Web.HttpUtility.UrlDecode(planid);
+            List<int> planIds = string.IsNullOrWhiteSpace(planid) ? new List<int>() : planid.Split(',').Select(p => int.Parse(p)).ToList();
 
             List<Plan> filteredPlans = db.Plans.Where(p => p.IsDeleted == false && planIds.Contains(p.PlanId)).ToList().Select(p => p).ToList();
             List<int> filteredPlanIds = new List<int>();

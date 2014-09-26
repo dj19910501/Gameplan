@@ -996,10 +996,10 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="strPlanIds">Comma separated list of plan ids</param>
         /// <returns>returns Json object with values required to show in plan/home header</returns>
-        public JsonResult GetPlanByMultiplePlanIDs(string strPlanIds, string activeMenu)
+        public JsonResult GetPlanByMultiplePlanIDs(string planid, string activeMenu)
         {
-            strPlanIds = System.Web.HttpUtility.UrlDecode(strPlanIds);
-            List<int> planIds = string.IsNullOrWhiteSpace(strPlanIds) ? new List<int>() : strPlanIds.Split(',').Select(p => int.Parse(p)).ToList();
+            planid = System.Web.HttpUtility.UrlDecode(planid);
+            List<int> planIds = string.IsNullOrWhiteSpace(planid) ? new List<int>() : planid.Split(',').Select(p => int.Parse(p)).ToList();
 
             try
             {
