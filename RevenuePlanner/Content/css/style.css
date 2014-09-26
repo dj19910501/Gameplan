@@ -8175,8 +8175,8 @@ footer a {
 
 .report-budget-months tbody.column1
 {
-    width: 7%;
-    max-width:7%;
+    width: 9%;
+    max-width: 9%;
 }
 .report-budget-months tbody.column2
 {
@@ -8184,8 +8184,8 @@ footer a {
 }
 .report-budget-months tbody.column3
 {
-    max-width: 8%;
-    width: 8%;
+    max-width: 10%;
+    width: 10%;
 }
 /* */
 .report-budget-months .column2 tr:nth-child(2) td div, .report-budget-quarters .column2 tr:nth-child(2) td div,

@@ -148,13 +148,13 @@
         var businessunitdetail = "#businessunitdetail";
         var geographydetail = "#geographydetail";
 
-        LoadCheckBoxValueForPlan(multiselectPlanId, filterPlanid);
+        LoadCheckBoxValue(multiselectPlanId, filterPlanid);
         LoadCheckBoxValue(ddlViewAudience, audiencedetail);
         LoadCheckBoxValue(ddlViewVertical, verticaldetail);
         LoadCheckBoxValue(ddlViewBusinessUnit, businessunitdetail);
         LoadCheckBoxValue(ddlViewGeography, geographydetail);
 
-        LoadMultiselectFilterPlan(multiselectPlanId, filterPlanid);
+        LoadMultiselectFilter(multiselectPlanId, filterPlanid);
         LoadMultiselectFilter(ddlViewAudience, audiencedetail);
         LoadMultiselectFilter(ddlViewVertical, verticaldetail);
         LoadMultiselectFilter(ddlViewBusinessUnit, businessunitdetail);
@@ -189,16 +189,6 @@
             });
 
             $('#selectAll_' + multiselectId).click(function () {
-                //var finalValue = "";
-                //$("#multipleselect_" + multiselectId).find("li").each(function () {
-                //    if ($(this).css('display') == 'list-item') {
-                //        $(this).find("input[type='checkbox']").each(function () {
-                //            if (!this.checked) {
-                //                finalValue += $(this).parent().find('span').eq(0).html() + ",  ";
-                //            }
-                //        });
-                //    }
-                //});
                 var delay = 50;//1 seconds
                 setTimeout(function () {
                     LoadCheckBoxValue(multiselectId, filterid);
@@ -209,63 +199,6 @@
                 var delay = 50;//1 seconds
                 setTimeout(function () {
                     LoadCheckBoxValue(multiselectId, filterid);
-                }, delay);
-            });
-        }
-
-        function LoadCheckBoxValueForPlan(multiselectId, filterid) {
-            viewByDisplay = true;
-            var isAll = true;
-            var finalValue = "";
-            $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
-                if (this.checked) {
-                    finalValue += $(this).parent().find('span').eq(0).html() + ",";
-                    var getAllocatedBy = $(this).val().split("_");
-                    if (getAllocatedBy[1] == Quartervalue && viewByDisplay == true) {
-                        viewByDisplay = false;
-                    }
-                }
-                else {
-                    isAll = false;
-                }
-            });
-            finalValue = finalValue.slice(0, -3);
-            if (finalValue == '') {
-                finalValue = 'None';
-            }
-            if (isAll) {
-                finalValue = 'All';
-            }
-            $(filterid).html(finalValue);
-           
-            if (viewByDisplay == false) {
-                DisableViewByAllocated();
-            }
-            else {
-                EnableViewByAllocated();
-            }
-        }
-
-        function LoadMultiselectFilterPlan(multiselectId, filterid) {
-            
-            $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
-                $(this).change(function (e) {
-                    LoadCheckBoxValueForPlan(multiselectId, filterid);
-                });
-            });
-
-            $('#selectAll_' + multiselectId).click(function () {
-                var delay = 50;//1 seconds
-                setTimeout(function () {
-                    LoadCheckBoxValueForPlan(multiselectId, filterid);
-                }, delay);
-            });
-
-            $('#deselectAll_' + multiselectId).click(function () {
-                var delay = 50;//1 seconds
-                setTimeout(function () {
-                    LoadCheckBoxValueForPlan(multiselectId, filterid);
-                    //your code to be executed after 1 seconds
                 }, delay);
             });
         }
@@ -275,6 +208,7 @@
                 var innerlivalue = $(this).find("a").attr("rel");
                 if (innerlivalue == monthvalue) {
                     $(this).css("display", "none");
+                    AllocatedBy = '@RevenuePlanner.Helpers.Enums.PlanAllocatedBy.quarters.ToString()';
                 }
                 else if (innerlivalue == Quartervalue) {
                     isByAllocated = false;
@@ -339,6 +273,8 @@
             BusinessUnitIds = GetFilterId(ddlViewBusinessUnit);
             AudienceIds = GetFilterId(ddlViewAudience);
             SortingId = '';
+            CheckAllocatedBy();
+            
             LoadBudgetData();
         });
 
@@ -347,6 +283,27 @@
             $("#yeardetail").html("FY " + $('#ddlYear').val());
             LoadPlanData();
         });
+
+        function CheckAllocatedBy() {
+            viewByDisplay = true;
+            $('#multipleselect_ddlPlan').find("input[type='checkbox']").each(function () {
+                if (this.checked) {
+                    var getAllocatedBy = $(this).val().split("_");
+                    if (getAllocatedBy[1] == Quartervalue && viewByDisplay == true) {
+                        viewByDisplay = false;
+                    }
+                }
+            });
+            if (viewByDisplay == false) {
+                DisableViewByAllocated();
+            }
+            else {
+                EnableViewByAllocated();
+            }
+
+
+        }
+
         function LoadPlanData() {
             $.ajax({
                 type: 'POST',
@@ -387,12 +344,8 @@
             //End Added by Mitesh Vaishnav for PL ticket #727
             $("#multipleselect_ddlPlan").find("input[type='search']").val('');
             $('#ddlPlan').multiselect("refresh");
-            LoadCheckBoxValueForPlan(multiselectPlanId, filterPlanid);
-            LoadMultiselectFilterPlan(multiselectPlanId, filterPlanid);
-            
-            //$('#multipleselect_ddlPlan').empty();
-            //$dropdown.next().find('.ui-multiselect').empty();
-            //$dropdown.multiselect({ noneSelectedText: $dropdown.attr('noneselectedvalue') }).multiselectfilter();
+            LoadCheckBoxValue(multiselectPlanId, filterPlanid);
+            LoadMultiselectFilter(multiselectPlanId, filterPlanid);
         }
 
        
@@ -439,8 +392,7 @@
     }
 
         function LoadBudgetData() {
-         if(isByAllocated)
-         {
+        if (isByAllocated) {
              $('#divTabData').load('@Url.Action("GetReportBudgetData", "Report")' + '?PlanIds=' + PlanIds + '&GeographyIds=' + GeographyIds + '&BusinessUnitIds=' + BusinessUnitIds + '&VerticalIds=' + VerticalIds + '&AudienceIds=' + AudienceIds + '&Year=' + Year + '&AllocatedBy=' + AllocatedBy + '&Tab=' + Tab + '&SortingId=' + SortingId);
          }
         }
