@@ -3097,7 +3097,7 @@ namespace RevenuePlanner.Controllers
             var planList = db.Plans.Where(p => p.Year == Year && p.IsDeleted == false && p.Status == published).ToList().Select(p => new
             {
                 Text = p.Title + " - " + (p.AllocatedBy == defaultallocatedby ? Noneallocatedby : p.AllocatedBy),
-                Value = p.PlanId.ToString()
+                Value = p.PlanId.ToString() + "_" + p.AllocatedBy
             }).ToList();
 
             return Json(planList, JsonRequestBehavior.AllowGet);

@@ -102,8 +102,9 @@ namespace RevenuePlanner.Controllers
                 {
                     lstAllowedBusinessUnits.ForEach(g => businessUnitIds.Add(Guid.Parse(g)));
                     var lstClientBusinessUnits = Common.GetBussinessUnitIds(Sessions.User.ClientId);
+                    lstClientBusinessUnits = lstClientBusinessUnits.Where(a => businessUnitIds.Contains(Guid.Parse(a.Value))).ToList();
                     planmodel.BusinessUnitIds = lstClientBusinessUnits;
-                    ViewBag.BusinessUnitIds = lstClientBusinessUnits.Where(a => businessUnitIds.Contains(Guid.Parse(a.Value)));
+                    ViewBag.BusinessUnitIds = lstClientBusinessUnits;
                 }
                 else
                 {
@@ -6036,6 +6037,12 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public ActionResult BindUpcomingActivitesValues(string planids)
         {
+            List<int> filterplanIds = string.IsNullOrWhiteSpace(planids) ? new List<int>() : planids.Split(',').Select(p => int.Parse(p)).ToList();
+            if (filterplanIds.Count == 1)
+            {
+                Sessions.PlanId = filterplanIds.Select(p => p).FirstOrDefault();
+            }
+            
             HomePlanModelHeader objHomePlan = new HomePlanModelHeader();
             //objHomePlan = Common.GetPlanHeaderValueForMultiplePlans(planIds);
             objHomePlan.UpcomingActivity = UpComingActivity(planids);

@@ -1927,6 +1927,11 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns View Of Assortment.</returns>
         public ActionResult Assortment(int campaignId = 0, int programId = 0, int tacticId = 0, string ismsg = "", string EditObject = "", bool isError = false)
         {
+            if (campaignId != 0)
+            {
+                Sessions.PlanId = db.Plan_Campaign.Where(c => c.PlanCampaignId == campaignId).Select(c => c.PlanId).FirstOrDefault();
+            }
+            
             // Added by dharmraj to check user activity permission
             bool IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
             ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;
