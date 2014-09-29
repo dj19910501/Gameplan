@@ -2916,7 +2916,7 @@ namespace RevenuePlanner.Helpers
                 int planId = tacticPlanList.Single(t => t.PlanTacticId == tactic.PlanTacticId).PlanId;
                 int modelId = tacticModelList.Single(t => t.PlanTacticId == tactic.PlanTacticId).ModelId;
                 List<StageRelation> stageModelRelation = modleStageRelationList.Single(m => m.ModelId == modelId).StageList;
-                List<Plan_Improvement_Campaign_Program_Tactic> improvementList = (planIMPTacticList.Single(p => p.PlanId == planId).ImprovementTacticList).Where(it => it.EffectiveDate <= tactic.EndDate).ToList();
+                List<Plan_Improvement_Campaign_Program_Tactic> improvementList = (planIMPTacticList.Single(p => p.PlanId == planId).ImprovementTacticList).Where(it => it.EffectiveDate <= tactic.StartDate).ToList();
                 if (improvementList.Count() > 0 && isIncludeImprovement)
                 {
                     TacticStageValueRelation tacticStageObj = new TacticStageValueRelation();
@@ -3294,7 +3294,7 @@ namespace RevenuePlanner.Helpers
         public static List<TacticStageValue> GetTacticStageValueListForImprovement(List<Plan_Campaign_Program_Tactic> marketingActivities, List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities)
         {
             MRPEntities dbStage = new MRPEntities();
-            List<StageRelation> stageRelation = CalculateStageValue(Sessions.PlanId, improvementActivities, true);
+            
             List<Stage> stageList = dbStage.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId).Select(stage => stage).ToList();
             List<TacticStageValue> tacticStageList = new List<TacticStageValue>();
             string stageINQ = Enums.Stage.INQ.ToString();
@@ -3317,6 +3317,8 @@ namespace RevenuePlanner.Helpers
             string Size = Enums.StageType.Size.ToString();
             foreach (Plan_Campaign_Program_Tactic tactic in marketingActivities)
             {
+                List<Plan_Improvement_Campaign_Program_Tactic> improvementList = improvementActivities.Where(it => it.EffectiveDate <= tactic.StartDate).ToList();
+                List<StageRelation> stageRelation = CalculateStageValue(Sessions.PlanId, improvementList, true);
                 int projectedStageLevel = stageList.Single(s => s.StageId == tactic.StageId).Level.Value;
                 inqStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelINQ).Select(s => s.StageId).ToList();
                 mqlStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelMQL).Select(s => s.StageId).ToList();
