@@ -858,10 +858,9 @@ namespace RevenuePlanner.Controllers
                 {
                     id = string.Format("B{0}", bu.BusinessUnitId),
                     text = bu.BusinessUnit.Title,
-                    start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateForPlan(GanttTabs.BusinessUnit, bu.PlanTacticId, bu.Plan_Campaign_Program.Plan_Campaign.PlanId, campaign, program, planTactic)),
-                    duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate,
-                                                              GetMinStartDateForPlan(GanttTabs.BusinessUnit, bu.PlanTacticId, bu.Plan_Campaign_Program.Plan_Campaign.PlanId, campaign, program, planTactic),
-                                                              GetMaxEndDateForPlan(GanttTabs.BusinessUnit, bu.PlanTacticId, bu.Plan_Campaign_Program.Plan_Campaign.PlanId, campaign, program, planTactic)),
+                    start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateStageAndBusinessUnit(campaign, program, planTactic.Where(pt => pt.BusinessUnitId.Equals(bu.BusinessUnitId)).Select(pt => pt).ToList())),
+                    duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, GetMinStartDateStageAndBusinessUnit(campaign, program, planTactic.Where(pt => pt.BusinessUnitId.Equals(bu.BusinessUnitId)).Select(pt => pt).ToList()),
+                                                              GetMaxEndDateStageAndBusinessUnit(campaign, program, planTactic.Where(pt => pt.BusinessUnitId.Equals(bu.BusinessUnitId)).Select(pt => pt).ToList())),
                     progress = 0,
                     //                                   GetProgress(Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateForPlan(GanttTabs.BusinessUnit, bu.PlanTacticId, bu.Plan_Campaign_Program.Plan_Campaign.PlanId, campaign, program, planTactic)),
                     //                                   Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate,
@@ -869,7 +868,7 @@ namespace RevenuePlanner.Controllers
                     //                                            GetMaxEndDateForPlan(GanttTabs.BusinessUnit, bu.PlanTacticId, bu.Plan_Campaign_Program.Plan_Campaign.PlanId, campaign, program, planTactic)), planTactic, improvementTactic),
                     open = false,
                     color = string.Concat(GANTT_BAR_CSS_CLASS_PREFIX, bu.Plan_Campaign_Program.Plan_Campaign.Plan.Model.BusinessUnit.ColorCode.ToLower())
-                });
+                }).ToList().Distinct().ToList().OrderBy(b => b.text).ToList();
 
                 var newQueryBusinessUnitTacticType = queryBusinessUnitTacticType.Select(bu => new
                 {
