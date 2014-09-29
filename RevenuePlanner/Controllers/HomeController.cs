@@ -2604,6 +2604,16 @@ namespace RevenuePlanner.Controllers
                                         result = Common.InsertChangeLog(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId, 0, planTacticId, tactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined);
                                     }
                                     Common.mailSendForTactic(planTacticId, status, tactic.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower());
+
+                                    ////Start Added by Mitesh Vaishnav for PL ticket #766 Different Behavior for Approve Tactics via Request tab
+                                    ////Update Program status according to the tactic status
+                                    Common.ChangeProgramStatus(tactic.PlanProgramId);
+
+                                    ////Update Campaign status according to the tactic and program status
+                                    var PlanCampaignId = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == tactic.PlanProgramId).Select(a => a.PlanCampaignId).Single();
+                                    Common.ChangeCampaignStatus(PlanCampaignId);
+                                    ////End Added by Mitesh Vaishnav for PL ticket #766 Different Behavior for Approve Tactics via Request tab
+
                                     if (result >= 1)
                                     {
                                         scope.Complete();
