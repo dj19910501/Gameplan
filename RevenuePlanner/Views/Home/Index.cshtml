@@ -949,6 +949,7 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
 
                         if (data.AllowedGeography != 'undefined' && data.AllowedGeography != null) {
                             geographyCount = data.AllowedGeography.length;
+                            if (geographyCount > 0) {
                             $("#GeographyAllModule").css("display", "block");
                             $("#NoGeographyFound").hide();
                             $.each(data.AllowedGeography, function (i, geoitem) {
@@ -958,12 +959,19 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
                             });
                         }
                         else {
+                                //Added By Bhavesh #783.4
+                            $("#GeographyAllModule").css("display", "none");
+                                $("#NoGeographyFound").show();
+                            }
+                        }
+                        else {
                             $("#GeographyAllModule").css("display", "none");
                             $("#NoGeographyFound").show();
                         }
 
                         if (data.AllowedVerticals != 'undefined' && data.AllowedVerticals != null) {
                             VerticalCount = data.AllowedVerticals.length;
+                            if (VerticalCount > 0) {
                             $("#ulVerticalAllModule").css("display", "block");
                             $("#NoVerticalFound").hide();
                             $.each(data.AllowedVerticals, function (i, verticlaItem) {
@@ -973,12 +981,19 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
                             });
                         }
                         else {
+                                //Added By Bhavesh #783.4
+                            $("#ulVerticalAllModule").css("display", "none");
+                                $("#NoVerticalFound").show();
+                            }
+                        }
+                        else {
                             $("#ulVerticalAllModule").css("display", "none");
                             $("#NoVerticalFound").show();
                         }
 
                         if (data.AllowedAudience != 'undefined' && data.AllowedAudience != null) {
                             AudienceCount = data.AllowedAudience.length;
+                            if (AudienceCount > 0) {
                             $("#ulAudienceAllModule").css("display", "block");
                             $("#NoAudienceFound").hide();
                             $.each(data.AllowedAudience, function (i, AudienceItem) {
@@ -986,6 +1001,12 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
                                 filters.AudienceIds.push(AudienceItem.AudienceId);
                                 filters.AudienceTitle.push(AudienceItem.Title);
                             });
+                            }
+                            else {
+                                //Added By Bhavesh #783.4
+                                $("#ulAudienceAllModule").css("display", "none");
+                                $("#NoAudienceFound").show();
+                            }
                         }
                         else {
                             $("#ulAudienceAllModule").css("display", "none");
