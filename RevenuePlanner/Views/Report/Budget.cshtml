@@ -8,7 +8,7 @@
     string SelectedYear = ViewBag.SelectedYear;
     string AudienceLabel = Common.CustomLabelFor(Enums.CustomLabelCode.Audience);
     string AudienceLabelTitle = string.Empty;
-    if(AudienceLabel.Length > 10)
+    if (AudienceLabel.Length > 10)
     {
         AudienceLabelTitle = AudienceLabel;
         AudienceLabel = AudienceLabel.Substring(0, 10) + "...";
@@ -32,11 +32,11 @@
     <!-- Budget Reporting Filter area -->
     <div class="budgetReportFilter-area clearfix">
         <div class="budgetReportFilter-area-left">
-            
+
             <!--Start modified by Mitesh Vaishnav for PL ticket #727 - Added "noneselectedvalue" attribute to dropdownlist.-->
             <div class="multiselection-area">
                 <span class="selectBox" id="ddlYearSpan" style="width: 115px; line-height: 2.5; padding-right: 7px;">
-                    @Html.DropDownList("ddlYear", new SelectList((System.Collections.IEnumerable)ViewBag.ViewYear, "Value", "Text",SelectedYear), new { @class = "ddlStyleReport" })
+                    @Html.DropDownList("ddlYear", new SelectList((System.Collections.IEnumerable)ViewBag.ViewYear, "Value", "Text", SelectedYear), new { @class = "ddlStyleReport" })
                 </span>
                 @Html.DropDownList("ddlViewBusinessUnit", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewBusinessUnit, "Value", "Text", ViewBusinessUnitSelectedValue.Where(b => b.Selected).Select(b => b.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlViewBusinessUnit", noneselectedvalue = "Business Units", style = "display:none" })
                 @Html.DropDownList("ddlPlan", new MultiSelectList((System.Collections.IEnumerable)ViewBag.ViewPlan, "Value", "Text", ViewPlanSelectedValue.Where(p => p.Selected).Select(p => p.Value)), new { @class = "multiselection-select", multiple = "multiple", id = "ddlPlan", noneselectedvalue = "Plans", style = "display:none" })
@@ -50,18 +50,18 @@
                 Active Filters
             </div>
             <div class="filter-detail">
-                    <label>Year:</label>
-                    <div class="details" id="yeardetail"></div>
-                    <label>Business Units:</label>
-                    <div class="details" id="businessunitdetail">All</div>
-                    <label>Plans:</label>
-                    <div class="details" id="plandetail"></div>
-                    <label>Geography:</label>
-                    <div class="details" id="geographydetail">All</div>
-                    <label>Verticals:</label>
-                    <div class="details" id="verticaldetail">All</div>
-                    <label>@Html.CustomLabelFor(Enums.CustomLabelCode.Audience):</label>
-                    <div class="details" id="audiencedetail">All</div>
+                <label>Year:</label>
+                <div class="details" id="yeardetail"></div>
+                <label>Business Units:</label>
+                <div class="details" id="businessunitdetail">All</div>
+                <label>Plans:</label>
+                <div class="details" id="plandetail"></div>
+                <label>Geography:</label>
+                <div class="details" id="geographydetail">All</div>
+                <label>Verticals:</label>
+                <div class="details" id="verticaldetail">All</div>
+                <label>@Html.CustomLabelFor(Enums.CustomLabelCode.Audience):</label>
+                <div class="details" id="audiencedetail">All</div>
             </div>
         </div>
         <div class="budgetReportFilter-area-right">
@@ -132,7 +132,7 @@
         $(".sbToggle").css("border-top-color", "#6D6D6D");
         $(".sbSelector").click(function () {
             $(".ui-multiselect-menu").each(function () {
-                $(this).css("display","none");
+                $(this).css("display", "none");
             });
         });
 
@@ -154,12 +154,6 @@
         LoadCheckBoxValue(ddlViewBusinessUnit, businessunitdetail);
         LoadCheckBoxValue(ddlViewGeography, geographydetail);
 
-        LoadMultiselectFilter(multiselectPlanId, filterPlanid);
-        LoadMultiselectFilter(ddlViewAudience, audiencedetail);
-        LoadMultiselectFilter(ddlViewVertical, verticaldetail);
-        LoadMultiselectFilter(ddlViewBusinessUnit, businessunitdetail);
-        LoadMultiselectFilter(ddlViewGeography, geographydetail);
-
         function LoadCheckBoxValue(multiselectId, filterid) {
             var finalValue = "";
             var isAll = true;
@@ -179,28 +173,6 @@
                 finalValue = 'All';
             }
             $(filterid).html(finalValue);
-        }
-
-        function LoadMultiselectFilter(multiselectId, filterid) {
-            $('#multipleselect_' + multiselectId).find("input[type='checkbox']").each(function () {
-                $(this).change(function (e) {
-                    LoadCheckBoxValue(multiselectId, filterid);
-                });
-            });
-
-            $('#selectAll_' + multiselectId).click(function () {
-                var delay = 50;//1 seconds
-                setTimeout(function () {
-                    LoadCheckBoxValue(multiselectId, filterid);
-                }, delay);
-            });
-
-            $('#deselectAll_' + multiselectId).click(function () {
-                var delay = 50;//1 seconds
-                setTimeout(function () {
-                    LoadCheckBoxValue(multiselectId, filterid);
-                }, delay);
-            });
         }
 
         function DisableViewByAllocated() {
@@ -256,17 +228,22 @@
                     finalValue += $(this).val() + ",";
                 }
             });
-            
+
             finalValue = finalValue.slice(0, -1);
             if (finalValue == '') {
                 finalValue = '';
             }
             return finalValue;
-         
+
         }
 
         $("#yeardetail").html("FY " + $('#ddlYear').val());
         $('#button-save').click(function () {
+            LoadCheckBoxValue(multiselectPlanId, filterPlanid);
+            LoadCheckBoxValue(ddlViewAudience, audiencedetail);
+            LoadCheckBoxValue(ddlViewVertical, verticaldetail);
+            LoadCheckBoxValue(ddlViewBusinessUnit, businessunitdetail);
+            LoadCheckBoxValue(ddlViewGeography, geographydetail);
             PlanIds = GetFilterIdForPlan(multiselectPlanId);
             VerticalIds = GetFilterId(ddlViewVertical);
             GeographyIds = GetFilterId(ddlViewGeography);
@@ -274,7 +251,7 @@
             AudienceIds = GetFilterId(ddlViewAudience);
             SortingId = '';
             CheckAllocatedBy();
-            
+
             LoadBudgetData();
         });
 
@@ -308,23 +285,23 @@
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Report/GetBudgetPlanBasedOnYear/")',
-            data: {
-                Year: Year
-            },
-            success: function (r) {
-                //   alert(JSON.stringify(r));
-                populatePlan(r, "ddlPlan");
+                data: {
+                    Year: Year
+                },
+                success: function (r) {
+                    //   alert(JSON.stringify(r));
+                    populatePlan(r, "ddlPlan");
 
-            }
-        });
-    }
+                }
+            });
+        }
 
         function populatePlan(items, id) {
             var $dropdown = $("#" + id);
             $dropdown.empty();
             var $html = '';
             if (items.length > 0) {
-              
+
                 $.each(items, function (index, planobj) {
                     if (planobj.Selected) {
                         $html += '<option value="' + planobj.Value + '" selected>' + planobj.Text + '</option>';
@@ -339,16 +316,15 @@
 
             //start Added by Mitesh Vaishnav for PL ticket #727
             //update multiselect box as its related dropdownlist's option will be changed
-           // var updatedOption = $("#ddlPlan").find('option');
-           
+            // var updatedOption = $("#ddlPlan").find('option');
+
             //End Added by Mitesh Vaishnav for PL ticket #727
             $("#multipleselect_ddlPlan").find("input[type='search']").val('');
             $('#ddlPlan').multiselect("refresh");
             LoadCheckBoxValue(multiselectPlanId, filterPlanid);
-            LoadMultiselectFilter(multiselectPlanId, filterPlanid);
         }
 
-       
+
         $("#ddlTabViewBy").change(function () {
             Tab = $('#ddlTabViewBy').val();
             SortingId = '';
@@ -368,7 +344,7 @@
         CheckAllocatedBy();
         LoadBudgetData();
         //, function () { LoadBudgetData(); });
-    
+
     });
 
     function LoadBudgetSortingEvent() {
@@ -392,9 +368,9 @@
         });
     }
 
-        function LoadBudgetData() {
+    function LoadBudgetData() {
         if (isByAllocated) {
-             $('#divTabData').load('@Url.Action("GetReportBudgetData", "Report")' + '?PlanIds=' + PlanIds + '&GeographyIds=' + GeographyIds + '&BusinessUnitIds=' + BusinessUnitIds + '&VerticalIds=' + VerticalIds + '&AudienceIds=' + AudienceIds + '&Year=' + Year + '&AllocatedBy=' + AllocatedBy + '&Tab=' + Tab + '&SortingId=' + SortingId);
-         }
+            $('#divTabData').load('@Url.Action("GetReportBudgetData", "Report")' + '?PlanIds=' + PlanIds + '&GeographyIds=' + GeographyIds + '&BusinessUnitIds=' + BusinessUnitIds + '&VerticalIds=' + VerticalIds + '&AudienceIds=' + AudienceIds + '&Year=' + Year + '&AllocatedBy=' + AllocatedBy + '&Tab=' + Tab + '&SortingId=' + SortingId);
         }
+    }
 </script>
