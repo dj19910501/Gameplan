@@ -6127,7 +6127,7 @@ namespace RevenuePlanner.Controllers
 
         //New parameter activeMenu added to check whether this method is called from Home or Plan
         [HttpPost]
-        public ActionResult BindUpcomingActivitesValues(string planids)
+        public ActionResult BindUpcomingActivitesValues(string planids, string CurrentTime)
         {
             HomePlanModelHeader objHomePlan = new HomePlanModelHeader();
             //objHomePlan = Common.GetPlanHeaderValueForMultiplePlans(planIds);
