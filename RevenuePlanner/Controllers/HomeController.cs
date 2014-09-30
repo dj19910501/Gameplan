@@ -2609,7 +2609,7 @@ namespace RevenuePlanner.Controllers
                                     Common.ChangeProgramStatus(tactic.PlanProgramId);
 
                                     ////Update Campaign status according to the tactic and program status
-                                    var PlanCampaignId = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == tactic.PlanProgramId).Select(a => a.PlanCampaignId).Single();
+                                    var PlanCampaignId = tactic.Plan_Campaign_Program.PlanCampaignId;
                                     Common.ChangeCampaignStatus(PlanCampaignId);
                                     ////End Added by Mitesh Vaishnav for PL ticket #766 Different Behavior for Approve Tactics via Request tab
 
