@@ -1016,6 +1016,14 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
                 }
             });
         }
+        else {
+            $("#GeographyAllModule").css("display", "none");
+            $("#NoGeographyFound").show();
+            $("#ulVerticalAllModule").css("display", "none");
+            $("#NoVerticalFound").show();
+            $("#ulAudienceAllModule").css("display", "none");
+            $("#NoAudienceFound").show();
+        }
     }
 
     function BindUpcomingActivites(SelectedPlanIds) {
