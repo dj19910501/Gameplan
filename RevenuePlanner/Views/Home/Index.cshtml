@@ -164,6 +164,7 @@
             if (items.length > 0) {
                 $.each(items, function (index, plan) {
                     if (plan.Selected) {
+                        SelectedPlanTitle = plan.Text;
                         $html += '<option value="' + plan.Value + '" selected>' + plan.Text + '</option>';
                         CurrentPlanId = plan.Value;
                         $("#CurrentPlanId").val(CurrentPlanId);
