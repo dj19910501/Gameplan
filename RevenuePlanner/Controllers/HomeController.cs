@@ -95,6 +95,10 @@ namespace RevenuePlanner.Controllers
                 businessUnitIds = clientBusinessUnit.ToList();
                 planmodel.BusinessUnitIds = Common.GetBussinessUnitIds(Sessions.User.ClientId); //commented due to not used any where
                 ViewBag.BusinessUnitIds = planmodel.BusinessUnitIds;//Added by Nirav for Custom Dropdown - 388
+                if (businessUnitIds.Count > 1)
+                    ViewBag.showBid = true;
+                else
+                    ViewBag.showBid = false;
             }
             else
             {
@@ -106,11 +110,16 @@ namespace RevenuePlanner.Controllers
                     lstClientBusinessUnits = lstClientBusinessUnits.Where(a => businessUnitIds.Contains(Guid.Parse(a.Value))).ToList();
                     planmodel.BusinessUnitIds = lstClientBusinessUnits;
                     ViewBag.BusinessUnitIds = lstClientBusinessUnits;
+                    if (lstAllowedBusinessUnits.Count > 1)
+                        ViewBag.showBid = true;
+                    else
+                        ViewBag.showBid = false;
                 }
                 else
                 {
                     businessUnitIds.Add(Sessions.User.BusinessUnitId);
                     ViewBag.BusinessUnitIds = Sessions.User.BusinessUnitId;//Added by Nirav for Custom Dropdown - 388
+                    ViewBag.showBid = false;
                 }
                 // End - Added by Sohel Pathan on 30/06/2014 for PL ticket #563 to apply custom restriction logic on Business Units
             }
@@ -230,6 +239,12 @@ namespace RevenuePlanner.Controllers
                         else
                         {
                             currentPlan = activePlan.Where(p => p.PlanId.Equals(Sessions.PlanId)).FirstOrDefault();
+
+                            if (currentPlan == null)
+                            {
+                                currentPlan = activePlan.OrderBy(p => p.Title).FirstOrDefault();
+                            }
+
                         }
                     }
                     /*added by Nirav for plan consistency on 14 apr 2014*/
@@ -297,6 +312,66 @@ namespace RevenuePlanner.Controllers
             {
                 objHomePlan.IsManager = false;
             }
+
+            List<SelectListItem> planList;
+            if (Bid == "false")
+            {
+                var plan = Common.GetPlan();
+                //if condition added to dispaly only published plan on home page
+                if (objactivemenu.Equals(Enums.ActiveMenu.Home))
+                {
+                    //// Getting Active plan for all above models.
+                    string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
+                    planList = plan.Where(p => p.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = p.PlanId.ToString() }).OrderBy(p => p.Text).ToList();
+                }
+                else
+                {
+                    planList = plan.Select(p => new SelectListItem() { Text = p.Title, Value = p.PlanId.ToString() }).OrderBy(p => p.Text).ToList();
+                }
+
+                var objexists = planList.Where(p => p.Value == currentPlanId.ToString()).ToList();
+                if (objexists.Count != 0)
+                {
+                    planList.Single(p => p.Value.Equals(currentPlanId.ToString())).Selected = true;
+                }
+            }
+            else
+            {
+                Guid bId = new Guid(Bid);
+                /*added by Nirav for plan consistency on 14 apr 2014*/
+                Sessions.BusinessUnitId = bId;
+                var plan = Common.GetPlan().Where(s => s.Model.BusinessUnitId == bId);
+                //if condition added to dispaly only published plan on home page
+                if (objactivemenu.Equals(Enums.ActiveMenu.Home))
+                {
+                    //// Getting Active plan for all above models.
+                    string planPublishedStatus = Enums.PlanStatusValues.Single(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
+                    planList = plan.Where(p => p.Status.Equals(planPublishedStatus)).Select(p => new SelectListItem() { Text = p.Title, Value = p.PlanId.ToString() }).OrderBy(p => p.Text).ToList();
+                }
+                else
+                {
+                    planList = plan.Select(p => new SelectListItem() { Text = p.Title, Value = p.PlanId.ToString() }).OrderBy(p => p.Text).ToList();
+                }
+
+                if (planList.Count > 0)
+                {
+                    var objexists = planList.Where(p => p.Value == currentPlanId.ToString()).ToList();
+                    if (objexists.Count != 0)
+                    {
+                        planList.Single(p => p.Value.Equals(currentPlanId.ToString())).Selected = true;
+                    }
+                    else
+                    {
+                        planList.FirstOrDefault().Selected = true;
+                    }
+                }
+                else
+                {
+                    Sessions.BusinessUnitId = Guid.Empty;
+                }
+
+            }
+            objHomePlan.plans = planList;
 
             return PartialView("_PlanDropdown", objHomePlan);
         }
@@ -5249,6 +5324,8 @@ namespace RevenuePlanner.Controllers
             int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
             var lstAllowedVertical = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
             var lstAllowedGeography = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId.ToString().ToLower()).ToList();////Modified by Mitesh Vaishnav For functional review point 89
+            var lstAllowedBusinessUnit = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId).ToList();
+
             TacticList = TacticList.Where(t => lstAllowedVertical.Contains(t.VerticalId.ToString()) && lstAllowedGeography.Contains(t.GeographyId.ToString().ToLower())).ToList();////Modified by Mitesh Vaishnav For functional review point 89
 
             List<int> TacticIds = TacticList.Select(t => t.PlanTacticId).ToList();
@@ -5279,6 +5356,7 @@ namespace RevenuePlanner.Controllers
             // Added by Dharmraj Mangukiya for filtering tactic as per custom restrictions PL ticket #538
             var lstEditableVertical = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
             var lstEditableGeography = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId.ToString().ToLower()).ToList();////Modified by Mitesh Vaishnav For functional review point 89
+            var lstEditableBusinessUnit = lstUserCustomRestriction.Where(r => r.Permission == ViewEditPermission && r.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString()).Select(r => r.CustomFieldId.ToString()).ToList();
 
             List<string> lstMonthly = new List<string>() { "Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "Y7", "Y8", "Y9", "Y10", "Y11", "Y12" };
 
@@ -5342,7 +5420,7 @@ namespace RevenuePlanner.Controllers
                 tacticStageTitle = t.Stage.Title,
                 projectedStageValue = t.ProjectedStageValue,
                 projectedStageValueActual = lstTacticActual.Where(a => a.PlanTacticId == t.PlanTacticId && a.StageTitle == TitleProjectedStageValue).Sum(a => a.Actualvalue),
-                IsTacticEditable = (lstEditableGeography.Contains(t.GeographyId.ToString().ToLower()) && lstEditableVertical.Contains(t.VerticalId.ToString())),////Modified by Mitesh Vaishnav For functional review point 89
+                IsTacticEditable = (lstEditableGeography.Contains(t.GeographyId.ToString().ToLower()) && lstEditableVertical.Contains(t.VerticalId.ToString()) && lstEditableBusinessUnit.Contains(t.BusinessUnitId.ToString())),////Modified by Mitesh Vaishnav For functional review point 89
                 //Set Line Item data with it's actual values and Sum
                 LineItemsData = (tacticLineItem.Where(pctq => pctq.PlanTacticId.Equals(t.PlanTacticId)).ToList()).Select(pcpt => new
                 {
@@ -6054,6 +6132,22 @@ namespace RevenuePlanner.Controllers
             HomePlanModelHeader objHomePlan = new HomePlanModelHeader();
             //objHomePlan = Common.GetPlanHeaderValueForMultiplePlans(planIds);
             objHomePlan.UpcomingActivity = UpComingActivity(planids);
+
+            bool IsItemExists = objHomePlan.UpcomingActivity.Where(s => s.Value == CurrentTime).Any();
+
+            if (IsItemExists)
+            {
+                foreach (SelectListItem item in objHomePlan.UpcomingActivity)
+                {
+                    item.Selected = false;
+
+                    if (CurrentTime == item.Value)
+                    {
+                        item.Selected = true;
+                    }
+                }
+            }
+            
             return PartialView("_planheader", objHomePlan);
         }
         public JsonResult SetSessionPlan(string planids)

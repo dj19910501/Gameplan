@@ -2,7 +2,7 @@
 @using RevenuePlanner.Helpers;
 
 <ul class="nav nav-tabs">
-  @*  <li class="title-header source-sans-proregular bold font-size25px">
+    <li class="title-header source-sans-proregular bold font-size25px">
 
         <form id="nl-form2" class="nl-form-plan-title without-margin plantitle">
 
@@ -19,7 +19,7 @@
             </script>
 
         </form>
-    </li>*@
+    </li>
     <li>
        @* <span class="drop-down-logo-icon2"></span>*@
     </li>
@@ -56,6 +56,9 @@
         RefreshCurrentTab();
         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
             GetCollaborators(CurrentPlanId);
+        }
+        else {
+            $("#nl-form2").hide();
         }
         var SelectedPlans = filters.SelectedPlans.toString();
         GetHealderData(SelectedPlans);

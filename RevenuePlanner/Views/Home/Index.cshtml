@@ -13,12 +13,14 @@
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
     bool IsBusinessUnitEditable = (bool)ViewBag.IsBusinessUnitEditable;
+    bool showBid = ViewBag.showBid;
 }
 
 @Html.Hidden("IsViewOnly")
 @Html.Hidden("hdnshowInspectForPlanTacticId", showInspectForPlanTacticId)
 @Html.Hidden("hdnshowInspectForPlanCampaignId", showInspectForPlanCampaignId)
 @Html.Hidden("hdnshowInspectForPlanProgramId", showInspectForPlanProgramId)
+@Html.Hidden("showBid", showBid)
 
 <!--Modified By Maninder Singh Wadhva PL Ticket#47-->
 @Html.Hidden("hdnIsImprovement", isImprovement)
@@ -57,17 +59,24 @@
         var Currenttime = "planYear";
         $(document).ready(function () {
             //Added by Nirav for Custom Dropdown - 388
-
+            var showBid = $('#showBid').val();
             filters.BUId.push('@Sessions.BusinessUnitId');
             $('#businessunitdetail').html($('#' + '@Sessions.BusinessUnitId').attr('butitile'));
             filters.BuTitles.push($('#businessunitdetail').html());
-
-            $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + filters.BUId.toString() + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val());//activeMenu parameter added
-            
-            @*else {
+            if (($('#ActiveMenu').val().toLowerCase() == "plan")){
+                if (showBid == 'True') {
+                    var id = $('#ddlBusinessUnit').val();
+                    $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + id + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val());//activeMenu parameter added
+                }
+                else {
                 $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=false&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val());//activeMenu parameter added
-            }*@
-            //  $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=false&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val());//activeMenu parameter added
+                }
+            }
+            else
+            {
+                $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + filters.BUId.toString() + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val());//activeMenu parameter added
+            }
+
             switch ($('#ActiveMenu').val().toLowerCase()) {
                 case 'home':
                     $("#DivButtonsHome").show();
@@ -75,6 +84,7 @@
                     break;
                 case 'plan':
                     $("#DivButtonsHome").hide();
+                    $("#SideBarUserWelcomeMessage").hide();
                     $("#DivButtonsPlanSummary").show();
                     $('#businessunitdetail').html('@ViewBag.BusinessUnitTitle');
                     $('#plandetail').html('@Model.PlanTitle.ToString()');
@@ -117,14 +127,16 @@
             $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
                 CurrentPlanId = $(this).attr('value');
                 $("#CurrentPlanId").val(CurrentPlanId);
+                SelectedPlanTitle =  $(this).text();
+                BindOtherAttributes();
                 //// Modified By Maninder Singh Wadhva to Address PL#203
                 if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-                    GetCollaborators(filters.SelectedPlans);
+                    GetCollaborators(CurrentPlanId);
                 }
                 RefreshCurrentTab();
                 var selectedPlanIds = filters.SelectedPlans.toString();
-                GetHealderData(selectedPlanIds);
-                GetNumberOfActivityPerMonByPlanId(selectedPlanIds, isQuater);
+                GetHealderData(CurrentPlanId);
+                GetNumberOfActivityPerMonByPlanId(CurrentPlanId, "planYear");
                 arrClosedTask = []; // addded by dharmraj for ticket #485 to clear closed task veriable on plan change.
             });
         }
@@ -145,8 +157,34 @@
             }
             $dropdown.append($html);
         }
+
+        function populateNF(items, id) {
+            var $dropdown = $("#" + id);
+            var $html = '';
+            if (items.length > 0) {
+                $.each(items, function (index, plan) {
+                    if (plan.Selected) {
+                        $html += '<option value="' + plan.Value + '" selected>' + plan.Text + '</option>';
+                        CurrentPlanId = plan.Value;
+                        $("#CurrentPlanId").val(CurrentPlanId);
+                    } else {
+                        $html += '<option value="' + plan.Value + '">' + plan.Text + '</option>';
+                    }
+                });
+            } else {
+                $html += '<option value=' + 0 + ' selected>' + "Plan Title" + '</option>';
+                CurrentPlanId = 0;
+                $("#CurrentPlanId").val(CurrentPlanId);
+            }
+            $dropdown.append($html);
+        }
+
         function onClickActivity() {
             $('#nl-formAct > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+                if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+                    filters.SelectedPlans = [];
+                    filters.SelectedPlans.push(CurrentPlanId);
+                }
                 if (filters.SelectedPlans.length > 0) {
                     var PlanIds = filters.SelectedPlans.toString();
                     var Title = $(this).text();
@@ -158,6 +196,20 @@
                     GetNumberOfActivityPerMonByPlanId(PlanIds, Currenttime);
 
                 }
+            });
+        }
+
+        function onClickBusinessUnit() {
+            $('#dropdown-business-unit').find('a#option').click(function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                var Title = $(this).text();
+                var id = $(this).attr("name");
+                $("#selected-option").html('');
+                $("#selected-option").html(Title);
+                $("#DivloadPlan").html('');
+                var pid = $('#PlanId').val();
+                $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + id + '&currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val()); //activeMenu parameter added
             });
         }
 
@@ -247,10 +299,11 @@
 
     <!-- Sidebar Block Starts -->
     <div id="sidebar" class="span2 sidebar">
-        <div class="sidebar-section first">
+        <div class="sidebar-section first" id="SideBarUserWelcomeMessage">
             <span>Hello, @Sessions.User.LastName.</span>
             <p>Let’s begin by filtering the information you want to see below.</p>
         </div>
+        <div class="WelcomeMessageBorder"></div>
         <div class="sidebar-section scroll-section">
             <div style="width: 100%;">
                 <div class="width50 float-left ">
@@ -398,6 +451,23 @@
 <div class="light-blue-chart cf" id="planHeader">
     @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
 </div>
+
+@{
+    if (showBid == true && (activeMenu.ToLower() == Enums.ActiveMenu.Plan.ToString().ToLower()))
+    {
+    <span class="selectBox dropdown-businessUnit" id="dropdown-business-unit">
+        @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId != Guid.Empty)
+        {
+            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text", Sessions.BusinessUnitId))
+        }
+        else
+        {
+            @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text"))
+        }
+    </span>
+    }
+}
+
 <div class="HomeSearchFilter-area clearfix">
     <div class="HomeSearchFilter-area-left">
         <h4 class="margin-bottom0">Active Filters</h4>
@@ -512,6 +582,10 @@
 
 <script type="text/javascript">
 
+
+    var SelectedBusinessUnitTitle="";
+    var SelectedPlanTitle="";
+
     var filters = {
         geographyIds: [],
         BUId: [],
@@ -537,7 +611,15 @@
     $("#ulAudienceAllModule").css("display", "none");
 
     function UpdateResult() {
-        var SelectedPlanIds = filters.SelectedPlans.toString();
+        var SelectedPlanIds;
+            if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
+                SelectedPlanIds = filters.SelectedPlans.toString();
+            }
+          else
+             {
+                SelectedPlanIds = CurrentPlanId;
+             }
+
         SetAttributeData();
 
         $.ajax({
@@ -558,7 +640,7 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
         SetPriceValue("#pMQLs");
         RefreshCurrentTab();
         GetHealderData(SelectedPlanIds);
-        GetNumberOfActivityPerMonByPlanId(SelectedPlanIds, "planYear");
+        GetNumberOfActivityPerMonByPlanId(SelectedPlanIds, Currenttime);
         onClickActivity();
                 }
             }
@@ -595,8 +677,19 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
         }
         }
         else {
+		    if (SelectedBusinessUnitTitle == "") {
             $('#businessunitdetail').html('@ViewBag.BusinessUnitTitle');
+		    }
+		    else {
+		        $('#businessunitdetail').html(SelectedBusinessUnitTitle);
+		    }
+            
+		    if (SelectedPlanTitle == "") {
             $('#plandetail').html('@Model.PlanTitle.ToString()');
+		    }
+		    else {
+		        $('#plandetail').html(SelectedPlanTitle);
+		    }
         }
 
         if (filters.geographyTitle.length > 0) {
@@ -800,12 +893,12 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
         var planIds = 0;
         if(activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()')
         {
-            planIds = CurrentPlanId;
+            filters.SelectedPlans = [];
+            filters.SelectedPlans.push(CurrentPlanId);
         }
-        else if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()')
-        {
+        
             planIds = filters.SelectedPlans;
-        }
+
         if (planIds.length > 0) {
             $('#DivloadPlan').show();
             $('.tab-content').show();
@@ -934,7 +1027,8 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
         else {
             planIds = filters.SelectedPlans;
         }
-        if (planIds.length > 0) {
+
+        if (planIds.length > 0 || CurrentPlanId > 0) {
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Home/GetCustomAttributes/")',
@@ -949,9 +1043,9 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
 
                         if (data.AllowedGeography != 'undefined' && data.AllowedGeography != null) {
                             geographyCount = data.AllowedGeography.length;
-                            if (geographyCount > 0) {
                             $("#GeographyAllModule").css("display", "block");
                             $("#NoGeographyFound").hide();
+                            if (geographyCount > 0) {
                             $.each(data.AllowedGeography, function (i, geoitem) {
                                 $('#ulSelectedGeography').append('<li class="accordion-inner close-list " title="' + geoitem.Title + '" id="liGeography' + geoitem.GeographyId + '"><span class="sidebarliwidth">' + geoitem.Title + '</span><a geoTitle="' + geoitem.Title + '" onclick="toggleGeography(this.id)" href="#" id="' + geoitem.GeographyId + '"></a></li>');
                                 filters.geographyIds.push(geoitem.GeographyId);
@@ -971,9 +1065,9 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
 
                         if (data.AllowedVerticals != 'undefined' && data.AllowedVerticals != null) {
                             VerticalCount = data.AllowedVerticals.length;
-                            if (VerticalCount > 0) {
                             $("#ulVerticalAllModule").css("display", "block");
                             $("#NoVerticalFound").hide();
+                            if (VerticalCount > 0) {
                             $.each(data.AllowedVerticals, function (i, verticlaItem) {
                                 $('#ulSelectedVertical').append('<li class="accordion-inner close-list" title="' + verticlaItem.Title + '" id="liVertical' + verticlaItem.VerticalId + '"><span class="sidebarliwidth">' + verticlaItem.Title + '</span><a verticalTitle="' + verticlaItem.Title + '" onclick="toggleVertical(this.id)" href="#" id="' + verticlaItem.VerticalId + '"></a></li>');
                                 filters.VerticalId.push(verticlaItem.VerticalId);
@@ -993,9 +1087,9 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
 
                         if (data.AllowedAudience != 'undefined' && data.AllowedAudience != null) {
                             AudienceCount = data.AllowedAudience.length;
-                            if (AudienceCount > 0) {
                             $("#ulAudienceAllModule").css("display", "block");
                             $("#NoAudienceFound").hide();
+                            if (AudienceCount > 0) {
                             $.each(data.AllowedAudience, function (i, AudienceItem) {
                                 $('#ulSelectedAudience').append('<li class="accordion-inner close-list" title="' + AudienceItem.Title + '" id="liAudience' + AudienceItem.AudienceId + '"><span class="sidebarliwidth">' + AudienceItem.Title + '</span><a AudienceTitle="' + AudienceItem.Title + '" onclick="toggleAudience(this.id)" href="#" id="' + AudienceItem.AudienceId + '"></a></li>');
                                 filters.AudienceIds.push(AudienceItem.AudienceId);
@@ -1016,14 +1110,6 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
                 }
             });
         }
-        else {
-            $("#GeographyAllModule").css("display", "none");
-            $("#NoGeographyFound").show();
-            $("#ulVerticalAllModule").css("display", "none");
-            $("#NoVerticalFound").show();
-            $("#ulAudienceAllModule").css("display", "none");
-            $("#NoAudienceFound").show();
-        }
     }
 
     function BindUpcomingActivites(SelectedPlanIds) {
@@ -1033,7 +1119,8 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
             dataType: "html",
             async: false,
             data: {
-                planids: SelectedPlanIds
+                planids: SelectedPlanIds,
+                CurrentTime : Currenttime
             },
             success: function (data) {
                 $("#planHeader").html(data);
@@ -1163,10 +1250,12 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
     $(".selectBox select").selectbox();
     $('#ddlBusinessUnit').change(function () {
         var Bid = $('#ddlBusinessUnit').val();
+        SelectedBusinessUnitTitle =($("#dropdown-business-unit .sbSelector").html());
         CurrentPlanId = $('#PlanId').val();
         $("#CurrentPlanId").val(CurrentPlanId);
-        /*changed by Nirav for plan consistency on 14 apr 2014*/
-        $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + Bid + '&currentPlanId=' + CurrentPlanId + '&activeMenu=' + $('#ActiveMenu').val())
+        $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + Bid + '&currentPlanId=' + CurrentPlanId + '&activeMenu=' + $('#ActiveMenu').val());
+        BindOtherAttributes();
+
     });
     /*end Nirav*/
     /// Script Start
@@ -1593,7 +1682,8 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
         }
         else if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()')
         {
-            Planid = CurrentPlanId;
+            Planid.push(CurrentPlanId);
+            BUId.push($('#ddlBusinessUnit').val());
             GetSelectedPlanNo = 1;
         }
 
