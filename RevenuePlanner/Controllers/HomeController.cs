@@ -6049,41 +6049,10 @@ namespace RevenuePlanner.Controllers
 
 
         [HttpPost]
-        public ActionResult GetCustomAttributes(string planIds, string requstedModule)
+        public ActionResult GetCustomAttributes()
         {
-            List<Plan_Campaign> activePlan1 = new List<Plan_Campaign>();
-            
             try
             {
-                if (!string.IsNullOrEmpty(planIds))
-                {
-
-                    List<string> selectedplanId = planIds.Split(',').ToList();
-                    List<int> PlanIdss = new List<int>();
-
-                    foreach (var item in selectedplanId)
-                    {
-                        PlanIdss.Add(Convert.ToInt32(item));
-                    }
-                    var statusList = Common.GetStatusListAfterApproved();
-                    if (requstedModule.ToLower() == Enums.ActiveMenu.Plan.ToString().ToLower())
-                    {
-                        List<string> statusCD = new List<string>();
-                        statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
-                        statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
-                        statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-                        statusList.AddRange(statusCD);
-                    }
-                    var objPlan_Campaign_Program_Tactic = (from pc in db.Plan_Campaign
-                                                           join pcp in db.Plan_Campaign_Program on pc.PlanCampaignId equals pcp.PlanCampaignId
-                                                           join pcpt in db.Plan_Campaign_Program_Tactic on pcp.PlanProgramId equals pcpt.PlanProgramId
-                                                           where PlanIdss.Contains(pc.PlanId) && pcpt.IsDeleted == false && pc.IsDeleted == false && pcp.IsDeleted == false
-                                                           && statusList.Contains(pcpt.Status)
-                                                           select pcpt).ToList();
-
-                    var Geography = objPlan_Campaign_Program_Tactic.Select(x => x.GeographyId).Distinct();
-                    var Vertical = objPlan_Campaign_Program_Tactic.Select(x => x.VerticalId).Distinct();
-                    var Audience = objPlan_Campaign_Program_Tactic.Select(x => x.AudienceId).Distinct();
 
                     var lstUserCustomRestriction = Common.GetUserCustomRestriction();
                     int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
@@ -6092,7 +6061,7 @@ namespace RevenuePlanner.Controllers
                     var lstAllowedGeography = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.Geography.ToString()).Select(r => r.CustomFieldId).ToList();
                     List<Guid> lstAllowedGeographyId = new List<Guid>();
                     lstAllowedGeography.ForEach(g => lstAllowedGeographyId.Add(Guid.Parse(g)));
-                    var allowedGeography = db.Geographies.Where(g => g.IsDeleted.Equals(false) && lstAllowedGeographyId.Contains(g.GeographyId) && Geography.Contains(g.GeographyId)).Distinct().Select(t => new
+                var allowedGeography = db.Geographies.Where(g => g.IsDeleted.Equals(false) && lstAllowedGeographyId.Contains(g.GeographyId)).Distinct().Select(t => new
                     {
                         t.GeographyId,
                         t.Title
@@ -6101,13 +6070,13 @@ namespace RevenuePlanner.Controllers
                     var lstAllowedVerticals = lstUserCustomRestriction.Where(r => (r.Permission == ViewOnlyPermission || r.Permission == ViewEditPermission) && r.CustomField == Enums.CustomRestrictionType.Verticals.ToString()).Select(r => r.CustomFieldId).ToList();
                     List<int> lstAllowedVerticalsId = new List<int>();
                     lstAllowedVerticals.ForEach(g => lstAllowedVerticalsId.Add(int.Parse(g)));
-                    var allowedVerticals = db.Verticals.Where(g => g.IsDeleted.Equals(false) && lstAllowedVerticalsId.Contains(g.VerticalId) && Vertical.Contains(g.VerticalId)).Distinct().Select(t => new
+                var allowedVerticals = db.Verticals.Where(g => g.IsDeleted.Equals(false) && lstAllowedVerticalsId.Contains(g.VerticalId)).Distinct().Select(t => new
                     {
                         t.VerticalId,
                         t.Title
                     }).OrderBy(t => t.Title);
 
-                    var allowedAudience = db.Audiences.Where(g => g.IsDeleted.Equals(false) && Audience.Contains(g.AudienceId) && g.ClientId == Sessions.User.ClientId).Distinct().Select(t => new
+                var allowedAudience = db.Audiences.Where(g => g.IsDeleted.Equals(false) && g.ClientId == Sessions.User.ClientId).Distinct().Select(t => new
                     {
                         t.AudienceId,
                         t.Title
@@ -6115,8 +6084,7 @@ namespace RevenuePlanner.Controllers
 
 
                     return Json(new { isSuccess = true, AllowedGeography = allowedGeography, AllowedVerticals = allowedVerticals, AllowedAudience = allowedAudience }, JsonRequestBehavior.AllowGet);
-                }
-                return Json(new { isSuccess = false }, JsonRequestBehavior.AllowGet);
+
             }
             catch (Exception e)
             {

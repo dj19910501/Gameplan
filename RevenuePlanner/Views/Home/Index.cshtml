@@ -128,7 +128,7 @@
                 CurrentPlanId = $(this).attr('value');
                 $("#CurrentPlanId").val(CurrentPlanId);
                 SelectedPlanTitle =  $(this).text();
-                BindOtherAttributes();
+                //BindOtherAttributes();
                 //// Modified By Maninder Singh Wadhva to Address PL#203
                 if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                     GetCollaborators(CurrentPlanId);
@@ -332,11 +332,11 @@
                                 string id = "li" + item.Value;
                                 if (item.Value == Sessions.BusinessUnitId.ToString())
                                 {
-                                    <li class="accordion-inner close-list" id="@id" title="@item.Text"><span class="sidebarliwidth">@item.Text</span><a href="#" BuTitile="@item.Text" id="@item.Value" onclick="toggleBusinessUnit(this.id)"></a></li>
+                                    <li class="accordion-inner close-list" id="@id" title="@item.Text"><span class="sidebarliwidth">@item.Text</span><a BuTitile="@item.Text" id="@item.Value" onclick="toggleBusinessUnit(this.id)"></a></li>
                                 }
                                 else
                                 {
-                                    <li class="accordion-inner" id="@id" title="@item.Text"><span class="sidebarliwidth">@item.Text</span><a href="#" BuTitile="@item.Text" id="@item.Value" onclick="toggleBusinessUnit(this.id)">Select</a></li>
+                                    <li class="accordion-inner" id="@id" title="@item.Text"><span class="sidebarliwidth">@item.Text</span><a BuTitile="@item.Text" id="@item.Value" onclick="toggleBusinessUnit(this.id)">Select</a></li>
                                 }
                             }
                             </ul>
@@ -788,7 +788,7 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
             $("#CurrentPlanId").val(event);
         }
 
-        BindOtherAttributes();
+        //   BindOtherAttributes();
     }
 
     function toggleGeography(event) {
@@ -938,18 +938,18 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
         filters.PlanTitles = [];
         filters.PlanIDs = [];
         filters.SelectedPlans = [];
-        filters.geographyIds = [];
-        filters.VerticalId = [];
-        filters.VerticalTitle = [];
-        filters.geographyTitle = [];
-        filters.AudienceIds = [];
-        filters.AudienceTitle = [];
-        $('#ulSelectedGeography').html('');
-        $('#ulSelectedVertical').html('');
-        $('#ulSelectedAudience').html('');
-        $("#GeographyAllModule").css("display", "none");
-        $("#ulVerticalAllModule").css("display", "none");
-        $("#ulAudienceAllModule").css("display", "none");
+        //filters.geographyIds = [];
+        //filters.VerticalId = [];
+        //filters.VerticalTitle = [];
+        //filters.geographyTitle = [];
+        //filters.AudienceIds = [];
+        //filters.AudienceTitle = [];
+        //$('#ulSelectedGeography').html('');
+        //$('#ulSelectedVertical').html('');
+        //$('#ulSelectedAudience').html('');
+        //$("#GeographyAllModule").css("display", "none");
+        //$("#ulVerticalAllModule").css("display", "none");
+        //$("#ulAudienceAllModule").css("display", "none");
     }
 
     function BindPlanBySelectedBusniessUnit() {
@@ -974,17 +974,17 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
                         $("#NoPlanFound").hide();
                         $.each(data.ActivePlans, function (i, item) {
                             if (item.PlanId == CurrentPlanId && isFirstCall) {
-                                $('#ulSelectedPlans').append('<li class="accordion-inner close-list" title="' + item.Title + '" id="liPlan' + item.PlanId + '"> <span class="sidebarliwidth">' + item.Title + '</span><a planTitle="' + item.Title + '" onclick="togglePlan(this.id)" href="#" id="' + item.PlanId + '"></a></li>');
+                                    $('#ulSelectedPlans').append('<li class="accordion-inner close-list" title="' + item.Title + '" id="liPlan' + item.PlanId + '"> <span class="sidebarliwidth">' + item.Title + '</span><a planTitle="' + item.Title + '" onclick="togglePlan(this.id)" id="' + item.PlanId + '"></a></li>');
                                 filters.SelectedPlans.push(item.PlanId);
                                 $('#plandetail').html(item.Title);
                                 filters.PlanTitles.push(item.Title);
                             }
                             else {
-                                $('#ulSelectedPlans').append('<li class="accordion-inner" title="' + item.Title + '" id="liPlan' + item.PlanId + '"><span class="sidebarliwidth">' + item.Title + '</span><a planTitle="' + item.Title + '" onclick="togglePlan(this.id)" href="#" id="' + item.PlanId + '">Select</a></li>');
+                                    $('#ulSelectedPlans').append('<li class="accordion-inner" title="' + item.Title + '" id="liPlan' + item.PlanId + '"><span class="sidebarliwidth">' + item.Title + '</span><a planTitle="' + item.Title + '" onclick="togglePlan(this.id)" id="' + item.PlanId + '">Select</a></li>');
                             }
                         });
 
-                        BindOtherAttributes();
+                            //   BindOtherAttributes();
                         }
                         else {
                             $("#PlanAllModule").css("display", "none");
@@ -1021,34 +1021,23 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
 
     function BindOtherAttributes() {
         ResetControlsBeforeOtherAttributes();
-        var planIds = 0;
-        if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-            planIds = CurrentPlanId;
-        }
-        else {
-            planIds = filters.SelectedPlans;
-        }
-
-        if (planIds.length > 0 || CurrentPlanId > 0) {
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Home/GetCustomAttributes/")',
                 dataType: "json",
                 async: false,
                 data: {
-                    planIds: planIds.toString(),
-                    requstedModule: activeMenu
+              
                 },
                 success: function (data) {
                     if (data.isSuccess == true) {
-
                         if (data.AllowedGeography != 'undefined' && data.AllowedGeography != null) {
                             geographyCount = data.AllowedGeography.length;
+                        if (geographyCount > 0) {
                             $("#GeographyAllModule").css("display", "block");
                             $("#NoGeographyFound").hide();
-                            if (geographyCount > 0) {
                             $.each(data.AllowedGeography, function (i, geoitem) {
-                                $('#ulSelectedGeography').append('<li class="accordion-inner close-list " title="' + geoitem.Title + '" id="liGeography' + geoitem.GeographyId + '"><span class="sidebarliwidth">' + geoitem.Title + '</span><a geoTitle="' + geoitem.Title + '" onclick="toggleGeography(this.id)" href="#" id="' + geoitem.GeographyId + '"></a></li>');
+                                $('#ulSelectedGeography').append('<li class="accordion-inner close-list " title="' + geoitem.Title + '" id="liGeography' + geoitem.GeographyId + '"><span class="sidebarliwidth">' + geoitem.Title + '</span><a geoTitle="' + geoitem.Title + '" onclick="toggleGeography(this.id)" id="' + geoitem.GeographyId + '"></a></li>');
                                 filters.geographyIds.push(geoitem.GeographyId);
                                 filters.geographyTitle.push(geoitem.Title);
                             });
@@ -1066,11 +1055,11 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
 
                         if (data.AllowedVerticals != 'undefined' && data.AllowedVerticals != null) {
                             VerticalCount = data.AllowedVerticals.length;
+                        if (VerticalCount > 0) {
                             $("#ulVerticalAllModule").css("display", "block");
                             $("#NoVerticalFound").hide();
-                            if (VerticalCount > 0) {
                             $.each(data.AllowedVerticals, function (i, verticlaItem) {
-                                $('#ulSelectedVertical').append('<li class="accordion-inner close-list" title="' + verticlaItem.Title + '" id="liVertical' + verticlaItem.VerticalId + '"><span class="sidebarliwidth">' + verticlaItem.Title + '</span><a verticalTitle="' + verticlaItem.Title + '" onclick="toggleVertical(this.id)" href="#" id="' + verticlaItem.VerticalId + '"></a></li>');
+                                $('#ulSelectedVertical').append('<li class="accordion-inner close-list" title="' + verticlaItem.Title + '" id="liVertical' + verticlaItem.VerticalId + '"><span class="sidebarliwidth">' + verticlaItem.Title + '</span><a verticalTitle="' + verticlaItem.Title + '" onclick="toggleVertical(this.id)" id="' + verticlaItem.VerticalId + '"></a></li>');
                                 filters.VerticalId.push(verticlaItem.VerticalId);
                                 filters.VerticalTitle.push(verticlaItem.Title);
                             });
@@ -1088,11 +1077,11 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
 
                         if (data.AllowedAudience != 'undefined' && data.AllowedAudience != null) {
                             AudienceCount = data.AllowedAudience.length;
+                        if (AudienceCount > 0) {
                             $("#ulAudienceAllModule").css("display", "block");
                             $("#NoAudienceFound").hide();
-                            if (AudienceCount > 0) {
                             $.each(data.AllowedAudience, function (i, AudienceItem) {
-                                $('#ulSelectedAudience').append('<li class="accordion-inner close-list" title="' + AudienceItem.Title + '" id="liAudience' + AudienceItem.AudienceId + '"><span class="sidebarliwidth">' + AudienceItem.Title + '</span><a AudienceTitle="' + AudienceItem.Title + '" onclick="toggleAudience(this.id)" href="#" id="' + AudienceItem.AudienceId + '"></a></li>');
+                                $('#ulSelectedAudience').append('<li class="accordion-inner close-list" title="' + AudienceItem.Title + '" id="liAudience' + AudienceItem.AudienceId + '"><span class="sidebarliwidth">' + AudienceItem.Title + '</span><a AudienceTitle="' + AudienceItem.Title + '" onclick="toggleAudience(this.id)" id="' + AudienceItem.AudienceId + '"></a></li>');
                                 filters.AudienceIds.push(AudienceItem.AudienceId);
                                 filters.AudienceTitle.push(AudienceItem.Title);
                             });
@@ -1111,7 +1100,6 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
                 }
             });
         }
-    }
 
     function BindUpcomingActivites(SelectedPlanIds) {
         $.ajax({
@@ -1173,7 +1161,7 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
             isFirstCall = false;
         }
 
-        BindOtherAttributes();
+        //  BindOtherAttributes();
     }
 
     function BulkGeoOperation(selection) {
@@ -1385,9 +1373,9 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
             if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
             SetBusinessUnitSection();
             }
-            else {
+            //else {
                 BindOtherAttributes();
-            }
+            //}
         });
 
     function SetBusinessUnitSection() {

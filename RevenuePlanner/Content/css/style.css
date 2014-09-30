@@ -8362,6 +8362,10 @@ li.close-list{background-color:#cccccc !important;}
     white-space: nowrap;
 }
 
+.sidebar-section .accordion-body li a
+{
+    cursor: pointer;
+}
 /*End Sidebar css #709*/
 
 
