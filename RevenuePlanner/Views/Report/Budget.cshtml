@@ -239,6 +239,8 @@
 
         $("#yeardetail").html("FY " + $('#ddlYear').val());
         $('#button-save').click(function () {
+            Year = $('#ddlYear').val();
+            $("#yeardetail").html("FY " + $('#ddlYear').val());
             LoadCheckBoxValue(multiselectPlanId, filterPlanid);
             LoadCheckBoxValue(ddlViewAudience, audiencedetail);
             LoadCheckBoxValue(ddlViewVertical, verticaldetail);
@@ -256,8 +258,6 @@
         });
 
         $("#ddlYear").change(function () {
-            Year = $('#ddlYear').val();
-            $("#yeardetail").html("FY " + $('#ddlYear').val());
             LoadPlanData();
         });
 
