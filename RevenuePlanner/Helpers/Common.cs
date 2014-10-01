@@ -3589,12 +3589,23 @@ namespace RevenuePlanner.Helpers
         public static List<UserCustomRestrictionModel> GetUserCustomRestriction()
         {
             BDSService.BDSServiceClient objBDSServiceClient = new BDSServiceClient();
-            return objBDSServiceClient.GetUserCustomRestrictionList(Sessions.User.UserId, Sessions.ApplicationId).Select(c => new UserCustomRestrictionModel
+            var listCustomRestriction= objBDSServiceClient.GetUserCustomRestrictionList(Sessions.User.UserId, Sessions.ApplicationId).Select(c => new UserCustomRestrictionModel
                                                                                                                         {
                                                                                                                             CustomField = c.CustomField,
                                                                                                                             CustomFieldId = c.CustomFieldId,
                                                                                                                             Permission = c.Permission
                                                                                                                         }).ToList();
+            ////Modified by Mitesh Vaishnav for PL ticket 819 BDS QA: New User Cannot Log In if Permissions Are Not Set
+            ////If list has not custom restriction for user's Business unit than add user's business unit with View/Edit permission
+            if (!listCustomRestriction.Any(a => a.CustomField == Enums.CustomRestrictionType.BusinessUnit.ToString() && a.CustomFieldId.ToLower() == Sessions.User.BusinessUnitId.ToString().ToLower()))
+            {
+                UserCustomRestrictionModel objUserCustomRestriction = new UserCustomRestrictionModel();
+                objUserCustomRestriction.CustomField = Enums.CustomRestrictionType.BusinessUnit.ToString();
+                objUserCustomRestriction.CustomFieldId = Sessions.User.BusinessUnitId.ToString();
+                objUserCustomRestriction.Permission=(int)Enums.CustomRestrictionPermission.ViewEdit;
+                listCustomRestriction.Add(objUserCustomRestriction);
+            }
+            return listCustomRestriction;
 
         }
 
