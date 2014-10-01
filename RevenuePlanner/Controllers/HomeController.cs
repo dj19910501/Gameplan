@@ -110,7 +110,7 @@ namespace RevenuePlanner.Controllers
                     lstClientBusinessUnits = lstClientBusinessUnits.Where(a => businessUnitIds.Contains(Guid.Parse(a.Value))).ToList();
                     planmodel.BusinessUnitIds = lstClientBusinessUnits;
                     ViewBag.BusinessUnitIds = lstClientBusinessUnits;
-                    if (lstAllowedBusinessUnits.Count > 1)
+                    if (lstAllowedBusinessUnits.Count >= 1)
                         ViewBag.showBid = true;
                     else
                         ViewBag.showBid = false;

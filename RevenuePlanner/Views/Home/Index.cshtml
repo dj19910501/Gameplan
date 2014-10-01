@@ -456,7 +456,7 @@
 @{
     if (showBid == true && (activeMenu.ToLower() == Enums.ActiveMenu.Plan.ToString().ToLower()))
     {
-    <span class="selectBox dropdown-businessUnit" id="dropdown-business-unit">
+    <span class="selectBox" id="dropdown-business-unit" style="width: 158px;">
         @if (RevenuePlanner.Helpers.Sessions.BusinessUnitId != Guid.Empty)
         {
             @Html.DropDownList("ddlBusinessUnit", new SelectList((System.Collections.IEnumerable)ViewBag.BusinessUnitIds, "Value", "Text", Sessions.BusinessUnitId))
@@ -469,6 +469,8 @@
     }
 }
 
+@if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
+    {
 <div class="HomeSearchFilter-area clearfix">
     <div class="HomeSearchFilter-area-left">
         <h4 class="margin-bottom0">Active Filters</h4>
@@ -496,6 +498,7 @@
         </div>
     </div>
 </div>
+}
 
 <script>
     var pid = $('#PlanId').val();
@@ -676,7 +679,7 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
         else {
             $('#plandetail').html(None);
         }
-        }
+            @*}
         else {
 		    if (SelectedBusinessUnitTitle == "") {
             $('#businessunitdetail').html('@ViewBag.BusinessUnitTitle');
@@ -691,7 +694,7 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
 		    else {
 		        $('#plandetail').html(SelectedPlanTitle);
 		    }
-        }
+        }*@
 
         if (filters.geographyTitle.length > 0) {
             if (geographyCount == filters.geographyTitle.length) {
@@ -728,7 +731,7 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
         else {
             $('#audiencedetail').html(None);
         }
-        
+        }
     }
 
     function removeByValue(arr, val) {
@@ -1243,7 +1246,7 @@ if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
         CurrentPlanId = $('#PlanId').val();
         $("#CurrentPlanId").val(CurrentPlanId);
         $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?Bid=' + Bid + '&currentPlanId=' + CurrentPlanId + '&activeMenu=' + $('#ActiveMenu').val());
-        BindOtherAttributes();
+       // BindOtherAttributes();
 
     });
     /*end Nirav*/

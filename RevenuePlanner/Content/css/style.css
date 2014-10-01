@@ -6056,10 +6056,10 @@ span.left-arrow {
 }
 
     #dropdown-business-unit a {
-        font-family: 'source_sans_probold', Arial, "sans-serif";
+        font-family: 'source_sans_prolight',Arial,"sans-serif";
         font-size: 14px;
-        color: #2F292B;
-        text-decoration: underline;
+        /*color: #2F292B;
+        text-decoration: underline;*/
     }
 
     #dropdown-business-unit li a {
