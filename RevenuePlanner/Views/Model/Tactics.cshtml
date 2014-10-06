@@ -54,7 +54,7 @@
 <div id="DivBackgroundModel" class="modal-backdrop fade in" style="z-index: 1501;display: none;"></div>
 <div id="DivPublishModelPopup" class="form-inspect-share hide fade in" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none; height: 205px;z-index: 1502;">
     <h2 class="primary-title source-sans-prosemibold">Select effective date</h2>
-    <div class="dp datepicker input-append date  calendar-width" id="dp_start" data-date="today();" data-date-format="@RevenuePlanner.Helpers.Common.dateFormat">
+    <div class="dp datepicker input-append date  calendar-width" id="dp_start" data-date="today();" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
         <input id="t_startdate" class="black-border-right font-size13 height30px" style="background-color: #ffffff; border-color: #f3f3f3; color: #000000; width: 240px; margin-top: 0px; border-radius: 4px;" size="16" type="text">
         <span class="add-on height30" style="border-radius: 4px;">
             <img src="~/Content/images/gray-calendar-icon-big.png"></span>
@@ -580,7 +580,7 @@
 
         });
         $('.dp').datepicker({
-            format: "@RevenuePlanner.Helpers.Common.dateFormat",
+            format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
             autoclose: true,
         }).on('changeDate', function (ev) {
             $(this).datepicker('hide');

@@ -346,7 +346,9 @@
     <Content Include="Content\images\circle-check-icon.png" />
     <Content Include="Content\images\circle-gray-check-icon.png" />
     <Content Include="Content\images\close-icon-list.png" />
+    <Content Include="Content\images\close-x-big.png" />
     <Content Include="Content\images\close-x.png" />
+    <Content Include="Content\images\comment_icon.png" />
     <Content Include="Content\images\deal-icon-active.png" />
     <Content Include="Content\images\deal-icon-blue.png" />
     <Content Include="Content\images\deal-icon.png" />

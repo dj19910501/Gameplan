@@ -4,22 +4,68 @@
 }
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
 @Html.Display(popupvalue)
-<buttom class="close-x-icon" data-dismiss="modal" aria-hidden="true"></buttom>
+<buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>
 @{
     var campaignMaster = (RevenuePlanner.Models.InspectModel)ViewBag.CampaignDetail;
     bool IsPlanEditable = (bool)ViewBag.IsPlanEditable;
 }
 @Html.Hidden("hdnPlanCampaignId", campaignMaster.PlanCampaignId, new { id = "hdnPlanCampaignId" })
 @Html.Hidden("hdnCampaignStatus", campaignMaster.Status, new { id = "hdnCampaignStatus" })
-<div>
+<div class="modal-popup-title">
     <span class="icon-flag bg-purple" style="background-color:#@campaignMaster.ColorCode !important;"></span>
     <h2 class="title-simple source-sans-prolight"><span class="tipsyclassTitle">@Html.Raw(campaignMaster.CampaignTitle)</span>
     @if (IsPlanEditable)
     {
-        @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = campaignMaster.PlanCampaignId, programId = 0 , tacticId = 0, EditObject = "Campaign", ismsg = "" }, new { @class = "edit-icon"})
+            @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = campaignMaster.PlanCampaignId, programId = 0, tacticId = 0, EditObject = "Campaign", ismsg = "" }, new { @class = "edit-icon-white btn-blue btn-large" })
     }
     </h2>
 </div>
+
+<div class="modal-popup-summary">
+    <h3 class="modal-popup-innertitle source-sans-proregular">Summary</h3>
+    <div id="nl-form" class="nl-form nl-form-modal source-sans-prolight">
+        I'm running a
+            @*<span id="tactic-type" class="source-sans-prosemibold color5693B3">Email</span>*@
+        campaign called 
+            <span id="tactic-name" class="source-sans-prosemibold color5693B3">@campaignMaster.CampaignTitle</span>
+        from
+            <span id="start-date" class="source-sans-prosemibold color5693B3">@campaignMaster.StartDate.ToString(Common.DateFormateForInspectPopupDescription)</span>
+        to
+            <span id="end-date" class="source-sans-prosemibold color5693B3">@campaignMaster.EndDate.ToString(Common.DateFormateForInspectPopupDescription)</span>.
+        
+        <p class="modal-status">The status is: 
+
+            @if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value)
+            {
+               <span id="status" class="source-sans-prosemibold statussubmitted"> @campaignMaster.Status</span>
+            }
+            else if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value)
+            {
+               <span id="status" class="source-sans-prosemibold statusrejected"> @campaignMaster.Status</span>
+            }
+            else if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Complete.ToString())).Value ||
+                     campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.InProgress.ToString())).Value ||
+                     campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Approved.ToString())).Value)
+            {
+               <span id="status" class="source-sans-prosemibold statusapproved"> @campaignMaster.Status</span>
+            }
+            else if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Created.ToString())).Value)
+            {
+               <span id="status" class="source-sans-prosemibold statuscreated"> @campaignMaster.Status</span>
+            }
+                                               .</p>
+
+        <div class="nl-overlay"></div>
+
+    </div>
+    <!--To call js for forms animations-->
+    <script src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
+    <script>
+        var nlform2 = new NLForm(document.getElementById('nl-form'));
+    </script>
+</div>
+
+
 <div>
 
     <ul class="nav nav-tabs new-margin" id="InspectTab">
@@ -29,10 +75,11 @@
         <li class="pull-left" id="liReview">
             <a>Review</a>
         </li>
-        <li id="status-option" class="source-sans-pro pull-right">
-            <p class="status-option-title hide" style="display: block;">Status: </p>
+        <li class="pull-right">
+            <h3 class="modal-popup-innertitle source-sans-proregular">Details</h3>
+            @* <p class="status-option-title hide" style="display: block;">Status: </p>*@
            @*    added by uday for PL #509*@
-            @if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value)
+            @* @if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value)
             {
                 <span class="status-option statussubmitted">@campaignMaster.Status</span>
             }
@@ -49,7 +96,7 @@
             else if (campaignMaster.Status == Enums.TacticStatusValues.Single(tacticStatus => tacticStatus.Key.Equals(Enums.TacticStatus.Created.ToString())).Value)
             {
                 <span class="status-option statuscreated">@campaignMaster.Status</span>
-            }
+            }*@
         </li>
     </ul>
     <div id="divTab">

@@ -594,7 +594,7 @@
             <div class="row-fluid ">
                 <div class="span12">
 
-                    <div id="modal-container-186470" class="modal-inspect-review hide fade" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none; height: auto!important;">
+                    <div id="modal-container-186470" class="modal-inspect-review hide fade modal-full-view" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none; height: auto!important;">
                         <div id="successMessage" class="alert alert-success message-position-popup" style="display: none;">
                             <a class="close">×</a>
                             <strong>Success.</strong> <span id="spanMessageSuccess"></span>
@@ -2587,16 +2587,24 @@
               //// Checking whether current task is improvement tactic or not.
               if (typeof planTacticId != 'undefined' && planTacticId != 0 && isImprovement == true) {
 
-                  modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
+                //modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
+                modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
+
                   $("#modal-container-186470").modal('show');
+                $('.modal-backdrop').addClass('modalFull-backdrop');
+                $('.modal-backdrop').attr("style", "display:none !important;");
                   $("#successMessage").css("display", "none");
                   $("#errorMessage").css("display", "none");
                   loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", "Setup");
             }
                 //// Checking whether current task is tactic or not.
             else if (typeof planTacticId != 'undefined' && planTacticId != 0) {
-                modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
+                //modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
+                modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
+
                 $("#modal-container-186470").modal('show');
+                $('.modal-backdrop').addClass('modalFull-backdrop');
+                $('.modal-backdrop').attr("style", "display:none !important;");
                 $("#successMessage").css("display", "none");
                 $("#errorMessage").css("display", "none");
                 loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup");
@@ -2604,8 +2612,12 @@
 
                 //// Checking whether current task is tactic or not.
             else if (typeof planProgramId != 'undefined' && planProgramId != 0) {
-                modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
+                // modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
+                modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
+
                 $("#modal-container-186470").modal('show');
+                $('.modal-backdrop').addClass('modalFull-backdrop');
+                $('.modal-backdrop').attr("style", "display:none !important;");
                 $("#successMessage").css("display", "none");
                 $("#errorMessage").css("display", "none");
                 loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup");
@@ -2613,15 +2625,21 @@
 
                 //// Checking whether current task is tactic or not.
             else if (typeof planCampaignId != 'undefined' && planCampaignId != 0) {
-                modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
+                //modalPosition(); /* added by Nirav shah for  Inspect screen : css changes as per new HTML*/
+                modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
+
                 $("#modal-container-186470").modal('show');
+                $('.modal-backdrop').addClass('modalFull-backdrop');
+                $('.modal-backdrop').attr("style", "display:none !important;");
                 $("#successMessage").css("display", "none");
                 $("#errorMessage").css("display", "none");
                 loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup");
             }
 }
 
-$("#modal-container-186470").on("show", function (e) { $("#modalMainContainer").show(); });
+    $("#modal-container-186470").on("show", function (e) {
+        $("#modalMainContainer").show();
+    });
 $("#modal-container-186470").on("hide", function (e) {
     $("#modalMainContainer").hide();
     if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {

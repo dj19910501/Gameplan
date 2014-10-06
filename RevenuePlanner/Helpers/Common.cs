@@ -73,7 +73,9 @@ namespace RevenuePlanner.Helpers
         public const string COLORC6EBF3_WITH_BORDER_IMPROVEMENT = "improvementcolorC6EBF3-with-border";
         public const string COLOR27A4E5 = "color27a4e5";
 
-        public const string dateFormat = "mm/dd/yyyy";
+        ////Modified By Pratik PL Ticket#810
+        public const string DateFormat = "MM/dd/yyyy";
+        public const string DateFormatDatePicker = "mm/dd/yyyy";
 
         //Added BY Bhavesh
         /// <summary>
@@ -138,6 +140,7 @@ namespace RevenuePlanner.Helpers
         public static string TextForModelIntegrationInstanceTypeOrLastSyncNull = "---";
         public static string DateFormatForModelIntegrationLastSync = "MM/dd/yyyy hh:mm tt";
         private const string GameplanIntegrationService = "Gameplan Integration Service";
+        public static string DateFormateForInspectPopupDescription = "MMMM dd";
         #endregion
 
         //#region Enums

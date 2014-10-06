@@ -9,55 +9,48 @@
 @using (Html.BeginForm())
 {
     @Html.HiddenFor(model => model.PlanTacticId)
-    <div class="span7" id="inspect-modal-right-div">
-        <div id="nl-form" class="nl-form nl-form-modal">
-            I'm running 
-                <span id="tactic-type" class="color5693B3">@Html.Raw(tactic.TacticTypeTitle)</span>
-            tactic called 
-                <span id="tactic-name" class="color5693B3">@Html.Raw(tactic.TacticTitle)</span>
-            from
-                <span id="start-date" class="color5693B3">@tactic.StartDate.ToShortDateString()</span>
-            to
-                <span id="end-date" class="color5693B3">@tactic.EndDate.ToShortDateString()</span>
-            for the
-                <span id="vertical" class="color5693B3">@tactic.VerticalTitle</span>
-            vertical.
-                                          <br>
-            The status is: 
-                <span id="status" class="color5693B3">@tactic.Status</span>
-
-            <div class="nl-overlay"></div>
-
+    
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
+        <div class="span6" id="inspect-modal-left-column1">
+            <p>Parent Campaign</p>
+            @Html.TextBox("txtCampaign", HttpUtility.HtmlDecode(tactic.CampaignTitle), new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.CampaignTitle })
+            <p>Parent Program</p>
+            @Html.TextBox("txtProgram", HttpUtility.HtmlDecode(tactic.ProgramTitle), new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.ProgramTitle })
+            <p>Description</p>
+            @Html.TextArea("txtDescription", HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size truncate", style = "background:#F2F2F2;", @readonly = "true" })
         </div>
-        <!--To call js for forms animations-->
-        <script src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
-        <script>
-            var nlform2 = new NLForm(document.getElementById('nl-form'));
-        </script>
+        <div class="span3" id="inspect-modal-left-column2">
+            <p>Tactic Type</p>
+            @Html.TextBoxFor(model => model.Owner, new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.Owner })
+            <p>Cost</p>
+            @Html.TextBoxFor(model => model.Cost, new { @class = "input-small truncate", id = "txtCost", @readonly = "true", })
+            @*Modified by Dharmraj for custom label, #738 Custom label for audience tab *@
+            <p>Start Date</p>
+            @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small", @readonly = "true", @Value = Model.StartDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat) })
+            <p>End Date</p>
+            @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small truncate", @readonly = "true", @Value = Model.EndDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat)  })
+        </div>
+        <div class="span3" id="inspect-modal-left-column3">
+            <p>Owner</p>
+            @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.Owner })
+            <p style="width: 110%;">Deployed to Integration</p>
+            @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true" })
+        </div>
     </div>
-                                       
-    <div class="span2" id="inspect-modal-left-column1">
-        <p>Parent Campaign</p>
-            @Html.TextBox("txtCampaign",HttpUtility.HtmlDecode(tactic.CampaignTitle), new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.CampaignTitle })
-        <p>Parent Program</p>
-            @Html.TextBox("txtProgram",HttpUtility.HtmlDecode(tactic.ProgramTitle), new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.ProgramTitle })
-        <p>Description</p>
-            @Html.TextArea("txtDescription",HttpUtility.HtmlDecode(Model.Description), new { @class = "span12 text-area-size truncate", style = "background:#F2F2F2;", @readonly = "true" })
-
-    </div>
-    <div class="span2" id="inspect-modal-left-column2">
-        <p>Owner</p>
-        @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.Owner })
-        @*Modified by Dharmraj for custom label, #738 Custom label for audience tab *@
-        <p class="ellipsis" title="@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</p>
+    <ul class="nav nav-tabs new-margin padding-bottom10" id="InspectTab">
+        <li class="pull-right">
+            <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
+        </li>
+    </ul>
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border">
+        <div class="span3 margin-top10" id="inspect-modal-left-column">
+            <p class="ellipsis" title="@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)">@Html.CustomLabelFor(Enums.CustomLabelCode.Audience)</p>
             @Html.TextBox("txtAudience", (string)ViewBag.Audience, new { @class = "span12 input-small", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.Audience })
-
-        <p>Business Unit</p>
-        @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
-        <p>Cost</p>
-            @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })
-        <p style="width:110%;">Deployed to Integration</p>
-            @Html.TextBox("txtDeployStatus",deployStatus,new {@class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true"})
+        </div>
+        <div class="span3 margin-top10" id="inspect-modal-left-column4">
+            <p>Business Unit</p>
+            @Html.TextBox("txtBusinessUnit", (string)ViewBag.BudinessUnitTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = (string)ViewBag.BudinessUnitTitle })
+        </div>
     </div>
                                         
     <span class="flag-icon"></span>
