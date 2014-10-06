@@ -7851,6 +7851,11 @@ div.sub{display:none; transition: height 0.35s ease 0s; padding:0;}
 /*Start -Added by Mitesh Vaishnav on 11/08/2014 for PL ticket #539*/
 footer {
     text-align: center;
+    /*#832  Footer should run all the way below the left bar*/
+    position:fixed;
+    bottom:0;
+    width:100%;
+    /*End #832*/
 }
 footer > span {
     padding: 10px 0;
