@@ -8669,3 +8669,14 @@ li.close-list{background-color:#cccccc !important;}
 .comment-scroll-section {
 max-height:350px;
 }
+.paddingleft25px {
+padding-left:25px;
+}
+.table-head {
+    font-size:17px; 
+     font-family: 'source_sans_prosemibold', Arial, "sans-serif";
+     font-weight:normal !important;
+}
+#modal-container-186470 {
+    padding-bottom: 150px !important;
+}

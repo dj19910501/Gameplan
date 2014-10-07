@@ -14,12 +14,14 @@
     border:none!important;
     }
 </style>
+<link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.mCustomScrollbar.css")" type="text/css" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.mCustomScrollbar.concat.min.js")"></script>
 <div id="panel-656352" class="content-panel-tab">
     <div class="cf" id="divActualInner">
         <div>
             <span>Note that imported values override user-generated values.</span>
         </div>
-        <div id="months_container" class="container-table" style="float: left;">
+        <div id="months_container" class="container-table" style="float: left; width:820px; overflow-x:scroll;">
             <table class="table table-striped mystats table-style " id="tblActual">
                 <thead>
                     <tr class="text-align-right height42">
@@ -66,7 +68,7 @@
                             }
                         }
                             }
-                            <th class="font3F3F3F actual-popup-tile" title="@stageLable">@stageLable</th>
+                            <th class="font3F3F3F actual-popup-tile table-head" title="@stageLable">@stageLable</th>
                             @for (int j = 1; j <= 12; j++)
                             {
                                 string ids = s + "-Y" + j;
@@ -85,7 +87,7 @@
                         </tr>
                     }
                     <tr class="height42" id="trCost">
-                        <th class="font3F3F3F actual-popup-tile">Cost</th>
+                        <th class="font3F3F3F actual-popup-tile table-head">Cost</th>
                         @for (int j = 1; j <= 12; j++)
                         {
                             string costIds = "Cost-Y" + j;
@@ -161,7 +163,7 @@
                         if (s == Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString())
                         {
                             <tr class="height42">
-                                <th id="inqP" class="text-align-right  projected font908D88 addFormatterActualNumber border-none">@tacticActual.ProjectedStageValue</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
+                                <th id="inqP" class="text-align-right  projected font3F3F3F addFormatterActualNumber border-none">@tacticActual.ProjectedStageValue</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
                                 <th id="lblTotalProjectedStageValue" class="border-r font3F3F3F text-align-right addFormatterActualNumber border-none">@tacticActual.ProjectedStageValueActual</th> @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
                                 <input type="hidden" id="hdnlblTotalProjectedStageValue" value="@tacticActual.ProjectedStageValueActual" />  @* Added by Sohel Pathan on 27/08/2014 for Internal Review Points *@
                             </tr>
@@ -169,7 +171,7 @@
                         else if (s.ToLower() == Common.StageCodeMQL)
                         {
                             <tr class="height42">
-                                <th id="mqlP" class="text-align-right  projected font908D88 addFormatterActualNumber border-none">@tacticActual.MQLs</th>   @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
+                                <th id="mqlP" class="text-align-right  projected font3F3F3F addFormatterActualNumber border-none">@tacticActual.MQLs</th>   @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
                                 <th id="lblTotalMQL" class="border-r font3F3F3F text-align-right addFormatterActualNumber border-none">@tacticActual.MQLsActual</th>   @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
                                 <input type="hidden" id="hdnlblTotalMQL" value="@tacticActual.MQLsActual" />  @* Added by Sohel Pathan on 27/08/2014 for Internal Review Points *@
                             </tr>
@@ -177,16 +179,16 @@
                     }
 
                     <tr class="height42">
-                        <th id="cwP" class="text-align-right  projected font908D88 addFormatterActualNumber border-none">@tacticActual.CWs</th> @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
+                        <th id="cwP" class="text-align-right  projected font3F3F3F addFormatterActualNumber border-none">@tacticActual.CWs</th> @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
                         <th id="lblTotalCW" class="border-r font3F3F3F text-align-right addFormatterActualNumber border-none">@tacticActual.CWsActual</th>  @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
                     </tr>
                     <tr class="height42">
-                        <th id="rP" class="text-align-right projected font908D88 setBudget border-none">@tacticActual.Revenues</th> @* Modified by Sohel Pathan on 10/09/2014 for Internal Review Points *@
+                        <th id="rP" class="text-align-right projected font3F3F3F setBudget border-none">@tacticActual.Revenues</th> @* Modified by Sohel Pathan on 10/09/2014 for Internal Review Points *@
                         <input type="hidden" id="hdnRp" value="@tacticActual.Revenues" />  @* Added by Sohel Pathan on 10/09/2014 for Internal Review Points *@
                         <th id="lblTotalRevenue" class="border-r font3F3F3F text-align-right setBudget border-none" ov="@tacticActual.RevenuesActual">@tacticActual.RevenuesActual</th> @* Modified by Sohel Pathan on 12/09/2014 for PL ticket #760 *@
                     </tr>
                     <tr class="height42">
-                        <th id="cP" class="text-align-right projected font908D88 setBudget border-none">@tacticActual.Cost</th> @* Modified by Sohel Pathan on 15/09/2014 for PL ticket #760 *@
+                        <th id="cP" class="text-align-right projected font3F3F3F setBudget border-none">@tacticActual.Cost</th> @* Modified by Sohel Pathan on 15/09/2014 for PL ticket #760 *@
                         <input type="hidden" id="hdnCp" value="@tacticActual.Cost" />  @* Added by Sohel Pathan on 10/09/2014 for Internal Review Points *@
                         <th class="border-r font3F3F3F text-align-right border-none" id="lblTotalCost">0</th>
                             @*<input id="lblTotalCost" class="backgroundC6EBF3 font3F3F3F text-align-right width75px currency_dollar" placeholder="- - -" maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar" value="@tacticActual.CostActual"></th>*@
@@ -199,13 +201,13 @@
                             string projectedId="lblProjected-"+item.PlanLineItemId;
                             string totalId = "lblTotal-" + item.PlanLineItemId;
                              <tr class="height42">
-                        <th id="@projectedId" class="text-align-right height22 projected padding-bottom9 font908D88 border-none">$@item.Cost</th>  @* Modified by Sohel Pathan on 12/09/2014 for PL ticket #760 *@ 
+                        <th id="@projectedId" class="text-align-right height22 projected padding-bottom9 font3F3F3F border-none">$@item.Cost</th>  @* Modified by Sohel Pathan on 12/09/2014 for PL ticket #760 *@ 
                         <th id="@totalId" class="border-r font3F3F3F text-align-right border-none"></th>
                     </tr>
                         }
                     }
                     <tr class="height42">
-                        <th id="roiP" class="text-align-right height22 projected padding-bottom9 font908D88 border-none">@tacticActual.ROI</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
+                        <th id="roiP" class="text-align-right height22 projected padding-bottom9 font3F3F3F border-none">@tacticActual.ROI</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
                         <th id="roiT" class="border-r font3F3F3F text-align-right border-none">@tacticActual.ROIActual</th>    @* Modified by Sohel Pathan on 02/09/2014 for PL ticket #742. *@
                     </tr>
                    
@@ -235,6 +237,13 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
+        //$("#months_container").mCustomScrollbar({
+        //    scrollButtons: {
+        //        enable: true
+        //    },
+        //    horizontalScroll: true,
+        //    advanced: { autoExpandHorizontalScroll: true, updateOnContentResize: true }
+        //});
         var TacticActual;
         var planTacticId = $("#hdnPlanTacticId").val();
         function ActualTab() {
@@ -502,8 +511,8 @@
             //$('#months_container').parent().css("padding-right", "40px");
             $('#months_container').parent().css("width", "970px");////modified by mitesh for PL ticket #812 change width 870 to 970
             //$('#months_container').parent().css("height", "275px");//removed by mitesh vaishnav for pl ticket #812
-            $('#months_container').css("width", "820px");//modified by mitesh for PL ticket #812 change width 600 to 820
-            $('#months_container').css("overflow-x", "scroll");
+            //$('#months_container').css("width", "820px");//modified by mitesh for PL ticket #812 change width 600 to 820
+            //$('#months_container').css("overflow-x", "scroll");
             //$(function () {
             //    $('#months_container').slimScrollHorizontal({
             //        height: '300px',

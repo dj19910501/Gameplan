@@ -3719,6 +3719,79 @@ namespace RevenuePlanner.Helpers
             return new MvcHtmlString(sb.ToString());
         }
 
+        /// <summary>
+        /// Added by Mitesh Vaishnav for PL ticket #844
+        /// function generate html output for custom fields of campaign,program or tactic into inspect popup screen
+        /// </summary>
+        /// <param name="id">Plan Tactic Id or Plan Campaign Id or Plan Program Id</param>
+        /// <param name="section">Parameter contains value from enum EntityType like Campaign or Program or Tactic.</param>
+        /// <returns>If Plan Tactic or Plan Campaign or Plan Program contains custom fields than returns html string else empty string</returns>
+        public static MvcHtmlString GenerateCustomFieldsForInspectPopup(int id, string section,int fieldCounter=0)
+        {
+            //list of custom fields for particular campaign or Program or Tactic
+            List<CustomFieldModel> customFieldList = Common.GetCustomFields(id, section);
+            StringBuilder sb = new StringBuilder(string.Empty);
+
+            //fieldCounter variable for defining raw style
+            if (customFieldList.Count != 0)
+            {
+                foreach (var item in customFieldList)
+                {
+                    string className = "span3 margin-top10";
+                    if (fieldCounter % 4 != 0)
+                    {
+                        className += " paddingleft25px";
+                    }
+                    sb.Append("<div class=\""+className+"\"><p title=\""+item.name+"\" class=\"ellipsis\">"+item.name+"</p>");
+
+                    //check if custom field type is textbox then generate textbox and if custom field type is dropdownlist then generate dropdownlist
+                    if (item.customFieldType == Enums.CustomFieldType.TextBox.ToString())
+                    {
+                        //When item value contains double quots then it would be replaced 
+                        string customFieldEntityValue = item.value != null ? item.value.Replace("\"", "&quot;") : string.Empty;
+                        sb.Append("<input type=\"text\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small\"");
+
+                        //If custom field is required than add attribute require
+                        if (item.isRequired)
+                        {
+                            sb.Append(" require=\"true\"");
+                        }
+                        sb.Append("></div>");
+                    }
+                    else if (item.customFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                    {
+                        sb.Append("<span class=\"selectBox\">  <select id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"ddlStyle\"");
+                        if (item.isRequired)
+                        {
+                            sb.Append(" require=\"true\"");
+                        }
+                        sb.Append("><option value=\"\">Please Select</option>");
+                        //set dropdown option values
+                        if (item.option.Count != 0)
+                        {
+                            foreach (var objOption in item.option)
+                            {
+                                //check - if custom field's value inserted before from dropdownlist then set it as selected
+                                if (item.value != objOption.customFieldOptionId.ToString())
+                                {
+                                    sb.Append("<option value=\"" + objOption.customFieldOptionId + "\">" + objOption.value + "</option>");
+                                }
+                                else
+                                {
+                                    sb.Append("<option value=\"" + objOption.customFieldOptionId + "\" selected=true>" + objOption.value + "</option>");
+                                }
+                            }
+                        }
+                        sb.Append("</select></span></div>");
+                    }
+
+                    fieldCounter = fieldCounter + 1;
+
+                }
+            }
+            return new MvcHtmlString(sb.ToString());
+        }
+
         #endregion
 
         #region Budgeting Report
