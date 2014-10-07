@@ -4389,6 +4389,22 @@ namespace RevenuePlanner.Controllers
                     newModelId = newModel.ModelId;
                     #endregion
 
+                    //Added By : Kalpesh Sharma PL #697 Default Line item type
+                    //Added By : #827 New Version of Model does not Add Entry in LineItemType table
+                    LineItemType objLineItemType = db.LineItemTypes.Where(s => s.ModelId == newModel.ModelId).SingleOrDefault();
+                    if (objLineItemType == null)
+                    {
+                        objLineItemType = new LineItemType();
+                        objLineItemType.ModelId = newModelId;
+                        objLineItemType.Title = Enums.LineItemTypes.None.ToString();
+                        objLineItemType.Description = Enums.LineItemTypes.None.ToString();
+                        objLineItemType.IsDeleted = false;
+                        objLineItemType.CreatedDate = DateTime.Now;
+                        objLineItemType.CreatedBy = Sessions.User.UserId;
+                        db.LineItemTypes.Add(objLineItemType);
+                        db.SaveChanges();
+                    }
+
                     #region Clone TacticTypes table entries
                     var oldTacticTypes = mrp.TacticTypes.Where(m => m.ModelId == OldModelID && (m.IsDeleted == null ? false : m.IsDeleted) == false).ToList();
 
