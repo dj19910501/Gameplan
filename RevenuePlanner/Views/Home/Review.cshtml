@@ -17,36 +17,36 @@
 }
 
 <div class="span5 width360" id="inspect-modal-right-div" style="width: 420px !important;">
-    <div style="padding-bottom: 10px; margin-bottom: 10px;" class="span5 width96 border-bottom-div">
+    <div style="padding-bottom: 16px; margin-bottom: 24px;" class="span5 width96 border-bottom-div">
         <div style="float: left; width: 48%; border-right: 1px solid #b2afaf">
-            <div class="font-size18">Parent Compagin</div>
+            <div class="source-sans-prosemibold">Parent Compagin</div>
             <div>
-                <div id="campaign-title1" class="tipsyclassTitle">@Html.Raw(tacticReview.CampaignTitle)</div>
+                <div id="campaign-title1" class="tipsyclassTitle sub-head">@Html.Raw(tacticReview.CampaignTitle)</div>
             </div>
         </div>
-        <div style="float: right; width: 48%;">
-            <div class="font-size18">Parent Program</div>
+        <div style="float: right; width: 47%;">
+            <div class="source-sans-prosemibold">Parent Program</div>
             <div>
-                <div id="program-title1" class="tipsyclassTitle">@Html.Raw(tacticReview.ProgramTitle)</div>
+                <div id="program-title1" class="tipsyclassTitle sub-head">@Html.Raw(tacticReview.ProgramTitle)</div>
             </div>
         </div>
     </div>
     <div class="cf source-sans-proregular padding-top32" style="padding-top: 26px !important;">
-        <div class="chart-gray pull-left size80x78 without-padding remove-box-shadow">
+        <div class="chart-gray pull-left size80x78 without-padding remove-box-shadow review-box">
             <div class="padding-top16"><span id="startDay-id" class="font_size30" style="line-height: 24px;">@tacticReview.StartDate.ToString("dd")</span></div>
             @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
             <span id="startMonth-id" class="font_size16">@tacticReview.StartDate.ToString("MMM")</span>
             <div class="margin-top16" style="margin-top:20px !important;">Start</div>
             @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
         </div>
-        <div class="chart-gray pull-left size80x78 without-padding remove-box-shadow">
+        <div class="chart-gray pull-left size80x78 without-padding remove-box-shadow review-box">
             <div class="padding-top16"><span id="endDay-id" class="font_size30" style="line-height: 24px;">@tacticReview.EndDate.ToString("dd")</span></div>
             @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
             <span id="endMonth-id" class="font_size16">@tacticReview.EndDate.ToString("MMM")</span>
             <div class="margin-top16" style="margin-top:20px !important;">End</div>
             @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
         </div>
-        <div class="chart-gray pull-left size80x78 without-padding remove-box-shadow">
+        <div class="chart-gray pull-left size80x78 without-padding remove-box-shadow review-box">
             <div class="padding-top16"><span id="inq-id" class="font_size30" style="line-height: 24px;">@tacticReview.ProjectedStageValue</span></div>
             @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
             @*<span class="font_size16" title="@Html.LabelForINQ("INQ")">@Html.LabelForINQ("INQ")</span>*@
@@ -63,7 +63,7 @@
         </div>
         @if (ShowMQL)
         {
-            <div class="chart-gray pull-left size80x78 without-padding remove-box-shadow">
+            <div class="chart-gray pull-left size80x78 without-padding remove-box-shadow review-box review-box-last">
                 <div class="padding-top16"><span id="mqls-id" class="font_size30" style="line-height: 24px;">@tacticReview.MQLs</span></div>
                 @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
                 <span class="font_size16" title="@Html.LabelForMQL("MQL")">@Html.LabelForMQL("MQL")</span>
@@ -73,22 +73,22 @@
         }
     </div>
     <div class="cf margin-top40 textalign-mozcenter" style="padding-bottom: 5px;">
-        <div class="pull-left size80x78 ">
+        <div class="pull-left size65x38 ">
             <div class="busunit"></div>
             <div>Bus. Unit</div>
             <span id="busunit-id" class="blue-text bold" title="@ViewBag.BudinessUnitTitle">@ViewBag.BudinessUnitTitle</span>
         </div>
-        <div class="pull-left size80x78  margin-left20">
+        <div class="pull-left size65x38  margin-left20">
             <div class="owner"></div>
             <div>Owner</div>
             <span id="owner-id" class="blue-text bold" title="@tacticReview.Owner">@tacticReview.Owner</span>
         </div>
-        <div class="pull-left size80x78 margin-left20">
+        <div class="pull-left size65x38 margin-left20">
             <div class="vertical"></div>
             <div>Vertical</div>
             <span id="vertical-id" class="blue-text bold" title="@tacticReview.VerticalTitle">@tacticReview.VerticalTitle</span>
         </div>
-        <div class="pull-left size80x78 margin-left20" style="margin-left: 13px !important; width: 77px !important;">
+        <div class="pull-left size65x38 margin-left20" style="margin-left: 13px !important; width: 77px !important;">
             <div class="audience-review"></div>
             <div>
                 @*Modified by Dharmraj for custom label, #738 Custom label for audience tab *@
@@ -96,7 +96,7 @@
             </div>
             <span id="audience-id" class="blue-text bold" title="@tacticReview.AudiencTitle">@tacticReview.AudiencTitle</span>
         </div>
-        <div class="pull-left size80x78 margin-left20">
+        <div class="pull-left size65x38 margin-left20">
             <div class="integration-review"></div>
             <div>
                 <label id="integration">Integration</label>
@@ -134,13 +134,13 @@
     </div>
 </div>
 
-<div class="span2 width50" id="inspect-modal-left-column2">
+<div class="span2 right-col-tab" id="inspect-modal-left-column2">
     @if ((bool)ViewBag.IsCommentsViewEditAuthorized)    // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
     {
     <div>Notes</div>
      
     <div id="divComment" class="chat-div" style="overflow: auto;">
-        <div id="divInnerComment">
+        <div id="divInnerComment" class="comment-scroll-section">
             @foreach (var item in ViewBag.ReviewModel)
             {
                 <div class="post-div" style="clear: both; width: 100%; border-bottom: solid 1px #A8A8A8;">
@@ -159,14 +159,14 @@
         </div>
         <div></div>
     </div>
-    <div class="padding-top10 border-bottom-div" style="padding-top:5px !important;">
+    <div class="padding-top10">
 
             @*<img class="avatar-user vertical-aligntop" src="@Url.Action("LoadUserImage", "User", new { id = RevenuePlanner.Helpers.Sessions.User.UserId })" alt="User avatar" />*@
-            @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment" })
+            @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment",@style="padding-right: 0px;" })
 
             @if (IsTacticEditable && (bool)ViewBag.IsBusinessUnitEditable)
             {
-                <button id="btnComment" class="btn btn-blue text-shadow-blue source-sans-proregular new-comment-buttom" type="button"><span class="comment-icon"></span></button>
+               <img id="btnComment" src="~/Content/images/chat-button.png" alt="" style="float:right" />
             }
 
     </div>
@@ -286,9 +286,9 @@
                     {
                         string firstStatus = aryStatus[0];
                 
-        <div class="margin-top10" style="float: left;">
+        <div class="margin-top23" style="float: left;">
             <div id="btn_change_status" class="btn-group dropup">
-                <button id="btnApproved" data-toggle="dropdown" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular margin-left20" style="width: 125px;">
+                <button id="btnApproved" data-toggle="dropdown" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 125px;">
                     <span class="flag-icon approve-icon-dropdown"></span>
                     <span id="spanTactic">@firstStatus</span>
                 </button>
@@ -329,7 +329,7 @@
                 {
                     if ((bool)ViewBag.IsModelDeploy)
                     {
-                <div class="margin-top10" style="float: right;">
+                <div class="margin-top23" style="float: right;">
                 <div id="btn_sync_status" class="btn-group dropup">
                     <button id="btnSync" data-toggle="dropdown" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 65px;">
                         <span class="flag-icon sync-icon-dropdown"></span>
@@ -371,8 +371,8 @@
             
     }
 
-    <div style="float: left; margin-left: 10px;" class="margin-top10">
-        <button class="btn btn-blue text-shadow-blue source-sans-proregular  button-inspect-result-modal pull-right  resize-button margin-left20 btn-blue share-tactic-icon" id="BtnShareTactic" type="button" style="width: 80px;"><span class="flag-icon"></span>Share </button>
+    <div style="float: left; margin-left: 10px;" class="margin-top23">
+        <button class="btn btn-blue text-shadow-blue source-sans-proregular  button-inspect-result-modal pull-right  resize-button btn-blue share-tactic-icon" id="BtnShareTactic" type="button" style="width: 80px;"><span class="flag-icon"></span>Share </button>
     </div>
 </div>
 <div id="DivPartialShareTactic">
@@ -583,5 +583,21 @@
             });
 
         });
+
+        //// Slim Scroll bar for comment div.
+        var r = $('#content_wraper').height() - 170;
+        $('.comment-scroll-section').css('height', r);
+        $(function () {
+            $('.comment-scroll-section').slimScroll();
+        });
+        function toggleChevron(e) {
+            $(e.target)
+            .prev('.accordion-heading')
+            .find("i.indicator")
+            .toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
+        }
+        $('.accordion').on('hidden.bs.collapse', toggleChevron);
+        $('.accordion').on('shown.bs.collapse', toggleChevron);
+
     });
 </script>

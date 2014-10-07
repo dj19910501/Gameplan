@@ -8,7 +8,7 @@
 @using (Html.BeginForm())
 {
     @Html.HiddenFor(model => model.PlanTacticId)
-    <div class="span7" id="inspect-modal-right-div">
+    @*<div class="span7" id="inspect-modal-right-div">
         <div id="nl-form" class="nl-form nl-form-modal">
             I'm running 
                 <span id="tactic-type" class="color5693B3">@Html.Raw(tactic.TacticTypeTitle)</span>
@@ -22,9 +22,9 @@
                 <span id="status" class="color5693B3">@tactic.Status</span>
             <div class="nl-overlay"></div>
         </div>
-    </div>
+    </div>*@
                                        
-    <div class="span2" id="inspect-modal-left-column1">
+    <div class="span6" id="inspect-modal-left-column1">
         <p>Parent Campaign</p>
             @Html.TextBox("txtCampaign",HttpUtility.HtmlDecode(tactic.CampaignTitle), new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.CampaignTitle })
      @*   <p>Parent Program</p>
@@ -40,7 +40,7 @@
             <br />
         </div>
     </div>
-    <div class="span2" id="inspect-modal-left-column2">
+    <div class="span3" id="inspect-modal-left-column2">
         <p>Owner</p>
         @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.Owner })
         <p>Effective Date</p>
