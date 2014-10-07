@@ -15,7 +15,7 @@
     <div id="campaign-title" class="bold padding-top16 font-size18 tipsyclassTitle">@Html.Raw(programReview.CampaignTitle)</div>*@
     <div style="padding-bottom: 16px; margin-bottom: 24px;" class="span5 width96 border-bottom-div">
         <div style="float: left; width: 48%;">
-            <div class="source-sans-prosemibold">Parent Compagin</div>
+            <div class="source-sans-prosemibold">Parent Campagin</div>
             <div>
                 <div id="campaign-title" class="tipsyclassTitle sub-head">@Html.Raw(programReview.CampaignTitle)</div>
             </div>
@@ -94,8 +94,8 @@
                     <div style="float: left; width: 10%;">
                         <img class="avatar-user" src="@Url.Action("LoadUserImage", "User", new { id = item.CreatedBy })" alt="User avatar" /></div>
                     <div style="float: left; width: 90%;">
-                        <span class="bold">@item.CommentedBy</span>
-                        <span>@Html.Raw(item.Comment)</span><br />
+                        <span class="commentedby-color">@item.CommentedBy</span>
+                        <span class="comment-color">@Html.Raw(item.Comment)</span><br />
                         <span class="font_size10" style="clear: both;">@item.CommentDate.ToString("MMM dd") at @item.CommentDate.ToString("hh:mmtt")</span>
                     </div>
                     <div style="clear: both;"></div>
@@ -126,7 +126,7 @@
     
 </div>
 
-<div class="border-top-div cf pull-left margin-top10" style="width: 100%;">
+<div class="border-top-div cf pull-left margin-top10 margin-bottom20" style="width: 100%;">
           
             @{
        

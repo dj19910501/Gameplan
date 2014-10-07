@@ -4996,13 +4996,13 @@ span.red-arrow-down-icon {
 
 .post-div {
     width: 97% !important;
-    padding-bottom: 10px;
-    margin-bottom: 10px;
+    padding-bottom: 6px;
+    margin-bottom: 5px;
 }
 
 .new-comment {
     resize: vertical;
-    width: 82%;
+    width: 88%;
     height: 40px;
 }
 
@@ -8669,6 +8669,23 @@ li.close-list{background-color:#cccccc !important;}
 .comment-scroll-section {
 max-height:350px;
 }
+
+.margin-bottom20 {
+    margin-bottom:20px !important;
+}
+
+.commentedby-color {
+    color: #333333;
+    font-family: "source_sans_prosemibold",Arial,"sans-serif";
+    font-size: 13px;
+    font-weight: normal;
+}
+
+.comment-color {
+    color: #6d6d6d;
+    font-size: 13px;
+}
+
 .paddingleft25px {
 padding-left:25px;
 }

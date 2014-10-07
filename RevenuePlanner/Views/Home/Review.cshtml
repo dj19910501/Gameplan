@@ -19,7 +19,7 @@
 <div class="span5 width360" id="inspect-modal-right-div" style="width: 420px !important;">
     <div style="padding-bottom: 16px; margin-bottom: 24px;" class="span5 width96 border-bottom-div">
         <div style="float: left; width: 48%; border-right: 1px solid #b2afaf">
-            <div class="source-sans-prosemibold">Parent Compagin</div>
+            <div class="source-sans-prosemibold">Parent Campagin</div>
             <div>
                 <div id="campaign-title1" class="tipsyclassTitle sub-head">@Html.Raw(tacticReview.CampaignTitle)</div>
             </div>
@@ -148,8 +148,8 @@
                         <img class="avatar-user" src="@Url.Action("LoadUserImage", "User", new { id = item.CreatedBy })" alt="User avatar" />
                     </div>
                     <div style="float: left; width: 90%;">
-                        <span class="bold">@item.CommentedBy</span>
-                        <span>@Html.Raw(item.Comment)</span><br />
+                        <span class="commentedby-color">@item.CommentedBy</span>
+                        <span class="comment-color">@Html.Raw(item.Comment)</span><br />
                         <span class="font_size10" style="clear: both;">@item.CommentDate.ToString("MMM dd") at @item.CommentDate.ToString("hh:mmtt")</span>
                     </div>
                     <div style="clear: both;"></div>
@@ -162,7 +162,7 @@
     <div class="padding-top10">
 
             @*<img class="avatar-user vertical-aligntop" src="@Url.Action("LoadUserImage", "User", new { id = RevenuePlanner.Helpers.Sessions.User.UserId })" alt="User avatar" />*@
-            @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment",@style="padding-right: 0px;" })
+            @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment" })
 
             @if (IsTacticEditable && (bool)ViewBag.IsBusinessUnitEditable)
             {
@@ -182,7 +182,7 @@
 
 </div>
 
-<div class="border-top-div cf pull-left margin-top10" style="width: 100%;">
+<div class="border-top-div cf pull-left margin-top10 margin-bottom20" style="width: 100%;">
 
 
 

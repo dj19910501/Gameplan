@@ -13,7 +13,7 @@
     @*<div class="font-size18">Overview</div>*@
     <div style="padding-bottom: 16px; margin-bottom: 24px;" class="span5 width96 border-bottom-div">
         <div style="float: left; width: 48%;">
-            <div class="source-sans-prosemibold">Parent Compagin</div>
+            <div class="source-sans-prosemibold">Parent Campagin</div>
             <div>
                 <div id="campaign-title" class="tipsyclassTitle sub-head">@Html.Raw(tacticReview.CampaignTitle)</div>
             </div>
@@ -78,8 +78,8 @@
                             <img class="avatar-user" src="@Url.Action("LoadUserImage", "User", new { id = item.CreatedBy })" alt="User avatar" />
                         </div>
                         <div style="float: left; width: 90%;">
-                            <span class="bold">@item.CommentedBy</span>
-                            <span>@Html.Raw(item.Comment)</span><br />
+                            <span class="commentedby-color">@item.CommentedBy</span>
+                            <span class="comment-color">@Html.Raw(item.Comment)</span><br />
                             <span class="font_size10" style="clear: both;">@item.CommentDate.ToString("MMM dd") at @item.CommentDate.ToString("hh:mmtt")</span>
                         </div>
                         <div style="clear: both;"></div>
@@ -109,7 +109,7 @@
     @* End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic*@
 </div>
 
-<div class="border-top-div cf pull-left margin-top10" style="width: 100%;">
+<div class="border-top-div cf pull-left margin-top10 margin-bottom20" style="width: 100%;">
 
 
 
